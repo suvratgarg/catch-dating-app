@@ -83,7 +83,10 @@ class EventRehearsalHelpSheet extends ConsumerWidget {
                     return Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text(context.l10n.eventAssistanceHelpMissing),
+                        Text(
+                          context.l10n.eventAssistanceHelpMissing,
+                          style: CatchTextStyles.supporting(context),
+                        ),
                         CatchButton(
                           label: context.l10n.eventAssistanceHelpReload,
                           onPressed: reload,

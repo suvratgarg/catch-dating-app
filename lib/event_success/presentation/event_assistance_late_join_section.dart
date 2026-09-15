@@ -164,11 +164,24 @@ class _EventAssistanceLateJoinSectionState
           style: Theme.of(context).textTheme.headlineSmall,
         ),
         gapH8,
-        Text(lateJoinStatusLabel(l10n, widget.status)),
-        if (origin != null) Text(origin),
+        Text(
+          lateJoinStatusLabel(l10n, widget.status),
+          style: CatchTextStyles.supporting(context),
+        ),
+        if (origin != null)
+          Text(origin, style: CatchTextStyles.supporting(context)),
         gapH12,
-        Text(l10n.eventAssistanceLateJoinBody),
-        if (saved) ...[gapH12, Text(l10n.eventAssistanceLateJoinSavedBody)],
+        Text(
+          l10n.eventAssistanceLateJoinBody,
+          style: CatchTextStyles.supporting(context),
+        ),
+        if (saved) ...[
+          gapH12,
+          Text(
+            l10n.eventAssistanceLateJoinSavedBody,
+            style: CatchTextStyles.supporting(context),
+          ),
+        ],
         CatchSection.fieldRows(
           first: true,
           children: [
@@ -208,6 +221,7 @@ class _EventAssistanceLateJoinSectionState
                       widget.setup,
                     ),
                   ),
+            style: CatchTextStyles.supporting(context),
           ),
           Text(switch (rules.cutoff) {
             LateJoinEventEnd() => l10n.eventAssistanceLateJoinEventEnd,
@@ -215,16 +229,18 @@ class _EventAssistanceLateJoinSectionState
               l10n.eventAssistanceLateJoinCutoffSummary(
                 time: lateJoinTimeLabel(context, at),
               ),
-          }),
+          }, style: CatchTextStyles.supporting(context)),
           Text(
             l10n.eventAssistanceLateJoinLimitSummary(
               count: rules.maxMessagesPerEpisode,
             ),
+            style: CatchTextStyles.supporting(context),
           ),
           Text(
             l10n.eventAssistanceLateJoinGapSummary(
               minutes: rules.minimumMinutesBetweenMessages,
             ),
+            style: CatchTextStyles.supporting(context),
           ),
           if (_editable && widget.setup != null) ...[
             CatchButton(
@@ -257,10 +273,16 @@ class _EventAssistanceLateJoinSectionState
         ],
         if (issue != null && _editable) ...[
           gapH12,
-          Text(lateJoinIssueLabel(l10n, issue)),
+          Text(
+            lateJoinIssueLabel(l10n, issue),
+            style: CatchTextStyles.supporting(context),
+          ),
         ],
         gapH12,
-        Text(l10n.eventAssistanceLateJoinDeliveryRequired),
+        Text(
+          l10n.eventAssistanceLateJoinDeliveryRequired,
+          style: CatchTextStyles.supporting(context),
+        ),
         if (widget.error != null) ...[
           gapH12,
           CatchLocalizedErrorBanner(widget.error!),
@@ -276,7 +298,10 @@ class _EventAssistanceLateJoinSectionState
                 : null,
           ),
         if (widget.phase == EventAssistanceLateJoinPhase.retryRequired) ...[
-          Text(l10n.eventAssistanceLateJoinRetryBody),
+          Text(
+            l10n.eventAssistanceLateJoinRetryBody,
+            style: CatchTextStyles.supporting(context),
+          ),
           gapH12,
           CatchButton(
             label: l10n.eventAssistanceLateJoinRetry,
@@ -284,7 +309,10 @@ class _EventAssistanceLateJoinSectionState
           ),
         ],
         if (widget.phase == EventAssistanceLateJoinPhase.refreshRequired) ...[
-          Text(l10n.eventAssistanceLateJoinRefreshBody),
+          Text(
+            l10n.eventAssistanceLateJoinRefreshBody,
+            style: CatchTextStyles.supporting(context),
+          ),
           gapH12,
           CatchButton(
             label: l10n.eventAssistanceLateJoinReload,

@@ -20,6 +20,7 @@ class EventAssistanceHelpEntry extends StatelessWidget {
           confirmationNeeded
               ? context.l10n.eventAssistanceHelpPendingBody
               : context.l10n.eventAssistanceHelpBody,
+          style: CatchTextStyles.supporting(context),
         ),
         gapH12,
         CatchButton(

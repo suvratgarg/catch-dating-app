@@ -106,7 +106,11 @@ class EventAssistanceCheckpointController
     if (auth.isLoading || auth.hasError || auth.asData == null) {
       return CheckpointUnavailable(auth.error ?? checkpointSessionChanged);
     }
-    _account = auth.requireValue;
+    _account = switch (auth) {
+      AsyncData(:final value) => value,
+      AsyncError(:final error) => throw error,
+      AsyncLoading() => throw AssertionError(),
+    };
     return const CheckpointIdle();
   }
 

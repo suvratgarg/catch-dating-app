@@ -68,7 +68,7 @@ final class EventSmsPreferenceControllerProvider
 }
 
 String _$eventSmsPreferenceControllerHash() =>
-    r'edbf97c5701b2fdd77da5fb374deab38fa746999';
+    r'1ddbb9fbbde339e82dea3478901e49d4268933c4';
 
 /// One participant's explicit SMS choice; reads and retries never enroll them.
 

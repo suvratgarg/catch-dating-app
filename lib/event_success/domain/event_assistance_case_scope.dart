@@ -1,5 +1,7 @@
 import 'package:catch_dating_app/event_success/domain/event_assistance_parsing.dart';
 
+const _liveAssistanceMode = 'live';
+
 enum AssistanceCaseStatus { open, resolved }
 
 final class EventAssistanceCaseScope {
@@ -82,7 +84,7 @@ void validateAssistanceCaseContext(
   required String eventId,
 }) {
   final map = assistanceObject(value, {'mode', 'organizerId', 'eventId'});
-  if (map['mode'] != 'live' ||
+  if (map['mode'] != _liveAssistanceMode ||
       map['organizerId'] != organizerId ||
       map['eventId'] != eventId) {
     throw const FormatException('Help request context mismatch.');

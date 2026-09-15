@@ -77,14 +77,25 @@ class EventRehearsalStaffSection extends ConsumerWidget {
             CatchLocalizedErrorBanner(error, onRetry: retry),
         builder: (context, review) {
           final staff = review.snapshot.staffReview;
-          if (staff == null) return Text(l10n.hostEventRehearsalStaffReadOnly);
+          if (staff == null) {
+            return Text(
+              l10n.hostEventRehearsalStaffReadOnly,
+              style: CatchTextStyles.supporting(context),
+            );
+          }
           return Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(l10n.hostEventRehearsalStaffBody),
+              Text(
+                l10n.hostEventRehearsalStaffBody,
+                style: CatchTextStyles.supporting(context),
+              ),
               if (!staff.canAssign) ...[
                 gapH8,
-                Text(l10n.hostEventRehearsalStaffReadOnly),
+                Text(
+                  l10n.hostEventRehearsalStaffReadOnly,
+                  style: CatchTextStyles.supporting(context),
+                ),
               ],
               gapH12,
               CatchFieldLanes.divided(

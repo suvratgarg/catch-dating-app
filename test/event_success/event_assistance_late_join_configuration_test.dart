@@ -49,13 +49,13 @@ void main() {
 
       await tap(find.byKey(const ValueKey('lateJoin.customize')));
       await tap(find.byKey(const ValueKey('lateJoin.destination')));
-      await tap(find.text('Follow confirmed group progress').last);
+      await tap(find.text('Follow confirmed group progress').hitTestable());
       await tap(find.byKey(const ValueKey('lateJoin.maximum')));
-      await tap(find.bySemanticsLabel('Increase limit').first);
+      await tap(find.bySemanticsLabel('Increase limit').hitTestable());
       await tap(find.byKey(const ValueKey('lateJoin.unanswered')));
-      await tap(find.text('Ask a host to review').last);
+      await tap(find.text('Ask a host to review').hitTestable());
       await tap(find.byKey(const ValueKey('lateJoin.mode')));
-      await tap(find.text('Send automatically').last);
+      await tap(find.text('Send automatically').hitTestable());
       expect(repository.writes, isEmpty);
       await tap(find.byKey(const ValueKey('lateJoin.save')));
       final command = repository.writes.single.change;

@@ -153,7 +153,7 @@ void main() {
             );
           }
           await pumpFeatureUi(tester);
-          await tap(find.text('Done').last);
+          await tap(find.byKey(const ValueKey('checkpoint.request.done')));
           await tap(manage);
           expect(find.text('Retry checkpoint decision'), findsOneWidget);
           expect(
@@ -178,7 +178,7 @@ void main() {
             ),
             findsOneWidget,
           );
-          await tap(find.text('Done').last);
+          await tap(find.byKey(const ValueKey('checkpoint.request.done')));
           await tap(manage);
           final reopen = find.byKey(
             const ValueKey('checkpoint.request.reopen'),

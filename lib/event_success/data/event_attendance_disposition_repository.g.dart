@@ -59,3 +59,55 @@ final class EventAttendanceDispositionRepositoryProvider
 
 String _$eventAttendanceDispositionRepositoryHash() =>
     r'53fa0c1262963e39aea1fdfa340dec4b8764c326';
+
+@ProviderFor(eventAttendanceDispositionCommands)
+final eventAttendanceDispositionCommandsProvider =
+    EventAttendanceDispositionCommandsProvider._();
+
+final class EventAttendanceDispositionCommandsProvider
+    extends
+        $FunctionalProvider<
+          EventAttendanceDispositionCommands,
+          EventAttendanceDispositionCommands,
+          EventAttendanceDispositionCommands
+        >
+    with $Provider<EventAttendanceDispositionCommands> {
+  EventAttendanceDispositionCommandsProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'eventAttendanceDispositionCommandsProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() =>
+      _$eventAttendanceDispositionCommandsHash();
+
+  @$internal
+  @override
+  $ProviderElement<EventAttendanceDispositionCommands> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  EventAttendanceDispositionCommands create(Ref ref) {
+    return eventAttendanceDispositionCommands(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(EventAttendanceDispositionCommands value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<EventAttendanceDispositionCommands>(
+        value,
+      ),
+    );
+  }
+}
+
+String _$eventAttendanceDispositionCommandsHash() =>
+    r'def59acced69c41551a3ee020fd621dbb66e6314';

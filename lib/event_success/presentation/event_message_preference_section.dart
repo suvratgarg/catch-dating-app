@@ -79,23 +79,34 @@ class EventMessagePreferenceSection extends StatelessWidget {
         children: [
           if (senderName != null)
             Text(senderName!, style: CatchTextStyles.sectionTitle(context)),
-          if (senderPhone != null) Text(senderPhone!),
-          if (earlierSender) ...[gapH8, Text(l.eventMessagesEarlierSender)],
+          if (senderPhone != null)
+            Text(senderPhone!, style: CatchTextStyles.supporting(context)),
+          if (earlierSender) ...[
+            gapH8,
+            Text(
+              l.eventMessagesEarlierSender,
+              style: CatchTextStyles.supporting(context),
+            ),
+          ],
           gapH8,
           Text(switch (permission) {
             EventMessagePermission.notSet => l.eventMessagesNotSet,
             EventMessagePermission.enabled => l.eventMessagesEnabled,
             EventMessagePermission.disabled => l.eventMessagesDisabled,
             EventMessagePermission.expired => l.eventMessagesExpired,
-          }, style: CatchTextStyles.bodyM(context)),
+          }, style: CatchTextStyles.supporting(context)),
           if (phoneLastFour != null)
-            Text(l.eventMessagesPhoneEnding(digits: phoneLastFour!)),
+            Text(
+              l.eventMessagesPhoneEnding(digits: phoneLastFour!),
+              style: CatchTextStyles.supporting(context),
+            ),
           if (expiry != null)
             Text(
               l.eventMessagesUntil(
                 date: material.formatFullDate(expiry),
                 time: material.formatTimeOfDay(TimeOfDay.fromDateTime(expiry)),
               ),
+              style: CatchTextStyles.supporting(context),
             ),
           if (availability != EventMessageAvailability.ready) ...[
             gapH8,
@@ -111,12 +122,12 @@ class EventMessagePreferenceSection extends StatelessWidget {
                 l.eventMessagesSenderUnavailable,
               EventMessageAvailability.subscriptionUnavailable =>
                 l.eventMessagesSubscriptionUnavailable,
-            }),
+            }, style: CatchTextStyles.supporting(context)),
           ],
           gapH12,
           // Server-authored consent is deliberately complete, never a preview
           // or locally reconstructed promise about delivery or privacy.
-          Text(consentText),
+          Text(consentText, style: CatchTextStyles.supporting(context)),
           if (phase != EventMessageSavePhase.ready) ...[
             gapH12,
             Semantics(
@@ -127,7 +138,7 @@ class EventMessagePreferenceSection extends StatelessWidget {
                 EventMessageSavePhase.uncertain => l.eventMessagesUncertain,
                 EventMessageSavePhase.refreshRequired =>
                   l.eventMessagesReviewChanged,
-              }),
+              }, style: CatchTextStyles.supporting(context)),
             ),
           ],
           if (notice != EventMessageSaveNotice.none) ...[
@@ -138,7 +149,7 @@ class EventMessagePreferenceSection extends StatelessWidget {
                 EventMessageSaveNotice.none => '',
                 EventMessageSaveNotice.saved => l.eventMessagesSaved,
                 EventMessageSaveNotice.changed => l.eventMessagesChanged,
-              }),
+              }, style: CatchTextStyles.supporting(context)),
             ),
           ],
           if (error != null) ...[gapH8, CatchLocalizedErrorBanner(error!)],

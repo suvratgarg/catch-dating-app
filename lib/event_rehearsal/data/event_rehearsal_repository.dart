@@ -308,10 +308,26 @@ class EventRehearsalRepository {
   );
 }
 
+/// Typed mutation seam used by the assistance editor.
+final class EventRehearsalAssistanceCommands {
+  const EventRehearsalAssistanceCommands(this._repository);
+
+  final EventRehearsalRepository _repository;
+
+  Future<EventRehearsalBootstrap> apply(RehearsalAssistanceChange change) =>
+      _repository.applyAssistance(change);
+}
+
 // keepalive: One callable client owns the isolated rehearsal domain.
 @Riverpod(keepAlive: true)
 EventRehearsalRepository eventRehearsalRepository(Ref ref) =>
     EventRehearsalRepository(ref.watch(firebaseFunctionsProvider));
+
+@riverpod
+EventRehearsalAssistanceCommands eventRehearsalAssistanceCommands(Ref ref) =>
+    EventRehearsalAssistanceCommands(
+      ref.watch(eventRehearsalRepositoryProvider),
+    );
 
 @riverpod
 Stream<EventRehearsalBootstrap> eventRehearsal(Ref ref, String sessionId) =>

@@ -97,7 +97,7 @@ void main() {
               image.dispose();
             });
           }
-          final name = find.byType(EditableText).first;
+          final name = find.byType(EditableText).hitTestable();
           await tester.ensureVisible(name);
           await tester.enterText(name, '');
           await tester.pump();

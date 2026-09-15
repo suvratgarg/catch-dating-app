@@ -40,14 +40,20 @@ class EventAssistanceSweepSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(l10n.eventSuccessAccountabilitySubtitle),
+          Text(
+            l10n.eventSuccessAccountabilitySubtitle,
+            style: CatchTextStyles.supporting(context),
+          ),
           gapH8,
           if (error != null)
             CatchLocalizedErrorBanner(error!, onRetry: onReload),
           if (loading)
             const CatchSkeleton.rows(count: 2)
           else if (guests.isEmpty)
-            Text(l10n.eventSuccessAccountabilityEmpty)
+            Text(
+              l10n.eventSuccessAccountabilityEmpty,
+              style: CatchTextStyles.supporting(context),
+            )
           else ...[
             Text(
               l10n.eventSuccessAccountabilityProgress(
@@ -60,6 +66,7 @@ class EventAssistanceSweepSection extends StatelessWidget {
                     .length,
                 total: guests.length,
               ),
+              style: CatchTextStyles.supporting(context),
             ),
             gapH8,
             CatchFieldLanes.divided(

@@ -71,7 +71,7 @@ final class EventRehearsalStaffControllerProvider
 }
 
 String _$eventRehearsalStaffControllerHash() =>
-    r'6c42b05e1b995b42e49e9310478e382d7e05b98c';
+    r'59adc51863b6257843dceb0ac19504273fd74476';
 
 /// One rehearsal owns one unresolved staff edit, including new synthetic staff.
 /// Refresh, dismissal and a different selection cannot replace its frozen request.

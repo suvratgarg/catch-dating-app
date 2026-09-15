@@ -73,7 +73,25 @@ class EventAttendanceDispositionRepository {
   );
 }
 
+/// Typed mutation seam used by attendance closeout presentation state.
+final class EventAttendanceDispositionCommands {
+  const EventAttendanceDispositionCommands(this._repository);
+
+  final EventAttendanceDispositionRepository _repository;
+
+  Future<EventAttendanceDispositionResult> apply(
+    EventAttendanceDispositionChange change,
+  ) => _repository.apply(change);
+}
+
 @riverpod
 EventAttendanceDispositionRepository eventAttendanceDispositionRepository(
   Ref ref,
 ) => EventAttendanceDispositionRepository(ref.watch(firebaseFunctionsProvider));
+
+@riverpod
+EventAttendanceDispositionCommands eventAttendanceDispositionCommands(
+  Ref ref,
+) => EventAttendanceDispositionCommands(
+  ref.watch(eventAttendanceDispositionRepositoryProvider),
+);

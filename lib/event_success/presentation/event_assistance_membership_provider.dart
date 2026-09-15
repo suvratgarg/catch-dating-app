@@ -48,7 +48,11 @@ class EventAssistanceMembership extends _$EventAssistanceMembership {
     final page = ref.watch(
       eventAssistanceMembershipForAccountProvider(
         scope,
-        account: auth.requireValue,
+        account: switch (auth) {
+          AsyncData(:final value) => value,
+          AsyncError(:final error) => throw error,
+          AsyncLoading() => throw AssertionError(),
+        },
       ),
     );
     if (page.isLoading) return const AsyncLoading();
@@ -62,7 +66,11 @@ class EventAssistanceMembership extends _$EventAssistanceMembership {
     ref.invalidate(
       eventAssistanceMembershipForAccountProvider(
         scope,
-        account: auth.requireValue,
+        account: switch (auth) {
+          AsyncData(:final value) => value,
+          AsyncError(:final error) => throw error,
+          AsyncLoading() => throw AssertionError(),
+        },
       ),
     );
   }

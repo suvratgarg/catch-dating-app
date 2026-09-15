@@ -48,7 +48,11 @@ class EventAssistanceCheckpoint extends _$EventAssistanceCheckpoint {
     final page = ref.watch(
       eventAssistanceCheckpointForAccountProvider(
         scope,
-        account: auth.requireValue,
+        account: switch (auth) {
+          AsyncData(:final value) => value,
+          AsyncError(:final error) => throw error,
+          AsyncLoading() => throw AssertionError(),
+        },
       ),
     );
     if (page.isLoading) return const AsyncLoading();
@@ -62,7 +66,11 @@ class EventAssistanceCheckpoint extends _$EventAssistanceCheckpoint {
     ref.invalidate(
       eventAssistanceCheckpointForAccountProvider(
         scope,
-        account: auth.requireValue,
+        account: switch (auth) {
+          AsyncData(:final value) => value,
+          AsyncError(:final error) => throw error,
+          AsyncLoading() => throw AssertionError(),
+        },
       ),
     );
   }

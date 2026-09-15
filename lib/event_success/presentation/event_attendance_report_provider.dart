@@ -46,7 +46,11 @@ class EventAttendanceReport extends _$EventAttendanceReport {
     ref.invalidate(
       eventAttendanceReportForAccountProvider(
         scope,
-        account: auth.requireValue,
+        account: switch (auth) {
+          AsyncData(:final value) => value,
+          AsyncError(:final error) => throw error,
+          AsyncLoading() => throw AssertionError(),
+        },
       ),
     );
   }

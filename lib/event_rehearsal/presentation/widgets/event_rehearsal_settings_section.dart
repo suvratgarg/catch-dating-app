@@ -77,7 +77,10 @@ class EventRehearsalSettingsSection extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Text(l.eventAssistanceLateJoinChooseScope),
+                Text(
+                  l.eventAssistanceLateJoinChooseScope,
+                  style: CatchTextStyles.supporting(context),
+                ),
                 for (final group in review.groups.values.where(
                   (g) => g.id != 'event:whole',
                 ))

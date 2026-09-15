@@ -117,7 +117,11 @@ class EventRehearsalSettingsController
         auth.error ?? rehearsalReviewSessionChanged,
       );
     }
-    _account = auth.requireValue;
+    _account = switch (auth) {
+      AsyncData(:final value) => value,
+      AsyncError(:final error) => throw error,
+      AsyncLoading() => throw AssertionError(),
+    };
     return const RehearsalSettingsIdle();
   }
 

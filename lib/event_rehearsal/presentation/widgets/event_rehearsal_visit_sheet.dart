@@ -80,7 +80,10 @@ class EventRehearsalVisitSheet extends ConsumerWidget {
                         .firstOrNull;
                 // An old sheet must not follow a reset into another run.
                 if (row == null) {
-                  return Text(context.l10n.eventAssistanceVisitChanged);
+                  return Text(
+                    context.l10n.eventAssistanceVisitChanged,
+                    style: CatchTextStyles.supporting(context),
+                  );
                 }
                 final evidence =
                     form?.result?.accountabilityReviews?.rows

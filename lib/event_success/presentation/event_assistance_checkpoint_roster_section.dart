@@ -60,7 +60,10 @@ class _EventAssistanceCheckpointRosterSectionState
         ),
         if (matches.isEmpty) ...[
           gapH8,
-          Text(l10n.eventAssistanceDepartureNoGuests),
+          Text(
+            l10n.eventAssistanceDepartureNoGuests,
+            style: CatchTextStyles.supporting(context),
+          ),
         ],
         for (final member in matches.skip(page * 12).take(12))
           EventAssistanceCheckpointGuestRow(
@@ -80,8 +83,8 @@ class _EventAssistanceCheckpointRosterSectionState
           ),
         if (matches.length > 12)
           Wrap(
-            spacing: 8,
-            runSpacing: 8,
+            spacing: CatchSpacing.s2,
+            runSpacing: CatchSpacing.s2,
             children: [
               CatchButton(
                 label: l10n.eventAssistanceDeparturePreviousPeople,
@@ -143,7 +146,7 @@ class EventAssistanceCheckpointGuestRow extends StatelessWidget {
         semanticButton: false,
         onTap: enabled ? onTap : null,
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: CatchSpacing.s3),
+          padding: CatchInsets.contentVertical,
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

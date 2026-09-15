@@ -85,13 +85,21 @@ class EventAssistanceVisitSection extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(l10n.eventAssistanceVisitBody),
-        if (contextMessage != null) ...[gapH8, Text(contextMessage!)],
+        Text(
+          l10n.eventAssistanceVisitBody,
+          style: CatchTextStyles.supporting(context),
+        ),
+        if (contextMessage != null) ...[
+          gapH8,
+          Text(contextMessage!, style: CatchTextStyles.supporting(context)),
+        ],
         gapH12,
-        CatchField.content(
-          copy: catchFieldCopy(l10n),
-          title: l10n.eventAssistanceVisitCurrent,
-          body: assistanceVisitLabel(l10n, disposition),
+        CatchFieldLanes.single(
+          child: CatchField.content(
+            copy: catchFieldCopy(l10n),
+            title: l10n.eventAssistanceVisitCurrent,
+            body: assistanceVisitLabel(l10n, disposition),
+          ),
         ),
         if (phase == EventAssistanceVisitPhase.ready) ...[
           gapH12,
@@ -124,7 +132,7 @@ class EventAssistanceVisitSection extends StatelessWidget {
             EventAssistanceVisitPhase.unavailable =>
               unavailableMessage ?? l10n.eventAssistanceVisitReadOnly,
             EventAssistanceVisitPhase.ready => '',
-          }),
+          }, style: CatchTextStyles.supporting(context)),
           if (submittedDisposition != null &&
               (pending ||
                   phase == EventAssistanceVisitPhase.retryRequired)) ...[
@@ -133,13 +141,14 @@ class EventAssistanceVisitSection extends StatelessWidget {
               l10n.eventAssistanceVisitPendingChoice(
                 status: assistanceVisitLabel(l10n, submittedDisposition!),
               ),
+              style: CatchTextStyles.supporting(context),
             ),
           ],
         ],
         if (phase == EventAssistanceVisitPhase.saved &&
             unavailableMessage != null) ...[
           gapH8,
-          Text(unavailableMessage!),
+          Text(unavailableMessage!, style: CatchTextStyles.supporting(context)),
         ],
         if (error != null) ...[gapH12, CatchLocalizedErrorBanner(error!)],
         if (phase == EventAssistanceVisitPhase.retryRequired) ...[
@@ -160,6 +169,7 @@ class EventAssistanceVisitSection extends StatelessWidget {
         ],
         gapH12,
         CatchButton(
+          key: const ValueKey('visit.done'),
           label: l10n.eventAssistanceVisitDone,
           variant: CatchButtonVariant.ghost,
           status: pending ? CatchButtonStatus.loading : CatchButtonStatus.idle,

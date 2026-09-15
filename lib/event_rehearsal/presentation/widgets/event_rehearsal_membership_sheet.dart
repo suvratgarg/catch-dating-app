@@ -77,7 +77,10 @@ class EventRehearsalMembershipSheet extends ConsumerWidget {
                         .where((r) => r.scope == scope)
                         .firstOrNull;
                 if (row == null) {
-                  return Text(context.l10n.eventAssistanceGroupChanged);
+                  return Text(
+                    context.l10n.eventAssistanceGroupChanged,
+                    style: CatchTextStyles.supporting(context),
+                  );
                 }
                 final facts =
                     form?.result?.membershipReviews?.rows

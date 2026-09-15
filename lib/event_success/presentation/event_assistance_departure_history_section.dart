@@ -36,11 +36,18 @@ class EventAssistanceDepartureHistorySection extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(contextMessage),
+        Text(contextMessage, style: CatchTextStyles.supporting(context)),
         gapH8,
-        Text(l10n.eventAssistanceHistoryBody),
+        Text(
+          l10n.eventAssistanceHistoryBody,
+          style: CatchTextStyles.supporting(context),
+        ),
         gapH12,
-        if (items.isEmpty) Text(l10n.eventAssistanceHistoryEmpty),
+        if (items.isEmpty)
+          Text(
+            l10n.eventAssistanceHistoryEmpty,
+            style: CatchTextStyles.supporting(context),
+          ),
         for (final row in items)
           CatchRecordRow(
             key: ValueKey('checkpoint.history.${row.revision}'),
@@ -73,8 +80,8 @@ class EventAssistanceDepartureHistorySection extends StatelessWidget {
           ),
         gapH12,
         Wrap(
-          spacing: 8,
-          runSpacing: 8,
+          spacing: CatchSpacing.s2,
+          runSpacing: CatchSpacing.s2,
           children: [
             if (onNewer != null)
               CatchButton(

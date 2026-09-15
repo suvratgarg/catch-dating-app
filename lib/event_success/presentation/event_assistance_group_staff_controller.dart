@@ -105,7 +105,11 @@ class EventAssistanceGroupStaffController
     if (auth.isLoading || auth.hasError || auth.asData == null) {
       return GroupStaffUnavailable(auth.error ?? groupStaffSessionChanged);
     }
-    _account = auth.requireValue;
+    _account = switch (auth) {
+      AsyncData(:final value) => value,
+      AsyncError(:final error) => throw error,
+      AsyncLoading() => throw AssertionError(),
+    };
     return const GroupStaffIdle();
   }
 

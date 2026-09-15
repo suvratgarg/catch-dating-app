@@ -117,8 +117,17 @@ class _EventRehearsalRuntimeSectionState
           style: Theme.of(context).textTheme.titleLarge,
         ),
         gapH12,
-        Text(l.hostEventRehearsalUpdatesBody),
-        if (saved) ...[gapH12, Text(l.hostEventRehearsalUpdatesSaved)],
+        Text(
+          l.hostEventRehearsalUpdatesBody,
+          style: CatchTextStyles.supporting(context),
+        ),
+        if (saved) ...[
+          gapH12,
+          Text(
+            l.hostEventRehearsalUpdatesSaved,
+            style: CatchTextStyles.supporting(context),
+          ),
+        ],
         gapH16,
         EventRehearsalRuntimeFields(
           draft: value,
@@ -130,10 +139,14 @@ class _EventRehearsalRuntimeSectionState
         gapH12,
         Text(
           '${l.hostEventRehearsalUpdatesScript}: ${value.outcomes.map((o) => rehearsalOutcomeLabel(l, o)).join(' → ')}',
+          style: CatchTextStyles.supporting(context),
         ),
         if (value.laterChoices?.isNotEmpty ?? false) ...[
           gapH8,
-          Text(l.eventAssistanceRuntimeRetainedChoices),
+          Text(
+            l.eventAssistanceRuntimeRetainedChoices,
+            style: CatchTextStyles.supporting(context),
+          ),
         ],
         CatchButton(
           key: const ValueKey('practice.customize'),
@@ -167,7 +180,10 @@ class _EventRehearsalRuntimeSectionState
         ],
         if (!valid && _editable) ...[
           gapH12,
-          Text(l.hostEventRehearsalUpdatesIssue),
+          Text(
+            l.hostEventRehearsalUpdatesIssue,
+            style: CatchTextStyles.supporting(context),
+          ),
         ],
         if (widget.error != null) ...[
           gapH12,
@@ -175,7 +191,10 @@ class _EventRehearsalRuntimeSectionState
         ],
         if (widget.phase == RehearsalSettingsPhase.retryRequired) ...[
           gapH12,
-          Text(l.eventAssistanceRuntimeRetryBody),
+          Text(
+            l.eventAssistanceRuntimeRetryBody,
+            style: CatchTextStyles.supporting(context),
+          ),
           CatchButton(
             key: const ValueKey('practice.retry'),
             label: l.eventAssistanceLateJoinRetry,
@@ -184,7 +203,10 @@ class _EventRehearsalRuntimeSectionState
         ],
         if (widget.phase == RehearsalSettingsPhase.refreshRequired) ...[
           gapH12,
-          Text(l.eventAssistanceRuntimeReloadBody),
+          Text(
+            l.eventAssistanceRuntimeReloadBody,
+            style: CatchTextStyles.supporting(context),
+          ),
           CatchButton(
             label: l.eventAssistanceLateJoinReload,
             onPressed: widget.onReload,
@@ -209,6 +231,7 @@ class _EventRehearsalRuntimeSectionState
           ),
         gapH12,
         CatchButton(
+          key: const ValueKey('practice.runtime.done'),
           label: l.eventAssistanceLateJoinDone,
           variant: CatchButtonVariant.secondary,
           onPressed: busy ? null : widget.onDone,

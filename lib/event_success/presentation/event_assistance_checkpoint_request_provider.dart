@@ -51,7 +51,7 @@ class EventAssistanceCheckpointRequest
     final page = ref.watch(
       eventAssistanceCheckpointRequestForAccountProvider(
         scope,
-        account: auth.requireValue,
+        account: auth.asData!.value,
       ),
     );
     if (page.isLoading) return const AsyncLoading();
@@ -65,13 +65,17 @@ class EventAssistanceCheckpointRequest
     ref.invalidate(
       eventAssistanceCheckpointForAccountProvider(
         scope,
-        account: auth.requireValue,
+        account: auth.asData!.value,
       ),
     );
     ref.invalidate(
       eventAssistanceCheckpointRequestForAccountProvider(
         scope,
-        account: auth.requireValue,
+        account: switch (auth) {
+          AsyncData(:final value) => value,
+          AsyncError(:final error) => throw error,
+          AsyncLoading() => throw AssertionError(),
+        },
       ),
     );
   }

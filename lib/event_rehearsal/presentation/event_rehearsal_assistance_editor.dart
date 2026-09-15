@@ -107,7 +107,11 @@ class EventRehearsalAssistanceEditor extends _$EventRehearsalAssistanceEditor {
         auth.error ?? rehearsalReviewSessionChanged,
       );
     }
-    _account = auth.requireValue;
+    _account = switch (auth) {
+      AsyncData(:final value) => value,
+      AsyncError(:final error) => throw error,
+      AsyncLoading() => throw AssertionError(),
+    };
     return const RehearsalAssistanceIdle();
   }
 
@@ -125,7 +129,7 @@ class EventRehearsalAssistanceEditor extends _$EventRehearsalAssistanceEditor {
     final RehearsalAssistanceForm form => form,
     _ => null,
   };
-  RehearsalAssistanceReview get review => _form!.review;
+  RehearsalAssistanceReview get _review => _form!.review;
 
   /// One rehearsal owns an unresolved operation across refreshed reviews and roles.
   void open(RehearsalAssistanceReview review) {
@@ -189,7 +193,7 @@ class EventRehearsalAssistanceEditor extends _$EventRehearsalAssistanceEditor {
     }
   }
 
-  void _requireCurrentReview() => _requireReview(review);
+  void _requireCurrentReview() => _requireReview(_review);
 
   void select(RehearsalAssistanceCommand? command) => _select(() => command);
 
@@ -198,7 +202,7 @@ class EventRehearsalAssistanceEditor extends _$EventRehearsalAssistanceEditor {
     RehearsalMovementPage movement,
   ) => _select(() {
     _requireMovement(draft, movement);
-    return draft.prepare(review.snapshot);
+    return draft.prepare(_review.snapshot);
   }, movement: movement);
 
   void selectAutomation(
@@ -207,7 +211,7 @@ class EventRehearsalAssistanceEditor extends _$EventRehearsalAssistanceEditor {
     RehearsalMovementPage movement,
   ) => _select(() {
     _requireMovement(draft, movement);
-    return draft.configure(review.snapshot, outcomes);
+    return draft.configure(_review.snapshot, outcomes);
   }, movement: movement);
 
   void _requireMovement(
@@ -225,7 +229,7 @@ class EventRehearsalAssistanceEditor extends _$EventRehearsalAssistanceEditor {
     final current = ref.read(
       eventRehearsalMovementProvider(movement.snapshot.selection),
     );
-    if (!identical(movement.account, review.account) ||
+    if (!identical(movement.account, _review.account) ||
         !movement.isCurrent ||
         current.isLoading ||
         current.hasError ||
@@ -240,7 +244,7 @@ class EventRehearsalAssistanceEditor extends _$EventRehearsalAssistanceEditor {
   ) => _select(
     () => RehearsalResolveAssistance(
       snapshot: request,
-      actorUid: review.account.uid,
+      actorUid: _review.account.uid,
       decision: decision,
     ),
   );
@@ -272,19 +276,19 @@ class EventRehearsalAssistanceEditor extends _$EventRehearsalAssistanceEditor {
       final change = command == null
           ? null
           : RehearsalAssistanceChange(
-              snapshot: review.snapshot,
+              snapshot: _review.snapshot,
               command: command,
               clientActionId: _newActionId(),
             );
       _movementPage = movement;
-      state = RehearsalAssistanceForm._(review: review, change: change);
+      state = RehearsalAssistanceForm._(review: _review, change: change);
     } catch (error) {
       if (_current(form.review.account, _epoch)) {
         _movementPage = null;
         state = RehearsalAssistanceForm._(
-          review: review,
+          review: _review,
           error: error,
-          phase: review.isCurrent
+          phase: _review.isCurrent
               ? RehearsalAssistancePhase.choosing
               : RehearsalAssistancePhase.refreshRequired,
         );
@@ -402,8 +406,8 @@ class EventRehearsalAssistanceEditor extends _$EventRehearsalAssistanceEditor {
     final change = form.change!;
     try {
       final result = await ref
-          .read(eventRehearsalRepositoryProvider)
-          .applyAssistance(change);
+          .read(eventRehearsalAssistanceCommandsProvider)
+          .apply(change);
       if (!_current(form.review.account, epoch)) {
         throw rehearsalReviewSessionChanged;
       }

@@ -102,17 +102,20 @@ class _EventAssistanceCheckpointRequestSectionState
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(widget.contextMessage),
+        Text(widget.contextMessage, style: CatchTextStyles.supporting(context)),
         if (widget.checkpointLabel case final label?) ...[
           gapH8,
           Text(label, style: CatchTextStyles.titleL(context)),
         ],
         gapH12,
-        Text(l10n.eventAssistanceCheckpointRequestBody),
+        Text(
+          l10n.eventAssistanceCheckpointRequestBody,
+          style: CatchTextStyles.supporting(context),
+        ),
         if (assistanceCheckpointRequestCopy(context, widget.request)
             case final status?) ...[
           gapH12,
-          Text(status),
+          Text(status, style: CatchTextStyles.supporting(context)),
         ],
         if (due != null) ...[
           gapH8,
@@ -121,6 +124,7 @@ class _EventAssistanceCheckpointRequestSectionState
               deadline:
                   '${local.formatMediumDate(due)} · ${local.formatTimeOfDay(TimeOfDay.fromDateTime(due))}',
             ),
+            style: CatchTextStyles.supporting(context),
           ),
         ],
         if (widget.request case final request?) ...[
@@ -133,6 +137,7 @@ class _EventAssistanceCheckpointRequestSectionState
                 request.responsibleOperatorId,
               ),
             ),
+            style: CatchTextStyles.supporting(context),
           ),
         ],
         if (widget.observationSummary case final summary?) ...[
@@ -177,6 +182,7 @@ class _EventAssistanceCheckpointRequestSectionState
                           l10n.eventAssistanceCheckpointClosedOut,
                       },
                   },
+            style: CatchTextStyles.supporting(context),
           ),
           if (widget.canReassign && widget.reporterOptions != null) ...[
             gapH8,
@@ -201,16 +207,18 @@ class _EventAssistanceCheckpointRequestSectionState
           ],
           if (widget.canClose || widget.canReopen || _choosingReporter) ...[
             gapH12,
-            CatchField.input(
-              key: const ValueKey('checkpoint.request.reason'),
-              copy: catchFieldCopy(l10n),
-              title: l10n.eventAssistanceCheckpointRequestReason,
-              contract: CatchContractConstraints
-                  .setEventAssistanceCheckpointCloseoutCallablePayloadCommandPayloadReason,
-              controller: _reason,
-              minLines: 2,
-              maxLines: 4,
-              onChanged: (_) => setState(() {}),
+            CatchFieldLanes.single(
+              child: CatchField.input(
+                key: const ValueKey('checkpoint.request.reason'),
+                copy: catchFieldCopy(l10n),
+                title: l10n.eventAssistanceCheckpointRequestReason,
+                contract: CatchContractConstraints
+                    .setEventAssistanceCheckpointCloseoutCallablePayloadCommandPayloadReason,
+                controller: _reason,
+                minLines: 2,
+                maxLines: 4,
+                onChanged: (_) => setState(() {}),
+              ),
             ),
             gapH12,
             if (_choosingReporter)
@@ -250,7 +258,10 @@ class _EventAssistanceCheckpointRequestSectionState
             ],
           ] else if (widget.request != null) ...[
             gapH8,
-            Text(l10n.eventAssistanceCheckpointRequestAuthority),
+            Text(
+              l10n.eventAssistanceCheckpointRequestAuthority,
+              style: CatchTextStyles.supporting(context),
+            ),
           ],
         ] else ...[
           gapH12,
@@ -266,7 +277,7 @@ class _EventAssistanceCheckpointRequestSectionState
             EventAssistanceCheckpointPhase.unavailable =>
               l10n.eventAssistanceCheckpointRequestAuthority,
             EventAssistanceCheckpointPhase.ready => '',
-          }),
+          }, style: CatchTextStyles.supporting(context)),
           if ((busy ||
                   widget.phase ==
                       EventAssistanceCheckpointPhase.retryRequired) &&
@@ -290,10 +301,11 @@ class _EventAssistanceCheckpointRequestSectionState
                   widget.reporterOptions,
                   reporterId,
                 ),
+                style: CatchTextStyles.supporting(context),
               ),
               gapH8,
             ],
-            Text(decision.reason),
+            Text(decision.reason, style: CatchTextStyles.supporting(context)),
           ],
         ],
         if (widget.error != null) ...[
@@ -318,6 +330,7 @@ class _EventAssistanceCheckpointRequestSectionState
         ],
         gapH8,
         CatchButton(
+          key: const ValueKey('checkpoint.request.done'),
           label: l10n.eventAssistanceVisitDone,
           variant: CatchButtonVariant.ghost,
           status: busy ? CatchButtonStatus.loading : CatchButtonStatus.idle,

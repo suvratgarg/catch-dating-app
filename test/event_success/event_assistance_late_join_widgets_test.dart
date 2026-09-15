@@ -113,7 +113,7 @@ void main() {
         expect(repository.writes, isEmpty);
         await capture('rules');
         await tap(find.byKey(const ValueKey('lateJoin.mode')));
-        await tap(find.text('Off').last);
+        await tap(find.text('Off').hitTestable());
         await tap(find.byKey(const ValueKey('lateJoin.save')));
         expect(repository.writes, hasLength(1));
         final original = repository.writes.single.change;

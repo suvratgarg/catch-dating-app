@@ -31,26 +31,37 @@ class EventAssistanceCheckpointReporterSection extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(l10n.eventAssistanceCheckpointReporterBody),
+        Text(
+          l10n.eventAssistanceCheckpointReporterBody,
+          style: CatchTextStyles.supporting(context),
+        ),
         gapH8,
         if (named.isNotEmpty)
-          CatchField<String>.select(
-            key: const ValueKey('checkpoint.request.reporter'),
-            copy: catchFieldCopy(l10n),
-            title: l10n.eventAssistanceCheckpointReporterLabel,
-            contract: CatchContractConstraints
-                .reassignEventAssistanceCheckpointReporterCallablePayloadCommandPayloadResponsibleOperatorId,
-            values: named.map((r) => r.operatorId).toList(),
-            value: value,
-            itemLabelBuilder: (id) => id == options.actorUid
-                ? l10n.eventAssistanceGroupYou
-                : named.firstWhere((r) => r.operatorId == id).displayName!,
-            onChanged: onChanged,
+          CatchFieldLanes.single(
+            child: CatchField<String>.select(
+              key: const ValueKey('checkpoint.request.reporter'),
+              copy: catchFieldCopy(l10n),
+              title: l10n.eventAssistanceCheckpointReporterLabel,
+              contract: CatchContractConstraints
+                  .reassignEventAssistanceCheckpointReporterCallablePayloadCommandPayloadResponsibleOperatorId,
+              values: named.map((r) => r.operatorId).toList(),
+              value: value,
+              itemLabelBuilder: (id) => id == options.actorUid
+                  ? l10n.eventAssistanceGroupYou
+                  : named.firstWhere((r) => r.operatorId == id).displayName!,
+              onChanged: onChanged,
+            ),
           )
         else
-          Text(l10n.eventAssistanceCheckpointReporterEmpty),
+          Text(
+            l10n.eventAssistanceCheckpointReporterEmpty,
+            style: CatchTextStyles.supporting(context),
+          ),
         if (alternatives.length != named.length)
-          Text(l10n.eventAssistanceCheckpointReporterUnnamed),
+          Text(
+            l10n.eventAssistanceCheckpointReporterUnnamed,
+            style: CatchTextStyles.supporting(context),
+          ),
       ],
     );
   }

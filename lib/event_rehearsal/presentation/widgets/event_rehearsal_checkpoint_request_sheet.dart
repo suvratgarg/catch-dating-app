@@ -83,7 +83,10 @@ class EventRehearsalCheckpointRequestSheet extends ConsumerWidget {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Text(context.l10n.eventAssistanceDepartureOtherPending),
+                      Text(
+                        context.l10n.eventAssistanceDepartureOtherPending,
+                        style: CatchTextStyles.supporting(context),
+                      ),
                       if (command is RehearsalResolveCheckpointVisit &&
                           command.selectedRevision ==
                               selection.progressRevision)
@@ -131,6 +134,7 @@ class EventRehearsalCheckpointRequestSheet extends ConsumerWidget {
                       if (checkpoint == null) {
                         return Text(
                           context.l10n.eventAssistanceCheckpointNoDestination,
+                          style: CatchTextStyles.supporting(context),
                         );
                       }
                       final role = snapshot.staffReview;

@@ -53,7 +53,10 @@ class _EventAssistanceCheckpointVisitsSectionState
           style: CatchTextStyles.titleL(context),
         ),
         gapH8,
-        Text(l10n.eventAssistanceCheckpointVisitsBody),
+        Text(
+          l10n.eventAssistanceCheckpointVisitsBody,
+          style: CatchTextStyles.supporting(context),
+        ),
         if (unconfirmed.length > 12) ...[
           gapH8,
           CatchSearchField.expanded(
@@ -68,7 +71,11 @@ class _EventAssistanceCheckpointVisitsSectionState
             }),
           ),
         ],
-        if (matches.isEmpty) Text(l10n.eventAssistanceDepartureNoGuests),
+        if (matches.isEmpty)
+          Text(
+            l10n.eventAssistanceDepartureNoGuests,
+            style: CatchTextStyles.supporting(context),
+          ),
         for (final member in matches.skip(page * 12).take(12))
           CatchRecordRow(
             key: ValueKey('checkpoint.visit.${member.attendeeId}'),
@@ -102,8 +109,8 @@ class _EventAssistanceCheckpointVisitsSectionState
           ),
         if (matches.length > 12)
           Wrap(
-            spacing: 8,
-            runSpacing: 8,
+            spacing: CatchSpacing.s2,
+            runSpacing: CatchSpacing.s2,
             children: [
               CatchButton(
                 label: l10n.eventAssistanceDeparturePreviousPeople,

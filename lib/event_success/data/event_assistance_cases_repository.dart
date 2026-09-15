@@ -65,6 +65,22 @@ class EventAssistanceCasesRepository {
       );
 }
 
+/// Typed mutation seam used by the case editor.
+final class EventAssistanceCaseCommands {
+  const EventAssistanceCaseCommands(this._repository);
+
+  final EventAssistanceCasesRepository _repository;
+
+  Future<EventAssistanceCaseResult> apply(EventAssistanceCaseChange change) =>
+      _repository.apply(change);
+}
+
 @riverpod
 EventAssistanceCasesRepository eventAssistanceCasesRepository(Ref ref) =>
     EventAssistanceCasesRepository(ref.watch(firebaseFunctionsProvider));
+
+@riverpod
+EventAssistanceCaseCommands eventAssistanceCaseCommands(Ref ref) =>
+    EventAssistanceCaseCommands(
+      ref.watch(eventAssistanceCasesRepositoryProvider),
+    );

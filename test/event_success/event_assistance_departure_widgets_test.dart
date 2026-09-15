@@ -208,7 +208,7 @@ void main() {
           expect(rehearsal.writes, isEmpty);
           if (Platform.environment['CAPTURE_DEPARTURE'] == '1') {
             await tester.ensureVisible(find.text('Confirm departure'));
-            await tester.pumpAndSettle();
+            await pumpFeatureUi(tester);
             await tester.runAsync(() async {
               final image =
                   await (boundary.currentContext!.findRenderObject()

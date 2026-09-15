@@ -128,7 +128,7 @@ void main() {
           expect(rehearsal.writes, isEmpty);
           if (Platform.environment['CAPTURE_CHECKPOINT'] == '1') {
             await tester.ensureVisible(find.text('Save checkpoint report'));
-            await tester.pumpAndSettle();
+            await pumpFeatureUi(tester);
             await tester.runAsync(() async {
               final image =
                   await (boundary.currentContext!.findRenderObject()

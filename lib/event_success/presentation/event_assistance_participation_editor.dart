@@ -128,7 +128,11 @@ class EventAssistanceParticipationEditor
         auth.error ?? participationSessionChanged,
       );
     }
-    _account = auth.requireValue;
+    _account = switch (auth) {
+      AsyncData(:final value) => value,
+      AsyncError(:final error) => throw error,
+      AsyncLoading() => throw AssertionError(),
+    };
     return const EventParticipationIdle();
   }
 
@@ -353,7 +357,7 @@ class EventAssistanceParticipationEditor
         throw participationSessionChanged;
       }
       final result = await ref
-          .read(eventAssistanceParticipationRepositoryProvider)
+          .read(eventAssistanceParticipationCommandsProvider)
           .apply(change);
       if (!_current(form.review.account, epoch)) {
         throw participationSessionChanged;

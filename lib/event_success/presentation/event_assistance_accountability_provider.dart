@@ -48,7 +48,11 @@ class EventAssistanceAccountability extends _$EventAssistanceAccountability {
     final page = ref.watch(
       eventAssistanceAccountabilityForAccountProvider(
         scope,
-        account: auth.requireValue,
+        account: switch (auth) {
+          AsyncData(:final value) => value,
+          AsyncError(:final error) => throw error,
+          AsyncLoading() => throw AssertionError(),
+        },
       ),
     );
     if (page.isLoading) return const AsyncLoading();
@@ -62,7 +66,11 @@ class EventAssistanceAccountability extends _$EventAssistanceAccountability {
     ref.invalidate(
       eventAssistanceAccountabilityForAccountProvider(
         scope,
-        account: auth.requireValue,
+        account: switch (auth) {
+          AsyncData(:final value) => value,
+          AsyncError(:final error) => throw error,
+          AsyncLoading() => throw AssertionError(),
+        },
       ),
     );
   }

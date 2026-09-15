@@ -29,9 +29,16 @@ class EventAssistanceDeliveryQueueSection extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(l10n.eventAssistanceDeliveryBody),
+        Text(
+          l10n.eventAssistanceDeliveryBody,
+          style: CatchTextStyles.supporting(context),
+        ),
         gapH12,
-        if (items.isEmpty) Text(l10n.eventAssistanceDeliveryEmpty),
+        if (items.isEmpty)
+          Text(
+            l10n.eventAssistanceDeliveryEmpty,
+            style: CatchTextStyles.supporting(context),
+          ),
         for (final row in items)
           CatchRecordRow(
             key: ValueKey('delivery.message.${row.messageId}'),
@@ -50,11 +57,12 @@ class EventAssistanceDeliveryQueueSection extends StatelessWidget {
           practice
               ? l10n.eventAssistanceDeliveryPracticeBody
               : l10n.eventAssistanceDeliveryPageBody,
+          style: CatchTextStyles.supporting(context),
         ),
         gapH8,
         Wrap(
-          spacing: 8,
-          runSpacing: 8,
+          spacing: CatchSpacing.s2,
+          runSpacing: CatchSpacing.s2,
           children: [
             if (onPrevious != null)
               CatchButton(

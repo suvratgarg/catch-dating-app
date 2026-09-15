@@ -47,7 +47,11 @@ class EventAssistanceParticipationReview
     final page = ref.watch(
       eventAssistanceParticipationForAccountProvider(
         scope,
-        account: auth.requireValue,
+        account: switch (auth) {
+          AsyncData(:final value) => value,
+          AsyncError(:final error) => throw error,
+          AsyncLoading() => throw AssertionError(),
+        },
       ),
     );
     if (page.isLoading) return const AsyncLoading();
@@ -61,7 +65,11 @@ class EventAssistanceParticipationReview
     ref.invalidate(
       eventAssistanceParticipationForAccountProvider(
         scope,
-        account: auth.requireValue,
+        account: switch (auth) {
+          AsyncData(:final value) => value,
+          AsyncError(:final error) => throw error,
+          AsyncLoading() => throw AssertionError(),
+        },
       ),
     );
   }

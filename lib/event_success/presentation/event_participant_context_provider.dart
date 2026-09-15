@@ -28,7 +28,11 @@ class EventParticipantContextReader extends _$EventParticipantContextReader {
     final page = ref.watch(
       eventParticipantContextForAccountProvider(
         eventId,
-        account: auth.requireValue,
+        account: switch (auth) {
+          AsyncData(:final value) => value,
+          AsyncError(:final error) => throw error,
+          AsyncLoading() => throw AssertionError(),
+        },
       ),
     );
     if (page.isLoading) {
@@ -48,7 +52,11 @@ class EventParticipantContextReader extends _$EventParticipantContextReader {
     ref.invalidate(
       eventParticipantContextForAccountProvider(
         eventId,
-        account: auth.requireValue,
+        account: switch (auth) {
+          AsyncData(:final value) => value,
+          AsyncError(:final error) => throw error,
+          AsyncLoading() => throw AssertionError(),
+        },
       ),
     );
   }

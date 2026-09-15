@@ -1,5 +1,7 @@
 import 'package:catch_dating_app/event_success/domain/event_assistance_parsing.dart';
 
+const _liveAssistanceMode = 'live';
+
 String assistanceMessageIdentity(Object? value) {
   if (value is String && RegExp(r'^outbox:[a-f0-9]{64}$').hasMatch(value)) {
     return value;
@@ -76,7 +78,7 @@ void validateAssistanceDeliveryContext(
   required String eventId,
 }) {
   final map = assistanceObject(value, {'mode', 'organizerId', 'eventId'});
-  if (map['mode'] != 'live' ||
+  if (map['mode'] != _liveAssistanceMode ||
       map['organizerId'] != organizerId ||
       map['eventId'] != eventId) {
     throw const FormatException('Delivery context mismatch.');

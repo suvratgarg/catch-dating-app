@@ -31,7 +31,10 @@ class EventRehearsalRuntimeFields extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         if (!showOutcomes) ...[
-          Text(l.hostEventRehearsalUpdatesChannels),
+          Text(
+            l.hostEventRehearsalUpdatesChannels,
+            style: CatchTextStyles.supporting(context),
+          ),
           CatchSection.fieldRows(
             children: [
               for (var i = 0; i < 3 && i <= draft.routes.length; i++)
@@ -100,7 +103,10 @@ class EventRehearsalRuntimeFields extends StatelessWidget {
             style: Theme.of(context).textTheme.titleMedium,
           ),
           gapH8,
-          Text(l.hostEventRehearsalUpdatesScriptBody),
+          Text(
+            l.hostEventRehearsalUpdatesScriptBody,
+            style: CatchTextStyles.supporting(context),
+          ),
           CatchSection.fieldRows(
             children: [
               for (final item in draft.outcomes.indexed)

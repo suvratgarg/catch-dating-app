@@ -39,12 +39,16 @@ class _EventAssistanceDepartureRosterSectionState
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(l10n.eventAssistanceDepartureRosterBody),
+        Text(
+          l10n.eventAssistanceDepartureRosterBody,
+          style: CatchTextStyles.supporting(context),
+        ),
         gapH8,
         Text(
           l10n.eventAssistanceDepartureSelected(
             count: widget.selectedIds.length,
           ),
+          style: CatchTextStyles.supporting(context),
         ),
         gapH8,
         CatchSearchField.expanded(
@@ -60,7 +64,10 @@ class _EventAssistanceDepartureRosterSectionState
         ),
         if (matches.isEmpty) ...[
           gapH8,
-          Text(l10n.eventAssistanceDepartureNoGuests),
+          Text(
+            l10n.eventAssistanceDepartureNoGuests,
+            style: CatchTextStyles.supporting(context),
+          ),
         ],
         for (final guest in matches.skip(page * 12).take(12))
           Semantics(
@@ -85,7 +92,7 @@ class _EventAssistanceDepartureRosterSectionState
                   ? () => _toggle(guest.id)
                   : null,
               child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: CatchSpacing.s3),
+                padding: CatchInsets.contentVertical,
                 child: Row(
                   children: [
                     Icon(
@@ -107,8 +114,8 @@ class _EventAssistanceDepartureRosterSectionState
           ),
         if (matches.length > 12)
           Wrap(
-            spacing: 8,
-            runSpacing: 8,
+            spacing: CatchSpacing.s2,
+            runSpacing: CatchSpacing.s2,
             children: [
               CatchButton(
                 label: l10n.eventAssistanceDeparturePreviousPeople,

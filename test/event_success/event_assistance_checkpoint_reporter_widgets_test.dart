@@ -115,7 +115,7 @@ void main() {
             find.byKey(const ValueKey('checkpoint.request.changeReporter')),
           );
           await tap(find.byKey(const ValueKey('checkpoint.request.reporter')));
-          await tap(find.text(practice ? 'You' : 'Priya').last);
+          await tap(find.text(practice ? 'You' : 'Priya').hitTestable());
           final save = find.byKey(
             const ValueKey('checkpoint.request.reassign'),
           );
@@ -154,7 +154,7 @@ void main() {
             );
           }
           await pumpFeatureUi(tester);
-          await tap(find.text('Done').last);
+          await tap(find.byKey(const ValueKey('checkpoint.request.done')));
           await tap(manage);
           expect(find.text('Retry checkpoint decision'), findsOneWidget);
           expect(find.text(practice ? 'You' : 'Priya'), findsOneWidget);

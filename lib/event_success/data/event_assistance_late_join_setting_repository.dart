@@ -61,9 +61,26 @@ class EventAssistanceLateJoinSettingRepository {
       );
 }
 
+/// Typed mutation seam used by the late-arrival setting editor.
+final class EventAssistanceLateJoinSettingCommands {
+  const EventAssistanceLateJoinSettingCommands(this._repository);
+
+  final EventAssistanceLateJoinSettingRepository _repository;
+
+  Future<LateJoinSettingResult> apply(LateJoinSettingChange change) =>
+      _repository.apply(change);
+}
+
 @riverpod
 EventAssistanceLateJoinSettingRepository
 eventAssistanceLateJoinSettingRepository(Ref ref) =>
     EventAssistanceLateJoinSettingRepository(
       ref.watch(firebaseFunctionsProvider),
     );
+
+@riverpod
+EventAssistanceLateJoinSettingCommands eventAssistanceLateJoinSettingCommands(
+  Ref ref,
+) => EventAssistanceLateJoinSettingCommands(
+  ref.watch(eventAssistanceLateJoinSettingRepositoryProvider),
+);

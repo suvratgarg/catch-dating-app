@@ -74,7 +74,7 @@ final class EventAttendanceDispositionEditorProvider
 }
 
 String _$eventAttendanceDispositionEditorHash() =>
-    r'5ba89ec50b8766e0c082d2749923d37035010fc4';
+    r'3821c19d8e691184b8ce60d4bbc6b425486347a0';
 
 /// One reviewed attendance decision. No implicit default, changed retry, or local
 /// optimistic settlement; the response always supplies the current closeout state.

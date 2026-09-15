@@ -59,12 +59,18 @@ class EventAssistanceHelpQueueSection extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(l10n.eventAssistanceHelpBody),
-        if (contextMessage != null) ...[gapH8, Text(contextMessage!)],
+        Text(
+          l10n.eventAssistanceHelpBody,
+          style: CatchTextStyles.supporting(context),
+        ),
+        if (contextMessage != null) ...[
+          gapH8,
+          Text(contextMessage!, style: CatchTextStyles.supporting(context)),
+        ],
         gapH12,
         Wrap(
-          spacing: 8,
-          runSpacing: 8,
+          spacing: CatchSpacing.s2,
+          runSpacing: CatchSpacing.s2,
           children: [
             for (final choice in AssistanceCaseStatus.values)
               Semantics(
@@ -88,6 +94,7 @@ class EventAssistanceHelpQueueSection extends StatelessWidget {
             status == AssistanceCaseStatus.open
                 ? l10n.eventAssistanceHelpEmptyOpen
                 : l10n.eventAssistanceHelpEmptyHandled,
+            style: CatchTextStyles.supporting(context),
           ),
         for (final row in items)
           CatchRecordRow(
@@ -111,11 +118,14 @@ class EventAssistanceHelpQueueSection extends StatelessWidget {
             onTap: () => onReview(row.id),
           ),
         gapH12,
-        Text(l10n.eventAssistanceHelpPageBody),
+        Text(
+          l10n.eventAssistanceHelpPageBody,
+          style: CatchTextStyles.supporting(context),
+        ),
         gapH8,
         Wrap(
-          spacing: 8,
-          runSpacing: 8,
+          spacing: CatchSpacing.s2,
+          runSpacing: CatchSpacing.s2,
           children: [
             if (onPrevious != null)
               CatchButton(

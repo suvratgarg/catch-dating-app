@@ -113,7 +113,11 @@ class EventAssistanceLateJoinSettingEditor
         auth.error ?? settingReviewSessionChanged,
       );
     }
-    _account = auth.requireValue;
+    _account = switch (auth) {
+      AsyncData(:final value) => value,
+      AsyncError(:final error) => throw error,
+      AsyncLoading() => throw AssertionError(),
+    };
     return const LateJoinSettingIdle();
   }
 
@@ -326,7 +330,7 @@ class EventAssistanceLateJoinSettingEditor
   ) async {
     try {
       final result = await ref
-          .read(eventAssistanceLateJoinSettingRepositoryProvider)
+          .read(eventAssistanceLateJoinSettingCommandsProvider)
           .apply(change);
       if (!_current(form.review.account, epoch)) {
         throw settingReviewSessionChanged;

@@ -67,7 +67,7 @@ final class EventAssistanceCaseEditorProvider
 }
 
 String _$eventAssistanceCaseEditorHash() =>
-    r'ec1181ec66bd756268c5f3960d791f04d2dde334';
+    r'423015073d425b6d393cbc84d1c8bca815bfa736';
 
 /// One case owns one pending decision across page refresh and sheet closure.
 

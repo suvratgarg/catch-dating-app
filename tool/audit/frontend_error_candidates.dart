@@ -475,6 +475,57 @@ Future<void> surfaceThroughMessageState() async {
     _errorMessage = error.toString();
   }
 }
+
+Future<void> surfaceThroughImmutableState() async {
+  try {
+    throw StateError('boom');
+  } catch (error) {
+    state = Failure(
+      error: error,
+    );
+  }
+}
+
+Future<void> surfaceThroughPublishedState() async {
+  try {
+    throw StateError('boom');
+  } catch (error) {
+    _publish(
+      Failure(error: error),
+    );
+  }
+}
+
+Future<void> compensateThenRethrow() async {
+  try {
+    throw StateError('boom');
+  } catch (error) {
+    final values = <int>[
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+    ];
+    values.clear();
+    rethrow;
+  }
+}
+
+Future<void> surfaceCatchError(Future<void> operation) => operation.catchError(
+  (Object error) {
+    _publishRead(Failure(error));
+  },
+);
 ''');
     final futureFixtureFile = File('${temp.path}/lib/returned_future.dart');
     futureFixtureFile.writeAsStringSync('''
@@ -541,11 +592,38 @@ Future<void> forwardFailure() {
           candidate.status == CandidateStatus.verified &&
           candidate.disposition.contains('surfaced to the user');
     }).toList();
-    if (verifiedSurfaceCandidates.length != 2) {
+    if (verifiedSurfaceCandidates.length != 4) {
       stderr.writeln(
-        'Expected two surfaced named_catch candidates, found '
+        'Expected four surfaced named_catch candidates, found '
         '${verifiedSurfaceCandidates.length}.',
       );
+      exitCode = 1;
+      return;
+    }
+    final compensated = candidates.where(
+      (candidate) =>
+          candidate.path.endsWith('/surfaced.dart') &&
+          candidate.rule.id == 'named_catch' &&
+          candidate.snippet.contains('catch (error)'),
+    );
+    if (!compensated.any(
+      (candidate) =>
+          candidate.disposition.contains('rethrows the original error'),
+    )) {
+      stderr.writeln(
+        'A direct rethrow must be found across the full catch body.',
+      );
+      exitCode = 1;
+      return;
+    }
+    final surfacedCallback = candidates.where(
+      (candidate) =>
+          candidate.path.endsWith('/surfaced.dart') &&
+          candidate.rule.id == 'catch_error_callback',
+    );
+    if (surfacedCallback.length != 1 ||
+        surfacedCallback.single.status != CandidateStatus.verified) {
+      stderr.writeln('Published catchError state must count as surfaced.');
       exitCode = 1;
       return;
     }
@@ -981,7 +1059,7 @@ bool _catchLogs(List<String> lines, int lineIndex) {
 bool _catchRethrows(List<String> lines, int lineIndex) {
   // `rethrow`, or `throw <normalized>` that converts the caught error into a
   // typed app exception before propagating it.
-  if (_near(lines, lineIndex, before: 0, after: 14, needle: 'rethrow')) {
+  if (_catchDirectlyRethrows(lines, lineIndex)) {
     return true;
   }
   if (_catchReturnsFailedFuture(lines, lineIndex)) return true;
@@ -1001,6 +1079,21 @@ bool _catchRethrows(List<String> lines, int lineIndex) {
       'completeError',
     ],
   );
+}
+
+bool _catchDirectlyRethrows(List<String> lines, int lineIndex) {
+  final header = lines[lineIndex];
+  if (!header.trimRight().endsWith('{')) return false;
+  final indent = header.length - header.trimLeft().length;
+  for (var index = lineIndex + 1; index < lines.length; index++) {
+    final line = lines[index];
+    final text = line.trimLeft();
+    if (text.isEmpty || _isComment(line)) continue;
+    final depth = line.length - text.length;
+    if (depth <= indent && text.startsWith('}')) return false;
+    if (depth == indent + 2 && text == 'rethrow;') return true;
+  }
+  return false;
 }
 
 bool _catchReturnsFailedFuture(List<String> lines, int lineIndex) {
@@ -1049,7 +1142,7 @@ bool _catchAfterMutationRun(List<String> lines, int lineIndex) {
 }
 
 bool _catchSurfacesToUser(List<String> lines, int lineIndex) {
-  return _near(
+  if (_near(
     lines,
     lineIndex,
     before: 0,
@@ -1067,8 +1160,37 @@ bool _catchSurfacesToUser(List<String> lines, int lineIndex) {
       'Error =',
       'Error;',
       'completeError',
+      '_publishRead(',
     ],
-  );
+  )) {
+    return true;
+  }
+  return _catchPublishesErrorState(lines, lineIndex);
+}
+
+bool _catchPublishesErrorState(List<String> lines, int lineIndex) {
+  final header = lines[lineIndex];
+  final caught = RegExp(r'catch\s*\(\s*([\w$]+)\b').firstMatch(header);
+  if (caught == null || !header.trimRight().endsWith('{')) return false;
+  final indent = header.length - header.trimLeft().length;
+  var publishesState = false;
+  var forwardsError = false;
+  for (var index = lineIndex + 1; index < lines.length; index++) {
+    final line = lines[index];
+    final text = line.trimLeft();
+    if (text.isEmpty || _isComment(line)) continue;
+    final depth = line.length - text.length;
+    if (depth <= indent && text.startsWith('}')) break;
+    if (text.contains('state =') || text.contains('_publish(')) {
+      publishesState = true;
+    }
+    if (RegExp(
+      r'\berror\s*:\s*' + RegExp.escape(caught.group(1)!) + r'\b',
+    ).hasMatch(text)) {
+      forwardsError = true;
+    }
+  }
+  return publishesState && forwardsError;
 }
 
 bool _catchDocumented(List<String> lines, int lineIndex) {

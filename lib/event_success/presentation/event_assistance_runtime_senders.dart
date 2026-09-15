@@ -93,7 +93,7 @@ class EventAssistanceRuntimeSenders extends _$EventAssistanceRuntimeSenders {
     );
     try {
       final page = await ref
-          .read(eventAssistanceRuntimeRepositoryProvider)
+          .read(eventAssistanceRuntimeCommandsProvider)
           .fetchSenderPage(review.view.scope, cursors: {route: cursor});
       if (!ref.mounted || epoch != _epoch) return;
       requireRuntimeReviewAccount(ref, review.account);

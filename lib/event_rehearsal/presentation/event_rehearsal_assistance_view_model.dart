@@ -58,7 +58,11 @@ class EventRehearsalAssistance extends _$EventRehearsalAssistance {
     final page = ref.watch(
       eventRehearsalAssistanceForAccountProvider(
         sessionId,
-        account: auth.requireValue,
+        account: switch (auth) {
+          AsyncData(:final value) => value,
+          AsyncError(:final error) => throw error,
+          AsyncLoading() => throw AssertionError(),
+        },
         practiceOperatorId: practiceOperatorId,
       ),
     );
@@ -73,7 +77,11 @@ class EventRehearsalAssistance extends _$EventRehearsalAssistance {
     ref.invalidate(
       eventRehearsalAssistanceForAccountProvider(
         sessionId,
-        account: auth.requireValue,
+        account: switch (auth) {
+          AsyncData(:final value) => value,
+          AsyncError(:final error) => throw error,
+          AsyncLoading() => throw AssertionError(),
+        },
         practiceOperatorId: practiceOperatorId,
       ),
     );

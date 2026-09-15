@@ -47,7 +47,11 @@ class EventAssistanceGroupStaff extends _$EventAssistanceGroupStaff {
     final page = ref.watch(
       eventAssistanceGroupStaffForAccountProvider(
         lookup,
-        account: auth.requireValue,
+        account: switch (auth) {
+          AsyncData(:final value) => value,
+          AsyncError(:final error) => throw error,
+          AsyncLoading() => throw AssertionError(),
+        },
       ),
     );
     if (page.isLoading) return const AsyncLoading();
@@ -61,7 +65,11 @@ class EventAssistanceGroupStaff extends _$EventAssistanceGroupStaff {
     ref.invalidate(
       eventAssistanceGroupStaffForAccountProvider(
         lookup,
-        account: auth.requireValue,
+        account: switch (auth) {
+          AsyncData(:final value) => value,
+          AsyncError(:final error) => throw error,
+          AsyncLoading() => throw AssertionError(),
+        },
       ),
     );
   }

@@ -117,19 +117,32 @@ class _EventAssistanceHelpDecisionSectionState
           style: Theme.of(context).textTheme.titleLarge,
         ),
         gapH8,
-        Text(helpCategoryLabel(l10n, row.category)),
-        Text(helpReceivedLabel(context, row.receivedAt)),
+        Text(
+          helpCategoryLabel(l10n, row.category),
+          style: CatchTextStyles.supporting(context),
+        ),
+        Text(
+          helpReceivedLabel(context, row.receivedAt),
+          style: CatchTextStyles.supporting(context),
+        ),
         if (row.assignment != null)
-          Text(helpAssignmentLabel(l10n, row.assignment!, options)),
+          Text(
+            helpAssignmentLabel(l10n, row.assignment!, options),
+            style: CatchTextStyles.supporting(context),
+          ),
         if (row.resolution != null)
           Text(
             row.resolution == AssistanceCaseResolutionOutcome.resolved
                 ? l10n.eventAssistanceHelpResolved
                 : l10n.eventAssistanceHelpDeclined,
+            style: CatchTextStyles.supporting(context),
           ),
         if (widget.contextMessage != null) ...[
           gapH8,
-          Text(widget.contextMessage!),
+          Text(
+            widget.contextMessage!,
+            style: CatchTextStyles.supporting(context),
+          ),
         ],
         gapH12,
         if (ready && _action == null) ...[
@@ -152,26 +165,34 @@ class _EventAssistanceHelpDecisionSectionState
             _HelpAction.transfer => l10n.eventAssistanceHelpTransferBody,
             _HelpAction.resolve => l10n.eventAssistanceHelpResolveBody,
             _HelpAction.decline => l10n.eventAssistanceHelpDeclineBody,
-          }),
+          }, style: CatchTextStyles.supporting(context)),
           if (_action == _HelpAction.transfer) ...[
             gapH12,
             if (named.isNotEmpty)
-              CatchField<String>.select(
-                key: const ValueKey('help.manager'),
-                copy: catchFieldCopy(l10n),
-                title: l10n.eventAssistanceHelpHost,
-                contract: CatchContractConstraints
-                    .resolveEventAssistanceCaseCallablePayloadCommandPayloadOwner,
-                values: named.map((m) => m.uid).toList(),
-                value: selected?.uid,
-                itemLabelBuilder: (id) =>
-                    named.singleWhere((m) => m.uid == id).displayName!,
-                onChanged: (id) => setState(() => _managerUid = id),
+              CatchFieldLanes.single(
+                child: CatchField<String>.select(
+                  key: const ValueKey('help.manager'),
+                  copy: catchFieldCopy(l10n),
+                  title: l10n.eventAssistanceHelpHost,
+                  contract: CatchContractConstraints
+                      .resolveEventAssistanceCaseCallablePayloadCommandPayloadOwner,
+                  values: named.map((m) => m.uid).toList(),
+                  value: selected?.uid,
+                  itemLabelBuilder: (id) =>
+                      named.singleWhere((m) => m.uid == id).displayName!,
+                  onChanged: (id) => setState(() => _managerUid = id),
+                ),
               )
             else
-              Text(l10n.eventAssistanceHelpNoHosts),
+              Text(
+                l10n.eventAssistanceHelpNoHosts,
+                style: CatchTextStyles.supporting(context),
+              ),
             if (named.length != candidates.length)
-              Text(l10n.eventAssistanceHelpUnnamedHosts),
+              Text(
+                l10n.eventAssistanceHelpUnnamedHosts,
+                style: CatchTextStyles.supporting(context),
+              ),
           ],
           gapH12,
           CatchButton(
@@ -205,7 +226,7 @@ class _EventAssistanceHelpDecisionSectionState
                   ? l10n.eventAssistanceHelpSourceChanged
                   : l10n.eventAssistanceHelpLegacy,
             EventAssistanceHelpPhase.ready => '',
-          }),
+          }, style: CatchTextStyles.supporting(context)),
           if (widget.submittedDecision case final choice?) ...[
             gapH8,
             Text(
@@ -221,6 +242,7 @@ class _EventAssistanceHelpDecisionSectionState
                     ),
                 },
               ),
+              style: CatchTextStyles.supporting(context),
             ),
           ],
         ],

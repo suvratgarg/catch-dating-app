@@ -113,7 +113,11 @@ class EventAssistanceRuntimeEditor extends _$EventAssistanceRuntimeEditor {
         auth.error ?? runtimeReviewSessionChanged,
       );
     }
-    _account = auth.requireValue;
+    _account = switch (auth) {
+      AsyncData(:final value) => value,
+      AsyncError(:final error) => throw error,
+      AsyncLoading() => throw AssertionError(),
+    };
     return const AssistanceRuntimeIdle();
   }
 
@@ -319,7 +323,7 @@ class EventAssistanceRuntimeEditor extends _$EventAssistanceRuntimeEditor {
   ) async {
     try {
       final result = await ref
-          .read(eventAssistanceRuntimeRepositoryProvider)
+          .read(eventAssistanceRuntimeCommandsProvider)
           .apply(change);
       if (!_current(form.review.account, epoch)) {
         throw runtimeReviewSessionChanged;

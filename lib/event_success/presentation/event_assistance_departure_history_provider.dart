@@ -26,7 +26,11 @@ class EventAssistanceDepartureHistory
     final result = ref.watch(
       eventAssistanceDepartureHistoryForAccountProvider(
         query,
-        account: auth.requireValue,
+        account: switch (auth) {
+          AsyncData(:final value) => value,
+          AsyncError(:final error) => throw error,
+          AsyncLoading() => throw AssertionError(),
+        },
       ),
     );
     if (result.isLoading) return const AsyncLoading();
@@ -40,7 +44,11 @@ class EventAssistanceDepartureHistory
     ref.invalidate(
       eventAssistanceDepartureHistoryForAccountProvider(
         query,
-        account: auth.requireValue,
+        account: switch (auth) {
+          AsyncData(:final value) => value,
+          AsyncError(:final error) => throw error,
+          AsyncLoading() => throw AssertionError(),
+        },
       ),
     );
   }

@@ -134,7 +134,11 @@ class EventSenderPreferenceController
           ? const EventSenderPreferenceHidden()
           : EventSenderPreferenceFailure(auth.error!);
     }
-    final account = _account = auth.requireValue;
+    final account = _account = switch (auth) {
+      AsyncData(:final value) => value,
+      AsyncError(:final error) => throw error,
+      AsyncLoading() => throw AssertionError(),
+    };
     unawaited(
       Future<void>.microtask(
         () => _read(account, epoch, () => _discover(account, epoch)),
@@ -489,30 +493,37 @@ class EventSenderPreferenceController
       _clearPending();
       return result;
     } catch (error) {
-      if (_current(review.account, epoch)) {
-        final definitive =
-            error is AppException &&
-            {
-              'invalid-argument',
-              'failed-precondition',
-              'permission-denied',
-              'unauthenticated',
-              'sign-in-required',
-              'callable-unavailable',
-            }.contains(error.code);
-        _publishReady(
-          EventSenderPreferenceReady._(
-            _navigation!,
-            review,
-            error: error,
-            phase: definitive
-                ? EventSenderPreferencePhase.refreshRequired
-                : EventSenderPreferencePhase.uncertain,
-          ),
-        );
-        if (definitive) _clearPending();
-      }
+      _publishApplyFailure(review, error, epoch);
       rethrow;
     }
+  }
+
+  void _publishApplyFailure(
+    EventSenderPreferenceReview review,
+    Object error,
+    int epoch,
+  ) {
+    if (!_current(review.account, epoch)) return;
+    final definitive =
+        error is AppException &&
+        {
+          'invalid-argument',
+          'failed-precondition',
+          'permission-denied',
+          'unauthenticated',
+          'sign-in-required',
+          'callable-unavailable',
+        }.contains(error.code);
+    _publishReady(
+      EventSenderPreferenceReady._(
+        _navigation!,
+        review,
+        error: error,
+        phase: definitive
+            ? EventSenderPreferencePhase.refreshRequired
+            : EventSenderPreferencePhase.uncertain,
+      ),
+    );
+    if (definitive) _clearPending();
   }
 }

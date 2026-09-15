@@ -74,9 +74,27 @@ class EventAssistanceParticipationRepository {
   );
 }
 
+/// Typed mutation seam used by the participation editor.
+final class EventAssistanceParticipationCommands {
+  const EventAssistanceParticipationCommands(this._repository);
+
+  final EventAssistanceParticipationRepository _repository;
+
+  Future<EventAssistanceParticipationResult> apply(
+    EventAssistanceParticipationChange change,
+  ) => _repository.apply(change);
+}
+
 @riverpod
 EventAssistanceParticipationRepository eventAssistanceParticipationRepository(
   Ref ref,
 ) => EventAssistanceParticipationRepository(
   ref.watch(firebaseFunctionsProvider),
+);
+
+@riverpod
+EventAssistanceParticipationCommands eventAssistanceParticipationCommands(
+  Ref ref,
+) => EventAssistanceParticipationCommands(
+  ref.watch(eventAssistanceParticipationRepositoryProvider),
 );

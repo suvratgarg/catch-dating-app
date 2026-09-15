@@ -77,7 +77,7 @@ void main() {
           await tester.ensureVisible(finder);
           await tester.tap(finder);
           if (busy) {
-            await tester.pump(const Duration(milliseconds: 250));
+            await tester.pump();
           } else {
             await pumpFeatureUi(tester);
           }
@@ -108,7 +108,9 @@ void main() {
         await tap(find.byKey(const ValueKey('runtime.channel.0')));
         final choice = repository.view.senderSetup!.choices.first;
         await tap(
-          find.text(runtimeSenderLabel(AppLocalizationsEn(), choice)).last,
+          find
+              .text(runtimeSenderLabel(AppLocalizationsEn(), choice))
+              .hitTestable(),
         );
         await tap(find.byKey(const ValueKey('runtime.customize')));
         expect(find.byType(EventAssistanceRuntimeLimits), findsOneWidget);
@@ -129,7 +131,7 @@ void main() {
         await pumpFeatureUi(tester);
         expect(find.byKey(const ValueKey('runtime.retry')), findsOneWidget);
         await capture('uncertain');
-        await tap(find.text('Done').first);
+        await tap(find.byKey(const ValueKey('runtime.done')));
         expect(find.text('Confirm your previous update'), findsOneWidget);
         await tap(find.byKey(const ValueKey('runtime.open')));
         await tap(find.byKey(const ValueKey('runtime.retry')), busy: true);
@@ -138,7 +140,7 @@ void main() {
         await pumpFeatureUi(tester);
         expect(find.text('Configured for this event'), findsOneWidget);
         await capture('saved');
-        await tap(find.text('Done').last);
+        await tap(find.byKey(const ValueKey('runtime.done')));
         expect(find.text('Confirm your previous update'), findsNothing);
         expect(repository.writes, hasLength(2));
         expect(tester.takeException(), isNull);
@@ -158,7 +160,7 @@ void main() {
     await pumpFeatureUi(tester);
     await tester.ensureVisible(find.byKey(const ValueKey('runtime.pause')));
     await tester.tap(find.byKey(const ValueKey('runtime.pause')));
-    await tester.pump(const Duration(milliseconds: 250));
+    await tester.pump();
     expect(
       repository.writes.single.change.command,
       isA<AssistanceRuntimePause>(),
@@ -184,7 +186,7 @@ void main() {
     await pumpFeatureUi(tester);
     await tester.ensureVisible(find.byKey(const ValueKey('runtime.pause')));
     await tester.tap(find.byKey(const ValueKey('runtime.pause')));
-    await tester.pump(const Duration(milliseconds: 250));
+    await tester.pump();
     repository.writes.single.result.completeError(
       const NetworkException('unavailable', 'Lost reply'),
     );
@@ -206,7 +208,9 @@ Widget _app(
   final scope = repository.view.scope;
   return ProviderScope(
     overrides: [
+      // ignore: riverpod_lint/scoped_providers_should_specify_dependencies
       uidProvider.overrideWith((ref) => auth ?? Stream.value('host-1')),
+      // ignore: riverpod_lint/scoped_providers_should_specify_dependencies
       eventAssistanceRuntimeRepositoryProvider.overrideWith(
         (ref) => repository,
       ),

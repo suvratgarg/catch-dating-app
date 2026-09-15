@@ -141,31 +141,46 @@ class _EventAssistanceMembershipSectionState
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(l10n.eventAssistanceGroupBody),
+        Text(
+          l10n.eventAssistanceGroupBody,
+          style: CatchTextStyles.supporting(context),
+        ),
         if (widget.contextMessage != null) ...[
           gapH8,
-          Text(widget.contextMessage!),
+          Text(
+            widget.contextMessage!,
+            style: CatchTextStyles.supporting(context),
+          ),
         ],
         gapH12,
-        CatchField.content(
-          copy: catchFieldCopy(l10n),
-          title: l10n.eventAssistanceGroupCurrent,
-          body: assistanceMembershipGroupLabel(
-            l10n,
-            facts,
-            facts.accepted?.groupId,
+        CatchFieldLanes.single(
+          child: CatchField.content(
+            copy: catchFieldCopy(l10n),
+            title: l10n.eventAssistanceGroupCurrent,
+            body: assistanceMembershipGroupLabel(
+              l10n,
+              facts,
+              facts.accepted?.groupId,
+            ),
           ),
         ),
         if (facts.membership is AssistanceChangedMembership) ...[
           gapH8,
-          Text(l10n.eventAssistanceGroupPrevious),
+          Text(
+            l10n.eventAssistanceGroupPrevious,
+            style: CatchTextStyles.supporting(context),
+          ),
         ],
-        if (transfer != null) ...[gapH8, Text(transfer)],
+        if (transfer != null) ...[
+          gapH8,
+          Text(transfer, style: CatchTextStyles.supporting(context)),
+        ],
         gapH12,
         if (ready && action == null) ...[
           if (facts.actions.isEmpty)
             Text(
               widget.unavailableMessage ?? l10n.eventAssistanceGroupNoActions,
+              style: CatchTextStyles.supporting(context),
             ),
           for (final choice in facts.actions) ...[
             CatchButton(
@@ -183,9 +198,15 @@ class _EventAssistanceMembershipSectionState
           ],
           if (facts.actions.contains(AssistanceMembershipAction.propose) &&
               widget.handoverReview == null)
-            Text(l10n.eventAssistanceGroupNoReceivers),
+            Text(
+              l10n.eventAssistanceGroupNoReceivers,
+              style: CatchTextStyles.supporting(context),
+            ),
         ] else if (ready && action != null) ...[
-          Text(assistanceMembershipActionBody(l10n, action)),
+          Text(
+            assistanceMembershipActionBody(l10n, action),
+            style: CatchTextStyles.supporting(context),
+          ),
           gapH12,
           if (placement || proposal)
             CatchFieldLanes.divided(
@@ -229,9 +250,15 @@ class _EventAssistanceMembershipSectionState
                       }),
                     ),
                   if (unnamedReceivers)
-                    Text(l10n.eventAssistanceGroupMissingName),
+                    Text(
+                      l10n.eventAssistanceGroupMissingName,
+                      style: CatchTextStyles.supporting(context),
+                    ),
                   if (receivers.isEmpty && !unnamedReceivers)
-                    Text(l10n.eventAssistanceGroupNoReceivers),
+                    Text(
+                      l10n.eventAssistanceGroupNoReceivers,
+                      style: CatchTextStyles.supporting(context),
+                    ),
                   if (expiry != null)
                     CatchField<int>.select(
                       copy: catchFieldCopy(l10n),
@@ -274,7 +301,7 @@ class _EventAssistanceMembershipSectionState
             EventAssistanceMembershipPhase.unavailable =>
               widget.unavailableMessage ?? l10n.eventAssistanceGroupNoActions,
             EventAssistanceMembershipPhase.ready => '',
-          }),
+          }, style: CatchTextStyles.supporting(context)),
           if ((busy ||
                   widget.phase ==
                       EventAssistanceMembershipPhase.retryRequired) &&
@@ -287,17 +314,24 @@ class _EventAssistanceMembershipSectionState
                   widget.submittedDecision!.action,
                 ),
               ),
+              style: CatchTextStyles.supporting(context),
             ),
             if (widget.submittedDecision case AssistancePlaceGroup(
               :final groupId,
             ))
-              Text(assistanceMembershipGroupLabel(l10n, facts, groupId)),
+              Text(
+                assistanceMembershipGroupLabel(l10n, facts, groupId),
+                style: CatchTextStyles.supporting(context),
+              ),
             if (widget.submittedDecision case AssistanceProposeGroup(
               :final groupId,
               :final receivingOperatorId,
               :final expiresAt,
             )) ...[
-              Text(assistanceMembershipGroupLabel(l10n, facts, groupId)),
+              Text(
+                assistanceMembershipGroupLabel(l10n, facts, groupId),
+                style: CatchTextStyles.supporting(context),
+              ),
               Text(
                 l10n.eventAssistanceGroupReceiverValue(
                   name: receivingOperatorId == widget.actorUid
@@ -310,9 +344,11 @@ class _EventAssistanceMembershipSectionState
                                 ?.displayName ??
                             l10n.eventAssistanceGroupUnnamedHost,
                 ),
+                style: CatchTextStyles.supporting(context),
               ),
               Text(
                 '${l10n.eventAssistanceGroupDeadline} ${DateFormat.jm(Localizations.localeOf(context).toLanguageTag()).format(DateTime.fromMillisecondsSinceEpoch(expiresAt))}',
+                style: CatchTextStyles.supporting(context),
               ),
             ],
           ],

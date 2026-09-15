@@ -82,7 +82,10 @@ class _EventRehearsalHelpQueueSheetState
             builder: (_, session) {
               final queue = session.snapshot.helpRequests;
               if (queue == null) {
-                return Text(context.l10n.eventAssistanceHelpMissing);
+                return Text(
+                  context.l10n.eventAssistanceHelpMissing,
+                  style: CatchTextStyles.supporting(context),
+                );
               }
               final rows =
                   queue.cases

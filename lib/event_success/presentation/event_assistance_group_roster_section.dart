@@ -40,14 +40,20 @@ class _EventAssistanceGroupRosterSectionState
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(l10n.eventAssistanceGroupRosterBody),
+          Text(
+            l10n.eventAssistanceGroupRosterBody,
+            style: CatchTextStyles.supporting(context),
+          ),
           gapH12,
           if (widget.error != null)
             CatchLocalizedErrorBanner(widget.error!, onRetry: widget.onReload),
           if (widget.loading)
             const CatchSkeleton.rows(count: 1)
           else if (widget.guests.isEmpty)
-            Text(l10n.eventAssistanceGroupNoGuests)
+            Text(
+              l10n.eventAssistanceGroupNoGuests,
+              style: CatchTextStyles.supporting(context),
+            )
           else ...[
             CatchField<String>.select(
               copy: catchFieldCopy(l10n),

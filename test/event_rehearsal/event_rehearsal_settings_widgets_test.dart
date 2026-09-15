@@ -39,7 +39,7 @@ void main() {
           await tester.ensureVisible(finder);
           await tester.tap(finder);
           if (busy) {
-            await tester.pump(const Duration(milliseconds: 250));
+            await tester.pump();
           } else {
             await pumpFeatureUi(tester);
           }
@@ -88,7 +88,7 @@ void main() {
         );
         await pumpFeatureUi(tester);
         await capture('uncertain');
-        await tap(find.text('Done').last);
+        await tap(find.byKey(const ValueKey('practice.runtime.done')));
         expect(
           find.byKey(const ValueKey('practice.pendingSettings')),
           findsOneWidget,
@@ -102,7 +102,7 @@ void main() {
         repository.confirm();
         await pumpFeatureUi(tester);
         await capture('saved');
-        await tap(find.text('Done').last);
+        await tap(find.byKey(const ValueKey('practice.runtime.done')));
         expect(
           find.byKey(const ValueKey('practice.pendingSettings')),
           findsNothing,
@@ -140,7 +140,7 @@ void main() {
         await tap(find.byKey(const ValueKey('practice.openRule')));
         await tap(find.byKey(const ValueKey('lateJoin.customize')));
         await tap(find.byKey(const ValueKey('lateJoin.unanswered')));
-        await tap(find.text('Ask a host to review').last);
+        await tap(find.text('Ask a host to review').hitTestable());
         final save = find.byKey(const ValueKey('lateJoin.save'));
         expect(
           tester.widget<CatchButton>(save).onPressed,
@@ -153,7 +153,7 @@ void main() {
         expect(repository.writes, isEmpty);
         // Switching to a rule with no deadline dependency remains an immediate
         // correction; the form does not erase the host's other choices.
-        await tap(find.text('Keep arrival unknown').last);
+        await tap(find.text('Keep arrival unknown').hitTestable());
         expect(tester.widget<CatchButton>(save).onPressed, isNotNull);
         expect(find.text('Set a response deadline'), findsNothing);
         expect(tester.takeException(), isNull);
@@ -179,7 +179,9 @@ Widget app(
   GlobalKey? boundary,
 }) => ProviderScope(
   overrides: [
+    // ignore: riverpod_lint/scoped_providers_should_specify_dependencies
     uidProvider.overrideWith((ref) => Stream.value('host-1')),
+    // ignore: riverpod_lint/scoped_providers_should_specify_dependencies
     eventRehearsalRepositoryProvider.overrideWith((ref) => repository),
   ],
   child: MaterialApp(

@@ -94,7 +94,10 @@ class EventRehearsalSettingsSheet extends ConsumerWidget {
                   final settings = snapshot.settingsReview;
                   if (settings == null ||
                       target != null && !settings.groups.containsKey(target)) {
-                    return Text(context.l10n.hostEventRehearsalStaffReadOnly);
+                    return Text(
+                      context.l10n.hostEventRehearsalStaffReadOnly,
+                      style: CatchTextStyles.supporting(context),
+                    );
                   }
                   final phase =
                       form?.phase ??

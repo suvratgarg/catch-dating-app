@@ -50,8 +50,14 @@ class EventAssistanceDeliveryDecisionSection extends StatelessWidget {
           style: Theme.of(context).textTheme.headlineSmall,
         ),
         gapH8,
-        Text(deliveryPurposeLabel(l10n, item.purpose)),
-        Text(deliveryTimeLabel(context, item.createdAt)),
+        Text(
+          deliveryPurposeLabel(l10n, item.purpose),
+          style: CatchTextStyles.supporting(context),
+        ),
+        Text(
+          deliveryTimeLabel(context, item.createdAt),
+          style: CatchTextStyles.supporting(context),
+        ),
         if (item.lifecycle != AssistanceMessageLifecycle.active)
           Text(switch (item.lifecycle) {
             AssistanceMessageLifecycle.cancelled =>
@@ -61,25 +67,43 @@ class EventAssistanceDeliveryDecisionSection extends StatelessWidget {
             AssistanceMessageLifecycle.responded =>
               l10n.eventAssistanceDeliveryStopReasonResponded,
             AssistanceMessageLifecycle.active => '',
-          }),
-        if (contextMessage != null) ...[gapH8, Text(contextMessage!)],
+          }, style: CatchTextStyles.supporting(context)),
+        if (contextMessage != null) ...[
+          gapH8,
+          Text(contextMessage!, style: CatchTextStyles.supporting(context)),
+        ],
         if (item.attendeeId == null) ...[
           gapH12,
-          Text(l10n.eventAssistanceDeliverySourceChanged),
+          Text(
+            l10n.eventAssistanceDeliverySourceChanged,
+            style: CatchTextStyles.supporting(context),
+          ),
         ],
         CatchSection.divided(
           title: l10n.eventAssistanceDeliveryEvidence,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(deliveryStatusLabel(l10n, item.status)),
+              Text(
+                deliveryStatusLabel(l10n, item.status),
+                style: CatchTextStyles.supporting(context),
+              ),
               if (item.status == AssistanceDeliveryStatus.accepted)
-                Text(l10n.eventAssistanceDeliveryAcceptedBody),
+                Text(
+                  l10n.eventAssistanceDeliveryAcceptedBody,
+                  style: CatchTextStyles.supporting(context),
+                ),
               if (item.status == AssistanceDeliveryStatus.unknown ||
                   item.status == AssistanceDeliveryStatus.conflictingEvidence)
-                Text(l10n.eventAssistanceDeliveryUnknownBody),
+                Text(
+                  l10n.eventAssistanceDeliveryUnknownBody,
+                  style: CatchTextStyles.supporting(context),
+                ),
               if (item.status == AssistanceDeliveryStatus.revoked)
-                Text(l10n.eventAssistanceDeliveryRevokedBody),
+                Text(
+                  l10n.eventAssistanceDeliveryRevokedBody,
+                  style: CatchTextStyles.supporting(context),
+                ),
             ],
           ),
         ),
@@ -91,11 +115,15 @@ class EventAssistanceDeliveryDecisionSection extends StatelessWidget {
                 : practice && item.coordination is AssistanceDeliveryUntracked
                 ? l10n.eventAssistanceDeliveryPracticeSending
                 : deliveryCoordinationLabel(l10n, item.coordination),
+            style: CatchTextStyles.supporting(context),
           ),
         ),
         CatchSection.divided(
           title: l10n.eventAssistanceDeliveryHandling,
-          child: Text(deliveryHandlingLabel(l10n, item.handling, actorUid)),
+          child: Text(
+            deliveryHandlingLabel(l10n, item.handling, actorUid),
+            style: CatchTextStyles.supporting(context),
+          ),
         ),
         if (item.attempts.isNotEmpty)
           CatchSection.divided(
@@ -108,9 +136,12 @@ class EventAssistanceDeliveryDecisionSection extends StatelessWidget {
                     key: ValueKey('delivery.attempt.$i'),
                     icon: CatchIcons.chatCircle,
                     title: switch (item.attempts[i].channel) {
-                      AssistanceDeliveryChannel.sms => 'SMS',
-                      AssistanceDeliveryChannel.whatsapp => 'WhatsApp',
-                      AssistanceDeliveryChannel.rcs => 'RCS',
+                      AssistanceDeliveryChannel.sms =>
+                        l10n.eventAssistanceRuntimeSms,
+                      AssistanceDeliveryChannel.whatsapp =>
+                        l10n.eventAssistanceRuntimeWhatsapp,
+                      AssistanceDeliveryChannel.rcs =>
+                        l10n.eventAssistanceRuntimeRcs,
                     },
                     metadata: deliveryTimeLabel(context, item.attempts[i].at),
                     facts: [deliveryAttemptLabel(l10n, item.attempts[i].state)],
@@ -122,7 +153,10 @@ class EventAssistanceDeliveryDecisionSection extends StatelessWidget {
         gapH12,
         if (phase == EventAssistanceDeliveryPhase.ready &&
             item.offersManualHandoff) ...[
-          Text(l10n.eventAssistanceDeliveryTakeOverBody),
+          Text(
+            l10n.eventAssistanceDeliveryTakeOverBody,
+            style: CatchTextStyles.supporting(context),
+          ),
           gapH12,
           CatchButton(
             key: const ValueKey('delivery.takeOver'),
@@ -137,7 +171,10 @@ class EventAssistanceDeliveryDecisionSection extends StatelessWidget {
             onPressed: null,
           ),
         if (phase == EventAssistanceDeliveryPhase.retryRequired) ...[
-          Text(l10n.eventAssistanceDeliveryRetryBody),
+          Text(
+            l10n.eventAssistanceDeliveryRetryBody,
+            style: CatchTextStyles.supporting(context),
+          ),
           gapH12,
           CatchButton(
             label: l10n.eventAssistanceDeliveryRetry,
@@ -145,7 +182,10 @@ class EventAssistanceDeliveryDecisionSection extends StatelessWidget {
           ),
         ],
         if (phase == EventAssistanceDeliveryPhase.refreshRequired) ...[
-          Text(l10n.eventAssistanceDeliveryRefresh),
+          Text(
+            l10n.eventAssistanceDeliveryRefresh,
+            style: CatchTextStyles.supporting(context),
+          ),
           gapH12,
           CatchButton(
             label: l10n.eventAssistanceDeliveryReload,
@@ -153,9 +193,15 @@ class EventAssistanceDeliveryDecisionSection extends StatelessWidget {
           ),
         ],
         if (phase == EventAssistanceDeliveryPhase.saved) ...[
-          Text(l10n.eventAssistanceDeliverySaved),
+          Text(
+            l10n.eventAssistanceDeliverySaved,
+            style: CatchTextStyles.supporting(context),
+          ),
           gapH8,
-          Text(l10n.eventAssistanceDeliverySavedBody),
+          Text(
+            l10n.eventAssistanceDeliverySavedBody,
+            style: CatchTextStyles.supporting(context),
+          ),
         ],
         gapH12,
         CatchButton(

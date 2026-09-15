@@ -52,7 +52,12 @@ void main() {
         await tester.scrollUntilVisible(
           find.text('Late arrival settings slot'),
           500,
-          scrollable: find.byType(Scrollable).first,
+          scrollable: find.byWidgetPredicate(
+            (widget) =>
+                widget is Scrollable &&
+                widget.physics is AlwaysScrollableScrollPhysics,
+            description: 'the event success setup scrollable',
+          ),
         );
         expect(
           find.text('Late arrival settings slot'),

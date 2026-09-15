@@ -54,112 +54,123 @@ class EventAssistanceLateJoinDestinationField extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        CatchField<int>.select(
-          key: const ValueKey('lateJoin.destination'),
-          copy: catchFieldCopy(l10n),
-          title: l10n.eventAssistanceLateJoinWhere,
-          contractExemption:
-              'Chooses a typed destination family from the server reviewed setup; the complete preference uses the canonical late-join union.',
-          values: [for (var i = 0; i < presets.length; i++) i],
-          value: index < 0 ? null : index,
-          itemLabelBuilder: (i) => switch (presets[i]) {
-            LateJoinConfirmedProgress() =>
-              l10n.eventAssistanceLateJoinConfirmed,
-            LateJoinFixedPlace() => lateJoinDestinationLabel(
-              l10n,
-              presets[i],
-              setup,
-            ),
-            LateJoinItinerary() => l10n.eventAssistanceLateJoinItinerary,
-            LateJoinGroupCheckpoints() =>
-              l10n.eventAssistanceLateJoinCheckpoints,
-          },
-          onChanged: enabled
-              ? (i) {
-                  if (i != null) onChanged(presets[i]);
-                }
-              : null,
-          states: {if (!enabled) WidgetState.disabled},
+        CatchFieldLanes.single(
+          child: CatchField<int>.select(
+            key: const ValueKey('lateJoin.destination'),
+            copy: catchFieldCopy(l10n),
+            title: l10n.eventAssistanceLateJoinWhere,
+            contractExemption:
+                'Chooses a typed destination family from the server reviewed setup; the complete preference uses the canonical late-join union.',
+            values: [for (var i = 0; i < presets.length; i++) i],
+            value: index < 0 ? null : index,
+            itemLabelBuilder: (i) => switch (presets[i]) {
+              LateJoinConfirmedProgress() =>
+                l10n.eventAssistanceLateJoinConfirmed,
+              LateJoinFixedPlace() => lateJoinDestinationLabel(
+                l10n,
+                presets[i],
+                setup,
+              ),
+              LateJoinItinerary() => l10n.eventAssistanceLateJoinItinerary,
+              LateJoinGroupCheckpoints() =>
+                l10n.eventAssistanceLateJoinCheckpoints,
+            },
+            onChanged: enabled
+                ? (i) {
+                    if (i != null) onChanged(presets[i]);
+                  }
+                : null,
+            states: {if (!enabled) WidgetState.disabled},
+          ),
         ),
         if (value is LateJoinConfirmedProgress)
-          Text(l10n.eventAssistanceLateJoinConfirmedBody),
+          Text(
+            l10n.eventAssistanceLateJoinConfirmedBody,
+            style: CatchTextStyles.supporting(context),
+          ),
         if (points.isNotEmpty)
-          CatchField<String>.choices(
-            key: const ValueKey('lateJoin.points'),
-            copy: catchFieldCopy(l10n),
-            title: l10n.eventAssistanceLateJoinPoints,
-            contract: value is LateJoinItinerary
-                ? CatchContractConstraints
-                      .eventAssistanceLateJoinInputPolicyDestinationPermittedStopIds
-                : CatchContractConstraints
-                      .eventAssistanceLateJoinInputPolicyDestinationPermittedCheckpointIds,
-            values: points.map((p) => p.id).toList(),
-            itemLabelBuilder: (id) =>
-                points.firstWhere((p) => p.id == id).label,
-            selected: selection,
-            mode: CatchChipMode.multiple,
-            states: {if (!enabled) WidgetState.disabled},
-            onSelectionChanged: enabled
-                ? (selected) {
-                    if (selected.isEmpty) return;
-                    final ids = points
-                        .where((p) => selected.contains(p.id))
-                        .map((p) => p.id)
-                        .toList();
-                    switch (value) {
-                      case LateJoinItinerary(:final itineraryId):
-                        onChanged(
-                          LateJoinItinerary(
-                            itineraryId: itineraryId,
-                            permittedStopIds: ids,
-                          ),
-                        );
-                      case LateJoinGroupCheckpoints(
-                        :final routeId,
-                        :final groupId,
-                      ):
-                        onChanged(
-                          LateJoinGroupCheckpoints(
-                            routeId: routeId,
-                            groupId: groupId,
-                            permittedCheckpointIds: ids,
-                          ),
-                        );
-                      case LateJoinFixedPlace() || LateJoinConfirmedProgress():
-                        break;
+          CatchFieldLanes.single(
+            child: CatchField<String>.choices(
+              key: const ValueKey('lateJoin.points'),
+              copy: catchFieldCopy(l10n),
+              title: l10n.eventAssistanceLateJoinPoints,
+              contract: value is LateJoinItinerary
+                  ? CatchContractConstraints
+                        .eventAssistanceLateJoinInputPolicyDestinationPermittedStopIds
+                  : CatchContractConstraints
+                        .eventAssistanceLateJoinInputPolicyDestinationPermittedCheckpointIds,
+              values: points.map((p) => p.id).toList(),
+              itemLabelBuilder: (id) =>
+                  points.firstWhere((p) => p.id == id).label,
+              selected: selection,
+              mode: CatchChipMode.multiple,
+              states: {if (!enabled) WidgetState.disabled},
+              onSelectionChanged: enabled
+                  ? (selected) {
+                      if (selected.isEmpty) return;
+                      final ids = points
+                          .where((p) => selected.contains(p.id))
+                          .map((p) => p.id)
+                          .toList();
+                      switch (value) {
+                        case LateJoinItinerary(:final itineraryId):
+                          onChanged(
+                            LateJoinItinerary(
+                              itineraryId: itineraryId,
+                              permittedStopIds: ids,
+                            ),
+                          );
+                        case LateJoinGroupCheckpoints(
+                          :final routeId,
+                          :final groupId,
+                        ):
+                          onChanged(
+                            LateJoinGroupCheckpoints(
+                              routeId: routeId,
+                              groupId: groupId,
+                              permittedCheckpointIds: ids,
+                            ),
+                          );
+                        case LateJoinFixedPlace() ||
+                            LateJoinConfirmedProgress():
+                          break;
+                      }
                     }
-                  }
-                : null,
+                  : null,
+            ),
           ),
         if (value case LateJoinFixedPlace(:final placeId, :final lateEntry))
-          CatchField<LateEntryRule>.choices(
-            key: const ValueKey('lateJoin.entry'),
-            copy: catchFieldCopy(l10n),
-            title: l10n.eventAssistanceLateJoinEntry,
-            contract: CatchContractConstraints
-                .eventAssistanceLateJoinInputPolicyDestinationLateEntry,
-            contractValueBuilder: (v) => v.name,
-            values: LateEntryRule.values,
-            itemLabelBuilder: (v) => switch (v) {
-              LateEntryRule.allowed => l10n.eventAssistanceLateJoinEntryAllowed,
-              LateEntryRule.hostDecision =>
-                l10n.eventAssistanceLateJoinEntryHost,
-              LateEntryRule.closed => l10n.eventAssistanceLateJoinEntryClosed,
-            },
-            selected: {lateEntry},
-            states: {if (!enabled) WidgetState.disabled},
-            onSelectionChanged: enabled
-                ? (v) {
-                    if (v.isNotEmpty) {
-                      onChanged(
-                        LateJoinFixedPlace(
-                          placeId: placeId,
-                          lateEntry: v.single,
-                        ),
-                      );
+          CatchFieldLanes.single(
+            child: CatchField<LateEntryRule>.choices(
+              key: const ValueKey('lateJoin.entry'),
+              copy: catchFieldCopy(l10n),
+              title: l10n.eventAssistanceLateJoinEntry,
+              contract: CatchContractConstraints
+                  .eventAssistanceLateJoinInputPolicyDestinationLateEntry,
+              contractValueBuilder: (v) => v.name,
+              values: LateEntryRule.values,
+              itemLabelBuilder: (v) => switch (v) {
+                LateEntryRule.allowed =>
+                  l10n.eventAssistanceLateJoinEntryAllowed,
+                LateEntryRule.hostDecision =>
+                  l10n.eventAssistanceLateJoinEntryHost,
+                LateEntryRule.closed => l10n.eventAssistanceLateJoinEntryClosed,
+              },
+              selected: {lateEntry},
+              states: {if (!enabled) WidgetState.disabled},
+              onSelectionChanged: enabled
+                  ? (v) {
+                      if (v.isNotEmpty) {
+                        onChanged(
+                          LateJoinFixedPlace(
+                            placeId: placeId,
+                            lateEntry: v.single,
+                          ),
+                        );
+                      }
                     }
-                  }
-                : null,
+                  : null,
+            ),
           ),
       ],
     );

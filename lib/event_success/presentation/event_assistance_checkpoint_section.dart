@@ -142,18 +142,22 @@ class _EventAssistanceCheckpointSectionState
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(widget.contextMessage),
+        Text(widget.contextMessage, style: CatchTextStyles.supporting(context)),
         gapH8,
         Text(
           l10n.eventAssistanceCheckpointDeparture(
             number: widget.progressRevision,
           ),
+          style: CatchTextStyles.supporting(context),
         ),
         if (roster != null) ...[
           gapH12,
           Text(roster.label, style: CatchTextStyles.titleL(context)),
           gapH8,
-          Text(l10n.eventAssistanceCheckpointBody),
+          Text(
+            l10n.eventAssistanceCheckpointBody,
+            style: CatchTextStyles.supporting(context),
+          ),
           gapH12,
           Text(
             l10n.eventAssistanceCheckpointSelected(
@@ -164,11 +168,14 @@ class _EventAssistanceCheckpointSectionState
           ),
           if (roster.members.isEmpty) ...[
             gapH8,
-            Text(l10n.eventAssistanceCheckpointEmptyRoster),
+            Text(
+              l10n.eventAssistanceCheckpointEmptyRoster,
+              style: CatchTextStyles.supporting(context),
+            ),
           ],
           if (widget.requestMessage case final message?) ...[
             gapH8,
-            Text(message),
+            Text(message, style: CatchTextStyles.supporting(context)),
           ],
           gapH12,
           if (roster.members.isNotEmpty)
@@ -181,23 +188,31 @@ class _EventAssistanceCheckpointSectionState
             ),
           if (correction && ready) ...[
             gapH12,
-            CatchField.input(
-              key: const ValueKey('checkpoint.correction'),
-              copy: catchFieldCopy(l10n),
-              title: l10n.eventAssistanceCheckpointCorrection,
-              contract: CatchContractConstraints
-                  .recordEventAssistanceCheckpointCallablePayloadCommandPayloadCorrectionReason,
-              controller: _reason,
-              minLines: 2,
-              maxLines: 4,
-              onChanged: (_) => setState(() {}),
+            CatchFieldLanes.single(
+              child: CatchField.input(
+                key: const ValueKey('checkpoint.correction'),
+                copy: catchFieldCopy(l10n),
+                title: l10n.eventAssistanceCheckpointCorrection,
+                contract: CatchContractConstraints
+                    .recordEventAssistanceCheckpointCallablePayloadCommandPayloadCorrectionReason,
+                controller: _reason,
+                minLines: 2,
+                maxLines: 4,
+                onChanged: (_) => setState(() {}),
+              ),
             ),
             gapH8,
-            Text(l10n.eventAssistanceCheckpointCorrectionBody),
+            Text(
+              l10n.eventAssistanceCheckpointCorrectionBody,
+              style: CatchTextStyles.supporting(context),
+            ),
           ] else if (widget.phase != EventAssistanceCheckpointPhase.saved &&
               widget.submittedObservation?.correctionReason != null) ...[
             gapH8,
-            Text(widget.submittedObservation!.correctionReason!),
+            Text(
+              widget.submittedObservation!.correctionReason!,
+              style: CatchTextStyles.supporting(context),
+            ),
           ],
         ] else if (available is AssistanceCheckpointUnavailable) ...[
           gapH12,
@@ -211,7 +226,7 @@ class _EventAssistanceCheckpointSectionState
             AssistanceCheckpointUnavailableReason.differentCheckpoint ||
             AssistanceCheckpointUnavailableReason.setupChanged =>
               l10n.eventAssistanceCheckpointSetupChanged,
-          }),
+          }, style: CatchTextStyles.supporting(context)),
         ],
         if (widget.phase != EventAssistanceCheckpointPhase.ready) ...[
           gapH12,
@@ -227,7 +242,7 @@ class _EventAssistanceCheckpointSectionState
             EventAssistanceCheckpointPhase.unavailable =>
               l10n.eventAssistanceCheckpointReadOnly,
             EventAssistanceCheckpointPhase.ready => '',
-          }),
+          }, style: CatchTextStyles.supporting(context)),
         ],
         if (widget.error != null) ...[
           gapH12,

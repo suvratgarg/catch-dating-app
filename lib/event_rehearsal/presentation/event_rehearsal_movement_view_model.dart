@@ -28,7 +28,11 @@ class EventRehearsalMovement extends _$EventRehearsalMovement {
     final page = ref.watch(
       eventRehearsalMovementForAccountProvider(
         selection,
-        account: auth.requireValue,
+        account: switch (auth) {
+          AsyncData(:final value) => value,
+          AsyncError(:final error) => throw error,
+          AsyncLoading() => throw AssertionError(),
+        },
       ),
     );
     if (page.isLoading) return const AsyncLoading();
@@ -42,7 +46,11 @@ class EventRehearsalMovement extends _$EventRehearsalMovement {
     ref.invalidate(
       eventRehearsalMovementForAccountProvider(
         selection,
-        account: auth.requireValue,
+        account: switch (auth) {
+          AsyncData(:final value) => value,
+          AsyncError(:final error) => throw error,
+          AsyncLoading() => throw AssertionError(),
+        },
       ),
     );
   }

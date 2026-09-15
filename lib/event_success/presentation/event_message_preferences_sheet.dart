@@ -90,7 +90,10 @@ class _EventMessagePreferencesSheetState
             EventParticipantLinked(:final scope) => Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Text(l.eventMessagesIntro),
+                Text(
+                  l.eventMessagesIntro,
+                  style: CatchTextStyles.supporting(context),
+                ),
                 gapH16,
                 CatchSection.fieldRows(
                   children: [
@@ -122,7 +125,7 @@ class _IdentityUnavailable extends StatelessWidget {
   Widget build(BuildContext context) => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
-      Text(message),
+      Text(message, style: CatchTextStyles.supporting(context)),
       gapH12,
       CatchButton(
         label: context.l10n.eventMessagesRefresh,

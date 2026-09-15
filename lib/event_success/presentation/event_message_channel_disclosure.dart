@@ -19,18 +19,20 @@ class EventMessageChannelDisclosure extends StatelessWidget {
   final Widget child;
   final bool pending;
   @override
-  Widget build(BuildContext context) => CatchField.control(
-    copy: catchFieldCopy(context.l10n),
-    key: ValueKey('messages.${channel.name}.disclosure'),
-    title: eventMessageChannelLabel(context, channel),
-    emphasis: CatchFieldEmphasis.title,
-    body: summary,
-    contractExemption:
-        'Discloses server-reviewed event permission; channel controllers own exact consent and withdrawal commands.',
-    disclosureMode: pending
-        ? CatchFieldMode.localExpanded
-        : CatchFieldMode.localCollapsed,
-    child: child,
+  Widget build(BuildContext context) => CatchFieldLanes.single(
+    child: CatchField.control(
+      copy: catchFieldCopy(context.l10n),
+      key: ValueKey('messages.${channel.name}.disclosure'),
+      title: eventMessageChannelLabel(context, channel),
+      emphasis: CatchFieldEmphasis.title,
+      body: summary,
+      contractExemption:
+          'Discloses server-reviewed event permission; channel controllers own exact consent and withdrawal commands.',
+      disclosureMode: pending
+          ? CatchFieldMode.localExpanded
+          : CatchFieldMode.localCollapsed,
+      child: child,
+    ),
   );
 }
 

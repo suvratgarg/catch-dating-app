@@ -127,7 +127,10 @@ void main() {
       expect(find.text('Some guests aren’t marked yet'), findsOneWidget);
       await tester.tap(find.text('Review sweep'));
       await pumpFeatureUi(tester);
-      final review = find.text('Review visit').first;
+      final review = find.descendant(
+        of: find.byKey(const ValueKey('sweep.guest.actor-01')),
+        matching: find.text('Review visit'),
+      );
       await tester.ensureVisible(review);
       await tester.tap(review);
       await pumpFeatureUi(tester);
@@ -230,7 +233,7 @@ void main() {
       await tester.ensureVisible(
         find.byType(EventRehearsalPracticeRoleSection),
       );
-      await tester.tap(find.text('Host').first);
+      await tester.tap(find.text('Host').hitTestable());
       await pumpFeatureUi(tester);
       await tester.tap(find.widgetWithText(CatchMenuRow<Object?>, 'sweep'));
       await pumpFeatureUi(tester);
@@ -259,7 +262,10 @@ void main() {
         banner.statuses.single.message,
         'Synthetic guests · Assistance as sweep',
       );
-      final review = find.text('Review visit').first;
+      final review = find.descendant(
+        of: find.byKey(const ValueKey('sweep.guest.actor-01')),
+        matching: find.text('Review visit'),
+      );
       await tester.ensureVisible(review);
       await tester.tap(review);
       await pumpFeatureUi(tester);

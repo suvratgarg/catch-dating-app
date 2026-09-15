@@ -96,7 +96,11 @@ class EventSmsPreferenceController extends _$EventSmsPreferenceController {
           ? const EventSmsPreferenceHidden()
           : EventSmsPreferenceFailure(auth.error!);
     }
-    final account = _account = auth.requireValue;
+    final account = _account = switch (auth) {
+      AsyncData(:final value) => value,
+      AsyncError(:final error) => throw error,
+      AsyncLoading() => throw AssertionError(),
+    };
     // Defer the read until the initial loading state has been published.
     unawaited(Future<void>.microtask(() => _load(account, epoch)));
     return const EventSmsPreferenceLoading();
@@ -301,29 +305,36 @@ class EventSmsPreferenceController extends _$EventSmsPreferenceController {
       );
       return result;
     } catch (error) {
-      if (_current(review.account, epoch)) {
-        final refresh =
-            error is AppException &&
-            {
-              'invalid-argument',
-              'failed-precondition',
-              'permission-denied',
-              'unauthenticated',
-              'sign-in-required',
-              'callable-unavailable',
-            }.contains(error.code);
-        if (refresh) _clearPending();
-        _publishReady(
-          EventSmsPreferenceReady._(
-            review,
-            error: error,
-            phase: refresh
-                ? EventSmsPreferencePhase.refreshRequired
-                : EventSmsPreferencePhase.uncertain,
-          ),
-        );
-      }
+      _publishApplyFailure(review, error, epoch);
       rethrow;
     }
+  }
+
+  void _publishApplyFailure(
+    EventSmsPreferenceReview review,
+    Object error,
+    int epoch,
+  ) {
+    if (!_current(review.account, epoch)) return;
+    final refresh =
+        error is AppException &&
+        {
+          'invalid-argument',
+          'failed-precondition',
+          'permission-denied',
+          'unauthenticated',
+          'sign-in-required',
+          'callable-unavailable',
+        }.contains(error.code);
+    if (refresh) _clearPending();
+    _publishReady(
+      EventSmsPreferenceReady._(
+        review,
+        error: error,
+        phase: refresh
+            ? EventSmsPreferencePhase.refreshRequired
+            : EventSmsPreferencePhase.uncertain,
+      ),
+    );
   }
 }

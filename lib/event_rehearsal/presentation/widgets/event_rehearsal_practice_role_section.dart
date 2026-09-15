@@ -33,35 +33,40 @@ class EventRehearsalPracticeRoleSection extends ConsumerWidget {
         if (staff == null ||
             staff.clockId != scope.clockId ||
             !staff.isManager) {
-          return Text(l10n.eventAssistanceVisitChanged);
+          return Text(
+            l10n.eventAssistanceVisitChanged,
+            style: CatchTextStyles.supporting(context),
+          );
         }
-        return CatchField<String>.select(
-          copy: catchFieldCopy(l10n),
-          title: l10n.hostEventRehearsalAssistanceRole,
-          helperText: l10n.hostEventRehearsalAssistanceRoleBody,
-          contractExemption:
-              'Local review identity selector. Host omits practiceOperatorId; synthetic role identity and authority are verified by the review provider.',
-          values: [
-            _host,
-            ...staff.operators.keys,
-            if (selected != null && !staff.operators.containsKey(selected))
-              selected,
-          ],
-          value: selected ?? _host,
-          itemLabelBuilder: (value) => value == _host
-              ? l10n.hostEventRehearsalHostRole
-              : staff.operators[value]?.displayName ??
-                    l10n.hostEventRehearsalUnavailableRole,
-          onChanged: (value) {
-            if (value == null) return;
-            try {
-              ref
-                  .read(role.notifier)
-                  .select(review, value == _host ? null : value);
-            } on Object catch (error) {
-              showCatchErrorSnackBar(context, error);
-            }
-          },
+        return CatchFieldLanes.single(
+          child: CatchField<String>.select(
+            copy: catchFieldCopy(l10n),
+            title: l10n.hostEventRehearsalAssistanceRole,
+            helperText: l10n.hostEventRehearsalAssistanceRoleBody,
+            contractExemption:
+                'Local review identity selector. Host omits practiceOperatorId; synthetic role identity and authority are verified by the review provider.',
+            values: [
+              _host,
+              ...staff.operators.keys,
+              if (selected != null && !staff.operators.containsKey(selected))
+                selected,
+            ],
+            value: selected ?? _host,
+            itemLabelBuilder: (value) => value == _host
+                ? l10n.hostEventRehearsalHostRole
+                : staff.operators[value]?.displayName ??
+                      l10n.hostEventRehearsalUnavailableRole,
+            onChanged: (value) {
+              if (value == null) return;
+              try {
+                ref
+                    .read(role.notifier)
+                    .select(review, value == _host ? null : value);
+              } on Object catch (error) {
+                showCatchErrorSnackBar(context, error);
+              }
+            },
+          ),
         );
       },
     );

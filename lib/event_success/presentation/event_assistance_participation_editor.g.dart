@@ -72,7 +72,7 @@ final class EventAssistanceParticipationEditorProvider
 }
 
 String _$eventAssistanceParticipationEditorHash() =>
-    r'7928106507ecd945588613543aa6456952f753d3';
+    r'200eb7a00a98b19be98d10c41daebae094b865f9';
 
 /// One guest owns one pending participation decision across review refresh and closure.
 

@@ -26,7 +26,7 @@ final class AuthenticatedSessionProvider
         argument: null,
         retry: null,
         name: r'authenticatedSessionProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -57,4 +57,4 @@ final class AuthenticatedSessionProvider
 }
 
 String _$authenticatedSessionHash() =>
-    r'5fa3489f8eeadd4e858383963dded997cae904a6';
+    r'fe81a2a56c8fc75e7fc9c4d1f0db4575a3cfef08';

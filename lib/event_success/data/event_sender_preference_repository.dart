@@ -111,7 +111,7 @@ class EventSenderPreferenceRepository {
     Map<String, Object?> input,
     T Function(Object?) decode,
   ) {
-    final name = switch ((scope.channel, action)) {
+    final callable = switch ((scope.channel, action)) {
       (EventSenderChannel.sms, _PreferenceAction.list) =>
         'listEventSmsPreferences',
       (EventSenderChannel.sms, _PreferenceAction.read) =>
@@ -134,7 +134,7 @@ class EventSenderPreferenceRepository {
     return withBackendErrorContext(
       () async {
         final response = await _functions
-            .httpsCallable(name)
+            .httpsCallable(callable)
             .call<Object?>(input);
         return decode(response.data);
       },
@@ -145,7 +145,7 @@ class EventSenderPreferenceRepository {
           _PreferenceAction.read => 'review event message preferences',
           _PreferenceAction.write => 'save event message preferences',
         },
-        resource: name,
+        resource: callable,
       ),
       mapper: mapMissingCallableAsUnavailable,
     );

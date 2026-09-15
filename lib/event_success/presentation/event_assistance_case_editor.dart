@@ -111,7 +111,11 @@ class EventAssistanceCaseEditor extends _$EventAssistanceCaseEditor {
         auth.error ?? caseReviewSessionChanged,
       );
     }
-    _account = auth.requireValue;
+    _account = switch (auth) {
+      AsyncData(:final value) => value,
+      AsyncError(:final error) => throw error,
+      AsyncLoading() => throw AssertionError(),
+    };
     return const AssistanceCaseIdle();
   }
 
@@ -324,7 +328,7 @@ class EventAssistanceCaseEditor extends _$EventAssistanceCaseEditor {
   ) async {
     try {
       final result = await ref
-          .read(eventAssistanceCasesRepositoryProvider)
+          .read(eventAssistanceCaseCommandsProvider)
           .apply(change);
       if (!_current(form.review.account, epoch)) {
         throw caseReviewSessionChanged;

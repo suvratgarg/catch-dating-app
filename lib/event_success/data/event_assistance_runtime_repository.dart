@@ -75,6 +75,27 @@ class EventAssistanceRuntimeRepository {
       );
 }
 
+/// Typed command and pagination seam used by runtime presentation state.
+final class EventAssistanceRuntimeCommands {
+  const EventAssistanceRuntimeCommands(this._repository);
+
+  final EventAssistanceRuntimeRepository _repository;
+
+  Future<AssistanceRuntimeResult> apply(AssistanceRuntimeChange change) =>
+      _repository.apply(change);
+
+  Future<AssistanceRuntimeView> fetchSenderPage(
+    EventAssistanceRuntimeScope scope, {
+    required Map<AssistanceMessageRoute, String> cursors,
+  }) => _repository.fetchSenderPage(scope, cursors: cursors);
+}
+
 @riverpod
 EventAssistanceRuntimeRepository eventAssistanceRuntimeRepository(Ref ref) =>
     EventAssistanceRuntimeRepository(ref.watch(firebaseFunctionsProvider));
+
+@riverpod
+EventAssistanceRuntimeCommands eventAssistanceRuntimeCommands(Ref ref) =>
+    EventAssistanceRuntimeCommands(
+      ref.watch(eventAssistanceRuntimeRepositoryProvider),
+    );

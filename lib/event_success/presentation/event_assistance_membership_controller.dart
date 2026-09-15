@@ -107,7 +107,11 @@ class EventAssistanceMembershipController
     if (auth.isLoading || auth.hasError || auth.asData == null) {
       return MembershipUnavailable(auth.error ?? membershipSessionChanged);
     }
-    _account = auth.requireValue;
+    _account = switch (auth) {
+      AsyncData(:final value) => value,
+      AsyncError(:final error) => throw error,
+      AsyncLoading() => throw AssertionError(),
+    };
     return const MembershipIdle();
   }
 

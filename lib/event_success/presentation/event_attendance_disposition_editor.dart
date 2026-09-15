@@ -172,7 +172,7 @@ class EventAttendanceDispositionEditor
   ) async {
     try {
       final result = await ref
-          .read(eventAttendanceDispositionRepositoryProvider)
+          .read(eventAttendanceDispositionCommandsProvider)
           .apply(change);
       requireAttendanceReviewAccount(ref, review.account);
       if (_revoked) throw attendanceReviewSessionChanged;

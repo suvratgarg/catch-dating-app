@@ -109,7 +109,11 @@ class EventAssistanceDeliveryController
         auth.error ?? deliveryReviewSessionChanged,
       );
     }
-    _account = auth.requireValue;
+    _account = switch (auth) {
+      AsyncData(:final value) => value,
+      AsyncError(:final error) => throw error,
+      AsyncLoading() => throw AssertionError(),
+    };
     return const AssistanceDeliveryIdle();
   }
 

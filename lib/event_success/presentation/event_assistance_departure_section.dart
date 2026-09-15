@@ -121,55 +121,74 @@ class _EventAssistanceDepartureSectionState
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(l10n.eventAssistanceDepartureBody),
+        Text(
+          l10n.eventAssistanceDepartureBody,
+          style: CatchTextStyles.supporting(context),
+        ),
         if (widget.contextMessage != null) ...[
           gapH8,
-          Text(widget.contextMessage!),
+          Text(
+            widget.contextMessage!,
+            style: CatchTextStyles.supporting(context),
+          ),
         ],
         gapH12,
-        CatchField.content(
-          copy: catchFieldCopy(l10n),
-          title: l10n.eventAssistanceDepartureCurrent,
-          body:
-              widget.currentDestination ??
-              l10n.eventAssistanceDepartureUnrecorded,
+        CatchFieldLanes.single(
+          child: CatchField.content(
+            copy: catchFieldCopy(l10n),
+            title: l10n.eventAssistanceDepartureCurrent,
+            body:
+                widget.currentDestination ??
+                l10n.eventAssistanceDepartureUnrecorded,
+          ),
         ),
         if (widget.sourceChanged)
-          Text(l10n.eventAssistanceDepartureSourceChanged),
+          Text(
+            l10n.eventAssistanceDepartureSourceChanged,
+            style: CatchTextStyles.supporting(context),
+          ),
         gapH12,
         if (ready) ...[
-          CatchField<AssistanceJoiningTarget>.select(
-            key: const ValueKey('departure.destination'),
-            copy: catchFieldCopy(l10n),
-            title: l10n.eventAssistanceDepartureDestination,
-            contractExemption:
-                'Selects a complete generated joining-target union from the current authorized review; each variant has its own target identifier.',
-            values: widget.destinations.map((d) => d.target).toList(),
-            value: target?.target,
-            itemLabelBuilder: (value) =>
-                widget.destinations.firstWhere((d) => d.target == value).label,
-            onChanged: (value) => setState(() {
-              _destination = value;
-              _requestCheckpoint = false;
-              _dueAt = null;
-            }),
-          ),
-          if (target != null) ...[
-            if (target.detail.isNotEmpty) ...[gapH8, Text(target.detail)],
-            CatchField.toggle(
-              key: const ValueKey('departure.recordRoster'),
+          CatchFieldLanes.single(
+            child: CatchField<AssistanceJoiningTarget>.select(
+              key: const ValueKey('departure.destination'),
               copy: catchFieldCopy(l10n),
-              title: l10n.eventAssistanceDepartureRecordRoster,
-              titleMaxLines: 3,
+              title: l10n.eventAssistanceDepartureDestination,
               contractExemption:
-                  'Controls presence of the optional departureRoster payload; it is not a persisted boolean.',
-              value: _recordRoster,
+                  'Selects a complete generated joining-target union from the current authorized review; each variant has its own target identifier.',
+              values: widget.destinations.map((d) => d.target).toList(),
+              value: target?.target,
+              itemLabelBuilder: (value) => widget.destinations
+                  .firstWhere((d) => d.target == value)
+                  .label,
               onChanged: (value) => setState(() {
-                _recordRoster = value;
-                _selected = {};
+                _destination = value;
                 _requestCheckpoint = false;
                 _dueAt = null;
               }),
+            ),
+          ),
+          if (target != null) ...[
+            if (target.detail.isNotEmpty) ...[
+              gapH8,
+              Text(target.detail, style: CatchTextStyles.supporting(context)),
+            ],
+            CatchFieldLanes.single(
+              child: CatchField.toggle(
+                key: const ValueKey('departure.recordRoster'),
+                copy: catchFieldCopy(l10n),
+                title: l10n.eventAssistanceDepartureRecordRoster,
+                titleMaxLines: 3,
+                contractExemption:
+                    'Controls presence of the optional departureRoster payload; it is not a persisted boolean.',
+                value: _recordRoster,
+                onChanged: (value) => setState(() {
+                  _recordRoster = value;
+                  _selected = {};
+                  _requestCheckpoint = false;
+                  _dueAt = null;
+                }),
+              ),
             ),
             if (_recordRoster) ...[
               if (widget.rosterLoading)
@@ -187,32 +206,40 @@ class _EventAssistanceDepartureSectionState
                   }),
                 ),
               gapH8,
-              if (_selected.isEmpty) Text(l10n.eventAssistanceDepartureNobody),
+              if (_selected.isEmpty)
+                Text(
+                  l10n.eventAssistanceDepartureNobody,
+                  style: CatchTextStyles.supporting(context),
+                ),
               if (canRequest)
-                CatchField.toggle(
-                  key: const ValueKey('departure.requestCheckpoint'),
-                  copy: catchFieldCopy(l10n),
-                  title: l10n.eventAssistanceDepartureRequestCheckpoint,
-                  titleMaxLines: 3,
-                  body: l10n.eventAssistanceDepartureReportMyself,
-                  bodyMaxLines: 3,
-                  contractExemption:
-                      'Explicitly includes a checkpointRequest for the current authenticated operator; current duty is rechecked at confirmation.',
-                  value: _requestCheckpoint,
-                  onChanged: (value) =>
-                      setState(() => _requestCheckpoint = value),
+                CatchFieldLanes.single(
+                  child: CatchField.toggle(
+                    key: const ValueKey('departure.requestCheckpoint'),
+                    copy: catchFieldCopy(l10n),
+                    title: l10n.eventAssistanceDepartureRequestCheckpoint,
+                    titleMaxLines: 3,
+                    body: l10n.eventAssistanceDepartureReportMyself,
+                    bodyMaxLines: 3,
+                    contractExemption:
+                        'Explicitly includes a checkpointRequest for the current authenticated operator; current duty is rechecked at confirmation.',
+                    value: _requestCheckpoint,
+                    onChanged: (value) =>
+                        setState(() => _requestCheckpoint = value),
+                  ),
                 ),
               if (canRequest && _requestCheckpoint && deadline != null)
-                CatchField<int>.select(
-                  key: const ValueKey('departure.deadline'),
-                  copy: catchFieldCopy(l10n),
-                  title: l10n.eventAssistanceDepartureDeadline,
-                  contract: CatchContractConstraints
-                      .confirmEventAssistanceDepartureCallablePayloadCommandPayloadCheckpointRequestDueAt,
-                  values: deadlineChoices,
-                  value: deadline,
-                  itemLabelBuilder: time,
-                  onChanged: (value) => setState(() => _dueAt = value),
+                CatchFieldLanes.single(
+                  child: CatchField<int>.select(
+                    key: const ValueKey('departure.deadline'),
+                    copy: catchFieldCopy(l10n),
+                    title: l10n.eventAssistanceDepartureDeadline,
+                    contract: CatchContractConstraints
+                        .confirmEventAssistanceDepartureCallablePayloadCommandPayloadCheckpointRequestDueAt,
+                    values: deadlineChoices,
+                    value: deadline,
+                    itemLabelBuilder: time,
+                    onChanged: (value) => setState(() => _dueAt = value),
+                  ),
                 ),
             ],
             gapH12,
@@ -252,7 +279,7 @@ class _EventAssistanceDepartureSectionState
               l10n.eventAssistanceDepartureChanged,
             EventAssistanceDeparturePhase.saved =>
               l10n.eventAssistanceDepartureSaved,
-          }),
+          }, style: CatchTextStyles.supporting(context)),
           if (submitted != null &&
               widget.phase != EventAssistanceDeparturePhase.saved) ...[
             gapH8,
@@ -262,6 +289,7 @@ class _EventAssistanceDepartureSectionState
                       .firstOrNull
                       ?.label ??
                   l10n.eventAssistanceDepartureDestination,
+              style: CatchTextStyles.supporting(context),
             ),
             Text(
               submitted.roster == null
@@ -269,12 +297,14 @@ class _EventAssistanceDepartureSectionState
                   : l10n.eventAssistanceDepartureSelected(
                       count: submitted.roster!.attendeeIds.length,
                     ),
+              style: CatchTextStyles.supporting(context),
             ),
             if (submitted.checkpoint != null)
               Text(
                 l10n.eventAssistanceDepartureReportAt(
                   time: time(submitted.checkpoint!.dueAt),
                 ),
+                style: CatchTextStyles.supporting(context),
               ),
           ],
         ],

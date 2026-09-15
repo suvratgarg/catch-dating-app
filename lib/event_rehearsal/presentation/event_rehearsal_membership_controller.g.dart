@@ -72,7 +72,7 @@ final class EventRehearsalMembershipControllerProvider
 }
 
 String _$eventRehearsalMembershipControllerHash() =>
-    r'1ce2aecfe5ee0479aebb250ec4f0db73cba8cdc5';
+    r'c1767ff3b73a447704a8fc82bb4dedbb75c9f65c';
 
 /// One synthetic guest owns one pending group decision across refresh and closure.
 

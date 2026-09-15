@@ -124,7 +124,11 @@ class EventAssistanceDepartureEditor extends _$EventAssistanceDepartureEditor {
         auth.error ?? departureSessionChanged,
       );
     }
-    _account = auth.requireValue;
+    _account = switch (auth) {
+      AsyncData(:final value) => value,
+      AsyncError(:final error) => throw error,
+      AsyncLoading() => throw AssertionError(),
+    };
     return const EventDepartureFormIdle();
   }
 

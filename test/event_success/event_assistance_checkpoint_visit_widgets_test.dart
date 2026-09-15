@@ -173,7 +173,7 @@ void main() {
               live.replaceVisit();
             }
           }
-          await tap(find.text('Done').last);
+          await tap(find.byKey(const ValueKey('visit.done')));
           // Leave both nested sheets. Pending ownership must outlive every sheet.
           Navigator.of(
             tester.element(
@@ -211,7 +211,7 @@ void main() {
             ),
             findsOneWidget,
           );
-          await tap(find.text('Done').last);
+          await tap(find.byKey(const ValueKey('visit.done')));
           expect(guest, findsOneWidget);
           expect(close, scale == 2 ? findsNothing : findsOneWidget);
           if (scale == 1) {

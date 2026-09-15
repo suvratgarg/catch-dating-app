@@ -11,7 +11,7 @@ final class AuthenticatedSession {
   final String uid;
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 AsyncValue<AuthenticatedSession> authenticatedSession(Ref ref) {
   final auth = ref.watch(uidProvider);
   if (auth.isLoading) return const AsyncLoading();

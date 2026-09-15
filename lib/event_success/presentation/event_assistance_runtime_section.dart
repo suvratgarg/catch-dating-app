@@ -134,13 +134,17 @@ class _EventAssistanceRuntimeSectionState
           style: Theme.of(context).textTheme.titleLarge,
         ),
         gapH12,
-        Text(l.eventAssistanceRuntimeBody),
+        Text(
+          l.eventAssistanceRuntimeBody,
+          style: CatchTextStyles.supporting(context),
+        ),
         if (saved) ...[
           gapH12,
           Text(
             widget.view.runtime?.status == AssistanceRuntimeRecordStatus.paused
                 ? l.eventAssistanceRuntimePauseSaved
                 : l.eventAssistanceRuntimeSaved,
+            style: CatchTextStyles.supporting(context),
           ),
         ],
         gapH16,
@@ -164,21 +168,29 @@ class _EventAssistanceRuntimeSectionState
               ][entry.$1],
               style: Theme.of(context).textTheme.titleMedium,
             ),
-            Text(_senderSummary(entry.$2)),
+            Text(
+              _senderSummary(entry.$2),
+              style: CatchTextStyles.supporting(context),
+            ),
             gapH12,
           ],
         gapH12,
         Text(
           '${l.eventAssistanceRuntimeUntil}: ${lateJoinTimeLabel(context, value.expiresAt)}',
+          style: CatchTextStyles.supporting(context),
         ),
         Text(
           value.responseDeadline == null
               ? l.eventAssistanceRuntimeNoDeadline
               : '${l.eventAssistanceRuntimeDeadline}: ${lateJoinTimeLabel(context, value.responseDeadline!)}',
+          style: CatchTextStyles.supporting(context),
         ),
         if (value.laterChoices?.isNotEmpty ?? false) ...[
           gapH8,
-          Text(l.eventAssistanceRuntimeRetainedChoices),
+          Text(
+            l.eventAssistanceRuntimeRetainedChoices,
+            style: CatchTextStyles.supporting(context),
+          ),
         ],
         if (_canConfigure) ...[
           CatchButton(
@@ -200,7 +212,10 @@ class _EventAssistanceRuntimeSectionState
         ],
         if (issue != null && _canConfigure) ...[
           gapH12,
-          Text(runtimeIssueLabel(l, issue)),
+          Text(
+            runtimeIssueLabel(l, issue),
+            style: CatchTextStyles.supporting(context),
+          ),
         ],
         if (widget.error != null) ...[
           gapH12,
@@ -208,7 +223,10 @@ class _EventAssistanceRuntimeSectionState
         ],
         if (widget.phase == EventAssistanceRuntimePhase.retryRequired) ...[
           gapH12,
-          Text(l.eventAssistanceRuntimeRetryBody),
+          Text(
+            l.eventAssistanceRuntimeRetryBody,
+            style: CatchTextStyles.supporting(context),
+          ),
           CatchButton(
             key: const ValueKey('runtime.retry'),
             label: l.eventAssistanceLateJoinRetry,
@@ -220,7 +238,10 @@ class _EventAssistanceRuntimeSectionState
                 !widget.canChooseSenders &&
                 widget.loadingRoute == null) ...[
           gapH12,
-          Text(l.eventAssistanceRuntimeReloadBody),
+          Text(
+            l.eventAssistanceRuntimeReloadBody,
+            style: CatchTextStyles.supporting(context),
+          ),
           CatchButton(
             label: l.eventAssistanceLateJoinReload,
             onPressed: widget.onReload,
@@ -246,6 +267,7 @@ class _EventAssistanceRuntimeSectionState
           ),
         gapH12,
         CatchButton(
+          key: const ValueKey('runtime.done'),
           label: l.eventAssistanceLateJoinDone,
           variant: CatchButtonVariant.secondary,
           onPressed: busy ? null : widget.onDone,
