@@ -31,7 +31,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 part 'host_event_rehearsal_coach_task.dart';
-part 'host_event_rehearsal_coach_dock.dart';
+part 'host_event_rehearsal_screen_actions.dart';
 
 class HostEventRehearsalScreen extends ConsumerStatefulWidget {
   const HostEventRehearsalScreen({
@@ -49,7 +49,8 @@ class HostEventRehearsalScreen extends ConsumerStatefulWidget {
 }
 
 class _HostEventRehearsalScreenState
-    extends ConsumerState<HostEventRehearsalScreen> {
+    extends ConsumerState<HostEventRehearsalScreen>
+    with _HostEventRehearsalScreenActions {
   var _coachCollapsed = false;
   var _coachTextScaleInitialized = false;
   String? _lastCoachTaskKey;
@@ -562,181 +563,137 @@ class _HostEventRehearsalScreenState
       // The mutation listener owns user-visible action failure.
     }
   }
+}
 
-  Future<List<EventSuccessSpatialDestination>> _previewSpatial(
-    EventRehearsalRuntimeProjection runtime,
-    EventRehearsalBootstrap rehearsal,
-    EventSuccessAssignment assignment,
-  ) async {
-    final actor = rehearsal.actors
-        .where((candidate) => candidate.actorId == assignment.uid)
-        .firstOrNull;
-    final assignmentsByUnit = <String, List<EventSuccessAssignment>>{};
-    for (final candidate in runtime.assignments) {
-      final unitId = candidate.layoutUnitId;
-      if (unitId == null || candidate.uid == assignment.uid) continue;
-      assignmentsByUnit.putIfAbsent(unitId, () => []).add(candidate);
-    }
-    return [
-      for (final unit in runtime.layout.units)
-        if (unit.id != assignment.layoutUnitId)
-          () {
-            final occupants = assignmentsByUnit[unit.id] ?? const [];
-            final full = occupants.length >= unit.capacity;
-            final conflicts =
-                actor != null &&
-                occupants.any(
-                  (occupant) => actor.keepApartActorIds.contains(occupant.uid),
-                );
-            return EventSuccessSpatialDestination(
-              unitId: unit.id,
-              valid: !full && !conflicts,
-              reason: full
-                  ? EventSuccessSpatialDestinationReason.capacity
-                  : conflicts
-                  ? EventSuccessSpatialDestinationReason.safetyKeepApart
-                  : null,
-              recommendedScope: actor?.status == EventRehearsalActorStatus.late
-                  ? EventSuccessSpatialScope.thisRound
-                  : EventSuccessSpatialScope.pinned,
-            );
-          }(),
-    ];
-  }
+class _RehearsalCoachDock extends StatelessWidget {
+  const _RehearsalCoachDock({
+    required this.task,
+    required this.collapsed,
+    required this.onWhy,
+    required this.onToggle,
+  });
 
-  Future<void> _controlSpatial(
-    EventRehearsalSession session,
-    String actorId,
-    EventRehearsalSpatialAction action, {
-    String? destinationUnitId,
-    EventRehearsalSpatialScope? scope,
-  }) async {
-    try {
-      await EventRehearsalController.spatialMutation.run(
-        ref,
-        (tx) => tx
-            .get(eventRehearsalControllerProvider.notifier)
-            .controlSpatial(
-              session: session,
-              actorId: actorId,
-              action: action,
-              destinationUnitId: destinationUnitId,
-              scope: scope,
+  final _RehearsalCoachTask task;
+  final bool collapsed;
+  final VoidCallback onWhy;
+  final VoidCallback onToggle;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final largeText = MediaQuery.textScalerOf(context).scale(1) >= 1.4;
+    if (collapsed) {
+      final coachIdentity = Row(
+        children: [
+          Icon(CatchIcons.scienceOutlined, color: t.danger),
+          gapW8,
+          Expanded(
+            child: Text(
+              context.l10n.hostEventRehearsalCoachCollapsed,
+              style: CatchTextStyles.labelM(context),
             ),
+          ),
+        ],
       );
-    } on Object {
-      // The mutation listener owns user-visible action failure.
-    }
-  }
-
-  Future<void> _copyGuestLink(String guestUrl) async {
-    try {
-      await EventRehearsalController.shareMutation.run(
-        ref,
-        (tx) => tx
-            .get(eventRehearsalControllerProvider.notifier)
-            .copyGuestLink(guestUrl),
+      final showCoach = CatchButton(
+        label: context.l10n.hostEventRehearsalCoachShow,
+        size: CatchButtonSize.sm,
+        variant: CatchButtonVariant.secondary,
+        fullWidth: largeText,
+        onPressed: onToggle,
       );
-      if (mounted) {
-        showCatchSnackBar(context, context.l10n.hostEventRehearsalLinkCopied);
-      }
-    } on Object {
-      // The mutation listener owns user-visible action failure.
-    }
-  }
-
-  Future<void> _shareGuestLink(String guestUrl) async {
-    try {
-      await EventRehearsalController.shareMutation.run(
-        ref,
-        (tx) => tx
-            .get(eventRehearsalControllerProvider.notifier)
-            .shareGuestLink(guestUrl),
+      return CatchDockSurface(
+        padding: CatchInsets.rosterRowContent,
+        child: largeText
+            ? Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [coachIdentity, gapH8, showCoach],
+              )
+            : Row(
+                children: [
+                  Expanded(child: coachIdentity),
+                  showCoach,
+                ],
+              ),
       );
-    } on Object {
-      // The mutation listener owns user-visible action failure.
     }
-  }
 
-  Future<void> _rotateGuestLink() async {
-    final confirmed = await showCatchConfirmDialog(
-      copy: catchDialogCopy(context.l10n),
-      context: context,
-      title: context.l10n.hostEventRehearsalRotateLink,
-      message: context.l10n.hostEventRehearsalRotateLinkBody,
-      confirmLabel: context.l10n.hostEventRehearsalRotateLink,
+    final taskCopy = Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        CatchSurface(
+          width: CatchIconAction.navSize,
+          height: CatchIconAction.navSize,
+          radius: CatchRadius.sm,
+          backgroundColor: t.danger,
+          child: Icon(CatchIcons.scienceOutlined, color: t.primaryInk),
+        ),
+        gapW12,
+        Expanded(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                context.l10n.hostEventRehearsalCoachProgress(
+                  current: task.number,
+                  total: 8,
+                ),
+                style: CatchTextStyles.kicker(context, color: t.danger),
+              ),
+              gapH4,
+              Text(
+                task.title,
+                maxLines: largeText ? null : 2,
+                overflow: largeText ? null : TextOverflow.ellipsis,
+                style: CatchTextStyles.sectionTitle(context),
+              ),
+              gapH2,
+              Text(
+                task.body,
+                maxLines: largeText ? null : 1,
+                overflow: largeText ? null : TextOverflow.ellipsis,
+                style: CatchTextStyles.supporting(context, color: t.ink2),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
-    if (confirmed != true || !mounted) return;
-    try {
-      await EventRehearsalController.guestLinkMutation.run(
-        ref,
-        (tx) => tx
-            .get(eventRehearsalControllerProvider.notifier)
-            .rotateGuestLink(widget.sessionId),
-      );
-    } on Object {
-      // The mutation listener owns user-visible action failure.
-    }
-  }
-
-  Future<void> _reset() async {
-    final confirmed = await showCatchConfirmDialog(
-      copy: catchDialogCopy(context.l10n),
-      context: context,
-      title: context.l10n.hostEventRehearsalReset,
-      message: context.l10n.hostEventRehearsalResetBody,
-      confirmLabel: context.l10n.hostEventRehearsalReset,
+    final actions = Wrap(
+      spacing: CatchSpacing.s2,
+      runSpacing: CatchSpacing.s2,
+      alignment: WrapAlignment.end,
+      children: [
+        CatchButton(
+          label: context.l10n.hostEventRehearsalCoachWhy,
+          size: CatchButtonSize.sm,
+          variant: CatchButtonVariant.secondary,
+          onPressed: onWhy,
+        ),
+        CatchButton(
+          label: context.l10n.hostEventRehearsalCoachGotIt,
+          size: CatchButtonSize.sm,
+          onPressed: onToggle,
+        ),
+      ],
     );
-    if (confirmed != true || !mounted) return;
-    try {
-      await EventRehearsalController.resetMutation.run(
-        ref,
-        (tx) => tx
-            .get(eventRehearsalControllerProvider.notifier)
-            .reset(widget.sessionId),
-      );
-    } on Object {
-      // The mutation listener owns user-visible action failure.
-    }
-  }
-
-  Future<void> _fork() async {
-    try {
-      final created = await EventRehearsalController.forkMutation.run(
-        ref,
-        (tx) => tx
-            .get(eventRehearsalControllerProvider.notifier)
-            .fork(widget.sessionId),
-      );
-      if (!mounted) return;
-      context.goNamed(
-        Routes.hostEventRehearsalScreen.name,
-        pathParameters: {
-          'clubId': widget.clubId,
-          'sessionId': created.sessionId,
-        },
-      );
-    } on Object {
-      // The mutation listener owns user-visible action failure.
-    }
-  }
-
-  Future<void> _export() async {
-    try {
-      await EventRehearsalController.exportMutation.run(
-        ref,
-        (tx) => tx
-            .get(eventRehearsalControllerProvider.notifier)
-            .exportReproduction(widget.sessionId),
-      );
-      if (mounted) {
-        showCatchSnackBar(
-          context,
-          context.l10n.hostEventRehearsalReproductionCopied,
-        );
-      }
-    } on Object {
-      // The mutation listener owns user-visible action failure.
-    }
+    return CatchDockSurface(
+      padding: largeText ? CatchInsets.content : CatchInsets.rosterRowContent,
+      child: largeText
+          ? Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [taskCopy, gapH10, actions],
+            )
+          : Row(
+              children: [
+                Expanded(child: taskCopy),
+                gapW8,
+                actions,
+              ],
+            ),
+    );
   }
 }

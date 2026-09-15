@@ -79,13 +79,35 @@ class _EventMessagePreferencesSheetState
           final identity = review.view.identity;
           if (!review.isCurrent) return const CatchSkeleton.rows();
           return switch (identity) {
-            EventParticipantUnlinked() => _IdentityUnavailable(
-              message: l.eventMessagesUnlinked,
-              onRetry: reload,
+            EventParticipantUnlinked() => Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  l.eventMessagesUnlinked,
+                  style: CatchTextStyles.supporting(context),
+                ),
+                gapH12,
+                CatchButton(
+                  label: l.eventMessagesRefresh,
+                  variant: CatchButtonVariant.secondary,
+                  onPressed: reload,
+                ),
+              ],
             ),
-            EventParticipantAmbiguous() => _IdentityUnavailable(
-              message: l.eventMessagesAmbiguous,
-              onRetry: reload,
+            EventParticipantAmbiguous() => Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  l.eventMessagesAmbiguous,
+                  style: CatchTextStyles.supporting(context),
+                ),
+                gapH12,
+                CatchButton(
+                  label: l.eventMessagesRefresh,
+                  variant: CatchButtonVariant.secondary,
+                  onPressed: reload,
+                ),
+              ],
             ),
             EventParticipantLinked(:final scope) => Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -115,23 +137,4 @@ class _EventMessagePreferencesSheetState
       ),
     );
   }
-}
-
-class _IdentityUnavailable extends StatelessWidget {
-  const _IdentityUnavailable({required this.message, required this.onRetry});
-  final String message;
-  final VoidCallback onRetry;
-  @override
-  Widget build(BuildContext context) => Column(
-    crossAxisAlignment: CrossAxisAlignment.stretch,
-    children: [
-      Text(message, style: CatchTextStyles.supporting(context)),
-      gapH12,
-      CatchButton(
-        label: context.l10n.eventMessagesRefresh,
-        variant: CatchButtonVariant.secondary,
-        onPressed: onRetry,
-      ),
-    ],
-  );
 }

@@ -46,7 +46,72 @@ class EventMessageSenderSection extends ConsumerWidget {
         );
       case EventSenderPreferenceReady():
         final review = state.review;
-        final navigation = _SenderNavigation(state: state, owner: owner);
+        final senderNavigation = state.navigation;
+        final senderIds = senderNavigation.previousSenderIds;
+        final selectedIndex = senderIds.indexOf(
+          senderNavigation.selectedSenderId ?? '',
+        );
+        void choose(String id) => runEventMessageAction(
+          context,
+          () => owner.choose(senderNavigation, id),
+        );
+        final navigation = Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (senderNavigation.isEarlier &&
+                senderNavigation.configuredSenderId != null)
+              CatchButton(
+                label: l.eventMessagesCurrentSender,
+                variant: CatchButtonVariant.secondary,
+                onPressed: state.canNavigate
+                    ? () => choose(senderNavigation.configuredSenderId!)
+                    : null,
+              ),
+            if (senderIds.isNotEmpty && !senderNavigation.isEarlier)
+              CatchButton(
+                label: l.eventMessagesOtherSenders,
+                variant: CatchButtonVariant.secondary,
+                onPressed: state.canNavigate
+                    ? () => choose(senderIds.first)
+                    : null,
+              ),
+            if (senderNavigation.isEarlier)
+              Wrap(
+                spacing: CatchSpacing.s2,
+                runSpacing: CatchSpacing.s2,
+                children: [
+                  if (selectedIndex > 0)
+                    CatchButton(
+                      label: l.eventMessagesPreviousPermission,
+                      variant: CatchButtonVariant.secondary,
+                      onPressed: state.canNavigate
+                          ? () => choose(senderIds[selectedIndex - 1])
+                          : null,
+                    ),
+                  if (selectedIndex >= 0 &&
+                      selectedIndex + 1 < senderIds.length)
+                    CatchButton(
+                      label: l.eventMessagesNextPermission,
+                      variant: CatchButtonVariant.secondary,
+                      onPressed: state.canNavigate
+                          ? () => choose(senderIds[selectedIndex + 1])
+                          : null,
+                    ),
+                ],
+              ),
+            if (senderNavigation.canLoadMore)
+              CatchButton(
+                label: l.eventMessagesMorePermissions,
+                variant: CatchButtonVariant.ghost,
+                onPressed: state.canNavigate
+                    ? () => runEventMessageAction(
+                        context,
+                        () => owner.loadMore(senderNavigation),
+                      )
+                    : null,
+              ),
+          ],
+        );
         if (review == null) {
           summary = l.eventMessagesMorePermissions;
           child = navigation;
@@ -122,74 +187,6 @@ class EventMessageSenderSection extends ConsumerWidget {
       summary: summary,
       pending: pending,
       child: child,
-    );
-  }
-}
-
-/// Visits server-selected permissions without treating opaque IDs as names or
-/// claiming their stable cursor order is chronological.
-class _SenderNavigation extends StatelessWidget {
-  const _SenderNavigation({required this.state, required this.owner});
-  final EventSenderPreferenceReady state;
-  final EventSenderPreferenceController owner;
-  @override
-  Widget build(BuildContext context) {
-    final l = context.l10n;
-    final nav = state.navigation;
-    final ids = nav.previousSenderIds;
-    final index = ids.indexOf(nav.selectedSenderId ?? '');
-    void choose(String id) =>
-        runEventMessageAction(context, () => owner.choose(nav, id));
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        if (nav.isEarlier && nav.configuredSenderId != null)
-          CatchButton(
-            label: l.eventMessagesCurrentSender,
-            variant: CatchButtonVariant.secondary,
-            onPressed: state.canNavigate
-                ? () => choose(nav.configuredSenderId!)
-                : null,
-          ),
-        if (ids.isNotEmpty && !nav.isEarlier)
-          CatchButton(
-            label: l.eventMessagesOtherSenders,
-            variant: CatchButtonVariant.secondary,
-            onPressed: state.canNavigate ? () => choose(ids.first) : null,
-          ),
-        if (nav.isEarlier)
-          Wrap(
-            spacing: CatchSpacing.s2,
-            runSpacing: CatchSpacing.s2,
-            children: [
-              if (index > 0)
-                CatchButton(
-                  label: l.eventMessagesPreviousPermission,
-                  variant: CatchButtonVariant.secondary,
-                  onPressed: state.canNavigate
-                      ? () => choose(ids[index - 1])
-                      : null,
-                ),
-              if (index >= 0 && index + 1 < ids.length)
-                CatchButton(
-                  label: l.eventMessagesNextPermission,
-                  variant: CatchButtonVariant.secondary,
-                  onPressed: state.canNavigate
-                      ? () => choose(ids[index + 1])
-                      : null,
-                ),
-            ],
-          ),
-        if (nav.canLoadMore)
-          CatchButton(
-            label: l.eventMessagesMorePermissions,
-            variant: CatchButtonVariant.ghost,
-            onPressed: state.canNavigate
-                ? () =>
-                      runEventMessageAction(context, () => owner.loadMore(nav))
-                : null,
-          ),
-      ],
     );
   }
 }

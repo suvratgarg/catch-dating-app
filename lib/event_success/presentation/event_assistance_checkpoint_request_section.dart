@@ -3,7 +3,6 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.d
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_checkpoint.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_checkpoint_request.dart';
-import 'package:catch_dating_app/event_success/presentation/event_assistance_checkpoint_reporter_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_checkpoint_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_checkpoint_visits_section.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -98,6 +97,20 @@ class _EventAssistanceCheckpointRequestSectionState
         ? null
         : DateTime.fromMillisecondsSinceEpoch(widget.request!.dueAt);
     final local = MaterialLocalizations.of(context);
+    final reporterOptions = widget.reporterOptions;
+    final alternativeReporters = reporterOptions?.reporters
+        .where(
+          (reporter) =>
+              reporter.operatorId != widget.request?.responsibleOperatorId,
+        )
+        .toList();
+    final namedReporters = alternativeReporters
+        ?.where(
+          (reporter) =>
+              reporter.displayName != null ||
+              reporter.operatorId == reporterOptions?.actorUid,
+        )
+        .toList();
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -198,11 +211,49 @@ class _EventAssistanceCheckpointRequestSectionState
               }),
             ),
             if (_choosingReporter)
-              EventAssistanceCheckpointReporterSection(
-                options: widget.reporterOptions!,
-                currentReporterId: widget.request!.responsibleOperatorId,
-                value: _reporterId,
-                onChanged: (id) => setState(() => _reporterId = id),
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    l10n.eventAssistanceCheckpointReporterBody,
+                    style: CatchTextStyles.supporting(context),
+                  ),
+                  gapH8,
+                  if (namedReporters?.isNotEmpty == true)
+                    CatchFieldLanes.single(
+                      child: CatchField<String>.select(
+                        key: const ValueKey('checkpoint.request.reporter'),
+                        copy: catchFieldCopy(l10n),
+                        title: l10n.eventAssistanceCheckpointReporterLabel,
+                        contract: CatchContractConstraints
+                            .reassignEventAssistanceCheckpointReporterCallablePayloadCommandPayloadResponsibleOperatorId,
+                        values: namedReporters!
+                            .map((reporter) => reporter.operatorId)
+                            .toList(),
+                        value: _reporterId,
+                        itemLabelBuilder: (id) =>
+                            id == reporterOptions?.actorUid
+                            ? l10n.eventAssistanceGroupYou
+                            : namedReporters
+                                  .firstWhere(
+                                    (reporter) => reporter.operatorId == id,
+                                  )
+                                  .displayName!,
+                        onChanged: (id) => setState(() => _reporterId = id),
+                      ),
+                    )
+                  else
+                    Text(
+                      l10n.eventAssistanceCheckpointReporterEmpty,
+                      style: CatchTextStyles.supporting(context),
+                    ),
+                  if (alternativeReporters?.length != namedReporters?.length)
+                    Text(
+                      l10n.eventAssistanceCheckpointReporterUnnamed,
+                      style: CatchTextStyles.supporting(context),
+                    ),
+                ],
               ),
           ],
           if (widget.canClose || widget.canReopen || _choosingReporter) ...[
@@ -339,4 +390,19 @@ class _EventAssistanceCheckpointRequestSectionState
       ],
     );
   }
+}
+
+String checkpointReporterName(
+  BuildContext context,
+  AssistanceCheckpointReporterOptions? options,
+  String id,
+) {
+  if (id == options?.actorUid) return context.l10n.eventAssistanceGroupYou;
+  for (final reporter
+      in options?.reporters ?? <AssistanceCheckpointReporterCandidate>[]) {
+    if (reporter.operatorId == id && reporter.displayName != null) {
+      return reporter.displayName!;
+    }
+  }
+  return context.l10n.eventAssistanceCheckpointReporterUnknown;
 }

@@ -108,7 +108,7 @@ final class AssistanceDeliveryQueued extends AssistanceDeliveryCoordination {
   const AssistanceDeliveryQueued._(this.dueAt);
   final int dueAt;
   @override
-  Object get _identity => dueAt;
+  int get _identity => dueAt;
 }
 
 final class AssistanceDeliveryAwaitingReceipt
@@ -116,7 +116,7 @@ final class AssistanceDeliveryAwaitingReceipt
   const AssistanceDeliveryAwaitingReceipt._(this.dueAt);
   final int dueAt;
   @override
-  Object get _identity => dueAt;
+  int get _identity => dueAt;
 }
 
 final class AssistanceDeliveryRetrying extends AssistanceDeliveryCoordination {
@@ -140,7 +140,7 @@ final class AssistanceDeliveryComplete extends AssistanceDeliveryCoordination {
   const AssistanceDeliveryComplete._(this.reason);
   final AssistanceDeliveryStopReason reason;
   @override
-  Object get _identity => reason;
+  AssistanceDeliveryStopReason get _identity => reason;
 }
 
 sealed class AssistanceDeliveryHandling {

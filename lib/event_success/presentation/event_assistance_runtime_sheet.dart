@@ -70,117 +70,103 @@ class EventAssistanceRuntimeSheet extends ConsumerWidget {
                 loadingBuilder: (_) => const CatchSkeleton.rows(),
                 errorBuilder: (_, error, _, retry) =>
                     CatchLocalizedErrorBanner(error, onRetry: retry),
-                builder: (_, session) => _RuntimeReview(
-                  session: session,
-                  form: form,
-                  page: page,
-                  onRun: run,
-                  onReload: reload,
-                ),
+                builder: (_, session) {
+                  final fresh = pageState.isSettledData
+                      ? pageState.value
+                      : null;
+                  final review =
+                      form == null ||
+                          form.phase == AssistanceRuntimeEditorPhase.choosing
+                      ? fresh ?? session
+                      : form.review;
+                  final sendersProvider = eventAssistanceRuntimeSendersProvider(
+                    review,
+                  );
+                  final directory = ref.watch(sendersProvider);
+                  final reviewController = ref.read(
+                    eventAssistanceRuntimeEditorProvider(
+                      review.view.scope,
+                    ).notifier,
+                  );
+                  final base = form?.result?.view ?? review.view;
+                  final saved =
+                      form?.phase == AssistanceRuntimeEditorPhase.saved;
+                  final view =
+                      saved &&
+                          fresh != null &&
+                          fresh.view.serverTime >= base.serverTime &&
+                          fresh.view.revision >= base.revision
+                      ? fresh.view
+                      : base;
+                  final phase = form == null
+                      ? (review.isCurrent
+                            ? EventAssistanceRuntimePhase.ready
+                            : EventAssistanceRuntimePhase.refreshRequired)
+                      : switch (form.phase) {
+                          AssistanceRuntimeEditorPhase.choosing =>
+                            review.isCurrent
+                                ? EventAssistanceRuntimePhase.ready
+                                : EventAssistanceRuntimePhase.refreshRequired,
+                          AssistanceRuntimeEditorPhase.submitting =>
+                            EventAssistanceRuntimePhase.submitting,
+                          AssistanceRuntimeEditorPhase.retryRequired =>
+                            EventAssistanceRuntimePhase.retryRequired,
+                          AssistanceRuntimeEditorPhase.refreshRequired =>
+                            EventAssistanceRuntimePhase.refreshRequired,
+                          AssistanceRuntimeEditorPhase.saved =>
+                            EventAssistanceRuntimePhase.saved,
+                        };
+                  final pending =
+                      phase == EventAssistanceRuntimePhase.submitting ||
+                      phase == EventAssistanceRuntimePhase.retryRequired;
+                  return EventAssistanceRuntimeSection(
+                    reviewIdentity: review,
+                    view: view,
+                    choices: saved
+                        ? fresh?.view.senderSetup?.choices ??
+                              form?.change?.senderReviews ??
+                              review.view.senderSetup?.choices ??
+                              []
+                        : pending
+                        ? form?.change?.senderReviews ??
+                              review.view.senderSetup?.choices ??
+                              []
+                        : directory.choices,
+                    moreRoutes: directory.cursors.keys.toSet(),
+                    loadingRoute: directory.loadingRoute,
+                    phase: phase,
+                    canChooseSenders: directory.isCurrent,
+                    submitted:
+                        form?.phase == AssistanceRuntimeEditorPhase.choosing
+                        ? null
+                        : form?.decision,
+                    error: pageState.error ?? form?.error ?? directory.error,
+                    onConfigure: (draft) => run(() {
+                      final choices = directory.requireReview(review);
+                      reviewController.open(review);
+                      reviewController.select(
+                        AssistanceRuntimeConfigure(
+                          draft.configurationFor(review.view, choices),
+                        ),
+                        senders: directory,
+                      );
+                      return reviewController.submit();
+                    }),
+                    onPause: () => run(() {
+                      reviewController.open(review);
+                      reviewController.select(const AssistanceRuntimePause());
+                      return reviewController.submit();
+                    }),
+                    onMore: (route) => run(
+                      () => ref.read(sendersProvider.notifier).loadMore(route),
+                    ),
+                    onRetry: () => run(reviewController.retry),
+                    onReload: reload,
+                    onDone: () => Navigator.of(context).pop(),
+                  );
+                },
               ),
       ),
-    );
-  }
-}
-
-class _RuntimeReview extends ConsumerWidget {
-  const _RuntimeReview({
-    required this.session,
-    required this.form,
-    required this.page,
-    required this.onRun,
-    required this.onReload,
-  });
-  final AssistanceRuntimeSession session;
-  final AssistanceRuntimeForm? form;
-  final AsyncValue<AssistanceRuntimeSession> page;
-  final void Function(Future<Object?> Function()) onRun;
-  final VoidCallback onReload;
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final pageState = catchAsyncStateFromAsyncValue(page);
-    final fresh = pageState.isSettledData ? pageState.value : null;
-    final review =
-        form == null || form!.phase == AssistanceRuntimeEditorPhase.choosing
-        ? fresh ?? session
-        : form!.review;
-    final sendersProvider = eventAssistanceRuntimeSendersProvider(review);
-    final directory = ref.watch(sendersProvider);
-    final controller = ref.read(
-      eventAssistanceRuntimeEditorProvider(review.view.scope).notifier,
-    );
-    final base = form?.result?.view ?? review.view;
-    final saved = form?.phase == AssistanceRuntimeEditorPhase.saved;
-    final view =
-        saved &&
-            fresh != null &&
-            fresh.view.serverTime >= base.serverTime &&
-            fresh.view.revision >= base.revision
-        ? fresh.view
-        : base;
-    final phase = form == null
-        ? (review.isCurrent
-              ? EventAssistanceRuntimePhase.ready
-              : EventAssistanceRuntimePhase.refreshRequired)
-        : switch (form!.phase) {
-            AssistanceRuntimeEditorPhase.choosing =>
-              review.isCurrent
-                  ? EventAssistanceRuntimePhase.ready
-                  : EventAssistanceRuntimePhase.refreshRequired,
-            AssistanceRuntimeEditorPhase.submitting =>
-              EventAssistanceRuntimePhase.submitting,
-            AssistanceRuntimeEditorPhase.retryRequired =>
-              EventAssistanceRuntimePhase.retryRequired,
-            AssistanceRuntimeEditorPhase.refreshRequired =>
-              EventAssistanceRuntimePhase.refreshRequired,
-            AssistanceRuntimeEditorPhase.saved =>
-              EventAssistanceRuntimePhase.saved,
-          };
-    final pending =
-        phase == EventAssistanceRuntimePhase.submitting ||
-        phase == EventAssistanceRuntimePhase.retryRequired;
-    return EventAssistanceRuntimeSection(
-      reviewIdentity: review,
-      view: view,
-      choices: saved
-          ? fresh?.view.senderSetup?.choices ??
-                form?.change?.senderReviews ??
-                review.view.senderSetup?.choices ??
-                []
-          : pending
-          ? form?.change?.senderReviews ??
-                review.view.senderSetup?.choices ??
-                []
-          : directory.choices,
-      moreRoutes: directory.cursors.keys.toSet(),
-      loadingRoute: directory.loadingRoute,
-      phase: phase,
-      canChooseSenders: directory.isCurrent,
-      submitted: form?.phase == AssistanceRuntimeEditorPhase.choosing
-          ? null
-          : form?.decision,
-      error: pageState.error ?? form?.error ?? directory.error,
-      onConfigure: (draft) => onRun(() {
-        final choices = directory.requireReview(review);
-        controller.open(review);
-        controller.select(
-          AssistanceRuntimeConfigure(
-            draft.configurationFor(review.view, choices),
-          ),
-          senders: directory,
-        );
-        return controller.submit();
-      }),
-      onPause: () => onRun(() {
-        controller.open(review);
-        controller.select(const AssistanceRuntimePause());
-        return controller.submit();
-      }),
-      onMore: (route) =>
-          onRun(() => ref.read(sendersProvider.notifier).loadMore(route)),
-      onRetry: () => onRun(controller.retry),
-      onReload: onReload,
-      onDone: () => Navigator.of(context).pop(),
     );
   }
 }

@@ -48,7 +48,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 part 'event_detail_screen_actions.dart';
-part 'event_detail_bottom_navigation_bar.dart';
 
 class EventDetailScreen extends ConsumerStatefulWidget {
   const EventDetailScreen({
@@ -610,6 +609,73 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen>
       widget.initialEvent!.clubId == widget.clubId;
 }
 
+class _EventDetailBottomNavigationBar extends StatelessWidget {
+  const _EventDetailBottomNavigationBar({
+    required this.event,
+    required this.userProfile,
+    required this.clubId,
+    required this.isAuthenticated,
+    this.isSaved = false,
+    this.isHosted = false,
+    this.isClubMember = false,
+    required this.participation,
+    required this.organizerCapabilities,
+    required this.inviteCode,
+    required this.inviteLinkId,
+    required this.now,
+    required this.darkSurface,
+    required this.completeProfileLabel,
+    required this.onGuestBook,
+    required this.onCompleteProfile,
+  });
+
+  final Event event;
+  final UserProfile? userProfile;
+  final String clubId;
+  final bool isAuthenticated;
+  final bool isSaved;
+  final bool isHosted;
+  final bool isClubMember;
+  final EventParticipation? participation;
+  final OrganizerSupplyCapabilities organizerCapabilities;
+  final String? inviteCode;
+  final String? inviteLinkId;
+  final DateTime now;
+  final bool darkSurface;
+  final String completeProfileLabel;
+  final VoidCallback onGuestBook;
+  final VoidCallback onCompleteProfile;
+
+  @override
+  Widget build(BuildContext context) {
+    if (!isAuthenticated) {
+      return GuestBookCta(onPressed: onGuestBook, darkSurface: darkSurface);
+    }
+
+    if (!eventDetailHasBookingReadyProfile(userProfile, now: now)) {
+      return EventBookingDock(
+        label: completeProfileLabel,
+        onPressed: onCompleteProfile,
+      );
+    }
+
+    return EventDetailCta(
+      event: event,
+      userProfile: userProfile!,
+      clubId: clubId,
+      participation: participation,
+      organizerCapabilities: organizerCapabilities,
+      isSaved: isSaved,
+      isHosted: isHosted,
+      isClubMember: isClubMember,
+      inviteCode: inviteCode,
+      inviteLinkId: inviteLinkId,
+      now: now,
+      darkSurface: darkSurface,
+    );
+  }
+}
+
 void _openEventSignIn(
   BuildContext context, {
   required String clubId,
@@ -716,17 +782,6 @@ Future<void> _addEventToCalendar(
       );
     }
   }
-}
-
-bool _canAddEventToCalendar({
-  required Event event,
-  required EventParticipation? participation,
-  required bool isHost,
-  required DateTime now,
-}) {
-  if (event.isCancelled || !event.startTime.isAfter(now)) return false;
-  if (isHost) return true;
-  return participation?.status == EventParticipationStatus.signedUp;
 }
 
 /// Keeps Event Detail inside the runtime's route family. In particular, a

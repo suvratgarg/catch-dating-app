@@ -16,6 +16,8 @@ part 'event_rehearsal_checkpoint_management_review.dart';
 part 'event_rehearsal_movement_checkpoint.dart';
 part 'event_rehearsal_checkpoint_visit.dart';
 
+typedef _CanonicalMovementJson = Object?;
+
 typedef RehearsalMovementScope = ({
   String sessionId,
   String organizerId,
@@ -490,7 +492,7 @@ AssistanceJoiningTarget _movementTarget(
 }
 
 String _movementHash(Object? value) {
-  Object? canonical(Object? v) {
+  _CanonicalMovementJson canonical(Object? v) {
     if (v == null || v is String || v is bool) return v;
     if (v is num) return assistanceInteger(v);
     if (v is List) return v.map(canonical).toList();

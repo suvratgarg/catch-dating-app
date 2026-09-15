@@ -9,6 +9,9 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'event_assistance_checkpoint_request_provider.g.dart';
 
+typedef CheckpointRequestSessionFuture =
+    Future<EventAssistanceCheckpointRequestSession>;
+
 final class EventAssistanceCheckpointRequestSession {
   EventAssistanceCheckpointRequestSession._(this.account, this.view);
   final AuthenticatedSession account;
@@ -95,8 +98,7 @@ class EventAssistanceCheckpointRequest
 }
 
 @Riverpod(retry: _noCheckpointRequestReadRetry)
-Future<EventAssistanceCheckpointRequestSession>
-eventAssistanceCheckpointRequestForAccount(
+CheckpointRequestSessionFuture eventAssistanceCheckpointRequestForAccount(
   Ref ref,
   EventAssistanceCheckpointScope scope, {
   required AuthenticatedSession account,

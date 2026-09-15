@@ -7,6 +7,9 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'event_assistance_accountability_provider.g.dart';
 
+typedef AccountabilitySessionFuture =
+    Future<EventAssistanceAccountabilitySession>;
+
 final class EventAssistanceAccountabilitySession {
   EventAssistanceAccountabilitySession._(this.account, this.view);
   final AuthenticatedSession account;
@@ -90,8 +93,7 @@ class EventAssistanceAccountability extends _$EventAssistanceAccountability {
 }
 
 @Riverpod(retry: _noAccountabilityReadRetry)
-Future<EventAssistanceAccountabilitySession>
-eventAssistanceAccountabilityForAccount(
+AccountabilitySessionFuture eventAssistanceAccountabilityForAccount(
   Ref ref,
   EventAssistanceAccountabilityScope scope, {
   required AuthenticatedSession account,

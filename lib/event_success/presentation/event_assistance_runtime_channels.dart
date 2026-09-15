@@ -29,6 +29,72 @@ class EventAssistanceRuntimeChannels extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
+    final channelFields = <Widget>[];
+    for (var index = 0; index < 3 && index <= draft.routes.length; index++) {
+      final saved = index < draft.routes.length ? draft.routes[index] : null;
+      final selected = saved == null
+          ? null
+          : choices
+                .where(
+                  (choice) =>
+                      choice.route == saved.route &&
+                      choice.senderId == saved.senderId,
+                )
+                .firstOrNull;
+      final options = <String, AssistanceRuntimeSenderChoice>{
+        for (final choice in choices)
+          if (choice.canSelect &&
+              !draft.routes.indexed.any(
+                (route) => route.$1 != index && route.$2.route == choice.route,
+              ))
+            '${choice.route.name}:${choice.senderId}': choice,
+      };
+      final selectedId = selected == null
+          ? null
+          : '${selected.route.name}:${selected.senderId}';
+      channelFields.add(
+        CatchFieldLanes.single(
+          child: CatchField<String>.select(
+            copy: catchFieldCopy(l),
+            key: ValueKey('runtime.channel.$index'),
+            title: [
+              l.eventAssistanceRuntimeFirst,
+              l.eventAssistanceRuntimeSecond,
+              l.eventAssistanceRuntimeThird,
+            ][index],
+            contractExemption:
+                'Maps reviewed eligible sender identities to a unique ordered runtime route list; labels never become sender IDs.',
+            values: ['off', ...options.keys],
+            value: saved == null
+                ? 'off'
+                : options.containsKey(selectedId)
+                ? selectedId
+                : null,
+            itemLabelBuilder: (value) => value == 'off'
+                ? l.eventAssistanceRuntimeNone
+                : runtimeSenderLabel(l, options[value]!),
+            helperText: saved == null
+                ? null
+                : selected == null || !selected.canSelect
+                ? l.eventAssistanceRuntimeSenderMissing
+                : selected.displayAddress,
+            onChanged: enabled
+                ? (value) {
+                    if (value != null) {
+                      onChanged(
+                        draft.withRoute(
+                          index,
+                          value == 'off' ? null : options[value]!,
+                        ),
+                      );
+                    }
+                  }
+                : null,
+            states: {if (!enabled) WidgetState.disabled},
+          ),
+        ),
+      );
+    }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -41,19 +107,7 @@ class EventAssistanceRuntimeChannels extends StatelessWidget {
           l.eventAssistanceRuntimeChannelBody,
           style: CatchTextStyles.supporting(context),
         ),
-        CatchSection.fieldRows(
-          first: true,
-          children: [
-            for (var i = 0; i < 3 && i <= draft.routes.length; i++)
-              _EventAssistanceRuntimeChannel(
-                index: i,
-                draft: draft,
-                choices: choices,
-                enabled: enabled,
-                onChanged: onChanged,
-              ),
-          ],
-        ),
+        CatchSection.fieldRows(first: true, children: channelFields),
         if (choices.every((c) => !c.canSelect)) ...[
           gapH12,
           Text(
@@ -86,83 +140,6 @@ class EventAssistanceRuntimeChannels extends StatelessWidget {
           ),
         if (loadingRoute != null) const CatchSkeleton.rows(count: 1),
       ],
-    );
-  }
-}
-
-class _EventAssistanceRuntimeChannel extends StatelessWidget {
-  const _EventAssistanceRuntimeChannel({
-    required this.index,
-    required this.draft,
-    required this.choices,
-    required this.enabled,
-    required this.onChanged,
-  });
-
-  final int index;
-  final AssistanceRuntimeDraft draft;
-  final List<AssistanceRuntimeSenderChoice> choices;
-  final bool enabled;
-  final ValueChanged<AssistanceRuntimeDraft> onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    final l = context.l10n;
-    final saved = index < draft.routes.length ? draft.routes[index] : null;
-    final selected = saved == null
-        ? null
-        : choices
-              .where(
-                (c) => c.route == saved.route && c.senderId == saved.senderId,
-              )
-              .firstOrNull;
-    final options = <String, AssistanceRuntimeSenderChoice>{
-      for (final c in choices)
-        if (c.canSelect &&
-            !draft.routes.indexed.any(
-              (r) => r.$1 != index && r.$2.route == c.route,
-            ))
-          '${c.route.name}:${c.senderId}': c,
-    };
-    final id = selected == null
-        ? null
-        : '${selected.route.name}:${selected.senderId}';
-    return CatchFieldLanes.single(
-      child: CatchField<String>.select(
-        copy: catchFieldCopy(l),
-        key: ValueKey('runtime.channel.$index'),
-        title: [
-          l.eventAssistanceRuntimeFirst,
-          l.eventAssistanceRuntimeSecond,
-          l.eventAssistanceRuntimeThird,
-        ][index],
-        contractExemption:
-            'Maps reviewed eligible sender identities to a unique ordered runtime route list; labels never become sender IDs.',
-        values: ['off', ...options.keys],
-        value: saved == null
-            ? 'off'
-            : options.containsKey(id)
-            ? id
-            : null,
-        itemLabelBuilder: (v) => v == 'off'
-            ? l.eventAssistanceRuntimeNone
-            : runtimeSenderLabel(l, options[v]!),
-        helperText: saved == null
-            ? null
-            : selected == null || !selected.canSelect
-            ? l.eventAssistanceRuntimeSenderMissing
-            : selected.displayAddress,
-        onChanged: enabled
-            ? (v) {
-                if (v != null) {
-                  onChanged(
-                    draft.withRoute(index, v == 'off' ? null : options[v]!),
-                  );
-                }
-              }
-            : null,
-        states: {if (!enabled) WidgetState.disabled},
-      ),
     );
   }
 }
