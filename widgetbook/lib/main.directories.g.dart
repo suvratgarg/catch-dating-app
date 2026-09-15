@@ -9225,6 +9225,39 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'HostFormEditorNotice',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Save failure, revision conflict, and invalid draft',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_editor_use_cases
+                            .hostFormEditorNoticePreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostFormEditorViewport',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Desktop outline, canvas, and inspector',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_editor_use_cases
+                            .hostFormEditorViewportPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostFormInspectorSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Desktop form, section, and question inspectors',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_editor_use_cases
+                            .hostFormInspectorSectionPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostFormMetrics',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -9247,6 +9280,50 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'HostFormOutlineMenu',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Desktop section and question selection',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_editor_use_cases
+                            .hostFormOutlineMenuPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostFormOverviewSectionList',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Published form overview',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_workspace_use_cases
+                            .hostFormWorkspaceOverviewPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostFormPublishText',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Question count and publication prompt',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_editor_use_cases
+                            .hostFormPublishTextPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostFormQuestionRowList',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Reorderable question rows',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_editor_use_cases
+                            .hostFormQuestionRowListPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostFormQuestionSection',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -9254,6 +9331,28 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_host_form_editor_use_cases
                             .hostFormQuestionSectionPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostFormQuestionSectionList',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Sections with editable question rows',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_editor_use_cases
+                            .hostFormQuestionSectionListPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostFormQuestionsPageBody',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Phone questions workspace',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_editor_use_cases
+                            .hostFormQuestionsPageBodyPreview,
                   ),
                 ],
               ),
@@ -9282,6 +9381,39 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_host_form_workspace_use_cases
                             .hostFormResponseRelatedActionsPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostFormSectionAccordion',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Form section with an expanded question',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_editor_use_cases
+                            .hostFormSectionAccordionPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostFormSectionField',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Section title and question actions',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_editor_use_cases
+                            .hostFormSectionFieldPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostFormSettingsMenu',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Settings and respondent preview links',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_editor_use_cases
+                            .hostFormSettingsMenuPreview,
                   ),
                 ],
               ),
@@ -9350,17 +9482,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_host_form_workspace_use_cases
                             .hostFormWorkspaceHeaderPreview,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostFormWorkspaceOverview',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Published form overview',
-                    builder:
-                        _widgetbook_workspace_hosts_host_form_workspace_use_cases
-                            .hostFormWorkspaceOverviewPreview,
                   ),
                 ],
               ),

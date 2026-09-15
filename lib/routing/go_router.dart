@@ -39,6 +39,7 @@ import 'package:catch_dating_app/hosts/presentation/forms/host_form_preview_scre
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_detail_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_share_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_templates_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_workspace_state.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_audience_view.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen.dart';
@@ -942,9 +943,7 @@ GoRoute _hostAudienceRoute(_RouterNavigatorKeys keys) {
         builder: (context, state) => HostFormBuilderScreen(
           organizerId: state.uri.queryParameters['organizerId'] ?? '',
           formId: state.pathParameters['formId']!,
-          initialView: HostFormWorkspaceView.values
-              .where((view) => view.name == state.uri.queryParameters['view'])
-              .firstOrNull,
+          initialView: hostFormViewFromQuery(state.uri.queryParameters['view']),
         ),
       ),
       GoRoute(

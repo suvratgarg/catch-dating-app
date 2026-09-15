@@ -1,7 +1,10 @@
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_availability_field.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_editor_notice.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_editor_viewport.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_number_field.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_question_section.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_questions_page_body.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_settings_section_list.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_validation_field_lanes.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_validation_text_field.dart';
@@ -71,6 +74,72 @@ void main() {
             hostFormValidationTextFieldPreview,
             HostFormValidationTextField,
             2,
+          ),
+          (
+            'Phone questions workspace',
+            hostFormQuestionsPageBodyPreview,
+            HostFormQuestionsPageBody,
+            1,
+          ),
+          (
+            'Sections with editable question rows',
+            hostFormQuestionSectionListPreview,
+            HostFormQuestionSectionList,
+            1,
+          ),
+          (
+            'Form section with an expanded question',
+            hostFormSectionAccordionPreview,
+            HostFormSectionAccordion,
+            1,
+          ),
+          (
+            'Reorderable question rows',
+            hostFormQuestionRowListPreview,
+            HostFormQuestionRowList,
+            1,
+          ),
+          (
+            'Settings and respondent preview links',
+            hostFormSettingsMenuPreview,
+            HostFormSettingsMenu,
+            1,
+          ),
+          (
+            'Question count and publication prompt',
+            hostFormPublishTextPreview,
+            HostFormPublishText,
+            1,
+          ),
+          (
+            'Desktop section and question selection',
+            hostFormOutlineMenuPreview,
+            HostFormOutlineMenu,
+            1,
+          ),
+          (
+            'Section title and question actions',
+            hostFormSectionFieldPreview,
+            HostFormSectionField,
+            1,
+          ),
+          (
+            'inspector selection',
+            hostFormInspectorSectionPreview,
+            HostFormInspectorSection,
+            3,
+          ),
+          (
+            'desktop viewport',
+            hostFormEditorViewportPreview,
+            HostFormEditorViewport,
+            1,
+          ),
+          (
+            'editor notices',
+            hostFormEditorNoticePreview,
+            HostFormEditorNotice,
+            3,
           ),
         ]) {
       testWidgets('$name previews fit at text scale $scale', (tester) async {

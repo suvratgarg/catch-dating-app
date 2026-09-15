@@ -3,8 +3,11 @@ import 'package:catch_dating_app/hosts/domain/forms/host_form_definition.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_editor.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_question.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_availability_field.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_editor_notice.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_editor_viewport.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_number_field.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_question_section.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_questions_page_body.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_settings_section_list.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_validation_field_lanes.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_validation_text_field.dart';
@@ -239,6 +242,264 @@ Widget hostFormValidationTextFieldPreview(BuildContext context) =>
           ),
       ],
     );
+
+@widgetbook.UseCase(
+  name: 'Phone questions workspace',
+  type: HostFormQuestionsPageBody,
+  path: '[P1 product surfaces]/Host operations/Forms',
+)
+Widget hostFormQuestionsPageBodyPreview(BuildContext context) => _editorPreview(
+  title: 'HostFormQuestionsPageBody',
+  catalogId: 'hostFormQuestionsPageBodyPreview',
+  children: (state, notifier) => [
+    WidgetbookContentFrame(
+      child: HostFormQuestionsPageBody(
+        organizerId: 'org_1',
+        formId: 'form_1',
+        state: state,
+        notifier: notifier,
+        onSelectionChanged: (_, _) {},
+      ),
+    ),
+  ],
+);
+
+@widgetbook.UseCase(
+  name: 'Sections with editable question rows',
+  type: HostFormQuestionSectionList,
+  path: '[P1 product surfaces]/Host operations/Forms',
+)
+Widget hostFormQuestionSectionListPreview(BuildContext context) =>
+    _editorPreview(
+      title: 'HostFormQuestionSectionList',
+      catalogId: 'hostFormQuestionSectionListPreview',
+      children: (state, notifier) => [
+        WidgetbookContentFrame(
+          child: HostFormQuestionSectionList(
+            organizerId: 'org_1',
+            formId: 'form_1',
+            definition: state.editor.definition,
+            status: state.editor.form.status,
+            notifier: notifier,
+            expandedQuestionId: null,
+            onQuestionExpansionChanged: (_) {},
+            onSelectionChanged: (_, _) {},
+          ),
+        ),
+      ],
+    );
+
+@widgetbook.UseCase(
+  name: 'Form section with an expanded question',
+  type: HostFormSectionAccordion,
+  path: '[P1 product surfaces]/Host operations/Forms',
+)
+Widget hostFormSectionAccordionPreview(BuildContext context) => _editorPreview(
+  title: 'HostFormSectionAccordion',
+  catalogId: 'hostFormSectionAccordionPreview',
+  children: (state, notifier) => [
+    WidgetbookContentFrame(
+      child: HostFormSectionAccordion(
+        organizerId: 'org_1',
+        formId: 'form_1',
+        definition: state.editor.definition,
+        sectionIndex: 0,
+        section: state.editor.definition.sections.first,
+        sectionCount: state.editor.definition.sections.length,
+        notifier: notifier,
+        expandedQuestionId:
+            state.editor.definition.sections.first.questions.first.questionId,
+        onQuestionExpansionChanged: (_) {},
+        onSelectionChanged: (_, _) {},
+      ),
+    ),
+  ],
+);
+
+@widgetbook.UseCase(
+  name: 'Reorderable question rows',
+  type: HostFormQuestionRowList,
+  path: '[P1 product surfaces]/Host operations/Forms',
+)
+Widget hostFormQuestionRowListPreview(BuildContext context) => _editorPreview(
+  title: 'HostFormQuestionRowList',
+  catalogId: 'hostFormQuestionRowListPreview',
+  children: (state, notifier) => [
+    WidgetbookContentFrame(
+      child: HostFormQuestionRowList(
+        organizerId: 'org_1',
+        formId: 'form_1',
+        definition: state.editor.definition,
+        sectionIndex: 0,
+        section: state.editor.definition.sections.first,
+        notifier: notifier,
+        expandedQuestionId: null,
+        onQuestionExpansionChanged: (_) {},
+        onSelectionChanged: (_, _) {},
+      ),
+    ),
+  ],
+);
+
+@widgetbook.UseCase(
+  name: 'Settings and respondent preview links',
+  type: HostFormSettingsMenu,
+  path: '[P1 product surfaces]/Host operations/Forms',
+)
+Widget hostFormSettingsMenuPreview(BuildContext context) => _editorPreview(
+  title: 'HostFormSettingsMenu',
+  catalogId: 'hostFormSettingsMenuPreview',
+  children: (state, notifier) => [
+    WidgetbookContentFrame(
+      child: HostFormSettingsMenu(organizerId: 'org_1', formId: 'form_1'),
+    ),
+  ],
+);
+
+@widgetbook.UseCase(
+  name: 'Question count and publication prompt',
+  type: HostFormPublishText,
+  path: '[P1 product surfaces]/Host operations/Forms',
+)
+Widget hostFormPublishTextPreview(BuildContext context) => _editorPreview(
+  title: 'HostFormPublishText',
+  catalogId: 'hostFormPublishTextPreview',
+  children: (state, notifier) => [
+    WidgetbookContentFrame(child: HostFormPublishText(state: state)),
+  ],
+);
+
+@widgetbook.UseCase(
+  name: 'Desktop section and question selection',
+  type: HostFormOutlineMenu,
+  path: '[P1 product surfaces]/Host operations/Forms',
+)
+Widget hostFormOutlineMenuPreview(BuildContext context) => _editorPreview(
+  title: 'HostFormOutlineMenu',
+  catalogId: 'hostFormOutlineMenuPreview',
+  children: (state, notifier) => [
+    WidgetbookContentFrame(
+      child: HostFormOutlineMenu(
+        definition: state.editor.definition,
+        selectedSection: 0,
+        selectedQuestion: 0,
+        onSelected: (_, _) {},
+        notifier: notifier,
+      ),
+    ),
+  ],
+);
+
+@widgetbook.UseCase(
+  name: 'Section title and question actions',
+  type: HostFormSectionField,
+  path: '[P1 product surfaces]/Host operations/Forms',
+)
+Widget hostFormSectionFieldPreview(BuildContext context) => _editorPreview(
+  title: 'HostFormSectionField',
+  catalogId: 'hostFormSectionFieldPreview',
+  children: (state, notifier) => [
+    WidgetbookContentFrame(
+      child: HostFormSectionField(
+        sectionIndex: 0,
+        section: state.editor.definition.sections.first,
+        sectionCount: state.editor.definition.sections.length,
+        notifier: notifier,
+        onSelectionChanged: (_, _) {},
+      ),
+    ),
+  ],
+);
+
+@widgetbook.UseCase(
+  name: 'Desktop form, section, and question inspectors',
+  type: HostFormInspectorSection,
+  path: '[P1 product surfaces]/Host operations/Forms',
+)
+Widget hostFormInspectorSectionPreview(BuildContext context) => _editorPreview(
+  title: 'HostFormInspectorSection',
+  catalogId: 'host.form_inspector',
+  children: (state, notifier) => [
+    for (final selection in [(null, null), (0, null), (0, 0)])
+      WidgetbookPageStateCard(
+        label: selection.$1 == null
+            ? 'Form settings'
+            : selection.$2 == null
+            ? 'Section'
+            : 'Question',
+        child: WidgetbookContentFrame(
+          child: HostFormInspectorSection(
+            definition: state.editor.definition,
+            sectionIndex: selection.$1,
+            questionIndex: selection.$2,
+            notifier: notifier,
+          ),
+        ),
+      ),
+  ],
+);
+
+@widgetbook.UseCase(
+  name: 'Desktop outline, canvas, and inspector',
+  type: HostFormEditorViewport,
+  path: '[P1 product surfaces]/Host operations/Forms',
+)
+Widget hostFormEditorViewportPreview(BuildContext context) => _editorPreview(
+  title: 'HostFormEditorViewport',
+  catalogId: 'host.form_editor_viewport',
+  children: (state, notifier) => [
+    SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: WidgetbookViewportFrame.device(
+        size: const Size(1200, 1000),
+        child: MediaQuery(
+          data: MediaQuery.of(context).copyWith(size: const Size(1200, 1000)),
+          child: HostFormEditorViewport(
+            state: state,
+            notifier: notifier,
+            sectionIndex: 0,
+            questionIndex: 0,
+            onSelectionChanged: (_, _) {},
+          ),
+        ),
+      ),
+    ),
+  ],
+);
+
+@widgetbook.UseCase(
+  name: 'Save failure, revision conflict, and invalid draft',
+  type: HostFormEditorNotice,
+  path: '[P1 product surfaces]/Host operations/Forms',
+)
+Widget hostFormEditorNoticePreview(BuildContext context) => _editorPreview(
+  title: 'HostFormEditorNotice',
+  catalogId: 'host.form_editor_notice',
+  children: (state, notifier) => [
+    for (final noticeState in [
+      state.copyWith(
+        saveState: HostFormSaveState.failed,
+        error: StateError('Preview save failure'),
+      ),
+      state.copyWith(saveState: HostFormSaveState.conflict),
+      state.copyWith(
+        editor: state.editor.copyWith(
+          validationIssues: const [
+            HostFormValidationIssue(
+              code: 'missing-label',
+              path: 'sections[0].questions[0].label',
+              message: 'Add a question label before publishing.',
+              severity: HostFormValidationSeverity.error,
+            ),
+          ],
+        ),
+      ),
+    ])
+      WidgetbookContentFrame(
+        child: HostFormEditorNotice(state: noticeState, notifier: notifier),
+      ),
+  ],
+);
 
 Widget _editorPreview({
   required String title,
