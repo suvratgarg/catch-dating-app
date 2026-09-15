@@ -12190,6 +12190,16 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Settings',
         children: [
           _widgetbook.WidgetbookComponent(
+            name: 'BlockedAccountTile',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Blocked account row',
+                builder: _widgetbook_workspace_utility_settings
+                    .blockedAccountTileState,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'SettingsScreen',
             useCases: [
               _widgetbook.WidgetbookUseCase(

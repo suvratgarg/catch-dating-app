@@ -82,10 +82,6 @@
       "maxLines": 1423
     },
     {
-      "path": "lib/safety/presentation/settings_screen.dart",
-      "maxLines": 834
-    },
-    {
       "path": "packages/catch_tokens/lib/src/semantic/catch_layout.dart",
       "maxLines": 807
     },
