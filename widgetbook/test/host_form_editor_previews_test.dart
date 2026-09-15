@@ -1,6 +1,10 @@
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_availability_field.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_number_field.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_question_section.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_settings_section_list.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_validation_field_lanes.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_validation_text_field.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -23,6 +27,49 @@ void main() {
             'availability fields',
             hostFormAvailabilityFieldPreview,
             HostFormAvailabilityField,
+            2,
+          ),
+          (
+            'question editing',
+            hostFormQuestionSectionPreview,
+            HostFormQuestionSection,
+            2,
+          ),
+          (
+            'text rules',
+            hostFormTextValidationPreview,
+            HostFormValidationFieldLanes,
+            1,
+          ),
+          (
+            'number rules',
+            hostFormNumberValidationPreview,
+            HostFormValidationFieldLanes,
+            1,
+          ),
+          (
+            'date rules',
+            hostFormDateValidationPreview,
+            HostFormValidationFieldLanes,
+            1,
+          ),
+          (
+            'choice rules',
+            hostFormChoicesValidationPreview,
+            HostFormValidationFieldLanes,
+            1,
+          ),
+          (
+            'file rules',
+            hostFormFileValidationPreview,
+            HostFormValidationFieldLanes,
+            1,
+          ),
+          ('number fields', hostFormNumberFieldPreview, HostFormNumberField, 2),
+          (
+            'validation text fields',
+            hostFormValidationTextFieldPreview,
+            HostFormValidationTextField,
             2,
           ),
         ]) {
