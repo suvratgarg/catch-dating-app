@@ -135,7 +135,7 @@ void _registerEventSuccessHostLiveTests() {
         child: MaterialApp(
           theme: AppTheme.light,
           home: Scaffold(
-            body: EventSuccessHostPanel(
+            body: EventSuccessHostWorkspacePageBody(
               event: event,
               plan: plan,
               planIsPersisted: true,
@@ -206,7 +206,7 @@ void _registerEventSuccessHostLiveTests() {
         child: MaterialApp(
           theme: AppTheme.light,
           home: Scaffold(
-            body: EventSuccessHostPanel(
+            body: EventSuccessHostWorkspacePageBody(
               event: event,
               plan: plan,
               planIsPersisted: true,
@@ -285,7 +285,7 @@ void _registerEventSuccessHostLiveTests() {
         child: MaterialApp(
           theme: AppTheme.light,
           home: Scaffold(
-            body: EventSuccessHostPanel(
+            body: EventSuccessHostWorkspacePageBody(
               event: event,
               plan: plan,
               planIsPersisted: true,
@@ -367,7 +367,7 @@ void _registerEventSuccessHostLiveTests() {
             body: SafeArea(
               child: Padding(
                 padding: const EdgeInsets.all(16),
-                child: EventSuccessHostPanel(
+                child: EventSuccessHostWorkspacePageBody(
                   event: event,
                   plan: plan,
                   planIsPersisted: true,
@@ -451,7 +451,7 @@ void _registerEventSuccessHostLiveTests() {
             body: SafeArea(
               child: Padding(
                 padding: const EdgeInsets.all(16),
-                child: EventSuccessHostPanel(
+                child: EventSuccessHostWorkspacePageBody(
                   event: event,
                   plan: plan,
                   planIsPersisted: true,
@@ -541,7 +541,7 @@ void _registerEventSuccessHostLiveTests() {
             body: SafeArea(
               child: Padding(
                 padding: const EdgeInsets.all(16),
-                child: EventSuccessHostPanel(
+                child: EventSuccessHostWorkspacePageBody(
                   event: event,
                   plan: plan,
                   planIsPersisted: true,
@@ -610,7 +610,7 @@ void _registerEventSuccessHostLiveTests() {
             body: SafeArea(
               child: Padding(
                 padding: const EdgeInsets.all(16),
-                child: EventSuccessHostPanel(
+                child: EventSuccessHostWorkspacePageBody(
                   event: event,
                   plan: plan,
                   planIsPersisted: true,
@@ -712,7 +712,7 @@ void _registerEventSuccessHostLiveTests() {
             body: SafeArea(
               child: Padding(
                 padding: const EdgeInsets.all(16),
-                child: EventSuccessHostPanel(
+                child: EventSuccessHostWorkspacePageBody(
                   event: event,
                   plan: plan,
                   planIsPersisted: true,
@@ -782,7 +782,7 @@ void _registerEventSuccessHostLiveTests() {
             body: SafeArea(
               child: Padding(
                 padding: const EdgeInsets.all(16),
-                child: EventSuccessHostPanel(
+                child: EventSuccessHostWorkspacePageBody(
                   event: event,
                   plan: plan,
                   planIsPersisted: true,
@@ -855,7 +855,7 @@ void _registerEventSuccessHostLiveTests() {
             body: SafeArea(
               child: Padding(
                 padding: const EdgeInsets.all(16),
-                child: EventSuccessHostPanel(
+                child: EventSuccessHostWorkspacePageBody(
                   event: event,
                   plan: plan,
                   planIsPersisted: true,
@@ -916,7 +916,7 @@ void _registerEventSuccessHostLiveTests() {
             body: SafeArea(
               child: Padding(
                 padding: const EdgeInsets.all(16),
-                child: EventSuccessHostPanel(
+                child: EventSuccessHostWorkspacePageBody(
                   event: event,
                   plan: plan,
                   planIsPersisted: true,

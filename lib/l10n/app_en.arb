@@ -10094,42 +10094,42 @@
   },
   "eventSuccessEventSuccessHostReportTitleNoEventReportYet": "No event report yet",
   "@eventSuccessEventSuccessHostReportTitleNoEventReportYet": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (title).",
+    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_host_report_page_body.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_report"
   },
   "eventSuccessEventSuccessHostReportBodyTheLiveEventGuide": "The live event guide was not saved for this event, so there is no post-event report to review. Attendance reporting remains available on this screen.",
   "@eventSuccessEventSuccessHostReportBodyTheLiveEventGuide": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (body).",
+    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_host_report_page_body.dart (body).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_report"
   },
   "eventSuccessEventSuccessHostReportTitlePostEventInsightsAre": "Post-event insights are off",
   "@eventSuccessEventSuccessHostReportTitlePostEventInsightsAre": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (title).",
+    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_host_report_page_body.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_report"
   },
   "eventSuccessEventSuccessHostReportBodyThisEventGuideDoes": "This event guide does not include post-event coaching for the host.",
   "@eventSuccessEventSuccessHostReportBodyThisEventGuideDoes": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (body).",
+    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_host_report_page_body.dart (body).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_report"
   },
   "eventSuccessEventSuccessHostReportTitleWaitingForAttendeeFeedback": "Waiting for attendee feedback",
   "@eventSuccessEventSuccessHostReportTitleWaitingForAttendeeFeedback": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (title).",
+    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_host_report_page_body.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_report"
   },
   "eventSuccessEventSuccessHostReportTitleFeedbackcountAttendeeFeedbackResponse": "{feedbackCount} attendee feedback response{value2}",
   "@eventSuccessEventSuccessHostReportTitleFeedbackcountAttendeeFeedbackResponse": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (title).",
+    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_host_report_page_body.dart (title).",
     "placeholders": {
       "feedbackCount": {},
       "value2": {}
@@ -10140,28 +10140,28 @@
   },
   "eventSuccessEventSuccessHostReportBodyTheReportCombinesAttendance": "The report combines attendance, safe aggregate feedback, assignment coverage, and explicit host-help requests. Private notes, safety concerns, and individual opener choices are not shown to hosts.",
   "@eventSuccessEventSuccessHostReportBodyTheReportCombinesAttendance": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (body).",
+    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_host_report_page_body.dart (body).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_report"
   },
   "eventSuccessEventSuccessHostReportTextHowReliableIsThis": "How reliable is this report?",
   "@eventSuccessEventSuccessHostReportTextHowReliableIsThis": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (Text).",
+    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_report_quality_section.dart (Text).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_report"
   },
   "eventSuccessEventSuccessHostReportTextShowsWhetherTheReport": "Shows whether the report is based on enough live data to trust.",
   "@eventSuccessEventSuccessHostReportTextShowsWhetherTheReport": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (Text).",
+    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_report_quality_section.dart (Text).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_report"
   },
   "eventSuccessEventSuccessHostReportLabelFeedback": "Feedback",
   "@eventSuccessEventSuccessHostReportLabelFeedback": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_report_quality_section.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_report"
@@ -10186,35 +10186,35 @@
   },
   "eventSuccessEventSuccessHostReportLabelCaughtSomeone": "Caught someone",
   "@eventSuccessEventSuccessHostReportLabelCaughtSomeone": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_report_quality_section.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_report"
   },
   "eventSuccessEventSuccessHostReportLabelPeopleIncluded": "People included",
   "@eventSuccessEventSuccessHostReportLabelPeopleIncluded": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_report_quality_section.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_report"
   },
   "eventSuccessEventSuccessHostReportLabelOptedOut": "Opted out",
   "@eventSuccessEventSuccessHostReportLabelOptedOut": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_report_quality_section.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_report"
   },
   "eventSuccessEventSuccessHostReportLabelWingmanHelp": "Wingman help",
   "@eventSuccessEventSuccessHostReportLabelWingmanHelp": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_report_quality_section.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_report"
   },
   "eventSuccessEventSuccessHostReportLabelFeedbackresponsecountCheckedincountFeedback": "{feedbackResponseCount}/{checkedInCount} feedback",
   "@eventSuccessEventSuccessHostReportLabelFeedbackresponsecountCheckedincountFeedback": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_report_quality_section.dart (label).",
     "placeholders": {
       "feedbackResponseCount": {},
       "checkedInCount": {}
@@ -10225,7 +10225,7 @@
   },
   "eventSuccessEventSuccessHostReportLabelAttendeeswhocaughtsomeoneCaughtSomeone": "{attendeesWhoCaughtSomeone} caught someone",
   "@eventSuccessEventSuccessHostReportLabelAttendeeswhocaughtsomeoneCaughtSomeone": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_report_quality_section.dart (label).",
     "placeholders": {
       "attendeesWhoCaughtSomeone": {}
     },
@@ -10242,7 +10242,7 @@
   },
   "eventSuccessEventSuccessHostReportLabelAssignmentparticipantcountAssigned": "{assignmentParticipantCount} assigned",
   "@eventSuccessEventSuccessHostReportLabelAssignmentparticipantcountAssigned": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_report_quality_section.dart (label).",
     "placeholders": {
       "assignmentParticipantCount": {}
     },
@@ -10252,7 +10252,7 @@
   },
   "eventSuccessEventSuccessHostReportLabelAssignmentoptoutcountOptedOut": "{assignmentOptOutCount} opted out",
   "@eventSuccessEventSuccessHostReportLabelAssignmentoptoutcountOptedOut": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_report_quality_section.dart (label).",
     "placeholders": {
       "assignmentOptOutCount": {}
     },
@@ -10262,7 +10262,7 @@
   },
   "eventSuccessEventSuccessHostReportLabelWingmanrequestcountHostHelpRequests": "{wingmanRequestCount} host-help requests",
   "@eventSuccessEventSuccessHostReportLabelWingmanrequestcountHostHelpRequests": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_report_quality_section.dart (label).",
     "placeholders": {
       "wingmanRequestCount": {}
     },
@@ -10272,49 +10272,49 @@
   },
   "eventSuccessEventSuccessHostReportTextEventFunnel": "Event funnel",
   "@eventSuccessEventSuccessHostReportTextEventFunnel": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (Text).",
+    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_funnel_section.dart (Text).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_report"
   },
   "eventSuccessEventSuccessHostReportLabelDemandToBooked": "Demand to booked",
   "@eventSuccessEventSuccessHostReportLabelDemandToBooked": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_funnel_section.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_report"
   },
   "eventSuccessEventSuccessHostReportLabelRequestsApproved": "Requests approved",
   "@eventSuccessEventSuccessHostReportLabelRequestsApproved": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_funnel_section.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_report"
   },
   "eventSuccessEventSuccessHostReportLabelOffersAccepted": "Offers accepted",
   "@eventSuccessEventSuccessHostReportLabelOffersAccepted": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_funnel_section.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_report"
   },
   "eventSuccessEventSuccessHostReportLabelPaymentComplete": "Payment complete",
   "@eventSuccessEventSuccessHostReportLabelPaymentComplete": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_funnel_section.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_report"
   },
   "eventSuccessEventSuccessHostReportLabelRepeatAttendees": "Repeat attendees",
   "@eventSuccessEventSuccessHostReportLabelRepeatAttendees": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_funnel_section.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_report"
   },
   "eventSuccessEventSuccessHostReportLabelTotaldemandcountPeopleInDemand": "{totalDemandCount} people in demand",
   "@eventSuccessEventSuccessHostReportLabelTotaldemandcountPeopleInDemand": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_funnel_section.dart (label).",
     "placeholders": {
       "totalDemandCount": {}
     },
@@ -10324,7 +10324,7 @@
   },
   "eventSuccessEventSuccessHostReportLabelWaitlistjoincountWaitlisted": "{waitlistJoinCount} waitlisted",
   "@eventSuccessEventSuccessHostReportLabelWaitlistjoincountWaitlisted": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_funnel_section.dart (label).",
     "placeholders": {
       "waitlistJoinCount": {}
     },
@@ -10334,7 +10334,7 @@
   },
   "eventSuccessEventSuccessHostReportLabelPaymentcompletedcountPaid": "{paymentCompletedCount} paid",
   "@eventSuccessEventSuccessHostReportLabelPaymentcompletedcountPaid": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_funnel_section.dart (label).",
     "placeholders": {
       "paymentCompletedCount": {}
     },
@@ -10344,7 +10344,7 @@
   },
   "eventSuccessEventSuccessHostReportLabelChatstartedcountChatsStarted": "{chatStartedCount} chats started",
   "@eventSuccessEventSuccessHostReportLabelChatstartedcountChatsStarted": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_funnel_section.dart (label).",
     "placeholders": {
       "chatStartedCount": {}
     },
@@ -10354,105 +10354,105 @@
   },
   "eventSuccessEventSuccessHostSetupTitleEventStartedWithoutA": "Event started without a saved guide",
   "@eventSuccessEventSuccessHostSetupTitleEventStartedWithoutA": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_setup.dart (title).",
+    "description": "Product copy used by lib/event_success/presentation/host_setup/event_success_host_setup_page_body.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_setup"
   },
   "eventSuccessEventSuccessHostSetupTitleLiveGuideCanNo": "Live guide can no longer be saved",
   "@eventSuccessEventSuccessHostSetupTitleLiveGuideCanNo": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_setup.dart (title).",
+    "description": "Product copy used by lib/event_success/presentation/host_setup/event_success_host_setup_page_body.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_setup"
   },
   "eventSuccessEventSuccessHostSetupBodyThisEventBeganBefore": "This event began before a live guide was saved. Attendance and check-in still work, but the Live tab won''t have any guided controls for this event.",
   "@eventSuccessEventSuccessHostSetupBodyThisEventBeganBefore": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_setup.dart (body).",
+    "description": "Product copy used by lib/event_success/presentation/host_setup/event_success_host_setup_page_body.dart (body).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_setup"
   },
   "eventSuccessEventSuccessHostSetupBodyBookingsHaveAlreadyStarted": "Bookings have already started. Attendance and check-in still work, but the Live tab won''t have guided controls unless a guide was saved first.",
   "@eventSuccessEventSuccessHostSetupBodyBookingsHaveAlreadyStarted": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_setup.dart (body).",
+    "description": "Product copy used by lib/event_success/presentation/host_setup/event_success_host_setup_page_body.dart (body).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_setup"
   },
   "eventSuccessEventSuccessHostSetupTitleSetupNotSavedYet": "Setup not saved yet",
   "@eventSuccessEventSuccessHostSetupTitleSetupNotSavedYet": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_setup.dart (title).",
+    "description": "Product copy used by lib/event_success/presentation/host_setup/event_success_host_setup_page_body.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_setup"
   },
   "eventSuccessEventSuccessHostSetupBodyThisDefaultPlanIs": "This default plan is visible here only. Save it so the Live tab is ready when the event starts.",
   "@eventSuccessEventSuccessHostSetupBodyThisDefaultPlanIs": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_setup.dart (body).",
+    "description": "Product copy used by lib/event_success/presentation/host_setup/event_success_host_setup_page_body.dart (body).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_setup"
   },
   "eventSuccessEventSuccessHostSetupTitleSettingsAreLocked": "Settings are locked",
   "@eventSuccessEventSuccessHostSetupTitleSettingsAreLocked": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_setup.dart (title).",
+    "description": "Product copy used by lib/event_success/presentation/host_setup/event_success_host_setup_page_body.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_setup"
   },
   "eventSuccessEventSuccessHostSetupBodyBookingsHaveStartedSo": "Bookings have started, so the saved guide is locked in. Switch to the Live tab to drive the event in real time once it starts.",
   "@eventSuccessEventSuccessHostSetupBodyBookingsHaveStartedSo": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_setup.dart (body).",
+    "description": "Product copy used by lib/event_success/presentation/host_setup/event_success_host_setup_page_body.dart (body).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_setup"
   },
   "eventSuccessEventSuccessHostSetupBodyTheEventHasStarted": "The event has started — setup is locked. Use the Live tab to control the event right now, and the Report tab afterward.",
   "@eventSuccessEventSuccessHostSetupBodyTheEventHasStarted": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_setup.dart (body).",
+    "description": "Product copy used by lib/event_success/presentation/host_setup/event_success_host_setup_page_body.dart (body).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_setup"
   },
   "eventSuccessEventSuccessHostSetupTitleYourPlan": "Your plan",
   "@eventSuccessEventSuccessHostSetupTitleYourPlan": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_setup.dart (title).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_setup_body.dart, lib/event_success/presentation/host_setup/event_success_host_setup_page_body.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_setup"
   },
   "eventSuccessEventSuccessHostSetupLabelSaveChanges": "Save changes",
   "@eventSuccessEventSuccessHostSetupLabelSaveChanges": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_setup.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/host_setup/event_success_host_setup_page_body.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_setup"
   },
   "eventSuccessEventSuccessHostSetupLabelSaveSetup": "Save setup",
   "@eventSuccessEventSuccessHostSetupLabelSaveSetup": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_setup.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/host_setup/event_success_host_setup_page_body.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_setup"
   },
   "eventSuccessEventSuccessHostSetupLabelSaveLiveGuide": "Save live guide",
   "@eventSuccessEventSuccessHostSetupLabelSaveLiveGuide": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_setup.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/host_setup/event_success_host_setup_page_body.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_setup"
   },
   "eventSuccessEventSuccessHostSetupTextTargetAttendees": "Target attendees",
   "@eventSuccessEventSuccessHostSetupTextTargetAttendees": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_setup.dart (Text).",
+    "description": "Product copy used by lib/event_success/presentation/host_setup/event_success_target_attendees_field.dart (Text).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_setup"
   },
   "eventSuccessEventSuccessHostSetupTextRecommendedRangeRecommendedminRecommendedmax": "Recommended range: {recommendedMin}-{recommendedMax}",
   "@eventSuccessEventSuccessHostSetupTextRecommendedRangeRecommendedminRecommendedmax": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_setup.dart (Text).",
+    "description": "Product copy used by lib/event_success/presentation/host_setup/event_success_target_attendees_field.dart (Text).",
     "placeholders": {
       "recommendedMin": {},
       "recommendedMax": {}
@@ -10463,7 +10463,7 @@
   },
   "eventSuccessEventSuccessHostSetupTextAddAGoalSoTheLiveGuideKnowsWhatToAimFor": "Add a goal so the live guide knows what to aim for.",
   "@eventSuccessEventSuccessHostSetupTextAddAGoalSoTheLiveGuideKnowsWhatToAimFor": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_setup.dart (Text).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_setup_body.dart (Text).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_setup"
@@ -10477,7 +10477,7 @@
   },
   "eventSuccessEventSuccessHostSetupTextUnsavedChanges": "Unsaved changes",
   "@eventSuccessEventSuccessHostSetupTextUnsavedChanges": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_setup.dart (Text).",
+    "description": "Product copy used by lib/event_success/presentation/host_setup/event_success_host_setup_page_body.dart (Text).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_setup"
@@ -12308,14 +12308,14 @@
   },
   "eventSuccessEventSuccessHostReportBodyThePostEventReport": "The post-event report appears once checked-in attendees share feedback. There is no signal to summarize yet.",
   "@eventSuccessEventSuccessHostReportBodyThePostEventReport": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (body).",
+    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_host_report_page_body.dart (body).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_report"
   },
   "eventSuccessEventSuccessHostReportTitleS": "s",
   "@eventSuccessEventSuccessHostReportTitleS": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (title).",
+    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_host_report_page_body.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_report"
@@ -16418,7 +16418,7 @@
   },
   "eventSuccessEventSuccessHostSetupVisiblecopyToint": "{toInt}",
   "@eventSuccessEventSuccessHostSetupVisiblecopyToint": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_setup.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/host_setup/event_success_target_attendees_field.dart (visibleCopy).",
     "placeholders": {
       "toInt": {}
     },
@@ -16428,14 +16428,14 @@
   },
   "eventSuccessEventSuccessHostSetupVisiblecopyDecreaseTargetAttendees": "Decrease target attendees",
   "@eventSuccessEventSuccessHostSetupVisiblecopyDecreaseTargetAttendees": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_setup.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/host_setup/event_success_target_attendees_field.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_setup"
   },
   "eventSuccessEventSuccessHostSetupVisiblecopyIncreaseTargetAttendees": "Increase target attendees",
   "@eventSuccessEventSuccessHostSetupVisiblecopyIncreaseTargetAttendees": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_setup.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/host_setup/event_success_target_attendees_field.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_setup"

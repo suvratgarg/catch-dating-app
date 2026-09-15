@@ -180,7 +180,7 @@ class _HostEventRehearsalScreenState
               return Column(
                 children: [
                   Expanded(
-                    child: EventSuccessHostPanel(
+                    child: EventSuccessHostWorkspacePageBody(
                       key: ValueKey(
                         'rehearsal-runtime-${rehearsal.session.id}',
                       ),

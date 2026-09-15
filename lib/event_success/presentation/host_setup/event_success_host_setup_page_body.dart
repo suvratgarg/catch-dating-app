@@ -1,7 +1,28 @@
-part of '../event_success_host_screen.dart';
+import 'dart:async';
 
-class SetupTab extends StatefulWidget {
-  const SetupTab({
+import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_activity_profile.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_feature_state.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_layout.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_structure.dart';
+import 'package:catch_dating_app/event_success/presentation/event_success_host_screen_state.dart';
+import 'package:catch_dating_app/event_success/presentation/event_success_room_setup_section.dart';
+import 'package:catch_dating_app/event_success/presentation/event_success_setup_body.dart';
+import 'package:catch_dating_app/event_success/presentation/host_components/event_success_activity_field_lanes.dart';
+import 'package:catch_dating_app/event_success/presentation/host_components/event_success_host_tab_page_body.dart';
+import 'package:catch_dating_app/event_success/presentation/host_components/event_success_plan_field_lanes.dart';
+import 'package:catch_dating_app/event_success/presentation/host_setup/event_success_readiness_field.dart';
+import 'package:catch_dating_app/event_success/presentation/host_setup/event_success_target_attendees_field.dart';
+import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_ui/catch_ui.dart';
+import 'package:flutter/material.dart';
+
+class EventSuccessHostSetupPageBody extends StatefulWidget {
+  const EventSuccessHostSetupPageBody({
     super.key,
     required this.event,
     required this.plan,
@@ -31,10 +52,12 @@ class SetupTab extends StatefulWidget {
   final DateTime? referenceNow;
 
   @override
-  State<SetupTab> createState() => _SetupTabState();
+  State<EventSuccessHostSetupPageBody> createState() =>
+      _EventSuccessHostSetupPageBodyState();
 }
 
-class _SetupTabState extends State<SetupTab> {
+class _EventSuccessHostSetupPageBodyState
+    extends State<EventSuccessHostSetupPageBody> {
   late EventSuccessHostDraft _draft = widget.plan.hostDraft.normalizeForFormat(
     widget.event.eventFormat,
   );
@@ -44,7 +67,7 @@ class _SetupTabState extends State<SetupTab> {
   bool _remotePlanChanged = false;
 
   @override
-  void didUpdateWidget(covariant SetupTab oldWidget) {
+  void didUpdateWidget(covariant EventSuccessHostSetupPageBody oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.plan != widget.plan) {
       if (_hasLocalChangesAgainst(oldWidget.plan)) {
@@ -209,7 +232,9 @@ class _SetupTabState extends State<SetupTab> {
                 planIsPersisted: widget.planIsPersisted,
               ),
               if (presentedDraft.readinessIssues.isNotEmpty)
-                ReadinessIssues(issues: presentedDraft.readinessIssues),
+                EventSuccessReadinessField(
+                  issues: presentedDraft.readinessIssues,
+                ),
             ],
           )
         else
@@ -225,8 +250,10 @@ class _SetupTabState extends State<SetupTab> {
                 planIsPersisted: widget.planIsPersisted,
               ),
               if (presentedDraft.readinessIssues.isNotEmpty)
-                ReadinessIssues(issues: presentedDraft.readinessIssues),
-              TargetAttendeeControl(
+                EventSuccessReadinessField(
+                  issues: presentedDraft.readinessIssues,
+                ),
+              EventSuccessTargetAttendeesField(
                 value: _targetAttendeeCount,
                 recommendedMin: _draft.playbook.capacity.min,
                 recommendedMax: _draft.playbook.capacity.max,
@@ -310,94 +337,5 @@ class _SetupTabState extends State<SetupTab> {
         ],
       ],
     );
-  }
-}
-
-class TargetAttendeeControl extends StatelessWidget {
-  const TargetAttendeeControl({
-    super.key,
-    required this.value,
-    required this.recommendedMin,
-    required this.recommendedMax,
-    required this.enabled,
-    required this.onChanged,
-  });
-
-  final int value;
-  final int recommendedMin;
-  final int recommendedMax;
-  final bool enabled;
-  final ValueChanged<int> onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    return CatchFieldLanes.single(
-      child: CatchField.stepper(
-        copy: catchFieldCopy(context.l10n),
-        title:
-            context.l10n.eventSuccessEventSuccessHostSetupTextTargetAttendees,
-        contract: CatchContractConstraints
-            .eventSuccessPlanDocumentTargetAttendeeCount,
-        body: context.l10n
-            .eventSuccessEventSuccessHostSetupTextRecommendedRangeRecommendedminRecommendedmax(
-              recommendedMin: recommendedMin,
-              recommendedMax: recommendedMax,
-            ),
-        value: value,
-        min: 1,
-        max: 1000,
-        valueLabelBuilder: (number) =>
-            context.l10n.eventSuccessEventSuccessHostSetupVisiblecopyToint(
-              toInt: number.toInt(),
-            ),
-        states: <WidgetState>{if (!enabled) WidgetState.disabled},
-        decreaseSemanticLabel: context
-            .l10n
-            .eventSuccessEventSuccessHostSetupVisiblecopyDecreaseTargetAttendees,
-        increaseSemanticLabel: context
-            .l10n
-            .eventSuccessEventSuccessHostSetupVisiblecopyIncreaseTargetAttendees,
-        onChanged: enabled ? (number) => onChanged(number.toInt()) : null,
-      ),
-    );
-  }
-}
-
-class ReadinessIssues extends StatelessWidget {
-  const ReadinessIssues({super.key, required this.issues});
-
-  final List<String> issues;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return CatchFieldLanes.single(
-      child: CatchField.content(
-        copy: catchFieldCopy(context.l10n),
-        title: context.l10n.eventSuccessEventSuccessHostSetupTitleBeforeLaunch,
-        body: issues.join('\n'),
-        bodyMaxLines: math.max(3, issues.length * 2),
-        icon: CatchIcons.errorOutlineRounded,
-        iconColor: t.warning,
-      ),
-    );
-  }
-}
-
-class NoticeCard extends StatelessWidget {
-  const NoticeCard({
-    super.key,
-    required this.icon,
-    required this.title,
-    required this.body,
-  });
-
-  final IconData icon;
-  final String title;
-  final String body;
-
-  @override
-  Widget build(BuildContext context) {
-    return CatchBanner(title: title, message: body, icon: icon);
   }
 }

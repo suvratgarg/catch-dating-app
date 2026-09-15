@@ -8697,37 +8697,37 @@ abstract class AppLocalizations {
   /// **'Assignment notes'**
   String get eventSuccessEventSuccessHostOverridesTextAssignmentNotes;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (title).
+  /// Product copy used by lib/event_success/presentation/host_report/event_success_host_report_page_body.dart (title).
   ///
   /// In en, this message translates to:
   /// **'No event report yet'**
   String get eventSuccessEventSuccessHostReportTitleNoEventReportYet;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (body).
+  /// Product copy used by lib/event_success/presentation/host_report/event_success_host_report_page_body.dart (body).
   ///
   /// In en, this message translates to:
   /// **'The live event guide was not saved for this event, so there is no post-event report to review. Attendance reporting remains available on this screen.'**
   String get eventSuccessEventSuccessHostReportBodyTheLiveEventGuide;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (title).
+  /// Product copy used by lib/event_success/presentation/host_report/event_success_host_report_page_body.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Post-event insights are off'**
   String get eventSuccessEventSuccessHostReportTitlePostEventInsightsAre;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (body).
+  /// Product copy used by lib/event_success/presentation/host_report/event_success_host_report_page_body.dart (body).
   ///
   /// In en, this message translates to:
   /// **'This event guide does not include post-event coaching for the host.'**
   String get eventSuccessEventSuccessHostReportBodyThisEventGuideDoes;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (title).
+  /// Product copy used by lib/event_success/presentation/host_report/event_success_host_report_page_body.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Waiting for attendee feedback'**
   String get eventSuccessEventSuccessHostReportTitleWaitingForAttendeeFeedback;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (title).
+  /// Product copy used by lib/event_success/presentation/host_report/event_success_host_report_page_body.dart (title).
   ///
   /// In en, this message translates to:
   /// **'{feedbackCount} attendee feedback response{value2}'**
@@ -8737,25 +8737,25 @@ abstract class AppLocalizations {
     required Object value2,
   });
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (body).
+  /// Product copy used by lib/event_success/presentation/host_report/event_success_host_report_page_body.dart (body).
   ///
   /// In en, this message translates to:
   /// **'The report combines attendance, safe aggregate feedback, assignment coverage, and explicit host-help requests. Private notes, safety concerns, and individual opener choices are not shown to hosts.'**
   String get eventSuccessEventSuccessHostReportBodyTheReportCombinesAttendance;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (Text).
+  /// Product copy used by lib/event_success/presentation/host_report/event_success_report_quality_section.dart (Text).
   ///
   /// In en, this message translates to:
   /// **'How reliable is this report?'**
   String get eventSuccessEventSuccessHostReportTextHowReliableIsThis;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (Text).
+  /// Product copy used by lib/event_success/presentation/host_report/event_success_report_quality_section.dart (Text).
   ///
   /// In en, this message translates to:
   /// **'Shows whether the report is based on enough live data to trust.'**
   String get eventSuccessEventSuccessHostReportTextShowsWhetherTheReport;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (label).
+  /// Product copy used by lib/event_success/presentation/host_report/event_success_report_quality_section.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Feedback'**
@@ -8777,31 +8777,31 @@ abstract class AppLocalizations {
     required Object checkedInCount,
   });
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (label).
+  /// Product copy used by lib/event_success/presentation/host_report/event_success_report_quality_section.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Caught someone'**
   String get eventSuccessEventSuccessHostReportLabelCaughtSomeone;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (label).
+  /// Product copy used by lib/event_success/presentation/host_report/event_success_report_quality_section.dart (label).
   ///
   /// In en, this message translates to:
   /// **'People included'**
   String get eventSuccessEventSuccessHostReportLabelPeopleIncluded;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (label).
+  /// Product copy used by lib/event_success/presentation/host_report/event_success_report_quality_section.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Opted out'**
   String get eventSuccessEventSuccessHostReportLabelOptedOut;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (label).
+  /// Product copy used by lib/event_success/presentation/host_report/event_success_report_quality_section.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Wingman help'**
   String get eventSuccessEventSuccessHostReportLabelWingmanHelp;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (label).
+  /// Product copy used by lib/event_success/presentation/host_report/event_success_report_quality_section.dart (label).
   ///
   /// In en, this message translates to:
   /// **'{feedbackResponseCount}/{checkedInCount} feedback'**
@@ -8811,7 +8811,7 @@ abstract class AppLocalizations {
     required Object checkedInCount,
   });
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (label).
+  /// Product copy used by lib/event_success/presentation/host_report/event_success_report_quality_section.dart (label).
   ///
   /// In en, this message translates to:
   /// **'{attendeesWhoCaughtSomeone} caught someone'**
@@ -8826,7 +8826,7 @@ abstract class AppLocalizations {
   /// **'Catches sent'**
   String get eventSuccessEventSuccessHostReportLabelCatchesSent;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (label).
+  /// Product copy used by lib/event_success/presentation/host_report/event_success_report_quality_section.dart (label).
   ///
   /// In en, this message translates to:
   /// **'{assignmentParticipantCount} assigned'**
@@ -8835,7 +8835,7 @@ abstract class AppLocalizations {
     required Object assignmentParticipantCount,
   });
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (label).
+  /// Product copy used by lib/event_success/presentation/host_report/event_success_report_quality_section.dart (label).
   ///
   /// In en, this message translates to:
   /// **'{assignmentOptOutCount} opted out'**
@@ -8843,7 +8843,7 @@ abstract class AppLocalizations {
     required Object assignmentOptOutCount,
   });
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (label).
+  /// Product copy used by lib/event_success/presentation/host_report/event_success_report_quality_section.dart (label).
   ///
   /// In en, this message translates to:
   /// **'{wingmanRequestCount} host-help requests'**
@@ -8852,43 +8852,43 @@ abstract class AppLocalizations {
     required Object wingmanRequestCount,
   });
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (Text).
+  /// Product copy used by lib/event_success/presentation/host_report/event_success_funnel_section.dart (Text).
   ///
   /// In en, this message translates to:
   /// **'Event funnel'**
   String get eventSuccessEventSuccessHostReportTextEventFunnel;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (label).
+  /// Product copy used by lib/event_success/presentation/host_report/event_success_funnel_section.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Demand to booked'**
   String get eventSuccessEventSuccessHostReportLabelDemandToBooked;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (label).
+  /// Product copy used by lib/event_success/presentation/host_report/event_success_funnel_section.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Requests approved'**
   String get eventSuccessEventSuccessHostReportLabelRequestsApproved;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (label).
+  /// Product copy used by lib/event_success/presentation/host_report/event_success_funnel_section.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Offers accepted'**
   String get eventSuccessEventSuccessHostReportLabelOffersAccepted;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (label).
+  /// Product copy used by lib/event_success/presentation/host_report/event_success_funnel_section.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Payment complete'**
   String get eventSuccessEventSuccessHostReportLabelPaymentComplete;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (label).
+  /// Product copy used by lib/event_success/presentation/host_report/event_success_funnel_section.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Repeat attendees'**
   String get eventSuccessEventSuccessHostReportLabelRepeatAttendees;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (label).
+  /// Product copy used by lib/event_success/presentation/host_report/event_success_funnel_section.dart (label).
   ///
   /// In en, this message translates to:
   /// **'{totalDemandCount} people in demand'**
@@ -8896,7 +8896,7 @@ abstract class AppLocalizations {
     required Object totalDemandCount,
   });
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (label).
+  /// Product copy used by lib/event_success/presentation/host_report/event_success_funnel_section.dart (label).
   ///
   /// In en, this message translates to:
   /// **'{waitlistJoinCount} waitlisted'**
@@ -8904,7 +8904,7 @@ abstract class AppLocalizations {
     required Object waitlistJoinCount,
   });
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (label).
+  /// Product copy used by lib/event_success/presentation/host_report/event_success_funnel_section.dart (label).
   ///
   /// In en, this message translates to:
   /// **'{paymentCompletedCount} paid'**
@@ -8912,7 +8912,7 @@ abstract class AppLocalizations {
     required Object paymentCompletedCount,
   });
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (label).
+  /// Product copy used by lib/event_success/presentation/host_report/event_success_funnel_section.dart (label).
   ///
   /// In en, this message translates to:
   /// **'{chatStartedCount} chats started'**
@@ -8920,91 +8920,91 @@ abstract class AppLocalizations {
     required Object chatStartedCount,
   });
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_setup.dart (title).
+  /// Product copy used by lib/event_success/presentation/host_setup/event_success_host_setup_page_body.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Event started without a saved guide'**
   String get eventSuccessEventSuccessHostSetupTitleEventStartedWithoutA;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_setup.dart (title).
+  /// Product copy used by lib/event_success/presentation/host_setup/event_success_host_setup_page_body.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Live guide can no longer be saved'**
   String get eventSuccessEventSuccessHostSetupTitleLiveGuideCanNo;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_setup.dart (body).
+  /// Product copy used by lib/event_success/presentation/host_setup/event_success_host_setup_page_body.dart (body).
   ///
   /// In en, this message translates to:
   /// **'This event began before a live guide was saved. Attendance and check-in still work, but the Live tab won\'\'t have any guided controls for this event.'**
   String get eventSuccessEventSuccessHostSetupBodyThisEventBeganBefore;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_setup.dart (body).
+  /// Product copy used by lib/event_success/presentation/host_setup/event_success_host_setup_page_body.dart (body).
   ///
   /// In en, this message translates to:
   /// **'Bookings have already started. Attendance and check-in still work, but the Live tab won\'\'t have guided controls unless a guide was saved first.'**
   String get eventSuccessEventSuccessHostSetupBodyBookingsHaveAlreadyStarted;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_setup.dart (title).
+  /// Product copy used by lib/event_success/presentation/host_setup/event_success_host_setup_page_body.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Setup not saved yet'**
   String get eventSuccessEventSuccessHostSetupTitleSetupNotSavedYet;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_setup.dart (body).
+  /// Product copy used by lib/event_success/presentation/host_setup/event_success_host_setup_page_body.dart (body).
   ///
   /// In en, this message translates to:
   /// **'This default plan is visible here only. Save it so the Live tab is ready when the event starts.'**
   String get eventSuccessEventSuccessHostSetupBodyThisDefaultPlanIs;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_setup.dart (title).
+  /// Product copy used by lib/event_success/presentation/host_setup/event_success_host_setup_page_body.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Settings are locked'**
   String get eventSuccessEventSuccessHostSetupTitleSettingsAreLocked;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_setup.dart (body).
+  /// Product copy used by lib/event_success/presentation/host_setup/event_success_host_setup_page_body.dart (body).
   ///
   /// In en, this message translates to:
   /// **'Bookings have started, so the saved guide is locked in. Switch to the Live tab to drive the event in real time once it starts.'**
   String get eventSuccessEventSuccessHostSetupBodyBookingsHaveStartedSo;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_setup.dart (body).
+  /// Product copy used by lib/event_success/presentation/host_setup/event_success_host_setup_page_body.dart (body).
   ///
   /// In en, this message translates to:
   /// **'The event has started — setup is locked. Use the Live tab to control the event right now, and the Report tab afterward.'**
   String get eventSuccessEventSuccessHostSetupBodyTheEventHasStarted;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_setup.dart (title).
+  /// Product copy used by lib/event_success/presentation/event_success_setup_body.dart, lib/event_success/presentation/host_setup/event_success_host_setup_page_body.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Your plan'**
   String get eventSuccessEventSuccessHostSetupTitleYourPlan;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_setup.dart (label).
+  /// Product copy used by lib/event_success/presentation/host_setup/event_success_host_setup_page_body.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Save changes'**
   String get eventSuccessEventSuccessHostSetupLabelSaveChanges;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_setup.dart (label).
+  /// Product copy used by lib/event_success/presentation/host_setup/event_success_host_setup_page_body.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Save setup'**
   String get eventSuccessEventSuccessHostSetupLabelSaveSetup;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_setup.dart (label).
+  /// Product copy used by lib/event_success/presentation/host_setup/event_success_host_setup_page_body.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Save live guide'**
   String get eventSuccessEventSuccessHostSetupLabelSaveLiveGuide;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_setup.dart (Text).
+  /// Product copy used by lib/event_success/presentation/host_setup/event_success_target_attendees_field.dart (Text).
   ///
   /// In en, this message translates to:
   /// **'Target attendees'**
   String get eventSuccessEventSuccessHostSetupTextTargetAttendees;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_setup.dart (Text).
+  /// Product copy used by lib/event_success/presentation/host_setup/event_success_target_attendees_field.dart (Text).
   ///
   /// In en, this message translates to:
   /// **'Recommended range: {recommendedMin}-{recommendedMax}'**
@@ -9014,7 +9014,7 @@ abstract class AppLocalizations {
     required Object recommendedMax,
   });
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_setup.dart (Text).
+  /// Product copy used by lib/event_success/presentation/event_success_setup_body.dart (Text).
   ///
   /// In en, this message translates to:
   /// **'Add a goal so the live guide knows what to aim for.'**
@@ -9027,7 +9027,7 @@ abstract class AppLocalizations {
   /// **'Before launch'**
   String get eventSuccessEventSuccessHostSetupTitleBeforeLaunch;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_setup.dart (Text).
+  /// Product copy used by lib/event_success/presentation/host_setup/event_success_host_setup_page_body.dart (Text).
   ///
   /// In en, this message translates to:
   /// **'Unsaved changes'**
@@ -10611,13 +10611,13 @@ abstract class AppLocalizations {
   /// **'this attendee'**
   String get eventSuccessEventSuccessCompanionWingmanTextThisAttendee;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (body).
+  /// Product copy used by lib/event_success/presentation/host_report/event_success_host_report_page_body.dart (body).
   ///
   /// In en, this message translates to:
   /// **'The post-event report appears once checked-in attendees share feedback. There is no signal to summarize yet.'**
   String get eventSuccessEventSuccessHostReportBodyThePostEventReport;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (title).
+  /// Product copy used by lib/event_success/presentation/host_report/event_success_host_report_page_body.dart (title).
   ///
   /// In en, this message translates to:
   /// **'s'**
@@ -14196,7 +14196,7 @@ abstract class AppLocalizations {
   String
   get eventSuccessEventSuccessHostOverridesVisiblecopyChooseTwoDifferentAttendees;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_setup.dart (visibleCopy).
+  /// Product copy used by lib/event_success/presentation/host_setup/event_success_target_attendees_field.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'{toInt}'**
@@ -14204,14 +14204,14 @@ abstract class AppLocalizations {
     required Object toInt,
   });
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_setup.dart (visibleCopy).
+  /// Product copy used by lib/event_success/presentation/host_setup/event_success_target_attendees_field.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Decrease target attendees'**
   String
   get eventSuccessEventSuccessHostSetupVisiblecopyDecreaseTargetAttendees;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_setup.dart (visibleCopy).
+  /// Product copy used by lib/event_success/presentation/host_setup/event_success_target_attendees_field.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Increase target attendees'**

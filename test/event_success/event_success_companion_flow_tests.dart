@@ -24,7 +24,7 @@ void _registerEventSuccessCompanionFlowTests() {
             body: SafeArea(
               child: Padding(
                 padding: const EdgeInsets.all(16),
-                child: EventSuccessHostPanel(
+                child: EventSuccessHostWorkspacePageBody(
                   event: event,
                   plan: plan,
                   planIsPersisted: true,
