@@ -5,8 +5,7 @@ import 'package:flutter/widgets.dart';
 
 /// Owns the room reveal clock without introducing a visual wrapper.
 /// Host and attendee surfaces keep their distinct reveal and consent contracts.
-abstract class EventSuccessRevealClockState<W extends StatefulWidget>
-    extends State<W> {
+mixin EventSuccessRevealClockMixin<W extends StatefulWidget> on State<W> {
   Timer? _timer;
   DateTime _now = DateTime.now();
   bool _enabled = false;

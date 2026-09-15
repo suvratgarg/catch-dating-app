@@ -17,7 +17,7 @@ import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
-import 'event_success_reveal_clock_state.dart';
+import 'event_success_reveal_clock_mixin.dart';
 
 class EventSuccessAttendeeRevealSurface extends StatefulWidget {
   const EventSuccessAttendeeRevealSurface({
@@ -53,7 +53,8 @@ class EventSuccessAttendeeRevealSurface extends StatefulWidget {
 }
 
 class _EventSuccessAttendeeRevealSurfaceState
-    extends EventSuccessRevealClockState<EventSuccessAttendeeRevealSurface> {
+    extends State<EventSuccessAttendeeRevealSurface>
+    with EventSuccessRevealClockMixin<EventSuccessAttendeeRevealSurface> {
   @override
   bool get revealClockEnabled =>
       widget.now == null &&
