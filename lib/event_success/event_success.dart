@@ -1,4 +1,5 @@
 export 'data/event_success_repository.dart';
+export 'domain/event_assistance_action_plan.dart';
 export 'domain/event_assistance_deliveries_page.dart';
 export 'domain/event_assistance_delivery.dart';
 export 'domain/event_assistance_delivery_change.dart';

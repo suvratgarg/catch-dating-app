@@ -132,6 +132,10 @@ missing capability. Workflow status is `external`, `complete`, `partial` or
 setup, live runtime, rehearsal and reporting can explain a gap rather than
 silently omit an action. Capability composition remains independent of
 `activityKind`; the saved event format and operating state own those facts.
+Flutter mirrors this projection in
+`event_assistance_action_plan.dart`, using the generated workflow and command
+binding descriptors directly. The resulting action and command lists are
+immutable and preserve the distinct live and rehearsal coverage states.
 
 The live `sendOperationalMessage` binding is partial. Late-join `joining`
 messages run through `LiveMessageDispatcher`; `planChange` and `followUp` still
