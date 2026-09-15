@@ -70,10 +70,6 @@
       "maxLines": 1595
     },
     {
-      "path": "lib/hosts/presentation/host_event_manage_screen.dart",
-      "maxLines": 1861
-    },
-    {
       "path": "lib/hosts/presentation/host_operations/host_analytics.dart",
       "maxLines": 1138
     },

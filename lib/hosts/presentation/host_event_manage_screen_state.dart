@@ -240,3 +240,18 @@ bool hostShowsCapacityNotice(Event event) {
   if (event.isFull) return true;
   return event.effectiveWaitlistedCohortCounts.values.any((count) => count > 0);
 }
+
+String hostEventManageLifecycleLabel(
+  AppLocalizations l10n, {
+  required Event event,
+  required HostEventWorkspacePhase phase,
+}) => event.isCancelled
+    ? l10n.hostsHostEventManageWorkspaceCancelled
+    : switch (phase) {
+        HostEventWorkspacePhase.preparation =>
+          l10n.hostsHostEventManageWorkspacePreparation,
+        HostEventWorkspacePhase.runtime =>
+          l10n.hostsHostEventManageWorkspaceRuntime,
+        HostEventWorkspacePhase.recap =>
+          l10n.hostsHostEventManageWorkspaceRecap,
+      };

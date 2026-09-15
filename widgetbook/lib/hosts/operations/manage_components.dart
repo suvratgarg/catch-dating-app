@@ -6,8 +6,11 @@ import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
 import 'package:catch_dating_app/events/domain/event_private_access.dart';
 import 'package:catch_dating_app/events/shared/attendance_sheet_view_model.dart';
+import 'package:catch_dating_app/hosts/presentation/host_event_booking_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_event_manage_section.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_event_private_access_section.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_invite_link_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_roster_display_state.dart';
@@ -176,16 +179,16 @@ Widget _hostEventManagePreviewFor(BuildContext context, String focus) {
         roster: const Center(child: Text('Guest roster content')),
       ),
     ),
-    'HostEventSummaryCard' => HostEventSummaryCard(club: club, event: event),
+    'HostEventSummarySection' => HostEventSummarySection(
+      club: club,
+      event: event,
+    ),
     'HostEventSummaryRow' => HostEventSummaryRow(
       icon: CatchIcons.locationOnOutlined,
       label: 'Meet',
       value: 'Carter Road Jetty',
     ),
-    'HostFullCapacityApron' => HostFullCapacityApron(
-      event: event,
-      roster: roster,
-    ),
+    'HostCapacitySection' => HostCapacitySection(event: event, roster: roster),
     'HostFullCapacityBanner' => const HostFullCapacityBanner(),
     'HostInviteLinkRow' => HostInviteLinkRow(
       event: event,
@@ -195,7 +198,7 @@ Widget _hostEventManagePreviewFor(BuildContext context, String focus) {
       onCopyInviteLink: (_) {},
       onDisableInviteLink: (_) {},
     ),
-    'HostInviteLinksList' => HostInviteLinksList(
+    'HostInviteLinksSection' => HostInviteLinksSection(
       event: event,
       inviteCode: inviteCode,
       linksAsync: AsyncData<List<EventInviteLink>>(
@@ -242,12 +245,12 @@ Widget _hostEventManagePreviewFor(BuildContext context, String focus) {
       onSearchChanged: (_) {},
       onFilterChanged: (_) {},
     ),
-    'HostPrivateAccessBody' => Consumer(
+    'HostPrivateAccessSection' => Consumer(
       builder: (context, ref, _) {
         final shareMutation = ref.watch(
           HostEventManageController.sharePrivateLinkMutation,
         );
-        return HostPrivateAccessBody(
+        return HostPrivateAccessSection(
           event: event,
           state: HostPrivateAccessDisplayState.resolve(
             l10n: context.l10n,
@@ -276,8 +279,8 @@ Widget _hostEventManagePreviewFor(BuildContext context, String focus) {
         );
       },
     ),
-    'HostPrivateAccessCard' => Consumer(
-      builder: (context, ref, _) => HostPrivateAccessCard(
+    'HostPrivateAccessAsyncBoundary' => Consumer(
+      builder: (context, ref, _) => HostPrivateAccessAsyncBoundary(
         club: club,
         event: event,
         accessAsync: AsyncData<EventPrivateAccess?>(
@@ -303,8 +306,18 @@ Widget _hostEventManagePreviewFor(BuildContext context, String focus) {
         onDisableInviteLink: (_) {},
       ),
     ),
-    'HostPrivateAccessShell' => const HostPrivateAccessShell(
+    'HostPrivateAccessSurface' => const HostPrivateAccessSurface(
       child: Text('Private access preview shell'),
+    ),
+    'HostPublicRegistrationField' => Consumer(
+      builder: (context, ref, _) => HostPublicRegistrationField(
+        club: club,
+        event: event,
+        mutation: ref.watch(
+          HostEventBookingController.publicRegistrationMutation,
+        ),
+        onChanged: (_) {},
+      ),
     ),
     'HostRosterFilterHeader' => HostRosterFilterHeader(
       title: 'Participation',
@@ -422,11 +435,11 @@ Widget hostStrictHostEventParticipantsPanelCatalogStates(
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
-  type: HostEventSummaryCard,
+  type: HostEventSummarySection,
   path: '[P1 product surfaces]/Host operations/Strict coverage',
 )
-Widget hostStrictHostEventSummaryCardCatalogStates(BuildContext context) =>
-    _hostEventManageExactCatalog(context, 'HostEventSummaryCard');
+Widget hostStrictHostEventSummarySectionCatalogStates(BuildContext context) =>
+    _hostEventManageExactCatalog(context, 'HostEventSummarySection');
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
@@ -446,11 +459,11 @@ Widget hostStrictHostEventCheckInQrPanelCatalogStates(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
-  type: HostFullCapacityApron,
+  type: HostCapacitySection,
   path: '[P1 product surfaces]/Host operations/Strict coverage',
 )
-Widget hostStrictHostFullCapacityApronCatalogStates(BuildContext context) =>
-    _hostEventManageExactCatalog(context, 'HostFullCapacityApron');
+Widget hostStrictHostCapacitySectionCatalogStates(BuildContext context) =>
+    _hostEventManageExactCatalog(context, 'HostCapacitySection');
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
@@ -470,11 +483,45 @@ Widget hostStrictHostInviteLinkRowCatalogStates(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
-  type: HostInviteLinksList,
+  type: HostInviteLinksSection,
   path: '[P1 product surfaces]/Host operations/Strict coverage',
 )
-Widget hostStrictHostInviteLinksListCatalogStates(BuildContext context) =>
-    _hostEventManageExactCatalog(context, 'HostInviteLinksList');
+Widget hostStrictHostInviteLinksSectionCatalogStates(BuildContext context) =>
+    _hostEventManageExactCatalog(context, 'HostInviteLinksSection');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostPrivateAccessAsyncBoundary,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostPrivateAccessAsyncBoundaryCatalogStates(
+  BuildContext context,
+) => _hostEventManageExactCatalog(context, 'HostPrivateAccessAsyncBoundary');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostPrivateAccessSection,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostPrivateAccessSectionCatalogStates(BuildContext context) =>
+    _hostEventManageExactCatalog(context, 'HostPrivateAccessSection');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostPrivateAccessSurface,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostPrivateAccessSurfaceCatalogStates(BuildContext context) =>
+    _hostEventManageExactCatalog(context, 'HostPrivateAccessSurface');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostPublicRegistrationField,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostPublicRegistrationFieldCatalogStates(
+  BuildContext context,
+) => _hostEventManageExactCatalog(context, 'HostPublicRegistrationField');
 
 class _HostManageComponentFrame extends StatelessWidget {
   const _HostManageComponentFrame({required this.child});
