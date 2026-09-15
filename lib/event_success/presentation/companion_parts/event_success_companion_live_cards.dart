@@ -57,7 +57,7 @@ class MicroPodCard extends StatelessWidget {
     final profilesByUid = {
       for (final profile in peerProfiles) profile.uid: profile,
     };
-    return StagePanel(
+    return CompanionStageSurface(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -126,7 +126,7 @@ class MicroPodCard extends StatelessWidget {
               ),
           ],
           gapH14,
-          StageActionDock(
+          CompanionStageActionSection(
             child: IncludeMeToggle(
               label: context
                   .l10n
@@ -245,7 +245,7 @@ class RotationScheduleCard extends StatelessWidget {
     final profilesByUid = {
       for (final profile in peerProfiles) profile.uid: profile,
     };
-    return StagePanel(
+    return CompanionStageSurface(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -305,7 +305,7 @@ class RotationScheduleCard extends StatelessWidget {
               ),
           ],
           gapH14,
-          StageActionDock(
+          CompanionStageActionSection(
             child: IncludeMeToggle(
               label: context
                   .l10n
@@ -381,7 +381,7 @@ class LiveStepContextCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final activeStep = step;
-    return StagePanel(
+    return CompanionStageSurface(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -475,7 +475,7 @@ class PreCheckInPlanningCard extends StatelessWidget {
               .eventSuccessEventSuccessCompanionLiveCardsTextYouCanAskThe,
         ),
     ];
-    return StagePanel(
+    return CompanionStageSurface(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -598,7 +598,7 @@ class _SelfCheckInCardState extends State<SelfCheckInCard> {
   Widget build(BuildContext context) {
     final busy = widget.actionState.isCheckingIn || _checkingIn;
     final t = CatchTokens.of(context);
-    return StagePanel(
+    return CompanionStageSurface(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -624,7 +624,7 @@ class _SelfCheckInCardState extends State<SelfCheckInCard> {
             style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
           gapH14,
-          StageActionDock(
+          CompanionStageActionSection(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -828,7 +828,7 @@ class StagePromptCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return StagePanel(
+    return CompanionStageSurface(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -867,7 +867,7 @@ class StageConversationCueCard extends StatelessWidget {
       EventSuccessConversationCueMoment.live => CatchIcons.forumOutlined,
       EventSuccessConversationCueMoment.postEvent => CatchIcons.chatOutlined,
     };
-    return StagePanel(
+    return CompanionStageSurface(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

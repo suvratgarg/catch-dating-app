@@ -18,7 +18,7 @@ class PrivateAfterglowRecapCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final feedback = this.feedback;
-    return StagePanel(
+    return CompanionStageSurface(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -113,7 +113,7 @@ class PrivateAfterglowRecapCard extends StatelessWidget {
             ],
           ),
           gapH14,
-          StageSoftBand(
+          CompanionStageBanner(
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

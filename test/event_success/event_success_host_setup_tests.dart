@@ -27,7 +27,7 @@ void _registerEventSuccessHostSetupTests() {
         ),
       );
 
-      expect(find.byType(StageBouncyPress), findsNWidgets(3));
+      expect(find.byType(CompanionBouncySurface), findsNWidgets(3));
       expect(find.byType(InkWell), findsNothing);
       final activeNode = find.semantics.byLabel('Question 2').evaluate().single;
       expect(

@@ -33,16 +33,16 @@ Widget eventSuccessStrictAfterglowBeatRow(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: "ArrivalRingCard",
-  type: ArrivalRingCard,
+  name: "CompanionArrivalSection",
+  type: CompanionArrivalSection,
   path:
       "[P1 product surfaces]/Event Success strict coverage/Companion folded states",
 )
-Widget eventSuccessStrictArrivalRingCard(BuildContext context) {
+Widget eventSuccessStrictCompanionArrivalSection(BuildContext context) {
   return eventSuccessStrictPreview(
     context,
     surface: EventSuccessStrictSurface.companion,
-    componentName: "ArrivalRingCard",
+    componentName: "CompanionArrivalSection",
   );
 }
 
@@ -119,30 +119,32 @@ Widget eventSuccessStrictIncludeMeToggle(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: "LiveArrivalRing",
-  type: LiveArrivalRing,
+  name: "CompanionArrivalProgressIndicator",
+  type: CompanionArrivalProgressIndicator,
   path:
       "[P1 product surfaces]/Event Success strict coverage/Companion folded states",
 )
-Widget eventSuccessStrictLiveArrivalRing(BuildContext context) {
+Widget eventSuccessStrictCompanionArrivalProgressIndicator(
+  BuildContext context,
+) {
   return eventSuccessStrictPreview(
     context,
     surface: EventSuccessStrictSurface.companion,
-    componentName: "LiveArrivalRing",
+    componentName: "CompanionArrivalProgressIndicator",
   );
 }
 
 @widgetbook.UseCase(
-  name: "LiveOthersInRoomLine",
-  type: LiveOthersInRoomLine,
+  name: "CompanionOthersInRoomText",
+  type: CompanionOthersInRoomText,
   path:
       "[P1 product surfaces]/Event Success strict coverage/Companion folded states",
 )
-Widget eventSuccessStrictLiveOthersInRoomLine(BuildContext context) {
+Widget eventSuccessStrictCompanionOthersInRoomText(BuildContext context) {
   return eventSuccessStrictPreview(
     context,
     surface: EventSuccessStrictSurface.companion,
-    componentName: "LiveOthersInRoomLine",
+    componentName: "CompanionOthersInRoomText",
   );
 }
 
@@ -175,16 +177,16 @@ Widget eventSuccessStrictMicroPodCard(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: "NoCompanionActionsCard",
-  type: NoCompanionActionsCard,
+  name: "CompanionActionsEmptyState",
+  type: CompanionActionsEmptyState,
   path:
       "[P1 product surfaces]/Event Success strict coverage/Companion folded states",
 )
-Widget eventSuccessStrictNoCompanionActionsCard(BuildContext context) {
+Widget eventSuccessStrictCompanionActionsEmptyState(BuildContext context) {
   return eventSuccessStrictPreview(
     context,
     surface: EventSuccessStrictSurface.companion,
-    componentName: "NoCompanionActionsCard",
+    componentName: "CompanionActionsEmptyState",
   );
 }
 

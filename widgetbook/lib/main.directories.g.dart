@@ -6962,57 +6962,145 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'AnimatedStageMotifBackground',
+                name: 'CompanionActionsEmptyState',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
-                    name: 'AnimatedStageMotifBackground',
-                    builder:
-                        _widgetbook_workspace_event_success_specimens_companion_stage
-                            .eventSuccessStrictAnimatedStageMotifBackground,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'ArrivalRingCard',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'ArrivalRingCard',
+                    name: 'CompanionActionsEmptyState',
                     builder:
                         _widgetbook_workspace_event_success_specimens_companion_social
-                            .eventSuccessStrictArrivalRingCard,
+                            .eventSuccessStrictCompanionActionsEmptyState,
                   ),
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'CompanionHero',
+                name: 'CompanionArrivalProgressIndicator',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
-                    name: 'CompanionHero',
+                    name: 'CompanionArrivalProgressIndicator',
                     builder:
-                        _widgetbook_workspace_event_success_specimens_companion_stage
-                            .eventSuccessStrictCompanionHero,
+                        _widgetbook_workspace_event_success_specimens_companion_social
+                            .eventSuccessStrictCompanionArrivalProgressIndicator,
                   ),
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'CompanionMomentStage',
+                name: 'CompanionArrivalSection',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
-                    name: 'CompanionMomentStage',
+                    name: 'CompanionArrivalSection',
                     builder:
-                        _widgetbook_workspace_event_success_specimens_companion_stage
-                            .eventSuccessStrictCompanionMomentStage,
+                        _widgetbook_workspace_event_success_specimens_companion_social
+                            .eventSuccessStrictCompanionArrivalSection,
                   ),
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'CompanionMomentStageContent',
+                name: 'CompanionBouncyChip',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
-                    name: 'CompanionMomentStageContent',
+                    name: 'CompanionBouncyChip',
                     builder:
                         _widgetbook_workspace_event_success_specimens_companion_stage
-                            .eventSuccessStrictCompanionMomentStageContent,
+                            .eventSuccessStrictCompanionBouncyChip,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'CompanionBouncySurface',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'CompanionBouncySurface',
+                    builder:
+                        _widgetbook_workspace_event_success_specimens_companion_stage
+                            .eventSuccessStrictCompanionBouncySurface,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'CompanionExpectationRow',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'CompanionExpectationRow',
+                    builder:
+                        _widgetbook_workspace_event_success_specimens_companion_paper
+                            .eventSuccessStrictCompanionExpectationRow,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'CompanionExpectationSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'CompanionExpectationSection',
+                    builder:
+                        _widgetbook_workspace_event_success_specimens_companion_paper
+                            .eventSuccessStrictCompanionExpectationSection,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'CompanionHeroSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'CompanionHeroSection',
+                    builder:
+                        _widgetbook_workspace_event_success_specimens_companion_stage
+                            .eventSuccessStrictCompanionHeroSection,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'CompanionMomentPageBody',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'CompanionMomentPageBody',
+                    builder:
+                        _widgetbook_workspace_event_success_specimens_companion_stage
+                            .eventSuccessStrictCompanionMomentPageBody,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'CompanionMomentViewport',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'CompanionMomentViewport',
+                    builder:
+                        _widgetbook_workspace_event_success_specimens_companion_stage
+                            .eventSuccessStrictCompanionMomentViewport,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'CompanionOthersInRoomText',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'CompanionOthersInRoomText',
+                    builder:
+                        _widgetbook_workspace_event_success_specimens_companion_social
+                            .eventSuccessStrictCompanionOthersInRoomText,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'CompanionPaperNavigationRow',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'CompanionPaperNavigationRow',
+                    builder:
+                        _widgetbook_workspace_event_success_specimens_companion_paper
+                            .eventSuccessStrictCompanionPaperNavigationRow,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'CompanionPaperProgressIndicator',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'CompanionPaperProgressIndicator',
+                    builder:
+                        _widgetbook_workspace_event_success_specimens_companion_paper
+                            .eventSuccessStrictCompanionPaperProgressIndicator,
                   ),
                 ],
               ),
@@ -7028,13 +7116,156 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'CompanionStageContentTransition',
+                name: 'CompanionPaperTicket',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
-                    name: 'CompanionStageContentTransition',
+                    name: 'CompanionPaperTicket',
+                    builder:
+                        _widgetbook_workspace_event_success_specimens_companion_paper
+                            .eventSuccessStrictCompanionPaperTicket,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'CompanionPaperTicketDivider',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'CompanionPaperTicketDivider',
+                    builder:
+                        _widgetbook_workspace_event_success_specimens_companion_paper
+                            .eventSuccessStrictCompanionPaperTicketDivider,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'CompanionPaperTicketHeader',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'CompanionPaperTicketHeader',
+                    builder:
+                        _widgetbook_workspace_event_success_specimens_companion_paper
+                            .eventSuccessStrictCompanionPaperTicketHeader,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'CompanionPaperTicketImage',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'CompanionPaperTicketImage',
+                    builder:
+                        _widgetbook_workspace_event_success_specimens_companion_paper
+                            .eventSuccessStrictCompanionPaperTicketImage,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'CompanionPaperTicketRow',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'CompanionPaperTicketRow',
+                    builder:
+                        _widgetbook_workspace_event_success_specimens_companion_paper
+                            .eventSuccessStrictCompanionPaperTicketRow,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'CompanionPaperTicketText',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'CompanionPaperTicketText',
+                    builder:
+                        _widgetbook_workspace_event_success_specimens_companion_paper
+                            .eventSuccessStrictCompanionPaperTicketText,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'CompanionPrivacySection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'CompanionPrivacySection',
+                    builder:
+                        _widgetbook_workspace_event_success_specimens_companion_paper
+                            .eventSuccessStrictCompanionPrivacySection,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'CompanionPrivacyText',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'CompanionPrivacyText',
                     builder:
                         _widgetbook_workspace_event_success_specimens_companion_stage
-                            .eventSuccessStrictCompanionStageContentTransition,
+                            .eventSuccessStrictCompanionPrivacyText,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'CompanionSelfCheckInSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'CompanionSelfCheckInSection',
+                    builder:
+                        _widgetbook_workspace_event_success_specimens_companion_paper
+                            .eventSuccessStrictCompanionSelfCheckInSection,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'CompanionStageActionSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'CompanionStageActionSection',
+                    builder:
+                        _widgetbook_workspace_event_success_specimens_companion_stage
+                            .eventSuccessStrictCompanionStageActionSection,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'CompanionStageBanner',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'CompanionStageBanner',
+                    builder:
+                        _widgetbook_workspace_event_success_specimens_companion_stage
+                            .eventSuccessStrictCompanionStageBanner,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'CompanionStageImage',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'CompanionStageImage',
+                    builder:
+                        _widgetbook_workspace_event_success_specimens_companion_stage
+                            .eventSuccessStrictCompanionStageImage,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'CompanionStageMotifImage',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'CompanionStageMotifImage',
+                    builder:
+                        _widgetbook_workspace_event_success_specimens_companion_stage
+                            .eventSuccessStrictCompanionStageMotifImage,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'CompanionStageNavigationRow',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'CompanionStageNavigationRow',
+                    builder:
+                        _widgetbook_workspace_event_success_specimens_companion_stage
+                            .eventSuccessStrictCompanionStageNavigationRow,
                   ),
                 ],
               ),
@@ -7046,6 +7277,28 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_event_success_specimens_companion_stage
                             .eventSuccessStrictCompanionStageScaffold,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'CompanionStageSurface',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'CompanionStageSurface',
+                    builder:
+                        _widgetbook_workspace_event_success_specimens_companion_stage
+                            .eventSuccessStrictCompanionStageSurface,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'CompanionStageTransitionViewport',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'CompanionStageTransitionViewport',
+                    builder:
+                        _widgetbook_workspace_event_success_specimens_companion_stage
+                            .eventSuccessStrictCompanionStageTransitionViewport,
                   ),
                 ],
               ),
@@ -7105,28 +7358,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'LiveArrivalRing',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'LiveArrivalRing',
-                    builder:
-                        _widgetbook_workspace_event_success_specimens_companion_social
-                            .eventSuccessStrictLiveArrivalRing,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'LiveOthersInRoomLine',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'LiveOthersInRoomLine',
-                    builder:
-                        _widgetbook_workspace_event_success_specimens_companion_social
-                            .eventSuccessStrictLiveOthersInRoomLine,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
                 name: 'LiveStepContextCard',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -7145,149 +7376,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_event_success_specimens_companion_social
                             .eventSuccessStrictMicroPodCard,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'NoCompanionActionsCard',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'NoCompanionActionsCard',
-                    builder:
-                        _widgetbook_workspace_event_success_specimens_companion_social
-                            .eventSuccessStrictNoCompanionActionsCard,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'PaperBarcode',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'PaperBarcode',
-                    builder:
-                        _widgetbook_workspace_event_success_specimens_companion_paper
-                            .eventSuccessStrictPaperBarcode,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'PaperCompanionNav',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'PaperCompanionNav',
-                    builder:
-                        _widgetbook_workspace_event_success_specimens_companion_paper
-                            .eventSuccessStrictPaperCompanionNav,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'PaperCompanionTicket',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'PaperCompanionTicket',
-                    builder:
-                        _widgetbook_workspace_event_success_specimens_companion_paper
-                            .eventSuccessStrictPaperCompanionTicket,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'PaperExpectationCard',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'PaperExpectationCard',
-                    builder:
-                        _widgetbook_workspace_event_success_specimens_companion_paper
-                            .eventSuccessStrictPaperExpectationCard,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'PaperExpectationRow',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'PaperExpectationRow',
-                    builder:
-                        _widgetbook_workspace_event_success_specimens_companion_paper
-                            .eventSuccessStrictPaperExpectationRow,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'PaperPrivacyCard',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'PaperPrivacyCard',
-                    builder:
-                        _widgetbook_workspace_event_success_specimens_companion_paper
-                            .eventSuccessStrictPaperPrivacyCard,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'PaperProgressRail',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'PaperProgressRail',
-                    builder:
-                        _widgetbook_workspace_event_success_specimens_companion_paper
-                            .eventSuccessStrictPaperProgressRail,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'PaperSelfCheckInBar',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'PaperSelfCheckInBar',
-                    builder:
-                        _widgetbook_workspace_event_success_specimens_companion_paper
-                            .eventSuccessStrictPaperSelfCheckInBar,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'PaperTicketDetail',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'PaperTicketDetail',
-                    builder:
-                        _widgetbook_workspace_event_success_specimens_companion_paper
-                            .eventSuccessStrictPaperTicketDetail,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'PaperTicketHeader',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'PaperTicketHeader',
-                    builder:
-                        _widgetbook_workspace_event_success_specimens_companion_paper
-                            .eventSuccessStrictPaperTicketHeader,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'PaperTicketPerforation',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'PaperTicketPerforation',
-                    builder:
-                        _widgetbook_workspace_event_success_specimens_companion_paper
-                            .eventSuccessStrictPaperTicketPerforation,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'PaperTicketSerial',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'PaperTicketSerial',
-                    builder:
-                        _widgetbook_workspace_event_success_specimens_companion_paper
-                            .eventSuccessStrictPaperTicketSerial,
                   ),
                 ],
               ),
@@ -7391,39 +7479,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'StageActionDock',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'StageActionDock',
-                    builder:
-                        _widgetbook_workspace_event_success_specimens_companion_stage
-                            .eventSuccessStrictStageActionDock,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'StageBouncyChip',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'StageBouncyChip',
-                    builder:
-                        _widgetbook_workspace_event_success_specimens_companion_stage
-                            .eventSuccessStrictStageBouncyChip,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'StageBouncyPress',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'StageBouncyPress',
-                    builder:
-                        _widgetbook_workspace_event_success_specimens_companion_stage
-                            .eventSuccessStrictStageBouncyPress,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
                 name: 'StageConversationCueCard',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -7446,50 +7501,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'StageGlyph',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'StageGlyph',
-                    builder:
-                        _widgetbook_workspace_event_success_specimens_companion_stage
-                            .eventSuccessStrictStageGlyph,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'StageNav',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'StageNav',
-                    builder:
-                        _widgetbook_workspace_event_success_specimens_companion_stage
-                            .eventSuccessStrictStageNav,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'StagePanel',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'StagePanel',
-                    builder:
-                        _widgetbook_workspace_event_success_specimens_companion_stage
-                            .eventSuccessStrictStagePanel,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'StagePrivacyLine',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'StagePrivacyLine',
-                    builder:
-                        _widgetbook_workspace_event_success_specimens_companion_stage
-                            .eventSuccessStrictStagePrivacyLine,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
                 name: 'StagePromptCard',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -7508,17 +7519,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_event_success_specimens_companion_stage
                             .eventSuccessStrictStageSectionLabel,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'StageSoftBand',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'StageSoftBand',
-                    builder:
-                        _widgetbook_workspace_event_success_specimens_companion_stage
-                            .eventSuccessStrictStageSoftBand,
                   ),
                 ],
               ),

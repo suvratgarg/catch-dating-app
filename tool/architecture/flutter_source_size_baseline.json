@@ -18,10 +18,6 @@
       "maxLines": 1033
     },
     {
-      "path": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "maxLines": 2080
-    },
-    {
       "path": "lib/event_success/presentation/event_success_feature_blocks.dart",
       "maxLines": 1011
     },

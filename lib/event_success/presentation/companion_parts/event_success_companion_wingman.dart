@@ -62,7 +62,7 @@ class _WingmanRequestSectionState extends State<WingmanRequestSection> {
         : _profileNameForUid(widget.candidates, requestedTargetUid);
 
     final t = CatchTokens.of(context);
-    return StagePanel(
+    return CompanionStageSurface(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -91,7 +91,7 @@ class _WingmanRequestSectionState extends State<WingmanRequestSection> {
           ),
           if (requestedTargetUid != null) ...[
             gapH12,
-            StageSoftBand(
+            CompanionStageBanner(
               child: Row(
                 children: [
                   Expanded(
@@ -124,7 +124,7 @@ class _WingmanRequestSectionState extends State<WingmanRequestSection> {
             ),
           ],
           gapH12,
-          StageSoftBand(
+          CompanionStageBanner(
             child: CatchFieldLanes.single(
               child: CatchField.input(
                 copy: catchFieldCopy(context.l10n),

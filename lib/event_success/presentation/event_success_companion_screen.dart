@@ -60,12 +60,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lottie/lottie.dart';
 
 part 'companion_parts/event_success_companion_afterglow.dart';
+part 'companion_parts/event_success_companion_arrival_section.dart';
 part 'companion_parts/event_success_companion_arrival_mission.dart';
 part 'companion_parts/event_success_companion_feedback.dart';
 part 'companion_parts/event_success_companion_live_cards.dart';
+part 'companion_parts/event_success_companion_motion_viewport.dart';
+part 'companion_parts/event_success_companion_paper_section.dart';
 part 'companion_parts/event_success_companion_questionnaire.dart';
 part 'companion_parts/event_success_companion_reveal_cinematic.dart';
 part 'companion_parts/event_success_companion_shared.dart';
+part 'companion_parts/event_success_companion_stage_viewport.dart';
 part 'companion_parts/event_success_companion_wingman.dart';
 part 'event_success_companion_body_screen.dart';
 
