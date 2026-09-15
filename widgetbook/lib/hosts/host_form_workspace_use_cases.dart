@@ -4,10 +4,12 @@ import 'package:catch_dating_app/hosts/domain/forms/host_form_definition.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_editor.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_response.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_summary.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_form_builder_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_metrics.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_overview_section_list.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_detail_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_workspace_header.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_workspace_state.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:flutter/material.dart';
@@ -46,7 +48,7 @@ Widget hostFormWorkspaceHeaderPreview(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Published form overview',
-  type: HostFormWorkspaceOverview,
+  type: HostFormOverviewSectionList,
   path: '[P1 product surfaces]/Host operations/Forms',
 )
 Widget hostFormWorkspaceOverviewPreview(BuildContext context) => ProviderScope(
@@ -61,7 +63,7 @@ Widget hostFormWorkspaceOverviewPreview(BuildContext context) => ProviderScope(
     child: Scaffold(
       body: SingleChildScrollView(
         padding: CatchInsets.pageBody,
-        child: HostFormWorkspaceOverview(
+        child: HostFormOverviewSectionList(
           organizerId: 'org_1',
           state: hostFormPreviewState,
           onQuestions: () {},

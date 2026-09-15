@@ -102,10 +102,6 @@
       "maxLines": 1595
     },
     {
-      "path": "lib/hosts/presentation/forms/host_form_builder_screen.dart",
-      "maxLines": 1670
-    },
-    {
       "path": "lib/hosts/presentation/host_event_manage_screen_state.dart",
       "maxLines": 1309
     },
@@ -143,7 +139,7 @@
     },
     {
       "path": "lib/routing/go_router.dart",
-      "maxLines": 1424
+      "maxLines": 1423
     },
     {
       "path": "lib/safety/presentation/settings_screen.dart",
