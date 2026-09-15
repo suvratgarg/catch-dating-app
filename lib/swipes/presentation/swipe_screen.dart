@@ -104,7 +104,8 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen> {
     );
     final eventAsync = ref.watch(watchEventProvider(widget.eventId));
     final currentUserAsync = ref.watch(watchUserProfileProvider);
-    final currentUser = currentUserAsync.asData?.value;
+    final currentUserState = _catchAsyncState(currentUserAsync);
+    final currentUser = currentUserState.value;
     final participationAsync = currentUser == null
         ? null
         : ref.watch(
@@ -114,7 +115,7 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen> {
       l10n: context.l10n,
       queue: _catchAsyncState(queueAsync),
       event: _catchAsyncState(eventAsync),
-      currentUser: _catchAsyncState(currentUserAsync),
+      currentUser: currentUserState,
       currentUserParticipation: participationAsync == null
           ? null
           : _catchAsyncState(participationAsync),

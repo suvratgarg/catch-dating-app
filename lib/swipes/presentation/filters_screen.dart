@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
@@ -84,10 +85,11 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
   @override
   Widget build(BuildContext context) {
     final profileAsync = ref.watch(watchUserProfileProvider);
+    final profileState = catchAsyncStateFromAsyncValue(profileAsync);
     final saveMutation = ref.watch(FiltersController.saveFiltersMutation);
     final saving = saveMutation.isPending;
     final preferencesState = _stateFor(
-      user: profileAsync.asData?.value,
+      user: profileState.value,
       saving: saving,
     );
     VoidCallback? onReset;
@@ -130,7 +132,7 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
             ),
           ],
         ),
-        footer: profileAsync.isLoading
+        footer: profileState.isLoading
             ? CatchDockSurface(
                 includeSafeArea: false,
                 padding: CatchInsets.formActionDock,

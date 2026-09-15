@@ -4,6 +4,7 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/external_links.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/external_event.dart';
 import 'package:catch_dating_app/events/events.dart'
@@ -77,6 +78,7 @@ class _ExploreMapScreenState extends ConsumerState<ExploreMapScreen> {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final uidAsync = ref.watch(uidProvider);
+    final uidState = catchAsyncStateFromAsyncValue(uidAsync);
     final viewerCacheKey = exploreMapViewerCacheKey(uidAsync);
     if (_lastViewerCacheKey != viewerCacheKey) {
       final hadViewer = _lastViewerCacheKey != null;
@@ -87,6 +89,7 @@ class _ExploreMapScreenState extends ConsumerState<ExploreMapScreen> {
       }
     }
     final feedAsync = ref.watch(exploreFeedViewModelProvider);
+    final feedState = catchAsyncStateFromAsyncValue(feedAsync);
     final selectedCity = ref.watch(selectedExploreCityProvider);
     final marketId = selectedCity.effectiveMarketId;
     if (_lastMarketId != marketId) {
@@ -94,13 +97,14 @@ class _ExploreMapScreenState extends ConsumerState<ExploreMapScreen> {
       _lastSuccessfulMapViewModel = null;
     }
     final filters = ref.watch(exploreFiltersProvider);
-    if (uidAsync.asData?.value == null &&
-        uidAsync.asData != null &&
-        filters.joinedOnly) {
+    if (uidState.value == null && uidState.hasData && filters.joinedOnly) {
       _scheduleGuestJoinedFilterReset();
     }
     final deviceLocationAsync = ref.watch(deviceLocationProvider);
-    final deviceLocation = deviceLocationAsync.asData?.value;
+    final deviceLocationState = catchAsyncStateFromAsyncValue(
+      deviceLocationAsync,
+    );
+    final deviceLocation = deviceLocationState.value;
     final distanceRingRadiusKm = exploreDistanceFilterKm(
       filters.distanceFilter,
     );
@@ -115,7 +119,7 @@ class _ExploreMapScreenState extends ConsumerState<ExploreMapScreen> {
             distanceKm: distanceRingRadiusKm.round(),
           );
     final hasDeviceLocation = deviceLocation != null;
-    final locationLoading = deviceLocationAsync.isLoading;
+    final locationLoading = deviceLocationState.isLoading;
     final distanceControlLabel = locationLoading
         ? context.l10n.exploreExploreMapScreenActionLocating
         : hasDeviceLocation
@@ -128,14 +132,14 @@ class _ExploreMapScreenState extends ConsumerState<ExploreMapScreen> {
             distance: distanceControlValue,
           )
         : context.l10n.exploreExploreMapScreenSemanticsUseMyLocation;
-    final feed = feedAsync.asData?.value;
+    final feed = feedState.value;
     final freshMapViewModel = feed == null
         ? null
         : AsyncData(exploreMapViewModelFromFeed(feed));
     if (freshMapViewModel != null) {
       _lastSuccessfulMapViewModel = freshMapViewModel;
     }
-    final mapViewModel = feedAsync.isLoading
+    final mapViewModel = feedState.isLoading
         ? _lastSuccessfulMapViewModel ?? const AsyncLoading<EventMapViewModel>()
         : feedAsync.whenData(exploreMapViewModelFromFeed);
     final selectedItem = _selectedItemFor(feed);
@@ -496,9 +500,9 @@ class _ExploreMapScreenState extends ConsumerState<ExploreMapScreen> {
 
 @visibleForTesting
 String exploreMapViewerCacheKey(AsyncValue<String?> uidAsync) {
-  final uidData = uidAsync.asData;
-  if (uidData == null) return 'auth-resolving';
-  return uidData.value == null ? 'guest' : 'viewer:${uidData.value}';
+  final uidState = catchAsyncStateFromAsyncValue(uidAsync);
+  if (!uidState.hasData) return 'auth-resolving';
+  return uidState.value == null ? 'guest' : 'viewer:${uidState.value}';
 }
 
 @visibleForTesting

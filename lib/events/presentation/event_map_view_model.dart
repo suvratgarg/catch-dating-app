@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/clubs/data/club_membership_repository.dart';
 import 'package:catch_dating_app/clubs/data/club_name_lookup.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/data/saved_event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -260,16 +261,17 @@ bool isUpcomingMapRun(Event event, DateTime now) =>
 @riverpod
 AsyncValue<EventMapViewModel> eventMapViewModel(Ref ref) {
   final userProfileAsync = ref.watch(watchUserProfileProvider);
+  final userProfileState = catchAsyncStateFromAsyncValue(userProfileAsync);
 
-  if (userProfileAsync.isLoading) return const AsyncLoading();
-  if (userProfileAsync.hasError) {
+  if (userProfileState.isLoading) return const AsyncLoading();
+  if (userProfileState.hasError) {
     return AsyncError(
-      userProfileAsync.error!,
-      userProfileAsync.stackTrace ?? StackTrace.current,
+      userProfileState.error!,
+      userProfileState.stackTrace ?? StackTrace.current,
     );
   }
 
-  final user = userProfileAsync.asData?.value;
+  final user = userProfileState.value;
   if (user == null) {
     return const AsyncData(
       EventMapViewModel(events: <Event>[], pinnedEvents: <Event>[]),
@@ -281,9 +283,12 @@ AsyncValue<EventMapViewModel> eventMapViewModel(Ref ref) {
   final membershipsAsync = ref.watch(
     watchActiveClubMembershipsForUserProvider(user.uid),
   );
+  final signedUpState = catchAsyncStateFromAsyncValue(signedUpAsync);
+  final savedState = catchAsyncStateFromAsyncValue(savedAsync);
+  final membershipsState = catchAsyncStateFromAsyncValue(membershipsAsync);
   final followedClubIds =
-      membershipsAsync.asData?.value
-          .map((membership) => membership.clubId)
+      membershipsState.value
+          ?.map((membership) => membership.clubId)
           .toList(growable: false) ??
       const <String>[];
   final recommendedAsync = ref.watch(
@@ -291,62 +296,64 @@ AsyncValue<EventMapViewModel> eventMapViewModel(Ref ref) {
       RecommendedEventsQuery.fromClubIds(followedClubIds),
     ),
   );
+  final recommendedState = catchAsyncStateFromAsyncValue(recommendedAsync);
 
-  if (signedUpAsync.isLoading ||
-      savedAsync.isLoading ||
-      membershipsAsync.isLoading ||
-      recommendedAsync.isLoading) {
+  if (signedUpState.isLoading ||
+      savedState.isLoading ||
+      membershipsState.isLoading ||
+      recommendedState.isLoading) {
     return const AsyncLoading();
   }
-  if (signedUpAsync.hasError) {
+  if (signedUpState.hasError) {
     return AsyncError(
-      signedUpAsync.error!,
-      signedUpAsync.stackTrace ?? StackTrace.current,
+      signedUpState.error!,
+      signedUpState.stackTrace ?? StackTrace.current,
     );
   }
-  if (savedAsync.hasError) {
+  if (savedState.hasError) {
     return AsyncError(
-      savedAsync.error!,
-      savedAsync.stackTrace ?? StackTrace.current,
+      savedState.error!,
+      savedState.stackTrace ?? StackTrace.current,
     );
   }
-  if (membershipsAsync.hasError) {
+  if (membershipsState.hasError) {
     return AsyncError(
-      membershipsAsync.error!,
-      membershipsAsync.stackTrace ?? StackTrace.current,
+      membershipsState.error!,
+      membershipsState.stackTrace ?? StackTrace.current,
     );
   }
-  if (recommendedAsync.hasError) {
+  if (recommendedState.hasError) {
     return AsyncError(
-      recommendedAsync.error!,
-      recommendedAsync.stackTrace ?? StackTrace.current,
+      recommendedState.error!,
+      recommendedState.stackTrace ?? StackTrace.current,
     );
   }
 
   final allEvents = <Event>[
-    ...?signedUpAsync.asData?.value,
-    ...?savedAsync.asData?.value,
-    ...?recommendedAsync.asData?.value,
+    ...?signedUpState.value,
+    ...?savedState.value,
+    ...?recommendedState.value,
   ];
   final clubNamesAsync = ref.watch(
     clubNameLookupProvider(
       ClubNameLookupQuery(allEvents.map((event) => event.clubId)),
     ),
   );
-  if (clubNamesAsync.isLoading) return const AsyncLoading();
-  if (clubNamesAsync.hasError) {
+  final clubNamesState = catchAsyncStateFromAsyncValue(clubNamesAsync);
+  if (clubNamesState.isLoading) return const AsyncLoading();
+  if (clubNamesState.hasError) {
     return AsyncError(
-      clubNamesAsync.error!,
-      clubNamesAsync.stackTrace ?? StackTrace.current,
+      clubNamesState.error!,
+      clubNamesState.stackTrace ?? StackTrace.current,
     );
   }
 
   return AsyncData(
     buildEventMapViewModel(
-      signedUpEvents: signedUpAsync.asData?.value ?? const <Event>[],
-      savedEvents: savedAsync.asData?.value ?? const <Event>[],
-      recommendedEvents: recommendedAsync.asData?.value ?? const <Event>[],
-      clubNamesById: clubNamesAsync.asData?.value ?? const <String, String>{},
+      signedUpEvents: signedUpState.value ?? const <Event>[],
+      savedEvents: savedState.value ?? const <Event>[],
+      recommendedEvents: recommendedState.value ?? const <Event>[],
+      clubNamesById: clubNamesState.value ?? const <String, String>{},
     ),
   );
 }

@@ -32,7 +32,7 @@ class ChatsList extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final uidAsync = ref.watch(uidProvider);
-    final uid = uidAsync.asData?.value;
+    final uid = _catchAsyncState(uidAsync).value;
     final query = ref.watch(chatSearchQueryProvider).trim();
 
     if (uid != null) {

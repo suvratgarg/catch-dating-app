@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:catch_dating_app/clubs/data/club_name_lookup.dart';
 import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/core/external_links.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/dashboard/presentation/activity_controller.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_event_focus_controller.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
@@ -59,7 +60,7 @@ class _DashboardFullSliverBodyState
         ClubNameLookupQuery(focusEvents.map((event) => event.clubId)),
       ),
     );
-    final clubNames = clubNamesAsync.asData?.value;
+    final clubNames = catchAsyncStateFromAsyncValue(clubNamesAsync).value;
     final checkInMutation = ref.watch(
       DashboardEventFocusController.selfCheckInMutation,
     );

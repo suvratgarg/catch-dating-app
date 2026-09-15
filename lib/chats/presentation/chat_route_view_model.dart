@@ -23,12 +23,14 @@ part 'chat_route_view_model.g.dart';
 @riverpod
 ChatRouteState chatRouteState(Ref ref, ChatRouteStateArgs args) {
   final uidAsync = ref.watch(uidProvider);
-  final uid = uidAsync.asData?.value;
+  final uidState = _catchAsyncState(uidAsync);
+  final uid = uidState.value;
   final messagesAsync = ref.watch(
     watchConversationMessagesProvider(args.matchId),
   );
   final matchAsync = ref.watch(matchStreamProvider(args.matchId));
-  final match = matchAsync.asData?.value;
+  final matchState = _catchAsyncState(matchAsync);
+  final match = matchState.value;
 
   final initialLookupState = ChatThreadLookupState.resolve(
     matchId: args.matchId,
@@ -60,8 +62,8 @@ ChatRouteState chatRouteState(Ref ref, ChatRouteStateArgs args) {
       ? ref.watch(suvbotActionsProvider)
       : const AsyncData(<SuvbotActionItem>[]);
 
-  final profile = otherProfileAsync.asData?.value ?? lookupState.initialProfile;
-  final matchState = _catchAsyncState(matchAsync);
+  final profile =
+      _catchAsyncState(otherProfileAsync).value ?? lookupState.initialProfile;
   final messagesState = _catchAsyncState(messagesAsync);
   final suvbotActionsState = _catchAsyncState(suvbotActionsAsync);
   final chatState = HostChatScreenState.resolve(
@@ -77,7 +79,7 @@ ChatRouteState chatRouteState(Ref ref, ChatRouteStateArgs args) {
   );
 
   return ChatRouteState(
-    uidAsync: _catchAsyncState(uidAsync),
+    uidAsync: uidState,
     uid: uid,
     matchAsync: matchState,
     messagesAsync: messagesState,

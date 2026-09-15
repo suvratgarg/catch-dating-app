@@ -38,12 +38,13 @@ class _EventRecapScreenState extends ConsumerState<EventRecapScreen> {
   @override
   Widget build(BuildContext context) {
     final recapAsync = ref.watch(eventRecapViewModelProvider(widget.eventId));
-    final viewModel = recapAsync.asData?.value;
+    final recapState = _catchAsyncState(recapAsync);
+    final viewModel = recapState.value;
     final rosterProfiles = _watchRosterProfiles(viewModel);
     final screenState = buildEventRecapScreenState(
       l10n: context.l10n,
       eventId: widget.eventId,
-      viewModel: _catchAsyncState(recapAsync),
+      viewModel: recapState,
       rosterProfiles: rosterProfiles,
       selectedVibeIds: _selectedVibes,
     );

@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/club_name_lookup.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/data/saved_event_repository.dart';
@@ -57,6 +58,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
   @override
   Widget build(BuildContext context) {
     final uidAsync = ref.watch(uidProvider);
+    final uidState = catchAsyncStateFromAsyncValue(uidAsync);
     final referenceNow = widget.referenceNow ?? DateTime.now();
     final fallbackSelectedDate = DateUtils.dateOnly(
       _selectedDate ?? widget.initialSelectedDate ?? referenceNow,
@@ -65,28 +67,32 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     var topBarToday = DateUtils.dateOnly(referenceNow);
     late final Widget body;
 
-    if (uidAsync.isLoading) {
+    if (uidState.isLoading) {
       body = const CalendarLoadingScreen();
-    } else if (uidAsync.hasError) {
+    } else if (uidState.hasError) {
       body = CatchLocalizedErrorState(
-        uidAsync.error!,
+        uidState.error!,
         context: AppErrorContext.auth,
         onRetry: () => ref.invalidate(uidProvider),
       );
     } else {
-      final uid = uidAsync.asData?.value;
+      final uid = uidState.value;
       final signedUpEventsAsync = uid == null
           ? const AsyncData(<Event>[])
           : ref.watch(watchSignedUpEventsProvider(uid));
       final savedEventsAsync = uid == null
           ? const AsyncData(<Event>[])
           : ref.watch(watchSavedEventDetailsForUserProvider(uid));
+      final signedUpEventsState = catchAsyncStateFromAsyncValue(
+        signedUpEventsAsync,
+      );
+      final savedEventsState = catchAsyncStateFromAsyncValue(savedEventsAsync);
 
-      if (signedUpEventsAsync.isLoading || savedEventsAsync.isLoading) {
+      if (signedUpEventsState.isLoading || savedEventsState.isLoading) {
         body = const CalendarLoadingScreen();
-      } else if (signedUpEventsAsync.hasError || savedEventsAsync.hasError) {
+      } else if (signedUpEventsState.hasError || savedEventsState.hasError) {
         body = CatchLocalizedErrorState(
-          signedUpEventsAsync.error ?? savedEventsAsync.error!,
+          signedUpEventsState.error ?? savedEventsState.error!,
           context: AppErrorContext.event,
           onRetry: uid == null
               ? null
@@ -97,8 +103,8 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
         );
       } else {
         final calendarState = CalendarHomeState.from(
-          signedUpEvents: signedUpEventsAsync.asData?.value ?? const <Event>[],
-          savedEvents: savedEventsAsync.asData?.value ?? const <Event>[],
+          signedUpEvents: signedUpEventsState.value ?? const <Event>[],
+          savedEvents: savedEventsState.value ?? const <Event>[],
           now: referenceNow,
           selectedDate: _selectedDate,
           expanded: _calendarExpanded,

@@ -113,10 +113,11 @@ class MembershipTrailingController extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final uidAsync = ref.watch(uidProvider);
+    final uidState = catchAsyncStateFromAsyncValue(uidAsync);
     final actionState = exploreOrganizerMembershipActionState(
       contentVisible: true,
-      authResolved: uidAsync.hasValue,
-      uid: uidAsync.asData?.value,
+      authResolved: uidState.hasData,
+      uid: uidState.value,
       isFollowing: isJoined,
     );
     if (actionState == ExploreOrganizerMembershipActionState.hidden) {

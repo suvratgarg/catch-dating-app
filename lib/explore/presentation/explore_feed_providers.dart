@@ -4,6 +4,7 @@ import 'package:catch_dating_app/clubs/data/club_membership_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/device_location.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/events/data/event_discovery_repository.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
@@ -38,24 +39,26 @@ DateTime exploreDiscoveryReferenceNow(Ref ref) => _discoveryReferenceNow();
 @riverpod
 AsyncValue<String?> exploreViewerCohortId(Ref ref) {
   final uidAsync = ref.watch(uidProvider);
-  if (uidAsync.isLoading) return const AsyncLoading();
-  if (uidAsync.hasError) {
+  final uidState = catchAsyncStateFromAsyncValue(uidAsync);
+  if (uidState.isLoading) return const AsyncLoading();
+  if (uidState.hasError) {
     return AsyncError(
-      uidAsync.error!,
-      uidAsync.stackTrace ?? StackTrace.current,
+      uidState.error!,
+      uidState.stackTrace ?? StackTrace.current,
     );
   }
-  if (uidAsync.asData?.value == null) return const AsyncData(null);
+  if (uidState.value == null) return const AsyncData(null);
 
   final userProfileAsync = ref.watch(watchUserProfileProvider);
-  if (userProfileAsync.isLoading) return const AsyncLoading();
-  if (userProfileAsync.hasError) {
+  final userProfileState = catchAsyncStateFromAsyncValue(userProfileAsync);
+  if (userProfileState.isLoading) return const AsyncLoading();
+  if (userProfileState.hasError) {
     return AsyncError(
-      userProfileAsync.error!,
-      userProfileAsync.stackTrace ?? StackTrace.current,
+      userProfileState.error!,
+      userProfileState.stackTrace ?? StackTrace.current,
     );
   }
-  final userProfile = userProfileAsync.asData?.value;
+  final userProfile = userProfileState.value;
   if (userProfile == null) return const AsyncData(null);
   final cohortId = const EventCohortResolver()
       .resolve(EventAttendeeProfile.fromUserProfile(userProfile))
@@ -83,11 +86,18 @@ AsyncValue<ExploreFeedViewModel> exploreFeedViewModel(Ref ref) {
   final deviceLocationAsync = distanceFilterKm == null
       ? const AsyncData<LocationCoordinate?>(null)
       : ref.watch(deviceLocationProvider);
+  final clubsState = catchAsyncStateFromAsyncValue(clubsAsync);
+  final uidState = catchAsyncStateFromAsyncValue(uidAsync);
+  final deviceLocationState = catchAsyncStateFromAsyncValue(
+    deviceLocationAsync,
+  );
   // Server search keys off the debounced query so typing doesn't fire a
   // Cloud Function call per keystroke. Local substring matching below uses
   // the live `normalizedQuery`, so the feed stays responsive while it settles.
-  final debouncedQuery =
-      ref.watch(debouncedExploreSearchQueryProvider).asData?.value ?? '';
+  final debouncedQueryState = catchAsyncStateFromAsyncValue(
+    ref.watch(debouncedExploreSearchQueryProvider),
+  );
+  final debouncedQuery = debouncedQueryState.value ?? '';
   final searchAsync = debouncedQuery.length < 2
       ? const AsyncData<ExploreSearchResult?>(null)
       : ref.watch(
@@ -97,37 +107,39 @@ AsyncValue<ExploreFeedViewModel> exploreFeedViewModel(Ref ref) {
           ),
         );
 
-  if (clubsAsync.isLoading ||
-      uidAsync.isLoading ||
-      deviceLocationAsync.isLoading) {
+  final searchState = catchAsyncStateFromAsyncValue(searchAsync);
+
+  if (clubsState.isLoading ||
+      uidState.isLoading ||
+      deviceLocationState.isLoading) {
     return const AsyncLoading();
   }
-  if (clubsAsync.hasError) {
+  if (clubsState.hasError) {
     return AsyncError(
-      clubsAsync.error!,
-      clubsAsync.stackTrace ?? StackTrace.current,
+      clubsState.error!,
+      clubsState.stackTrace ?? StackTrace.current,
     );
   }
-  if (uidAsync.hasError) {
+  if (uidState.hasError) {
     return AsyncError(
-      uidAsync.error!,
-      uidAsync.stackTrace ?? StackTrace.current,
+      uidState.error!,
+      uidState.stackTrace ?? StackTrace.current,
     );
   }
-  if (deviceLocationAsync.hasError) {
+  if (deviceLocationState.hasError) {
     return AsyncError(
-      deviceLocationAsync.error!,
-      deviceLocationAsync.stackTrace ?? StackTrace.current,
+      deviceLocationState.error!,
+      deviceLocationState.stackTrace ?? StackTrace.current,
     );
   }
 
-  final sourceClubs = clubsAsync.asData?.value ?? const <Club>[];
+  final sourceClubs = clubsState.value ?? const <Club>[];
   final sourceClubIds = sourceClubs.map((club) => club.id).toSet();
-  final searchResult = searchAsync.asData?.value;
+  final searchResult = searchState.value;
   final serverEventIds = searchResult?.eventIds.toSet();
   final serverClubIds = searchResult?.organizerIds.toSet();
 
-  final uid = uidAsync.asData?.value;
+  final uid = uidState.value;
   final viewerCohortIdAsync = uid == null
       ? const AsyncData<String?>(null)
       : ref.watch(exploreViewerCohortIdProvider);
@@ -141,49 +153,62 @@ AsyncValue<ExploreFeedViewModel> exploreFeedViewModel(Ref ref) {
   final savedEventEdgesAsync = uid == null
       ? const AsyncData<List<SavedEvent>>([])
       : ref.watch(watchSavedEventsForUserProvider(uid));
+  final userProfileState = catchAsyncStateFromAsyncValue(userProfileAsync);
+  final viewerCohortIdState = catchAsyncStateFromAsyncValue(
+    viewerCohortIdAsync,
+  );
+  final followedClubIdsState = catchAsyncStateFromAsyncValue(
+    followedClubIdsAsync,
+  );
+  final participationsState = catchAsyncStateFromAsyncValue(
+    participationsAsync,
+  );
+  final savedEventEdgesState = catchAsyncStateFromAsyncValue(
+    savedEventEdgesAsync,
+  );
 
-  if (userProfileAsync.isLoading ||
-      viewerCohortIdAsync.isLoading ||
-      followedClubIdsAsync.isLoading ||
-      participationsAsync.isLoading ||
-      savedEventEdgesAsync.isLoading) {
+  if (userProfileState.isLoading ||
+      viewerCohortIdState.isLoading ||
+      followedClubIdsState.isLoading ||
+      participationsState.isLoading ||
+      savedEventEdgesState.isLoading) {
     return const AsyncLoading();
   }
-  if (viewerCohortIdAsync.hasError) {
+  if (viewerCohortIdState.hasError) {
     return AsyncError(
-      viewerCohortIdAsync.error!,
-      viewerCohortIdAsync.stackTrace ?? StackTrace.current,
+      viewerCohortIdState.error!,
+      viewerCohortIdState.stackTrace ?? StackTrace.current,
     );
   }
-  if (userProfileAsync.hasError) {
+  if (userProfileState.hasError) {
     return AsyncError(
-      userProfileAsync.error!,
-      userProfileAsync.stackTrace ?? StackTrace.current,
+      userProfileState.error!,
+      userProfileState.stackTrace ?? StackTrace.current,
     );
   }
-  if (followedClubIdsAsync.hasError) {
+  if (followedClubIdsState.hasError) {
     return AsyncError(
-      followedClubIdsAsync.error!,
-      followedClubIdsAsync.stackTrace ?? StackTrace.current,
+      followedClubIdsState.error!,
+      followedClubIdsState.stackTrace ?? StackTrace.current,
     );
   }
-  if (participationsAsync.hasError) {
+  if (participationsState.hasError) {
     return AsyncError(
-      participationsAsync.error!,
-      participationsAsync.stackTrace ?? StackTrace.current,
+      participationsState.error!,
+      participationsState.stackTrace ?? StackTrace.current,
     );
   }
-  if (savedEventEdgesAsync.hasError) {
+  if (savedEventEdgesState.hasError) {
     return AsyncError(
-      savedEventEdgesAsync.error!,
-      savedEventEdgesAsync.stackTrace ?? StackTrace.current,
+      savedEventEdgesState.error!,
+      savedEventEdgesState.stackTrace ?? StackTrace.current,
     );
   }
 
-  final followedClubIds = followedClubIdsAsync.asData?.value ?? <String>{};
+  final followedClubIds = followedClubIdsState.value ?? <String>{};
   final membershipClubIds = followedClubIds;
-  final userProfile = userProfileAsync.asData?.value;
-  final viewerCohortId = viewerCohortIdAsync.asData?.value;
+  final userProfile = userProfileState.value;
+  final viewerCohortId = viewerCohortIdState.value;
 
   final windowRequest = ExploreDiscoveryWindowRequest(
     internalQuery: EventDiscoveryQuery.forCity(
@@ -191,7 +216,7 @@ AsyncValue<ExploreFeedViewModel> exploreFeedViewModel(Ref ref) {
       startAt: queryTimeWindow?.start ?? now,
       endBefore: queryTimeWindow?.end,
       activityKinds: [?activityKindFilter],
-      center: deviceLocationAsync.asData?.value,
+      center: deviceLocationState.value,
       maxDistanceKm: distanceFilterKm,
       viewerCohortId: viewerCohortId,
     ),
@@ -205,21 +230,23 @@ AsyncValue<ExploreFeedViewModel> exploreFeedViewModel(Ref ref) {
   final discoveryWindowAsync = ref.watch(
     exploreDiscoveryWindowProvider(windowRequest),
   );
-  if (discoveryWindowAsync.isLoading) {
+  final discoveryWindowState = catchAsyncStateFromAsyncValue(
+    discoveryWindowAsync,
+  );
+  if (discoveryWindowState.isLoading) {
     return const AsyncLoading();
   }
-  if (discoveryWindowAsync.hasError) {
+  if (discoveryWindowState.hasError) {
     return AsyncError(
-      discoveryWindowAsync.error!,
-      discoveryWindowAsync.stackTrace ?? StackTrace.current,
+      discoveryWindowState.error!,
+      discoveryWindowState.stackTrace ?? StackTrace.current,
     );
   }
-  final discoveryWindow = switch (discoveryWindowAsync) {
-    AsyncData(:final value) => value,
-    _ => throw StateError(
-      'Explore discovery window resolved without data, loading, or error.',
-    ),
-  };
+  final discoveryWindow =
+      discoveryWindowState.value ??
+      (throw StateError(
+        'Explore discovery window resolved without data, loading, or error.',
+      ));
 
   final eventsById = <String, Event>{
     for (final event in discoveryWindow.internalEvents) event.id: event,
@@ -234,21 +261,24 @@ AsyncValue<ExploreFeedViewModel> exploreFeedViewModel(Ref ref) {
             ),
           ),
         );
-  if (followedRecommendationsAsync.isLoading) return const AsyncLoading();
-  if (followedRecommendationsAsync.hasError) {
+  final followedRecommendationsState = catchAsyncStateFromAsyncValue(
+    followedRecommendationsAsync,
+  );
+  if (followedRecommendationsState.isLoading) return const AsyncLoading();
+  if (followedRecommendationsState.hasError) {
     return AsyncError(
-      followedRecommendationsAsync.error!,
-      followedRecommendationsAsync.stackTrace ?? StackTrace.current,
+      followedRecommendationsState.error!,
+      followedRecommendationsState.stackTrace ?? StackTrace.current,
     );
   }
   final savedEventIds =
-      savedEventEdgesAsync.asData?.value
-          .map((savedEvent) => savedEvent.eventId)
+      savedEventEdgesState.value
+          ?.map((savedEvent) => savedEvent.eventId)
           .toSet() ??
       <String>{};
   final missingPersonalEventIds = <String>{
     for (final participation
-        in participationsAsync.asData?.value ?? const <EventParticipation>[])
+        in participationsState.value ?? const <EventParticipation>[])
       if (participation.status == EventParticipationStatus.signedUp &&
           !eventsById.containsKey(participation.eventId))
         participation.eventId,
@@ -266,25 +296,29 @@ AsyncValue<ExploreFeedViewModel> exploreFeedViewModel(Ref ref) {
       : ref.watch(
           watchEventsByIdsProvider(EventsByIdQuery(searchResult.eventIds)),
         );
+  final personalEventsState = catchAsyncStateFromAsyncValue(
+    personalEventsAsync,
+  );
+  final searchEventsState = catchAsyncStateFromAsyncValue(searchEventsAsync);
   // Personal event enrichment (out-of-city joined/saved events) is
   // intentionally non-blocking: the feed renders immediately from in-city
   // discovery and personal events stream in progressively, degrading
   // gracefully if that secondary query is slow or fails. Search results, by
   // contrast, are the primary content and must block/surface errors.
-  if (searchEventsAsync.isLoading) return const AsyncLoading();
-  if (searchEventsAsync.hasError) {
+  if (searchEventsState.isLoading) return const AsyncLoading();
+  if (searchEventsState.hasError) {
     return AsyncError(
-      searchEventsAsync.error!,
-      searchEventsAsync.stackTrace ?? StackTrace.current,
+      searchEventsState.error!,
+      searchEventsState.stackTrace ?? StackTrace.current,
     );
   }
 
   final participationByEventId = <String, EventParticipation>{
     for (final participation
-        in participationsAsync.asData?.value ?? const <EventParticipation>[])
+        in participationsState.value ?? const <EventParticipation>[])
       participation.eventId: participation,
   };
-  for (final event in personalEventsAsync.asData?.value ?? const <Event>[]) {
+  for (final event in personalEventsState.value ?? const <Event>[]) {
     final participation = participationByEventId[event.id];
     if (sourceClubIds.contains(event.clubId) ||
         (event.synthetic &&
@@ -293,11 +327,11 @@ AsyncValue<ExploreFeedViewModel> exploreFeedViewModel(Ref ref) {
     }
   }
   for (final candidate
-      in followedRecommendationsAsync.asData?.value ??
+      in followedRecommendationsState.value ??
           const <ExploreEventRecommendationCandidate>[]) {
     eventsById.putIfAbsent(candidate.event.id, () => candidate.event);
   }
-  for (final event in searchEventsAsync.asData?.value ?? const <Event>[]) {
+  for (final event in searchEventsState.value ?? const <Event>[]) {
     eventsById[event.id] = event;
   }
   final extraClubIds = <String>{
@@ -311,19 +345,19 @@ AsyncValue<ExploreFeedViewModel> exploreFeedViewModel(Ref ref) {
       : ref.watch(
           watchClubsForMessagingByIdsProvider(ClubsByIdQuery(extraClubIds)),
         );
-  if (extraClubsAsync.isLoading) return const AsyncLoading();
-  if (extraClubsAsync.hasError) {
+  final extraClubsState = catchAsyncStateFromAsyncValue(extraClubsAsync);
+  if (extraClubsState.isLoading) return const AsyncLoading();
+  if (extraClubsState.hasError) {
     return AsyncError(
-      extraClubsAsync.error!,
-      extraClubsAsync.stackTrace ?? StackTrace.current,
+      extraClubsState.error!,
+      extraClubsState.stackTrace ?? StackTrace.current,
     );
   }
   final clubById = {
     for (final club in sourceClubs) club.id: club,
-    for (final club in extraClubsAsync.asData?.value ?? const <Club>[])
-      club.id: club,
+    for (final club in extraClubsState.value ?? const <Club>[]) club.id: club,
   };
-  final deviceLocation = deviceLocationAsync.asData?.value;
+  final deviceLocation = deviceLocationState.value;
   final allItems = eventsById.values
       .where((event) => event.isUpcomingAt(now))
       .map((event) {
@@ -420,8 +454,7 @@ AsyncValue<ExploreFeedViewModel> exploreFeedViewModel(Ref ref) {
         viewer: userProfile,
         signedUpEventIds: {
           for (final participation
-              in participationsAsync.asData?.value ??
-                  const <EventParticipation>[])
+              in participationsState.value ?? const <EventParticipation>[])
             if (participation.status == EventParticipationStatus.signedUp)
               participation.eventId,
         },
@@ -461,24 +494,28 @@ Map<ExploreTimeFilter, int> _exploreDateSupplyCounts({
 AsyncValue<List<ExploreEventRecommendation>> exploreRecommendations(Ref ref) {
   final uidAsync = ref.watch(uidProvider);
   final followedClubIdsAsync = ref.watch(currentUserFollowedClubIdsProvider);
-  if (uidAsync.isLoading || followedClubIdsAsync.isLoading) {
+  final uidState = catchAsyncStateFromAsyncValue(uidAsync);
+  final followedClubIdsState = catchAsyncStateFromAsyncValue(
+    followedClubIdsAsync,
+  );
+  if (uidState.isLoading || followedClubIdsState.isLoading) {
     return const AsyncLoading();
   }
-  if (uidAsync.hasError) {
+  if (uidState.hasError) {
     return AsyncError(
-      uidAsync.error!,
-      uidAsync.stackTrace ?? StackTrace.current,
+      uidState.error!,
+      uidState.stackTrace ?? StackTrace.current,
     );
   }
-  if (followedClubIdsAsync.hasError) {
+  if (followedClubIdsState.hasError) {
     return AsyncError(
-      followedClubIdsAsync.error!,
-      followedClubIdsAsync.stackTrace ?? StackTrace.current,
+      followedClubIdsState.error!,
+      followedClubIdsState.stackTrace ?? StackTrace.current,
     );
   }
 
-  final uid = uidAsync.asData?.value;
-  final followedClubIds = followedClubIdsAsync.asData?.value ?? <String>{};
+  final uid = uidState.value;
+  final followedClubIds = followedClubIdsState.value ?? <String>{};
   if (uid == null || followedClubIds.isEmpty) {
     return const AsyncData(<ExploreEventRecommendation>[]);
   }
@@ -494,47 +531,55 @@ AsyncValue<List<ExploreEventRecommendation>> exploreRecommendations(Ref ref) {
       ),
     ),
   );
-  if (userAsync.isLoading ||
-      signedUpEventsAsync.isLoading ||
-      attendedEventsAsync.isLoading ||
-      candidatesAsync.isLoading) {
+  final userState = catchAsyncStateFromAsyncValue(userAsync);
+  final signedUpEventsState = catchAsyncStateFromAsyncValue(
+    signedUpEventsAsync,
+  );
+  final attendedEventsState = catchAsyncStateFromAsyncValue(
+    attendedEventsAsync,
+  );
+  final candidatesState = catchAsyncStateFromAsyncValue(candidatesAsync);
+  if (userState.isLoading ||
+      signedUpEventsState.isLoading ||
+      attendedEventsState.isLoading ||
+      candidatesState.isLoading) {
     return const AsyncLoading();
   }
-  if (userAsync.hasError) {
+  if (userState.hasError) {
     return AsyncError(
-      userAsync.error!,
-      userAsync.stackTrace ?? StackTrace.current,
+      userState.error!,
+      userState.stackTrace ?? StackTrace.current,
     );
   }
-  if (signedUpEventsAsync.hasError) {
+  if (signedUpEventsState.hasError) {
     return AsyncError(
-      signedUpEventsAsync.error!,
-      signedUpEventsAsync.stackTrace ?? StackTrace.current,
+      signedUpEventsState.error!,
+      signedUpEventsState.stackTrace ?? StackTrace.current,
     );
   }
-  if (attendedEventsAsync.hasError) {
+  if (attendedEventsState.hasError) {
     return AsyncError(
-      attendedEventsAsync.error!,
-      attendedEventsAsync.stackTrace ?? StackTrace.current,
+      attendedEventsState.error!,
+      attendedEventsState.stackTrace ?? StackTrace.current,
     );
   }
-  if (candidatesAsync.hasError) {
+  if (candidatesState.hasError) {
     return AsyncError(
-      candidatesAsync.error!,
-      candidatesAsync.stackTrace ?? StackTrace.current,
+      candidatesState.error!,
+      candidatesState.stackTrace ?? StackTrace.current,
     );
   }
 
-  final signedUpEvents = signedUpEventsAsync.asData?.value ?? const <Event>[];
+  final signedUpEvents = signedUpEventsState.value ?? const <Event>[];
   return AsyncData(
     rankExploreEventRecommendations(
       candidates:
-          candidatesAsync.asData?.value ??
+          candidatesState.value ??
           const <ExploreEventRecommendationCandidate>[],
       signedUpEventIds: signedUpEvents.map((event) => event.id).toSet(),
-      attendedEvents: attendedEventsAsync.asData?.value ?? const <Event>[],
+      attendedEvents: attendedEventsState.value ?? const <Event>[],
       signedUpEvents: signedUpEvents,
-      viewer: userAsync.asData?.value,
+      viewer: userState.value,
       now: ref.watch(exploreDiscoveryReferenceNowProvider),
     ),
   );

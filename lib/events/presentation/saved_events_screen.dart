@@ -2,6 +2,7 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/club_name_lookup.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_sliver_error_state.dart';
 import 'package:catch_dating_app/events/data/saved_event_repository.dart';
@@ -25,6 +26,7 @@ class SavedEventsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final t = CatchTokens.of(context);
     final uidAsync = ref.watch(uidProvider);
+    final uidState = catchAsyncStateFromAsyncValue(uidAsync);
 
     return CatchRouteScaffold(
       backgroundColor: t.bg,
@@ -41,20 +43,20 @@ class SavedEventsScreen extends ConsumerWidget {
         slivers: [
           Consumer(
             builder: (context, ref, _) {
-              if (uidAsync.isLoading) {
+              if (uidState.isLoading) {
                 return const EventAgendaSliverSkeleton(
                   padding: EdgeInsets.zero,
                 );
               }
-              if (uidAsync.hasError) {
+              if (uidState.hasError) {
                 return CatchLocalizedSliverErrorState(
-                  uidAsync.error!,
+                  uidState.error!,
                   context: AppErrorContext.auth,
                   onRetry: () => ref.invalidate(uidProvider),
                 );
               }
 
-              final userId = uidAsync.asData?.value;
+              final userId = uidState.value;
               final savedEvents = userId == null
                   ? const AsyncData(<Event>[])
                   : ref.watch(watchSavedEventDetailsForUserProvider(userId));

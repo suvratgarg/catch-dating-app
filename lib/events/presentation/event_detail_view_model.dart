@@ -4,6 +4,7 @@ import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/domain/club_membership.dart';
 import 'package:catch_dating_app/core/app_config.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/data/saved_event_repository.dart';
@@ -50,10 +51,11 @@ AsyncValue<EventDetailViewModel?> eventDetailViewModel(
   String eventId,
 ) {
   final uidAsync = ref.watch(uidProvider);
-  final uid = uidAsync.asData?.value;
+  final uidState = catchAsyncStateFromAsyncValue(uidAsync);
+  final uid = uidState.value;
   final isAuthenticated = uid != null;
   final eventAsync = ref.watch(watchEventProvider(eventId));
-  final event = eventAsync.asData?.value;
+  final event = catchAsyncStateFromAsyncValue(eventAsync).value;
   final clubAsync = event == null
       ? const AsyncData<Club?>(null)
       : ref.watch(fetchClubProvider(event.clubId));
@@ -78,9 +80,9 @@ AsyncValue<EventDetailViewModel?> eventDetailViewModel(
     currentUid: uid,
     isAuthenticated: isAuthenticated,
     appRole: AppConfig.appRole,
-    authResolved: uidAsync.hasValue || uidAsync.hasError,
-    authError: uidAsync.hasError ? uidAsync.error : null,
-    authStackTrace: uidAsync.hasError ? uidAsync.stackTrace : null,
+    authResolved: uidState.hasData || uidState.hasError,
+    authError: uidState.hasError ? uidState.error : null,
+    authStackTrace: uidState.hasError ? uidState.stackTrace : null,
   );
 }
 
@@ -100,6 +102,14 @@ AsyncValue<EventDetailViewModel?> buildEventDetailViewModel({
   Object? authError,
   StackTrace? authStackTrace,
 }) {
+  final eventState = catchAsyncStateFromAsyncValue(eventAsync);
+  final userProfileState = catchAsyncStateFromAsyncValue(userProfileAsync);
+  final reviewsState = catchAsyncStateFromAsyncValue(reviewsAsync);
+  final clubState = catchAsyncStateFromAsyncValue(clubAsync);
+  final savedEventState = catchAsyncStateFromAsyncValue(savedEventAsync);
+  final participationState = catchAsyncStateFromAsyncValue(participationAsync);
+  final membershipState = catchAsyncStateFromAsyncValue(membershipAsync);
+
   // Do not transiently derive guest actions while Firebase auth is resolving.
   // This is especially important for route-extra fallbacks and save/review
   // controls whose policy differs for a signed-in viewer.
@@ -112,64 +122,64 @@ AsyncValue<EventDetailViewModel?> buildEventDetailViewModel({
   // Event and organizer authority are blocking for every viewer. Rendering a
   // public event before its organizer resolves can leak a hidden listing and
   // transiently show the wrong guest actions.
-  if (eventAsync.isLoading || clubAsync.isLoading) {
+  if (eventState.isLoading || clubState.isLoading) {
     return const AsyncLoading();
   }
   // For authenticated users, also block on reviews + user profile.
   if (isAuthenticated) {
-    if (userProfileAsync.isLoading ||
-        reviewsAsync.isLoading ||
-        savedEventAsync.isLoading ||
-        participationAsync.isLoading) {
+    if (userProfileState.isLoading ||
+        reviewsState.isLoading ||
+        savedEventState.isLoading ||
+        participationState.isLoading) {
       return const AsyncLoading();
     }
   }
 
   // Event error is always fatal.
-  if (eventAsync.hasError) {
+  if (eventState.hasError) {
     return AsyncError(
-      eventAsync.error!,
-      eventAsync.stackTrace ?? StackTrace.current,
+      eventState.error!,
+      eventState.stackTrace ?? StackTrace.current,
     );
   }
-  if (clubAsync.hasError) {
+  if (clubState.hasError) {
     return AsyncError(
-      clubAsync.error!,
-      clubAsync.stackTrace ?? StackTrace.current,
+      clubState.error!,
+      clubState.stackTrace ?? StackTrace.current,
     );
   }
 
   // Reviews and userProfile errors only fatal for authenticated users.
   if (isAuthenticated) {
-    if (userProfileAsync.hasError) {
+    if (userProfileState.hasError) {
       return AsyncError(
-        userProfileAsync.error!,
-        userProfileAsync.stackTrace ?? StackTrace.current,
+        userProfileState.error!,
+        userProfileState.stackTrace ?? StackTrace.current,
       );
     }
-    if (reviewsAsync.hasError) {
+    if (reviewsState.hasError) {
       return AsyncError(
-        reviewsAsync.error!,
-        reviewsAsync.stackTrace ?? StackTrace.current,
+        reviewsState.error!,
+        reviewsState.stackTrace ?? StackTrace.current,
       );
     }
-    if (savedEventAsync.hasError) {
+    if (savedEventState.hasError) {
       return AsyncError(
-        savedEventAsync.error!,
-        savedEventAsync.stackTrace ?? StackTrace.current,
+        savedEventState.error!,
+        savedEventState.stackTrace ?? StackTrace.current,
       );
     }
-    if (participationAsync.hasError) {
+    if (participationState.hasError) {
       return AsyncError(
-        participationAsync.error!,
-        participationAsync.stackTrace ?? StackTrace.current,
+        participationState.error!,
+        participationState.stackTrace ?? StackTrace.current,
       );
     }
   }
 
-  final event = eventAsync.asData?.value;
+  final event = eventState.value;
   if (event == null) return const AsyncData(null);
-  final club = clubAsync.asData?.value;
+  final club = clubState.value;
   if (club == null) return const AsyncData(null);
   final isOwnedHostRoute =
       isAuthenticated && currentUid != null && club.isHostedBy(currentUid);
@@ -179,29 +189,27 @@ AsyncValue<EventDetailViewModel?> buildEventDetailViewModel({
   if (!appRole.isHost && !club.isPubliclyBrowseable) {
     return const AsyncData(null);
   }
-  if (isAuthenticated && !isOwnedHostRoute && membershipAsync.isLoading) {
+  if (isAuthenticated && !isOwnedHostRoute && membershipState.isLoading) {
     return const AsyncLoading();
   }
-  if (isAuthenticated && !isOwnedHostRoute && membershipAsync.hasError) {
+  if (isAuthenticated && !isOwnedHostRoute && membershipState.hasError) {
     return AsyncError(
-      membershipAsync.error!,
-      membershipAsync.stackTrace ?? StackTrace.current,
+      membershipState.error!,
+      membershipState.stackTrace ?? StackTrace.current,
     );
   }
 
-  final userProfile = isAuthenticated ? (userProfileAsync.asData?.value) : null;
+  final userProfile = isAuthenticated ? userProfileState.value : null;
   final reviews = isAuthenticated
-      ? (reviewsAsync.asData?.value ?? const [])
+      ? (reviewsState.value ?? const <Review>[])
       : const <Review>[];
-  final participation = isAuthenticated
-      ? participationAsync.asData?.value
-      : null;
+  final participation = isAuthenticated ? participationState.value : null;
   final isHost =
       isAuthenticated && currentUid != null && club.isHostedBy(currentUid);
-  final isSaved = isAuthenticated && savedEventAsync.requireValue != null;
+  final isSaved = isAuthenticated && savedEventState.value != null;
   final isClubMember =
       isAuthenticated &&
-      membershipAsync.asData?.value?.status == ClubMembershipStatus.active;
+      membershipState.value?.status == ClubMembershipStatus.active;
 
   return AsyncData(
     EventDetailViewModel(

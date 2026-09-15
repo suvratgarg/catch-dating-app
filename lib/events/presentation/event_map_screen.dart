@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/external_event.dart';
@@ -86,7 +87,9 @@ class _EventMapViewState extends ConsumerState<EventMapView> {
         widget.viewModel ?? ref.watch(eventMapViewModelProvider);
     final AsyncValue<LocationCoordinate?> deviceLocationAsync =
         widget.deviceLocation ?? ref.watch(deviceLocationProvider);
-    final deviceLocation = deviceLocationAsync.asData?.value;
+    final deviceLocation = catchAsyncStateFromAsyncValue(
+      deviceLocationAsync,
+    ).value;
     final selectedCity = ref.watch(selectedExploreCityProvider);
     final selectedCityWasUserSelected = ref.watch(
       selectedExploreCityWasUserSelectedProvider,

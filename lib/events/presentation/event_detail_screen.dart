@@ -123,9 +123,12 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen>
   Widget build(BuildContext context) {
     final vmAsync = ref.watch(eventDetailViewModelProvider(widget.eventId));
     final uidAsync = ref.watch(uidProvider);
-    final vm = vmAsync.asData?.value;
+    final vmState = _catchAsyncState(vmAsync);
+    final uidState = _catchAsyncState(uidAsync);
+    final vm = vmState.value;
     final resolvedClubId = vm?.event.clubId ?? widget.clubId;
     final clubAsync = ref.watch(fetchClubProvider(resolvedClubId));
+    final clubState = _catchAsyncState(clubAsync);
     final isHostApp = AppConfig.appRole.isHost;
 
     if (vm != null) {
@@ -199,12 +202,11 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen>
       );
       final hostState = eventDetailHostStateFrom(
         l10n: context.l10n,
-        clubState: _catchAsyncState(clubAsync),
+        clubState: clubState,
         currentUid: vm.userProfile?.uid,
         canMessageHost:
             sectionVisibility.showConsumerActions &&
-            (clubAsync.asData?.value?.supplyCapabilities.hostContactEnabled ??
-                false) &&
+            (clubState.value?.supplyCapabilities.hostContactEnabled ?? false) &&
             vm.userProfile?.hasSocialReadyProfileOn(now) == true,
       );
       final socialState = eventDetailSocialStateFrom(
@@ -384,7 +386,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen>
               userProfile: vm.userProfile,
               isAuthenticated: vm.isAuthenticated,
               organizerCapabilities:
-                  clubAsync.asData?.value?.supplyCapabilities ??
+                  clubState.value?.supplyCapabilities ??
                   const OrganizerSupplyCapabilities.unclaimedReadOnly(
                     claimable: false,
                   ),
@@ -401,7 +403,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen>
                 isClubMember: vm.isClubMember,
                 participation: vm.participation,
                 organizerCapabilities:
-                    clubAsync.asData?.value?.supplyCapabilities ??
+                    clubState.value?.supplyCapabilities ??
                     const OrganizerSupplyCapabilities.unclaimedReadOnly(
                       claimable: false,
                     ),
@@ -431,10 +433,10 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen>
 
     final canRenderGuestInitialEvent =
         !isHostApp &&
-        uidAsync.hasValue &&
-        uidAsync.value == null &&
-        clubAsync.asData?.value?.isPubliclyBrowseable == true;
-    if (vmAsync.isLoading &&
+        uidState.hasData &&
+        uidState.value == null &&
+        clubState.value?.isPubliclyBrowseable == true;
+    if (vmState.isLoading &&
         _initialEventMatchesRoute &&
         canRenderGuestInitialEvent) {
       final event = widget.initialEvent!;
@@ -522,8 +524,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen>
               event: event,
               userProfile: null,
               isAuthenticated: false,
-              organizerCapabilities:
-                  clubAsync.asData!.value!.supplyCapabilities,
+              organizerCapabilities: clubState.value!.supplyCapabilities,
               now: now,
               sectionVisibility: sectionVisibility,
             )
@@ -533,8 +534,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen>
                 clubId: widget.clubId,
                 isAuthenticated: false,
                 participation: null,
-                organizerCapabilities:
-                    clubAsync.asData!.value!.supplyCapabilities,
+                organizerCapabilities: clubState.value!.supplyCapabilities,
                 inviteCode: widget.inviteCode,
                 inviteLinkId: widget.inviteLinkId,
                 now: now,
@@ -555,18 +555,18 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen>
       );
     }
 
-    if (vmAsync.isLoading) {
+    if (vmState.isLoading) {
       return EventDetailLoadingScreen(
         presentationMode: widget.presentationMode,
         showBottomNavigation: !isHostApp,
       );
     }
 
-    if (vmAsync.hasError) {
+    if (vmState.hasError) {
       return CatchScaffold.workspace(
         body: SafeArea(
           child: CatchLocalizedErrorState(
-            vmAsync.error!,
+            vmState.error!,
             context: AppErrorContext.event,
             onRetry: () =>
                 ref.invalidate(eventDetailViewModelProvider(widget.eventId)),

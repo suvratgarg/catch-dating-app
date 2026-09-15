@@ -7,6 +7,7 @@ import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/domain/city_data.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/sentinels.dart';
 import 'package:catch_dating_app/explore/data/explore_search_repository.dart';
 import 'package:catch_dating_app/explore/presentation/explore_filter_logic.dart';
@@ -497,17 +498,18 @@ AsyncValue<List<Club>> exploreSourceClubs(Ref ref) {
   final locationClubsAsync = ref.watch(
     watchClubsByLocationProvider(city.effectiveMarketId),
   );
+  final locationClubsState = catchAsyncStateFromAsyncValue(locationClubsAsync);
 
-  if (locationClubsAsync.isLoading) {
+  if (locationClubsState.isLoading) {
     return const AsyncLoading();
   }
-  if (locationClubsAsync.hasError) {
+  if (locationClubsState.hasError) {
     return AsyncError(
-      locationClubsAsync.error!,
-      locationClubsAsync.stackTrace ?? StackTrace.current,
+      locationClubsState.error!,
+      locationClubsState.stackTrace ?? StackTrace.current,
     );
   }
-  final locationClubs = locationClubsAsync.asData?.value ?? const <Club>[];
+  final locationClubs = locationClubsState.value ?? const <Club>[];
   return AsyncData(List.unmodifiable(locationClubs));
 }
 
@@ -516,17 +518,18 @@ AsyncValue<List<Club>> filteredExploreClubs(Ref ref) {
   final city = ref.watch(selectedExploreCityProvider);
   final query = ref.watch(exploreSearchQueryProvider);
   final clubsAsync = ref.watch(exploreSourceClubsProvider);
+  final clubsState = catchAsyncStateFromAsyncValue(clubsAsync);
   final normalizedQuery = query.trim().toLowerCase();
 
-  if (clubsAsync.isLoading) return const AsyncLoading();
-  if (clubsAsync.hasError) {
+  if (clubsState.isLoading) return const AsyncLoading();
+  if (clubsState.hasError) {
     return AsyncError(
-      clubsAsync.error!,
-      clubsAsync.stackTrace ?? StackTrace.current,
+      clubsState.error!,
+      clubsState.stackTrace ?? StackTrace.current,
     );
   }
 
-  final sourceClubs = clubsAsync.asData?.value ?? const <Club>[];
+  final sourceClubs = clubsState.value ?? const <Club>[];
   if (normalizedQuery.isEmpty) {
     return AsyncData(sourceClubs);
   }
@@ -537,8 +540,10 @@ AsyncValue<List<Club>> filteredExploreClubs(Ref ref) {
   // Server search keys off the debounced query so typing doesn't fire a
   // Cloud Function call per keystroke. Until it settles, `localFallback`
   // (computed from the live query above) keeps results responsive.
-  final debouncedQuery =
-      ref.watch(debouncedExploreSearchQueryProvider).asData?.value ?? '';
+  final debouncedQueryState = catchAsyncStateFromAsyncValue(
+    ref.watch(debouncedExploreSearchQueryProvider),
+  );
+  final debouncedQuery = debouncedQueryState.value ?? '';
   if (debouncedQuery.length < 2) {
     return AsyncData(localFallback);
   }
@@ -548,15 +553,16 @@ AsyncValue<List<Club>> filteredExploreClubs(Ref ref) {
       cityName: city.effectiveMarketId,
     ),
   );
+  final searchState = catchAsyncStateFromAsyncValue(searchAsync);
 
-  if (searchAsync.isLoading) {
+  if (searchState.isLoading) {
     return AsyncData(localFallback);
   }
-  if (searchAsync.hasError) {
+  if (searchState.hasError) {
     return AsyncData(localFallback);
   }
 
-  final searchResult = searchAsync.asData?.value;
+  final searchResult = searchState.value;
   if (searchResult == null) {
     return AsyncData(localFallback);
   }
@@ -564,16 +570,17 @@ AsyncValue<List<Club>> filteredExploreClubs(Ref ref) {
   final searchedClubsAsync = ref.watch(
     watchClubsByIdsProvider(ClubsByIdQuery(searchResult.organizerIds)),
   );
-  if (searchedClubsAsync.isLoading) {
+  final searchedClubsState = catchAsyncStateFromAsyncValue(searchedClubsAsync);
+  if (searchedClubsState.isLoading) {
     return const AsyncLoading();
   }
-  if (searchedClubsAsync.hasError) {
+  if (searchedClubsState.hasError) {
     return AsyncData(localFallback);
   }
 
   final rankedMatches = _rankClubsById(
     ids: searchResult.organizerIds,
-    clubs: searchedClubsAsync.asData?.value ?? const <Club>[],
+    clubs: searchedClubsState.value ?? const <Club>[],
   );
   return AsyncData(rankedMatches);
 }
@@ -598,48 +605,53 @@ List<Club> _rankClubsById({
 @riverpod
 AsyncValue<ExploreViewModel> exploreClubsViewModel(Ref ref) {
   final filteredAsync = ref.watch(filteredExploreClubsProvider);
+  final filteredState = catchAsyncStateFromAsyncValue(filteredAsync);
   final browseFilters = ref.watch(exploreFiltersProvider);
 
-  if (filteredAsync.isLoading) {
+  if (filteredState.isLoading) {
     return const AsyncLoading();
   }
-  if (filteredAsync.hasError) {
+  if (filteredState.hasError) {
     return AsyncError(
-      filteredAsync.error!,
-      filteredAsync.stackTrace ?? StackTrace.current,
+      filteredState.error!,
+      filteredState.stackTrace ?? StackTrace.current,
     );
   }
 
-  final sourceClubs = filteredAsync.asData?.value ?? const <Club>[];
+  final sourceClubs = filteredState.value ?? const <Club>[];
   if (sourceClubs.isEmpty) {
     return const AsyncData(ExploreViewModel(joinedClubs: [], allClubs: []));
   }
 
   final uidAsync = ref.watch(uidProvider);
-  if (uidAsync.isLoading) {
+  final uidState = catchAsyncStateFromAsyncValue(uidAsync);
+  if (uidState.isLoading) {
     return const AsyncLoading();
   }
-  if (uidAsync.hasError) {
+  if (uidState.hasError) {
     return AsyncError(
-      uidAsync.error!,
-      uidAsync.stackTrace ?? StackTrace.current,
+      uidState.error!,
+      uidState.stackTrace ?? StackTrace.current,
     );
   }
 
-  final uid = uidAsync.asData?.value;
+  final uid = uidState.value;
   final followedClubIdsAsync = ref.watch(currentUserFollowedClubIdsProvider);
+  final followedClubIdsState = catchAsyncStateFromAsyncValue(
+    followedClubIdsAsync,
+  );
 
-  if (uid != null && followedClubIdsAsync.isLoading) {
+  if (uid != null && followedClubIdsState.isLoading) {
     return const AsyncLoading();
   }
-  if (uid != null && followedClubIdsAsync.hasError) {
+  if (uid != null && followedClubIdsState.hasError) {
     return AsyncError(
-      followedClubIdsAsync.error!,
-      followedClubIdsAsync.stackTrace ?? StackTrace.current,
+      followedClubIdsState.error!,
+      followedClubIdsState.stackTrace ?? StackTrace.current,
     );
   }
 
-  final followedClubIds = followedClubIdsAsync.asData?.value ?? <String>{};
+  final followedClubIds = followedClubIdsState.value ?? <String>{};
   final joinedClubIds = followedClubIds;
   final clubs = applyExploreFilters(
     clubs: sourceClubs,

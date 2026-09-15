@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/dashboard/presentation/notifications_list_state.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/notifications/domain/activity_notification.dart';
@@ -10,32 +11,38 @@ NotificationsListState buildNotificationsListState({
   required AppLocalizations l10n,
   bool markAllReadPending = false,
 }) {
-  if (uid.isLoading && !uid.hasValue) {
+  final uidState = catchAsyncStateFromAsyncValue(uid);
+  if (uidState.isLoading) {
     return const NotificationsAccessLoading();
   }
 
-  if (uid.hasError && !uid.hasValue) {
-    return NotificationsAccessError(error: uid.error!);
+  if (uidState.hasError) {
+    return NotificationsAccessError(error: uidState.error!);
   }
 
-  final userId = uid.asData?.value;
+  final userId = uidState.value;
   if (userId == null) {
     return const NotificationsSignedOut();
   }
 
   final notificationsAsync = notifications;
-  if (notificationsAsync == null ||
-      (notificationsAsync.isLoading && !notificationsAsync.hasValue)) {
+  if (notificationsAsync == null) {
+    return NotificationsActivityLoading(uid: userId);
+  }
+  final notificationsState = catchAsyncStateFromAsyncValue(notificationsAsync);
+  if (notificationsState.isLoading) {
     return NotificationsActivityLoading(uid: userId);
   }
 
-  final error = notificationsAsync.error;
-  if (error != null && !notificationsAsync.hasValue) {
-    return NotificationsActivityError(uid: userId, error: error);
+  if (notificationsState.hasError) {
+    return NotificationsActivityError(
+      uid: userId,
+      error: notificationsState.error!,
+    );
   }
 
   final visibleNotifications =
-      (notificationsAsync.asData?.value ?? const <ActivityNotification>[])
+      (notificationsState.value ?? const <ActivityNotification>[])
           .where((notification) => notification.isVisibleInActivity)
           .toList(growable: false);
   if (visibleNotifications.isEmpty) {

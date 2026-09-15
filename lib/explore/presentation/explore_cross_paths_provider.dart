@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/cross_paths/cross_paths.dart';
 import 'package:catch_dating_app/events/domain/viewer_event_availability.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_providers.dart';
@@ -34,13 +35,17 @@ String crossPathsExploreSessionId(Ref ref) {
 @riverpod
 Future<List<CrossPathsSuggestion>> exploreCrossPathsSuggestions(Ref ref) async {
   final uidAsync = ref.watch(uidProvider);
-  final uid = uidAsync.asData?.value;
+  final uidState = catchAsyncStateFromAsyncValue(uidAsync);
+  final uid = uidState.value;
   if (uid == null) return const [];
 
   final query = ref.watch(exploreSearchQueryProvider).trim();
   if (query.isNotEmpty) return const [];
 
-  final feed = ref.watch(exploreFeedViewModelProvider).asData?.value;
+  final feedState = catchAsyncStateFromAsyncValue(
+    ref.watch(exploreFeedViewModelProvider),
+  );
+  final feed = feedState.value;
   if (feed == null || feed.items.isEmpty) return const [];
 
   final eventIds = crossPathsExploreEventIds(feed);
