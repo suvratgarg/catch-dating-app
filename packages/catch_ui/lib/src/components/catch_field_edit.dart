@@ -6,6 +6,13 @@ extension _CatchFieldEdit on _CatchFieldState {
   }
 
   EdgeInsets get _rowPadding {
+    final contentInsets = CatchFieldGeometryScope.contentInsetsOf(context);
+    if (contentInsets != null) {
+      return contentInsets.copyWith(
+        top: CatchFieldTokens.rowVerticalPadding,
+        bottom: CatchFieldTokens.rowVerticalPadding,
+      );
+    }
     final containerOwnsGutter =
         CatchFieldGeometryScope.gutterOwnershipOf(context) ==
         CatchFieldGeometryScopeMode.container;

@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/explore.feature.json",
   "generatedFor": "2026-09-14",
   "sourceDigest": "sha256:9486af42475eb47fdac3b04d8d3184a0fb7c5d18f54deb686130f90447573077",
-  "resolvedDigest": "sha256:4278b8fa96ced65edf6568834a58bd17d93385f1d992a2c4dcde3b51ace69ff6",
+  "resolvedDigest": "sha256:d07f9d0558c4c7f826d7dd6bdbc3581e98965ecd65f13743b083b31783b2fe86",
   "feature": {
     "id": "feature.explore",
     "name": "Explore",
@@ -1807,6 +1807,7 @@
               "file": "packages/catch_ui/lib/src/components/catch_field.dart",
               "constructors": [
                 "CatchField.read",
+                "CatchField.navigate",
                 "CatchField.content",
                 "CatchField.nav",
                 "CatchField.sortable",

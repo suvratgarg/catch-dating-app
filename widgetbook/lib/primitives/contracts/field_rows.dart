@@ -493,12 +493,9 @@ Widget catchFieldRowContractStates(BuildContext context) {
       WidgetbookContractStateCard(
         label: 'add',
         child: WidgetbookContractFieldWidth(
-          child: CatchFieldRow.add(
-            leading: Icon(CatchIcons.add, color: t.primary),
-            body: Text(
-              'Add another time',
-              style: CatchTextStyles.fieldRowTitle(context, color: t.primary),
-            ),
+          child: CatchField.add(
+            copy: catchFieldCopy(context.l10n),
+            title: 'Add another time',
             onTap: widgetbookNoop,
           ),
         ),

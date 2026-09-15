@@ -10,7 +10,7 @@ import 'package:flutter/foundation.dart';
 class CatchResponsiveFieldInteractionPolicy {
   const CatchResponsiveFieldInteractionPolicy({
     this.singleColumn = CatchDividedFieldInteractionScopeMode.fullBleed,
-    this.splitPane = CatchDividedFieldInteractionScopeMode.roundedTile,
+    this.splitPane = CatchDividedFieldInteractionScopeMode.fullBleed,
   });
 
   final CatchDividedFieldInteractionScopeMode singleColumn;

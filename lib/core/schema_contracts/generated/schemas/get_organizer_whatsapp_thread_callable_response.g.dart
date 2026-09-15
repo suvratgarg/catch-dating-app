@@ -37,6 +37,15 @@ const schemaGetOrganizerWhatsappThreadCallableResponseSchema = <String, Object?>
       'minLength': 1,
       'maxLength': 180,
     },
+    'linkedUid': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'minLength': 1,
+      'maxLength': 128,
+      'description': 'Verified current account identity for this organizer contact; absent on older servers and null for unresolved, merged, hidden or deleted identities.',
+    },
     'displayName': <String, Object?>{
       'type': 'string',
       'minLength': 1,

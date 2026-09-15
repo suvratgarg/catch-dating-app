@@ -1,8 +1,8 @@
+import 'package:catch_ui/catch_ui.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_applications_panel.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_detail_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_detail_tabs.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_memory.dart';
-import 'package:catch_dating_app/hosts/presentation/customers/host_customer_row.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_timeline.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen.dart';
 import 'package:flutter/material.dart';
@@ -116,16 +116,17 @@ Widget hostCustomerHistoryFiltersComponentStates(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Populated component',
-  type: HostCustomerTimelineRecord,
+  type: CatchField,
   path: '[P1 product surfaces]/Host operations/Customers',
 )
 Widget hostCustomerTimelineRecordComponentStates(BuildContext context) =>
     hostCustomersStates(
       context,
-      detailBuilder: (customer) => Column(
+      detailBuilder: (customer) => CatchSection.containedRows(
         children: [
           for (final entry in customer.timeline)
-            HostCustomerTimelineRecord(
+            hostCustomerTimelineField(
+              context,
               entry: entry,
               onOpenFormResponse: (_) {},
               onOpenEvent: (_) {},
@@ -191,14 +192,6 @@ Widget hostCustomersDirectoryStates(BuildContext context) =>
   path: '[P1 product surfaces]/Host operations/Customers',
 )
 Widget hostCustomerDirectoryControlsStates(BuildContext context) =>
-    hostCustomersStates(context);
-
-@widgetbook.UseCase(
-  name: 'Row states',
-  type: HostCustomerRow,
-  path: '[P1 product surfaces]/Host operations/Customers',
-)
-Widget hostCustomerDirectoryRowStates(BuildContext context) =>
     hostCustomersStates(context);
 
 @widgetbook.UseCase(

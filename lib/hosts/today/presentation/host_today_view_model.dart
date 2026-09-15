@@ -114,6 +114,18 @@ HostTodayState buildHostTodayState(
     attentionIssues: List<HostTodayAttentionIssue>.unmodifiable(
       attentionIssues,
     ),
+    attentionCountIsComplete:
+        data != null &&
+        data.attentionIssues.isEmpty &&
+        data.localAttendanceMerged &&
+        data.attentionCoverage.map((c) => c.kind).toSet().length ==
+            HostAttentionKind.values.length &&
+        data.attentionCoverage.every(
+          (c) =>
+              c.state == HostAttentionCoverageState.complete ||
+              (c.state == HostAttentionCoverageState.clientMergeRequired &&
+                  c.kind == HostAttentionKind.attendanceSync),
+        ),
     laterEvents: List<HostTodayEventRowData>.unmodifiable(laterEvents),
     hasPastEvents: data?.hasPastEvents ?? false,
   );

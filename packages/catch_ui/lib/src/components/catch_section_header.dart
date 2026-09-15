@@ -67,6 +67,7 @@ class CatchSectionHeader extends StatelessWidget {
             label: displayText,
             color: color,
             variant: textVariant,
+            maxLines: null,
           ),
         );
       }
@@ -80,6 +81,7 @@ class CatchSectionHeader extends StatelessWidget {
                 label: displayText,
                 color: color,
                 variant: textVariant,
+                maxLines: null,
               ),
             )
           else
@@ -120,6 +122,7 @@ class CatchSectionHeader extends StatelessWidget {
                           label: displayText,
                           color: color,
                           variant: textVariant,
+                          maxLines: null,
                         ),
                       )
                     else

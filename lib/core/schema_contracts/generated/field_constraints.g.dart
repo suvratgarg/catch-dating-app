@@ -27387,6 +27387,13 @@ abstract final class CatchContractConstraints {
     minimum: 0,
   );
 
+  static const getOrganizerWhatsappThreadCallableResponseLinkedUid = CatchContractFieldConstraints(
+    path: 'getOrganizerWhatsappThreadCallableResponse.linkedUid',
+    maxLength: 128,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
   static const getOrganizerWhatsappThreadCallableResponseMessages = CatchContractFieldConstraints(
     path: 'getOrganizerWhatsappThreadCallableResponse.messages',
     required: true,
@@ -33545,6 +33552,13 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     enumValues: <String>['inbound', 'outbound'],
+  );
+
+  static const listOrganizerWhatsappThreadsCallableResponseThreadsItemsLinkedUid = CatchContractFieldConstraints(
+    path: 'listOrganizerWhatsappThreadsCallableResponse.threads.items.linkedUid',
+    maxLength: 128,
+    minLength: 1,
+    valueTypes: <String>['string'],
   );
 
   static const listOrganizerWhatsappThreadsCallableResponseThreadsItemsServiceWindowExpiresAtMillis = CatchContractFieldConstraints(
@@ -66847,6 +66861,7 @@ abstract final class CatchContractConstraints {
     'getOrganizerWhatsappThreadCallableResponse.contactId': getOrganizerWhatsappThreadCallableResponseContactId,
     'getOrganizerWhatsappThreadCallableResponse.displayName': getOrganizerWhatsappThreadCallableResponseDisplayName,
     'getOrganizerWhatsappThreadCallableResponse.lastInboundAtMillis': getOrganizerWhatsappThreadCallableResponseLastInboundAtMillis,
+    'getOrganizerWhatsappThreadCallableResponse.linkedUid': getOrganizerWhatsappThreadCallableResponseLinkedUid,
     'getOrganizerWhatsappThreadCallableResponse.messages': getOrganizerWhatsappThreadCallableResponseMessages,
     'getOrganizerWhatsappThreadCallableResponse.messages.items.body': getOrganizerWhatsappThreadCallableResponseMessagesItemsBody,
     'getOrganizerWhatsappThreadCallableResponse.messages.items.direction': getOrganizerWhatsappThreadCallableResponseMessagesItemsDirection,
@@ -67701,6 +67716,7 @@ abstract final class CatchContractConstraints {
     'listOrganizerWhatsappThreadsCallableResponse.threads.items.lastMessageAtMillis': listOrganizerWhatsappThreadsCallableResponseThreadsItemsLastMessageAtMillis,
     'listOrganizerWhatsappThreadsCallableResponse.threads.items.lastMessageBody': listOrganizerWhatsappThreadsCallableResponseThreadsItemsLastMessageBody,
     'listOrganizerWhatsappThreadsCallableResponse.threads.items.lastMessageDirection': listOrganizerWhatsappThreadsCallableResponseThreadsItemsLastMessageDirection,
+    'listOrganizerWhatsappThreadsCallableResponse.threads.items.linkedUid': listOrganizerWhatsappThreadsCallableResponseThreadsItemsLinkedUid,
     'listOrganizerWhatsappThreadsCallableResponse.threads.items.serviceWindowExpiresAtMillis': listOrganizerWhatsappThreadsCallableResponseThreadsItemsServiceWindowExpiresAtMillis,
     'listOrganizerWhatsappThreadsCallableResponse.threads.items.serviceWindowOpen': listOrganizerWhatsappThreadsCallableResponseThreadsItemsServiceWindowOpen,
     'listOrganizerWhatsappThreadsCallableResponse.threads.items.threadId': listOrganizerWhatsappThreadsCallableResponseThreadsItemsThreadId,

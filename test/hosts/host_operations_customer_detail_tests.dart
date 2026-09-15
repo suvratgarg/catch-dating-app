@@ -282,7 +282,11 @@ void _registerHostOperationsCustomerDetailTests() {
       findsOneWidget,
     );
 
-    final customerRow = find.byType(HostCustomerRow);
+    final customerRow = find.byWidgetPredicate(
+      (widget) =>
+          widget is CatchField &&
+          widget.key == const ValueKey('host-customer-contact-1'),
+    );
     expect(
       tester.getTopLeft(customerRow).dy,
       greaterThanOrEqualTo(filtersRect.bottom),

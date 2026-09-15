@@ -188,10 +188,6 @@ void main() {
             child: CatchSectionList.page(
               emptyStateOmitted: true,
               mode: CatchSectionListMode.adaptiveTwoColumn,
-              fieldInteractionPolicy:
-                  const CatchResponsiveFieldInteractionPolicy(
-                    splitPane: CatchDividedFieldInteractionScopeMode.fullBleed,
-                  ),
               items: [
                 CatchSectionListItem(
                   child: CatchSection.fieldRows(

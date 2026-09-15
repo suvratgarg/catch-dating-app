@@ -719,6 +719,25 @@ void main() {
     final overlayFinder = find.byKey(CatchField.pressOverlayKey);
 
     await tester.sendEventToBinding(
+      PointerAddedEvent(
+        pointer: 41,
+        position: fieldRect.center,
+        kind: PointerDeviceKind.mouse,
+      ),
+    );
+    await tester.sendEventToBinding(
+      PointerHoverEvent(
+        pointer: 41,
+        position: fieldRect.center,
+        kind: PointerDeviceKind.mouse,
+      ),
+    );
+    await tester.pump();
+    final hoverColor =
+        (tester.widget<AnimatedContainer>(overlayFinder).decoration!
+                as BoxDecoration)
+            .color;
+    await tester.sendEventToBinding(
       PointerDownEvent(
         pointer: 41,
         position: fieldRect.center,
@@ -730,7 +749,7 @@ void main() {
     var decoration =
         tester.widget<AnimatedContainer>(overlayFinder).decoration!
             as BoxDecoration;
-    expect(decoration.color, Colors.transparent);
+    expect(decoration.color, hoverColor);
     expect(decoration.border, isNull);
     await tester.sendEventToBinding(
       PointerUpEvent(
@@ -739,6 +758,14 @@ void main() {
         kind: PointerDeviceKind.mouse,
       ),
     );
+    await tester.sendEventToBinding(
+      PointerRemovedEvent(
+        pointer: 41,
+        position: fieldRect.center,
+        kind: PointerDeviceKind.mouse,
+      ),
+    );
+    await tester.pump();
 
     final gesture = await tester.startGesture(fieldRect.center);
     await tester.pump();

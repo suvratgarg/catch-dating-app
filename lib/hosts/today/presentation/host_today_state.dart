@@ -40,6 +40,7 @@ class HostTodayState {
     this.attentionIssues = const <HostTodayAttentionIssue>[],
     this.laterEvents = const <HostTodayEventRowData>[],
     this.hasPastEvents = false,
+    this.attentionCountIsComplete = false,
     this.error,
     this.stackTrace,
   });
@@ -50,6 +51,9 @@ class HostTodayState {
   final List<HostTodayAttentionIssue> attentionIssues;
   final List<HostTodayEventRowData> laterEvents;
   final bool hasPastEvents;
+
+  /// Counts are exact only when every projected kind and local merge is known.
+  final bool attentionCountIsComplete;
   final Object? error;
   final StackTrace? stackTrace;
 }

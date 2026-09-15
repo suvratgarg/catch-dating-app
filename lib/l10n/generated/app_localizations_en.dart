@@ -4073,14 +4073,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String hostsHostInboxScreenLabelBookedBookedthreadcount({
     required Object bookedThreadCount,
   }) {
-    return 'BOOKED · $bookedThreadCount';
+    return 'Booked · $bookedThreadCount';
   }
 
   @override
   String hostsHostInboxScreenLabelProspectiveProspectivethreadcount({
     required Object prospectiveThreadCount,
   }) {
-    return 'PROSPECTIVE · $prospectiveThreadCount';
+    return 'Prospective · $prospectiveThreadCount';
   }
 
   @override
@@ -17715,4 +17715,169 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsCreateEventCreateAction => 'Create event';
+
+  @override
+  String get hostFormPersonField => 'Use this answer as';
+
+  @override
+  String get hostFormPersonFieldHelp =>
+      'Identify contact and profile answers for review. Other answers stay with this response.';
+
+  @override
+  String hostFormPersonFieldName({required String field}) {
+    String _temp0 = intl.Intl.selectLogic(field, {
+      'givenName': 'First name',
+      'familyName': 'Last name',
+      'displayName': 'Full name',
+      'dateOfBirth': 'Date of birth',
+      'age': 'Age',
+      'gender': 'Gender',
+      'phoneNumber': 'Phone number',
+      'email': 'Email',
+      'instagramHandle': 'Instagram',
+      'linkedinUrl': 'LinkedIn',
+      'profilePhoto': 'Profile photo',
+      'city': 'City',
+      'heightCm': 'Height in centimetres',
+      'occupation': 'Occupation',
+      'company': 'Company',
+      'education': 'Education',
+      'languages': 'Languages',
+      'relationshipGoal': 'Relationship goal',
+      'interestedInGenders': 'Gender preference',
+      'drinking': 'Drinking',
+      'smoking': 'Smoking',
+      'religion': 'Religion',
+      'workout': 'Exercise',
+      'diet': 'Diet',
+      'children': 'Children',
+      'other': 'Response only',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String hostTodayTaskCountPartial({required int count}) {
+    return '$count+';
+  }
+
+  @override
+  String get hostTodayTaskCoverageIncomplete => 'Some tasks may be missing';
+
+  @override
+  String get hostTodayTonight => 'Tonight';
+
+  @override
+  String get hostTodayLiveNow => 'Live now';
+
+  @override
+  String hostTodayStartsInMinutes({required int minutes}) {
+    return 'Starts in $minutes min';
+  }
+
+  @override
+  String hostTodayStartsInHours({required int hours, required int minutes}) {
+    return 'Starts in ${hours}h ${minutes}m';
+  }
+
+  @override
+  String hostTodayStartsOn({required String date, required String time}) {
+    return 'Starts $date · $time';
+  }
+
+  @override
+  String hostTodayCheckedIn({required int count}) {
+    return '$count checked in';
+  }
+
+  @override
+  String get hostInboxNewMessage => 'New message';
+
+  @override
+  String get hostInboxFindPerson => 'Find a person';
+
+  @override
+  String get hostInboxChoosePerson =>
+      'Choose someone from People or add a new person.';
+
+  @override
+  String get hostInboxAddPerson => 'Add person';
+
+  @override
+  String get hostInboxReplyVia => 'Reply via';
+
+  @override
+  String get hostInboxCatchChannel => 'Catch';
+
+  @override
+  String get hostInboxPartialSources =>
+      'Some conversations are still loading or unavailable. Available messages are shown.';
+
+  @override
+  String get hostInboxMoreConversations => 'Load more conversations';
+
+  @override
+  String get hostInboxUnclassified =>
+      'Booking status is unavailable for some people. Their conversations are included below.';
+
+  @override
+  String get hostInboxUnknownBooking => 'Booking status unavailable';
+
+  @override
+  String hostInboxPartialUnread({required int count}) {
+    return 'At least $count unread messages. Some source read counts are unavailable.';
+  }
+
+  @override
+  String get hostInboxHistoryCoverage =>
+      'This conversation shows available retained history. Some older messages may be missing.';
+
+  @override
+  String get hostInboxSharedThreadHistory =>
+      'This source conversation also covers other events. Its messages are shown together because individual messages do not carry event labels.';
+
+  @override
+  String get hostInboxSelectionUnavailable =>
+      'This conversation is no longer available in the selected organizer and scope.';
+
+  @override
+  String get hostInboxRouteUnavailable =>
+      'This reply route is unavailable. Choose an available route or review the person’s details.';
+
+  @override
+  String get hostInboxChooseReplyRoute =>
+      'Choose a reply route before writing a message.';
+
+  @override
+  String get hostInboxAvailableRoutes => 'Available ways to message';
+
+  @override
+  String get hostInboxOpenPerson => 'Open person details';
+
+  @override
+  String get hostInboxNewMessageUnavailable =>
+      'No in-app reply route is currently available. Review contact details and messaging permissions on the person’s record.';
+
+  @override
+  String hostInboxMessageVia({required String channel}) {
+    return 'Message via $channel';
+  }
+
+  @override
+  String get hostInboxGeneralStatus => 'General inquiry';
+
+  @override
+  String get hostInboxInquiryStatus => 'Inquiry';
+
+  @override
+  String get hostInboxBookedStatus => 'Booked';
+
+  @override
+  String get hostInboxProspectiveStatus => 'Prospective';
+
+  @override
+  String get hostInboxOlderMessages => 'Load older Catch messages';
+
+  @override
+  String get hostInboxWhatsappReplyChannel => 'WhatsApp';
 }

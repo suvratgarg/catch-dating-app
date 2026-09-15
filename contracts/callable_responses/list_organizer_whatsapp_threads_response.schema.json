@@ -18,6 +18,7 @@
       "properties": {
         "threadId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
         "contactId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+        "linkedUid": {"type": ["string", "null"], "minLength": 1, "maxLength": 128, "description": "Verified current account identity for this organizer contact; absent on older servers and null for unresolved, merged, hidden or deleted identities."},
         "displayName": {"type": "string", "minLength": 1, "maxLength": 120},
         "eventIds": {"type": "array", "maxItems": 50, "uniqueItems": true, "items": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"}},
         "lastMessageBody": {"type": "string", "minLength": 1, "maxLength": 4096},

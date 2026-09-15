@@ -1,7 +1,7 @@
 {
   "version": 1,
   "generatedFrom": "design/components/catch.components.json",
-  "registryUpdated": "2026-09-07",
+  "registryUpdated": "2026-09-16",
   "codeToComponents": {
     "catch_async_requires_retry": [
       "catch.async_value"
@@ -19,6 +19,9 @@
       "catch.field"
     ],
     "catch_field_geometry_is_section_owned": [
+      "catch.field"
+    ],
+    "catch_field_owns_row_interaction": [
       "catch.field"
     ],
     "catch_field_requires_section_context": [
@@ -56,7 +59,7 @@
       "catch.surface"
     ],
     "catch_no_positional_widget_finder": [
-      "catch.row_press_surface"
+      "catch.field"
     ],
     "catch_no_presentation_platform_import": [
       "catch.chat_composer"
@@ -152,6 +155,12 @@
     "catch_prefer_semantic_insets": [
       "catch.screen_body"
     ],
+    "catch_row_geometry_is_internal": [
+      "catch.field"
+    ],
+    "catch_row_section_fills_viewport": [
+      "catch.field"
+    ],
     "catch_screen_gutter_uses_semantic_insets": [
       "catch.screen_body"
     ],
@@ -172,6 +181,9 @@
     ],
     "catch_screen_top_bar_conformance": [
       "catch.top_bar"
+    ],
+    "catch_section_content_is_passive": [
+      "catch.field"
     ],
     "catch_section_list_requires_empty_policy": [
       "catch.section_stack"

@@ -27,6 +27,7 @@ class ChatController extends _$ChatController {
     required String matchId,
     required String senderId,
     required String text,
+    String? messageId,
   }) async {
     await withBackendErrorContext(
       () => ref
@@ -35,6 +36,7 @@ class ChatController extends _$ChatController {
             conversationId: matchId,
             senderId: senderId,
             text: text,
+            messageId: messageId,
           ),
       context: const BackendErrorContext(
         service: BackendService.firestore,

@@ -6,6 +6,7 @@ import 'package:catch_ui/src/components/catch_field_interaction_plane_scope.dart
 import 'package:catch_ui/src/components/catch_field_visibility_scope.dart';
 import 'package:catch_ui/src/components/catch_responsive_field_interaction_policy.dart';
 import 'package:catch_ui/src/patterns/catch_page_body.dart';
+import 'package:catch_ui/src/patterns/catch_row_viewport.dart';
 import 'package:catch_ui/src/patterns/catch_scroll_terminal_gap.dart';
 import 'package:catch_ui/src/patterns/catch_section_list_item.dart';
 import 'package:catch_ui/src/patterns/catch_section_list_mode.dart';
@@ -40,7 +41,8 @@ class CatchSectionList extends StatelessWidget {
          detailInsets: null,
        ),
        _responsive = null,
-       _page = null;
+       _page = null,
+       _panes = null;
 
   const CatchSectionList.inset({
     super.key,
@@ -60,7 +62,8 @@ class CatchSectionList extends StatelessWidget {
          detailInsets: null,
        ),
        _responsive = null,
-       _page = null;
+       _page = null,
+       _panes = null;
 
   const CatchSectionList.sliver({
     super.key,
@@ -86,7 +89,8 @@ class CatchSectionList extends StatelessWidget {
          ),
        ),
        _responsive = null,
-       _page = null;
+       _page = null,
+       _panes = null;
 
   const CatchSectionList.responsive({
     super.key,
@@ -116,7 +120,8 @@ class CatchSectionList extends StatelessWidget {
          columnGap: columnGap,
          fieldInteractionPolicy: fieldInteractionPolicy,
        ),
-       _page = null;
+       _page = null,
+       _panes = null;
 
   const CatchSectionList.page({
     super.key,
@@ -158,7 +163,26 @@ class CatchSectionList extends StatelessWidget {
          physics: physics,
          primary: primary,
          terminalExtra: terminalExtra,
+       ),
+       _panes = null;
+
+  /// Co-scrolling page panes. Each pane owns its complete interaction width;
+  /// sections retain content gutters and the enclosing page retains scrolling.
+  const CatchSectionList.panes({
+    super.key,
+    required Widget body,
+    Widget? trailing,
+    double trailingWidth = CatchLayout.hostTodayAttentionPaneWidth,
+  }) : _sequence = null,
+       _responsive = null,
+       _page = null,
+       _panes = (
+         primary: body,
+         secondary: trailing,
+         secondaryWidth: trailingWidth,
        );
+
+  final ({Widget primary, Widget? secondary, double secondaryWidth})? _panes;
 
   final _CatchSectionListSequence? _sequence;
   final _CatchSectionListResponsive? _responsive;
@@ -173,6 +197,22 @@ class CatchSectionList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final panes = _panes;
+    if (panes != null) {
+      return Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(child: CatchRowViewport(child: panes.primary)),
+          if (panes.secondary case final secondary?) ...[
+            const SizedBox(width: CatchGaps.section),
+            SizedBox(
+              width: panes.secondaryWidth,
+              child: CatchRowViewport(child: secondary),
+            ),
+          ],
+        ],
+      );
+    }
     final responsive = _responsive;
     final page = _page;
     if (page != null) {

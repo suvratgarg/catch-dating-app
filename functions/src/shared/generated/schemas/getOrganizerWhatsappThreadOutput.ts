@@ -35,6 +35,15 @@ export const getOrganizerWhatsappThreadCallableResponseSchema: Record<string, un
       "minLength": 1,
       "maxLength": 180
     },
+    "linkedUid": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 128,
+      "description": "Verified current account identity for this organizer contact; absent on older servers and null for unresolved, merged, hidden or deleted identities."
+    },
     "displayName": {
       "type": "string",
       "minLength": 1,

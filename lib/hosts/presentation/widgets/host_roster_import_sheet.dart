@@ -229,18 +229,20 @@ class _HostRosterImportSheetState extends State<HostRosterImportSheet> {
           ],
           if (mapped.rows.isNotEmpty) ...[
             gapH12,
-            for (final row in mapped.rows.take(3).indexed)
-              CatchPersonRow(
-                copy: catchPersonRowCopy(context.l10n),
-                data: CatchPersonRowData(
-                  name: row.$2.displayName,
-                  metaLine: [
-                    row.$2.phone,
-                    row.$2.email,
-                  ].whereType<String>().join(' · '),
-                ),
-                divider: row.$1 > 0,
-              ),
+            CatchSection.containedRows(
+              children: [
+                for (final row in mapped.rows.take(3).indexed)
+                  CatchField.read(
+                    content: CatchPersonLayout(
+                      name: row.$2.displayName,
+                      supportingText: [
+                        row.$2.phone,
+                        row.$2.email,
+                      ].whereType<String>().join(' · '),
+                    ),
+                  ),
+              ],
+            ),
           ],
         ],
       ),

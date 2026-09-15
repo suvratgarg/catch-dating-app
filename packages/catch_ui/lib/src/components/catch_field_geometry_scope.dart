@@ -25,12 +25,25 @@ class CatchFieldGeometryScope extends InheritedWidget {
     super.key,
     required this.gutterOwnership,
     this.interactionOutsets,
+    this.contentInsets,
+    this.exactBounds = false,
     this.interactionShape = CatchFieldGeometryScopeVariant.roundedTile,
     required super.child,
   });
 
   final CatchFieldGeometryScopeMode gutterOwnership;
   final EdgeInsets? interactionOutsets;
+  final EdgeInsets? contentInsets;
+  final bool exactBounds;
+
+  static EdgeInsets? contentInsetsOf(BuildContext context) => context
+      .dependOnInheritedWidgetOfExactType<CatchFieldGeometryScope>()
+      ?.contentInsets;
+  static bool exactBoundsOf(BuildContext context) =>
+      context
+          .dependOnInheritedWidgetOfExactType<CatchFieldGeometryScope>()
+          ?.exactBounds ??
+      false;
   final CatchFieldGeometryScopeVariant interactionShape;
 
   static CatchFieldGeometryScopeMode gutterOwnershipOf(BuildContext context) =>
@@ -77,6 +90,8 @@ class CatchFieldGeometryScope extends InheritedWidget {
 
   @override
   bool updateShouldNotify(CatchFieldGeometryScope oldWidget) =>
+      contentInsets != oldWidget.contentInsets ||
+      exactBounds != oldWidget.exactBounds ||
       gutterOwnership != oldWidget.gutterOwnership ||
       interactionOutsets != oldWidget.interactionOutsets ||
       interactionShape != oldWidget.interactionShape;

@@ -129,35 +129,36 @@ class _HostFormAutomationsScreenState
                   message: context.l10n.hostFormAutomationsEmptyBody,
                 )
               else
-                CatchSection.divided(
-                  first: true,
+                CatchSection.containedRows(
                   title: context.l10n.hostFormAutomationsRules,
                   children: [
                     for (final rule in state.rules)
-                      CatchRecordRow(
+                      CatchField.navigate(
                         key: ValueKey('automation-edit-${rule.ruleId}'),
-                        title: rule.name,
-                        icon: CatchIcons.autoAwesomeOutlined,
-                        metadata: [
-                          rule.enabled
-                              ? context.l10n.hostAudienceAutomationActive
-                              : context.l10n.hostAudienceAutomationPaused,
-                          if (formId == null && rule.formId != null)
-                            sources?.forms
-                                    .where((form) => form.id == rule.formId)
-                                    .firstOrNull
-                                    ?.title ??
-                                context.l10n.hostAudienceThisForm,
-                        ].join(' · '),
-                        description: _automationRuleSummary(
-                          context,
-                          rule,
-                          sources,
-                        ),
-                        onTap: () => setState(() {
+                        onActivate: () => setState(() {
                           _selectedRule = rule;
                           _editing = true;
                         }),
+                        content: CatchRecordLayout(
+                          title: rule.name,
+                          icon: CatchIcons.autoAwesomeOutlined,
+                          metadata: [
+                            rule.enabled
+                                ? context.l10n.hostAudienceAutomationActive
+                                : context.l10n.hostAudienceAutomationPaused,
+                            if (formId == null && rule.formId != null)
+                              sources?.forms
+                                      .where((form) => form.id == rule.formId)
+                                      .firstOrNull
+                                      ?.title ??
+                                  context.l10n.hostAudienceThisForm,
+                          ].join(' · '),
+                          description: _automationRuleSummary(
+                            context,
+                            rule,
+                            sources,
+                          ),
+                        ),
                       ),
                   ],
                 ),

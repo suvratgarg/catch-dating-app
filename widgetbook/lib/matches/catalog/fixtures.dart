@@ -44,7 +44,7 @@ class WidgetbookMatchesCelebrationPreview extends StatelessWidget {
   }
 }
 
-CatchPersonRow widgetbookMatchesChatPersonRowForPreview(
+CatchField widgetbookMatchesChatPersonRowForPreview(
   BuildContext context,
   ChatThreadPreview preview, {
   bool divider = false,
@@ -52,25 +52,28 @@ CatchPersonRow widgetbookMatchesChatPersonRowForPreview(
 }) {
   final unreadCount = preview.unreadCount;
   final isNew = !preview.hasConversation;
-  return CatchPersonRow(
-    copy: catchPersonRowCopy(context.l10n),
-    data: CatchPersonRowData(
+  return CatchField.navigate(
+    onActivate: onTap ?? () {},
+    content: CatchConversationLayout(
       name: preview.displayName,
+      preview: preview.previewText,
       imageUrl: preview.photoUrl,
-      lastMessage: preview.previewText,
       timestamp: AppTimeFormatters.chatTimestamp(preview.timestamp),
-      unreadCount: unreadCount,
-      isFresh: unreadCount > 0 || isNew,
-      showFreshDot: unreadCount == 0 && isNew,
+      context: null,
       avatarShape: preview.match.isClubHostInquiry
           ? CatchAvatarVariant.square
           : CatchAvatarVariant.circle,
+      activityLabel: (unreadCount) > 0
+          ? (unreadCount).toString()
+          : (unreadCount == 0 && isNew)
+          ? (catchPersonRowCopy(context.l10n)).newMatchLabel
+          : null,
+      activitySemantics: (unreadCount) > 0
+          ? (catchPersonRowCopy(context.l10n)).unreadCountLabel(unreadCount)
+          : (unreadCount == 0 && isNew)
+          ? (catchPersonRowCopy(context.l10n)).newMatchLabel
+          : null,
     ),
-    avatarSize: CatchLayout.chatListAvatarExtent,
-    padding: CatchInsets.chatListTileVertical,
-    divider: divider,
-    showFreshBackground: false,
-    onTap: onTap,
   );
 }
 

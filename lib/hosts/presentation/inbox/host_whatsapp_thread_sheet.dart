@@ -14,48 +14,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
-class HostWhatsappThreadRow extends StatelessWidget {
-  const HostWhatsappThreadRow({
-    super.key,
-    required this.thread,
-    required this.onTap,
-  });
-
-  final HostWhatsappThreadSummary thread;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) => CatchSurface.card(
-    key: ValueKey('host-whatsapp-thread-${thread.threadId}'),
-    onTap: onTap,
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Text(
-          thread.displayName,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: CatchTextStyles.name(context),
-        ),
-        gapH4,
-        Text(
-          context.l10n.hostInboxWhatsappChannel,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: CatchTextStyles.statusLabel(context),
-        ),
-        gapH4,
-        Text(
-          thread.lastMessageBody,
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-          style: CatchTextStyles.supporting(context),
-        ),
-      ],
-    ),
-  );
-}
-
 class HostWhatsappThreadSheet extends ConsumerStatefulWidget {
   const HostWhatsappThreadSheet({
     super.key,

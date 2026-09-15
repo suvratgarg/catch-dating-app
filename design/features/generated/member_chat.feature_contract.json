@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/member_chat.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:d1ceb8f9ed770e130c766f08a698d78da6a7263cf711ab058abf83595240148b",
-  "resolvedDigest": "sha256:c5b34bd5b63fbd47047b1533994d38521b9bba0690a3d0a579ccc562596e6ba0",
+  "resolvedDigest": "sha256:b6ba8ec07980ab84caf682d10e19867c2e3d9ea695bf468c3f09b5ff90e54a03",
   "feature": {
     "id": "feature.member_chat",
     "name": "Chat Thread",
@@ -1676,6 +1676,7 @@
               "file": "packages/catch_ui/lib/src/components/catch_field.dart",
               "constructors": [
                 "CatchField.read",
+                "CatchField.navigate",
                 "CatchField.content",
                 "CatchField.nav",
                 "CatchField.sortable",
@@ -3973,6 +3974,7 @@
               "file": "packages/catch_ui/lib/src/components/catch_field.dart",
               "constructors": [
                 "CatchField.read",
+                "CatchField.navigate",
                 "CatchField.content",
                 "CatchField.nav",
                 "CatchField.sortable",

@@ -13,6 +13,19 @@ import 'preview.dart';
 import 'shell_fixture.dart';
 
 @widgetbook.UseCase(
+  name: 'Period remains available during loading',
+  type: HostAnalyticsPeriodInput,
+  path: '[P1 product surfaces]/Host operations',
+)
+Widget hostAnalyticsPeriodStates(BuildContext context) =>
+    WidgetbookHostComponentFrame(
+      child: HostAnalyticsPeriodInput(
+        selected: HostClubInsightsRangePreset.thirtyDays,
+        onChanged: (_) {},
+      ),
+    );
+
+@widgetbook.UseCase(
   name: 'Insights scorecard states',
   type: HostClubInsightsPane,
   path: '[P1 product surfaces]/Host operations',
@@ -124,16 +137,10 @@ Widget _hostAnalyticsPreviewFor(String focus) {
       onOpenEventReport: (_) {},
       onOpenAllEvents: () {},
     ),
-    'HostAnalyticsEventTile' => HostAnalyticsEventTile(
-      event: report.topEvents.first,
-      onTap: () {},
-    ),
     'HostAnalyticsReportView' => HostAnalyticsReportView(
       report: report,
       rangePreset: HostClubInsightsRangePreset.thirtyDays,
       currencyCode: 'INR',
-      allTimeOverview: const Text('All-time club metrics'),
-      onRangeChanged: (_) {},
       onOpenEventReport: (_) {},
       onOpenAllEvents: () {},
       onOpenEventDefaults: () {},
@@ -272,14 +279,6 @@ Widget hostStrictCatchBarIndicatorCatalogStates(BuildContext context) =>
 )
 Widget hostStrictHostAnalyticsEventListCatalogStates(BuildContext context) =>
     _hostAnalyticsExactCatalog(context, 'HostAnalyticsEventList');
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostAnalyticsEventTile,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostAnalyticsEventTileCatalogStates(BuildContext context) =>
-    _hostAnalyticsExactCatalog(context, 'HostAnalyticsEventTile');
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
