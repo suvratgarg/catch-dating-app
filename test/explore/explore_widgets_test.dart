@@ -37,6 +37,7 @@ import 'package:catch_dating_app/events/shared/event_tiles/event_tiles.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/explore/domain/explore_event_recommendation.dart';
 import 'package:catch_dating_app/explore/presentation/explore_chrome_state.dart';
+import 'package:catch_dating_app/explore/presentation/explore_feed_providers.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/explore_filter_state.dart';
 import 'package:catch_dating_app/explore/presentation/explore_map_screen.dart';

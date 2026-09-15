@@ -13,6 +13,7 @@ import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/explore/presentation/explore_feed_providers.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/explore_screen.dart';
 import 'package:catch_dating_app/reviews/data/reviews_repository.dart';

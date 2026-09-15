@@ -25,6 +25,7 @@ import 'package:catch_dating_app/explore/data/explore_search_repository.dart';
 import 'package:catch_dating_app/explore/presentation/explore_chrome_state.dart';
 import 'package:catch_dating_app/explore/presentation/explore_club_display_state.dart';
 import 'package:catch_dating_app/explore/presentation/explore_event_display_state.dart';
+import 'package:catch_dating_app/explore/presentation/explore_feed_providers.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/explore_filter_logic.dart';
 import 'package:catch_dating_app/explore/presentation/explore_filter_state.dart';

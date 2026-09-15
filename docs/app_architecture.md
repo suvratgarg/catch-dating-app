@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.65.5
+version: 1.65.6
 updated: 2026-09-15
 owner: app_architecture
 status: active
@@ -404,6 +404,9 @@ accept plain values and keep provider reads in the route boundary.
 The screen mounts `ExploreScreenEmptyState`, `ExploreClearButton`, and
 `ExploreFeedSkeleton` from their component files; empty-state callbacks and
 loading shapes retain their existing contracts.
+`explore_feed_view_model.dart` owns feed values and cover selection;
+`explore_feed_providers.dart` owns Riverpod reads, discovery orchestration, and
+recommendation loading. Screens import the provider seam explicitly.
 
 Explore's visible date strip is an intent selector, not a set of overlapping
 weekly taxonomies. `Tonight`, the next six local dates, and `Any` are the only

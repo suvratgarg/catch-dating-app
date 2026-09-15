@@ -2257,7 +2257,7 @@
             "symbol": "exploreClubsViewModel"
           },
       {
-        "file": "lib/explore/presentation/explore_feed_view_model.dart",
+        "file": "lib/explore/presentation/explore_feed_providers.dart",
         "symbol": "exploreFeedViewModel"
       },
       {
