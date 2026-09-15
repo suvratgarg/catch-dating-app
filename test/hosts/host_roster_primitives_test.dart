@@ -94,7 +94,7 @@ void main() {
                 selectedFilter: HostRosterFilter.all,
                 onFilterChanged: (_) {},
               ),
-              HostRosterSearchBar(
+              HostRosterSearchField(
                 value: '',
                 label: 'Search roster',
                 onChanged: (_) {},

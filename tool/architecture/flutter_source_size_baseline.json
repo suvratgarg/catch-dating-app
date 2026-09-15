@@ -74,10 +74,6 @@
       "maxLines": 923
     },
     {
-      "path": "lib/hosts/presentation/widgets/host_event_attendance_panel.dart",
-      "maxLines": 1352
-    },
-    {
       "path": "lib/onboarding/presentation/pages/welcome_page.dart",
       "maxLines": 891
     },
