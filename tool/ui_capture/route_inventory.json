@@ -1179,7 +1179,7 @@
     {
       "siteId": "material-page:lib/dashboard/presentation/widgets/dashboard_full.dart:1",
       "sourcePath": "lib/dashboard/presentation/widgets/dashboard_full.dart",
-      "line": 255,
+      "line": 256,
       "ordinal": 1,
       "presentationExpression": "(routeContext)=>EventCheckInCelebrationScreen(event:event,onViewEvent:(){Navigator.of(routeContext).pop();GoRouter.of(context).goNamed(Routes.eventDetailScreen.name,pathParameters:{'clubId':event.clubId,'eventId':event.id},extra:event);},onBackHome:(){Navigator.of(routeContext).pop();GoRouter.of(context).goNamed(Routes.dashboardScreen.name);})",
       "presentationTarget": "EventCheckInCelebrationScreen",
