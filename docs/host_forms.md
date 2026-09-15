@@ -1,7 +1,7 @@
 ---
 doc_id: host_forms_product_spec
-version: 1.0.0
-updated: 2026-09-05
+version: 1.0.1
+updated: 2026-09-15
 owner: host_tooling
 status: active
 ---
@@ -202,6 +202,15 @@ The builder supports:
 Builder state must remain serializable and deterministic. Widgets do not own
 publishing, validation, persistence, or identity generation.
 
+The question inspector exposes **Use this answer as**. Compatible mappings come
+from the generated person-field catalog, with Instagram accepting a handle or
+URL. A person field can be assigned to only one question in the form. Selecting
+a mapping applies its catalog data classification and starts with detail-only
+presentation. Changing to an incompatible answer type removes the mapping.
+Unmapped answers remain response content; contact actions do not guess identity
+from question labels. Application review may fall back to the response identity
+only after the same response-access checks used to disclose its answers.
+
 ### Preview
 
 Preview renders the same response components and validation engine used by the
@@ -389,6 +398,21 @@ marketing consent, payment, or public identity.
 Conversions show a preview, conflicts, exact fields, permissions, and resulting
 record before confirmation. The receipt supports safe replay and a bounded undo
 where the downstream aggregate permits it.
+
+Event admissions use a separate receipt for each response and selected event.
+Admitting the same response again to that event replays its result; admitting it
+to another event creates a separate roster entry. Before roster import, the
+conversion resolves the CRM contact and writes its form-response origin. The
+roster audience projection follows that reviewed origin and validates the
+organizer, event, response, and attendee identity. It preserves existing manual
+tags. Conflicting phone/email matches and an existing roster edge belonging to
+a different contact require duplicate review before conversion.
+
+Approval, roster admission, CRM tagging, and messaging permission are separate
+states. Organizer-authored external payment links can be included in individual
+message handoffs or campaign drafts; they do not create Catch payment records or
+prove that the organizer received payment. Managed audience dispatch still
+requires the existing sender, template, recipient-permission, and delivery gates.
 
 ## Canonical Data Architecture
 

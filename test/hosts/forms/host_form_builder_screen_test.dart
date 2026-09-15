@@ -167,6 +167,8 @@ void main() {
       expect(find.text('Advanced settings'), findsOneWidget);
       expect(find.text('Data classification'), findsNothing);
 
+      expect(find.text('Use this answer as'), findsOneWidget);
+      await ensureCentered(tester, find.text('Advanced settings'));
       await tester.tap(find.text('Advanced settings'));
       await pumpFeatureUi(tester);
 
