@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/event_success/presentation/host_live/event_success_step_action_row.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_feature_state.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_models.dart';
@@ -22,7 +23,7 @@ void main() {
         MaterialApp(
           theme: AppTheme.light,
           home: Scaffold(
-            body: LiveStepNavigation(
+            body: EventSuccessStepActionRow(
               plan: EventSuccessLivePlan(
                 playbook: EventSuccessPlaybookLibrary.hostLedSocial,
                 durationShape: entry.key,

@@ -235,10 +235,10 @@
             "lib/event_success/presentation/reveal/event_success_attendee_reveal_surface.dart",
             "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
             "lib/event_success/presentation/companion_parts/event_success_companion_live_cards.dart",
-            "lib/event_success/presentation/host_parts/event_success_host_live.dart",
+            "lib/event_success/presentation/host_live/event_success_host_live_page_body.dart",
             "lib/event_success/presentation/assignments/event_success_host_pod_section.dart",
             "lib/event_success/presentation/assignments/event_success_host_rotation_section.dart",
-            "lib/event_success/presentation/host_parts/event_success_host_shared.dart",
+            "lib/event_success/presentation/host_components/event_success_host_tab_page_body.dart",
             "test/event_success/event_success_companion_screen_state_test.dart"
           ],
           "exitCriteria": "Promote Event Success only after companion and host route screens are thin provider edges, display-state derivation lives in registered *_screen_state.dart adapters, provider-free part widgets remain render-only, and tests cover the host and companion screen-state adapters. The companion screen-state adapter, host screen-state adapter, and live reveal action-state adapter are aligned as of 2026-07-03; route-level ref density and route splitting remain open."
@@ -980,6 +980,24 @@
         {
           "path": "lib/event_success/presentation/event_success_moment_presentation_state.dart",
           "role": "provider-free Event Success moment copy, icons, reveal effects, and ambient-bed projection from the generated choreography contract",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "lib/event_success/presentation/event_success_control_room_state.dart",
+          "role": "provider-free control-room synchronization state shared by the host route, console, and sync badge",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "lib/event_success/presentation/host_live/event_success_outcome_units_state.dart",
+          "role": "provider-free Host outcome-unit projection preserving scoring/ranking identity, labels, ordering, and deduplication",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "lib/event_success/presentation/host_components/event_success_host_resource_error_state.dart",
+          "role": "provider-free Host resource error surface with typed retry-intent copy and explicit recovery callbacks",
           "providerFree": true,
           "status": "aligned"
         }

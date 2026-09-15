@@ -27,15 +27,11 @@
     },
     {
       "path": "lib/event_success/presentation/event_success_host_screen.dart",
-      "maxLines": 1664
+      "maxLines": 1576
     },
     {
       "path": "lib/event_success/presentation/event_success_room_map.dart",
       "maxLines": 1089
-    },
-    {
-      "path": "lib/event_success/presentation/host_parts/event_success_host_live.dart",
-      "maxLines": 1847
     },
     {
       "path": "lib/events/data/event_repository.dart",

@@ -2877,7 +2877,7 @@
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "HostActivitySummary",
+          "name": "EventSuccessActivityFieldLanes",
           "action": "keep"
         },
         {
@@ -4052,7 +4052,7 @@
           "action": "keep"
         },
         {
-          "name": "WingmanRequestHostRow",
+          "name": "EventSuccessHostHelpRow",
           "action": "keep"
         }
       ],
@@ -4466,7 +4466,7 @@
           "action": "keep"
         },
         {
-          "name": "EventSuccessTabPicker",
+          "name": "EventSuccessHostTabBar",
           "action": "keep"
         }
       ],
@@ -5169,11 +5169,11 @@
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "CompatibilitySignalHostCard",
+          "name": "EventSuccessCompatibilitySection",
           "action": "keep"
         },
         {
-          "name": "WingmanRequestsHostCard",
+          "name": "EventSuccessHostHelpSection",
           "action": "keep"
         }
       ],

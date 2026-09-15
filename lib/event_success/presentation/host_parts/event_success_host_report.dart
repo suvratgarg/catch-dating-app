@@ -31,7 +31,7 @@ class ReportTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (!planIsPersisted) {
-      return EventSuccessHostTabBody(
+      return EventSuccessHostTabPageBody(
         embedded: embedded,
         children: [
           _EventSuccessReportEmptyState(
@@ -53,7 +53,7 @@ class ReportTab extends StatelessWidget {
       now: DateTime.now(),
     );
     if (!runtime.hostReportEnabled) {
-      return EventSuccessHostTabBody(
+      return EventSuccessHostTabPageBody(
         embedded: embedded,
         children: [
           _EventSuccessReportEmptyState(
@@ -84,7 +84,7 @@ class ReportTab extends StatelessWidget {
         .toList(growable: false);
     final errorStates = [
       for (final failure in reportFailures)
-        EventSuccessHostResourceError(
+        EventSuccessHostResourceErrorState(
           failure: failure,
           onRetry: onRetryResource == null
               ? null
@@ -92,7 +92,7 @@ class ReportTab extends StatelessWidget {
         ),
     ];
     if (reportScorecard == null) {
-      return EventSuccessHostTabBody(
+      return EventSuccessHostTabPageBody(
         embedded: embedded,
         children: [
           ...errorStates.expand((error) => [error, gapH16]),
@@ -123,7 +123,7 @@ class ReportTab extends StatelessWidget {
     );
     final feedbackCount = brief.scorecard.feedbackResponseCount;
 
-    return EventSuccessHostTabBody(
+    return EventSuccessHostTabPageBody(
       embedded: embedded,
       children: [
         ...errorStates.expand((error) => [error, gapH16]),
