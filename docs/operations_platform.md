@@ -1,7 +1,7 @@
 ---
 doc_id: operations_platform
-version: 1.25.0
-updated: 2026-09-09
+version: 1.26.0
+updated: 2026-09-15
 owner: operations_platform
 status: active
 ---
@@ -841,6 +841,31 @@ they cannot reopen terminal work or reset recovery/attempt caps. An unchanged
 accepted/unknown submission keeps its original receipt deadline, or its existing
 review if that wait already elapsed. Consent restoration can resume an unsent
 held message, but does not prove a pending submission failed.
+
+### Read-only event messaging setup review
+
+Trusted operators can inspect one event, channel and sender with
+`npm --prefix functions run operations:review-event-messaging -- --environment <dev|staging|prod> --project <matching-project> --organizer <id> --event <id> --route <catchEventSms|organizerEventWhatsapp|catchEventRcs> --sender <id>`.
+The command requires an explicit project matching the repository's environment
+alias and existing read access. It has no apply option, and it does not load
+provider credentials or invoke a messaging provider. Registration in the shared
+tool manifest is pending release of that file's active worktree claim.
+
+The bounded read uses the same event source, saved runtime, sender, template
+and budget readers as runtime configuration and dispatch. It reports saved
+selection separately from runtime status, then reviews the exact event and
+sender-day budgets. Missing or invalid records remain distinct from paused,
+expired, exhausted, changed-currency or changed-agent limits. Valid budget
+records retain their ceiling, conservative charges, remaining amount, approval
+reference and content hash even when unavailable. A read failure returns no
+partial report. A billing-day rollover requires another complete read; SMS
+uses its India window and WhatsApp/RCS use UTC.
+
+This is a timestamped review of recorded setup, not an approval receipt or send
+permission. It makes no writes and does not verify provider registration,
+credentials, guest consent, deployed workers or live delivery. Audited sender
+and budget provisioning, financial reconciliation and activation remain their
+own work. No setup report may substitute for those decisions.
 
 ## Adding Another Workflow
 
