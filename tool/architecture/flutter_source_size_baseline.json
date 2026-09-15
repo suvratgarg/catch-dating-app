@@ -147,7 +147,7 @@
     },
     {
       "path": "lib/hosts/presentation/widgets/host_operational_roster_panel.dart",
-      "maxLines": 1990
+      "maxLines": 1545
     },
     {
       "path": "lib/onboarding/presentation/pages/welcome_page.dart",
