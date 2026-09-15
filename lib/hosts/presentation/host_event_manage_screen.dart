@@ -391,7 +391,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
                   'value is submitted or persisted.',
               body: context.l10n.hostsHostEventAttendancePanelBodyCheckInQr,
               icon: CatchIcons.qrCode2Rounded,
-              child: HostEventCheckInQrPanel(event: event),
+              child: HostEventCheckInQrSection(event: event),
             ),
           ],
         ),

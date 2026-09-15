@@ -10077,13 +10077,13 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'HostEventCheckInQrPanel',
+                name: 'HostEventCheckInQrSection',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Exact catalog',
                     builder:
                         _widgetbook_workspace_hosts_operations_manage_components
-                            .hostStrictHostEventCheckInQrPanelCatalogStates,
+                            .hostStrictHostEventCheckInQrSectionCatalogStates,
                   ),
                 ],
               ),
@@ -10110,17 +10110,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'HostEventParticipantsList',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_operations_manage_components
-                            .hostStrictHostEventParticipantsListCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
                 name: 'HostEventParticipantsPanel',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -10128,6 +10117,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_operations_manage_components
                             .hostStrictHostEventParticipantsPanelCatalogStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostEventParticipantsSectionList',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Exact catalog',
+                    builder:
+                        _widgetbook_workspace_hosts_operations_manage_components
+                            .hostStrictHostEventParticipantsSectionListCatalogStates,
                   ),
                 ],
               ),
@@ -10296,6 +10296,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'HostParticipationLifecycleSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Exact catalog',
+                    builder:
+                        _widgetbook_workspace_hosts_operations_manage_components
+                            .hostStrictHostParticipationLifecycleSectionCatalogStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostPrivateAccessAsyncBoundary',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -10336,6 +10347,39 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_operations_manage_components
                             .hostStrictHostPublicRegistrationFieldCatalogStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostRosterFilterHeader',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Exact catalog',
+                    builder:
+                        _widgetbook_workspace_hosts_operations_manage_components
+                            .hostStrictHostRosterFilterHeaderCatalogStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostRosterSearchField',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Exact catalog',
+                    builder:
+                        _widgetbook_workspace_hosts_operations_manage_components
+                            .hostStrictHostRosterSearchFieldCatalogStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostWaitlistBulkOfferNotice',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Exact catalog',
+                    builder:
+                        _widgetbook_workspace_hosts_operations_manage_components
+                            .hostStrictHostWaitlistBulkOfferNoticeCatalogStates,
                   ),
                 ],
               ),

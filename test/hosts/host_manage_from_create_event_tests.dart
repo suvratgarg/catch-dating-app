@@ -183,7 +183,7 @@ void _registerHostManageFromCreateEventTests() {
       await _pumpHostActionFrame(tester);
       await _pumpTestAnimation(tester);
 
-      expect(find.byType(HostEventCheckInQrPanel), findsOneWidget);
+      expect(find.byType(HostEventCheckInQrSection), findsOneWidget);
       await tester.tap(find.text('Check-in QR'));
       await _pumpTestAnimation(tester);
       await tester.drag(

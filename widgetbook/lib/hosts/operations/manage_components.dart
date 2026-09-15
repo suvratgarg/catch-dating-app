@@ -112,7 +112,7 @@ Widget _hostEventManagePreviewFor(BuildContext context, String focus) {
       onSharePrivateLink: (_) {},
     ),
     'HostEventAttendancePanel' => HostEventAttendancePanel(eventId: event.id),
-    'HostEventParticipantsList' => HostEventParticipantsList(
+    'HostEventParticipantsSectionList' => HostEventParticipantsSectionList(
       viewModel: viewModel,
       mode: HostEventParticipantsMode.live,
       scrollable: false,
@@ -147,7 +147,7 @@ Widget _hostEventManagePreviewFor(BuildContext context, String focus) {
       eventId: event.id,
       mode: HostEventParticipantsMode.setup,
     ),
-    'HostEventCheckInQrPanel' => HostEventCheckInQrPanel(event: event),
+    'HostEventCheckInQrSection' => HostEventCheckInQrSection(event: event),
     'HostEventRosterHandle' => Center(
       child: SizedBox(
         width: CatchLayout.hostRosterDrawerHandleWidth,
@@ -215,7 +215,7 @@ Widget _hostEventManagePreviewFor(BuildContext context, String focus) {
       onCopyInviteLink: (_) {},
       onDisableInviteLink: (_) {},
     ),
-    'HostParticipationLifecycleBoard' => HostParticipationLifecycleBoard(
+    'HostParticipationLifecycleSection' => HostParticipationLifecycleSection(
       viewModel: viewModel,
       mode: HostEventParticipantsMode.live,
       profiles: profiles,
@@ -326,12 +326,12 @@ Widget _hostEventManagePreviewFor(BuildContext context, String focus) {
       selectedFilter: HostRosterFilter.all,
       onFilterChanged: (_) {},
     ),
-    'HostRosterSearchBar' => HostRosterSearchBar(
+    'HostRosterSearchField' => HostRosterSearchField(
       value: '',
       label: 'Search roster',
       onChanged: (_) {},
     ),
-    'HostWaitlistBulkOfferAction' => HostWaitlistBulkOfferAction(
+    'HostWaitlistBulkOfferNotice' => HostWaitlistBulkOfferNotice(
       count: 1,
       candidateCount: 3,
       isPending: false,
@@ -340,6 +340,40 @@ Widget _hostEventManagePreviewFor(BuildContext context, String focus) {
     _ => Text('No exact preview registered for $focus.'),
   };
 }
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostParticipationLifecycleSection,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostParticipationLifecycleSectionCatalogStates(
+  BuildContext context,
+) => _hostEventManageExactCatalog(context, 'HostParticipationLifecycleSection');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostRosterFilterHeader,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostRosterFilterHeaderCatalogStates(BuildContext context) =>
+    _hostEventManageExactCatalog(context, 'HostRosterFilterHeader');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostRosterSearchField,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostRosterSearchFieldCatalogStates(BuildContext context) =>
+    _hostEventManageExactCatalog(context, 'HostRosterSearchField');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostWaitlistBulkOfferNotice,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostWaitlistBulkOfferNoticeCatalogStates(
+  BuildContext context,
+) => _hostEventManageExactCatalog(context, 'HostWaitlistBulkOfferNotice');
 
 AttendanceSheetViewModel _hostAttendanceViewModel() {
   final value = buildAttendanceSheetViewModel(
@@ -418,11 +452,12 @@ Widget hostStrictHostEventManageRouteScreenCatalogStates(
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
-  type: HostEventParticipantsList,
+  type: HostEventParticipantsSectionList,
   path: '[P1 product surfaces]/Host operations/Strict coverage',
 )
-Widget hostStrictHostEventParticipantsListCatalogStates(BuildContext context) =>
-    _hostEventManageExactCatalog(context, 'HostEventParticipantsList');
+Widget hostStrictHostEventParticipantsSectionListCatalogStates(
+  BuildContext context,
+) => _hostEventManageExactCatalog(context, 'HostEventParticipantsSectionList');
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
@@ -451,11 +486,11 @@ Widget hostStrictHostEventSummaryRowCatalogStates(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
-  type: HostEventCheckInQrPanel,
+  type: HostEventCheckInQrSection,
   path: '[P1 product surfaces]/Host operations/Strict coverage',
 )
-Widget hostStrictHostEventCheckInQrPanelCatalogStates(BuildContext context) =>
-    _hostEventManageExactCatalog(context, 'HostEventCheckInQrPanel');
+Widget hostStrictHostEventCheckInQrSectionCatalogStates(BuildContext context) =>
+    _hostEventManageExactCatalog(context, 'HostEventCheckInQrSection');
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
