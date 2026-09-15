@@ -6,20 +6,6 @@ import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 import 'preview.dart';
 
 @widgetbook.UseCase(
-  name: "CompatibilitySignalHostCard",
-  type: CompatibilitySignalHostCard,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Host folded states",
-)
-Widget eventSuccessStrictCompatibilitySignalHostCard(BuildContext context) {
-  return eventSuccessStrictPreview(
-    context,
-    surface: EventSuccessStrictSurface.host,
-    componentName: "CompatibilitySignalHostCard",
-  );
-}
-
-@widgetbook.UseCase(
   name: "EventSuccessHostPanel",
   type: EventSuccessHostPanel,
   path:
@@ -30,20 +16,6 @@ Widget eventSuccessStrictEventSuccessHostPanel(BuildContext context) {
     context,
     surface: EventSuccessStrictSurface.host,
     componentName: "EventSuccessHostPanel",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "EventSuccessHostTabBody",
-  type: EventSuccessHostTabBody,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Host folded states",
-)
-Widget eventSuccessStrictEventSuccessHostTabBody(BuildContext context) {
-  return eventSuccessStrictPreview(
-    context,
-    surface: EventSuccessStrictSurface.host,
-    componentName: "EventSuccessHostTabBody",
   );
 }
 
@@ -164,34 +136,6 @@ Widget eventSuccessStrictEventSuccessSkeletonSurface(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: "EventSuccessTabPicker",
-  type: EventSuccessTabPicker,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Host folded states",
-)
-Widget eventSuccessStrictEventSuccessTabPicker(BuildContext context) {
-  return eventSuccessStrictPreview(
-    context,
-    surface: EventSuccessStrictSurface.host,
-    componentName: "EventSuccessTabPicker",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "HostActivitySummary",
-  type: HostActivitySummary,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Host folded states",
-)
-Widget eventSuccessStrictHostActivitySummary(BuildContext context) {
-  return eventSuccessStrictPreview(
-    context,
-    surface: EventSuccessStrictSurface.host,
-    componentName: "HostActivitySummary",
-  );
-}
-
-@widgetbook.UseCase(
   name: "HostFunnelSummary",
   type: HostFunnelSummary,
   path:
@@ -220,48 +164,6 @@ Widget eventSuccessStrictHostReportSignalGrid(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: "LiveNowConsole",
-  type: LiveNowConsole,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Host folded states",
-)
-Widget eventSuccessStrictLiveNowConsole(BuildContext context) {
-  return eventSuccessStrictPreview(
-    context,
-    surface: EventSuccessStrictSurface.host,
-    componentName: "LiveNowConsole",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "LiveStepNavigation",
-  type: LiveStepNavigation,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Host folded states",
-)
-Widget eventSuccessStrictLiveStepNavigation(BuildContext context) {
-  return eventSuccessStrictPreview(
-    context,
-    surface: EventSuccessStrictSurface.host,
-    componentName: "LiveStepNavigation",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "LiveTab",
-  type: LiveTab,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Host folded states",
-)
-Widget eventSuccessStrictLiveTab(BuildContext context) {
-  return eventSuccessStrictPreview(
-    context,
-    surface: EventSuccessStrictSurface.host,
-    componentName: "LiveTab",
-  );
-}
-
-@widgetbook.UseCase(
   name: "NoticeCard",
   type: NoticeCard,
   path:
@@ -272,20 +174,6 @@ Widget eventSuccessStrictNoticeCard(BuildContext context) {
     context,
     surface: EventSuccessStrictSurface.host,
     componentName: "NoticeCard",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "PlanSummary",
-  type: PlanSummary,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Host folded states",
-)
-Widget eventSuccessStrictPlanSummary(BuildContext context) {
-  return eventSuccessStrictPreview(
-    context,
-    surface: EventSuccessStrictSurface.host,
-    componentName: "PlanSummary",
   );
 }
 
@@ -342,33 +230,5 @@ Widget eventSuccessStrictTargetAttendeeControl(BuildContext context) {
     context,
     surface: EventSuccessStrictSurface.host,
     componentName: "TargetAttendeeControl",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "WingmanRequestHostRow",
-  type: WingmanRequestHostRow,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Host folded states",
-)
-Widget eventSuccessStrictWingmanRequestHostRow(BuildContext context) {
-  return eventSuccessStrictPreview(
-    context,
-    surface: EventSuccessStrictSurface.host,
-    componentName: "WingmanRequestHostRow",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "WingmanRequestsHostCard",
-  type: WingmanRequestsHostCard,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Host folded states",
-)
-Widget eventSuccessStrictWingmanRequestsHostCard(BuildContext context) {
-  return eventSuccessStrictPreview(
-    context,
-    surface: EventSuccessStrictSurface.host,
-    componentName: "WingmanRequestsHostCard",
   );
 }

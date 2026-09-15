@@ -123,7 +123,7 @@ class _SetupTabState extends State<SetupTab> {
     );
     final presentedDraft = _resolvedDraft;
 
-    return EventSuccessHostTabBody(
+    return EventSuccessHostTabPageBody(
       embedded: widget.embedded,
       children: [
         if (unsavedFrozen) ...[
@@ -199,8 +199,11 @@ class _SetupTabState extends State<SetupTab> {
             first: true,
             title: context.l10n.eventSuccessEventSuccessHostSetupTitleYourPlan,
             children: [
-              HostActivitySummary(profile: profile, draft: presentedDraft),
-              PlanSummary(
+              EventSuccessActivityFieldLanes(
+                profile: profile,
+                draft: presentedDraft,
+              ),
+              EventSuccessPlanFieldLanes(
                 plan: widget.plan,
                 draft: presentedDraft,
                 planIsPersisted: widget.planIsPersisted,
@@ -216,7 +219,7 @@ class _SetupTabState extends State<SetupTab> {
             targetAttendeeCount: _targetAttendeeCount,
             attendeePrompt: _attendeePromptText,
             planLeadingRows: [
-              PlanSummary(
+              EventSuccessPlanFieldLanes(
                 plan: widget.plan,
                 draft: presentedDraft,
                 planIsPersisted: widget.planIsPersisted,
@@ -379,15 +382,6 @@ class ReadinessIssues extends StatelessWidget {
       ),
     );
   }
-}
-
-EventRunOfShowStep? _activeRunOfShowStep(EventSuccessRuntime runtime) {
-  final steps = runtime.runOfShowSteps;
-  if (steps.isEmpty) return null;
-  final index = runtime.plan.activeStepIndex;
-  if (index <= 0) return steps.first;
-  if (index >= steps.length) return steps.last;
-  return steps[index];
 }
 
 class NoticeCard extends StatelessWidget {

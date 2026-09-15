@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.20.4
+version: 1.20.5
 updated: 2026-09-15
 owner: recursive_audit_loop
 status: active
@@ -309,7 +309,8 @@ rather than embedded in event-type logic.
 |---|---|
 | Domain/runtime/playbooks | `lib/event_success/domain/` |
 | Repository/providers | `lib/event_success/data/event_success_repository.dart` |
-| Host setup/live/report UI | `lib/event_success/presentation/event_success_host_screen.dart` and `host_parts/` |
+| Host route, setup and report UI | `lib/event_success/presentation/event_success_host_screen.dart` and the remaining setup/report files in `host_parts/` |
+| Host live control and shared components | `lib/event_success/presentation/host_live/` owns the live workspace, control room, step actions, accountability, presence, room summary and alerts; `host_components/` owns the tab chrome, plan/activity summaries, compatibility, help and resource errors. `event_success_host_keys.dart` and `event_success_control_room_state.dart` expose their shared plain contracts. |
 | Attendee companion UI | `lib/event_success/presentation/event_success_companion_screen.dart` and `companion_parts/` |
 | Companion loading UI | `lib/event_success/presentation/companion/event_success_companion_loading_page_body.dart` (page, stage, and primary-action skeletons) |
 | Companion moment presentation | `lib/event_success/presentation/event_success_moment_presentation_state.dart` (localized copy, icons, and choreography projection) |

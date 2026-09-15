@@ -4,11 +4,9 @@ import 'dart:math' as math;
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
-import 'package:catch_dating_app/core/responsive/component_breakpoints.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
-import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_activity_profile.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_assignment.dart';
@@ -25,10 +23,7 @@ import 'package:catch_dating_app/event_success/domain/event_success_standings.da
 import 'package:catch_dating_app/event_success/domain/event_success_structure.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_wingman_request.dart';
 import 'package:catch_dating_app/event_success/presentation/assignments/event_success_assignment_profiles.dart';
-import 'package:catch_dating_app/event_success/presentation/assignments/event_success_host_pod_section.dart';
-import 'package:catch_dating_app/event_success/presentation/assignments/event_success_host_rotation_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_controller.dart';
-import 'package:catch_dating_app/event_success/presentation/event_success_conversation_cue_copy.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_feature_blocks.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_host_fixture_actions.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_host_screen_state.dart';
@@ -39,7 +34,13 @@ import 'package:catch_dating_app/event_success/presentation/event_success_room_m
 import 'package:catch_dating_app/event_success/presentation/event_success_room_setup_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_setup_body.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_skeletons.dart';
-import 'package:catch_dating_app/event_success/presentation/reveal/event_success_host_reveal_surface.dart';
+import 'package:catch_dating_app/event_success/presentation/host_components/event_success_activity_field_lanes.dart';
+import 'package:catch_dating_app/event_success/presentation/host_components/event_success_host_resource_error_state.dart';
+import 'package:catch_dating_app/event_success/presentation/host_components/event_success_host_tab_bar.dart';
+import 'package:catch_dating_app/event_success/presentation/host_components/event_success_host_tab_page_body.dart';
+import 'package:catch_dating_app/event_success/presentation/host_components/event_success_live_workspace_tab_bar.dart';
+import 'package:catch_dating_app/event_success/presentation/host_components/event_success_plan_field_lanes.dart';
+import 'package:catch_dating_app/event_success/presentation/host_live/event_success_host_live_page_body.dart';
 import 'package:catch_dating_app/events/data/event_attendee_repository.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -56,17 +57,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 export 'package:catch_dating_app/event_success/presentation/event_success_host_screen_state.dart';
 export 'package:catch_dating_app/event_success/presentation/event_success_host_fixture_actions.dart';
 
-part 'host_parts/event_success_host_live.dart';
 part 'host_parts/event_success_host_report.dart';
 part 'host_parts/event_success_host_setup.dart';
-part 'host_parts/event_success_host_shared.dart';
-
-abstract final class EventSuccessHostKeys {
-  static const scrollView = ValueKey<String>('event_success.host.scroll_view');
-}
-
-final EdgeInsets _hostWingmanRequestNotePadding = CatchInsets.pageHorizontal
-    .copyWith(bottom: CatchSpacing.s2);
 
 Object? _mutationError(MutationState<dynamic> state) {
   return state.hasError ? (state as MutationError).error : null;
@@ -359,7 +351,7 @@ class _EventSuccessHostSectionState
       case EventSuccessHostSectionStatus.error:
         final retryIntent = state.retryIntent!;
         return frameCompactLiveState(
-          EventSuccessHostResourceError(
+          EventSuccessHostResourceErrorState(
             failure: EventSuccessHostResourceFailure(
               retryIntent: retryIntent,
               error: state.error!,
@@ -882,86 +874,6 @@ class _EventSuccessHostSectionState
   }
 }
 
-AppErrorContext _eventSuccessHostRetryContext(
-  EventSuccessHostRetryIntent intent,
-) {
-  return switch (intent) {
-    EventSuccessHostRetryIntent.assignmentParticipantProfiles ||
-    EventSuccessHostRetryIntent.rotationParticipantProfiles ||
-    EventSuccessHostRetryIntent.wingmanProfiles => AppErrorContext.profile,
-    EventSuccessHostRetryIntent.plan ||
-    EventSuccessHostRetryIntent.roster ||
-    EventSuccessHostRetryIntent.assignments ||
-    EventSuccessHostRetryIntent.rotationAssignments ||
-    EventSuccessHostRetryIntent.rotationDrafts ||
-    EventSuccessHostRetryIntent.preferences ||
-    EventSuccessHostRetryIntent.wingmanRequests ||
-    EventSuccessHostRetryIntent.scorecard ||
-    EventSuccessHostRetryIntent.spatialLayout => AppErrorContext.event,
-  };
-}
-
-class EventSuccessHostResourceError extends StatelessWidget {
-  const EventSuccessHostResourceError({
-    super.key,
-    required this.failure,
-    this.onRetry,
-    this.compact = false,
-  });
-
-  final EventSuccessHostResourceFailure failure;
-  final VoidCallback? onRetry;
-  final bool compact;
-
-  @override
-  Widget build(BuildContext context) {
-    final errorContext = _eventSuccessHostRetryContext(failure.retryIntent);
-    final descriptor = appErrorDescriptor(
-      failure.error,
-      l10n: context.l10n,
-      context: errorContext,
-    );
-    final resource = switch (failure.retryIntent) {
-      EventSuccessHostRetryIntent.plan =>
-        context.l10n.eventSuccessHostResourceLiveGuide,
-      EventSuccessHostRetryIntent.roster =>
-        context.l10n.eventSuccessHostResourceGuestRoster,
-      EventSuccessHostRetryIntent.assignments =>
-        context.l10n.eventSuccessHostResourceMicroPodAssignments,
-      EventSuccessHostRetryIntent.rotationAssignments =>
-        context.l10n.eventSuccessHostResourcePublishedRotations,
-      EventSuccessHostRetryIntent.rotationDrafts =>
-        context.l10n.eventSuccessHostResourceRotationDrafts,
-      EventSuccessHostRetryIntent.assignmentParticipantProfiles =>
-        context.l10n.eventSuccessHostResourceMicroPodProfiles,
-      EventSuccessHostRetryIntent.rotationParticipantProfiles =>
-        context.l10n.eventSuccessHostResourceRotationProfiles,
-      EventSuccessHostRetryIntent.preferences =>
-        context.l10n.eventSuccessHostResourceAttendeePreferences,
-      EventSuccessHostRetryIntent.wingmanRequests =>
-        context.l10n.eventSuccessHostResourceHostHelpRequests,
-      EventSuccessHostRetryIntent.wingmanProfiles =>
-        context.l10n.eventSuccessHostResourceHostHelpProfiles,
-      EventSuccessHostRetryIntent.scorecard =>
-        context.l10n.eventSuccessHostResourceEventReport,
-      EventSuccessHostRetryIntent.spatialLayout =>
-        context.l10n.eventSuccessHostResourceRoomLayout,
-    };
-    return CatchErrorState(
-      title: context.l10n.eventSuccessHostResourceUnavailableTitle(
-        resource: resource,
-      ),
-      message: descriptor.message,
-      icon: descriptor.icon,
-      retryLabel: descriptor.retryLabel,
-      onRetry: onRetry,
-      mode: (compact)
-          ? CatchErrorStateMode.compact
-          : CatchErrorStateMode.inline,
-    );
-  }
-}
-
 class EventSuccessHostSectionSkeleton extends StatelessWidget {
   const EventSuccessHostSectionSkeleton({
     super.key,
@@ -1353,7 +1265,7 @@ class _EventSuccessHostPanelState extends State<EventSuccessHostPanel> {
         referenceNow: widget.referenceNow,
         embedded: widget.embedded,
       ),
-      EventSuccessHostTab.live => LiveTab(
+      EventSuccessHostTab.live => EventSuccessHostLivePageBody(
         event: widget.event,
         plan: widget.plan,
         planIsPersisted: widget.planIsPersisted,
@@ -1461,7 +1373,7 @@ class _EventSuccessHostPanelState extends State<EventSuccessHostPanel> {
                   top: CatchSpacing.s3,
                   bottom: CatchSpacing.s2,
                 ),
-                child: EventSuccessLiveWorkspacePicker(
+                child: EventSuccessLiveWorkspaceTabBar(
                   selected: _liveWorkspace,
                   guestsSemanticLabel: widget.guestsWorkspaceSemanticLabel,
                   onChanged: (workspace) {
@@ -1479,7 +1391,7 @@ class _EventSuccessHostPanelState extends State<EventSuccessHostPanel> {
         : body;
     if (!widget.showTabs) return workspaceBody;
 
-    final tabs = EventSuccessTabPicker(
+    final tabs = EventSuccessHostTabBar(
       selectedTab: _selectedTab,
       onChanged: (tab) => setState(() => _selectedTab = tab),
     );

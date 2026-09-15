@@ -26,3 +26,18 @@ export 'presentation/reveal/event_success_reveal_assignment_kind.dart'; // publi
 export 'presentation/event_success_questionnaire_config_editor.dart'; // public-api: shared presentation component used outside this feature
 export 'presentation/event_success_room_map.dart'; // public-api: shared host and attendee spatial projection
 export 'presentation/event_success_room_setup_section.dart'; // public-api: shared create and post-creation room setup
+
+export 'presentation/event_success_control_room_state.dart'; // public-api: shared presentation contract used outside this feature
+export 'presentation/event_success_host_keys.dart'; // public-api: shared presentation contract used outside this feature
+export 'presentation/host_components/event_success_activity_field_lanes.dart'; // public-api: shared presentation contract used outside this feature
+export 'presentation/host_components/event_success_compatibility_section.dart'; // public-api: shared presentation contract used outside this feature
+export 'presentation/host_components/event_success_host_help_section.dart'; // public-api: shared presentation contract used outside this feature
+export 'presentation/host_components/event_success_host_resource_error_state.dart'; // public-api: shared presentation contract used outside this feature
+export 'presentation/host_components/event_success_host_tab_bar.dart'; // public-api: shared presentation contract used outside this feature
+export 'presentation/host_components/event_success_host_tab_page_body.dart'; // public-api: shared presentation contract used outside this feature
+export 'presentation/host_components/event_success_live_workspace_tab_bar.dart'; // public-api: shared presentation contract used outside this feature
+export 'presentation/host_components/event_success_plan_field_lanes.dart'; // public-api: shared presentation contract used outside this feature
+export 'presentation/host_live/event_success_accountability_section.dart'; // public-api: shared presentation contract used outside this feature
+export 'presentation/host_live/event_success_control_room_page_body.dart'; // public-api: shared presentation contract used outside this feature
+export 'presentation/host_live/event_success_host_live_page_body.dart'; // public-api: shared presentation contract used outside this feature
+export 'presentation/host_live/event_success_step_action_row.dart'; // public-api: shared presentation contract used outside this feature

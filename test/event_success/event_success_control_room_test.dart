@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/event_success/presentation/host_components/event_success_live_workspace_tab_bar.dart';
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_layout.dart';
@@ -194,7 +195,7 @@ void main() {
 
       await tester.tap(
         find.descendant(
-          of: find.byType(EventSuccessLiveWorkspacePicker),
+          of: find.byType(EventSuccessLiveWorkspaceTabBar),
           matching: find.text('Guests'),
         ),
       );

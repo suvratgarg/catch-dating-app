@@ -8270,55 +8270,55 @@ abstract class AppLocalizations {
   /// **'Pick one when the room needs an easy next line.'**
   String get eventSuccessEventSuccessCompanionBodyScreenSubtitlePickOneWhenThe;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_live.dart (title).
+  /// Product copy used by lib/event_success/presentation/host_live/event_success_host_live_page_body.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Live mode needs saved setup'**
   String get eventSuccessEventSuccessHostLiveTitleLiveModeNeedsSaved;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_live.dart (title).
+  /// Product copy used by lib/event_success/presentation/host_live/event_success_host_live_page_body.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Live mode was not configured'**
   String get eventSuccessEventSuccessHostLiveTitleLiveModeWasNot;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_live.dart (body).
+  /// Product copy used by lib/event_success/presentation/host_live/event_success_host_live_page_body.dart (body).
   ///
   /// In en, this message translates to:
   /// **'Save the live guide before the event to enable guided controls. Attendance and check-in stay available from this Live tab.'**
   String get eventSuccessEventSuccessHostLiveBodySaveTheLiveGuide;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_live.dart (body).
+  /// Product copy used by lib/event_success/presentation/host_live/event_success_host_live_page_body.dart (body).
   ///
   /// In en, this message translates to:
   /// **'This event did not have a live guide saved before it started. Attendance and check-in remain available; guided live controls stay unavailable for this event.'**
   String get eventSuccessEventSuccessHostLiveBodyThisEventDidNot;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_live.dart (title).
+  /// Product copy used by lib/event_success/presentation/host_live/event_success_host_live_page_body.dart (title).
   ///
   /// In en, this message translates to:
   /// **'No live steps selected'**
   String get eventSuccessEventSuccessHostLiveTitleNoLiveStepsSelected;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_live.dart (body).
+  /// Product copy used by lib/event_success/presentation/host_live/event_success_host_live_page_body.dart (body).
   ///
   /// In en, this message translates to:
   /// **'This saved setup does not include any tools the host can use during the event.'**
   String get eventSuccessEventSuccessHostLiveBodyThisSavedSetupDoes;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_live.dart (title).
+  /// Product copy used by lib/event_success/presentation/host_live/event_success_host_live_page_body.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Conversation cues'**
   String get eventSuccessEventSuccessHostLiveTitleConversationCues;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_live.dart (subtitle).
+  /// Product copy used by lib/event_success/presentation/host_live/event_success_host_live_page_body.dart (subtitle).
   ///
   /// In en, this message translates to:
   /// **'Use one when the room needs a cleaner next interaction.'**
   String get eventSuccessEventSuccessHostLiveSubtitleUseOneWhenThe;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_live.dart (subtitle).
+  /// Product copy used by lib/event_success/presentation/host_live/event_success_host_live_page_body.dart (subtitle).
   ///
   /// In en, this message translates to:
   /// **'Close with one suggested first message after mutual matches.'**
@@ -8363,50 +8363,50 @@ abstract class AppLocalizations {
   /// **'Place next round'**
   String get eventSuccessEventSuccessHostLiveLabelPlaceNextRound;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_live.dart (title).
+  /// Product copy used by lib/event_success/presentation/host_live/event_success_host_live_page_body.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Supporting controls'**
   String get eventSuccessEventSuccessHostLiveTitleSupportingControls;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_live.dart (subtitle).
+  /// Product copy used by lib/event_success/presentation/host_live/event_success_host_live_page_body.dart (subtitle).
   ///
   /// In en, this message translates to:
   /// **'Controls that stay available without competing with the current live step.'**
   String get eventSuccessEventSuccessHostLiveSubtitleControlsThatStayAvailable;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_live.dart (label).
+  /// Product copy used by lib/event_success/presentation/host_live/event_success_control_room_page_body.dart, lib/event_success/presentation/host_live/event_success_host_live_page_body.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Mark live guide complete'**
   String get eventSuccessEventSuccessHostLiveLabelMarkLiveGuideComplete;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_live.dart (title).
+  /// Product copy used by lib/event_success/presentation/host_live/event_success_control_room_page_body.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Controls for this step'**
   String get eventSuccessEventSuccessHostLiveTitleControlsForThisStep;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_live.dart (subtitle).
+  /// Product copy used by lib/event_success/presentation/host_live/event_success_control_room_page_body.dart (subtitle).
   ///
   /// In en, this message translates to:
   /// **'Handle these before moving the room forward.'**
   String get eventSuccessEventSuccessHostLiveSubtitleHandleTheseBeforeMoving;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_live.dart (CatchButton).
+  /// Product copy used by lib/event_success/presentation/host_live/event_success_control_room_page_body.dart, lib/event_success/presentation/host_live/event_success_step_action_row.dart (CatchButton).
   ///
   /// In en, this message translates to:
   /// **'eventSuccessPreviousStepButton'**
   String
   get eventSuccessEventSuccessHostLiveCatchbuttonEventsuccesspreviousstepbutton;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_live.dart (label).
+  /// Product copy used by lib/event_success/presentation/host_live/event_success_control_room_page_body.dart, lib/event_success/presentation/host_live/event_success_step_action_row.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Previous'**
   String get eventSuccessEventSuccessHostLiveLabelPrevious;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_live.dart (CatchButton).
+  /// Product copy used by lib/event_success/presentation/host_live/event_success_control_room_page_body.dart, lib/event_success/presentation/host_live/event_success_step_action_row.dart (CatchButton).
   ///
   /// In en, this message translates to:
   /// **'eventSuccessNextStepButton'**
@@ -9033,7 +9033,7 @@ abstract class AppLocalizations {
   /// **'Unsaved changes'**
   String get eventSuccessEventSuccessHostSetupTextUnsavedChanges;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_shared.dart (label).
+  /// Product copy used by lib/event_success/presentation/host_components/event_success_plan_field_lanes.dart (label).
   ///
   /// In en, this message translates to:
   /// **'{length} tools'**
@@ -9041,13 +9041,13 @@ abstract class AppLocalizations {
     required Object length,
   });
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_shared.dart (label).
+  /// Product copy used by lib/event_success/presentation/host_components/event_success_plan_field_lanes.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Not saved'**
   String get eventSuccessEventSuccessHostSharedLabelNotSaved;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_shared.dart (label).
+  /// Product copy used by lib/event_success/presentation/host_components/event_success_activity_field_lanes.dart (label).
   ///
   /// In en, this message translates to:
   /// **'{length} selected'**
@@ -9055,43 +9055,43 @@ abstract class AppLocalizations {
     required Object length,
   });
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_shared.dart (Text).
+  /// Product copy used by lib/event_success/presentation/host_components/event_success_compatibility_section.dart (Text).
   ///
   /// In en, this message translates to:
   /// **'Match clue questions'**
   String get eventSuccessEventSuccessHostSharedTextMatchClueQuestions;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_shared.dart (label).
+  /// Product copy used by lib/event_success/presentation/host_components/event_success_compatibility_section.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Can guide pairings'**
   String get eventSuccessEventSuccessHostSharedLabelCanGuidePairings;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_shared.dart (label).
+  /// Product copy used by lib/event_success/presentation/host_components/event_success_compatibility_section.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Clues only'**
   String get eventSuccessEventSuccessHostSharedLabelCluesOnly;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_shared.dart (Text).
+  /// Product copy used by lib/event_success/presentation/host_components/event_success_compatibility_section.dart (Text).
   ///
   /// In en, this message translates to:
   /// **'Suggested pairings can use shared answers as one light input after interest, safety, and attendee opt-out checks.'**
   String get eventSuccessEventSuccessHostSharedTextSuggestedPairingsCanUse;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_shared.dart (Text).
+  /// Product copy used by lib/event_success/presentation/host_components/event_success_compatibility_section.dart (Text).
   ///
   /// In en, this message translates to:
   /// **'Answers can still shape reveal clues, but suggested pairings will not use them.'**
   String get eventSuccessEventSuccessHostSharedTextAnswersCanStillShape;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_shared.dart (Text).
+  /// Product copy used by lib/event_success/presentation/host_components/event_success_host_help_section.dart (Text).
   ///
   /// In en, this message translates to:
   /// **'\"Help me say hi\" requests'**
   String get eventSuccessEventSuccessHostSharedTextHelpMeSayHi;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_shared.dart (label).
+  /// Product copy used by lib/event_success/presentation/host_components/event_success_host_help_section.dart (label).
   ///
   /// In en, this message translates to:
   /// **'{length} active'**
@@ -9099,26 +9099,26 @@ abstract class AppLocalizations {
     required Object length,
   });
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_shared.dart (Text).
+  /// Product copy used by lib/event_success/presentation/host_components/event_success_host_help_section.dart (Text).
   ///
   /// In en, this message translates to:
   /// **'Attendees explicitly asked the host for help. Use rotation edits or live facilitation to pair them safely.'**
   String get eventSuccessEventSuccessHostSharedTextAttendeesExplicitlyAskedThe;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_shared.dart (Text).
+  /// Product copy used by lib/event_success/presentation/host_components/event_success_host_help_section.dart (Text).
   ///
   /// In en, this message translates to:
   /// **'Attendees explicitly asked the host for help. Use this as live facilitation context.'**
   String
   get eventSuccessEventSuccessHostSharedTextAttendeesExplicitlyAskedThef44110;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_shared.dart (Text).
+  /// Product copy used by lib/event_success/presentation/host_components/event_success_host_help_section.dart (Text).
   ///
   /// In en, this message translates to:
   /// **'No host-help requests yet.'**
   String get eventSuccessEventSuccessHostSharedTextNoHostHelpRequests;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_shared.dart (label).
+  /// Product copy used by lib/event_success/presentation/host_components/event_success_host_help_section.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Host visible'**
@@ -14113,7 +14113,7 @@ abstract class AppLocalizations {
     required Object value2,
   });
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_live.dart (visibleCopy).
+  /// Product copy used by lib/event_success/presentation/host_live/event_success_control_room_page_body.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Attendees at {locationName} see: {attendeeExperience}'**
@@ -14122,13 +14122,13 @@ abstract class AppLocalizations {
     required Object attendeeExperience,
   });
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_live.dart (visibleCopy).
+  /// Product copy used by lib/event_success/presentation/host_live/event_success_control_room_page_body.dart, lib/event_success/presentation/host_live/event_success_step_action_row.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Final step'**
   String get eventSuccessEventSuccessHostLiveVisiblecopyFinalStep;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_live.dart (visibleCopy).
+  /// Product copy used by lib/event_success/presentation/host_live/event_success_step_action_row.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Next: {title}'**
@@ -14218,19 +14218,19 @@ abstract class AppLocalizations {
   String
   get eventSuccessEventSuccessHostSetupVisiblecopyIncreaseTargetAttendees;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_shared.dart (visibleCopy).
+  /// Product copy used by lib/event_success/presentation/host_components/event_success_host_help_section.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'this attendee'**
   String get eventSuccessEventSuccessHostSharedVisiblecopyThisAttendee;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_shared.dart (visibleCopy).
+  /// Product copy used by lib/event_success/presentation/host_components/event_success_host_help_section.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Attendee'**
   String get eventSuccessEventSuccessHostSharedVisiblecopyAttendee;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_shared.dart (visibleCopy).
+  /// Product copy used by lib/event_success/presentation/host_components/event_success_host_help_section.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Asked for help meeting {targetName}'**
@@ -16632,19 +16632,19 @@ abstract class AppLocalizations {
   /// **'Back to Control Room'**
   String get eventSuccessControlRoomFallbackDone;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_shared.dart (label).
+  /// Product copy used by lib/event_success/presentation/host_components/event_success_host_tab_bar.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Setup'**
   String get eventSuccessEventSuccessHostSharedLabelSetup;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_shared.dart (label).
+  /// Product copy used by lib/event_success/presentation/host_components/event_success_host_tab_bar.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Live'**
   String get eventSuccessEventSuccessHostSharedLabelLive;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_shared.dart (label).
+  /// Product copy used by lib/event_success/presentation/host_components/event_success_host_tab_bar.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Report'**

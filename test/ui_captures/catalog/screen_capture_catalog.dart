@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/event_success/presentation/host_components/event_success_host_help_section.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -13570,7 +13571,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     builder: (context) => _hostManageLiveSectionCapture(event: _hostEvent),
     drive: (tester) => _scrollHostManageLiveSectionTo(
       tester,
-      find.byType(WingmanRequestsHostCard, skipOffstage: false),
+      find.byType(EventSuccessHostHelpSection, skipOffstage: false),
     ),
   ),
   ScreenCaptureEntry(
