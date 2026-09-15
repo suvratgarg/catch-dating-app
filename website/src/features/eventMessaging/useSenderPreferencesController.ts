@@ -2,6 +2,7 @@ import {useInfiniteQuery, useMutation, useQuery, useQueryClient} from "@tanstack
 import {useEffect, useRef, useState} from "react";
 import {watchEventRuntimeAuthState} from "../../firebase";
 import {websiteQueryKeys} from "../../shared/query/queryKeys";
+import {senderPreferencePages} from "./senderPreferenceParsing";
 import {newerSenderPreference, type SenderPreferencePort, type SenderPreferenceResponse,
   type SenderPreferenceSubmission, type SenderPreferenceState} from "./senderPreferencePort";
 
@@ -49,6 +50,7 @@ export function useSenderPreferencesController<Response extends SenderPreference
       return result;
     },
     getNextPageParam: (last) => last.nextCursor,
+    select: senderPreferencePages,
     // Discovery is a page-session selection. It cannot replace a reviewed sender mid-save.
     retry: false, gcTime: 0, staleTime: Infinity,
     refetchOnWindowFocus: false, refetchOnReconnect: false,
@@ -56,14 +58,16 @@ export function useSenderPreferencesController<Response extends SenderPreference
   const configured = options.data?.pages[0]?.configuredSenderId ?? null;
   const earlierIds = [...new Set(options.data?.pages.flatMap((p) => p.previousSenderIds) ?? [])]
     .filter((id) => id !== configured);
-  const senderId = selection?.identity === identity ? selection.senderId : configured ?? earlierIds[0] ?? null;
+  const senderId = selection?.identity === identity &&
+    (selection.senderId === configured || earlierIds.includes(selection.senderId)) ?
+    selection.senderId : configured ?? earlierIds[0] ?? null;
   const earlier = senderId !== null && senderId !== configured;
   const preferenceIdentity = JSON.stringify([identity, senderId]);
   preferenceIdentityRef.current = preferenceIdentity;
   const queryKey = websiteQueryKeys.eventMessaging.senderPreference(port.channel, instance, preferenceIdentity);
   const unresolved = pending.current?.identity === preferenceIdentity;
   const query = useQuery({
-    queryKey, enabled: auth.uid !== null && senderId !== null && !sending && !unresolved,
+    queryKey, enabled: auth.uid !== null && senderId !== null && !options.isError && !sending && !unresolved,
     queryFn: async ({signal}) => {
       const scope = {eventId, attendeeId, senderId: senderId!};
       const result = await port.read(scope);
@@ -107,6 +111,12 @@ export function useSenderPreferencesController<Response extends SenderPreference
     },
   });
 
+  function discoveryIsCurrent() {
+    const cached = client.getQueryState(optionsKey);
+    return options.data !== undefined && !options.isError && cached?.status === "success" &&
+      cached.fetchStatus === "idle" && JSON.stringify(cached.data) === JSON.stringify(options.data);
+  }
+
   function submit(decision: "grant" | "revoke" | "retry") {
     if (lock.current || !mounted.current || !auth.uid || !senderId ||
         preferenceIdentityRef.current !== preferenceIdentity || identityRef.current !== identity) return;
@@ -117,7 +127,7 @@ export function useSenderPreferencesController<Response extends SenderPreference
     } else {
       const shown = query.data?.view;
       const cached = client.getQueryData<Response>(queryKey)?.view;
-      if (pending.current || !shown || !cached || query.isError || options.isError ||
+      if (pending.current || !shown || !cached || query.isError || !discoveryIsCurrent() ||
           shown.revision !== cached.revision || port.reviewKey(shown) !== port.reviewKey(cached) ||
           (decision === "grant" && (earlier || !cached.canEnable)) ||
           (decision === "revoke" && cached.preference !== "enabled")) return;
@@ -129,14 +139,14 @@ export function useSenderPreferencesController<Response extends SenderPreference
   }
 
   const canNavigate = () => mounted.current && identityRef.current === identity &&
-    !lock.current && !pending.current && !options.isFetching;
+    !lock.current && !pending.current && client.getQueryState(optionsKey)?.fetchStatus !== "fetching";
   function choose(id: string | null) {
-    if (!id || !canNavigate() || (id !== configured && !earlierIds.includes(id))) return;
+    if (!id || !canNavigate() || !discoveryIsCurrent() || (id !== configured && !earlierIds.includes(id))) return;
     preferenceIdentityRef.current = "selection-changing";
     setNotice(""); setSelection({identity, senderId: id});
   }
   async function next() {
-    if (!canNavigate()) return;
+    if (!canNavigate() || !discoveryIsCurrent()) return;
     const index = senderId ? earlierIds.indexOf(senderId) : -1;
     if (earlierIds[index + 1]) { choose(earlierIds[index + 1]); return; }
     if (!options.hasNextPage) return;

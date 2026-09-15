@@ -17,6 +17,18 @@ const cursor = (v: unknown, channel: PreferenceChannel): v is string =>
     Record<PreferenceChannel, RegExp>)[channel].test(v);
 const invalid = () => new Error("Invalid sender preference discovery response");
 
+/** A history walk must describe one configured sender and move forward in time. */
+export function senderPreferencePages<T extends {pages: Options[]}>(data: T): T {
+  const first = data.pages[0];
+  if (!first) throw invalid();
+  let serverTime = first.serverTime;
+  for (const page of data.pages) {
+    if (page.configuredSenderId !== first.configuredSenderId || page.serverTime < serverTime) throw invalid();
+    serverTime = page.serverTime;
+  }
+  return data;
+}
+
 export function senderPreferenceOptions(value: unknown,
   scope: Omit<SenderPreferenceScope, "senderId">, after: string | null, channel: PreferenceChannel): Options {
   if (!record(value) || !keys(value, "attendeeId,configuredSenderId,eventId,nextCursor,previousSenderIds,serverTime") ||
