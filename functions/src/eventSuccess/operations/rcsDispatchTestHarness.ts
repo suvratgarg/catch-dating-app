@@ -24,8 +24,8 @@ import {operationContentHash} from "../../operations/durableActions";
 export async function rcsHarness(real?: Firestore, id = "rcs",
   routes: MessageRecord["intent"]["permittedRoutes"] =
   ["catchEventRcs", "catchEventSms", "organizerEventWhatsapp"],
-  eventEnd = start + 3_600_000) {
-  const h = await harness(real, id, routes, eventEnd);
+  eventEnd = start + 3_600_000, privateRecipient = false) {
+  const h = await harness(real, id, routes, eventEnd, privateRecipient);
   const sender: SmsConfig = {schemaVersion: 1, senderId: "sms-" + id,
     revision: 1, provider: "gupshup", senderIdentity: "catchPlatform",
     country: "IN", status: "ready", mask: "CATCHS",

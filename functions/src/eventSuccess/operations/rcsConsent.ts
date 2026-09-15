@@ -51,6 +51,9 @@ export function parseRcsPermission(value: unknown): Permission {
   if (!validateEventRcsPermissionDocument(value) ||
       value.permissionId !== rcsPermissionId(value.context,
         value.attendeeId, value.senderId) ||
+      (value.recipientBinding &&
+        (value.recipientBinding.subjectUid !== value.subjectUid ||
+         value.recipientBinding.sourceGeneration !== value.sourceGeneration)) ||
       value.recipientEndpointId !== rcsEndpointId(value.context,
         value.attendeeId, value.phoneE164) ||
       !value.sender.displayName.trim() ||

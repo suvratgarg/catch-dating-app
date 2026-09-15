@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.132.0
+version: 1.133.0
 updated: 2026-09-15
 owner: recursive_audit_loop
 status: active
@@ -2350,7 +2350,9 @@ The Consumer event detail page now exposes Event messages for signed-in users
 with a booking record, including past or cancelled bookings. It uses this
 identity boundary before reading SMS, WhatsApp or RCS preferences. No attendee
 ID is inferred from the booking ID and no private account phone is copied into
-Host-visible attendee data. Private endpoint enrollment remains a separate gap.
+Host-visible attendee data. Explicit enrollment can use a private verified
+account number when the roster has no phone. An invalid or conflicting roster
+number does not silently fall back to the account number.
 
 The single native sheet progressively discloses each channel's current
 permission, exact server consent, masked recipient, expiry and available actions.
@@ -2361,6 +2363,29 @@ and reopening an uncertain save offers the same request for retry. WhatsApp/RCS
 history loads explicitly; earlier senders permit withdrawal only, and opaque IDs
 are never presented as sender names. The normal and enlarged-text interaction
 checks exercise independent consent, historical withdrawal and recovery.
+
+SMS, WhatsApp and RCS now share a closed recipient binding: roster phone or
+private verified phone, with the exact linked UID and Firestore source generation.
+Legacy records without the binding retain their original roster-phone check;
+clearing a roster phone never upgrades prior consent. New grants bind the exact
+origin in the reviewed hash and immutable consent receipt. Private permissions
+remain in server-only collections and never write the account number to the
+Host roster. Phone verification, event admission, sender readiness, STOP state,
+spending and delivery authority remain separate checks.
+
+An active private grant continues to name its reviewed phone if the account
+phone changes. It can be withdrawn without a current signed phone claim; a new
+number requires a subsequent explicit review. Expiry, a verified STOP or a
+replacement sender releases that old number for a fresh review; the new number's
+STOP state is checked independently and no consent transfers automatically.
+All three channel reviews recheck the clock after their database reads, so slow
+reads cannot extend consent eligibility or publish a stale enabled state.
+Withdrawal preserves the old
+endpoint and evidence, so a corrected recipient may correctly return no current
+permission. Native SMS recognizes that confirmed outcome at the exact next
+revision. Dispatch, sender-history discovery and native WhatsApp/RCS replies use
+the same source binding. Native reply records retain the binding and an endpoint
+hash, without copying the raw phone into callback records or the roster.
 
 The native SMS preference controller now retains the exact unresolved request
 through sheet dismissal, including after a response is lost. Its temporary
@@ -2515,8 +2540,7 @@ now supplies the canonical Google RBM sender configuration and rendering
 boundary described below; generated outputs come from the current generator.
 The RCS backend now includes consent and withdrawal APIs, capability/readiness
 checks, shared outbox dispatch, OAuth loading, authenticated HTTP ingress, and
-delivery/native-reply consumers. Remaining work includes private verified endpoint enrollment,
-audited sender/budget onboarding, retention and financial reconciliation,
+delivery/native-reply consumers. Remaining work includes audited sender/budget onboarding, retention and financial reconciliation,
 provider registration, deployment, activation and end-to-end verification. On 2026-09-08 the user resumed independent RCS work while the
 Host UI handoff is pending. Neither the parked prototype nor the restored
 source establishes live provider selection, provisioning or readiness.

@@ -23425,6 +23425,11 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const eventAssistanceSmsPermissionDocumentRecipientBinding = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsPermissionDocument.recipientBinding',
+    valueTypes: <String>['object'],
+  );
+
   static const eventAssistanceSmsPermissionDocumentRecipientEndpointId = CatchContractFieldConstraints(
     path: 'eventAssistanceSmsPermissionDocument.recipientEndpointId',
     maxLength: 160,
@@ -29537,6 +29542,11 @@ abstract final class CatchContractConstraints {
     maximum: 9007199254740991,
   );
 
+  static const eventRcsDispatchDocumentReplyBindingRecipientBinding = CatchContractFieldConstraints(
+    path: 'eventRcsDispatchDocument.replyBinding.recipientBinding',
+    valueTypes: <String>['object'],
+  );
+
   static const eventRcsDispatchDocumentReplyBindingSourceGeneration = CatchContractFieldConstraints(
     path: 'eventRcsDispatchDocument.replyBinding.sourceGeneration',
     required: true,
@@ -29696,6 +29706,11 @@ abstract final class CatchContractConstraints {
     path: 'eventRcsPermissionDocument.purpose',
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const eventRcsPermissionDocumentRecipientBinding = CatchContractFieldConstraints(
+    path: 'eventRcsPermissionDocument.recipientBinding',
+    valueTypes: <String>['object'],
   );
 
   static const eventRcsPermissionDocumentRecipientEndpointId = CatchContractFieldConstraints(
@@ -47993,6 +48008,11 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const eventWhatsappPermissionDocumentRecipientBinding = CatchContractFieldConstraints(
+    path: 'eventWhatsappPermissionDocument.recipientBinding',
+    valueTypes: <String>['object'],
+  );
+
   static const eventWhatsappPermissionDocumentRecipientEndpointId = CatchContractFieldConstraints(
     path: 'eventWhatsappPermissionDocument.recipientEndpointId',
     maxLength: 160,
@@ -48603,6 +48623,11 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     pattern: '^[0-9]{1,32}\$',
+  );
+
+  static const eventWhatsappReplyBindingDocumentRecipientBinding = CatchContractFieldConstraints(
+    path: 'eventWhatsappReplyBindingDocument.recipientBinding',
+    valueTypes: <String>['object'],
   );
 
   static const eventWhatsappReplyBindingDocumentRecipientEndpointId = CatchContractFieldConstraints(
@@ -95776,6 +95801,7 @@ abstract final class CatchContractConstraints {
     'eventAssistanceSmsPermissionDocument.permissionId': eventAssistanceSmsPermissionDocumentPermissionId,
     'eventAssistanceSmsPermissionDocument.phoneE164': eventAssistanceSmsPermissionDocumentPhoneE164,
     'eventAssistanceSmsPermissionDocument.purpose': eventAssistanceSmsPermissionDocumentPurpose,
+    'eventAssistanceSmsPermissionDocument.recipientBinding': eventAssistanceSmsPermissionDocumentRecipientBinding,
     'eventAssistanceSmsPermissionDocument.recipientEndpointId': eventAssistanceSmsPermissionDocumentRecipientEndpointId,
     'eventAssistanceSmsPermissionDocument.revision': eventAssistanceSmsPermissionDocumentRevision,
     'eventAssistanceSmsPermissionDocument.routeId': eventAssistanceSmsPermissionDocumentRouteId,
@@ -96608,6 +96634,7 @@ abstract final class CatchContractConstraints {
     'eventRcsDispatchDocument.replyBinding.expiresAt': eventRcsDispatchDocumentReplyBindingExpiresAt,
     'eventRcsDispatchDocument.replyBinding.guestId': eventRcsDispatchDocumentReplyBindingGuestId,
     'eventRcsDispatchDocument.replyBinding.guestRevision': eventRcsDispatchDocumentReplyBindingGuestRevision,
+    'eventRcsDispatchDocument.replyBinding.recipientBinding': eventRcsDispatchDocumentReplyBindingRecipientBinding,
     'eventRcsDispatchDocument.replyBinding.sourceGeneration': eventRcsDispatchDocumentReplyBindingSourceGeneration,
     'eventRcsDispatchDocument.replyBinding.subjectUid': eventRcsDispatchDocumentReplyBindingSubjectUid,
     'eventRcsDispatchDocument.schemaVersion': eventRcsDispatchDocumentSchemaVersion,
@@ -96629,6 +96656,7 @@ abstract final class CatchContractConstraints {
     'eventRcsPermissionDocument.permissionId': eventRcsPermissionDocumentPermissionId,
     'eventRcsPermissionDocument.phoneE164': eventRcsPermissionDocumentPhoneE164,
     'eventRcsPermissionDocument.purpose': eventRcsPermissionDocumentPurpose,
+    'eventRcsPermissionDocument.recipientBinding': eventRcsPermissionDocumentRecipientBinding,
     'eventRcsPermissionDocument.recipientEndpointId': eventRcsPermissionDocumentRecipientEndpointId,
     'eventRcsPermissionDocument.revision': eventRcsPermissionDocumentRevision,
     'eventRcsPermissionDocument.routeId': eventRcsPermissionDocumentRouteId,
@@ -99073,6 +99101,7 @@ abstract final class CatchContractConstraints {
     'eventWhatsappPermissionDocument.permissionId': eventWhatsappPermissionDocumentPermissionId,
     'eventWhatsappPermissionDocument.phoneE164': eventWhatsappPermissionDocumentPhoneE164,
     'eventWhatsappPermissionDocument.purpose': eventWhatsappPermissionDocumentPurpose,
+    'eventWhatsappPermissionDocument.recipientBinding': eventWhatsappPermissionDocumentRecipientBinding,
     'eventWhatsappPermissionDocument.recipientEndpointId': eventWhatsappPermissionDocumentRecipientEndpointId,
     'eventWhatsappPermissionDocument.revision': eventWhatsappPermissionDocumentRevision,
     'eventWhatsappPermissionDocument.routeId': eventWhatsappPermissionDocumentRouteId,
@@ -99153,6 +99182,7 @@ abstract final class CatchContractConstraints {
     'eventWhatsappReplyBindingDocument.messageId': eventWhatsappReplyBindingDocumentMessageId,
     'eventWhatsappReplyBindingDocument.providerAccountId': eventWhatsappReplyBindingDocumentProviderAccountId,
     'eventWhatsappReplyBindingDocument.providerPhoneNumberId': eventWhatsappReplyBindingDocumentProviderPhoneNumberId,
+    'eventWhatsappReplyBindingDocument.recipientBinding': eventWhatsappReplyBindingDocumentRecipientBinding,
     'eventWhatsappReplyBindingDocument.recipientEndpointId': eventWhatsappReplyBindingDocumentRecipientEndpointId,
     'eventWhatsappReplyBindingDocument.replyKind': eventWhatsappReplyBindingDocumentReplyKind,
     'eventWhatsappReplyBindingDocument.schemaVersion': eventWhatsappReplyBindingDocumentSchemaVersion,

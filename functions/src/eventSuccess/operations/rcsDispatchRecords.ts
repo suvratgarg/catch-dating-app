@@ -91,6 +91,9 @@ export function parseRcsDispatch(value: unknown): RcsDispatch {
   const reply = value.replyBinding;
   if (reply && (reply.guestId !== guestIdentity(value.context,
     value.attendeeId) || reply.expiresAt <= value.createdAt ||
+    (reply.recipientBinding &&
+      (reply.recipientBinding.subjectUid !== reply.subjectUid ||
+       reply.recipientBinding.sourceGeneration !== reply.sourceGeneration)) ||
     reply.choices.some((choice, i) => i > 0 &&
       choice.index <= reply.choices[i - 1].index) ||
     new Set(reply.choices.map((c) => c.choiceId)).size !==

@@ -19538,7 +19538,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eventMessagesVerifyPhone =>
-      'Your verified phone needs to match your guest record before you can allow messages.';
+      'A matching verified phone is required to allow messages. You can still turn off an existing permission.';
 
   @override
   String get eventMessagesNotAdmitted =>

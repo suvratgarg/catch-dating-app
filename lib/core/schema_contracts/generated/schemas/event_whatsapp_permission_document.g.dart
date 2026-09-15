@@ -199,6 +199,61 @@ const schemaEventWhatsappPermissionDocumentSchema = <String, Object?>{
             },
           },
         },
+        'recipientBinding': <String, Object?>{
+          'type': 'object',
+          'oneOf': <Object?>[
+            <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'kind',
+                'subjectUid',
+                'sourceGeneration',
+              ],
+              'properties': <String, Object?>{
+                'kind': <String, Object?>{
+                  'type': 'string',
+                  'const': 'rosterPhone',
+                },
+                'subjectUid': <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 128,
+                  'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                },
+                'sourceGeneration': <String, Object?>{
+                  'type': 'string',
+                  'pattern': '^[a-f0-9]{64}\$',
+                },
+              },
+            },
+            <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'kind',
+                'subjectUid',
+                'sourceGeneration',
+              ],
+              'properties': <String, Object?>{
+                'kind': <String, Object?>{
+                  'type': 'string',
+                  'const': 'privateVerifiedPhone',
+                },
+                'subjectUid': <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 128,
+                  'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                },
+                'sourceGeneration': <String, Object?>{
+                  'type': 'string',
+                  'pattern': '^[a-f0-9]{64}\$',
+                },
+              },
+            },
+          ],
+        },
       },
     },
     <String, Object?>{
@@ -400,6 +455,61 @@ const schemaEventWhatsappPermissionDocumentSchema = <String, Object?>{
               'maxLength': 32,
             },
           },
+        },
+        'recipientBinding': <String, Object?>{
+          'type': 'object',
+          'oneOf': <Object?>[
+            <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'kind',
+                'subjectUid',
+                'sourceGeneration',
+              ],
+              'properties': <String, Object?>{
+                'kind': <String, Object?>{
+                  'type': 'string',
+                  'const': 'rosterPhone',
+                },
+                'subjectUid': <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 128,
+                  'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                },
+                'sourceGeneration': <String, Object?>{
+                  'type': 'string',
+                  'pattern': '^[a-f0-9]{64}\$',
+                },
+              },
+            },
+            <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'kind',
+                'subjectUid',
+                'sourceGeneration',
+              ],
+              'properties': <String, Object?>{
+                'kind': <String, Object?>{
+                  'type': 'string',
+                  'const': 'privateVerifiedPhone',
+                },
+                'subjectUid': <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 128,
+                  'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                },
+                'sourceGeneration': <String, Object?>{
+                  'type': 'string',
+                  'pattern': '^[a-f0-9]{64}\$',
+                },
+              },
+            },
+          ],
         },
       },
     },

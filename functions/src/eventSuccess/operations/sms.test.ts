@@ -630,7 +630,9 @@ test("withdrawal rejects changed credentials, revocation and replacement scope",
       }
       if (change === "subject") {
         await h.write(h.permissionPath,
-          {...h.permission, evidence: {...h.permission.evidence,
+          {...h.permission, recipientBinding: {...h.permission.recipientBinding,
+            subjectUid: "replacement-guest"},
+          evidence: {...h.permission.evidence,
             subjectUid: "replacement-guest"}});
       }
       if (change === "expiry") h.clock.now = h.permission.expiresAt;

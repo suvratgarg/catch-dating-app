@@ -151,6 +151,9 @@
     "intentHash": {
       "type": "string",
       "pattern": "^[a-f0-9]{64}$"
+    },
+    "recipientBinding": {
+      "$ref": "../shared/event_assistance_message_recipient.schema.json#/definitions/RecipientBinding"
     }
   }
 }

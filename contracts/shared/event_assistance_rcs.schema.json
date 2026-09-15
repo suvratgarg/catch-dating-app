@@ -664,6 +664,9 @@
                       }
                     }
                   }
+                },
+                "recipientBinding": {
+                  "$ref": "./event_assistance_message_recipient.schema.json#/definitions/RecipientBinding"
                 }
               }
             }

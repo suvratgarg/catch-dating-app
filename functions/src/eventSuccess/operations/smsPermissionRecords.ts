@@ -29,6 +29,8 @@ export function parseSmsPermission(value: unknown): Permission {
         value.attendeeId, value.senderId) ||
       value.recipientEndpointId !== smsEndpointId(value.context,
         value.attendeeId, value.phoneE164) ||
+      (value.recipientBinding && value.evidence !== null &&
+        value.recipientBinding.subjectUid !== value.evidence.subjectUid) ||
       (value.evidence !== null &&
         (value.expiresAt <= value.evidence.acceptedAt ||
          value.updatedAt < Math.max(value.evidence.acceptedAt,

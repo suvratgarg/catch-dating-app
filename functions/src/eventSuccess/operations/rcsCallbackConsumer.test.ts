@@ -17,8 +17,8 @@ import {MessageRecord, parseMessageRecord} from "./messageOutbox";
 type Harness = Awaited<ReturnType<typeof fixture>>;
 const token = "fixture-only-rcs-token-12345678901234567890";
 async function fixture(real?: Firestore, id = "consumer",
-  choices?: MessageRecord["intent"]["choices"]) {
-  const h = await rcsHarness(real, id);
+  choices?: MessageRecord["intent"]["choices"], privateRecipient = false) {
+  const h = await rcsHarness(real, id, undefined, undefined, privateRecipient);
   if (choices) {
     const record = await h.record();
     await h.write(EVENT_ASSISTANCE_MESSAGES + "/" + h.messageId,
@@ -124,25 +124,27 @@ test("contradictory RCS delivery and revocation retain positive evidence",
     }
   });
 
-test("a native reply handles lost POST responses without waiting for receipts",
-  async () => {
-    const h = await fixture();
-    h.behavior.beforeSend = async () => {
-      assert.equal((await h.attempt()).state.kind, "unknown");
-      assert.equal((await consume(h, await h.reply())).kind, "reply");
-    };
-    h.behavior.send = "unknown";
-    await h.dispatch();
-    assert.equal((await h.guest()).intention.kind, "onMyWay");
-    assert.equal((await h.record()).lifecycle, "responded");
-    assert.equal((await h.attempt()).state.kind, "delivered");
-    assert.equal((await h.read(h.attendeePath))?.status, "registered");
-    const before = await h.guest();
-    await consume(h, await h.reply());
-    assert.deepEqual(await h.guest(), before);
-    assert.deepEqual(await consume(h, await h.reply("another-tap")),
-      {kind: "rejected", reason: "alreadyResponded"});
-  });
+for (const privateRecipient of [false, true]) {
+  test("native reply handles a lost POST, private=" + privateRecipient,
+    async () => {
+      const h = await fixture(undefined, "reply", undefined, privateRecipient);
+      h.behavior.beforeSend = async () => {
+        assert.equal((await h.attempt()).state.kind, "unknown");
+        assert.equal((await consume(h, await h.reply())).kind, "reply");
+      };
+      h.behavior.send = "unknown";
+      await h.dispatch();
+      assert.equal((await h.guest()).intention.kind, "onMyWay");
+      assert.equal((await h.record()).lifecycle, "responded");
+      assert.equal((await h.attempt()).state.kind, "delivered");
+      assert.equal((await h.read(h.attendeePath))?.status, "registered");
+      const before = await h.guest();
+      await consume(h, await h.reply());
+      assert.deepEqual(await h.guest(), before);
+      assert.deepEqual(await consume(h, await h.reply("another-tap")),
+        {kind: "rejected", reason: "alreadyResponded"});
+    });
+}
 
 test("RCS preserves rendered indices and invokes typed help",
   async () => {

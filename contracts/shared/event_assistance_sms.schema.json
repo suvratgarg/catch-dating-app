@@ -419,6 +419,9 @@
               "minLength": 1,
               "maxLength": 160,
               "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "recipientBinding": {
+              "$ref": "./event_assistance_message_recipient.schema.json#/definitions/RecipientBinding"
             }
           }
         },
@@ -585,6 +588,9 @@
               "minLength": 1,
               "maxLength": 160,
               "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "recipientBinding": {
+              "$ref": "./event_assistance_message_recipient.schema.json#/definitions/RecipientBinding"
             }
           }
         }

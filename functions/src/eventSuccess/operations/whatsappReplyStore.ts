@@ -14,6 +14,8 @@ import {readEventAssistanceMessageGate} from "./guestMessageGate";
 import {guestCollections, guestIdentity, parseGuest} from "./guestRecords";
 import {parseMessageRecord} from "./messageOutbox";
 import {sameMessageContext} from "./messagingPolicy";
+import {messageRecipientMatches} from "./messageRecipient";
+import type {Permission} from "./whatsappPermissionRecords";
 import {
   parseWhatsappReplyBinding, ReplyBinding, WHATSAPP_REPLY_BINDINGS,
   whatsappAttemptFromReplyId, whatsappAttemptScopeHash,
@@ -36,7 +38,8 @@ export class WhatsappReplyStore {
     private readonly clock: () => number = Date.now) {}
 
   /** Freeze only the choices actually offered by the provider renderer. */
-  prepare(replyKind: ReplyBinding["replyKind"], choiceIds: readonly string[]):
+  prepare(replyKind: ReplyBinding["replyKind"], choiceIds: readonly string[],
+    permission?: Permission):
     PrepareDispatchResource<ReplyBinding> {
     const offered = [...choiceIds];
     return async (tx, record, attempt, now) => {
@@ -65,13 +68,28 @@ export class WhatsappReplyStore {
       if (bindingSnap.exists) return {kind: "withheld"};
       const guest = parseGuest(guestSnap.data());
       const sender = senderSnap.data();
-      const endpointHash = whatsappEndpointHash(attendeeSnap.data()?.phoneE164);
+      // Final-claim material supplies the reviewed private endpoint. Without
+      // it this helper retains its legacy, strict roster-phone behavior.
+      const attendee = attendeeSnap.data();
+      const endpointHash = whatsappEndpointHash(
+        permission?.phoneE164 ?? attendee?.phoneE164);
+      if (permission && (permission.status !== "granted" ||
+          permission.attendeeId !== intent.attendeeId ||
+          !sameMessageContext(permission.context, intent.context) ||
+          permission.senderId !== attempt.binding.senderId ||
+          permission.recipientEndpointId !==
+            attempt.binding.recipientEndpointId)) return {kind: "withheld"};
       if (!validateOrganizerSenderConnectionDocument(sender) ||
           sender.organizerId !== intent.context.organizerId ||
           sender.status !== "active" || !sender.wabaId ||
           !sender.phoneNumberId ||
           sender.revision !== attempt.binding.bindingRevision ||
-          !endpointHash || attempt.binding.recipientEndpointId !==
+          !endpointHash ||
+          !messageRecipientMatches(permission?.recipientBinding, {
+            rosterPhone: attendee?.phoneE164, linkedUid: attendee?.linkedUid,
+            sourceGeneration: guest.sourceGeneration,
+          }, (phone) => whatsappEndpointHash(phone) === endpointHash) ||
+          attempt.binding.recipientEndpointId !==
             "whatsapp:" + endpointHash) return {kind: "withheld"};
       const binding = parseWhatsappReplyBinding({schemaVersion: 1,
         attemptId: attempt.attemptId, messageId: record.messageId,
@@ -85,6 +103,8 @@ export class WhatsappReplyStore {
         providerAccountId: sender.wabaId,
         providerPhoneNumberId: sender.phoneNumberId,
         recipientEndpointId: attempt.binding.recipientEndpointId, endpointHash,
+        ...(permission?.recipientBinding ?
+          {recipientBinding: permission.recipientBinding} : {}),
         replyKind, choices: offered.map((choiceId, index) => ({choiceId,
           nativeId: whatsappNativeReplyId(attempt.attemptId, index)})),
         createdAt: now, expiresAt: Math.min(intent.expiresAt, now + 86_400_000),
@@ -174,8 +194,11 @@ export class WhatsappReplyStore {
           guest.guestId !== binding.guestId ||
           guest.episodeId !== binding.episodeId ||
           guest.attendeeGeneration !== binding.attendeeGeneration ||
-          whatsappEndpointHash(attendeeSnap.data()?.phoneE164) !==
-            binding.endpointHash ||
+          !messageRecipientMatches(binding.recipientBinding, {
+            rosterPhone: attendeeSnap.data()?.phoneE164,
+            linkedUid: attendeeSnap.data()?.linkedUid,
+            sourceGeneration: guest.sourceGeneration,
+          }, (phone) => whatsappEndpointHash(phone) === binding.endpointHash) ||
           !validateOrganizerSenderConnectionDocument(sender) ||
           sender.organizerId !== binding.context.organizerId ||
           sender.wabaId !== binding.providerAccountId ||

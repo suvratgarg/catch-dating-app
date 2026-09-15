@@ -196,6 +196,61 @@ export const eventWhatsappPermissionDocumentSchema: Record<string, unknown> = {
               "maxLength": 32
             }
           }
+        },
+        "recipientBinding": {
+          "type": "object",
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "subjectUid",
+                "sourceGeneration"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "rosterPhone"
+                },
+                "subjectUid": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "sourceGeneration": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "subjectUid",
+                "sourceGeneration"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "privateVerifiedPhone"
+                },
+                "subjectUid": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "sourceGeneration": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                }
+              }
+            }
+          ]
         }
       }
     },
@@ -398,6 +453,61 @@ export const eventWhatsappPermissionDocumentSchema: Record<string, unknown> = {
               "maxLength": 32
             }
           }
+        },
+        "recipientBinding": {
+          "type": "object",
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "subjectUid",
+                "sourceGeneration"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "rosterPhone"
+                },
+                "subjectUid": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "sourceGeneration": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "subjectUid",
+                "sourceGeneration"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "privateVerifiedPhone"
+                },
+                "subjectUid": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "sourceGeneration": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                }
+              }
+            }
+          ]
         }
       }
     }

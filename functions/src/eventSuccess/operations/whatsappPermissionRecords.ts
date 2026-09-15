@@ -28,6 +28,8 @@ export function parseWhatsappPermission(value: unknown): Permission {
       value.permissionId !== whatsappPermissionId(value.context,
         value.attendeeId, value.senderId) ||
       value.recipientEndpointId !== whatsappEndpointId(value.phoneE164) ||
+      (value.recipientBinding && value.evidence !== null &&
+        value.recipientBinding.subjectUid !== value.evidence.subjectUid) ||
       (value.evidence !== null &&
         (value.evidence.senderHash !== whatsappSenderHash(
           value.context.organizerId, value.senderId, value.sender) ||

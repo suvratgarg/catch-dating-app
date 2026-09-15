@@ -14,6 +14,7 @@ import {parseRcsDispatch, RcsDispatch, RCS_DISPATCHES,
 import {EVENT_ASSISTANCE_MESSAGES} from "./firestoreMessageOutbox";
 import {LiveAttempt, MessageRecord, parseMessageRecord} from "./messageOutbox";
 import {sameMessageContext} from "./messagingPolicy";
+import {messageRecipientMatches} from "./messageRecipient";
 import {ConfirmedDeliveryState} from "./deliveryReceiptState";
 import {mergeDeliveryReceipt} from "./deliveryReceipts";
 import {guestCollections, parseGuest} from "./guestRecords";
@@ -220,8 +221,11 @@ export class RcsCallbackConsumer {
         guest.attendeeGeneration !== binding.attendeeGeneration ||
         guest.sourceGeneration !== binding.sourceGeneration ||
         attendeeSnap.data()?.linkedUid !== binding.subjectUid ||
-        rcsPhoneHash(attendeeSnap.data()?.phoneE164) !==
-          dispatch.endpointHash) {
+        !messageRecipientMatches(binding.recipientBinding, {
+          rosterPhone: attendeeSnap.data()?.phoneE164,
+          linkedUid: attendeeSnap.data()?.linkedUid,
+          sourceGeneration: guest.sourceGeneration,
+        }, (phone) => rcsPhoneHash(phone) === dispatch.endpointHash)) {
       return reject("scopeMismatch");
     }
     let gate;

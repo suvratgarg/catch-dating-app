@@ -31078,7 +31078,7 @@ abstract class AppLocalizations {
   /// Consumer event message permission review and recovery.
   ///
   /// In en, this message translates to:
-  /// **'Your verified phone needs to match your guest record before you can allow messages.'**
+  /// **'A matching verified phone is required to allow messages. You can still turn off an existing permission.'**
   String get eventMessagesVerifyPhone;
 
   /// Consumer event message permission review and recovery.

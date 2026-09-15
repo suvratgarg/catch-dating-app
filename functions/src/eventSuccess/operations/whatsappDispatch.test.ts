@@ -133,7 +133,11 @@ test("WhatsApp withdrawal cannot cross recipient, subject or provider identity",
         value.phoneE164 = "+919999999998";
         value.recipientEndpointId = whatsappEndpointId(value.phoneE164);
       }
-      if (field === "subject") evidence.subjectUid = "different-user";
+      if (field === "subject") {
+        evidence.subjectUid = "different-user";
+        value.recipientBinding = {...value.recipientBinding as object,
+          subjectUid: "different-user"};
+      }
       if (field === "generation") value.attendeeGeneration = "f".repeat(64);
       if (field === "account" || field === "sender") {
         const sender = {...value.sender as Permission["sender"]};
@@ -594,37 +598,44 @@ test("Firestore retains ambiguous delivery until complete signed evidence", {
   }
 });
 
-test("a native reply resumes after signed status recovers a lost send response",
-  async () => {
-    const h = await harness();
-    const claim = await h.claim();
-    if (claim.kind !== "claimed") throw new Error("Expected claim");
-    const attemptId = claim.permit.attempt.attemptId;
-    const rawBody = Buffer.from(JSON.stringify({entry: [{
-      id: h.expected.connection.wabaId, changes: [{value: {
-        metadata: {phone_number_id: h.expected.connection.phoneNumberId},
-        messages: [{id: "wamid.reply", from: h.actor.phone.slice(1),
-          context: {id: "wamid.delivery"}, timestamp: String(start / 1000),
-          type: "button", button: {text: "On my way",
-            payload: claim.resource.replies[0].payload}}],
-      }}],
-    }]}));
-    await ingestMetaWhatsappWebhook({db: h.db, rawBody, appSecret,
-      now: Timestamp.fromMillis(h.clock.now), signatureHeader: "sha256=" +
+for (const privateRecipient of [false, true]) {
+  test("native reply recovers a lost response, private=" + privateRecipient,
+    async () => {
+      const h = await harness(undefined, "reply", undefined, undefined,
+        privateRecipient);
+      const claim = await h.claim();
+      if (claim.kind !== "claimed") throw new Error("Expected claim");
+      const attemptId = claim.permit.attempt.attemptId;
+      const rawBody = Buffer.from(JSON.stringify({entry: [{
+        id: h.expected.connection.wabaId, changes: [{value: {
+          metadata: {phone_number_id: h.expected.connection.phoneNumberId},
+          messages: [{id: "wamid.reply", from: h.actor.phone.slice(1),
+            context: {id: "wamid.delivery"}, timestamp: String(start / 1000),
+            type: "button", button: {text: "On my way",
+              payload: claim.resource.replies[0].payload}}],
+        }}],
+      }]}));
+      await ingestMetaWhatsappWebhook({db: h.db, rawBody, appSecret,
+        now: Timestamp.fromMillis(h.clock.now), signatureHeader: "sha256=" +
         createHmac("sha256", appSecret).update(rawBody).digest("hex")});
-    const replyId = "omwe_" + createHash("sha256").update("inbound:wamid.reply")
-      .digest("hex").slice(0, 48);
-    const replies = new WhatsappReplyStore(h.db, () => h.clock.now);
-    assert.deepEqual(await replies.consumeQueued(replyId),
-      {kind: "waiting", reason: "deliveryUnconfirmed"});
-    const statusId = await queuedStatus(h,
-      whatsappStatusCorrelation(attemptId, claim.resource.rendered.payloadHash),
-      "sent");
-    assert.equal((await new WhatsappDeliveryStore(h.db, () => h.clock.now)
-      .consumeQueued(statusId)).kind, "recorded");
-    assert.deepEqual(await replies.consumeQueued(replyId), {kind: "accepted"});
-    assert.deepEqual(await replies.consumeQueued(replyId), {kind: "replayed"});
-  });
+      const replyId = "omwe_" + createHash("sha256")
+        .update("inbound:wamid.reply")
+        .digest("hex").slice(0, 48);
+      const replies = new WhatsappReplyStore(h.db, () => h.clock.now);
+      assert.deepEqual(await replies.consumeQueued(replyId),
+        {kind: "waiting", reason: "deliveryUnconfirmed"});
+      const statusId = await queuedStatus(h,
+        whatsappStatusCorrelation(attemptId,
+          claim.resource.rendered.payloadHash),
+        "sent");
+      assert.equal((await new WhatsappDeliveryStore(h.db, () => h.clock.now)
+        .consumeQueued(statusId)).kind, "recorded");
+      assert.deepEqual(await replies.consumeQueued(replyId),
+        {kind: "accepted"});
+      assert.deepEqual(await replies.consumeQueued(replyId),
+        {kind: "replayed"});
+    });
+}
 
 test("one claim atomically debits two ceilings and freezes native choices",
   async () => {

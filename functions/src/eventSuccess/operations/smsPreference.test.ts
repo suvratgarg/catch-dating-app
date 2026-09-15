@@ -146,7 +146,12 @@ test("old withdrawal cannot change consent for a corrected phone number",
     assert.deepEqual(await h.read(h.permissionPath), before);
     const fresh = await h.store.set(actor, await h.stop(actor));
     assert.equal(fresh.outcome, "applied");
-    assert.equal(fresh.view.preference, "disabled");
+    assert.equal(fresh.view.preference, "notSet");
+    const withdrawn = await h.read(h.permissionPath);
+    assert.equal(withdrawn!.status, "revoked");
+    assert.equal(withdrawn!.phoneE164, before!.phoneE164);
+    assert.deepEqual(withdrawn!.recipientBinding, before!.recipientBinding);
+    assert.deepEqual(withdrawn!.evidence, before!.evidence);
   });
 
 test("changed consent proof invalidates a review without a revision bump",
@@ -260,6 +265,25 @@ test("grant requires linked UID, matching verified phone and admission",
     assert.equal(await h.read(h.permissionPath), undefined);
   });
 
+test("withdrawal receipts preserve the original registration identity",
+  async () => {
+    const h = await harness();
+    await h.store.set(h.actor, h.grant);
+    const granted = parseSmsPermission(await h.read(h.permissionPath));
+    await h.write(h.attendeePath, {...await h.read(h.attendeePath),
+      createdAt: {seconds: start / 1000, nanoseconds: 6}});
+    const result = await h.store.set(h.actor, await h.stop());
+    assert.equal(result.outcome, "applied");
+    assert.equal(result.view.preference, "notSet");
+    const revoked = parseSmsPermission(await h.read(h.permissionPath));
+    const receipt = parseSmsConsentReceipt(await h.read(
+      SMS_CONSENT_RECEIPTS + "/" + revoked.currentReceiptId));
+    assert.equal(revoked.attendeeGeneration, granted.attendeeGeneration);
+    assert.equal(receipt.attendeeGeneration, granted.attendeeGeneration);
+    assert.deepEqual(revoked.recipientBinding, granted.recipientBinding);
+    assert.deepEqual(revoked.evidence, granted.evidence);
+  });
+
 test("recreated rosters and tampered grants cannot inherit consent",
   async () => {
     const h = await harness();
@@ -356,4 +380,26 @@ test("a backwards clock cannot publish stale consent or mutate its revision",
     await assert.rejects(h.store.get(h.actor, h.scope), /clock is behind/);
     await assert.rejects(h.store.set(h.actor, stop), /clock is behind/);
     assert.deepEqual(await h.read(h.permissionPath), before);
+  });
+
+
+test("private SMS review is read-only and requires a new origin review",
+  async () => {
+    const h = await harness();
+    await h.write(h.attendeePath, {...await h.read(h.attendeePath),
+      phoneE164: null});
+    const before = await h.read(h.attendeePath);
+    const {view} = await h.store.get(h.actor, h.scope);
+    assert.equal(view.canEnable, true);
+    assert.equal(view.phoneLastFour, "9999");
+    assert.equal(view.preference, "notSet");
+    assert.equal(await h.read(h.permissionPath), undefined);
+    assert.equal((await h.store.set(h.actor, h.grant)).outcome, "conflict");
+    assert.equal(await h.read(h.permissionPath), undefined);
+    const result = await h.store.set(h.actor, {...h.grant,
+      requestId: "private-reviewed", expectedReviewHash: view.reviewHash});
+    assert.equal(result.view.preference, "enabled");
+    const permission = parseSmsPermission(await h.read(h.permissionPath));
+    assert.equal(permission.recipientBinding?.kind, "privateVerifiedPhone");
+    assert.deepEqual(await h.read(h.attendeePath), before);
   });

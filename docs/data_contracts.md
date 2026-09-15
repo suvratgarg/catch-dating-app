@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.116.0
+version: 1.117.0
 updated: 2026-09-15
 owner: recursive_audit_loop
 status: active
@@ -3351,6 +3351,29 @@ evidence. Changed attendee creation stamps invalidate existing consent.
 Responses reveal only the participant's masked number,
 status, availability and consent text; there is no client collection access.
 Sender approval and activation remain separate trusted provisioning steps.
+
+Event-service SMS, WhatsApp and RCS permission documents may now carry the
+closed shared `recipientBinding` from
+`contracts/shared/event_assistance_message_recipient.schema.json`. New grants
+record `rosterPhone` or `privateVerifiedPhone`, the linked UID and exact source
+generation. Absence on a legacy permission means the original strict roster-phone
+match, never private enrollment. A supported signed Auth phone may be reviewed
+privately only when the canonical roster phone is absent. Reads do not persist
+it; only explicit channel consent writes the private permission and its exact
+receipt. An active private grant retains its reviewed phone until withdrawal,
+including when Auth no longer supplies that number. Expired or stopped grants,
+and grants for a replaced sender identity, permit fresh review of a changed
+signed number with that number's own STOP state. Withdrawal preserves the
+original recipient and may return `notSet` for a corrected current recipient.
+
+The same binding is frozen into WhatsApp native-reply records and RCS dispatch
+reply bindings. Planning, final dispatch, saved-sender discovery and callback
+consumption compare the source generation, linked UID and recipient origin.
+Permission collections remain inaccessible to browser/mobile clients and Hosts;
+the operational roster remains unchanged. Deploy the updated shared readers and
+writers together before enabling enrollment: older strict readers will reject
+new records with the additional field. These source contracts do not activate a
+provider or establish production delivery.
 
 `getEventAssistanceParticipantContext` resolves only the authenticated caller's
 operational attendee identity for one event. A read-only transaction reads the

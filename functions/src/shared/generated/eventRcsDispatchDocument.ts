@@ -73,5 +73,16 @@ export interface EventRcsDispatchDocument {
       index: number;
       choiceId: string;
     }[];
+    recipientBinding?:
+      | {
+          kind: "rosterPhone";
+          subjectUid: string;
+          sourceGeneration: string;
+        }
+      | {
+          kind: "privateVerifiedPhone";
+          subjectUid: string;
+          sourceGeneration: string;
+        };
   };
 }

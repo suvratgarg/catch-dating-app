@@ -27,7 +27,8 @@ export const keys = {currentKeyId: "fixture-key",
 export const appSecret = "fixture-stop-secret";
 export async function harness(realDb?: Firestore, id = "test",
   permittedRoutes: MessageRecord["intent"]["permittedRoutes"] =
-  ["organizerEventWhatsapp"], eventEnd = start + 3_600_000) {
+  ["organizerEventWhatsapp"], eventEnd = start + 3_600_000,
+  privateRecipient = false) {
   const fake = new ProgressFirestore();
   const db = realDb ?? fake as unknown as Firestore;
   const clock = {now: start};
@@ -51,7 +52,7 @@ export async function harness(realDb?: Firestore, id = "test",
   const progress = await seedJoiningProgress(db, context, start, eventEnd);
   await write(attendeePath, {organizerId: context.organizerId,
     eventId: context.eventId, status: "registered", linkedUid: actor.uid,
-    phoneE164: actor.phone, createdAt: stamp});
+    phoneE164: privateRecipient ? null : actor.phone, createdAt: stamp});
   await write(senderPath, {organizerId: context.organizerId,
     channel: "whatsapp", provider: "metaCloudApi", status: "active",
     wabaId: "700123", phoneNumberId, businessId: "900123",

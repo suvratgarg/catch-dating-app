@@ -194,15 +194,17 @@ final class EventSmsPreferenceResult {
     }
     if (outcome == EventSmsPreferenceOutcome.applied &&
         (view.revision != (change.snapshot.revision ?? 0) + 1 ||
-            view.preference !=
-                switch (change.decision) {
-                  EventSmsPreferenceDecision.grant =>
-                    EventSmsPreference.enabled,
-                  EventSmsPreferenceDecision.revoke =>
-                    EventSmsPreference.disabled,
-                })) {
+            !switch (change.decision) {
+              EventSmsPreferenceDecision.grant =>
+                view.preference == EventSmsPreference.enabled,
+              EventSmsPreferenceDecision.revoke =>
+                view.preference == EventSmsPreference.disabled ||
+                    view.preference == EventSmsPreference.notSet,
+            })) {
       throw const FormatException('Event text decision was not confirmed.');
     }
+    // A withdrawal preserves the original endpoint. A corrected recipient
+    // therefore has no permission instead of inheriting the prior opt-out.
     // Exact replays return current state, including a subsequent withdrawal
     // or replaced recipient. Never replace that state with the old decision.
   }

@@ -265,6 +265,44 @@ test("STOP fences existing and in-flight consent until a fresh review",
     assert.equal((await h.allowed()).kind, "blocked");
   });
 
+test("a stopped private RCS number permits a fresh verified-number review",
+  async () => {
+    const h = await harness();
+    await h.write(h.attendeePath, {...await h.read(h.attendeePath),
+      phoneE164: null});
+    await h.store.set(h.actor, await h.grant());
+    const changed = {...h.actor, phone: "+918888887777"};
+    assert.equal((await h.store.get(changed, h.scope)).view.canEnable, false);
+    h.clock.now++;
+    await h.callback();
+    h.clock.now++;
+    const {view} = await h.store.get(changed, h.scope);
+    assert.equal(view.preference, "notSet");
+    assert.equal(view.phoneLastFour, "7777");
+    assert.equal(view.canEnable, true);
+    const result = await h.store.set(changed, {...h.scope,
+      requestId: "new-private-number", expectedRevision: view.revision,
+      decision: {kind: "grant", copyVersion: RCS_CONSENT_VERSION,
+        reviewHash: view.reviewHash}});
+    assert.equal(result.view.preference, "enabled");
+    assert.equal((await h.permission()).phoneE164, changed.phone);
+    assert.equal((await h.read(h.attendeePath))!.phoneE164, null);
+  });
+
+test("a replacement RCS sender does not pin the previous private number",
+  async () => {
+    const h = await harness();
+    await h.write(h.attendeePath, {...await h.read(h.attendeePath),
+      phoneE164: null});
+    await h.store.set(h.actor, await h.grant());
+    await h.write(h.senderPath, {...h.config, agentId: "new-agent"});
+    const {view} = await h.store.get({...h.actor, phone: "+918888887777"},
+      h.scope);
+    assert.equal(view.preference, "notSet");
+    assert.equal(view.phoneLastFour, "7777");
+    assert.equal(view.canEnable, true);
+  });
+
 test("same-clock or broken subscription proof cannot enable consent",
   async () => {
     const h = await harness();

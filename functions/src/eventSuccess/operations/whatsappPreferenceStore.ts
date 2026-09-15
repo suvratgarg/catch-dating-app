@@ -1,3 +1,5 @@
+import {MessageRecipientBinding, MessageRecipientSource,
+  reviewMessageRecipient, messageRecipientMatches} from "./messageRecipient";
 import type {Firestore, Transaction} from "firebase-admin/firestore";
 import {HttpsError} from "firebase-functions/v2/https";
 import type {GetEventWhatsappPreferenceCallablePayload as Scope} from
@@ -33,6 +35,8 @@ interface PreferenceFacts {
   context: Permission["context"];
   source: GuestSourceFacts;
   phone: string | null;
+  recipientBinding: MessageRecipientBinding | null;
+  recipientSource: MessageRecipientSource;
   permission: Permission | null;
   receipt: ConsentReceipt | null;
   sender: ConsentSender | null;
@@ -45,9 +49,17 @@ export class WhatsappPreferenceStore {
     private readonly clock: () => number = Date.now) {}
 
   async get(actor: WhatsappPreferenceActor, scope: Scope): Promise<Response> {
-    return runAssistanceTransaction(this.db, async (tx) => ({outcome: "read",
-      view: this.view(actor, scope, await this.read(tx, actor, scope),
-        this.now())}));
+    return runAssistanceTransaction(this.db, async (tx) => {
+      const now = this.now();
+      const facts = await this.read(tx, actor, scope, now);
+      const reviewedAt = this.now();
+      if (reviewedAt < now) {
+        throw new HttpsError("unavailable",
+          "Event preference clock is behind.");
+      }
+      return {outcome: "read", view: this.view(actor, scope, facts,
+        reviewedAt)};
+    });
   }
 
   async set(actor: WhatsappPreferenceActor,
@@ -59,11 +71,16 @@ export class WhatsappPreferenceStore {
     ]);
     const requestHash = operationContentHash([actor.uid, input]);
     return runAssistanceTransaction(this.db, async (tx) => {
-      const facts = await this.read(tx, actor, input);
+      const readAt = this.now();
+      const facts = await this.read(tx, actor, input, readAt);
       const ref = this.db.collection(WHATSAPP_CONSENT_RECEIPTS)
         .doc(receiptId);
       const existing = await tx.get(ref);
       const now = this.now();
+      if (now < readAt) {
+        throw new HttpsError("unavailable",
+          "Event preference clock is behind.");
+      }
       const currentView = this.view(actor, input, facts, now);
       if (existing.exists) {
         const prior = parseWhatsappConsentReceipt(existing.data());
@@ -108,6 +125,8 @@ export class WhatsappPreferenceStore {
         // Time the signed phone claim was checked, not a claim of a new OTP.
         phoneVerifiedAt: now, subjectUid: actor.uid} :
         previous?.evidence ?? null;
+      const recipientBinding = granting || !previous ?
+        facts.recipientBinding : previous.recipientBinding;
       const permission = parseWhatsappPermission({schemaVersion: 1,
         permissionId, currentReceiptId: receiptId,
         revision: (previous?.revision ?? 0) + 1,
@@ -116,6 +135,7 @@ export class WhatsappPreferenceStore {
           previous?.attendeeGeneration ?? facts.source.attendeeGeneration,
         senderId: input.senderId, sender, routeId: "organizerEventWhatsapp",
         purpose: "eventService", phoneE164: phone,
+        ...(recipientBinding ? {recipientBinding} : {}),
         recipientEndpointId: whatsappEndpointId(phone),
         status: granting ? "granted" : "revoked", evidence,
         expiresAt: granting ? Math.floor(facts.source.eventEnd) + 86_400_000 :
@@ -143,7 +163,7 @@ export class WhatsappPreferenceStore {
   }
 
   private async read(tx: Transaction, actor: WhatsappPreferenceActor,
-    scope: Scope): Promise<PreferenceFacts> {
+    scope: Scope, now: number): Promise<PreferenceFacts> {
     [scope.eventId, scope.attendeeId, scope.senderId, actor.uid]
       .forEach(requireDocumentId);
     const [eventSnap, attendeeSnap, senderSnap, policySnap] = await tx.getAll(
@@ -176,11 +196,46 @@ export class WhatsappPreferenceStore {
       .doc(permission.currentReceiptId)) : null;
     const receipt = receiptSnap?.exists ?
       parseWhatsappConsentReceipt(receiptSnap.data()) : null;
-    const endpoint = whatsappEndpointHash(attendee.phoneE164);
+    const recipientSource: MessageRecipientSource = {
+      rosterPhone: attendee.phoneE164, linkedUid: attendee.linkedUid,
+      sourceGeneration: source.sourceGeneration,
+    };
+    const sender = whatsappConsentSender(scope.senderId, context.organizerId,
+      senderSnap.data(), policySnap.data());
+    const currentGrant = permission !== null && permission.expiresAt > now &&
+      whatsappPermissionHasReceipt(permission, receipt) &&
+      (!sender || (permission.sender.providerAccountId ===
+        sender.identity.providerAccountId &&
+        permission.sender.providerPhoneNumberId ===
+        sender.identity.providerPhoneNumberId));
+    let recipient = reviewMessageRecipient(actor, recipientSource,
+      (value) => whatsappEndpointHash(value) !== null, permission,
+      currentGrant);
+    let stopFacts = await this.readStop(tx, context.organizerId,
+      recipient.phone);
+    if (!stopFacts.stopInvalid && stopFacts.stop &&
+        stopFacts.stop.observedAt <= now && permission?.evidence &&
+        stopFacts.stop.stoppedAt >= permission.evidence.acceptedAt &&
+        recipient.phone !== actor.phone && whatsappEndpointHash(actor.phone)) {
+      // A stopped grant no longer pins a changed signed phone. Reviewing a
+      // new number still requires its own STOP state and explicit consent.
+      recipient = reviewMessageRecipient(actor, recipientSource,
+        (value) => whatsappEndpointHash(value) !== null, permission, false);
+      stopFacts = await this.readStop(tx, context.organizerId, recipient.phone);
+    }
+    return {context, source, permission, receipt, sender, ...stopFacts,
+      phone: recipient.phone, recipientBinding: recipient.binding,
+      recipientSource};
+  }
+
+  private async readStop(tx: Transaction, organizerId: string,
+    phone: string | null): Promise<Pick<PreferenceFacts,
+      "stop" | "stopInvalid">> {
+    const endpoint = whatsappEndpointHash(phone);
     let stop: EndpointStop | null = null;
     let stopInvalid = false;
     if (endpoint) {
-      const stopId = whatsappStopId(context.organizerId, endpoint);
+      const stopId = whatsappStopId(organizerId, endpoint);
       const stopSnap = await tx.get(this.db
         .collection(WHATSAPP_ENDPOINT_STOPS).doc(stopId));
       if (stopSnap.exists) {
@@ -193,22 +248,21 @@ export class WhatsappPreferenceStore {
         }
       }
     }
-    return {context, source, permission, receipt, stop, stopInvalid,
-      sender: whatsappConsentSender(scope.senderId, context.organizerId,
-        senderSnap.data(), policySnap.data()),
-      phone: whatsappEndpointHash(attendee.phoneE164) ?
-        attendee.phoneE164 : null};
+    return {stop, stopInvalid};
   }
 
   private view(actor: WhatsappPreferenceActor, scope: Scope,
     facts: PreferenceFacts, now: number): Response["view"] {
     const {source, sender, permission, receipt, phone, stop} = facts;
     if (now < (permission?.updatedAt ?? 0) || now < (receipt?.createdAt ?? 0)) {
-      throw new HttpsError("unavailable", "Event preference clock is behind.");
+      throw new HttpsError("unavailable",
+        "Event preference clock is behind.");
     }
     const belongs = permission !== null &&
       permission.attendeeGeneration === source.attendeeGeneration &&
       permission.phoneE164 === phone &&
+      messageRecipientMatches(permission.recipientBinding,
+        facts.recipientSource, (value) => value === permission.phoneE164) &&
       (permission.evidence === null ||
         permission.evidence.subjectUid === actor.uid) &&
       (!sender || (permission.sender.providerAccountId ===
@@ -245,6 +299,7 @@ export class WhatsappPreferenceStore {
     const reviewHash = operationContentHash([facts.context, scope.attendeeId,
       actor.uid, source.attendeeGeneration, source.sourceGeneration,
       source.eventTitle, Math.floor(source.eventEnd) + 86_400_000, phone,
+      facts.recipientBinding,
       scope.senderId, identity ?? null, stopRecordHash,
       WHATSAPP_CONSENT_HASH]);
     return {eventId: scope.eventId, attendeeId: scope.attendeeId,

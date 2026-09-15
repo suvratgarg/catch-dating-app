@@ -7,6 +7,41 @@ import 'package:json_schema/json_schema.dart';
 import 'event_sms_preference_fixtures.dart';
 
 void main() {
+  test('withdrawal may leave a corrected recipient without a permission', () {
+    final granted = smsView().prepareChange(
+      requestId: 'grant-original',
+      decision: EventSmsPreferenceDecision.grant,
+    );
+    final withdrawal = smsApplied(granted).view.prepareChange(
+      requestId: 'withdraw-original',
+      decision: EventSmsPreferenceDecision.revoke,
+    );
+    final result = smsApplied(
+      withdrawal,
+      patch: {
+        'preference': 'notSet',
+        'expiresAt': null,
+        'phoneLastFour': '1234',
+      },
+    );
+    expect(() => result.requireChange(withdrawal), returnsNormally);
+    expect(result.view.canEnable, isTrue);
+    expect(result.view.canDisable, isFalse);
+    expect(
+      () => smsApplied(
+        withdrawal,
+        patch: {'preference': 'enabled'},
+      ).requireChange(withdrawal),
+      throwsFormatException,
+    );
+    expect(
+      () => smsApplied(
+        withdrawal,
+        patch: {'preference': 'notSet', 'expiresAt': null, 'revision': 3},
+      ).requireChange(withdrawal),
+      throwsFormatException,
+    );
+  });
   test(
     'closed decisions preserve reviewed fields and match the source schema',
     () {

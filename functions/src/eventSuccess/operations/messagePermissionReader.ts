@@ -1,3 +1,4 @@
+import {messageRecipientMatches} from "./messageRecipient";
 import type {Firestore, Transaction} from "firebase-admin/firestore";
 import type {OrganizerSenderConnectionDocument as Connection} from
   "../../shared/generated/organizerSenderConnectionDocument";
@@ -45,7 +46,10 @@ export async function readSmsMessagePermission(db: Firestore, tx: Transaction,
   const attendee = attendeeSnap.data();
   if (permission.permissionId !== id || permission.senderId !== senderId ||
       permission.attendeeGeneration !== source.attendeeGeneration ||
-      permission.phoneE164 !== attendee?.phoneE164 ||
+      !messageRecipientMatches(permission.recipientBinding, {
+        rosterPhone: attendee?.phoneE164, linkedUid: attendee?.linkedUid,
+        sourceGeneration: source.sourceGeneration,
+      }, (phone) => phone === permission.phoneE164) ||
       permission.evidence.subjectUid !== attendee?.linkedUid ||
       permission.updatedAt > now || permission.expiresAt <= now ||
       now >= Math.floor(source.eventEnd) + 86_400_000) return missing();
@@ -73,7 +77,10 @@ export async function readWhatsappMessagePermission(db: Firestore,
   const attendee = attendeeSnap.data();
   if (permission.permissionId !== id ||
       permission.attendeeGeneration !== source.attendeeGeneration ||
-      permission.phoneE164 !== attendee?.phoneE164 ||
+      !messageRecipientMatches(permission.recipientBinding, {
+        rosterPhone: attendee?.phoneE164, linkedUid: attendee?.linkedUid,
+        sourceGeneration: source.sourceGeneration,
+      }, (phone) => phone === permission.phoneE164) ||
       permission.evidence.subjectUid !== attendee?.linkedUid ||
       permission.sender.providerAccountId !== connection.wabaId ||
       permission.sender.providerPhoneNumberId !== connection.phoneNumberId ||

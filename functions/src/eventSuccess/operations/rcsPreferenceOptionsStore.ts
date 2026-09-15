@@ -1,3 +1,4 @@
+import {messageRecipientMatches} from "./messageRecipient";
 import {FieldPath, Firestore} from "firebase-admin/firestore";
 import {HttpsError} from "firebase-functions/v2/https";
 import type {ListEventRcsPreferencesCallablePayload as Scope} from
@@ -55,7 +56,10 @@ export class RcsPreferenceOptionsStore {
         if (permission.senderId !== configuredSenderId &&
             permission.sourceGeneration === source.sourceGeneration &&
             permission.attendeeGeneration === source.attendeeGeneration &&
-            permission.phoneE164 === phone) {
+            messageRecipientMatches(permission.recipientBinding, {
+              rosterPhone: phone, linkedUid: uid,
+              sourceGeneration: source.sourceGeneration,
+            }, (value) => value === permission.phoneE164)) {
           previous.add(permission.senderId);
         }
       }

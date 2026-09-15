@@ -1,3 +1,4 @@
+import {messageRecipientMatches} from "./messageRecipient";
 import type {Firestore, Transaction} from "firebase-admin/firestore";
 import {GuestSourceFacts, guestSourceFactsFromSnapshots} from "./guestRecords";
 import {rcsCallbackClock} from "./rcsCallbackRecords";
@@ -42,7 +43,10 @@ export async function readRcsMessagePermission(db: Firestore, tx: Transaction,
       permission.sender.agentId !== config.agentId ||
       permission.attendeeGeneration !== source.attendeeGeneration ||
       permission.sourceGeneration !== source.sourceGeneration ||
-      permission.phoneE164 !== attendee?.phoneE164 ||
+      !messageRecipientMatches(permission.recipientBinding, {
+        rosterPhone: attendee?.phoneE164, linkedUid: attendee?.linkedUid,
+        sourceGeneration: source.sourceGeneration,
+      }, (phone) => phone === permission.phoneE164) ||
       permission.subjectUid !== attendee?.linkedUid ||
       permission.updatedAt > now || permission.expiresAt <= now ||
       now >= Math.floor(source.eventEnd) + 86_400_000) return missing;

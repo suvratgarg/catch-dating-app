@@ -30,6 +30,17 @@ export type EventAssistanceSmsPermissionDocument =
       expiresAt: number;
       updatedAt: number;
       currentReceiptId: string;
+      recipientBinding?:
+        | {
+            kind: "rosterPhone";
+            subjectUid: string;
+            sourceGeneration: string;
+          }
+        | {
+            kind: "privateVerifiedPhone";
+            subjectUid: string;
+            sourceGeneration: string;
+          };
     }
   | {
       schemaVersion: 1;
@@ -58,4 +69,15 @@ export type EventAssistanceSmsPermissionDocument =
       expiresAt: number;
       updatedAt: number;
       currentReceiptId: string;
+      recipientBinding?:
+        | {
+            kind: "rosterPhone";
+            subjectUid: string;
+            sourceGeneration: string;
+          }
+        | {
+            kind: "privateVerifiedPhone";
+            subjectUid: string;
+            sourceGeneration: string;
+          };
     };

@@ -215,6 +215,61 @@ export const eventRcsPermissionDocumentSchema: Record<string, unknown> = {
           "type": "string",
           "pattern": "^rcs-subscription:[a-f0-9]{64}$",
           "description": "Derived agent and phone conversation key for bounded STOP discovery; covered by the immutable permission receipt."
+        },
+        "recipientBinding": {
+          "type": "object",
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "subjectUid",
+                "sourceGeneration"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "rosterPhone"
+                },
+                "subjectUid": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "sourceGeneration": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "subjectUid",
+                "sourceGeneration"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "privateVerifiedPhone"
+                },
+                "subjectUid": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "sourceGeneration": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                }
+              }
+            }
+          ]
         }
       }
     },
@@ -436,6 +491,61 @@ export const eventRcsPermissionDocumentSchema: Record<string, unknown> = {
           "type": "string",
           "pattern": "^rcs-subscription:[a-f0-9]{64}$",
           "description": "Derived agent and phone conversation key for bounded STOP discovery; covered by the immutable permission receipt."
+        },
+        "recipientBinding": {
+          "type": "object",
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "subjectUid",
+                "sourceGeneration"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "rosterPhone"
+                },
+                "subjectUid": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "sourceGeneration": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "subjectUid",
+                "sourceGeneration"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "privateVerifiedPhone"
+                },
+                "subjectUid": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "sourceGeneration": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                }
+              }
+            }
+          ]
         }
       }
     }

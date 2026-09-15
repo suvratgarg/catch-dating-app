@@ -168,6 +168,8 @@ export class RcsDispatchStore {
           attendeeGeneration: guest.attendeeGeneration,
           sourceGeneration: guest.sourceGeneration,
           subjectUid: permission.subjectUid,
+          ...(permission.recipientBinding ?
+            {recipientBinding: permission.recipientBinding} : {}),
           expiresAt: Math.min(record.intent.expiresAt, grant.expiresAt,
             permission.expiresAt, material.deliveryExpiresAt),
           choices: material.prepared.choices.map(({index}) => ({index,

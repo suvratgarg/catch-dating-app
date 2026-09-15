@@ -38,4 +38,15 @@ export interface EventWhatsappReplyBindingDocument {
   createdAt: number;
   expiresAt: number;
   intentHash: string;
+  recipientBinding?:
+    | {
+        kind: "rosterPhone";
+        subjectUid: string;
+        sourceGeneration: string;
+      }
+    | {
+        kind: "privateVerifiedPhone";
+        subjectUid: string;
+        sourceGeneration: string;
+      };
 }

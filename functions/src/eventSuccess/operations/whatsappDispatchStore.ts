@@ -111,7 +111,7 @@ export class WhatsappDispatchStore {
         attempt.attemptId);
       const native = replies.length ? await new WhatsappReplyStore(this.db)
         .prepare("templateQuickReply", material.rendered.replies.map((r) =>
-          r.choiceId))(tx, record, attempt, now) : null;
+          r.choiceId), material.permission)(tx, record, attempt, now) : null;
       if (native?.kind === "withheld") return {kind: "withheld"};
       const {connection, policy, permission, rendered, budgets} = material;
       const withdrawalRef = this.db.collection(WHATSAPP_WITHDRAWAL_GRANTS)

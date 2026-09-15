@@ -26064,7 +26064,7 @@
     "x-owner": "product",
     "x-surface": "event_success.presentation"
   },
-  "eventMessagesVerifyPhone": "Your verified phone needs to match your guest record before you can allow messages.",
+  "eventMessagesVerifyPhone": "A matching verified phone is required to allow messages. You can still turn off an existing permission.",
   "@eventMessagesVerifyPhone": {
     "description": "Consumer event message permission review and recovery.",
     "x-audience": "consumer",

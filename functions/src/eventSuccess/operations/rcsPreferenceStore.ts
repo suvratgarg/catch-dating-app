@@ -1,3 +1,5 @@
+import {MessageRecipientBinding, MessageRecipientSource,
+  reviewMessageRecipient, messageRecipientMatches} from "./messageRecipient";
 import type {Firestore, Transaction} from "firebase-admin/firestore";
 import {HttpsError} from "firebase-functions/v2/https";
 import type {GetEventRcsPreferenceCallablePayload as Scope} from
@@ -27,6 +29,8 @@ interface Facts {
   context: Permission["context"];
   source: GuestSourceFacts;
   phone: string | null;
+  recipientBinding: MessageRecipientBinding | null;
+  recipientSource: MessageRecipientSource;
   sender: RcsConfig | null;
   permission: Permission | null;
   receipt: ConsentReceipt | null;
@@ -41,8 +45,14 @@ export class RcsPreferenceStore {
   async get(actor: RcsPreferenceActor, scope: Scope): Promise<Response> {
     return runAssistanceTransaction(this.db, async (tx) => {
       const now = rcsCallbackClock(this.clock());
-      return {outcome: "read", view: this.view(actor, scope,
-        await this.read(tx, actor, scope, now), now)};
+      const facts = await this.read(tx, actor, scope, now);
+      const reviewedAt = rcsCallbackClock(this.clock());
+      if (reviewedAt < now) {
+        throw new HttpsError("unavailable",
+          "Event preference clock is behind.");
+      }
+      return {outcome: "read", view: this.view(actor, scope, facts,
+        reviewedAt)};
     });
   }
 
@@ -54,11 +64,16 @@ export class RcsPreferenceStore {
     ]);
     const requestHash = operationContentHash([actor.uid, input]);
     return runAssistanceTransaction(this.db, async (tx) => {
-      const now = rcsCallbackClock(this.clock());
-      const facts = await this.read(tx, actor, input, now);
+      const readAt = rcsCallbackClock(this.clock());
+      const facts = await this.read(tx, actor, input, readAt);
       const receiptRef = this.db.collection(rcsConsentCollections.receipts)
         .doc(receiptId);
       const prior = await tx.get(receiptRef);
+      const now = rcsCallbackClock(this.clock());
+      if (now < readAt) {
+        throw new HttpsError("unavailable",
+          "Event preference clock is behind.");
+      }
       const view = this.view(actor, input, facts, now);
       if (prior.exists) {
         const receipt = parseRcsConsentReceipt(prior.data());
@@ -98,6 +113,8 @@ export class RcsPreferenceStore {
         phoneVerifiedAt: now, reviewHash: view.reviewHash,
         reviewedStopHash: rcsStopHash(facts.subscription)} :
         previous?.evidence ?? null;
+      const recipientBinding = granting || !previous ?
+        facts.recipientBinding : previous.recipientBinding;
       const permission = parseRcsPermission({schemaVersion: 1,
         permissionId: rcsPermissionId(facts.context, input.attendeeId,
           input.senderId), currentReceiptId: receiptId,
@@ -110,6 +127,7 @@ export class RcsPreferenceStore {
         subjectUid: actor.uid, senderId: input.senderId, sender,
         routeId: "catchEventRcs", purpose: "eventService", phoneE164: phone,
         subscriptionId: rcsSubscriptionId(sender.agentId, rcsPhoneHash(phone)!),
+        ...(recipientBinding ? {recipientBinding} : {}),
         recipientEndpointId: rcsEndpointId(facts.context,
           input.attendeeId, phone), status: granting ? "granted" : "revoked",
         evidence, expiresAt: granting ? expiry(facts.source) :
@@ -176,8 +194,38 @@ export class RcsPreferenceStore {
       if (senderSnap.exists) sender = parseRcsConfig(senderSnap.data());
       if (sender?.senderId !== scope.senderId) sender = null;
     } catch {/* A broken sender cannot prevent withdrawal. */}
-    const phone = rcsPhoneHash(attendee.phoneE164) ? attendee.phoneE164 : null;
+    const recipientSource: MessageRecipientSource = {
+      rosterPhone: attendee.phoneE164, linkedUid: attendee.linkedUid,
+      sourceGeneration: source.sourceGeneration,
+    };
+    let recipient = reviewMessageRecipient(actor, recipientSource,
+      (value) => rcsPhoneHash(value) !== null, permission,
+      permission !== null && permission.expiresAt > now &&
+        rcsPermissionHasReceipt(permission, receipt) &&
+        (!sender || permission.sender.agentId === sender.agentId));
     const identity = senderIdentity(sender) ?? permission?.sender;
+    let subscriptionFacts = await this.readSubscription(tx, identity,
+      recipient.phone, permission, now);
+    if (!subscriptionFacts.subscriptionInvalid &&
+        subscriptionFacts.subscription?.lastStop &&
+        subscriptionFacts.subscription.lastStop.observedAt < now &&
+        permission && !rcsPermissionClearsStop(permission,
+      subscriptionFacts.subscription) && recipient.phone !== actor.phone &&
+        rcsPhoneHash(actor.phone)) {
+      recipient = reviewMessageRecipient(actor, recipientSource,
+        (value) => rcsPhoneHash(value) !== null, permission, false);
+      subscriptionFacts = await this.readSubscription(tx, identity,
+        recipient.phone, permission, now);
+    }
+    return {context, source, permission, receipt, sender,
+      phone: recipient.phone, recipientBinding: recipient.binding,
+      recipientSource, ...subscriptionFacts};
+  }
+
+  private async readSubscription(tx: Transaction,
+    identity: Permission["sender"] | null | undefined, phone: string | null,
+    permission: Permission | null, now: number): Promise<Pick<Facts,
+      "subscription" | "subscriptionInvalid">> {
     let subscription: RcsSubscription | null = null;
     let subscriptionInvalid = false;
     if (identity && phone) {
@@ -192,8 +240,7 @@ export class RcsPreferenceStore {
         subscriptionInvalid = true;
       }
     }
-    return {context, source, permission, receipt, sender, phone,
-      subscription, subscriptionInvalid};
+    return {subscription, subscriptionInvalid};
   }
 
   private view(actor: RcsPreferenceActor, scope: Scope, facts: Facts,
@@ -206,6 +253,8 @@ export class RcsPreferenceStore {
     const belongs = permission !== null &&
       permission.subjectUid === actor.uid &&
       permission.phoneE164 === phone &&
+      messageRecipientMatches(permission.recipientBinding,
+        facts.recipientSource, (value) => value === permission.phoneE164) &&
       permission.attendeeGeneration === source.attendeeGeneration &&
       permission.sourceGeneration === source.sourceGeneration &&
       (!sender || permission.sender.agentId === sender.agentId);
@@ -242,6 +291,7 @@ export class RcsPreferenceStore {
       reviewHash: operationContentHash([facts.context, scope.attendeeId,
         actor.uid, source.attendeeGeneration, source.sourceGeneration,
         source.eventTitle, expiry(source), phone, scope.senderId, identity,
+        facts.recipientBinding,
         rcsStopHash(subscription)]),
       consent: {version: RCS_CONSENT_VERSION, text: RCS_CONSENT_TEXT}};
   }

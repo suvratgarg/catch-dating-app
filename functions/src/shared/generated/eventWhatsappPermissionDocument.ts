@@ -37,6 +37,17 @@ export type EventWhatsappPermissionDocument =
         displayName: string;
         displayPhoneNumber: string;
       };
+      recipientBinding?:
+        | {
+            kind: "rosterPhone";
+            subjectUid: string;
+            sourceGeneration: string;
+          }
+        | {
+            kind: "privateVerifiedPhone";
+            subjectUid: string;
+            sourceGeneration: string;
+          };
     }
   | {
       schemaVersion: 1;
@@ -72,4 +83,15 @@ export type EventWhatsappPermissionDocument =
         displayName: string;
         displayPhoneNumber: string;
       };
+      recipientBinding?:
+        | {
+            kind: "rosterPhone";
+            subjectUid: string;
+            sourceGeneration: string;
+          }
+        | {
+            kind: "privateVerifiedPhone";
+            subjectUid: string;
+            sourceGeneration: string;
+          };
     };

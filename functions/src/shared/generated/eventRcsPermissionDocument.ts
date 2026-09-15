@@ -42,6 +42,17 @@ export type EventRcsPermissionDocument =
        * Derived agent and phone conversation key for bounded STOP discovery; covered by the immutable permission receipt.
        */
       subscriptionId: string;
+      recipientBinding?:
+        | {
+            kind: "rosterPhone";
+            subjectUid: string;
+            sourceGeneration: string;
+          }
+        | {
+            kind: "privateVerifiedPhone";
+            subjectUid: string;
+            sourceGeneration: string;
+          };
     }
   | {
       schemaVersion: 1;
@@ -82,4 +93,15 @@ export type EventRcsPermissionDocument =
        * Derived agent and phone conversation key for bounded STOP discovery; covered by the immutable permission receipt.
        */
       subscriptionId: string;
+      recipientBinding?:
+        | {
+            kind: "rosterPhone";
+            subjectUid: string;
+            sourceGeneration: string;
+          }
+        | {
+            kind: "privateVerifiedPhone";
+            subjectUid: string;
+            sourceGeneration: string;
+          };
     };

@@ -207,7 +207,11 @@ test("links cannot revoke replacement subjects, phones, sources or agents",
       await h.prepare();
       const p = await h.permission();
       const patch: Record<string, unknown> = {};
-      if (change === "subject") patch.subjectUid = "replacement";
+      if (change === "subject") {
+        patch.subjectUid = "replacement";
+        patch.recipientBinding = {...p.recipientBinding,
+          subjectUid: "replacement"};
+      }
       if (change === "phone") {
         patch.phoneE164 = "+919888888888";
         patch.subscriptionId = rcsSubscriptionId(p.sender.agentId,
@@ -216,7 +220,11 @@ test("links cannot revoke replacement subjects, phones, sources or agents",
           patch.phoneE164 as string);
       }
       if (change === "attendee") patch.attendeeGeneration = "c".repeat(64);
-      if (change === "source") patch.sourceGeneration = "c".repeat(64);
+      if (change === "source") {
+        patch.sourceGeneration = "c".repeat(64);
+        patch.recipientBinding = {...p.recipientBinding,
+          sourceGeneration: patch.sourceGeneration};
+      }
       if (change === "agent") {
         const sender = {...p.sender, agentId: "replacement@rbm.goog"};
         patch.sender = sender;

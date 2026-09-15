@@ -103,7 +103,9 @@ test("changed source withholds the old default without inventing readiness",
       [h.rcsConfig.senderId]);
     const permission = await h.permission();
     await h.write(h.rcsPermissionPath, {...permission,
-      sourceGeneration: "a".repeat(64)});
+      sourceGeneration: "a".repeat(64),
+      recipientBinding: {...permission.recipientBinding!,
+        sourceGeneration: "a".repeat(64)}});
     assert.deepEqual((await h.list()).previousSenderIds, []);
   });
 
