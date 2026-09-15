@@ -27,6 +27,20 @@ class HostEventBookingController extends _$HostEventBookingController {
 
   Future<void>? _updateHostedEventInFlight;
 
+  static Object waitlistOfferSelectionMutationKey(
+    String eventId,
+    List<String> userIds,
+  ) {
+    return userIds.length == 1
+        ? HostEventBookingController.waitlistOfferMutationKey(
+            eventId: eventId,
+            userId: userIds.single,
+          )
+        : HostEventBookingController.bulkWaitlistOfferMutationKey(
+            eventId: eventId,
+          );
+  }
+
   static HostEventParticipantMutationKey waitlistOfferMutationKey({
     required String eventId,
     required String userId,

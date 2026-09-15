@@ -24,6 +24,8 @@ import 'package:catch_dating_app/hosts/presentation/host_event_action_keys.dart'
 import 'package:catch_dating_app/hosts/presentation/host_event_booking_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen_state.dart';
+import 'package:catch_dating_app/hosts/presentation/host_roster_display_state.dart';
+import 'package:catch_dating_app/hosts/presentation/host_roster_row_state.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/catch_roster_board.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
@@ -335,7 +337,10 @@ class _HostEventParticipantsPanelState
   ) {
     if (userIds.isEmpty) return;
     final mutation = HostEventBookingController.createWaitlistOfferMutation(
-      _waitlistOfferMutationKey(viewModel.event.id, userIds),
+      HostEventBookingController.waitlistOfferSelectionMutationKey(
+        viewModel.event.id,
+        userIds,
+      ),
     );
     if (ref.read(mutation).isPending) return;
     mutation.run(
@@ -438,17 +443,6 @@ class _HostEventParticipantsPanelState
 
 CatchAsyncState<T> _catchAsyncState<T>(AsyncValue<T> value) {
   return catchAsyncStateFromAsyncValue(value);
-}
-
-Object _waitlistOfferMutationKey(String eventId, List<String> userIds) {
-  return userIds.length == 1
-      ? HostEventBookingController.waitlistOfferMutationKey(
-          eventId: eventId,
-          userId: userIds.single,
-        )
-      : HostEventBookingController.bulkWaitlistOfferMutationKey(
-          eventId: eventId,
-        );
 }
 
 Rect? _shareOrigin(BuildContext context) {

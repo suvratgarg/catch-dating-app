@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.65.6
+version: 1.65.7
 updated: 2026-09-15
 owner: app_architecture
 status: active
@@ -4148,6 +4148,14 @@ Current Host adopters:
 - `lib/hosts/events/presentation/host_events_view_model.dart`
 - `lib/hosts/events/presentation/widgets/host_events_list.dart`
 - `test/hosts/host_operations_screen_test.dart`
+
+Host Manage keeps lifecycle, event actions and summary state in
+`host_event_manage_screen_state.dart`. Invitation access and link display live
+in `host_invite_link_state.dart`; roster filtering, lookup and mutation
+snapshots live in `host_roster_display_state.dart`; setup/live/report row
+policy lives in `host_roster_row_state.dart`. These adapters receive plain
+data and callbacks. The booking controller owns single-versus-bulk mutation
+key selection; provider reads and route effects remain at their existing edges.
 
 `HostTodayState` and `HostTodayAttentionData` apply the boundary to the
 command-centre projection: `HostTodayScreen` translates provider snapshots at
