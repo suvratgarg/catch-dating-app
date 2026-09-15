@@ -2221,55 +2221,55 @@ abstract class AppLocalizations {
   /// **'Load more plans'**
   String get exploreExploreScreenActionLoadMorePlans;
 
-  /// Product copy used by lib/explore/presentation/explore_screen.dart (title).
+  /// Product copy used by lib/explore/presentation/widgets/explore_screen_empty_state.dart (title).
   ///
   /// In en, this message translates to:
   /// **'No organizers match this search'**
   String get exploreExploreScreenTitleNoClubsMatchThis;
 
-  /// Product copy used by lib/explore/presentation/explore_screen.dart (message).
+  /// Product copy used by lib/explore/presentation/widgets/explore_screen_empty_state.dart (message).
   ///
   /// In en, this message translates to:
   /// **'Clear the search or filters to bring nearby organizers back into view.'**
   String get exploreExploreScreenMessageClearTheSearchOr;
 
-  /// Product copy used by lib/explore/presentation/explore_screen.dart (message).
+  /// Product copy used by lib/explore/presentation/widgets/explore_screen_empty_state.dart (message).
   ///
   /// In en, this message translates to:
   /// **'Try another organizer, neighborhood, host, or tag.'**
   String get exploreExploreScreenMessageTryAnotherClubNeighborhood;
 
-  /// Product copy used by lib/explore/presentation/explore_screen.dart (title).
+  /// Product copy used by lib/explore/presentation/widgets/explore_screen_empty_state.dart (title).
   ///
   /// In en, this message translates to:
   /// **'No organizers match these filters'**
   String get exploreExploreScreenTitleNoClubsMatchThese;
 
-  /// Product copy used by lib/explore/presentation/explore_screen.dart (message).
+  /// Product copy used by lib/explore/presentation/widgets/explore_screen_empty_state.dart (message).
   ///
   /// In en, this message translates to:
   /// **'Clear one or more filters to bring nearby organizers back into view.'**
   String get exploreExploreScreenMessageClearOneOrMore;
 
-  /// Product copy used by lib/explore/presentation/explore_screen.dart (label).
+  /// Product copy used by lib/explore/presentation/widgets/explore_clear_button.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Clear search and filters'**
   String get exploreExploreScreenLabelClearSearchAndFilters;
 
-  /// Product copy used by lib/explore/presentation/explore_screen.dart (label).
+  /// Product copy used by lib/explore/presentation/widgets/explore_clear_button.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Clear search'**
   String get exploreExploreScreenLabelClearSearch;
 
-  /// Product copy used by lib/explore/presentation/explore_screen.dart (label).
+  /// Product copy used by lib/explore/presentation/widgets/explore_clear_button.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Clear filters'**
   String get exploreExploreScreenLabelClearFilters;
 
-  /// Product copy used by lib/explore/presentation/explore_screen.dart (label).
+  /// Product copy used by lib/explore/presentation/widgets/explore_clear_button.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Clear'**
@@ -6680,7 +6680,7 @@ abstract class AppLocalizations {
     required Object capacityLimit,
   });
 
-  /// Product copy used by lib/explore/presentation/explore_screen.dart (title).
+  /// Product copy used by lib/explore/presentation/widgets/explore_screen_empty_state.dart (title).
   ///
   /// In en, this message translates to:
   /// **'No organizers in {cityLabel} yet'**
@@ -10629,7 +10629,7 @@ abstract class AppLocalizations {
   /// **'You\'\'re already booked for something then. Keep both if you can make it work, or swap one out.'**
   String get eventsBookingConflictSheetTextYouReAlreadyBooked;
 
-  /// Product copy used by lib/explore/presentation/explore_screen.dart (message).
+  /// Product copy used by lib/explore/presentation/widgets/explore_screen_empty_state.dart (message).
   ///
   /// In en, this message translates to:
   /// **'Try another city from the location control, or create the first organizer when you are ready to host.'**
@@ -11521,7 +11521,7 @@ abstract class AppLocalizations {
   /// **'After you review a completed event, it will appear here.'**
   String get reviewsReviewsHistoryViewModelMessageAfterYouReviewA;
 
-  /// Product copy used by lib/explore/presentation/explore_screen_state.dart (label).
+  /// Product copy used by lib/explore/presentation/explore_chrome_state.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Map'**
@@ -11535,31 +11535,31 @@ abstract class AppLocalizations {
     required int mappableEventCount,
   });
 
-  /// Product copy used by lib/explore/presentation/explore_screen_state.dart (label).
+  /// Product copy used by lib/explore/presentation/explore_filter_state.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Any'**
   String get exploreExploreScreenStateLabelAny;
 
-  /// Product copy used by lib/explore/presentation/explore_screen_state.dart (label).
+  /// Product copy used by lib/explore/presentation/explore_filter_state.dart (label).
   ///
   /// In en, this message translates to:
   /// **'1 km'**
   String get exploreExploreScreenStateLabel1Km;
 
-  /// Product copy used by lib/explore/presentation/explore_screen_state.dart (label).
+  /// Product copy used by lib/explore/presentation/explore_filter_state.dart (label).
   ///
   /// In en, this message translates to:
   /// **'3 km'**
   String get exploreExploreScreenStateLabel3Km;
 
-  /// Product copy used by lib/explore/presentation/explore_screen_state.dart (label).
+  /// Product copy used by lib/explore/presentation/explore_filter_state.dart (label).
   ///
   /// In en, this message translates to:
   /// **'5 km'**
   String get exploreExploreScreenStateLabel5Km;
 
-  /// Product copy used by lib/explore/presentation/explore_screen_state.dart (label).
+  /// Product copy used by lib/explore/presentation/explore_filter_state.dart (label).
   ///
   /// In en, this message translates to:
   /// **'10 km'**
@@ -11589,19 +11589,19 @@ abstract class AppLocalizations {
   /// **'View event'**
   String get exploreExploreScreenStateCtaViewEvent;
 
-  /// Product copy used by lib/explore/presentation/explore_screen_state.dart (actionLabel).
+  /// Product copy used by lib/explore/presentation/explore_event_display_state.dart (actionLabel).
   ///
   /// In en, this message translates to:
   /// **'Open'**
   String get exploreExploreScreenStateActionlabelOpen;
 
-  /// Product copy used by lib/explore/presentation/explore_screen_state.dart (actionLabel).
+  /// Product copy used by lib/explore/presentation/explore_event_display_state.dart (actionLabel).
   ///
   /// In en, this message translates to:
   /// **'No link'**
   String get exploreExploreScreenStateActionlabelNoLink;
 
-  /// Product copy used by lib/explore/presentation/explore_screen_state.dart (caption).
+  /// Product copy used by lib/explore/presentation/explore_club_display_state.dart (caption).
   ///
   /// In en, this message translates to:
   /// **'Organizer to know'**
@@ -14511,7 +14511,7 @@ abstract class AppLocalizations {
   /// **'external_platform'**
   String get exploreExploreScreenVisiblecopyExternalPlatform;
 
-  /// Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/explore/presentation/explore_chrome_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Choose city: {label}'**
@@ -14519,7 +14519,7 @@ abstract class AppLocalizations {
     required Object label,
   });
 
-  /// Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/explore/presentation/explore_chrome_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'EXPLORE · {label}'**
@@ -14527,25 +14527,25 @@ abstract class AppLocalizations {
     required Object label,
   });
 
-  /// Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/explore/presentation/explore_chrome_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Explore'**
   String get exploreExploreScreenStateVisiblecopyExplore;
 
-  /// Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/explore/presentation/explore_chrome_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Search events or organizers'**
   String get exploreExploreScreenStateVisiblecopySearchEventsOrClubs;
 
-  /// Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/explore/presentation/explore_filter_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Open explore filters'**
   String get exploreExploreScreenStateVisiblecopyOpenExploreFilters;
 
-  /// Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/explore/presentation/explore_filter_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Open explore filters, {activeCount} active'**
@@ -14553,7 +14553,7 @@ abstract class AppLocalizations {
     required Object activeCount,
   });
 
-  /// Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/explore/presentation/explore_event_display_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'{time} - {priceLabel}'**
@@ -14562,7 +14562,7 @@ abstract class AppLocalizations {
     required Object priceLabel,
   });
 
-  /// Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/explore/presentation/explore_event_display_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'{signedUpCount} going - {coverSpotsLabel}'**
@@ -14571,7 +14571,7 @@ abstract class AppLocalizations {
     required Object coverSpotsLabel,
   });
 
-  /// Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/explore/presentation/explore_event_display_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'FROM {toUpperCase}'**
@@ -14579,13 +14579,13 @@ abstract class AppLocalizations {
     required Object toUpperCase,
   });
 
-  /// Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/explore/presentation/explore_event_display_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'External'**
   String get exploreExploreScreenStateVisiblecopyExternal;
 
-  /// Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/explore/presentation/explore_event_display_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'{time} · {priceLabel}'**
@@ -14594,43 +14594,43 @@ abstract class AppLocalizations {
     required Object priceLabel,
   });
 
-  /// Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/explore/presentation/explore_event_display_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Open external event source'**
   String get exploreExploreScreenStateVisiblecopyOpenExternalEventSource;
 
-  /// Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/explore/presentation/explore_event_display_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'External event link unavailable'**
   String get exploreExploreScreenStateVisiblecopyExternalEventLinkUnavailable;
 
-  /// Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/explore/presentation/explore_event_display_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'READ-ONLY SUPPLY · NO CATCH BOOKING'**
   String get exploreExploreScreenStateVisiblecopyReadOnlySupplyNo;
 
-  /// Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/explore/presentation/explore_club_display_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'ORGANIZER TO KNOW'**
   String get exploreExploreScreenStateVisiblecopyClubToKnow;
 
-  /// Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/explore/presentation/explore_mixed_feed_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'PLAN'**
   String get exploreExploreScreenStateVisiblecopyPlan;
 
-  /// Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/explore/presentation/explore_mixed_feed_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'PLANS'**
   String get exploreExploreScreenStateVisiblecopyPlans;
 
-  /// Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/explore/presentation/explore_mixed_feed_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'{count} {noun}'**
@@ -14648,7 +14648,7 @@ abstract class AppLocalizations {
     required Object noun,
   });
 
-  /// Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/explore/presentation/explore_mixed_feed_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'{count} {noun} · {dateSpan}'**
@@ -14668,7 +14668,7 @@ abstract class AppLocalizations {
     required Object dateSpan,
   });
 
-  /// Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/explore/presentation/explore_club_display_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Next: {nextEvent}'**
@@ -14676,7 +14676,7 @@ abstract class AppLocalizations {
     required Object nextEvent,
   });
 
-  /// Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/explore/presentation/explore_club_display_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'{clubMemberCountLabel} - {area}'**
@@ -14685,7 +14685,7 @@ abstract class AppLocalizations {
     required Object area,
   });
 
-  /// Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/explore/presentation/explore_event_display_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'{coverTimeScope} - {name} - {locationName}'**
@@ -14695,31 +14695,31 @@ abstract class AppLocalizations {
     required Object locationName,
   });
 
-  /// Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/explore/presentation/explore_event_display_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Tonight'**
   String get exploreExploreScreenStateVisiblecopyTonight;
 
-  /// Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/explore/presentation/explore_event_display_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Tomorrow'**
   String get exploreExploreScreenStateVisiblecopyTomorrow;
 
-  /// Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/explore/presentation/explore_event_display_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'This week'**
   String get exploreExploreScreenStateVisiblecopyThisWeek;
 
-  /// Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/explore/presentation/explore_event_display_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'1 left'**
   String get exploreExploreScreenStateVisiblecopy1Left;
 
-  /// Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/explore/presentation/explore_event_display_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'{spots} left'**

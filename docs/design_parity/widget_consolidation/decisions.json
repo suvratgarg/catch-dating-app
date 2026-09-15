@@ -5213,7 +5213,7 @@
           "action": "keep"
         },
         {
-          "name": "ExploreSkeletonList",
+          "name": "ExploreFeedSkeleton",
           "action": "keep"
         }
       ],

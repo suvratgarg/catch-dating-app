@@ -1,7 +1,8 @@
-import 'package:catch_dating_app/explore/presentation/explore_screen.dart';
 import 'package:catch_dating_app/explore/presentation/explore_screen_state.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
+import 'package:catch_dating_app/explore/presentation/widgets/explore_clear_button.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_events_section.dart';
+import 'package:catch_dating_app/explore/presentation/widgets/explore_screen_empty_state.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -116,17 +117,17 @@ Widget exploreScreenEmptyStateStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Clear action states',
-  type: ExploreClearAction,
+  type: ExploreClearButton,
   path: '[Explore]/Controls',
 )
 Widget exploreClearActionStates(BuildContext context) {
   return WidgetbookScrollCatalogFrame(
-    title: 'ExploreClearAction',
+    title: 'ExploreClearButton',
     catalogId: 'control.explore.clear_action',
     children: [
       WidgetbookPageStateCard(
         label: 'clear search',
-        child: ExploreClearAction(
+        child: ExploreClearButton(
           clearSearch: true,
           clearFilters: false,
           onClearSearch: widgetbookNoop,
@@ -134,7 +135,7 @@ Widget exploreClearActionStates(BuildContext context) {
       ),
       WidgetbookPageStateCard(
         label: 'clear filters',
-        child: ExploreClearAction(
+        child: ExploreClearButton(
           clearSearch: false,
           clearFilters: true,
           onClearFilters: widgetbookNoop,
@@ -142,7 +143,7 @@ Widget exploreClearActionStates(BuildContext context) {
       ),
       WidgetbookPageStateCard(
         label: 'clear search and filters',
-        child: ExploreClearAction(
+        child: ExploreClearButton(
           clearSearch: true,
           clearFilters: true,
           onClearSearch: widgetbookNoop,

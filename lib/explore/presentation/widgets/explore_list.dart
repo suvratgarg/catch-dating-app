@@ -1,9 +1,9 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_sliver_error_state.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
-import 'package:catch_dating_app/explore/presentation/explore_screen.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_body.dart';
+import 'package:catch_dating_app/explore/presentation/widgets/explore_clear_button.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -112,7 +112,7 @@ class ExploreListEmptyState extends ConsumerWidget {
             title: context.l10n.exploreExploreListTitleNoClubsMatchThis,
             message: context.l10n.exploreExploreListMessageClearTheSearchOr,
             actions: [
-              ExploreClearAction(
+              ExploreClearButton(
                 clearSearch: true,
                 clearFilters: true,
                 icon: CatchIcons.closeRounded,
@@ -137,7 +137,7 @@ class ExploreListEmptyState extends ConsumerWidget {
                 .l10n
                 .exploreExploreListMessageTryAnotherClubNeighborhood,
             actions: [
-              ExploreClearAction(
+              ExploreClearButton(
                 clearSearch: true,
                 clearFilters: false,
                 icon: CatchIcons.closeRounded,
@@ -158,7 +158,7 @@ class ExploreListEmptyState extends ConsumerWidget {
             title: context.l10n.exploreExploreListTitleNoClubsMatchThese,
             message: context.l10n.exploreExploreListMessageClearOneOrMore,
             actions: [
-              ExploreClearAction(
+              ExploreClearButton(
                 clearSearch: false,
                 clearFilters: true,
                 icon: CatchIcons.closeRounded,

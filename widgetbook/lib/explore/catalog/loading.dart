@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/explore/presentation/explore_screen.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_events_section.dart';
+import 'package:catch_dating_app/explore/presentation/widgets/explore_feed_skeleton.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_list.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -12,12 +12,12 @@ import 'preview.dart';
 
 @widgetbook.UseCase(
   name: 'Skeleton list states',
-  type: ExploreSkeletonList,
+  type: ExploreFeedSkeleton,
   path: '[Explore]/Sections',
 )
 Widget exploreSkeletonListStates(BuildContext context) {
   return WidgetbookScrollCatalogFrame(
-    title: 'ExploreSkeletonList',
+    title: 'ExploreFeedSkeleton',
     catalogId: 'section.explore.skeleton_list',
     children: [
       WidgetbookPageStateCard(
@@ -26,7 +26,7 @@ Widget exploreSkeletonListStates(BuildContext context) {
           height: WidgetbookPreviewLayout.profileSectionPreviewHeight,
           child: SingleChildScrollView(
             padding: CatchInsets.pageBody,
-            child: ExploreSkeletonList(),
+            child: ExploreFeedSkeleton(),
           ),
         ),
       ),

@@ -5086,7 +5086,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'ExploreClearAction',
+            name: 'ExploreClearButton',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Clear action states',
@@ -5396,6 +5396,16 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'ExploreFeedSkeleton',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Skeleton list states',
+                builder: _widgetbook_workspace_explore_catalog_loading
+                    .exploreSkeletonListStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'ExploreFilterRail',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -5447,16 +5457,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Route empty states',
                 builder: _widgetbook_workspace_explore_catalog_empty
                     .exploreScreenEmptyStateStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'ExploreSkeletonList',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Skeleton list states',
-                builder: _widgetbook_workspace_explore_catalog_loading
-                    .exploreSkeletonListStates,
               ),
             ],
           ),

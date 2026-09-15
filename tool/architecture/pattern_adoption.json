@@ -626,7 +626,37 @@
         },
         {
           "path": "lib/explore/presentation/explore_screen_state.dart",
-          "role": "provider-free ExploreFeedSectionState, ExploreCoverStoryState, ExploreChromeState, ExploreEventRowState, ExploreExternalEventRowState, ExploreClubCardState, ExploreMapLauncherState, ExploreCityPickerState, ExploreCityTriggerState, ExploreFilterRailState, ExploreDateStripState, ExploreFilterSheetState, ExploreCollapsedMapSummaryState, ExplorePeekRailState, ExploreMapEventTicketState, ExploreScreenBodyState, ExploreDiscoveryEmptyState, and ExploreEventsEmptyState adapters for mixed-feed card planning, cover-story/search-open/event-row/external-row/club-card/map-sheet/filter/chrome display labels, date supply density, live count copy, city-picker availability, map-count label, route body branch precedence, source-club/feed empty copy, clear-action cardinality, and broaden-time-filter intent",
+          "role": "ExploreDiscoveryScreenState, ExploreScreenBodyState, ExploreDiscoveryEmptyState, and ExploreEventsEmptyState own provider-free route branch precedence, retry targets, empty recovery copy, and clear-filter intent",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "lib/explore/presentation/explore_chrome_state.dart",
+          "role": "ExploreChromeState, ExploreCityPickerState, ExploreCityTriggerState, and ExploreMapLauncherState own provider-free search chrome, city availability and labels, and map-count display",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "lib/explore/presentation/explore_filter_state.dart",
+          "role": "ExploreFilterRailState, ExploreDateStripState, and ExploreFilterSheetState own provider-free date-supply density, cursor-honest result counts, distance and area choices, and active-filter labels",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "lib/explore/presentation/explore_event_display_state.dart",
+          "role": "ExploreCoverStoryState, ExploreEventRowState, and ExploreExternalEventRowState own provider-free event copy, viewer eligibility, prices, capacity, and external-source semantics",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "lib/explore/presentation/explore_club_display_state.dart",
+          "role": "ExploreClubCardState and ExploreOrganizerMembershipActionState own provider-free organizer identity, trust copy, and membership-action visibility",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "lib/explore/presentation/explore_mixed_feed_state.dart",
+          "role": "ExploreFeedSectionState and the sealed ExploreMixedCard family own provider-free event-majority ordering, bounded Cross Paths insertion, organizer intermix, day grouping, weekly recommendations, and result counts",
           "providerFree": true,
           "status": "aligned"
         },
@@ -920,6 +950,30 @@
         {
           "path": "lib/payments/presentation/payment_history_state.dart",
           "role": "provider-free Payment History adapter preserving payment rows plus event-title loading, failure, resolved title, and genuinely missing-event state",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "lib/explore/presentation/widgets/explore_screen_empty_state.dart",
+          "role": "provider-free Explore empty-state renderer receiving the route-owned recovery state and callbacks; distinct from the provider-owned directory empty state",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "lib/event_success/presentation/reveal/event_success_reveal_clock_state.dart",
+          "role": "provider-free Flutter State lifecycle base for the shared reveal timer; owns enable, pause, resume, and disposal while concrete reveal surfaces own rendering",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "lib/hosts/presentation/customers/host_customer_loading_state.dart",
+          "role": "provider-free deterministic customer detail placeholder model used only while the canonical customer surface is loading",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "lib/hosts/presentation/forms/host_form_workspace_state.dart",
+          "role": "provider-free workspace pane identity and exact query-string selection shared by the form builder and route adapter",
           "providerFree": true,
           "status": "aligned"
         }
@@ -1440,7 +1494,7 @@
         "node tool/architecture/check_app_architecture_exhibits.mjs",
         "node tool/architecture/check_adopted_architecture_boundaries.mjs"
       ],
-      "notes": "Features select semantic body roles and provide header/body/state content. The composition owners—not each screen—translate those choices into page padding, one scroll owner, responsive lanes, interaction planes, and shell-aware terminal geometry. Pushed routes remain a separate compact-title hierarchy while sharing the Archivo family through CatchTextStyles.routeTitle."
+      "notes": "Features select semantic body roles and provide header/body/state content. The composition owners\u2014not each screen\u2014translate those choices into page padding, one scroll owner, responsive lanes, interaction planes, and shell-aware terminal geometry. Pushed routes remain a separate compact-title hierarchy while sharing the Archivo family through CatchTextStyles.routeTitle."
     },
     {
       "id": "ARCH-ROOT-PRIMARY-RAIL-001",
@@ -2040,7 +2094,7 @@
           "status": "aligned"
         },
         {
-          "path": "lib/explore/presentation/explore_cross_paths_provider.dart and lib/explore/presentation/explore_screen_state.dart",
+          "path": "lib/explore/presentation/explore_cross_paths_provider.dart and lib/explore/presentation/explore_mixed_feed_state.dart",
           "role": "server-gated optional enrichment, current-event request bounding, token expiry, and provider-free event-majority mixed-feed planning",
           "status": "aligned"
         },
