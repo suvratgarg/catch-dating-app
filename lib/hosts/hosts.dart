@@ -57,3 +57,7 @@ export 'presentation/widgets/host_organizer_switcher.dart'; // public-api: share
 export 'presentation/widgets/host_team_management_section.dart'; // public-api: shared presentation component used outside this feature
 export 'presentation/widgets/stepper_footer.dart'; // public-api: shared presentation component used outside this feature
 export 'today/presentation/host_today_screen.dart'; // public-api: route entry point exposed to app routing
+
+export 'presentation/host_invite_link_state.dart'; // public-api: provider-free Host display state reused by tests and catalog
+export 'presentation/host_roster_display_state.dart'; // public-api: provider-free Host display state reused by tests and catalog
+export 'presentation/host_roster_row_state.dart'; // public-api: provider-free Host display state reused by tests and catalog

@@ -70,12 +70,8 @@
       "maxLines": 1595
     },
     {
-      "path": "lib/hosts/presentation/host_event_manage_screen_state.dart",
-      "maxLines": 1309
-    },
-    {
       "path": "lib/hosts/presentation/host_event_manage_screen.dart",
-      "maxLines": 1865
+      "maxLines": 1861
     },
     {
       "path": "lib/hosts/presentation/host_operations/host_analytics.dart",
@@ -95,7 +91,7 @@
     },
     {
       "path": "lib/hosts/presentation/widgets/host_event_attendance_panel.dart",
-      "maxLines": 1358
+      "maxLines": 1352
     },
     {
       "path": "lib/hosts/presentation/widgets/host_operational_roster_panel.dart",

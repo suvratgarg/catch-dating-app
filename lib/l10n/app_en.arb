@@ -13599,98 +13599,98 @@
   },
   "hostsHostEventManageScreenStateDescriptionThisEventCanStay": "This event can stay listed; only people with this code or private link can book.",
   "@hostsHostEventManageScreenStateDescriptionThisEventCanStay": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (description).",
+    "description": "Product copy used by lib/hosts/presentation/host_invite_link_state.dart (description).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateDescriptionThisEventRequiresAn": "This event requires an invite, but no host-readable access code was found.",
   "@hostsHostEventManageScreenStateDescriptionThisEventRequiresAn": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (description).",
+    "description": "Product copy used by lib/hosts/presentation/host_invite_link_state.dart (description).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateLabelAll": "All",
   "@hostsHostEventManageScreenStateLabelAll": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (label).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_display_state.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateLabelBooked": "Booked",
   "@hostsHostEventManageScreenStateLabelBooked": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (label).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_display_state.dart, lib/hosts/presentation/host_roster_row_state.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateLabelRequests": "Requests",
   "@hostsHostEventManageScreenStateLabelRequests": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (label).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_display_state.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateLabelWaitlist": "Waitlist",
   "@hostsHostEventManageScreenStateLabelWaitlist": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (label).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_display_state.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateLabelSlots": "Slots",
   "@hostsHostEventManageScreenStateLabelSlots": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (label).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_display_state.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateEmptytitleNoMatches": "No matches",
   "@hostsHostEventManageScreenStateEmptytitleNoMatches": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (emptyTitle).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_display_state.dart (emptyTitle).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateEmptytitleOpenSlotsAreNot": "Open slots are not people",
   "@hostsHostEventManageScreenStateEmptytitleOpenSlotsAreNot": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (emptyTitle).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_display_state.dart (emptyTitle).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateEmptytitleNoParticipantsYet": "No participants yet",
   "@hostsHostEventManageScreenStateEmptytitleNoParticipantsYet": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (emptyTitle).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_display_state.dart (emptyTitle).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateLabelDue": "Due",
   "@hostsHostEventManageScreenStateLabelDue": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (label).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_display_state.dart, lib/hosts/presentation/host_roster_row_state.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateLabelIn": "In",
   "@hostsHostEventManageScreenStateLabelIn": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (label).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_display_state.dart, lib/hosts/presentation/host_roster_row_state.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateLabelAttended": "Attended",
   "@hostsHostEventManageScreenStateLabelAttended": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (label).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_display_state.dart, lib/hosts/presentation/host_roster_row_state.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateLabelNoShow": "No-show",
   "@hostsHostEventManageScreenStateLabelNoShow": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (label).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_display_state.dart, lib/hosts/presentation/host_roster_row_state.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
@@ -13725,42 +13725,42 @@
   },
   "hostsHostEventManageScreenStateLabelOffered": "Offered",
   "@hostsHostEventManageScreenStateLabelOffered": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (label).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_row_state.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateLabelAccepted": "Accepted",
   "@hostsHostEventManageScreenStateLabelAccepted": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (label).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_row_state.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateLabelRequest": "Request",
   "@hostsHostEventManageScreenStateLabelRequest": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (label).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_row_state.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateLabelWait": "Wait",
   "@hostsHostEventManageScreenStateLabelWait": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (label).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_row_state.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateLabelExpired": "Expired",
   "@hostsHostEventManageScreenStateLabelExpired": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (label).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_row_state.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateLabelNew": "New",
   "@hostsHostEventManageScreenStateLabelNew": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (label).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_row_state.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
@@ -17444,119 +17444,119 @@
   },
   "hostsHostEventManageScreenStateVisiblecopyNoPeopleMatchThis": "No people match this search.",
   "@hostsHostEventManageScreenStateVisiblecopyNoPeopleMatchThis": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_display_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopySlotsShowCapacityLeft": "Slots show capacity left after booked people. New people appear here once they book or request access.",
   "@hostsHostEventManageScreenStateVisiblecopySlotsShowCapacityLeft": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_display_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopyBookedAndWaitlistedPeople": "Booked and waitlisted people will appear here.",
   "@hostsHostEventManageScreenStateVisiblecopyBookedAndWaitlistedPeople": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_display_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopyNoLiveRosterRows": "No live roster rows match this search.",
   "@hostsHostEventManageScreenStateVisiblecopyNoLiveRosterRows": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_display_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopyNoReportRowsMatch": "No report rows match this search.",
   "@hostsHostEventManageScreenStateVisiblecopyNoReportRowsMatch": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_display_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopyCheckedIn": "Checked in",
   "@hostsHostEventManageScreenStateVisiblecopyCheckedIn": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_row_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopyUndo": "Undo",
   "@hostsHostEventManageScreenStateVisiblecopyUndo": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_row_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopyCheckIn": "Check in",
   "@hostsHostEventManageScreenStateVisiblecopyCheckIn": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_row_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopyFree": "Free",
   "@hostsHostEventManageScreenStateVisiblecopyFree": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_row_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopySharing": "Sharing...",
   "@hostsHostEventManageScreenStateVisiblecopySharing": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_invite_link_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopyPublicEventLink": "Public event link",
   "@hostsHostEventManageScreenStateVisiblecopyPublicEventLink": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_invite_link_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopyLoadingLink": "Loading link",
   "@hostsHostEventManageScreenStateVisiblecopyLoadingLink": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_invite_link_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopyInviteSetupUnavailable": "Invite setup unavailable",
   "@hostsHostEventManageScreenStateVisiblecopyInviteSetupUnavailable": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_invite_link_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopyPrivateInviteLink": "Private invite link",
   "@hostsHostEventManageScreenStateVisiblecopyPrivateInviteLink": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_invite_link_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopyInviteLinksUnavailable": "Invite links unavailable",
   "@hostsHostEventManageScreenStateVisiblecopyInviteLinksUnavailable": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_invite_link_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopy1InviteLink": "1 invite link",
   "@hostsHostEventManageScreenStateVisiblecopy1InviteLink": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_invite_link_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopyCountInviteLinks": "{count} invite links",
   "@hostsHostEventManageScreenStateVisiblecopyCountInviteLinks": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_invite_link_state.dart (visibleCopy).",
     "placeholders": {
       "count": {}
     },
@@ -17566,182 +17566,182 @@
   },
   "hostsHostEventManageScreenStateVisiblecopyEveryoneVisibleIsChecked": "Everyone visible is checked in",
   "@hostsHostEventManageScreenStateVisiblecopyEveryoneVisibleIsChecked": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_display_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopyNoCheckedInPeople": "No checked-in people yet",
   "@hostsHostEventManageScreenStateVisiblecopyNoCheckedInPeople": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_display_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopyNoWaitlistedPeople": "No waitlisted people",
   "@hostsHostEventManageScreenStateVisiblecopyNoWaitlistedPeople": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_display_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopyRosterIsEmpty": "Roster is empty",
   "@hostsHostEventManageScreenStateVisiblecopyRosterIsEmpty": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_display_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopySwitchToInTo": "Switch to In to review arrivals or All to see the full roster.",
   "@hostsHostEventManageScreenStateVisiblecopySwitchToInTo": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_display_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopyCheckedInPeopleWill": "Checked-in people will appear here during the event.",
   "@hostsHostEventManageScreenStateVisiblecopyCheckedInPeopleWill": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_display_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopyWaitlistedPeopleWillAppear": "Waitlisted people will appear here for context.",
   "@hostsHostEventManageScreenStateVisiblecopyWaitlistedPeopleWillAppear": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_display_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopySignedUpParticipantsWill": "Signed-up participants will appear here when they book.",
   "@hostsHostEventManageScreenStateVisiblecopySignedUpParticipantsWill": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_display_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopyNoAttendedPeopleYet": "No attended people yet",
   "@hostsHostEventManageScreenStateVisiblecopyNoAttendedPeopleYet": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_display_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopyNoNoShowsYet": "No no-shows yet",
   "@hostsHostEventManageScreenStateVisiblecopyNoNoShowsYet": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_display_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopyNoParticipantsYet": "No participants yet",
   "@hostsHostEventManageScreenStateVisiblecopyNoParticipantsYet": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_display_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopyCheckedInPeopleWill186cb6": "Checked-in people will appear here after the event.",
   "@hostsHostEventManageScreenStateVisiblecopyCheckedInPeopleWill186cb6": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_display_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopyBookedPeopleWhoDid": "Booked people who did not check in will appear here.",
   "@hostsHostEventManageScreenStateVisiblecopyBookedPeopleWhoDid": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_display_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopyWaitlistHistoryWillAppear": "Waitlist history will appear here when people queue for this event.",
   "@hostsHostEventManageScreenStateVisiblecopyWaitlistHistoryWillAppear": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_display_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopyAttendanceAndWaitlistHistory": "Attendance and waitlist history will appear here once people sign up.",
   "@hostsHostEventManageScreenStateVisiblecopyAttendanceAndWaitlistHistory": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_display_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopyOfferSent": "Offer sent",
   "@hostsHostEventManageScreenStateVisiblecopyOfferSent": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_row_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopyAcceptedOffer": "Accepted offer",
   "@hostsHostEventManageScreenStateVisiblecopyAcceptedOffer": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_row_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopyOfferExpired": "Offer expired",
   "@hostsHostEventManageScreenStateVisiblecopyOfferExpired": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_row_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopyApproved": "Approved",
   "@hostsHostEventManageScreenStateVisiblecopyApproved": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_row_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopyViewProfile": "View profile",
   "@hostsHostEventManageScreenStateVisiblecopyViewProfile": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_row_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopyWaitlisted": "Waitlisted",
   "@hostsHostEventManageScreenStateVisiblecopyWaitlisted": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_row_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopyProfileReady": "Profile ready",
   "@hostsHostEventManageScreenStateVisiblecopyProfileReady": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_row_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopyBooked": "Booked",
   "@hostsHostEventManageScreenStateVisiblecopyBooked": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_row_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopyCancelled": "Cancelled",
   "@hostsHostEventManageScreenStateVisiblecopyCancelled": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_row_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopyDeleted": "Deleted",
   "@hostsHostEventManageScreenStateVisiblecopyDeleted": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_row_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopyParticipant": "Participant",
   "@hostsHostEventManageScreenStateVisiblecopyParticipant": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_row_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"

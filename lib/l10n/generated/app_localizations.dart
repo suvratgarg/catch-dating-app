@@ -11709,85 +11709,85 @@ abstract class AppLocalizations {
   /// **'Clear filters'**
   String get exploreExploreScreenStateActionlabelClearFilters;
 
-  /// Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (description).
+  /// Product copy used by lib/hosts/presentation/host_invite_link_state.dart (description).
   ///
   /// In en, this message translates to:
   /// **'This event can stay listed; only people with this code or private link can book.'**
   String get hostsHostEventManageScreenStateDescriptionThisEventCanStay;
 
-  /// Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (description).
+  /// Product copy used by lib/hosts/presentation/host_invite_link_state.dart (description).
   ///
   /// In en, this message translates to:
   /// **'This event requires an invite, but no host-readable access code was found.'**
   String get hostsHostEventManageScreenStateDescriptionThisEventRequiresAn;
 
-  /// Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (label).
+  /// Product copy used by lib/hosts/presentation/host_roster_display_state.dart (label).
   ///
   /// In en, this message translates to:
   /// **'All'**
   String get hostsHostEventManageScreenStateLabelAll;
 
-  /// Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (label).
+  /// Product copy used by lib/hosts/presentation/host_roster_display_state.dart, lib/hosts/presentation/host_roster_row_state.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Booked'**
   String get hostsHostEventManageScreenStateLabelBooked;
 
-  /// Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (label).
+  /// Product copy used by lib/hosts/presentation/host_roster_display_state.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Requests'**
   String get hostsHostEventManageScreenStateLabelRequests;
 
-  /// Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (label).
+  /// Product copy used by lib/hosts/presentation/host_roster_display_state.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Waitlist'**
   String get hostsHostEventManageScreenStateLabelWaitlist;
 
-  /// Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (label).
+  /// Product copy used by lib/hosts/presentation/host_roster_display_state.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Slots'**
   String get hostsHostEventManageScreenStateLabelSlots;
 
-  /// Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (emptyTitle).
+  /// Product copy used by lib/hosts/presentation/host_roster_display_state.dart (emptyTitle).
   ///
   /// In en, this message translates to:
   /// **'No matches'**
   String get hostsHostEventManageScreenStateEmptytitleNoMatches;
 
-  /// Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (emptyTitle).
+  /// Product copy used by lib/hosts/presentation/host_roster_display_state.dart (emptyTitle).
   ///
   /// In en, this message translates to:
   /// **'Open slots are not people'**
   String get hostsHostEventManageScreenStateEmptytitleOpenSlotsAreNot;
 
-  /// Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (emptyTitle).
+  /// Product copy used by lib/hosts/presentation/host_roster_display_state.dart (emptyTitle).
   ///
   /// In en, this message translates to:
   /// **'No participants yet'**
   String get hostsHostEventManageScreenStateEmptytitleNoParticipantsYet;
 
-  /// Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (label).
+  /// Product copy used by lib/hosts/presentation/host_roster_display_state.dart, lib/hosts/presentation/host_roster_row_state.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Due'**
   String get hostsHostEventManageScreenStateLabelDue;
 
-  /// Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (label).
+  /// Product copy used by lib/hosts/presentation/host_roster_display_state.dart, lib/hosts/presentation/host_roster_row_state.dart (label).
   ///
   /// In en, this message translates to:
   /// **'In'**
   String get hostsHostEventManageScreenStateLabelIn;
 
-  /// Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (label).
+  /// Product copy used by lib/hosts/presentation/host_roster_display_state.dart, lib/hosts/presentation/host_roster_row_state.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Attended'**
   String get hostsHostEventManageScreenStateLabelAttended;
 
-  /// Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (label).
+  /// Product copy used by lib/hosts/presentation/host_roster_display_state.dart, lib/hosts/presentation/host_roster_row_state.dart (label).
   ///
   /// In en, this message translates to:
   /// **'No-show'**
@@ -11817,37 +11817,37 @@ abstract class AppLocalizations {
   /// **'Report'**
   String get hostsHostEventManageScreenStateLabelReport;
 
-  /// Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (label).
+  /// Product copy used by lib/hosts/presentation/host_roster_row_state.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Offered'**
   String get hostsHostEventManageScreenStateLabelOffered;
 
-  /// Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (label).
+  /// Product copy used by lib/hosts/presentation/host_roster_row_state.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Accepted'**
   String get hostsHostEventManageScreenStateLabelAccepted;
 
-  /// Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (label).
+  /// Product copy used by lib/hosts/presentation/host_roster_row_state.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Request'**
   String get hostsHostEventManageScreenStateLabelRequest;
 
-  /// Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (label).
+  /// Product copy used by lib/hosts/presentation/host_roster_row_state.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Wait'**
   String get hostsHostEventManageScreenStateLabelWait;
 
-  /// Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (label).
+  /// Product copy used by lib/hosts/presentation/host_roster_row_state.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Expired'**
   String get hostsHostEventManageScreenStateLabelExpired;
 
-  /// Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (label).
+  /// Product copy used by lib/hosts/presentation/host_roster_row_state.dart (label).
   ///
   /// In en, this message translates to:
   /// **'New'**
@@ -15056,104 +15056,104 @@ abstract class AppLocalizations {
     required Object waitlisted,
   });
 
-  /// Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/hosts/presentation/host_roster_display_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'No people match this search.'**
   String get hostsHostEventManageScreenStateVisiblecopyNoPeopleMatchThis;
 
-  /// Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/hosts/presentation/host_roster_display_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Slots show capacity left after booked people. New people appear here once they book or request access.'**
   String get hostsHostEventManageScreenStateVisiblecopySlotsShowCapacityLeft;
 
-  /// Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/hosts/presentation/host_roster_display_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Booked and waitlisted people will appear here.'**
   String
   get hostsHostEventManageScreenStateVisiblecopyBookedAndWaitlistedPeople;
 
-  /// Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/hosts/presentation/host_roster_display_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'No live roster rows match this search.'**
   String get hostsHostEventManageScreenStateVisiblecopyNoLiveRosterRows;
 
-  /// Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/hosts/presentation/host_roster_display_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'No report rows match this search.'**
   String get hostsHostEventManageScreenStateVisiblecopyNoReportRowsMatch;
 
-  /// Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/hosts/presentation/host_roster_row_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Checked in'**
   String get hostsHostEventManageScreenStateVisiblecopyCheckedIn;
 
-  /// Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/hosts/presentation/host_roster_row_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Undo'**
   String get hostsHostEventManageScreenStateVisiblecopyUndo;
 
-  /// Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/hosts/presentation/host_roster_row_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Check in'**
   String get hostsHostEventManageScreenStateVisiblecopyCheckIn;
 
-  /// Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/hosts/presentation/host_roster_row_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Free'**
   String get hostsHostEventManageScreenStateVisiblecopyFree;
 
-  /// Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/hosts/presentation/host_invite_link_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Sharing...'**
   String get hostsHostEventManageScreenStateVisiblecopySharing;
 
-  /// Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/hosts/presentation/host_invite_link_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Public event link'**
   String get hostsHostEventManageScreenStateVisiblecopyPublicEventLink;
 
-  /// Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/hosts/presentation/host_invite_link_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Loading link'**
   String get hostsHostEventManageScreenStateVisiblecopyLoadingLink;
 
-  /// Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/hosts/presentation/host_invite_link_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Invite setup unavailable'**
   String get hostsHostEventManageScreenStateVisiblecopyInviteSetupUnavailable;
 
-  /// Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/hosts/presentation/host_invite_link_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Private invite link'**
   String get hostsHostEventManageScreenStateVisiblecopyPrivateInviteLink;
 
-  /// Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/hosts/presentation/host_invite_link_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Invite links unavailable'**
   String get hostsHostEventManageScreenStateVisiblecopyInviteLinksUnavailable;
 
-  /// Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/hosts/presentation/host_invite_link_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'1 invite link'**
   String get hostsHostEventManageScreenStateVisiblecopy1InviteLink;
 
-  /// Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/hosts/presentation/host_invite_link_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'{count} invite links'**
@@ -15161,161 +15161,161 @@ abstract class AppLocalizations {
     required Object count,
   });
 
-  /// Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/hosts/presentation/host_roster_display_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Everyone visible is checked in'**
   String get hostsHostEventManageScreenStateVisiblecopyEveryoneVisibleIsChecked;
 
-  /// Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/hosts/presentation/host_roster_display_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'No checked-in people yet'**
   String get hostsHostEventManageScreenStateVisiblecopyNoCheckedInPeople;
 
-  /// Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/hosts/presentation/host_roster_display_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'No waitlisted people'**
   String get hostsHostEventManageScreenStateVisiblecopyNoWaitlistedPeople;
 
-  /// Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/hosts/presentation/host_roster_display_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Roster is empty'**
   String get hostsHostEventManageScreenStateVisiblecopyRosterIsEmpty;
 
-  /// Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/hosts/presentation/host_roster_display_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Switch to In to review arrivals or All to see the full roster.'**
   String get hostsHostEventManageScreenStateVisiblecopySwitchToInTo;
 
-  /// Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/hosts/presentation/host_roster_display_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Checked-in people will appear here during the event.'**
   String get hostsHostEventManageScreenStateVisiblecopyCheckedInPeopleWill;
 
-  /// Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/hosts/presentation/host_roster_display_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Waitlisted people will appear here for context.'**
   String
   get hostsHostEventManageScreenStateVisiblecopyWaitlistedPeopleWillAppear;
 
-  /// Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/hosts/presentation/host_roster_display_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Signed-up participants will appear here when they book.'**
   String get hostsHostEventManageScreenStateVisiblecopySignedUpParticipantsWill;
 
-  /// Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/hosts/presentation/host_roster_display_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'No attended people yet'**
   String get hostsHostEventManageScreenStateVisiblecopyNoAttendedPeopleYet;
 
-  /// Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/hosts/presentation/host_roster_display_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'No no-shows yet'**
   String get hostsHostEventManageScreenStateVisiblecopyNoNoShowsYet;
 
-  /// Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/hosts/presentation/host_roster_display_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'No participants yet'**
   String get hostsHostEventManageScreenStateVisiblecopyNoParticipantsYet;
 
-  /// Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/hosts/presentation/host_roster_display_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Checked-in people will appear here after the event.'**
   String
   get hostsHostEventManageScreenStateVisiblecopyCheckedInPeopleWill186cb6;
 
-  /// Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/hosts/presentation/host_roster_display_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Booked people who did not check in will appear here.'**
   String get hostsHostEventManageScreenStateVisiblecopyBookedPeopleWhoDid;
 
-  /// Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/hosts/presentation/host_roster_display_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Waitlist history will appear here when people queue for this event.'**
   String
   get hostsHostEventManageScreenStateVisiblecopyWaitlistHistoryWillAppear;
 
-  /// Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/hosts/presentation/host_roster_display_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Attendance and waitlist history will appear here once people sign up.'**
   String
   get hostsHostEventManageScreenStateVisiblecopyAttendanceAndWaitlistHistory;
 
-  /// Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/hosts/presentation/host_roster_row_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Offer sent'**
   String get hostsHostEventManageScreenStateVisiblecopyOfferSent;
 
-  /// Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/hosts/presentation/host_roster_row_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Accepted offer'**
   String get hostsHostEventManageScreenStateVisiblecopyAcceptedOffer;
 
-  /// Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/hosts/presentation/host_roster_row_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Offer expired'**
   String get hostsHostEventManageScreenStateVisiblecopyOfferExpired;
 
-  /// Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/hosts/presentation/host_roster_row_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Approved'**
   String get hostsHostEventManageScreenStateVisiblecopyApproved;
 
-  /// Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/hosts/presentation/host_roster_row_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'View profile'**
   String get hostsHostEventManageScreenStateVisiblecopyViewProfile;
 
-  /// Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/hosts/presentation/host_roster_row_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Waitlisted'**
   String get hostsHostEventManageScreenStateVisiblecopyWaitlisted;
 
-  /// Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/hosts/presentation/host_roster_row_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Profile ready'**
   String get hostsHostEventManageScreenStateVisiblecopyProfileReady;
 
-  /// Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/hosts/presentation/host_roster_row_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Booked'**
   String get hostsHostEventManageScreenStateVisiblecopyBooked;
 
-  /// Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/hosts/presentation/host_roster_row_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Cancelled'**
   String get hostsHostEventManageScreenStateVisiblecopyCancelled;
 
-  /// Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/hosts/presentation/host_roster_row_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Deleted'**
   String get hostsHostEventManageScreenStateVisiblecopyDeleted;
 
-  /// Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/hosts/presentation/host_roster_row_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Participant'**

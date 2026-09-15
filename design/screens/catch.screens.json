@@ -13648,15 +13648,15 @@
             "symbol": "HostEventRosterDrawer"
           },
           {
-            "file": "lib/hosts/presentation/host_event_manage_screen_state.dart",
+            "file": "lib/hosts/presentation/host_invite_link_state.dart",
             "symbol": "HostInviteLinkRowDisplayState"
           },
           {
-            "file": "lib/hosts/presentation/host_event_manage_screen_state.dart",
+            "file": "lib/hosts/presentation/host_roster_display_state.dart",
             "symbol": "HostParticipantsMutationDisplayState"
           },
           {
-            "file": "lib/hosts/presentation/host_event_manage_screen_state.dart",
+            "file": "lib/hosts/presentation/host_roster_display_state.dart",
             "symbol": "HostParticipantLifecycleActions"
           },
           {
@@ -13664,7 +13664,7 @@
             "symbol": "HostReportSummaryDisplayState"
           },
           {
-            "file": "lib/hosts/presentation/host_event_manage_screen_state.dart",
+            "file": "lib/hosts/presentation/host_roster_display_state.dart",
             "symbol": "HostParticipantProfilesLookupState"
           },
           {

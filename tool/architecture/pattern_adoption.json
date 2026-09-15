@@ -784,7 +784,7 @@
         },
         {
           "path": "lib/hosts/presentation/host_event_manage_screen_state.dart",
-          "role": "provider-free Host Event Manage display-state adapter for section selection, destructive action policy, private-link display data, participants mutation state, report summary, invite-link rows, roster rows, capacity display, and setup/live/report row policy; route-owned URL construction keeps routing out of the adapter",
+          "role": "provider-free Host Event Manage lifecycle/section selection, event identity and capacity, destructive action policy, attendance-count fallback and report summary; roster and invitation display state have separate owners",
           "providerFree": true,
           "status": "aligned"
         },
@@ -1007,6 +1007,24 @@
         {
           "path": "lib/event_success/presentation/host_report/event_success_report_empty_state.dart",
           "role": "provider-free report empty-state placement over the shared CatchEmptyState contract with explicit title, message and icon",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "lib/hosts/presentation/host_invite_link_state.dart",
+          "role": "provider-free private access and invitation-link status, sharing availability, mutation mode and row statistics; URL construction stays at the route edge",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "lib/hosts/presentation/host_roster_display_state.dart",
+          "role": "provider-free participant action callbacks and pending/error snapshots, profile lookup, roster filters, ordered search results, bulk-offer eligibility and empty-state copy",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "lib/hosts/presentation/host_roster_row_state.dart",
+          "role": "provider-free setup/live/report participant row policy, waitlist offer signals, attendance affordances, payment display and localized metadata",
           "providerFree": true,
           "status": "aligned"
         }
