@@ -155,7 +155,7 @@
     },
     {
       "path": "lib/routing/go_router.dart",
-      "maxLines": 1501
+      "maxLines": 1424
     },
     {
       "path": "lib/safety/presentation/settings_screen.dart",
