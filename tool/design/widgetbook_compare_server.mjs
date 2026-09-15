@@ -1833,16 +1833,15 @@ function buildCandidates() {
       ],
     },
     {
-      id: "app-policy-card-family",
-      title: "Policy card family",
+      id: "app-policy-section-family",
+      title: "Policy section family",
       reason:
-        "Policy/default/schedule cards are all structured policy summaries with editable/read-only variants and should share one card grammar.",
-      recommended: "catch.policy_card",
-      tags: ["card", "policy"],
+        "Policy/default/schedule sections are structured summaries with editable/read-only variants and should share one section grammar.",
+      recommended: "catch.section",
+      tags: ["section", "policy"],
       names: [
-        "EditableHostedEventPolicyCard",
-        "ReadOnlyHostedEventPolicyCard",
-        "ReadOnlyHostedEventScheduleCard",
+        "HostedEventPolicySection",
+        "HostedEventScheduleSection",
         "ClubPolicyDefaultsCard",
         "EventDetailPolicySummary",
       ],

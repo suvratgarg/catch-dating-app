@@ -62,10 +62,6 @@
       "maxLines": 933
     },
     {
-      "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "maxLines": 1664
-    },
-    {
       "path": "lib/hosts/presentation/event_management/create/create_event_screen.dart",
       "maxLines": 1595
     },

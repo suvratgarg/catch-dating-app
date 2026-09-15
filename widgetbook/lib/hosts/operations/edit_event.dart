@@ -350,30 +350,32 @@ Widget editHostedEventScopeNoticeCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Editable policy states',
-  type: EditableHostedEventPolicyCard,
+  type: HostedEventPolicySection,
   path: '[P1 product surfaces]/Host edit event',
 )
-Widget editableHostedEventPolicyCardCatalogStates(BuildContext context) {
+Widget editableHostedEventPolicySectionCatalogStates(BuildContext context) {
   return const WidgetbookPageCatalogFrame(
-    title: 'EditableHostedEventPolicyCard',
-    contractId: 'component.host.event.edit_policy_card',
+    title: 'HostedEventPolicySection.editable',
+    contractId: 'component.host.event.policy_section.editable',
     children: [
       WidgetbookPageStateCard(
         label: 'open capacity',
         child: WidgetbookHostDeviceFrame(
-          child: _EditableHostedEventPolicyCardFrame(),
+          child: _EditableHostedEventPolicySectionFrame(),
         ),
       ),
       WidgetbookPageStateCard(
         label: 'open capacity with cohort caps',
         child: WidgetbookHostDeviceFrame(
-          child: _EditableHostedEventPolicyCardFrame(cohortCapsEnabled: true),
+          child: _EditableHostedEventPolicySectionFrame(
+            cohortCapsEnabled: true,
+          ),
         ),
       ),
       WidgetbookPageStateCard(
         label: 'invite only',
         child: WidgetbookHostDeviceFrame(
-          child: _EditableHostedEventPolicyCardFrame(
+          child: _EditableHostedEventPolicySectionFrame(
             admissionPreset: EventAdmissionPreset.inviteOnly,
           ),
         ),
@@ -381,7 +383,7 @@ Widget editableHostedEventPolicyCardCatalogStates(BuildContext context) {
       WidgetbookPageStateCard(
         label: 'request to join',
         child: WidgetbookHostDeviceFrame(
-          child: _EditableHostedEventPolicyCardFrame(
+          child: _EditableHostedEventPolicySectionFrame(
             admissionPreset: EventAdmissionPreset.requestToJoin,
           ),
         ),
@@ -389,7 +391,7 @@ Widget editableHostedEventPolicyCardCatalogStates(BuildContext context) {
       WidgetbookPageStateCard(
         label: 'balanced singles with demand pricing',
         child: WidgetbookHostDeviceFrame(
-          child: _EditableHostedEventPolicyCardFrame(
+          child: _EditableHostedEventPolicySectionFrame(
             admissionPreset: EventAdmissionPreset.balancedSingles,
             dynamicPricingEnabled: true,
           ),
@@ -401,18 +403,20 @@ Widget editableHostedEventPolicyCardCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Read-only policy states',
-  type: ReadOnlyHostedEventPolicyCard,
+  type: HostedEventPolicySection,
   path: '[P1 product surfaces]/Host edit event',
 )
-Widget readOnlyHostedEventPolicyCardCatalogStates(BuildContext context) {
+Widget readOnlyHostedEventPolicySectionCatalogStates(BuildContext context) {
   return WidgetbookPageCatalogFrame(
-    title: 'ReadOnlyHostedEventPolicyCard',
-    contractId: 'component.host.event.read_only_policy_card',
+    title: 'HostedEventPolicySection.readOnly',
+    contractId: 'component.host.event.policy_section.read_only',
     children: [
       WidgetbookPageStateCard(
         label: 'locked policy',
         child: WidgetbookHostDeviceFrame(
-          child: ReadOnlyHostedEventPolicyCard(event: widgetbookPrivateEvent),
+          child: HostedEventPolicySection.readOnly(
+            event: widgetbookPrivateEvent,
+          ),
         ),
       ),
     ],
@@ -420,27 +424,50 @@ Widget readOnlyHostedEventPolicyCardCatalogStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Read-only schedule states',
-  type: ReadOnlyHostedEventScheduleCard,
+  name: 'Schedule states',
+  type: HostedEventScheduleSection,
   path: '[P1 product surfaces]/Host edit event',
 )
-Widget readOnlyHostedEventScheduleCardCatalogStates(BuildContext context) {
+Widget hostedEventScheduleSectionCatalogStates(BuildContext context) {
   return WidgetbookPageCatalogFrame(
-    title: 'ReadOnlyHostedEventScheduleCard',
-    contractId: 'component.host.event.read_only_schedule_card',
+    title: 'HostedEventScheduleSection',
+    contractId: 'component.host.event.schedule_section',
     children: [
+      WidgetbookPageStateCard(
+        label: 'editable',
+        child: WidgetbookHostDeviceFrame(
+          child: HostedEventScheduleSection.editable(
+            state: const HostEventEditScheduleFieldState(
+              scheduleLocked: false,
+              dateValue: '18/09/2026',
+              startTimeValue: '7:30 PM',
+              durationMinutes: 90,
+              errorText: null,
+            ),
+            onPickDate: _ignoreEditEventAction,
+            onPickStartTime: _ignoreEditEventAction,
+            onDurationChanged: _ignoreEditEventDuration,
+          ),
+        ),
+      ),
       WidgetbookPageStateCard(
         label: 'started event',
         child: WidgetbookHostDeviceFrame(
-          child: ReadOnlyHostedEventScheduleCard(event: widgetbookPrivateEvent),
+          child: HostedEventScheduleSection.readOnly(
+            event: widgetbookPrivateEvent,
+          ),
         ),
       ),
     ],
   );
 }
 
-class _EditableHostedEventPolicyCardFrame extends StatefulWidget {
-  const _EditableHostedEventPolicyCardFrame({
+void _ignoreEditEventAction() {}
+
+void _ignoreEditEventDuration(int _) {}
+
+class _EditableHostedEventPolicySectionFrame extends StatefulWidget {
+  const _EditableHostedEventPolicySectionFrame({
     this.admissionPreset = EventAdmissionPreset.openCapacity,
     this.cohortCapsEnabled = false,
     this.dynamicPricingEnabled = false,
@@ -451,12 +478,12 @@ class _EditableHostedEventPolicyCardFrame extends StatefulWidget {
   final bool dynamicPricingEnabled;
 
   @override
-  State<_EditableHostedEventPolicyCardFrame> createState() =>
-      _EditableHostedEventPolicyCardFrameState();
+  State<_EditableHostedEventPolicySectionFrame> createState() =>
+      _EditableHostedEventPolicySectionFrameState();
 }
 
-class _EditableHostedEventPolicyCardFrameState
-    extends State<_EditableHostedEventPolicyCardFrame> {
+class _EditableHostedEventPolicySectionFrameState
+    extends State<_EditableHostedEventPolicySectionFrame> {
   late final TextEditingController _capacityController;
   late final TextEditingController _priceController;
   late final TextEditingController _minAgeController;
@@ -506,7 +533,7 @@ class _EditableHostedEventPolicyCardFrameState
   Widget build(BuildContext context) {
     return Padding(
       padding: CatchInsets.content,
-      child: EditableHostedEventPolicyCard(
+      child: HostedEventPolicySection.editable(
         state: HostEventEditPolicyFieldState.from(
           currencyCode: currencyCodeForCityName(widgetbookClub.location),
           admissionPreset: _admissionPreset,
