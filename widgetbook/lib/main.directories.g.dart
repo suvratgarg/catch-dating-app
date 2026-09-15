@@ -207,6 +207,8 @@ import 'package:widgetbook_workspace/geometry/specimens/top_bars.dart'
     as _widgetbook_workspace_geometry_specimens_top_bars;
 import 'package:widgetbook_workspace/hosts/host_booking_provider_use_cases.dart'
     as _widgetbook_workspace_hosts_host_booking_provider_use_cases;
+import 'package:widgetbook_workspace/hosts/host_form_editor_use_cases.dart'
+    as _widgetbook_workspace_hosts_host_form_editor_use_cases;
 import 'package:widgetbook_workspace/hosts/host_form_workspace_use_cases.dart'
     as _widgetbook_workspace_hosts_host_form_workspace_use_cases;
 import 'package:widgetbook_workspace/hosts/host_inbox_use_cases.dart'
@@ -9212,6 +9214,17 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'Forms',
             children: [
               _widgetbook.WidgetbookComponent(
+                name: 'HostFormAvailabilityField',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Opening and closing dates',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_editor_use_cases
+                            .hostFormAvailabilityFieldPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostFormMetrics',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -9247,6 +9260,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_host_form_workspace_use_cases
                             .hostFormResponseRelatedActionsPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostFormSettingsSectionList',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Autosaved form settings',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_editor_use_cases
+                            .hostFormSettingsSectionListPreview,
                   ),
                 ],
               ),

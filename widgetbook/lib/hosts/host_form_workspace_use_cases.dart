@@ -16,7 +16,7 @@ import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
 import '../preview_layout_contracts.dart';
 
-final _state = HostFormEditorState(
+final hostFormPreviewState = HostFormEditorState(
   editor: HostFormEditor(
     form: _previewPublishedSummary('org_1', 'form_1'),
     definition: HostFormDefinition.fromMap(_previewPublishedDefinition()),
@@ -36,7 +36,7 @@ Widget hostFormWorkspaceHeaderPreview(BuildContext context) {
     width: WidgetbookPreviewLayout.wideContractWidth,
     child: StatefulBuilder(
       builder: (context, setState) => HostFormWorkspaceHeader(
-        state: _state,
+        state: hostFormPreviewState,
         selected: selected,
         onChanged: (value) => setState(() => selected = value),
       ),
@@ -63,7 +63,7 @@ Widget hostFormWorkspaceOverviewPreview(BuildContext context) => ProviderScope(
         padding: CatchInsets.pageBody,
         child: HostFormWorkspaceOverview(
           organizerId: 'org_1',
-          state: _state,
+          state: hostFormPreviewState,
           onQuestions: () {},
           onReviewResponses: () {},
           onSettings: () {},
