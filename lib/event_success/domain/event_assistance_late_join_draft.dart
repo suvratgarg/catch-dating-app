@@ -6,12 +6,22 @@ import 'package:catch_dating_app/event_success/domain/event_assistance_observati
 
 enum LateJoinDraftMode { inherit, disabled, observe, prepare, automatic }
 
+/// Timing evidence is separate from the joining-rule review. Live callers that
+/// have not loaded runtime timing do not pretend that a deadline is missing.
+enum LateJoinRuntimeTiming {
+  notReviewed,
+  notConfigured,
+  noResponseDeadline,
+  responseDeadline,
+}
+
 enum LateJoinDraftIssue {
   missingRules,
   setupUnavailable,
   destinationChanged,
   invalidCutoff,
   eventInheritance,
+  missingResponseDeadline,
 }
 
 /// Local editing state. Only an explicit save turns defaults into a preference.
@@ -71,6 +81,7 @@ final class LateJoinSettingDraft {
     required String groupId,
     required int serverTime,
     required LateJoinSettingSetup? setup,
+    LateJoinRuntimeTiming runtimeTiming = LateJoinRuntimeTiming.notReviewed,
   }) {
     if (mode == LateJoinDraftMode.inherit) {
       return groupId == 'event:whole'
@@ -89,6 +100,11 @@ final class LateJoinSettingDraft {
     ) when at <= serverTime || at > setup.eventEnd) {
       return LateJoinDraftIssue.invalidCutoff;
     }
+    if (runtimeTiming == LateJoinRuntimeTiming.noResponseDeadline &&
+        currentRules.unanswered ==
+            LateJoinUnansweredRule.hostReviewAtDeadline) {
+      return LateJoinDraftIssue.missingResponseDeadline;
+    }
     return null;
   }
 
@@ -103,8 +119,14 @@ final class LateJoinSettingDraft {
     required String groupId,
     required int serverTime,
     required LateJoinSettingSetup? setup,
+    LateJoinRuntimeTiming runtimeTiming = LateJoinRuntimeTiming.notReviewed,
   }) {
-    if (issueForSetup(groupId: groupId, serverTime: serverTime, setup: setup) !=
+    if (issueForSetup(
+          groupId: groupId,
+          serverTime: serverTime,
+          setup: setup,
+          runtimeTiming: runtimeTiming,
+        ) !=
         null) {
       throw StateError('Review the late arrival rules.');
     }

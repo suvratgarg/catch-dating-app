@@ -54,6 +54,8 @@ String lateJoinIssueLabel(AppLocalizations l10n, LateJoinDraftIssue issue) =>
         l10n.eventAssistanceLateJoinSetupUnknown,
       LateJoinDraftIssue.destinationChanged =>
         l10n.eventAssistanceLateJoinDestinationChanged,
+      LateJoinDraftIssue.missingResponseDeadline =>
+        l10n.eventAssistanceRuntimeSetDeadline,
       LateJoinDraftIssue.invalidCutoff =>
         l10n.eventAssistanceLateJoinInvalidCutoff,
     };

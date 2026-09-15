@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.135.0
+version: 1.136.0
 updated: 2026-09-15
 owner: recursive_audit_loop
 status: active
@@ -285,6 +285,16 @@ subsequent rule editing and closed runs at normal and double text size. Isolated
 Widgetbook previews mount these same controls; their shared generated index and
 widget inventory registration await the existing file claim. Provider activation,
 real delivery and device verification remain separate integration work.
+
+The rehearsal joining-rule form now validates the runtime timing evidence before
+Save. An enabled rule that requests Host review cannot be saved against a
+configured practice runtime with no response deadline, including a paused one.
+The form explains the missing prerequisite and uses the same typed validation as
+the immutable command. Turning the rule off, inheriting a group rule, or choosing
+to keep arrival unknown remains available. A rule may still be prepared before
+runtime configuration; the runtime's own validation then requires a deadline.
+Live timing that has not been loaded stays explicitly unreviewed, preserving its
+existing server-owned activation checks rather than guessing at a missing value.
 
 New event-enrolled recipes follow current accepted group membership and saved
 departure. Unassigned pace-group guests receive no inferred route. Explicit

@@ -138,6 +138,7 @@ class EventRehearsalSettingsSheet extends ConsumerWidget {
                     groupLabel: group.label,
                     setup: group.setup,
                     serverTime: settings.serverTime,
+                    runtimeTiming: settings.runtimeTiming,
                     status: group.status,
                     origin: group.origin,
                     phase: switch (phase) {
@@ -175,6 +176,7 @@ class EventRehearsalSettingsSheet extends ConsumerWidget {
                             groupId: target,
                             serverTime: currentSettings.serverTime,
                             setup: currentSettings.groups[target]?.setup,
+                            runtimeTiming: currentSettings.runtimeTiming,
                           ),
                         ),
                       );

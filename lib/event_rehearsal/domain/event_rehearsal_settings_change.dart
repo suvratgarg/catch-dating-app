@@ -78,19 +78,12 @@ final class RehearsalSettingsChange {
                   groupId: groupId,
                   serverTime: view.serverTime,
                   setup: group.setup,
+                  runtimeTiming: view.runtimeTiming,
                 ) !=
                 null) {
           throw const FormatException(
             'Review the practice group and joining rule.',
           );
-        }
-        if (preference is LateJoinConfigured &&
-            view.runtime != null &&
-            preference.template.setting is AssistanceTemplateEnabled &&
-            preference.template.rules.unanswered ==
-                LateJoinUnansweredRule.hostReviewAtDeadline &&
-            view.runtime!.configuration.responseDeadline == null) {
-          throw const FormatException('Configure a response deadline first.');
         }
       case RehearsalConfigureUpdates(:final configuration):
         final deadline = configuration.responseDeadline;

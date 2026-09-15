@@ -4,6 +4,7 @@ import 'package:catch_dating_app/core/cryptography/sha256_digest.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_runtime_configuration.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_staff.dart';
+import 'package:catch_dating_app/event_success/domain/event_assistance_late_join_draft.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_late_join_setting.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_late_join_setup.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_late_join_template.dart';
@@ -109,6 +110,11 @@ final class RehearsalSettingsReview {
   final Map<String, RehearsalSettingsGroup> groups;
   int get serverTime => session.virtualNow.millisecondsSinceEpoch;
   int get eventEnd => groups['event:whole']!.setup.eventEnd;
+  LateJoinRuntimeTiming get runtimeTiming => runtime == null
+      ? LateJoinRuntimeTiming.notConfigured
+      : runtime!.configuration.responseDeadline == null
+      ? LateJoinRuntimeTiming.noResponseDeadline
+      : LateJoinRuntimeTiming.responseDeadline;
 
   factory RehearsalSettingsReview.fromJson(
     Object? value, {

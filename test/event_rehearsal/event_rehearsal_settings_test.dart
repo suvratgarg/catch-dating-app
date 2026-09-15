@@ -6,6 +6,8 @@ import 'package:catch_dating_app/core/schema_contracts/generated/schema_contract
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_assistance_automation.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_settings_change.dart';
+import 'package:catch_dating_app/event_success/domain/event_assistance_late_join_draft.dart';
+import 'package:catch_dating_app/event_success/domain/event_assistance_late_join_rules.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_late_join_setting.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_runtime_configuration.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -28,6 +30,56 @@ void main() {
   final schema = JsonSchema.create(
     schemas.schemaContractsByName['ControlEventRehearsalCallablePayload']!,
   );
+  test('practice command and form use the same deadline prerequisite', () {
+    for (final name in ['initial', 'configured', 'paused']) {
+      for (final withDeadline in [false, true]) {
+        final raw = sample(name);
+        final runtime = review(raw)['runtime'] as Map?;
+        if (runtime != null && withDeadline) {
+          (runtime['configuration'] as Map)['responseDeadline'] =
+              snapshot(name).settingsReview!.serverTime + 60000;
+        }
+        final current = EventRehearsalBootstrap.fromCallableData(raw);
+        final settings = current.settingsReview!;
+        final group = settings.groups['event:whole']!;
+        final base = LateJoinSettingDraft.fromPreference(
+          LateJoinConfigured(settings.suggested),
+        );
+        final draft = base.withRules(
+          base.rules!.copyWith(
+            unanswered: LateJoinUnansweredRule.hostReviewAtDeadline,
+          ),
+        );
+        final blocked = runtime != null && !withDeadline;
+        expect(
+          draft.issueForSetup(
+            groupId: group.id,
+            serverTime: settings.serverTime,
+            setup: group.setup,
+            runtimeTiming: settings.runtimeTiming,
+          ),
+          blocked ? LateJoinDraftIssue.missingResponseDeadline : null,
+        );
+        // Build the wire decision without timing hints, as a caller could; the
+        // immutable command must independently enforce the authoritative review.
+        expect(
+          () => RehearsalSettingsChange(
+            snapshot: current,
+            decision: RehearsalSetRule(
+              group.id,
+              draft.preferenceForSetup(
+                groupId: group.id,
+                serverTime: settings.serverTime,
+                setup: group.setup,
+              ),
+            ),
+            clientActionId: 'deadline_rule',
+          ),
+          blocked ? throwsFormatException : returnsNormally,
+        );
+      }
+    }
+  });
   test(
     'native settings read actual server defaults, inheritance and practice roles',
     () {

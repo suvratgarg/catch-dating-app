@@ -34,6 +34,57 @@ void main() {
     );
   }
 
+  test('known missing deadlines block only enabled host-review rules', () {
+    final view = sample();
+    final base = LateJoinSettingDraft.fromView(view);
+    final draft = base.withRules(
+      base.rules!.copyWith(
+        unanswered: LateJoinUnansweredRule.hostReviewAtDeadline,
+      ),
+    );
+    for (final timing in LateJoinRuntimeTiming.values) {
+      for (final mode in LateJoinDraftMode.values) {
+        final value = draft.withMode(mode);
+        final scope = mode == LateJoinDraftMode.inherit
+            ? 'easy'
+            : 'event:whole';
+        final invalid =
+            timing == LateJoinRuntimeTiming.noResponseDeadline &&
+            mode != LateJoinDraftMode.disabled &&
+            mode != LateJoinDraftMode.inherit;
+        expect(
+          value.issueForSetup(
+            groupId: scope,
+            serverTime: view.serverTime,
+            setup: view.setup,
+            runtimeTiming: timing,
+          ),
+          invalid ? LateJoinDraftIssue.missingResponseDeadline : null,
+        );
+        if (invalid) {
+          expect(
+            () => value.preferenceForSetup(
+              groupId: scope,
+              serverTime: view.serverTime,
+              setup: view.setup,
+              runtimeTiming: timing,
+            ),
+            throwsStateError,
+          );
+        }
+      }
+    }
+    expect(
+      base.issueForSetup(
+        groupId: 'event:whole',
+        serverTime: view.serverTime,
+        setup: view.setup,
+        runtimeTiming: LateJoinRuntimeTiming.noResponseDeadline,
+      ),
+      isNull,
+    );
+  });
+
   test('defaults are a local proposal and group defaults remain inherited', () {
     final view = sample();
     final draft = LateJoinSettingDraft.fromView(view);

@@ -10,6 +10,7 @@ import 'package:catch_dating_app/event_success/presentation/event_assistance_lat
 import 'package:catch_dating_app/event_success/presentation/event_assistance_runtime_limits.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -113,6 +114,48 @@ void main() {
         expect(repository.writes.last.change.decision, isA<RehearsalSetRule>());
         repository.confirm();
         await pumpFeatureUi(tester);
+        expect(tester.takeException(), isNull);
+      },
+    );
+  }
+  for (final withDeadline in [false, true]) {
+    testWidgets(
+      'practice deadline prerequisite is visible before Save: $withDeadline',
+      (tester) async {
+        final repository = SettingsUiRepository(stage: 'configured');
+        if (withDeadline) {
+          final runtime =
+              (repository.raw['settingsReview'] as Map)['runtime'] as Map;
+          (runtime['configuration'] as Map)['responseDeadline'] =
+              repository.snapshot.settingsReview!.serverTime + 60000;
+        }
+        await tester.pumpWidget(app(repository));
+        await pumpFeatureUi(tester);
+        Future<void> tap(Finder target) async {
+          await tester.ensureVisible(target);
+          await tester.tap(target);
+          await pumpFeatureUi(tester);
+        }
+
+        await tap(find.byKey(const ValueKey('practice.openRule')));
+        await tap(find.byKey(const ValueKey('lateJoin.customize')));
+        await tap(find.byKey(const ValueKey('lateJoin.unanswered')));
+        await tap(find.text('Ask a host to review').last);
+        final save = find.byKey(const ValueKey('lateJoin.save'));
+        expect(
+          tester.widget<CatchButton>(save).onPressed,
+          withDeadline ? isNotNull : isNull,
+        );
+        expect(
+          find.text('Set a response deadline'),
+          withDeadline ? findsNothing : findsOneWidget,
+        );
+        expect(repository.writes, isEmpty);
+        // Switching to a rule with no deadline dependency remains an immediate
+        // correction; the form does not erase the host's other choices.
+        await tap(find.text('Keep arrival unknown').last);
+        expect(tester.widget<CatchButton>(save).onPressed, isNotNull);
+        expect(find.text('Set a response deadline'), findsNothing);
         expect(tester.takeException(), isNull);
       },
     );

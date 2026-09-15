@@ -37,6 +37,7 @@ class EventAssistanceLateJoinSection extends StatefulWidget {
     required this.onRetry,
     required this.onReload,
     required this.onDone,
+    this.runtimeTiming = LateJoinRuntimeTiming.notReviewed,
     this.suggestedRules,
     this.submittedDraft,
     this.error,
@@ -46,6 +47,7 @@ class EventAssistanceLateJoinSection extends StatefulWidget {
   final String groupId, groupLabel;
   final LateJoinSettingSetup? setup;
   final int serverTime;
+  final LateJoinRuntimeTiming runtimeTiming;
   final AssistanceSettingStatus status;
   final AssistanceSettingOrigin origin;
   final EventAssistanceLateJoinPhase phase;
@@ -151,6 +153,7 @@ class _EventAssistanceLateJoinSectionState
       groupId: widget.groupId,
       serverTime: widget.serverTime,
       setup: widget.setup,
+      runtimeTiming: widget.runtimeTiming,
     );
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
