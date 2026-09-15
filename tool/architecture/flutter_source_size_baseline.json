@@ -86,14 +86,6 @@
       "maxLines": 923
     },
     {
-      "path": "lib/hosts/domain/host_form_operations.dart",
-      "maxLines": 902
-    },
-    {
-      "path": "lib/hosts/domain/host_form.dart",
-      "maxLines": 1351
-    },
-    {
       "path": "lib/hosts/presentation/club_management/create/create_club_screen.dart",
       "maxLines": 870
     },
@@ -111,11 +103,7 @@
     },
     {
       "path": "lib/hosts/presentation/forms/host_form_builder_screen.dart",
-      "maxLines": 3069
-    },
-    {
-      "path": "lib/hosts/presentation/forms/host_forms_screen.dart",
-      "maxLines": 862
+      "maxLines": 2832
     },
     {
       "path": "lib/hosts/presentation/host_event_manage_screen_state.dart",

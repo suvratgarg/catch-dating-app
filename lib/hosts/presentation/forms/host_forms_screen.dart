@@ -12,8 +12,9 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.da
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_sliver_error_state.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
-import 'package:catch_dating_app/hosts/domain/host_form.dart';
-import 'package:catch_dating_app/hosts/domain/host_form_operations.dart';
+import 'package:catch_dating_app/hosts/domain/forms/host_form_configuration.dart';
+import 'package:catch_dating_app/hosts/domain/forms/host_form_summary.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_copy.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_responses_panel.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_audience_view.dart';
@@ -693,68 +694,6 @@ class _HostFormsLibraryPage extends ConsumerWidget
   }
 }
 
-String hostFormConsequenceSummary(BuildContext context, HostFormSummary form) {
-  final projection = form.consequences;
-  if (projection.coverage == HostFormConsequenceCoverage.unavailable) {
-    return [
-      context.l10n.hostFormConsequencesUnavailable,
-      if (form.purpose == HostFormPurpose.application)
-        context.l10n.hostFormConsequenceApplicationReview,
-    ].join(' · ');
-  }
-  final parts = <String>[
-    _hostFormIdentityConsequence(context, projection.identityPolicy),
-  ];
-  if (projection.coverage == HostFormConsequenceCoverage.identityOnly) {
-    parts.add(context.l10n.hostFormAutomationConsequencesUnavailable);
-    return parts.join(' · ');
-  }
-  final actions = projection.enabledAutomationActionKinds;
-  if (actions.contains(HostFormAutomationActionKind.createCrmContact)) {
-    parts.add(context.l10n.hostFormConsequenceCreatesCustomer);
-  }
-  if (form.purpose == HostFormPurpose.application ||
-      actions.contains(HostFormAutomationActionKind.addApplicationQueue)) {
-    parts.add(context.l10n.hostFormConsequenceApplicationReview);
-  }
-  if (actions.contains(HostFormAutomationActionKind.proposeEventAttendee)) {
-    parts.add(context.l10n.hostFormConsequenceProposesAttendee);
-  }
-  if (actions.contains(HostFormAutomationActionKind.addOrganizerTag)) {
-    parts.add(context.l10n.hostFormConsequenceAppliesTags);
-  }
-  if (actions.contains(HostFormAutomationActionKind.notifyTeam)) {
-    parts.add(context.l10n.hostFormConsequenceNotifiesTeam);
-  }
-  if (actions.contains(HostFormAutomationActionKind.signedWebhook)) {
-    parts.add(context.l10n.hostFormConsequenceCallsWebhook);
-  }
-  if (actions.contains(HostFormAutomationActionKind.campaignHandoff)) {
-    parts.add(context.l10n.hostFormConsequencePreparesSend);
-  }
-  if (parts.length == 1) {
-    parts.add(context.l10n.hostFormConsequenceFormsOnly);
-  }
-  return parts.join(' · ');
-}
-
-String _hostFormIdentityConsequence(
-  BuildContext context,
-  HostFormIdentityPolicy? policy,
-) => switch (policy) {
-  HostFormIdentityPolicy.anonymous =>
-    context.l10n.hostFormConsequenceIdentityAnonymous,
-  HostFormIdentityPolicy.emailVerified =>
-    context.l10n.hostFormConsequenceIdentityEmail,
-  HostFormIdentityPolicy.phoneVerified =>
-    context.l10n.hostFormConsequenceIdentityPhone,
-  HostFormIdentityPolicy.emailOrPhoneVerified =>
-    context.l10n.hostFormConsequenceIdentityEmailOrPhone,
-  HostFormIdentityPolicy.catchAccount =>
-    context.l10n.hostFormConsequenceIdentityCatchAccount,
-  null => context.l10n.hostFormConsequenceIdentityUnknown,
-};
-
 List<CatchActionMenuItem<_HostFormRowAction>> _hostFormRowActions(
   BuildContext context,
   HostFormSummary form,
@@ -837,26 +776,6 @@ class HostFormsNoOrganizer extends StatelessWidget {
     );
   }
 }
-
-String hostFormStatusLabel(
-  BuildContext context,
-  HostFormLifecycleStatus status,
-) => switch (status) {
-  HostFormLifecycleStatus.draft => context.l10n.hostFormsStatusDraft,
-  HostFormLifecycleStatus.published => context.l10n.hostFormsStatusPublished,
-  HostFormLifecycleStatus.paused => context.l10n.hostFormsStatusPaused,
-  HostFormLifecycleStatus.archived => context.l10n.hostFormsStatusArchived,
-};
-
-String hostFormPurposeLabel(BuildContext context, HostFormPurpose purpose) =>
-    switch (purpose) {
-      HostFormPurpose.application => context.l10n.hostFormsPurposeApplication,
-      HostFormPurpose.registration => context.l10n.hostFormsPurposeRegistration,
-      HostFormPurpose.intake => context.l10n.hostFormsPurposeIntake,
-      HostFormPurpose.waiver => context.l10n.hostFormsPurposeWaiver,
-      HostFormPurpose.feedback => context.l10n.hostFormsPurposeFeedback,
-      HostFormPurpose.survey => context.l10n.hostFormsPurposeSurvey,
-    };
 
 String _requestId(String prefix) =>
     '${prefix}_${DateTime.now().microsecondsSinceEpoch}';
