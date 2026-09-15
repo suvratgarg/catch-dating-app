@@ -971,10 +971,10 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>StarRating</code> | <code>lib/reviews/shared/star_rating.dart:7</code> | — | — | Read-only star row. [rating] is 1-5 (integers for filled stars). |
 | <code>StarRatingPicker</code> | <code>lib/reviews/shared/star_rating.dart:37</code> | — | — | Tappable star row for picking a rating. |
 | <code>WriteReviewSheet</code> | <code>lib/reviews/shared/write_review_sheet.dart:36</code> | — | — | No class documentation or registry summary. |
-| <code>AccountProfileStatus</code> | <code>lib/safety/presentation/settings_screen.dart:642</code> | — | — | No class documentation or registry summary. |
-| <code>BlockedAccountTile</code> | <code>lib/safety/presentation/settings_screen.dart:795</code> | — | — | No class documentation or registry summary. |
-| <code>BlockedAccountsSection</code> | <code>lib/safety/presentation/settings_screen.dart:680</code> | — | — | No class documentation or registry summary. |
-| <code>BlockedAccountsSkeleton</code> | <code>lib/safety/presentation/settings_screen.dart:745</code> | — | — | No class documentation or registry summary. |
+| <code>BlockedAccountTile</code> | <code>lib/safety/presentation/blocked_account_tile.dart:3</code> | — | — | No class documentation or registry summary. |
+| <code>AccountProfileStatus</code> | <code>lib/safety/presentation/settings_screen.dart:644</code> | — | — | No class documentation or registry summary. |
+| <code>BlockedAccountsSection</code> | <code>lib/safety/presentation/settings_screen.dart:682</code> | — | — | No class documentation or registry summary. |
+| <code>BlockedAccountsSkeleton</code> | <code>lib/safety/presentation/settings_screen.dart:747</code> | — | — | No class documentation or registry summary. |
 | <code>EventRecapLoadingBody</code> | <code>lib/swipes/presentation/event_recap_screen.dart:276</code> | — | — | No class documentation or registry summary. |
 | <code>EventRecapReadyBody</code> | <code>lib/swipes/presentation/event_recap_screen.dart:134</code> | — | — | No class documentation or registry summary. |
 | <code>RecapHero</code> | <code>lib/swipes/presentation/event_recap_screen.dart:410</code> | — | — | No class documentation or registry summary. |
@@ -1162,7 +1162,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>PaymentHistoryScreen</code> | <code>lib/payments/presentation/payment_history_screen.dart:20</code> | — | — | No class documentation or registry summary. |
 | <code>PublicProfileScreen</code> | <code>lib/public_profile/presentation/public_profile_screen.dart:19</code> | — | — | No class documentation or registry summary. |
 | <code>ReviewsHistoryScreen</code> | <code>lib/reviews/presentation/reviews_history_screen.dart:17</code> | — | — | No class documentation or registry summary. |
-| <code>SettingsScreen</code> | <code>lib/safety/presentation/settings_screen.dart:28</code> | — | — | No class documentation or registry summary. |
+| <code>SettingsScreen</code> | <code>lib/safety/presentation/settings_screen.dart:30</code> | — | — | No class documentation or registry summary. |
 | <code>EventRecapScreen</code> | <code>lib/swipes/presentation/event_recap_screen.dart:21</code> | — | — | No class documentation or registry summary. |
 | <code>FiltersScreen</code> | <code>lib/swipes/presentation/filters_screen.dart:20</code> | — | — | No class documentation or registry summary. |
 | <code>SwipeHubScreen</code> | <code>lib/swipes/presentation/swipe_hub_screen.dart:17</code> | — | — | No class documentation or registry summary. |
