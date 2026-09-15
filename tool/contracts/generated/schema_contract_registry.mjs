@@ -204042,7 +204042,20 @@ export const eventAssistanceWorkflowCatalog = {
       "trigger": "A required meeting place or arrival instruction is unconfirmed by its deadline",
       "automatic": "Request the missing fact; keep the readiness issue current",
       "hostDecision": "Confirm the location or an explicitly allowed alternative",
-      "resolution": "Required location and instructions are confirmed"
+      "resolution": "Required location and instructions are confirmed",
+      "commands": {
+        "automatic": [],
+        "host": [],
+        "guest": []
+      },
+      "overridePolicy": "none",
+      "hostProjection": {
+        "surfaces": [
+          "today",
+          "eventSetup"
+        ],
+        "presentation": "readinessTask"
+      }
     },
     {
       "kind": "routeReadiness",
@@ -204054,7 +204067,20 @@ export const eventAssistanceWorkflowCatalog = {
       "trigger": "The chosen moving format lacks a confirmed route or joining points",
       "automatic": "Check required route facts and identify the specific gap",
       "hostDecision": "Confirm the route, permitted joining points and contingency",
-      "resolution": "Route requirements are confirmed"
+      "resolution": "Route requirements are confirmed",
+      "commands": {
+        "automatic": [],
+        "host": [],
+        "guest": []
+      },
+      "overridePolicy": "none",
+      "hostProjection": {
+        "surfaces": [
+          "today",
+          "eventSetup"
+        ],
+        "presentation": "readinessTask"
+      }
     },
     {
       "kind": "formatReadiness",
@@ -204066,7 +204092,20 @@ export const eventAssistanceWorkflowCatalog = {
       "trigger": "The selected interaction, algorithm, programme or resource combination is unsupported or incomplete",
       "automatic": "Resolve capabilities and explain unsupported combinations",
       "hostDecision": "Confirm the run of show and supported operating model, or explicitly choose manual operation",
-      "resolution": "Saved format passes capability validation"
+      "resolution": "Saved format passes capability validation",
+      "commands": {
+        "automatic": [],
+        "host": [],
+        "guest": []
+      },
+      "overridePolicy": "none",
+      "hostProjection": {
+        "surfaces": [
+          "today",
+          "eventSetup"
+        ],
+        "presentation": "readinessTask"
+      }
     },
     {
       "kind": "rosterReadiness",
@@ -204078,7 +204117,24 @@ export const eventAssistanceWorkflowCatalog = {
       "trigger": "A committed guest source/import is incomplete, duplicated, stale or failed",
       "automatic": "Reconcile source batches without discarding successful rows; expose ambiguities",
       "hostDecision": "Resolve ambiguous identities or reconnect the source",
-      "resolution": "Committed import and reconciliation finish with unresolved rows accounted for"
+      "resolution": "Committed import and reconciliation finish with unresolved rows accounted for",
+      "commands": {
+        "automatic": [
+          "reconcileRoster"
+        ],
+        "host": [
+          "reconcileRoster"
+        ],
+        "guest": []
+      },
+      "overridePolicy": "none",
+      "hostProjection": {
+        "surfaces": [
+          "today",
+          "eventSetup"
+        ],
+        "presentation": "readinessTask"
+      }
     },
     {
       "kind": "requiredGuestData",
@@ -204090,7 +204146,25 @@ export const eventAssistanceWorkflowCatalog = {
       "trigger": "A selected operation needs explicit guest information that is missing",
       "automatic": "Request only required fields and stop once supplied",
       "hostDecision": "Review an exception or approve host-assisted participation where allowed",
-      "resolution": "Required information is present or operation uses an allowed fallback"
+      "resolution": "Required information is present or operation uses an allowed fallback",
+      "commands": {
+        "automatic": [
+          "requestRequiredData",
+          "openHostCase"
+        ],
+        "host": [
+          "applyOverride"
+        ],
+        "guest": []
+      },
+      "overridePolicy": "scopedReasonedExpiring",
+      "hostProjection": {
+        "surfaces": [
+          "today",
+          "eventSetup"
+        ],
+        "presentation": "readinessTask"
+      }
     },
     {
       "kind": "resourceReadiness",
@@ -204102,7 +204176,22 @@ export const eventAssistanceWorkflowCatalog = {
       "trigger": "A required resource count, capacity or allocation constraint is unconfirmed",
       "automatic": "Check capacity against the selected plan; identify shortages",
       "hostDecision": "Confirm resources or approve a viable reduced plan",
-      "resolution": "Required resources and capacity are usable"
+      "resolution": "Required resources and capacity are usable",
+      "commands": {
+        "automatic": [],
+        "host": [
+          "changeResource"
+        ],
+        "guest": []
+      },
+      "overridePolicy": "none",
+      "hostProjection": {
+        "surfaces": [
+          "today",
+          "eventSetup"
+        ],
+        "presentation": "readinessTask"
+      }
     },
     {
       "kind": "staffingReadiness",
@@ -204114,7 +204203,22 @@ export const eventAssistanceWorkflowCatalog = {
       "trigger": "A required responsibility has no accepted, authorized person for its scope",
       "automatic": "Request acceptance; track coverage and access separately",
       "hostDecision": "Assign or replace lead, check-in operator, pacer, sweep or marshal",
-      "resolution": "Each required responsibility is accepted and executable"
+      "resolution": "Each required responsibility is accepted and executable",
+      "commands": {
+        "automatic": [],
+        "host": [
+          "assignResponsibility"
+        ],
+        "guest": []
+      },
+      "overridePolicy": "none",
+      "hostProjection": {
+        "surfaces": [
+          "today",
+          "eventSetup"
+        ],
+        "presentation": "readinessTask"
+      }
     },
     {
       "kind": "messagingReadiness",
@@ -204126,7 +204230,20 @@ export const eventAssistanceWorkflowCatalog = {
       "trigger": "A selected automatic assistance policy cannot reach some intended guests",
       "automatic": "Resolve eligible endpoints and sender readiness; show coverage and alternatives",
       "hostDecision": "Choose an available route or handle unreachable guests",
-      "resolution": "Delivery capability or explicit fallback covers the intended assistance"
+      "resolution": "Delivery capability or explicit fallback covers the intended assistance",
+      "commands": {
+        "automatic": [],
+        "host": [],
+        "guest": []
+      },
+      "overridePolicy": "none",
+      "hostProjection": {
+        "surfaces": [
+          "today",
+          "eventSetup"
+        ],
+        "presentation": "readinessTask"
+      }
     },
     {
       "kind": "admissionReview",
@@ -204138,7 +204255,22 @@ export const eventAssistanceWorkflowCatalog = {
       "trigger": "A join request, waitlist vacancy or expiring offer requires a decision",
       "automatic": "Order eligible candidates and prepare bounded offers where policy allows",
       "hostDecision": "Approve admission policy, exceptions or contested requests",
-      "resolution": "Request/offer resolved or expired without overselling"
+      "resolution": "Request/offer resolved or expired without overselling",
+      "commands": {
+        "automatic": [],
+        "host": [
+          "admitGuest"
+        ],
+        "guest": []
+      },
+      "overridePolicy": "none",
+      "hostProjection": {
+        "surfaces": [
+          "today",
+          "eventSetup"
+        ],
+        "presentation": "readinessTask"
+      }
     },
     {
       "kind": "financialReadiness",
@@ -204150,7 +204282,20 @@ export const eventAssistanceWorkflowCatalog = {
       "trigger": "A paid event has a confirmed payment-provider prerequisite",
       "automatic": "Read the provider-owned requirement and route to its owner",
       "hostDecision": "Complete provider setup",
-      "resolution": "Authoritative provider prerequisite is resolved"
+      "resolution": "Authoritative provider prerequisite is resolved",
+      "commands": {
+        "automatic": [],
+        "host": [],
+        "guest": []
+      },
+      "overridePolicy": "none",
+      "hostProjection": {
+        "surfaces": [
+          "today",
+          "eventSetup"
+        ],
+        "presentation": "readinessTask"
+      }
     },
     {
       "kind": "joiningInstructions",
@@ -204162,7 +204307,23 @@ export const eventAssistanceWorkflowCatalog = {
       "trigger": "Joining instructions are due or a guest newly becomes admitted",
       "automatic": "Publish current joining guidance and deliver through an eligible service route",
       "hostDecision": "Confirm unusual arrival instructions or channel fallback",
-      "resolution": "Current instructions available and delivery evidence accounted for"
+      "resolution": "Current instructions available and delivery evidence accounted for",
+      "commands": {
+        "automatic": [
+          "publishGuidance",
+          "sendOperationalMessage"
+        ],
+        "host": [],
+        "guest": []
+      },
+      "overridePolicy": "none",
+      "hostProjection": {
+        "surfaces": [
+          "today",
+          "eventSetup"
+        ],
+        "presentation": "readinessTask"
+      }
     },
     {
       "kind": "identityResolution",
@@ -204174,7 +204335,21 @@ export const eventAssistanceWorkflowCatalog = {
       "trigger": "An attendee claim is ambiguous or private runtime access fails",
       "automatic": "Offer verified recovery and retain the operational roster row",
       "hostDecision": "Confirm the intended identity; never auto-merge ambiguous people",
-      "resolution": "Claim resolved or host-assisted path selected"
+      "resolution": "Claim resolved or host-assisted path selected",
+      "commands": {
+        "automatic": [],
+        "host": [
+          "resolveClaim"
+        ],
+        "guest": []
+      },
+      "overridePolicy": "none",
+      "hostProjection": {
+        "surfaces": [
+          "liveGuests"
+        ],
+        "presentation": "atomicAction"
+      }
     },
     {
       "kind": "guestAdmission",
@@ -204186,7 +204361,21 @@ export const eventAssistanceWorkflowCatalog = {
       "trigger": "A walk-in, waitlisted or cancelled guest requests entry",
       "automatic": "Check entitlement/capacity and prepare an admission decision",
       "hostDecision": "Approve an allowed exception or decline",
-      "resolution": "Admission decision persisted independently of check-in"
+      "resolution": "Admission decision persisted independently of check-in",
+      "commands": {
+        "automatic": [],
+        "host": [
+          "admitGuest"
+        ],
+        "guest": []
+      },
+      "overridePolicy": "none",
+      "hostProjection": {
+        "surfaces": [
+          "liveGuests"
+        ],
+        "presentation": "atomicAction"
+      }
     },
     {
       "kind": "guestCheckIn",
@@ -204198,7 +204387,21 @@ export const eventAssistanceWorkflowCatalog = {
       "trigger": "A guest arrives, a duplicate arrival is reported, or a mistake is identified",
       "automatic": "Apply absolute attendance idempotently; preserve party context; acknowledge duplicates",
       "hostDecision": "Verify arrival or correct the specific mistaken check-in",
-      "resolution": "Desired attendance revision is confirmed"
+      "resolution": "Desired attendance revision is confirmed",
+      "commands": {
+        "automatic": [],
+        "host": [
+          "checkInGuest"
+        ],
+        "guest": []
+      },
+      "overridePolicy": "none",
+      "hostProjection": {
+        "surfaces": [
+          "liveGuests"
+        ],
+        "presentation": "atomicAction"
+      }
     },
     {
       "kind": "lateJoin",
@@ -204210,7 +204413,30 @@ export const eventAssistanceWorkflowCatalog = {
       "trigger": "An admitted guest has not joined when departure/start is confirmed",
       "automatic": "Maintain current joining guidance; collect intentions; update affected guests; stop on join/decline/cutoff",
       "hostDecision": "Confirm physical departure, restricted late entry or an unreachable guest exception",
-      "resolution": "Guest joins, declines, reaches cutoff or receives a recorded host disposition"
+      "resolution": "Guest joins, declines, reaches cutoff or receives a recorded host disposition",
+      "commands": {
+        "automatic": [
+          "publishGuidance",
+          "sendOperationalMessage",
+          "openHostCase"
+        ],
+        "host": [
+          "confirmDeparture",
+          "recordNoShow",
+          "resolveAccountability"
+        ],
+        "guest": [
+          "setJoinIntent"
+        ]
+      },
+      "overridePolicy": "none",
+      "hostProjection": {
+        "surfaces": [
+          "liveNow",
+          "liveGuests"
+        ],
+        "presentation": "exceptionQueue"
+      }
     },
     {
       "kind": "participationChange",
@@ -204222,7 +204448,23 @@ export const eventAssistanceWorkflowCatalog = {
       "trigger": "A guest leaves, returns, sits out or opts out of a module",
       "automatic": "Stop affected future allocations/messages; prepare appropriate re-entry",
       "hostDecision": "Confirm departure/return where required and allowed recovery",
-      "resolution": "Participation intent and affected future work agree"
+      "resolution": "Participation intent and affected future work agree",
+      "commands": {
+        "automatic": [],
+        "host": [
+          "setParticipation"
+        ],
+        "guest": [
+          "setParticipation"
+        ]
+      },
+      "overridePolicy": "none",
+      "hostProjection": {
+        "surfaces": [
+          "liveGuests"
+        ],
+        "presentation": "atomicAction"
+      }
     },
     {
       "kind": "guestPrerequisite",
@@ -204234,7 +204476,24 @@ export const eventAssistanceWorkflowCatalog = {
       "trigger": "An admitted checked-in guest cannot use the selected activity",
       "automatic": "Explain the specific identity/profile/consent/assignment prerequisite",
       "hostDecision": "Resolve it or select an eligible host-assisted alternative",
-      "resolution": "Guest can participate or an explicit allowed alternative is active"
+      "resolution": "Guest can participate or an explicit allowed alternative is active",
+      "commands": {
+        "automatic": [
+          "requestRequiredData",
+          "openHostCase"
+        ],
+        "host": [
+          "applyOverride"
+        ],
+        "guest": []
+      },
+      "overridePolicy": "scopedReasonedExpiring",
+      "hostProjection": {
+        "surfaces": [
+          "liveGuests"
+        ],
+        "presentation": "exceptionQueue"
+      }
     },
     {
       "kind": "allocationRepair",
@@ -204246,7 +204505,25 @@ export const eventAssistanceWorkflowCatalog = {
       "trigger": "A guest is unassigned or a placement/group constraint changes",
       "automatic": "Prepare legal placements, swaps and future groups while preserving unaffected history",
       "hostDecision": "Approve disruptive changes, hard placement pins and publication",
-      "resolution": "Approved valid assignment applied; affected guests informed"
+      "resolution": "Approved valid assignment applied; affected guests informed",
+      "commands": {
+        "automatic": [
+          "proposeAllocation"
+        ],
+        "host": [
+          "proposeAllocation",
+          "publishAllocation",
+          "applyOverride"
+        ],
+        "guest": []
+      },
+      "overridePolicy": "scopedReasonedExpiring",
+      "hostProjection": {
+        "surfaces": [
+          "liveRoom"
+        ],
+        "presentation": "exceptionQueue"
+      }
     },
     {
       "kind": "placementConfirmation",
@@ -204258,7 +204535,21 @@ export const eventAssistanceWorkflowCatalog = {
       "trigger": "Someone reaches an assigned physical place",
       "automatic": "Keep assigned location separate from confirmed observed position",
       "hostDecision": "Confirm the guest is at that place",
-      "resolution": "Observed placement is recorded for the current assignment"
+      "resolution": "Observed placement is recorded for the current assignment",
+      "commands": {
+        "automatic": [],
+        "host": [
+          "confirmPlacement"
+        ],
+        "guest": []
+      },
+      "overridePolicy": "none",
+      "hostProjection": {
+        "surfaces": [
+          "liveRoom"
+        ],
+        "presentation": "atomicAction"
+      }
     },
     {
       "kind": "resourceRecovery",
@@ -204270,7 +204561,26 @@ export const eventAssistanceWorkflowCatalog = {
       "trigger": "A table, court, station or piece of required equipment is unavailable",
       "automatic": "Suspend affected future reservations and prepare a repair",
       "hostDecision": "Close/reopen resource and approve redistribution",
-      "resolution": "Capacity and assignments reflect the usable resources"
+      "resolution": "Capacity and assignments reflect the usable resources",
+      "commands": {
+        "automatic": [
+          "proposeAllocation"
+        ],
+        "host": [
+          "changeResource",
+          "proposeAllocation",
+          "publishAllocation"
+        ],
+        "guest": []
+      },
+      "overridePolicy": "none",
+      "hostProjection": {
+        "surfaces": [
+          "liveRoom",
+          "liveNow"
+        ],
+        "presentation": "exceptionQueue"
+      }
     },
     {
       "kind": "fairParticipation",
@@ -204282,7 +204592,24 @@ export const eventAssistanceWorkflowCatalog = {
       "trigger": "A guest is waiting, repeatedly excluded or due the next opportunity",
       "automatic": "Track waiting/byes and propose the next eligible opportunity",
       "hostDecision": "Resolve incompatible constraints or an allowed fairness exception",
-      "resolution": "Every waiting guest has a valid next opportunity or an explicit reason"
+      "resolution": "Every waiting guest has a valid next opportunity or an explicit reason",
+      "commands": {
+        "automatic": [
+          "proposeAllocation"
+        ],
+        "host": [
+          "publishAllocation",
+          "applyOverride"
+        ],
+        "guest": []
+      },
+      "overridePolicy": "scopedReasonedExpiring",
+      "hostProjection": {
+        "surfaces": [
+          "liveRoom"
+        ],
+        "presentation": "exceptionQueue"
+      }
     },
     {
       "kind": "roundPublication",
@@ -204294,7 +204621,21 @@ export const eventAssistanceWorkflowCatalog = {
       "trigger": "A next round or reveal is due, cancelled or corrected",
       "automatic": "Prepare the next draft; validate constraints; preserve published history",
       "hostDecision": "Publish, cancel a pending reveal, or issue an explicit correction",
-      "resolution": "Intended revision is published or cancelled; receipt visible"
+      "resolution": "Intended revision is published or cancelled; receipt visible",
+      "commands": {
+        "automatic": [],
+        "host": [
+          "controlReveal"
+        ],
+        "guest": []
+      },
+      "overridePolicy": "none",
+      "hostProjection": {
+        "surfaces": [
+          "liveNow"
+        ],
+        "presentation": "statusControl"
+      }
     },
     {
       "kind": "unitProgress",
@@ -204306,7 +204647,22 @@ export const eventAssistanceWorkflowCatalog = {
       "trigger": "A court/group starts, finishes or needs a substitute independently",
       "automatic": "Update that unit's progress, release resources and prepare next use",
       "hostDecision": "Confirm actual start/finish and substitutions",
-      "resolution": "Unit progress and resource occupancy agree"
+      "resolution": "Unit progress and resource occupancy agree",
+      "commands": {
+        "automatic": [],
+        "host": [
+          "controlUnitProgress"
+        ],
+        "guest": []
+      },
+      "overridePolicy": "none",
+      "hostProjection": {
+        "surfaces": [
+          "liveNow",
+          "liveRoom"
+        ],
+        "presentation": "statusControl"
+      }
     },
     {
       "kind": "outcomeRecording",
@@ -204318,7 +204674,21 @@ export const eventAssistanceWorkflowCatalog = {
       "trigger": "A round result is submitted, missing, corrected or disputed",
       "automatic": "Validate complete outcome data and recompute permitted standings",
       "hostDecision": "Record/correct the actual result and resolve disputes",
-      "resolution": "Accepted result revision and derived standings agree"
+      "resolution": "Accepted result revision and derived standings agree",
+      "commands": {
+        "automatic": [],
+        "host": [
+          "recordOutcome"
+        ],
+        "guest": []
+      },
+      "overridePolicy": "none",
+      "hostProjection": {
+        "surfaces": [
+          "liveNow"
+        ],
+        "presentation": "atomicAction"
+      }
     },
     {
       "kind": "programmeRecovery",
@@ -204330,7 +204700,21 @@ export const eventAssistanceWorkflowCatalog = {
       "trigger": "A step overruns, activity pauses, a cue is revisited or the remaining programme changes",
       "automatic": "Prepare revised timing and affected instructions without retracting past facts",
       "hostDecision": "Pause/resume, extend, skip or approve reordered remaining steps",
-      "resolution": "Confirmed future programme and active clocks agree"
+      "resolution": "Confirmed future programme and active clocks agree",
+      "commands": {
+        "automatic": [],
+        "host": [
+          "changeProgramme"
+        ],
+        "guest": []
+      },
+      "overridePolicy": "none",
+      "hostProjection": {
+        "surfaces": [
+          "liveNow"
+        ],
+        "presentation": "statusControl"
+      }
     },
     {
       "kind": "departure",
@@ -204342,7 +204726,22 @@ export const eventAssistanceWorkflowCatalog = {
       "trigger": "A group is due to depart or the host confirms it has moved",
       "automatic": "Prepare headcount and destination; fan out consequences after confirmation",
       "hostDecision": "Confirm depart, wait or destination change per group",
-      "resolution": "Departure revision and current destination recorded"
+      "resolution": "Departure revision and current destination recorded",
+      "commands": {
+        "automatic": [],
+        "host": [
+          "confirmDeparture"
+        ],
+        "guest": []
+      },
+      "overridePolicy": "none",
+      "hostProjection": {
+        "surfaces": [
+          "liveNow",
+          "liveGuests"
+        ],
+        "presentation": "atomicAction"
+      }
     },
     {
       "kind": "checkpoint",
@@ -204354,7 +204753,27 @@ export const eventAssistanceWorkflowCatalog = {
       "trigger": "A group reaches or misses an expected checkpoint",
       "automatic": "Request a scoped report; compare expected and accounted-for members",
       "hostDecision": "Pacer/sweep confirms headcount and unresolved dispositions",
-      "resolution": "Checkpoint report current; discrepancies owned"
+      "resolution": "Checkpoint report current; discrepancies owned",
+      "commands": {
+        "automatic": [
+          "requestCheckpointReport",
+          "openHostCase"
+        ],
+        "host": [
+          "recordCheckpoint",
+          "reassignCheckpointReporter",
+          "setCheckpointCloseout"
+        ],
+        "guest": []
+      },
+      "overridePolicy": "none",
+      "hostProjection": {
+        "surfaces": [
+          "liveNow",
+          "liveGuests"
+        ],
+        "presentation": "exceptionQueue"
+      }
     },
     {
       "kind": "groupTransfer",
@@ -204366,7 +204785,22 @@ export const eventAssistanceWorkflowCatalog = {
       "trigger": "A participant requests or requires a group change",
       "automatic": "Prepare transfer and notify responsible operators",
       "hostDecision": "Receiving group acknowledges handover where required",
-      "resolution": "One accepted membership and responsible operator remain"
+      "resolution": "One accepted membership and responsible operator remain",
+      "commands": {
+        "automatic": [],
+        "host": [
+          "transferGroup"
+        ],
+        "guest": []
+      },
+      "overridePolicy": "none",
+      "hostProjection": {
+        "surfaces": [
+          "liveGuests",
+          "liveRoom"
+        ],
+        "presentation": "atomicAction"
+      }
     },
     {
       "kind": "routeRecovery",
@@ -204378,7 +204812,22 @@ export const eventAssistanceWorkflowCatalog = {
       "trigger": "A route or venue is blocked, unsuitable or changed",
       "automatic": "Identify affected groups and joining instructions; prepare approved alternatives",
       "hostDecision": "Confirm hold, diversion, return or replacement venue",
-      "resolution": "New route/stop revision confirmed and affected guidance updated"
+      "resolution": "New route/stop revision confirmed and affected guidance updated",
+      "commands": {
+        "automatic": [],
+        "host": [
+          "changeRoute"
+        ],
+        "guest": []
+      },
+      "overridePolicy": "none",
+      "hostProjection": {
+        "surfaces": [
+          "liveNow",
+          "liveRoom"
+        ],
+        "presentation": "exceptionQueue"
+      }
     },
     {
       "kind": "locationFreshness",
@@ -204390,7 +204839,24 @@ export const eventAssistanceWorkflowCatalog = {
       "trigger": "A tracked leader position expires, permission ends or tracking stops",
       "automatic": "Remove live claims, fall back to confirmed guidance and request fresh information",
       "hostDecision": "Restart permitted sharing or provide a human progress report",
-      "resolution": "Fresh location or explicitly labelled fallback available"
+      "resolution": "Fresh location or explicitly labelled fallback available",
+      "commands": {
+        "automatic": [
+          "requestCheckpointReport"
+        ],
+        "host": [
+          "setLocationSharing"
+        ],
+        "guest": []
+      },
+      "overridePolicy": "none",
+      "hostProjection": {
+        "surfaces": [
+          "liveNow",
+          "liveRoom"
+        ],
+        "presentation": "exceptionQueue"
+      }
     },
     {
       "kind": "accountability",
@@ -204402,7 +204868,24 @@ export const eventAssistanceWorkflowCatalog = {
       "trigger": "A departed participant is unresolved at a checkpoint, transfer or finish",
       "automatic": "Reconcile against the relevant departure/participation episode; retain uncertainty",
       "hostDecision": "Responsible operator confirms returned, departed or assistance outcome",
-      "resolution": "All required dispositions resolved or permitted completion exception recorded"
+      "resolution": "All required dispositions resolved or permitted completion exception recorded",
+      "commands": {
+        "automatic": [
+          "openHostCase"
+        ],
+        "host": [
+          "resolveAccountability"
+        ],
+        "guest": []
+      },
+      "overridePolicy": "none",
+      "hostProjection": {
+        "surfaces": [
+          "liveNow",
+          "liveGuests"
+        ],
+        "presentation": "exceptionQueue"
+      }
     },
     {
       "kind": "planChangeCommunication",
@@ -204414,7 +204897,21 @@ export const eventAssistanceWorkflowCatalog = {
       "trigger": "A confirmed event change affects particular guests",
       "automatic": "Compute affected audience, update guidance and send bounded meaningful changes",
       "hostDecision": "Approve the underlying change; handle exceptional recipients",
-      "resolution": "Current change is communicated or delivery exception owned"
+      "resolution": "Current change is communicated or delivery exception owned",
+      "commands": {
+        "automatic": [
+          "sendOperationalMessage"
+        ],
+        "host": [],
+        "guest": []
+      },
+      "overridePolicy": "none",
+      "hostProjection": {
+        "surfaces": [
+          "liveNow"
+        ],
+        "presentation": "exceptionQueue"
+      }
     },
     {
       "kind": "deliveryRecovery",
@@ -204426,7 +204923,23 @@ export const eventAssistanceWorkflowCatalog = {
       "trigger": "A delivery is rejected, unknown, expired or no longer relevant",
       "automatic": "Reconcile provider evidence; retry only when safe; cancel obsolete pending sends",
       "hostDecision": "Choose an allowed fallback for unresolved delivery",
-      "resolution": "Delivery outcome known or explicit manual/unreachable disposition"
+      "resolution": "Delivery outcome known or explicit manual/unreachable disposition",
+      "commands": {
+        "automatic": [
+          "repairDelivery"
+        ],
+        "host": [
+          "repairDelivery"
+        ],
+        "guest": []
+      },
+      "overridePolicy": "none",
+      "hostProjection": {
+        "surfaces": [
+          "liveNow"
+        ],
+        "presentation": "exceptionQueue"
+      }
     },
     {
       "kind": "replyOwnership",
@@ -204438,7 +204951,24 @@ export const eventAssistanceWorkflowCatalog = {
       "trigger": "A guest response creates an explicit unresolved request",
       "automatic": "Route a structured response to its workflow; assign genuine reply obligations",
       "hostDecision": "Answer or transfer an unhandled request",
-      "resolution": "Request resolved or responsibility accepted"
+      "resolution": "Request resolved or responsibility accepted",
+      "commands": {
+        "automatic": [
+          "openHostCase"
+        ],
+        "host": [
+          "resolveAssistance"
+        ],
+        "guest": []
+      },
+      "overridePolicy": "none",
+      "hostProjection": {
+        "surfaces": [
+          "liveNow",
+          "liveGuests"
+        ],
+        "presentation": "exceptionQueue"
+      }
     },
     {
       "kind": "guestAssistance",
@@ -204450,7 +204980,24 @@ export const eventAssistanceWorkflowCatalog = {
       "trigger": "A guest asks for practical or introduction help",
       "automatic": "Acknowledge and route privately to an available responsible operator",
       "hostDecision": "Provide assistance and record the operational resolution",
-      "resolution": "Request resolved, declined or explicitly transferred"
+      "resolution": "Request resolved, declined or explicitly transferred",
+      "commands": {
+        "automatic": [
+          "openHostCase"
+        ],
+        "host": [
+          "resolveAssistance"
+        ],
+        "guest": []
+      },
+      "overridePolicy": "none",
+      "hostProjection": {
+        "surfaces": [
+          "liveNow",
+          "liveGuests"
+        ],
+        "presentation": "exceptionQueue"
+      }
     },
     {
       "kind": "comfortSafety",
@@ -204462,7 +205009,24 @@ export const eventAssistanceWorkflowCatalog = {
       "trigger": "A comfort or safety concern is explicitly reported",
       "automatic": "Route to authorized staff; constrain future allocations; retain a private unresolved case",
       "hostDecision": "Assess and act; decide separation, pause, removal or outside assistance",
-      "resolution": "Authorized human records disposition; sensitive details stay restricted"
+      "resolution": "Authorized human records disposition; sensitive details stay restricted",
+      "commands": {
+        "automatic": [
+          "routeRestrictedCase"
+        ],
+        "host": [
+          "resolveRestrictedCase"
+        ],
+        "guest": []
+      },
+      "overridePolicy": "none",
+      "hostProjection": {
+        "surfaces": [
+          "liveNow",
+          "liveGuests"
+        ],
+        "presentation": "exceptionQueue"
+      }
     },
     {
       "kind": "attendanceSync",
@@ -204474,7 +205038,22 @@ export const eventAssistanceWorkflowCatalog = {
       "trigger": "An attendance action is queued offline or conflicts with a newer revision",
       "automatic": "Retry absolute operations; preserve applied results and mark data freshness",
       "hostDecision": "Resolve conflicting identity or attendance observations",
-      "resolution": "Outbox synchronized or conflict explicitly resolved"
+      "resolution": "Outbox synchronized or conflict explicitly resolved",
+      "commands": {
+        "automatic": [],
+        "host": [
+          "reconcileAttendance"
+        ],
+        "guest": []
+      },
+      "overridePolicy": "none",
+      "hostProjection": {
+        "surfaces": [
+          "liveGuests",
+          "liveNow"
+        ],
+        "presentation": "exceptionQueue"
+      }
     },
     {
       "kind": "concurrencyRecovery",
@@ -204486,7 +205065,23 @@ export const eventAssistanceWorkflowCatalog = {
       "trigger": "Two operators act against the same changing resource",
       "automatic": "Reject stale intent; return new facts; preserve unrelated applied work",
       "hostDecision": "Reconfirm only when the proposed effect has materially changed",
-      "resolution": "Action applied once against valid preconditions or abandoned"
+      "resolution": "Action applied once against valid preconditions or abandoned",
+      "commands": {
+        "automatic": [
+          "resumeOperation"
+        ],
+        "host": [
+          "resumeOperation"
+        ],
+        "guest": []
+      },
+      "overridePolicy": "none",
+      "hostProjection": {
+        "surfaces": [
+          "liveNow"
+        ],
+        "presentation": "exceptionQueue"
+      }
     },
     {
       "kind": "operationRecovery",
@@ -204498,7 +205093,23 @@ export const eventAssistanceWorkflowCatalog = {
       "trigger": "An action times out, a worker restarts or a device reconnects",
       "automatic": "Resume durable work and reconcile unknown effects before retrying",
       "hostDecision": "Handle genuinely unresolved external outcomes",
-      "resolution": "Work reaches a known outcome with no blind duplicate effect"
+      "resolution": "Work reaches a known outcome with no blind duplicate effect",
+      "commands": {
+        "automatic": [
+          "resumeOperation"
+        ],
+        "host": [
+          "resumeOperation"
+        ],
+        "guest": []
+      },
+      "overridePolicy": "none",
+      "hostProjection": {
+        "surfaces": [
+          "liveNow"
+        ],
+        "presentation": "exceptionQueue"
+      }
     },
     {
       "kind": "contextBoundary",
@@ -204510,7 +205121,19 @@ export const eventAssistanceWorkflowCatalog = {
       "trigger": "An action targets the wrong event/session or mode",
       "automatic": "Reject mismatched identity, scope or rehearsal/live destination",
       "hostDecision": "Open the intended event context",
-      "resolution": "Only intended event/session receives the action"
+      "resolution": "Only intended event/session receives the action",
+      "commands": {
+        "automatic": [],
+        "host": [],
+        "guest": []
+      },
+      "overridePolicy": "none",
+      "hostProjection": {
+        "surfaces": [
+          "liveNow"
+        ],
+        "presentation": "exceptionQueue"
+      }
     },
     {
       "kind": "overrideReview",
@@ -204522,7 +205145,21 @@ export const eventAssistanceWorkflowCatalog = {
       "trigger": "A host requests a change contrary to a suggestion or constraint",
       "automatic": "Explain whether the rule is a preference, overrideable operating rule or hard limit",
       "hostDecision": "Choose an allowed scoped override with reason and expiry",
-      "resolution": "Explicit override applied or non-overridable limit retained"
+      "resolution": "Explicit override applied or non-overridable limit retained",
+      "commands": {
+        "automatic": [],
+        "host": [
+          "applyOverride"
+        ],
+        "guest": []
+      },
+      "overridePolicy": "scopedReasonedExpiring",
+      "hostProjection": {
+        "surfaces": [
+          "liveNow"
+        ],
+        "presentation": "atomicAction"
+      }
     },
     {
       "kind": "eventClosure",
@@ -204534,7 +205171,23 @@ export const eventAssistanceWorkflowCatalog = {
       "trigger": "Event finishes, ends early or is aborted",
       "automatic": "Stop live tasks, identify unresolved obligations and prepare closure",
       "hostDecision": "Confirm finish/abort and allowed accountability exceptions",
-      "resolution": "Live operation closed; surviving obligations handed to follow-up"
+      "resolution": "Live operation closed; surviving obligations handed to follow-up",
+      "commands": {
+        "automatic": [],
+        "host": [
+          "completeEvent",
+          "applyOverride"
+        ],
+        "guest": []
+      },
+      "overridePolicy": "scopedReasonedExpiring",
+      "hostProjection": {
+        "surfaces": [
+          "liveNow",
+          "eventReport"
+        ],
+        "presentation": "statusControl"
+      }
     },
     {
       "kind": "attendanceReconciliation",
@@ -204546,7 +205199,22 @@ export const eventAssistanceWorkflowCatalog = {
       "trigger": "Final attendance disagrees with confirmed observations or pending work",
       "automatic": "Assemble specific discrepancies without classifying silence as absence",
       "hostDecision": "Correct attendance and confirmed no-show dispositions",
-      "resolution": "Final attendance reconciled with coverage stated"
+      "resolution": "Final attendance reconciled with coverage stated",
+      "commands": {
+        "automatic": [],
+        "host": [
+          "reconcileAttendance",
+          "recordNoShow"
+        ],
+        "guest": []
+      },
+      "overridePolicy": "none",
+      "hostProjection": {
+        "surfaces": [
+          "eventReport"
+        ],
+        "presentation": "exceptionQueue"
+      }
     },
     {
       "kind": "financialReconciliation",
@@ -204558,7 +205226,24 @@ export const eventAssistanceWorkflowCatalog = {
       "trigger": "An authoritative provider reports a payment/refund discrepancy",
       "automatic": "Link provider reconciliation work and prevent duplicate financial effects",
       "hostDecision": "Resolve through payment owner; authorize money movement there",
-      "resolution": "Provider-owned discrepancy resolved"
+      "resolution": "Provider-owned discrepancy resolved",
+      "commands": {
+        "automatic": [
+          "reconcileFinance"
+        ],
+        "host": [
+          "reconcileFinance"
+        ],
+        "guest": []
+      },
+      "overridePolicy": "none",
+      "hostProjection": {
+        "surfaces": [
+          "today",
+          "eventReport"
+        ],
+        "presentation": "exceptionQueue"
+      }
     },
     {
       "kind": "postEventFollowUp",
@@ -204570,7 +205255,25 @@ export const eventAssistanceWorkflowCatalog = {
       "trigger": "A selected follow-up is due or becomes inappropriate",
       "automatic": "Prepare/deliver relevant messages through permitted routes; honor opt-outs and unresolved cases",
       "hostDecision": "Handle sensitive exceptions or explicitly authored content",
-      "resolution": "Chosen follow-up delivered, skipped or exception owned"
+      "resolution": "Chosen follow-up delivered, skipped or exception owned",
+      "commands": {
+        "automatic": [
+          "sendOperationalMessage",
+          "repairDelivery"
+        ],
+        "host": [
+          "repairDelivery"
+        ],
+        "guest": []
+      },
+      "overridePolicy": "none",
+      "hostProjection": {
+        "surfaces": [
+          "today",
+          "eventReport"
+        ],
+        "presentation": "exceptionQueue"
+      }
     },
     {
       "kind": "eventLearning",
@@ -204582,7 +205285,19 @@ export const eventAssistanceWorkflowCatalog = {
       "trigger": "Event operations have closed with enough evidence for a recap",
       "automatic": "Summarize interventions, waiting, unresolved work and guest outcomes with denominators",
       "hostDecision": "Review lessons and choose changes for next time",
-      "resolution": "Report represents available evidence and explicit unknowns"
+      "resolution": "Report represents available evidence and explicit unknowns",
+      "commands": {
+        "automatic": [],
+        "host": [],
+        "guest": []
+      },
+      "overridePolicy": "none",
+      "hostProjection": {
+        "surfaces": [
+          "eventReport"
+        ],
+        "presentation": "reportInsight"
+      }
     }
   ]
 };

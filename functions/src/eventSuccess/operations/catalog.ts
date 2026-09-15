@@ -4,6 +4,11 @@ import type {
 import {
   eventAssistanceWorkflowCatalog,
 } from "../../shared/generated/catalogs/eventAssistanceWorkflowCatalog";
+import {
+  COMMAND_AUTHORITY,
+  type Authority,
+  type CommandKind,
+} from "./commands";
 import {assertNever} from "./lateJoin";
 
 export type WorkflowKind = EventAssistancePolicy["kind"];
@@ -16,8 +21,60 @@ const completeCatalog: [
   ? true
   : false = true;
 void completeCatalog;
+type CatalogCommands =
+  (typeof workflowDefinitions)[number]["commands"];
+type CatalogCommandKind = CatalogCommands[keyof CatalogCommands][number];
+const completeCommandCatalog: [
+  Exclude<CommandKind, CatalogCommandKind>,
+  Exclude<CatalogCommandKind, CommandKind>,
+] extends [never, never]
+  ? true
+  : false = true;
+void completeCommandCatalog;
+
+type CommandsAvailableTo<A extends Authority> = {
+  [K in CommandKind]: Extract<
+    A,
+    (typeof COMMAND_AUTHORITY)[K][number]
+  > extends never ? never : K
+}[CommandKind];
+type CommandsFor<R extends keyof CatalogCommands> =
+  CatalogCommands[R][number];
+type HostAuthority =
+  | "checkIn"
+  | "groupLead"
+  | "eventLead"
+  | "authorizedSafetyOperator";
+const commandsMatchActors: [
+  Exclude<CommandsFor<"automatic">,
+    CommandsAvailableTo<"systemWithinPolicy">>,
+  Exclude<CommandsFor<"host">, CommandsAvailableTo<HostAuthority>>,
+  Exclude<CommandsFor<"guest">, CommandsAvailableTo<"guestSelf">>,
+] extends [never, never, never]
+  ? true
+  : false = true;
+void commandsMatchActors;
+
 export type ApplicabilityRule =
   (typeof workflowDefinitions)[number]["applicability"];
+export type HostSurface =
+  (typeof workflowDefinitions)[number]["hostProjection"]["surfaces"][number];
+
+export function workflowDefinitionsForSurface(
+  surface: HostSurface
+) {
+  return workflowDefinitions.filter((definition) =>
+    (definition.hostProjection.surfaces as readonly HostSurface[])
+      .includes(surface));
+}
+
+export function workflowHasCommandContract(
+  definition: (typeof workflowDefinitions)[number]
+): boolean {
+  return definition.commands.automatic.length > 0 ||
+    definition.commands.host.length > 0 ||
+    definition.commands.guest.length > 0;
+}
 
 /** Derived per phase/unit from the saved format and explicit requirements. */
 export interface OperatingCapabilities {

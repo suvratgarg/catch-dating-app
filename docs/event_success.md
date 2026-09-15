@@ -98,6 +98,23 @@ the command kind, payload and live/rehearsal context. Generated TypeScript
 contracts and Dart vocabularies must be regenerated together; the schema check
 requires complete catalog/configuration coverage.
 
+Each catalog definition also names its actor-specific automatic, Host and guest
+commands, its override policy, and the Host surfaces and presentation that own
+the workflow. The catalog therefore answers both "what can happen?" and "where
+does the Host handle it?" without making a runtime executor implicit. Contract
+validation requires every command kind to appear in at least one workflow and
+every workflow to have a valid Host projection. TypeScript compilation proves
+that automatic, Host and guest command lists agree with command authority; the
+generated Dart descriptor exposes the same closed relation to Today, setup,
+live Now, live Guests, live Room and report code.
+
+Seven workflows intentionally have no command contract yet:
+`venueReadiness`, `routeReadiness`, `formatReadiness`,
+`messagingReadiness`, `financialReadiness`, `contextBoundary` and
+`eventLearning`. Their empty lists are checked source evidence of an
+implementation gap, rather than an inferred no-op or a claim that descriptive
+catalog coverage is executable.
+
 `functions/src/eventSuccess/operations/` owns the pure policy evaluators and
 command-boundary validation. The late-join evaluator accepts explicit time,
 attendance, admission, guidance, participation episode and policy authority.
@@ -2562,10 +2579,14 @@ delivery and attendance-closeout state without widening provider authority.
 With the shared execution and SMS/WhatsApp/RCS boundaries in source, the next
 implementation sequence is:
 
-1. Extend the remaining workflow families with their applicable commands,
-   overrides and Host projections. A catalog definition alone is not executable
-   coverage.
-2. Complete audited consent and sender/budget onboarding, verify SMS, WhatsApp
+1. Add the seven missing domain commands and register policy evaluators against
+   authoritative source facts. The remaining mapped workflows still require
+   their concrete executor registration; catalog membership alone is not
+   executable coverage.
+2. Bind unresolved workflow occurrences to the mapped Today, setup, live Now,
+   live Guests, live Room and report projections. A surface mapping does not
+   manufacture readiness or occurrence state.
+3. Complete audited consent and sender/budget onboarding, verify SMS, WhatsApp
    and RCS activation, integrate and deploy, and verify the journey on device.
 
 The initial RCS contracts and rendering draft are preserved on

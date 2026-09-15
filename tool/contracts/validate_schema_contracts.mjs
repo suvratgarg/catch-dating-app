@@ -182,6 +182,68 @@ function checkEventAssistanceContracts(parsed) {
     )
       fail("Assistance commands require closed context-bound envelopes.");
   }
+  const knownCommandKinds = new Set(commandKinds);
+  const referencedCommandKinds = new Set();
+  const commandRoles = ["automatic", "host", "guest"];
+  const overridePolicies = new Set(["none", "scopedReasonedExpiring"]);
+  const hostSurfaces = new Set([
+    "today",
+    "eventSetup",
+    "liveNow",
+    "liveGuests",
+    "liveRoom",
+    "eventReport",
+  ]);
+  const hostPresentations = new Set([
+    "readinessTask",
+    "atomicAction",
+    "statusControl",
+    "exceptionQueue",
+    "reportInsight",
+  ]);
+  for (const row of rows) {
+    const workflow = row.kind ?? "unknown";
+    const commandMap = row.commands;
+    if (!commandMap || typeof commandMap !== "object" ||
+        JSON.stringify(Object.keys(commandMap)) !==
+          JSON.stringify(commandRoles)) {
+      fail("Workflow commands must cover every actor role: " + workflow);
+      continue;
+    }
+    for (const role of commandRoles) {
+      const values = commandMap[role];
+      if (!Array.isArray(values) ||
+          new Set(values).size !== values.length ||
+          values.some((kind) => !knownCommandKinds.has(kind))) {
+        fail("Invalid " + role + " workflow commands: " + workflow);
+        continue;
+      }
+      for (const kind of values) referencedCommandKinds.add(kind);
+    }
+    if (!overridePolicies.has(row.overridePolicy)) {
+      fail("Invalid workflow override policy: " + workflow);
+    }
+    const supportsOverride = commandMap.host.includes("applyOverride");
+    if ((row.overridePolicy === "scopedReasonedExpiring") !==
+        supportsOverride) {
+      fail("Workflow override policy must match applyOverride: " + workflow);
+    }
+    const projection = row.hostProjection;
+    if (!projection || typeof projection !== "object" ||
+        JSON.stringify(Object.keys(projection)) !==
+          JSON.stringify(["surfaces", "presentation"]) ||
+        !Array.isArray(projection.surfaces) ||
+        projection.surfaces.length === 0 ||
+        new Set(projection.surfaces).size !== projection.surfaces.length ||
+        projection.surfaces.some((surface) => !hostSurfaces.has(surface)) ||
+        !hostPresentations.has(projection.presentation)) {
+      fail("Invalid Host projection: " + workflow);
+    }
+  }
+  if (JSON.stringify([...referencedCommandKinds].sort()) !==
+      JSON.stringify([...knownCommandKinds].sort())) {
+    fail("Event assistance workflows must account for every command kind.");
+  }
 }
 
 function checkHostAttentionPolicyCatalog(parsed) {

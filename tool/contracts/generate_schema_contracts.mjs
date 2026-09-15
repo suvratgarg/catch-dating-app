@@ -4561,14 +4561,11 @@ async function main() {
   );
   addTextOutput(
     "lib/core/schema_contracts/generated/event_assistance_kinds.g.dart",
-    "// GENERATED CODE - DO NOT MODIFY BY HAND.\n" +
-      "// Regenerate with: node tool/contracts/generate_schema_contracts.mjs\n\n" +
-      "enum EventAssistanceWorkflowKind {\n" +
-      workflowKinds.map((kind) => "  " + kind + ",").join("\n") +
-      "\n}\n\n" +
-      "enum EventAssistanceCommandKind {\n" +
-      commandKinds.map((kind) => "  " + kind + ",").join("\n") +
-      "\n}\n"
+    renderDartEventAssistanceCatalog({
+      catalog: eventAssistanceCatalog,
+      workflowKinds,
+      commandKinds,
+    })
   );
   const bundledSchemas = new Map();
 
@@ -5298,6 +5295,148 @@ export function deriveEventSuccessMomentSeed(input: {
     hash = Math.imul(hash ^ 0xff, 0x01000193) >>> 0;
   }
   return hash;
+}
+`;
+}
+
+function renderDartEventAssistanceCatalog({
+  catalog,
+  workflowKinds,
+  commandKinds,
+}) {
+  const enumText = (name, values) => {
+    const compact = `enum ${name} { ${
+      values.map(lowerCamelCase).join(", ")
+    } }`;
+    return compact.length <= 80 ? compact :
+      `enum ${name} {\n` +
+      values.map((value) => `  ${lowerCamelCase(value)},`).join("\n") +
+      "\n}";
+  };
+  const enumList = (name, values, spaces = 6) => values.length === 0 ?
+    `<${name}>[]` :
+    `<${name}>[\n` + values.map((value) =>
+      `${" ".repeat(spaces)}${name}.${lowerCamelCase(value)},`
+    ).join("\n") + `\n${" ".repeat(spaces - 2)}]`;
+  const families = [...new Set(catalog.definitions.map((row) => row.family))];
+  const applicability = [...new Set(
+    catalog.definitions.map((row) => row.applicability)
+  )];
+  const scopes = [...new Set(catalog.definitions.map((row) => row.scope))];
+  const overridePolicies = [...new Set(
+    catalog.definitions.map((row) => row.overridePolicy)
+  )];
+  const surfaces = [...new Set(catalog.definitions.flatMap(
+    (row) => row.hostProjection.surfaces
+  ))];
+  const presentations = [...new Set(catalog.definitions.map(
+    (row) => row.hostProjection.presentation
+  ))];
+  const rows = catalog.definitions.map((row) =>
+    "  EventAssistanceWorkflowDescriptor(\n" +
+    `    kind: EventAssistanceWorkflowKind.${row.kind},\n` +
+    `    version: ${row.version},\n` +
+    `    family: EventAssistanceWorkflowFamily.${
+      lowerCamelCase(row.family)
+    },\n` +
+    `    applicability: EventAssistanceApplicability.${
+      lowerCamelCase(row.applicability)
+    },\n` +
+    `    scope: EventAssistanceWorkflowScope.${lowerCamelCase(row.scope)},\n` +
+    `    automaticCommands: ${enumList(
+      "EventAssistanceCommandKind",
+      row.commands.automatic
+    )},\n` +
+    `    hostCommands: ${enumList(
+      "EventAssistanceCommandKind",
+      row.commands.host
+    )},\n` +
+    `    guestCommands: ${enumList(
+      "EventAssistanceCommandKind",
+      row.commands.guest
+    )},\n` +
+    `    overridePolicy: EventAssistanceOverridePolicy.${
+      lowerCamelCase(row.overridePolicy)
+    },\n` +
+    "    hostProjection: EventAssistanceHostProjection(\n" +
+    `      surfaces: ${enumList(
+      "EventAssistanceHostSurface",
+      row.hostProjection.surfaces,
+      8
+    )},\n` +
+    `      presentation: EventAssistanceHostPresentation.${
+      lowerCamelCase(row.hostProjection.presentation)
+    },\n` +
+    "    ),\n" +
+    "  ),"
+  ).join("\n");
+  return `${dartGeneratedHeader()}${enumText(
+    "EventAssistanceWorkflowKind",
+    workflowKinds
+  )}
+
+${enumText("EventAssistanceCommandKind", commandKinds)}
+
+${enumText("EventAssistanceWorkflowFamily", families)}
+
+${enumText("EventAssistanceApplicability", applicability)}
+
+${enumText("EventAssistanceWorkflowScope", scopes)}
+
+${enumText("EventAssistanceOverridePolicy", overridePolicies)}
+
+${enumText("EventAssistanceHostSurface", surfaces)}
+
+${enumText("EventAssistanceHostPresentation", presentations)}
+
+final class EventAssistanceHostProjection {
+  const EventAssistanceHostProjection({
+    required this.surfaces,
+    required this.presentation,
+  });
+
+  final List<EventAssistanceHostSurface> surfaces;
+  final EventAssistanceHostPresentation presentation;
+}
+
+final class EventAssistanceWorkflowDescriptor {
+  const EventAssistanceWorkflowDescriptor({
+    required this.kind,
+    required this.version,
+    required this.family,
+    required this.applicability,
+    required this.scope,
+    required this.automaticCommands,
+    required this.hostCommands,
+    required this.guestCommands,
+    required this.overridePolicy,
+    required this.hostProjection,
+  });
+
+  final EventAssistanceWorkflowKind kind;
+  final int version;
+  final EventAssistanceWorkflowFamily family;
+  final EventAssistanceApplicability applicability;
+  final EventAssistanceWorkflowScope scope;
+  final List<EventAssistanceCommandKind> automaticCommands;
+  final List<EventAssistanceCommandKind> hostCommands;
+  final List<EventAssistanceCommandKind> guestCommands;
+  final EventAssistanceOverridePolicy overridePolicy;
+  final EventAssistanceHostProjection hostProjection;
+
+  bool get hasCommandContract =>
+      automaticCommands.isNotEmpty ||
+      hostCommands.isNotEmpty ||
+      guestCommands.isNotEmpty;
+}
+
+const eventAssistanceWorkflowCatalog = <EventAssistanceWorkflowDescriptor>[
+${rows}
+];
+
+extension EventAssistanceWorkflowCatalogLookup on EventAssistanceWorkflowKind {
+  EventAssistanceWorkflowDescriptor get descriptor =>
+      eventAssistanceWorkflowCatalog[index];
 }
 `;
 }
@@ -6363,6 +6502,7 @@ ${bySource}
     text: `${dartGeneratedHeader()}
 // Stable barrel for generated Dart JSON Schema contracts.
 
+export 'event_assistance_kinds.g.dart';
 export 'event_success_moment_presentations.g.dart';
 export 'field_constraints.g.dart';
 export 'schemas/schema_constants.g.dart';

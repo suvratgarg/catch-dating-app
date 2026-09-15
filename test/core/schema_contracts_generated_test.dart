@@ -8,6 +8,37 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:json_schema/json_schema.dart';
 
 void main() {
+  test('generated event assistance catalog is exhaustive and typed', () {
+    expect(
+      schema_contracts.eventAssistanceWorkflowCatalog.length,
+      schema_contracts.EventAssistanceWorkflowKind.values.length,
+    );
+    for (final kind in schema_contracts.EventAssistanceWorkflowKind.values) {
+      expect(
+        schema_contracts.eventAssistanceWorkflowCatalog[kind.index].kind,
+        kind,
+      );
+    }
+    expect(
+      schema_contracts.eventAssistanceWorkflowCatalog
+          .expand(
+            (definition) => <schema_contracts.EventAssistanceCommandKind>[
+              ...definition.automaticCommands,
+              ...definition.hostCommands,
+              ...definition.guestCommands,
+            ],
+          )
+          .toSet(),
+      schema_contracts.EventAssistanceCommandKind.values.toSet(),
+    );
+    expect(
+      schema_contracts.eventAssistanceWorkflowCatalog
+          .expand((definition) => definition.hostProjection.surfaces)
+          .toSet(),
+      schema_contracts.EventAssistanceHostSurface.values.toSet(),
+    );
+  });
+
   test('generated profile prompt constants match contract limits', () {
     expect(schemaProfilePromptPerfectEventId, 'perfectRun');
     expect(schemaMaxProfilePromptAnswers, 3);
