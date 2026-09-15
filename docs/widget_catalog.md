@@ -351,9 +351,9 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>CatchStartupBrandStage</code> | <code>lib/core/widgets/catch_startup_loading_screen.dart:41</code> | — | — | The shared role-specific brand anchor used by Host startup and auth. |
 | <code>EventActivityBackdrop</code> | <code>lib/core/widgets/event_activity_visuals.dart:181</code> | — | <code>catch.event_card</code> | Shared activity artwork backdrop used by event cards, thumbnails, and no-photo event media states. |
 | <code>EventActivityStamp</code> | <code>lib/core/widgets/event_visual_atoms.dart:6</code> | — | <code>catch.event_card</code> | Circular activity glyph stamp used by event cards, agenda rows, and ticket compositions. |
-| <code>OrderedPhotoAddTile</code> | <code>lib/core/widgets/ordered_photo_picker.dart:837</code> | — | — | No class documentation or registry summary. |
-| <code>OrderedPhotoPicker</code> | <code>lib/core/widgets/ordered_photo_picker.dart:50</code> | — | — | No class documentation or registry summary. |
-| <code>OrderedPhotoTile</code> | <code>lib/core/widgets/ordered_photo_picker.dart:598</code> | — | — | No class documentation or registry summary. |
+| <code>OrderedPhotoAddTile</code> | <code>lib/core/widgets/ordered_photo_picker.dart:714</code> | — | — | No class documentation or registry summary. |
+| <code>OrderedPhotoPicker</code> | <code>lib/core/widgets/ordered_photo_picker.dart:15</code> | — | — | No class documentation or registry summary. |
+| <code>OrderedPhotoTile</code> | <code>lib/core/widgets/ordered_photo_picker.dart:475</code> | — | — | No class documentation or registry summary. |
 | <code>CrossPathsEventConsentSection</code> | <code>lib/cross_paths/presentation/cross_paths_event_consent_section.dart:8</code> | — | — | Provider-free Event Detail renderer for hidden, loading, enabled, disabled, pending, and unavailable event-consent states resolved by the route. |
 | <code>CrossPathsEventContextCard</code> | <code>lib/cross_paths/presentation/cross_paths_explore_card.dart:131</code> | — | — | No class documentation or registry summary. |
 | <code>CrossPathsExploreCard</code> | <code>lib/cross_paths/presentation/cross_paths_explore_card.dart:25</code> | — | — | No class documentation or registry summary. |
@@ -476,7 +476,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>ProgressRow</code> | <code>lib/event_success/presentation/event_success_feature_blocks.dart:651</code> | — | — | No class documentation or registry summary. |
 | <code>WingmanCandidateRow</code> | <code>lib/event_success/presentation/event_success_feature_blocks.dart:916</code> | — | — | No class documentation or registry summary. |
 | <code>EventSuccessHeroSurface</code> | <code>lib/event_success/presentation/event_success_hero_surface.dart:6</code> | — | — | Accent-to-ink diagonal gradient hero shell for event_success surfaces. |
-| <code>EventSuccessHostSection</code> | <code>lib/event_success/presentation/event_success_host_screen.dart:46</code> | — | — | No class documentation or registry summary. |
+| <code>EventSuccessHostSection</code> | <code>lib/event_success/presentation/event_success_host_screen.dart:48</code> | — | — | No class documentation or registry summary. |
 | <code>EventSuccessHostWorkspacePageBody</code> | <code>lib/event_success/presentation/event_success_host_workspace_page_body.dart:29</code> | — | — | No class documentation or registry summary. |
 | <code>CustomQuestionnaireFields</code> | <code>lib/event_success/presentation/event_success_questionnaire_config_editor.dart:157</code> | — | — | No class documentation or registry summary. |
 | <code>EventSuccessQuestionnaireConfigEditor</code> | <code>lib/event_success/presentation/event_success_questionnaire_config_editor.dart:11</code> | — | — | No class documentation or registry summary. |
@@ -931,11 +931,11 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>OnboardingProfilePromptsStep</code> | <code>lib/onboarding/presentation/pages/profile_prompts_page.dart:126</code> | — | — | No class documentation or registry summary. |
 | <code>PromptField</code> | <code>lib/onboarding/presentation/pages/profile_prompts_page.dart:189</code> | — | — | No class documentation or registry summary. |
 | <code>OnboardingRunningPrefsStep</code> | <code>lib/onboarding/presentation/pages/running_prefs_page.dart:161</code> | — | — | No class documentation or registry summary. |
-| <code>ReelBand</code> | <code>lib/onboarding/presentation/pages/welcome_page.dart:556</code> | — | — | No class documentation or registry summary. |
-| <code>ReelRow</code> | <code>lib/onboarding/presentation/pages/welcome_page.dart:635</code> | — | — | No class documentation or registry summary. |
-| <code>RevealEntrance</code> | <code>lib/onboarding/presentation/pages/welcome_page.dart:767</code> | — | — | No class documentation or registry summary. |
-| <code>WelcomeFocusLockup</code> | <code>lib/onboarding/presentation/pages/welcome_page.dart:412</code> | — | — | The fixed grammatical focus slot shared by the Consumer boot handoff and the moving Welcome reel. |
-| <code>WelcomeScene</code> | <code>lib/onboarding/presentation/pages/welcome_page.dart:222</code> | — | — | No class documentation or registry summary. |
+| <code>ReelBand</code> | <code>lib/onboarding/presentation/pages/welcome_page.dart:558</code> | — | — | No class documentation or registry summary. |
+| <code>ReelRow</code> | <code>lib/onboarding/presentation/pages/welcome_page.dart:637</code> | — | — | No class documentation or registry summary. |
+| <code>RevealEntrance</code> | <code>lib/onboarding/presentation/pages/welcome_page.dart:769</code> | — | — | No class documentation or registry summary. |
+| <code>WelcomeFocusLockup</code> | <code>lib/onboarding/presentation/pages/welcome_page.dart:414</code> | — | — | The fixed grammatical focus slot shared by the Consumer boot handoff and the moving Welcome reel. |
+| <code>WelcomeScene</code> | <code>lib/onboarding/presentation/pages/welcome_page.dart:224</code> | — | — | No class documentation or registry summary. |
 | <code>OnboardingStepLayout</code> | <code>lib/onboarding/shared/onboarding_step_layout.dart:5</code> | — | — | No class documentation or registry summary. |
 | <code>OrganizerAuthorityBadge</code> | <code>lib/organizers/presentation/organizer_authority_badge.dart:21</code> | — | — | No class documentation or registry summary. |
 | <code>PaymentCheckoutEventBackdrop</code> | <code>lib/payments/presentation/payment_confirmation_screen.dart:182</code> | — | — | No class documentation or registry summary. |
@@ -1081,7 +1081,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>CatchConsumerBootScreen</code> | <code>lib/consumer_bootstrap.dart:167</code> | — | — | The animated Consumer cold-start surface shown above auth and routing. |
 | <code>CatchCelebrationScreen</code> | <code>lib/core/celebration/catch_celebration_screen.dart:41</code> | — | — | No class documentation or registry summary. |
 | <code>CatchStartupLoadingScreen</code> | <code>lib/core/widgets/catch_startup_loading_screen.dart:9</code> | — | — | Branded app-start composition with the Catch logo and a delayed bounded loading indicator. |
-| <code>OrderedPhotoManagerScreen</code> | <code>lib/core/widgets/ordered_photo_picker.dart:221</code> | — | — | Full-screen editor for long ordered galleries. It keeps a local mirror so dozens of items can be reordered or removed without collapsing the route; every operation is also forwarded to the owning draft/controller. |
+| <code>OrderedPhotoManagerScreen</code> | <code>lib/core/widgets/ordered_photo_picker.dart:166</code> | — | — | Full-screen editor for long ordered galleries. It keeps a local mirror so dozens of items can be reordered or removed without collapsing the route; every operation is also forwarded to the owning draft/controller. |
 | <code>CrossPathsInvitationScreen</code> | <code>lib/cross_paths/presentation/cross_paths_invitation_screen.dart:27</code> | — | — | No class documentation or registry summary. |
 | <code>ActivityScreen</code> | <code>lib/dashboard/presentation/activity_screen.dart:22</code> | — | — | No class documentation or registry summary. |
 | <code>DashboardEmptyHomeScreen</code> | <code>lib/dashboard/presentation/dashboard_empty_home_screen.dart:3</code> | — | — | No class documentation or registry summary. |
@@ -1111,7 +1111,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>HostEventsTimelinePage</code> | <code>lib/hosts/events/presentation/widgets/host_events_list.dart:213</code> | — | — | One lifecycle page. The root owns tabs and scrolling chrome; this adapter selects data/state only, and the shared page/section/record owners lay it out. |
 | <code>HostApplicationDetailScreen</code> | <code>lib/hosts/presentation/applications/host_application_detail_screen.dart:3</code> | — | — | No class documentation or registry summary. |
 | <code>HostApplicationsScreen</code> | <code>lib/hosts/presentation/applications/host_applications_screen.dart:27</code> | — | — | No class documentation or registry summary. |
-| <code>CreateClubScreen</code> | <code>lib/hosts/presentation/club_management/create/create_club_screen.dart:32</code> | — | — | No class documentation or registry summary. |
+| <code>CreateClubScreen</code> | <code>lib/hosts/presentation/club_management/create/create_club_screen.dart:34</code> | — | — | No class documentation or registry summary. |
 | <code>HostClubEditorLoadingScreen</code> | <code>lib/hosts/presentation/club_management/create/widgets/host_club_editor_loading_screen.dart:7</code> | — | — | No class documentation or registry summary. |
 | <code>HostCreateClubScreen</code> | <code>lib/hosts/presentation/club_management/host_create_club_screen.dart:4</code> | — | — | No class documentation or registry summary. |
 | <code>HostCustomerDetailScreen</code> | <code>lib/hosts/presentation/customers/host_customer_detail_screen.dart:43</code> | — | — | No class documentation or registry summary. |
@@ -1155,7 +1155,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>PhotosPage</code> | <code>lib/onboarding/presentation/pages/photos_page.dart:17</code> | — | — | No class documentation or registry summary. |
 | <code>ProfilePromptsPage</code> | <code>lib/onboarding/presentation/pages/profile_prompts_page.dart:17</code> | — | — | No class documentation or registry summary. |
 | <code>RunningPrefsPage</code> | <code>lib/onboarding/presentation/pages/running_prefs_page.dart:16</code> | — | — | No class documentation or registry summary. |
-| <code>WelcomePage</code> | <code>lib/onboarding/presentation/pages/welcome_page.dart:16</code> | — | — | No class documentation or registry summary. |
+| <code>WelcomePage</code> | <code>lib/onboarding/presentation/pages/welcome_page.dart:18</code> | — | — | No class documentation or registry summary. |
 | <code>StartWelcomeRouteScreen</code> | <code>lib/onboarding/presentation/start_welcome_route_screen.dart:9</code> | — | — | Route-level surface owner for the logged-out Welcome experience. |
 | <code>PaymentConfirmationLoadingScreen</code> | <code>lib/payments/presentation/payment_confirmation_loading_screen.dart:5</code> | — | — | No class documentation or registry summary. |
 | <code>PaymentConfirmationScreen</code> | <code>lib/payments/presentation/payment_confirmation_screen.dart:31</code> | — | — | No class documentation or registry summary. |

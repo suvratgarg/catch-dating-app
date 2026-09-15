@@ -6,10 +6,6 @@
   "policy": "new_or_split_handwritten_sources_stay_bounded_existing_debt_cannot_grow",
   "allowedFindings": [
     {
-      "path": "lib/core/widgets/ordered_photo_picker.dart",
-      "maxLines": 895
-    },
-    {
       "path": "lib/event_rehearsal/presentation/host_event_rehearsal_screen.dart",
       "maxLines": 905
     },
