@@ -17,7 +17,7 @@ export const adminDecideSafetyTriageItemCallablePayloadSchema: Record<string, un
     "targetPath": {
       "type": "string",
       "maxLength": 260,
-      "pattern": "^(reports|moderationFlags|eventSafetyReports)/[^/]+$"
+      "pattern": "^(reports|moderationFlags|eventSafetyReports|eventAssistanceCases)/[^/]+$"
     },
     "decision": {
       "type": "string",
@@ -36,7 +36,7 @@ export const adminDecideSafetyTriageItemCallablePayloadSchema: Record<string, un
     "targetPath": {
       "type": "string",
       "maxLength": 260,
-      "pattern": "^(reports|moderationFlags|eventSafetyReports)/[^/]+$"
+      "pattern": "^(reports|moderationFlags|eventSafetyReports|eventAssistanceCases)/[^/]+$"
     }
   }
 } as const;

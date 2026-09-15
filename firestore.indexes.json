@@ -183,6 +183,32 @@
           "order": "ASCENDING"
         },
         {
+          "fieldPath": "owner",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "receivedAt",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "eventAssistanceCases",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "context.mode",
+          "order": "ASCENDING"
+        },
+        {
           "fieldPath": "context.organizerId",
           "order": "ASCENDING"
         },

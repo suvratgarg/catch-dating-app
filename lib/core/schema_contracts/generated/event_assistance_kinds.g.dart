@@ -173,7 +173,6 @@ enum EventAssistanceMissingCapability {
   rehearsalOverrideControl,
   rehearsalLocationSharing,
   rehearsalRestrictedCaseRouting,
-  restrictedCaseResolution,
   rehearsalRestrictedCaseResolution,
 }
 
@@ -1871,9 +1870,11 @@ const eventAssistanceCommandBindingCatalog =
   EventAssistanceCommandBindingDescriptor(
     commandKind: EventAssistanceCommandKind.resolveRestrictedCase,
     live: EventAssistanceModeBinding(
-      bindingType: EventAssistanceCommandBindingType.contractOnly,
-      operations: <String>[],
-      missingCapability: EventAssistanceMissingCapability.restrictedCaseResolution,
+      bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      operations: <String>[
+        'adminDecideSafetyTriageItem',
+      ],
+      missingCapability: null,
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.contractOnly,

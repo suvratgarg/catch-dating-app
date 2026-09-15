@@ -69,6 +69,33 @@ test("normalizeQueueItem builds readable safety report rows", () => {
   );
 });
 
+test("normalizeQueueItem builds live restricted event request rows", () => {
+  assert.deepEqual(
+    normalizeQueueItem(
+      "eventAssistanceCase",
+      "eventAssistanceCases/case:restricted-1",
+      {
+        context: {
+          mode: "live",
+          eventId: "event-1",
+          organizerId: "organizer-1",
+        },
+        attendeeId: "attendee-1",
+        status: "open",
+        receivedAt: 1_780_000_000_000,
+      }
+    ),
+    {
+      id: "eventAssistanceCases/case:restricted-1",
+      title: "Live event safety request",
+      detail: "event event-1 - attendee attendee-1",
+      status: "open",
+      createdAt: "2026-05-28T20:26:40.000Z",
+      targetPath: "eventAssistanceCases/case:restricted-1",
+    }
+  );
+});
+
 test("normalizeQueueItem builds readable club claim request rows", () => {
   assert.deepEqual(
     normalizeQueueItem("clubClaimRequest", "clubClaimRequests/request-1", {

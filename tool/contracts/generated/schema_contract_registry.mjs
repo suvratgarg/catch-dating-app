@@ -202025,7 +202025,7 @@ export const adminDecideSafetyTriageItemCallablePayloadSchema = {
     "targetPath": {
       "type": "string",
       "maxLength": 260,
-      "pattern": "^(reports|moderationFlags|eventSafetyReports)/[^/]+$"
+      "pattern": "^(reports|moderationFlags|eventSafetyReports|eventAssistanceCases)/[^/]+$"
     },
     "decision": {
       "type": "string",
@@ -202044,7 +202044,7 @@ export const adminDecideSafetyTriageItemCallablePayloadSchema = {
     "targetPath": {
       "type": "string",
       "maxLength": 260,
-      "pattern": "^(reports|moderationFlags|eventSafetyReports)/[^/]+$"
+      "pattern": "^(reports|moderationFlags|eventSafetyReports|eventAssistanceCases)/[^/]+$"
     }
   }
 };
@@ -202064,7 +202064,7 @@ export const adminDecideSafetyTriageItemCallableResponseSchema = {
     "targetPath": {
       "type": "string",
       "maxLength": 260,
-      "pattern": "^(reports|moderationFlags|eventSafetyReports)/[^/]+$"
+      "pattern": "^(reports|moderationFlags|eventSafetyReports|eventAssistanceCases)/[^/]+$"
     },
     "decision": {
       "type": "string",
@@ -202077,7 +202077,8 @@ export const adminDecideSafetyTriageItemCallableResponseSchema = {
       "type": "string",
       "enum": [
         "reviewed",
-        "dismissed"
+        "dismissed",
+        "resolved"
       ]
     }
   }
@@ -202098,7 +202099,7 @@ export const adminAssignSafetyTriageItemCallablePayloadSchema = {
     "targetPath": {
       "type": "string",
       "maxLength": 260,
-      "pattern": "^(reports|moderationFlags|eventSafetyReports)/[^/]+$"
+      "pattern": "^(reports|moderationFlags|eventSafetyReports|eventAssistanceCases)/[^/]+$"
     },
     "assigneeUid": {
       "anyOf": [
@@ -202133,7 +202134,7 @@ export const adminAssignSafetyTriageItemCallableResponseSchema = {
     "targetPath": {
       "type": "string",
       "maxLength": 260,
-      "pattern": "^(reports|moderationFlags|eventSafetyReports)/[^/]+$"
+      "pattern": "^(reports|moderationFlags|eventSafetyReports|eventAssistanceCases)/[^/]+$"
     },
     "assignment": {
       "type": "object",
@@ -205939,9 +205940,11 @@ export const eventAssistanceCommandBindingCatalog = {
     {
       "commandKind": "resolveRestrictedCase",
       "live": {
-        "bindingType": "contractOnly",
-        "operations": [],
-        "missingCapability": "restrictedCaseResolution"
+        "bindingType": "domainAdapter",
+        "operations": [
+          "adminDecideSafetyTriageItem"
+        ],
+        "missingCapability": null
       },
       "rehearsal": {
         "bindingType": "contractOnly",

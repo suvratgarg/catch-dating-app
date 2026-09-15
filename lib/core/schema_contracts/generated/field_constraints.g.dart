@@ -490,7 +490,7 @@ abstract final class CatchContractConstraints {
     maxLength: 260,
     required: true,
     valueTypes: <String>['string'],
-    pattern: '^(reports|moderationFlags|eventSafetyReports)/[^/]+\$',
+    pattern: '^(reports|moderationFlags|eventSafetyReports|eventAssistanceCases)/[^/]+\$',
   );
 
   static const adminAssignSafetyTriageItemCallableResponseAssignmentAssigneeUid = CatchContractFieldConstraints(
@@ -527,7 +527,7 @@ abstract final class CatchContractConstraints {
     maxLength: 260,
     required: true,
     valueTypes: <String>['string'],
-    pattern: '^(reports|moderationFlags|eventSafetyReports)/[^/]+\$',
+    pattern: '^(reports|moderationFlags|eventSafetyReports|eventAssistanceCases)/[^/]+\$',
   );
 
   static const adminCreateMarketingContentDraftCallablePayloadCityId = CatchContractFieldConstraints(
@@ -1083,7 +1083,7 @@ abstract final class CatchContractConstraints {
     maxLength: 260,
     required: true,
     valueTypes: <String>['string'],
-    pattern: '^(reports|moderationFlags|eventSafetyReports)/[^/]+\$',
+    pattern: '^(reports|moderationFlags|eventSafetyReports|eventAssistanceCases)/[^/]+\$',
   );
 
   static const adminDecideSafetyTriageItemCallableResponseDecision = CatchContractFieldConstraints(
@@ -1097,7 +1097,7 @@ abstract final class CatchContractConstraints {
     path: 'adminDecideSafetyTriageItemCallableResponse.status',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['reviewed', 'dismissed'],
+    enumValues: <String>['reviewed', 'dismissed', 'resolved'],
   );
 
   static const adminDecideSafetyTriageItemCallableResponseTargetPath = CatchContractFieldConstraints(
@@ -1105,7 +1105,7 @@ abstract final class CatchContractConstraints {
     maxLength: 260,
     required: true,
     valueTypes: <String>['string'],
-    pattern: '^(reports|moderationFlags|eventSafetyReports)/[^/]+\$',
+    pattern: '^(reports|moderationFlags|eventSafetyReports|eventAssistanceCases)/[^/]+\$',
   );
 
   static const adminGetClubDetailsCallablePayloadClubId = CatchContractFieldConstraints(

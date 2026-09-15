@@ -17,7 +17,7 @@ export const adminAssignSafetyTriageItemCallablePayloadSchema: Record<string, un
     "targetPath": {
       "type": "string",
       "maxLength": 260,
-      "pattern": "^(reports|moderationFlags|eventSafetyReports)/[^/]+$"
+      "pattern": "^(reports|moderationFlags|eventSafetyReports|eventAssistanceCases)/[^/]+$"
     },
     "assigneeUid": {
       "anyOf": [

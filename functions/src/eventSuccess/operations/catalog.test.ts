@@ -88,7 +88,6 @@ test("unimplemented live commands name their missing capability", () => {
     changeRoute: "liveRouteDecision",
     requestRequiredData: "liveRequiredDataRequest",
     reconcileFinance: "eventPaymentCaseResolution",
-    resolveRestrictedCase: "restrictedCaseResolution",
   });
 });
 

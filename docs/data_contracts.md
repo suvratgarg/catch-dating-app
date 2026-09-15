@@ -367,6 +367,13 @@ canonical command includes the expected case revision; its callable also
 requires the reviewed source hash. `eventAssistanceCaseReceipts` records exact
 request hashes, source binding, actor, outcome and committed revision for
 transactional retry safety. Both collections deny direct client access.
+Comfort/safety requests remain excluded from the organizer queue. The Admin
+safety overview reads their `authorizedSafetyOperator` rows into the event
+safety queue, and `adminDecideSafetyTriageItem` closes the nested revisioned
+handling state as resolved or declined. `adminAssignSafetyTriageItem` changes
+only that nested safety assignment. Both mutations validate the complete case,
+preserve its event/attendee/message binding and write an Admin audit record;
+they do not perform an account, content, payment or event mutation.
 See `docs/event_success.md` for lifecycle and integration boundaries.
 
 ### Event Assistance Delivery Review

@@ -2194,8 +2194,11 @@ transaction. The guest webpage at `/event-update/:linkId` uses the public
 read/reply boundary and the existing web runtime primitives. Practical Host case
 reads and resolution now have typed backend and Dart client boundaries described
 above. Open practical cases also project as one event-level Host Today task that
-routes into the live workspace; restricted comfort/safety cases stay outside
-that projection. Key provisioning and the rehearsal response adapter remain
+routes into the live workspace. Restricted comfort/safety cases stay outside
+the Host projection and enter the Admin event-safety queue. An authorized
+safety reviewer can assign one or close it as handled or declined through the
+existing audited triage callable; the adapter updates only the case's nested
+handling state. Key provisioning and the rehearsal response adapter remain
 separate steps.
 
 ### Durable message delivery coordination

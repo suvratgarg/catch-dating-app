@@ -148,6 +148,7 @@ export async function adminGetOverviewHandler(
     openReports,
     pendingModerationFlags,
     openEventSafetyReports,
+    openEventAssistanceCases,
     pendingAccessApplications,
     pendingClubClaimRequests,
     indexReviewPages,
@@ -160,6 +161,7 @@ export async function adminGetOverviewHandler(
     safetyReports,
     moderationFlags,
     eventSafetyReports,
+    eventAssistanceCases,
     accessApplications,
     clubClaimRequests,
     clubIndexReviews,
@@ -176,6 +178,12 @@ export async function adminGetOverviewHandler(
     ),
     countCollection(
       db.collection("eventSafetyReports").where("status", "==", "open")
+    ),
+    countCollection(
+      db.collection("eventAssistanceCases")
+        .where("context.mode", "==", "live")
+        .where("owner", "==", "authorizedSafetyOperator")
+        .where("status", "==", "open")
     ),
     countCollection(
       db.collection("accessApplications").where("status", "==", "pending")
@@ -218,6 +226,7 @@ export async function adminGetOverviewHandler(
       "open",
       "eventSafetyReport"
     ),
+    listRestrictedEventAssistanceCases(db),
     listQueueItems(
       db,
       "accessApplications",
@@ -258,8 +267,8 @@ export async function adminGetOverviewHandler(
       ),
       metric(
         "eventSafetyReports",
-        "Event safety reports",
-        openEventSafetyReports
+        "Event safety cases",
+        openEventSafetyReports + openEventAssistanceCases
       ),
       metric(
         "pendingApplications",
@@ -286,7 +295,10 @@ export async function adminGetOverviewHandler(
     queues: {
       safetyReports,
       moderationFlags,
-      eventSafetyReports,
+      eventSafetyReports: [
+        ...eventAssistanceCases,
+        ...eventSafetyReports,
+      ].slice(0, 5),
       accessApplications,
       clubClaimRequests,
       clubIndexReviews,
@@ -393,6 +405,24 @@ async function listQueueItems(
   );
 }
 
+/** Lists live restricted guest requests for the authorized safety queue. */
+async function listRestrictedEventAssistanceCases(
+  db: FirebaseFirestore.Firestore
+): Promise<AdminQueueItem[]> {
+  const snapshot = await db.collection("eventAssistanceCases")
+    .where("context.mode", "==", "live")
+    .where("owner", "==", "authorizedSafetyOperator")
+    .where("status", "==", "open")
+    .orderBy("receivedAt", "desc")
+    .limit(5)
+    .get();
+  return snapshot.docs.map((doc) => normalizeQueueItem(
+    "eventAssistanceCase",
+    `eventAssistanceCases/${doc.id}`,
+    doc.data()
+  ));
+}
+
 /**
  * Lists organizer pages waiting for a human SEO indexing review.
  * @param {FirebaseFirestore.Firestore} db Firestore instance.
@@ -487,6 +517,20 @@ export function normalizeQueueItem(
       ].join(" - "),
       status,
       createdAt,
+      targetPath,
+    };
+  }
+  if (kind === "eventAssistanceCase") {
+    const context = objectValue(data.context);
+    return {
+      id: targetPath,
+      title: "Live event safety request",
+      detail: [
+        `event ${stringValue(context?.eventId) ?? "unknown"}`,
+        `attendee ${stringValue(data.attendeeId) ?? "unknown"}`,
+      ].join(" - "),
+      status,
+      createdAt: isoFromTimestamp(data.receivedAt),
       targetPath,
     };
   }
@@ -592,6 +636,9 @@ function metric(
  */
 function isoFromTimestamp(value: unknown): string | null {
   if (!value) return null;
+  if (Number.isSafeInteger(value) && (value as number) >= 0) {
+    return new Date(value as number).toISOString();
+  }
   if (value instanceof Date) return value.toISOString();
   if (
     typeof value === "object" &&

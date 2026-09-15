@@ -204,7 +204,7 @@ function ownerDigestCards(overview: AdminOverviewResponse): OwnerDigestCardModel
       totals: [
         {label: "Open user reports", value: metricValue(overview, "openReports")},
         {label: "Pending moderation", value: metricValue(overview, "pendingModerationFlags")},
-        {label: "Open event reports", value: metricValue(overview, "eventSafetyReports")},
+        {label: "Open event safety", value: metricValue(overview, "eventSafetyReports")},
       ],
       previewRows: [
         ...overview.queues.safetyReports,

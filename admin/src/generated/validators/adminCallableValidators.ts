@@ -61,7 +61,7 @@ const model = {
         "targetPath": {
           "type": "string",
           "maxLength": 260,
-          "pattern": "^(reports|moderationFlags|eventSafetyReports)/[^/]+$"
+          "pattern": "^(reports|moderationFlags|eventSafetyReports|eventAssistanceCases)/[^/]+$"
         },
         "assigneeUid": {
           "anyOf": [
@@ -2621,7 +2621,7 @@ const model = {
         "targetPath": {
           "type": "string",
           "maxLength": 260,
-          "pattern": "^(reports|moderationFlags|eventSafetyReports)/[^/]+$"
+          "pattern": "^(reports|moderationFlags|eventSafetyReports|eventAssistanceCases)/[^/]+$"
         }
       }
     },
@@ -2727,7 +2727,7 @@ const model = {
       "properties": {
         "targetPath": {
           "type": "string",
-          "pattern": "^(reports|moderationFlags|eventSafetyReports)/[A-Za-z0-9_-]{1,180}$"
+          "pattern": "^(reports|moderationFlags|eventSafetyReports|eventAssistanceCases)/[A-Za-z0-9][A-Za-z0-9._:-]{0,179}$"
         }
       }
     },
@@ -4590,7 +4590,7 @@ const model = {
         "targetPath": {
           "type": "string",
           "maxLength": 260,
-          "pattern": "^(reports|moderationFlags|eventSafetyReports)/[^/]+$"
+          "pattern": "^(reports|moderationFlags|eventSafetyReports|eventAssistanceCases)/[^/]+$"
         },
         "assignment": {
           "type": "object",
@@ -4766,7 +4766,7 @@ const model = {
         "targetPath": {
           "type": "string",
           "maxLength": 260,
-          "pattern": "^(reports|moderationFlags|eventSafetyReports)/[^/]+$"
+          "pattern": "^(reports|moderationFlags|eventSafetyReports|eventAssistanceCases)/[^/]+$"
         },
         "decision": {
           "type": "string",
@@ -4779,7 +4779,8 @@ const model = {
           "type": "string",
           "enum": [
             "reviewed",
-            "dismissed"
+            "dismissed",
+            "resolved"
           ]
         }
       }

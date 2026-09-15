@@ -583,9 +583,11 @@ export const eventAssistanceCommandBindingCatalog = {
     {
       "commandKind": "resolveRestrictedCase",
       "live": {
-        "bindingType": "contractOnly",
-        "operations": [],
-        "missingCapability": "restrictedCaseResolution"
+        "bindingType": "domainAdapter",
+        "operations": [
+          "adminDecideSafetyTriageItem"
+        ],
+        "missingCapability": null
       },
       "rehearsal": {
         "bindingType": "contractOnly",
