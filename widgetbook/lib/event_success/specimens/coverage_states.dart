@@ -1,6 +1,8 @@
 import 'package:catch_dating_app/design_fixtures/event_success_companion_fixtures.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_host_screen.dart';
-import 'package:catch_dating_app/event_success/presentation/event_success_live_reveal_card.dart';
+import 'package:catch_dating_app/event_success/presentation/reveal/event_success_attendee_reveal_surface.dart';
+import 'package:catch_dating_app/event_success/presentation/reveal/event_success_host_reveal_surface.dart';
+import 'package:catch_dating_app/event_success/presentation/reveal/event_success_reveal_assignment_kind.dart';
 import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -76,7 +78,7 @@ class LiveRevealCoverageStates extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        EventSuccessLiveRevealHostCard(
+        EventSuccessHostRevealSurface(
           event: event,
           plan: plan,
           podAssignments: const [],
@@ -91,7 +93,7 @@ class LiveRevealCoverageStates extends StatelessWidget {
           onResetReveal: () async {},
         ),
         gapH16,
-        EventSuccessLiveRevealAttendeeCard(
+        EventSuccessAttendeeRevealSurface(
           event: event,
           plan: EventSuccessCompanionFixtures.revealUnlockedPlan,
           kind: EventSuccessRevealAssignmentKind.rotations,

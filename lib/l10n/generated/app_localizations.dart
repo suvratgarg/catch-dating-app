@@ -9124,20 +9124,20 @@ abstract class AppLocalizations {
   /// **'Host visible'**
   String get eventSuccessEventSuccessHostSharedLabelHostVisible;
 
-  /// Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_actions.dart (label).
+  /// Product copy used by lib/event_success/presentation/reveal/event_success_reveal_action_row.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Generate assignments first'**
   String
   get eventSuccessEventSuccessLiveRevealActionsLabelGenerateAssignmentsFirst;
 
-  /// Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_actions.dart (label).
+  /// Product copy used by lib/event_success/presentation/reveal/event_success_reveal_action_row.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Reveal now'**
   String get eventSuccessEventSuccessLiveRevealActionsLabelRevealNow;
 
-  /// Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_actions.dart (label).
+  /// Product copy used by lib/event_success/presentation/reveal/event_success_reveal_action_row.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Reveal round {value1}'**
@@ -9145,7 +9145,7 @@ abstract class AppLocalizations {
     required Object value1,
   });
 
-  /// Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_actions.dart (label).
+  /// Product copy used by lib/event_success/presentation/reveal/event_success_reveal_action_row.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Drop {countdownSeconds}s countdown'**
@@ -9154,38 +9154,38 @@ abstract class AppLocalizations {
     required Object countdownSeconds,
   });
 
-  /// Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_attendee.dart (label).
+  /// Product copy used by lib/event_success/presentation/reveal/event_success_attendee_reveal_surface.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Unlocking'**
   String get eventSuccessEventSuccessLiveRevealAttendeeLabelUnlocking;
 
-  /// Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_attendee.dart (label).
+  /// Product copy used by lib/event_success/presentation/reveal/event_success_attendee_reveal_surface.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Revealed'**
   String get eventSuccessEventSuccessLiveRevealAttendeeLabelRevealed;
 
-  /// Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_attendee.dart (label).
+  /// Product copy used by lib/event_success/presentation/reveal/event_success_attendee_reveal_surface.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Waiting'**
   String get eventSuccessEventSuccessLiveRevealAttendeeLabelWaiting;
 
-  /// Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_host.dart (label).
+  /// Product copy used by lib/event_success/presentation/reveal/event_success_host_reveal_surface.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Synchronized partner reveal'**
   String
   get eventSuccessEventSuccessLiveRevealHostLabelSynchronizedPartnerReveal;
 
-  /// Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_host.dart (label).
+  /// Product copy used by lib/event_success/presentation/reveal/event_success_host_reveal_surface.dart (label).
   ///
   /// In en, this message translates to:
   /// **'No assignments'**
   String get eventSuccessEventSuccessLiveRevealHostLabelNoAssignments;
 
-  /// Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_host.dart (label).
+  /// Product copy used by lib/event_success/presentation/reveal/event_success_host_reveal_surface.dart (label).
   ///
   /// In en, this message translates to:
   /// **'{value1}/{roundCount} shown'**
@@ -9194,31 +9194,31 @@ abstract class AppLocalizations {
     required Object roundCount,
   });
 
-  /// Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_host.dart (caption).
+  /// Product copy used by lib/event_success/presentation/reveal/event_success_host_reveal_surface.dart (caption).
   ///
   /// In en, this message translates to:
   /// **'seconds'**
   String get eventSuccessEventSuccessLiveRevealHostCaptionSeconds;
 
-  /// Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_host.dart (caption).
+  /// Product copy used by lib/event_success/presentation/reveal/event_success_host_reveal_surface.dart (caption).
   ///
   /// In en, this message translates to:
   /// **'revealed'**
   String get eventSuccessEventSuccessLiveRevealHostCaptionRevealed;
 
-  /// Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_host.dart (caption).
+  /// Product copy used by lib/event_success/presentation/reveal/event_success_host_reveal_surface.dart (caption).
   ///
   /// In en, this message translates to:
   /// **'next round'**
   String get eventSuccessEventSuccessLiveRevealHostCaptionNextRound;
 
-  /// Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (label).
+  /// Product copy used by lib/event_success/presentation/reveal/event_success_countdown_surface.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Room hold'**
   String get eventSuccessEventSuccessLiveRevealWidgetsLabelRoomHold;
 
-  /// Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (Text).
+  /// Product copy used by lib/event_success/presentation/reveal/event_success_countdown_surface.dart (Text).
   ///
   /// In en, this message translates to:
   /// **'Everyone gets this {assignmentNoun} at the same time. No names shown yet.'**
@@ -9227,7 +9227,7 @@ abstract class AppLocalizations {
     required Object assignmentNoun,
   });
 
-  /// Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (Text).
+  /// Product copy used by lib/event_success/presentation/reveal/event_success_countdown_surface.dart (Text).
   ///
   /// In en, this message translates to:
   /// **'{seconds}'**
@@ -9235,56 +9235,56 @@ abstract class AppLocalizations {
     required Object seconds,
   });
 
-  /// Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (Text).
+  /// Product copy used by lib/event_success/presentation/reveal/event_success_countdown_surface.dart (Text).
   ///
   /// In en, this message translates to:
   /// **'SECONDS'**
   String get eventSuccessEventSuccessLiveRevealWidgetsTextSeconds3fb8f1;
 
-  /// Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (label).
+  /// Product copy used by lib/event_success/presentation/reveal/event_success_countdown_surface.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Hold'**
   String get eventSuccessEventSuccessLiveRevealWidgetsLabelHold;
 
-  /// Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (label).
+  /// Product copy used by lib/event_success/presentation/reveal/event_success_countdown_surface.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Watch'**
   String get eventSuccessEventSuccessLiveRevealWidgetsLabelWatch;
 
-  /// Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (label).
+  /// Product copy used by lib/event_success/presentation/reveal/event_success_countdown_surface.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Move'**
   String get eventSuccessEventSuccessLiveRevealWidgetsLabelMove;
 
-  /// Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (title).
+  /// Product copy used by lib/event_success/presentation/reveal/event_success_countdown_notice_row_list.dart (title).
   ///
   /// In en, this message translates to:
   /// **'No names shown yet'**
   String get eventSuccessEventSuccessLiveRevealWidgetsTitleNoNamesShownYet;
 
-  /// Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (body).
+  /// Product copy used by lib/event_success/presentation/reveal/event_success_countdown_notice_row_list.dart (body).
   ///
   /// In en, this message translates to:
   /// **'Partner details stay locked until the shared release.'**
   String
   get eventSuccessEventSuccessLiveRevealWidgetsBodyPartnerDetailsStayLocked;
 
-  /// Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (title).
+  /// Product copy used by lib/event_success/presentation/reveal/event_success_countdown_notice_row_list.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Clue is live'**
   String get eventSuccessEventSuccessLiveRevealWidgetsTitleClueIsLive;
 
-  /// Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (Text).
+  /// Product copy used by lib/event_success/presentation/reveal/event_success_countdown_surface.dart (Text).
   ///
   /// In en, this message translates to:
   /// **'The room is holding for the reveal.'**
   String get eventSuccessEventSuccessLiveRevealWidgetsTextTheRoomIsHolding;
 
-  /// Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (Text).
+  /// Product copy used by lib/event_success/presentation/reveal/event_success_countdown_surface.dart (Text).
   ///
   /// In en, this message translates to:
   /// **'The host controls the {assignmentNoun} unlock from live mode.'**
@@ -9292,13 +9292,13 @@ abstract class AppLocalizations {
     required Object assignmentNoun,
   });
 
-  /// Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (title).
+  /// Product copy used by lib/event_success/presentation/reveal/event_success_countdown_notice_row_list.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Unlocked together'**
   String get eventSuccessEventSuccessLiveRevealWidgetsTitleUnlockedTogether;
 
-  /// Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (label).
+  /// Product copy used by lib/event_success/presentation/reveal/event_success_countdown_surface.dart (label).
   ///
   /// In en, this message translates to:
   /// **'{value1} people'**
@@ -9306,31 +9306,31 @@ abstract class AppLocalizations {
     required Object value1,
   });
 
-  /// Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (label).
+  /// Product copy used by lib/event_success/presentation/reveal/event_success_countdown_surface.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Loading podmates'**
   String get eventSuccessEventSuccessLiveRevealWidgetsLabelLoadingPodmates;
 
-  /// Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (label).
+  /// Product copy used by lib/event_success/presentation/reveal/event_success_countdown_surface.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Loading partners'**
   String get eventSuccessEventSuccessLiveRevealWidgetsLabelLoadingPartners;
 
-  /// Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (label).
+  /// Product copy used by lib/event_success/presentation/reveal/event_success_countdown_surface.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Loading group members'**
   String get eventSuccessEventSuccessLiveRevealWidgetsLabelLoadingGroupMembers;
 
-  /// Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (label).
+  /// Product copy used by lib/event_success/presentation/reveal/event_success_countdown_surface.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Names loading'**
   String get eventSuccessEventSuccessLiveRevealWidgetsLabelNamesLoading;
 
-  /// Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (Text).
+  /// Product copy used by lib/event_success/presentation/reveal/event_success_countdown_surface.dart (Text).
   ///
   /// In en, this message translates to:
   /// **'{timeRange} · {peerName}'**
@@ -9339,13 +9339,13 @@ abstract class AppLocalizations {
     required Object peerName,
   });
 
-  /// Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (label).
+  /// Product copy used by lib/event_success/presentation/reveal/event_success_countdown_surface.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Hidden until reveal'**
   String get eventSuccessEventSuccessLiveRevealWidgetsLabelHiddenUntilReveal;
 
-  /// Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (label).
+  /// Product copy used by lib/event_success/presentation/reveal/event_success_countdown_surface.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Round {value1}'**
@@ -9353,7 +9353,7 @@ abstract class AppLocalizations {
     required Object value1,
   });
 
-  /// Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (Text).
+  /// Product copy used by lib/event_success/presentation/reveal/event_success_countdown_surface.dart (Text).
   ///
   /// In en, this message translates to:
   /// **'R{value1}'**
@@ -9361,7 +9361,7 @@ abstract class AppLocalizations {
     required Object value1,
   });
 
-  /// Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (label).
+  /// Product copy used by lib/event_success/presentation/reveal/event_success_countdown_surface.dart (label).
   ///
   /// In en, this message translates to:
   /// **'R{value1}'**
@@ -14238,7 +14238,7 @@ abstract class AppLocalizations {
     required Object targetName,
   });
 
-  /// Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_host.dart (visibleCopy).
+  /// Product copy used by lib/event_success/presentation/reveal/event_success_host_reveal_surface.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'{remainingSeconds}'**
@@ -14246,13 +14246,13 @@ abstract class AppLocalizations {
     required Object remainingSeconds,
   });
 
-  /// Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_host.dart (visibleCopy).
+  /// Product copy used by lib/event_success/presentation/reveal/event_success_host_reveal_surface.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'OK'**
   String get eventSuccessEventSuccessLiveRevealHostVisiblecopyOk;
 
-  /// Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_host.dart (visibleCopy).
+  /// Product copy used by lib/event_success/presentation/reveal/event_success_host_reveal_surface.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'{value1}'**
@@ -14260,13 +14260,13 @@ abstract class AppLocalizations {
     required Object value1,
   });
 
-  /// Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (visibleCopy).
+  /// Product copy used by lib/event_success/presentation/reveal/event_success_rotation_row_list.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Partner'**
   String get eventSuccessEventSuccessLiveRevealWidgetsVisiblecopyPartner;
 
-  /// Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (visibleCopy).
+  /// Product copy used by lib/event_success/presentation/reveal/event_success_rotation_row_list.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'{format}-{format2}'**
@@ -14275,19 +14275,19 @@ abstract class AppLocalizations {
     required Object format2,
   });
 
-  /// Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (visibleCopy).
+  /// Product copy used by lib/event_success/presentation/reveal/event_success_rotation_row_list.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Done'**
   String get eventSuccessEventSuccessLiveRevealWidgetsVisiblecopyDone;
 
-  /// Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (visibleCopy).
+  /// Product copy used by lib/event_success/presentation/reveal/event_success_rotation_row_list.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Now'**
   String get eventSuccessEventSuccessLiveRevealWidgetsVisiblecopyNow;
 
-  /// Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (visibleCopy).
+  /// Product copy used by lib/event_success/presentation/reveal/event_success_rotation_row_list.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Hidden'**
@@ -16408,13 +16408,13 @@ abstract class AppLocalizations {
   /// **'Catch private'**
   String get coreCatchPrivacyBadgeLabelCatchPrivate;
 
-  /// Product copy used by lib/event_success/presentation/event_success_live_reveal_card.dart (label).
+  /// Product copy used by lib/event_success/presentation/reveal/event_success_reveal_assignment_kind.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Pod reveal'**
   String get eventSuccessEventSuccessLiveRevealCardLabelPodReveal;
 
-  /// Product copy used by lib/event_success/presentation/event_success_live_reveal_card.dart (label).
+  /// Product copy used by lib/event_success/presentation/reveal/event_success_reveal_assignment_kind.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Rotation reveal'**

@@ -4779,8 +4779,8 @@
               "RevealCountdown"
             ],
             "flutter": {
-              "file": "lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_attendee.dart",
-              "symbol": "EventSuccessLiveRevealAttendeeCard"
+              "file": "lib/event_success/presentation/reveal/event_success_attendee_reveal_surface.dart",
+              "symbol": "EventSuccessAttendeeRevealSurface"
             },
             "currentOwner": "EventSuccessCompanionScreen",
             "targetOwner": "provider-free live reveal section with masked countdown and reduced-motion states",

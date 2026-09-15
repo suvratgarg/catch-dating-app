@@ -18,7 +18,10 @@ export 'presentation/event_success_controller.dart'; // public-api: command seam
 export 'presentation/event_success_conversation_cue_copy.dart'; // public-api: localized presentation copy reused across feature boundaries
 export 'presentation/event_success_defaults_panel.dart'; // public-api: shared presentation component used outside this feature
 export 'presentation/event_success_host_screen.dart'; // public-api: route entry point exposed to app routing
-export 'presentation/event_success_live_reveal_card.dart'; // public-api: shared presentation component used outside this feature
+export 'presentation/event_success_live_reveal_card_state.dart'; // public-api: reveal command state
+export 'presentation/reveal/event_success_attendee_reveal_surface.dart'; // public-api: attendee reveal component
+export 'presentation/reveal/event_success_host_reveal_surface.dart'; // public-api: host reveal component
+export 'presentation/reveal/event_success_reveal_assignment_kind.dart'; // public-api: reveal assignment contract
 export 'presentation/event_success_questionnaire_config_editor.dart'; // public-api: shared presentation component used outside this feature
 export 'presentation/event_success_room_map.dart'; // public-api: shared host and attendee spatial projection
 export 'presentation/event_success_room_setup_section.dart'; // public-api: shared create and post-creation room setup

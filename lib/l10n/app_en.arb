@@ -10591,21 +10591,21 @@
   },
   "eventSuccessEventSuccessLiveRevealActionsLabelGenerateAssignmentsFirst": "Generate assignments first",
   "@eventSuccessEventSuccessLiveRevealActionsLabelGenerateAssignmentsFirst": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_actions.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_reveal_action_row.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_actions"
   },
   "eventSuccessEventSuccessLiveRevealActionsLabelRevealNow": "Reveal now",
   "@eventSuccessEventSuccessLiveRevealActionsLabelRevealNow": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_actions.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_reveal_action_row.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_actions"
   },
   "eventSuccessEventSuccessLiveRevealActionsLabelRevealRoundValue1": "Reveal round {value1}",
   "@eventSuccessEventSuccessLiveRevealActionsLabelRevealRoundValue1": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_actions.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_reveal_action_row.dart (label).",
     "placeholders": {
       "value1": {}
     },
@@ -10615,7 +10615,7 @@
   },
   "eventSuccessEventSuccessLiveRevealActionsLabelDropCountdownsecondsSCountdown": "Drop {countdownSeconds}s countdown",
   "@eventSuccessEventSuccessLiveRevealActionsLabelDropCountdownsecondsSCountdown": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_actions.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_reveal_action_row.dart (label).",
     "placeholders": {
       "countdownSeconds": {}
     },
@@ -10625,42 +10625,42 @@
   },
   "eventSuccessEventSuccessLiveRevealAttendeeLabelUnlocking": "Unlocking",
   "@eventSuccessEventSuccessLiveRevealAttendeeLabelUnlocking": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_attendee.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_attendee_reveal_surface.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_attendee"
   },
   "eventSuccessEventSuccessLiveRevealAttendeeLabelRevealed": "Revealed",
   "@eventSuccessEventSuccessLiveRevealAttendeeLabelRevealed": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_attendee.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_attendee_reveal_surface.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_attendee"
   },
   "eventSuccessEventSuccessLiveRevealAttendeeLabelWaiting": "Waiting",
   "@eventSuccessEventSuccessLiveRevealAttendeeLabelWaiting": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_attendee.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_attendee_reveal_surface.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_attendee"
   },
   "eventSuccessEventSuccessLiveRevealHostLabelSynchronizedPartnerReveal": "Synchronized partner reveal",
   "@eventSuccessEventSuccessLiveRevealHostLabelSynchronizedPartnerReveal": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_host.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_host_reveal_surface.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_host"
   },
   "eventSuccessEventSuccessLiveRevealHostLabelNoAssignments": "No assignments",
   "@eventSuccessEventSuccessLiveRevealHostLabelNoAssignments": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_host.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_host_reveal_surface.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_host"
   },
   "eventSuccessEventSuccessLiveRevealHostLabelValue1RoundcountShown": "{value1}/{roundCount} shown",
   "@eventSuccessEventSuccessLiveRevealHostLabelValue1RoundcountShown": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_host.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_host_reveal_surface.dart (label).",
     "placeholders": {
       "value1": {},
       "roundCount": {}
@@ -10671,35 +10671,35 @@
   },
   "eventSuccessEventSuccessLiveRevealHostCaptionSeconds": "seconds",
   "@eventSuccessEventSuccessLiveRevealHostCaptionSeconds": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_host.dart (caption).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_host_reveal_surface.dart (caption).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_host"
   },
   "eventSuccessEventSuccessLiveRevealHostCaptionRevealed": "revealed",
   "@eventSuccessEventSuccessLiveRevealHostCaptionRevealed": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_host.dart (caption).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_host_reveal_surface.dart (caption).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_host"
   },
   "eventSuccessEventSuccessLiveRevealHostCaptionNextRound": "next round",
   "@eventSuccessEventSuccessLiveRevealHostCaptionNextRound": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_host.dart (caption).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_host_reveal_surface.dart (caption).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_host"
   },
   "eventSuccessEventSuccessLiveRevealWidgetsLabelRoomHold": "Room hold",
   "@eventSuccessEventSuccessLiveRevealWidgetsLabelRoomHold": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_countdown_surface.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_widgets"
   },
   "eventSuccessEventSuccessLiveRevealWidgetsTextEveryoneGetsThisAssignmentnoun": "Everyone gets this {assignmentNoun} at the same time. No names shown yet.",
   "@eventSuccessEventSuccessLiveRevealWidgetsTextEveryoneGetsThisAssignmentnoun": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (Text).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_countdown_surface.dart (Text).",
     "placeholders": {
       "assignmentNoun": {}
     },
@@ -10709,7 +10709,7 @@
   },
   "eventSuccessEventSuccessLiveRevealWidgetsTextSeconds": "{seconds}",
   "@eventSuccessEventSuccessLiveRevealWidgetsTextSeconds": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (Text).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_countdown_surface.dart (Text).",
     "placeholders": {
       "seconds": {}
     },
@@ -10719,63 +10719,63 @@
   },
   "eventSuccessEventSuccessLiveRevealWidgetsTextSeconds3fb8f1": "SECONDS",
   "@eventSuccessEventSuccessLiveRevealWidgetsTextSeconds3fb8f1": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (Text).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_countdown_surface.dart (Text).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_widgets"
   },
   "eventSuccessEventSuccessLiveRevealWidgetsLabelHold": "Hold",
   "@eventSuccessEventSuccessLiveRevealWidgetsLabelHold": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_countdown_surface.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_widgets"
   },
   "eventSuccessEventSuccessLiveRevealWidgetsLabelWatch": "Watch",
   "@eventSuccessEventSuccessLiveRevealWidgetsLabelWatch": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_countdown_surface.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_widgets"
   },
   "eventSuccessEventSuccessLiveRevealWidgetsLabelMove": "Move",
   "@eventSuccessEventSuccessLiveRevealWidgetsLabelMove": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_countdown_surface.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_widgets"
   },
   "eventSuccessEventSuccessLiveRevealWidgetsTitleNoNamesShownYet": "No names shown yet",
   "@eventSuccessEventSuccessLiveRevealWidgetsTitleNoNamesShownYet": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (title).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_countdown_notice_row_list.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_widgets"
   },
   "eventSuccessEventSuccessLiveRevealWidgetsBodyPartnerDetailsStayLocked": "Partner details stay locked until the shared release.",
   "@eventSuccessEventSuccessLiveRevealWidgetsBodyPartnerDetailsStayLocked": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (body).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_countdown_notice_row_list.dart (body).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_widgets"
   },
   "eventSuccessEventSuccessLiveRevealWidgetsTitleClueIsLive": "Clue is live",
   "@eventSuccessEventSuccessLiveRevealWidgetsTitleClueIsLive": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (title).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_countdown_notice_row_list.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_widgets"
   },
   "eventSuccessEventSuccessLiveRevealWidgetsTextTheRoomIsHolding": "The room is holding for the reveal.",
   "@eventSuccessEventSuccessLiveRevealWidgetsTextTheRoomIsHolding": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (Text).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_countdown_surface.dart (Text).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_widgets"
   },
   "eventSuccessEventSuccessLiveRevealWidgetsTextTheHostControlsThe": "The host controls the {assignmentNoun} unlock from live mode.",
   "@eventSuccessEventSuccessLiveRevealWidgetsTextTheHostControlsThe": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (Text).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_countdown_surface.dart (Text).",
     "placeholders": {
       "assignmentNoun": {}
     },
@@ -10785,14 +10785,14 @@
   },
   "eventSuccessEventSuccessLiveRevealWidgetsTitleUnlockedTogether": "Unlocked together",
   "@eventSuccessEventSuccessLiveRevealWidgetsTitleUnlockedTogether": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (title).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_countdown_notice_row_list.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_widgets"
   },
   "eventSuccessEventSuccessLiveRevealWidgetsLabelValue1People": "{value1} people",
   "@eventSuccessEventSuccessLiveRevealWidgetsLabelValue1People": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_countdown_surface.dart (label).",
     "placeholders": {
       "value1": {}
     },
@@ -10802,35 +10802,35 @@
   },
   "eventSuccessEventSuccessLiveRevealWidgetsLabelLoadingPodmates": "Loading podmates",
   "@eventSuccessEventSuccessLiveRevealWidgetsLabelLoadingPodmates": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_countdown_surface.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_widgets"
   },
   "eventSuccessEventSuccessLiveRevealWidgetsLabelLoadingPartners": "Loading partners",
   "@eventSuccessEventSuccessLiveRevealWidgetsLabelLoadingPartners": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_countdown_surface.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_widgets"
   },
   "eventSuccessEventSuccessLiveRevealWidgetsLabelLoadingGroupMembers": "Loading group members",
   "@eventSuccessEventSuccessLiveRevealWidgetsLabelLoadingGroupMembers": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_countdown_surface.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_widgets"
   },
   "eventSuccessEventSuccessLiveRevealWidgetsLabelNamesLoading": "Names loading",
   "@eventSuccessEventSuccessLiveRevealWidgetsLabelNamesLoading": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_countdown_surface.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_widgets"
   },
   "eventSuccessEventSuccessLiveRevealWidgetsTextTimerangePeername": "{timeRange} · {peerName}",
   "@eventSuccessEventSuccessLiveRevealWidgetsTextTimerangePeername": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (Text).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_countdown_surface.dart (Text).",
     "placeholders": {
       "timeRange": {},
       "peerName": {}
@@ -10841,14 +10841,14 @@
   },
   "eventSuccessEventSuccessLiveRevealWidgetsLabelHiddenUntilReveal": "Hidden until reveal",
   "@eventSuccessEventSuccessLiveRevealWidgetsLabelHiddenUntilReveal": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_countdown_surface.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_widgets"
   },
   "eventSuccessEventSuccessLiveRevealWidgetsLabelRoundValue1": "Round {value1}",
   "@eventSuccessEventSuccessLiveRevealWidgetsLabelRoundValue1": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_countdown_surface.dart (label).",
     "placeholders": {
       "value1": {}
     },
@@ -10858,7 +10858,7 @@
   },
   "eventSuccessEventSuccessLiveRevealWidgetsTextRValue1": "R{value1}",
   "@eventSuccessEventSuccessLiveRevealWidgetsTextRValue1": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (Text).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_countdown_surface.dart (Text).",
     "placeholders": {
       "value1": {}
     },
@@ -10868,7 +10868,7 @@
   },
   "eventSuccessEventSuccessLiveRevealWidgetsLabelRValue1": "R{value1}",
   "@eventSuccessEventSuccessLiveRevealWidgetsLabelRValue1": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_countdown_surface.dart (label).",
     "placeholders": {
       "value1": {}
     },
@@ -16466,7 +16466,7 @@
   },
   "eventSuccessEventSuccessLiveRevealHostVisiblecopyRemainingseconds": "{remainingSeconds}",
   "@eventSuccessEventSuccessLiveRevealHostVisiblecopyRemainingseconds": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_host.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_host_reveal_surface.dart (visibleCopy).",
     "placeholders": {
       "remainingSeconds": {}
     },
@@ -16476,14 +16476,14 @@
   },
   "eventSuccessEventSuccessLiveRevealHostVisiblecopyOk": "OK",
   "@eventSuccessEventSuccessLiveRevealHostVisiblecopyOk": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_host.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_host_reveal_surface.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_host"
   },
   "eventSuccessEventSuccessLiveRevealHostVisiblecopyValue1": "{value1}",
   "@eventSuccessEventSuccessLiveRevealHostVisiblecopyValue1": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_host.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_host_reveal_surface.dart (visibleCopy).",
     "placeholders": {
       "value1": {}
     },
@@ -16493,14 +16493,14 @@
   },
   "eventSuccessEventSuccessLiveRevealWidgetsVisiblecopyPartner": "Partner",
   "@eventSuccessEventSuccessLiveRevealWidgetsVisiblecopyPartner": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_rotation_row_list.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_widgets"
   },
   "eventSuccessEventSuccessLiveRevealWidgetsVisiblecopyFormatFormat2": "{format}-{format2}",
   "@eventSuccessEventSuccessLiveRevealWidgetsVisiblecopyFormatFormat2": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_rotation_row_list.dart (visibleCopy).",
     "placeholders": {
       "format": {},
       "format2": {}
@@ -16511,21 +16511,21 @@
   },
   "eventSuccessEventSuccessLiveRevealWidgetsVisiblecopyDone": "Done",
   "@eventSuccessEventSuccessLiveRevealWidgetsVisiblecopyDone": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_rotation_row_list.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_widgets"
   },
   "eventSuccessEventSuccessLiveRevealWidgetsVisiblecopyNow": "Now",
   "@eventSuccessEventSuccessLiveRevealWidgetsVisiblecopyNow": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_rotation_row_list.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_widgets"
   },
   "eventSuccessEventSuccessLiveRevealWidgetsVisiblecopyHidden": "Hidden",
   "@eventSuccessEventSuccessLiveRevealWidgetsVisiblecopyHidden": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_rotation_row_list.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_widgets"
@@ -19027,14 +19027,14 @@
   },
   "eventSuccessEventSuccessLiveRevealCardLabelPodReveal": "Pod reveal",
   "@eventSuccessEventSuccessLiveRevealCardLabelPodReveal": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_live_reveal_card.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_reveal_assignment_kind.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_live_reveal_card"
   },
   "eventSuccessEventSuccessLiveRevealCardLabelRotationReveal": "Rotation reveal",
   "@eventSuccessEventSuccessLiveRevealCardLabelRotationReveal": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_live_reveal_card.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_reveal_assignment_kind.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_live_reveal_card"

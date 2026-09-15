@@ -91,6 +91,8 @@ import 'package:widgetbook_workspace/event_success/companion/screen.dart'
     as _widgetbook_workspace_event_success_companion_screen;
 import 'package:widgetbook_workspace/event_success/event_success_module_consolidation_prototypes.dart'
     as _widgetbook_workspace_event_success_event_success_module_consolidation_prototypes;
+import 'package:widgetbook_workspace/event_success/host_reveal_components_use_cases.dart'
+    as _widgetbook_workspace_event_success_host_reveal_components_use_cases;
 import 'package:widgetbook_workspace/event_success/specimens/companion_paper.dart'
     as _widgetbook_workspace_event_success_specimens_companion_paper;
 import 'package:widgetbook_workspace/event_success/specimens/companion_social.dart'
@@ -6299,6 +6301,49 @@ final directories = <_widgetbook.WidgetbookNode>[
         ],
       ),
       _widgetbook.WidgetbookFolder(
+        name: 'Event Success',
+        children: [
+          _widgetbook.WidgetbookFolder(
+            name: 'Reveal components',
+            children: [
+              _widgetbook.WidgetbookComponent(
+                name: 'EventSuccessHostRevealViewport',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Ready',
+                    builder:
+                        _widgetbook_workspace_event_success_host_reveal_components_use_cases
+                            .eventSuccessHostRevealViewportStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventSuccessOutcomeSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Ready',
+                    builder:
+                        _widgetbook_workspace_event_success_host_reveal_components_use_cases
+                            .eventSuccessOutcomeSectionStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventSuccessStandingsSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Ready',
+                    builder:
+                        _widgetbook_workspace_event_success_host_reveal_components_use_cases
+                            .eventSuccessStandingsSectionStates,
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
         name: 'Event Success companion',
         children: [
           _widgetbook.WidgetbookComponent(
@@ -7557,13 +7602,13 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookFolder(
-            name: 'Live reveal folded states',
+            name: 'Live reveal components',
             children: [
               _widgetbook.WidgetbookComponent(
-                name: 'AssignmentUnlockedShell',
+                name: 'EventSuccessAssignmentSurface',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
-                    name: 'AssignmentUnlockedShell',
+                    name: 'EventSuccessAssignmentSurface',
                     builder:
                         _widgetbook_workspace_event_success_specimens_live_reveal
                             .eventSuccessStrictAssignmentUnlockedShell,
@@ -7571,76 +7616,10 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'AttendeeCountdown',
+                name: 'EventSuccessAttendeeRevealSurface',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
-                    name: 'AttendeeCountdown',
-                    builder:
-                        _widgetbook_workspace_event_success_specimens_live_reveal
-                            .eventSuccessStrictAttendeeCountdown,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'CountdownBeatRail',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'CountdownBeatRail',
-                    builder:
-                        _widgetbook_workspace_event_success_specimens_live_reveal
-                            .eventSuccessStrictCountdownBeatRail,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'CountdownCuePill',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'CountdownCuePill',
-                    builder:
-                        _widgetbook_workspace_event_success_specimens_live_reveal
-                            .eventSuccessStrictCountdownCuePill,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'CountdownCueStack',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'CountdownCueStack',
-                    builder:
-                        _widgetbook_workspace_event_success_specimens_live_reveal
-                            .eventSuccessStrictCountdownCueStack,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'CountdownNumber',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'CountdownNumber',
-                    builder:
-                        _widgetbook_workspace_event_success_specimens_live_reveal
-                            .eventSuccessStrictCountdownNumber,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'CountdownStageDial',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'CountdownStageDial',
-                    builder:
-                        _widgetbook_workspace_event_success_specimens_live_reveal
-                            .eventSuccessStrictCountdownStageDial,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'EventSuccessLiveRevealAttendeeCard',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'EventSuccessLiveRevealAttendeeCard',
+                    name: 'EventSuccessAttendeeRevealSurface',
                     builder:
                         _widgetbook_workspace_event_success_specimens_live_reveal
                             .eventSuccessStrictEventSuccessLiveRevealAttendeeCard,
@@ -7648,32 +7627,76 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'EventSuccessLiveRevealHostCard',
+                name: 'EventSuccessCountdownIndicator',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
-                    name: 'EventSuccessLiveRevealHostCard',
+                    name: 'EventSuccessCountdownIndicator',
                     builder:
                         _widgetbook_workspace_event_success_specimens_live_reveal
-                            .eventSuccessStrictEventSuccessLiveRevealHostCard,
+                            .eventSuccessStrictCountdownStageDial,
                   ),
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'HostRevealActions',
+                name: 'EventSuccessCountdownNotice',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
-                    name: 'HostRevealActions',
+                    name: 'EventSuccessCountdownNotice',
                     builder:
                         _widgetbook_workspace_event_success_specimens_live_reveal
-                            .eventSuccessStrictHostRevealActions,
+                            .eventSuccessStrictCountdownCuePill,
                   ),
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'RevealGroupSlotRow',
+                name: 'EventSuccessCountdownNoticeRowList',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
-                    name: 'RevealGroupSlotRow',
+                    name: 'EventSuccessCountdownNoticeRowList',
+                    builder:
+                        _widgetbook_workspace_event_success_specimens_live_reveal
+                            .eventSuccessStrictCountdownCueStack,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventSuccessCountdownStepper',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'EventSuccessCountdownStepper',
+                    builder:
+                        _widgetbook_workspace_event_success_specimens_live_reveal
+                            .eventSuccessStrictCountdownBeatRail,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventSuccessCountdownSurface',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'EventSuccessCountdownSurface',
+                    builder:
+                        _widgetbook_workspace_event_success_specimens_live_reveal
+                            .eventSuccessStrictAttendeeCountdown,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventSuccessCountdownText',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'EventSuccessCountdownText',
+                    builder:
+                        _widgetbook_workspace_event_success_specimens_live_reveal
+                            .eventSuccessStrictCountdownNumber,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventSuccessGroupRotationRow',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'EventSuccessGroupRotationRow',
                     builder:
                         _widgetbook_workspace_event_success_specimens_live_reveal
                             .eventSuccessStrictRevealGroupSlotRow,
@@ -7681,87 +7704,10 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'RevealHostCopy',
+                name: 'EventSuccessGroupRotationRowList',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
-                    name: 'RevealHostCopy',
-                    builder:
-                        _widgetbook_workspace_event_success_specimens_live_reveal
-                            .eventSuccessStrictRevealHostCopy,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'RevealProgressBar',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'RevealProgressBar',
-                    builder:
-                        _widgetbook_workspace_event_success_specimens_live_reveal
-                            .eventSuccessStrictRevealProgressBar,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'RevealRoundList',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'RevealRoundList',
-                    builder:
-                        _widgetbook_workspace_event_success_specimens_live_reveal
-                            .eventSuccessStrictRevealRoundList,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'RevealRoundRail',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'RevealRoundRail',
-                    builder:
-                        _widgetbook_workspace_event_success_specimens_live_reveal
-                            .eventSuccessStrictRevealRoundRail,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'RevealRoundRow',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'RevealRoundRow',
-                    builder:
-                        _widgetbook_workspace_event_success_specimens_live_reveal
-                            .eventSuccessStrictRevealRoundRow,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'RevealSlotRow',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'RevealSlotRow',
-                    builder:
-                        _widgetbook_workspace_event_success_specimens_live_reveal
-                            .eventSuccessStrictRevealSlotRow,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'RevealTicker',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'RevealTicker',
-                    builder:
-                        _widgetbook_workspace_event_success_specimens_live_reveal
-                            .eventSuccessStrictRevealTicker,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'VisibleGroupRotationSlots',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'VisibleGroupRotationSlots',
+                    name: 'EventSuccessGroupRotationRowList',
                     builder:
                         _widgetbook_workspace_event_success_specimens_live_reveal
                             .eventSuccessStrictVisibleGroupRotationSlots,
@@ -7769,10 +7715,21 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'VisiblePodAssignment',
+                name: 'EventSuccessHostRevealSurface',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
-                    name: 'VisiblePodAssignment',
+                    name: 'EventSuccessHostRevealSurface',
+                    builder:
+                        _widgetbook_workspace_event_success_specimens_live_reveal
+                            .eventSuccessStrictEventSuccessLiveRevealHostCard,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventSuccessPodAssignmentSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'EventSuccessPodAssignmentSection',
                     builder:
                         _widgetbook_workspace_event_success_specimens_live_reveal
                             .eventSuccessStrictVisiblePodAssignment,
@@ -7780,24 +7737,101 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'VisibleRotationSlots',
+                name: 'EventSuccessRevealActionRow',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
-                    name: 'VisibleRotationSlots',
+                    name: 'EventSuccessRevealActionRow',
                     builder:
                         _widgetbook_workspace_event_success_specimens_live_reveal
-                            .eventSuccessStrictVisibleRotationSlots,
+                            .eventSuccessStrictHostRevealActions,
                   ),
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'WaitingRevealCue',
+                name: 'EventSuccessRevealHeader',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
-                    name: 'WaitingRevealCue',
+                    name: 'EventSuccessRevealHeader',
+                    builder:
+                        _widgetbook_workspace_event_success_specimens_live_reveal
+                            .eventSuccessStrictRevealHostCopy,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventSuccessRevealProgressIndicator',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'EventSuccessRevealProgressIndicator',
+                    builder:
+                        _widgetbook_workspace_event_success_specimens_live_reveal
+                            .eventSuccessStrictRevealProgressBar,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventSuccessRevealRoundRow',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'EventSuccessRevealRoundRow',
+                    builder:
+                        _widgetbook_workspace_event_success_specimens_live_reveal
+                            .eventSuccessStrictRevealRoundRow,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventSuccessRevealRoundRowList',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'EventSuccessRevealRoundRowList',
+                    builder:
+                        _widgetbook_workspace_event_success_specimens_live_reveal
+                            .eventSuccessStrictRevealRoundList,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventSuccessRevealRoundStepper',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'EventSuccessRevealRoundStepper',
+                    builder:
+                        _widgetbook_workspace_event_success_specimens_live_reveal
+                            .eventSuccessStrictRevealRoundRail,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventSuccessRevealWaitingNotice',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'EventSuccessRevealWaitingNotice',
                     builder:
                         _widgetbook_workspace_event_success_specimens_live_reveal
                             .eventSuccessStrictWaitingRevealCue,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventSuccessRotationRow',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'EventSuccessRotationRow',
+                    builder:
+                        _widgetbook_workspace_event_success_specimens_live_reveal
+                            .eventSuccessStrictRevealSlotRow,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventSuccessRotationRowList',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'EventSuccessRotationRowList',
+                    builder:
+                        _widgetbook_workspace_event_success_specimens_live_reveal
+                            .eventSuccessStrictVisibleRotationSlots,
                   ),
                 ],
               ),

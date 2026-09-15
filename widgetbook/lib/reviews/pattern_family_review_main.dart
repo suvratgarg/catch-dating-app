@@ -7,8 +7,8 @@ import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_playbooks.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_feature_blocks.dart'
     show EventSuccessMetricPill, LiveStepRow;
-import 'package:catch_dating_app/event_success/presentation/event_success_live_reveal_card.dart'
-    show CountdownBeatRail;
+import 'package:catch_dating_app/event_success/presentation/reveal/event_success_countdown_stepper.dart'
+    show EventSuccessCountdownStepper;
 import 'package:catch_dating_app/event_success/presentation/event_success_progress_status.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_organizer_switcher.dart'
     show HostOrganizerAvatar, HostOrganizerSwitcherSheet;
@@ -561,7 +561,7 @@ class _ProgressCueFamily extends StatelessWidget {
           note: 'Early progress keeps the first step current.',
           child: SizedBox(
             width: WidgetbookPreviewLayout.standardContractWidth,
-            child: CountdownBeatRail(items: items, currentIndex: 0),
+            child: EventSuccessCountdownStepper(items: items, currentIndex: 0),
           ),
         ),
         _PreviewCard(
@@ -569,7 +569,7 @@ class _ProgressCueFamily extends StatelessWidget {
           note: 'Middle progress should distinguish complete from current.',
           child: SizedBox(
             width: WidgetbookPreviewLayout.standardContractWidth,
-            child: CountdownBeatRail(items: items, currentIndex: 1),
+            child: EventSuccessCountdownStepper(items: items, currentIndex: 1),
           ),
         ),
         _PreviewCard(
@@ -577,7 +577,7 @@ class _ProgressCueFamily extends StatelessWidget {
           note: 'Completed items use success checks; current alone stays gold.',
           child: SizedBox(
             width: WidgetbookPreviewLayout.standardContractWidth,
-            child: CountdownBeatRail(items: items, currentIndex: 2),
+            child: EventSuccessCountdownStepper(items: items, currentIndex: 2),
           ),
         ),
         _PreviewCard(

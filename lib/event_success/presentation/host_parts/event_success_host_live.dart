@@ -350,7 +350,7 @@ class LiveTab extends StatelessWidget {
       if (finishAnyway == true) await complete(true);
     }
 
-    Widget liveRevealCard() => EventSuccessLiveRevealHostCard(
+    Widget liveRevealCard() => EventSuccessHostRevealSurface(
       event: event,
       plan: plan,
       podAssignments: assignments,

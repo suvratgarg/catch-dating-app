@@ -2306,7 +2306,7 @@
             "lib/event_success/presentation/companion_parts/event_success_companion_wingman.dart",
             "lib/event_success/presentation/companion_parts/event_success_companion_afterglow.dart",
             "lib/event_success/presentation/companion_parts/event_success_companion_feedback.dart",
-            "lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_attendee.dart"
+            "lib/event_success/presentation/reveal/event_success_attendee_reveal_surface.dart"
           ],
           "componentIds": [
             "catch.badge",
