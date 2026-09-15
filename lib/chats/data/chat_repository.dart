@@ -121,19 +121,42 @@ class ChatRepository {
     required String matchId,
     required String senderId,
     required String text,
+    String? messageId,
   }) => withBackendErrorContext(
     () async {
       final normalizedText = normalizeOutgoingChatText(text);
-      await _db
+      final message = _db
           .collection(_matchesCollectionPath)
           .doc(matchId)
           .collection('messages')
-          .doc()
-          .set({
-            'senderId': senderId,
-            'text': normalizedText,
-            'sentAt': FieldValue.serverTimestamp(),
-          });
+          .doc(messageId);
+      if (messageId == null) {
+        await message.set({
+          'senderId': senderId,
+          'text': normalizedText,
+          'sentAt': FieldValue.serverTimestamp(),
+        });
+        return;
+      }
+      await _db.runTransaction((transaction) async {
+        final existing = await transaction.get(message);
+        if (existing.exists) {
+          final data = existing.data()!;
+          if (data['senderId'] != senderId ||
+              data['text'] != normalizedText ||
+              data['imageUrl'] != null) {
+            throw StateError(
+              'Message operation is already bound to different content.',
+            );
+          }
+          return;
+        }
+        transaction.set(message, {
+          'senderId': senderId,
+          'text': normalizedText,
+          'sentAt': FieldValue.serverTimestamp(),
+        });
+      });
     },
     context: const BackendErrorContext(
       service: BackendService.firestore,

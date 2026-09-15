@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/data/read_limit_policy.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
@@ -22,6 +23,7 @@ abstract class ChatsListViewModel with _$ChatsListViewModel {
     required List<ChatThreadPreview> newMatches,
     required List<ChatThreadPreview> conversations,
     required int totalThreadCount,
+    @Default(false) bool sourceWindowMayHaveMore,
   }) = _ChatsListViewModel;
 
   bool get isEmpty => newMatches.isEmpty && conversations.isEmpty;
@@ -154,7 +156,7 @@ AsyncValue<ChatsListViewModel> chatsListViewModel(Ref ref) {
         : profilesState?.value ?? const <String, PublicProfile>{};
     final previews = displayMatches
         .map(
-          (match) => _previewForMatch(
+          (match) => chatThreadPreviewForMatch(
             match,
             currentUid,
             clubsById: clubsById,
@@ -181,15 +183,17 @@ AsyncValue<ChatsListViewModel> chatsListViewModel(Ref ref) {
       newMatches: List.unmodifiable(newMatches),
       conversations: List.unmodifiable(conversations),
       totalThreadCount: displayMatches.length,
+      sourceWindowMayHaveMore: matches.length >= ReadLimitPolicy.historyPage,
     );
   });
 }
 
-ChatThreadPreview _previewForMatch(
+ChatThreadPreview chatThreadPreviewForMatch(
   Match match,
   String uid, {
   required Map<String, Club> clubsById,
   required Map<String, PublicProfile> profilesByUid,
+  bool isHostViewer = false,
 }) {
   final otherUid = match.otherId(uid);
   final club = match.isClubHostInquiry && match.clubId != null
@@ -198,7 +202,9 @@ ChatThreadPreview _previewForMatch(
   final hostProfile = _hostProfileFor(club, otherUid);
   final otherParticipantIsHost = hostProfile != null;
   final shouldReadPublicProfile =
-      !match.isClubHostInquiry || (club != null && !otherParticipantIsHost);
+      isHostViewer ||
+      !match.isClubHostInquiry ||
+      (club != null && !otherParticipantIsHost);
   final profile = shouldReadPublicProfile ? profilesByUid[otherUid] : null;
   final displayName =
       hostProfile?.displayName ??

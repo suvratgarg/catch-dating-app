@@ -28173,7 +28173,7 @@ abstract class AppLocalizations {
   /// Person-based Host messaging interface copy.
   ///
   /// In en, this message translates to:
-  /// **'At least {count} unread messages. WhatsApp read status is unavailable.'**
+  /// **'At least {count} unread messages. Some source read counts are unavailable.'**
   String hostInboxPartialUnread({required int count});
 
   /// Person-based Host messaging interface copy.
@@ -28253,6 +28253,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Prospective'**
   String get hostInboxProspectiveStatus;
+
+  /// History pagination action for a Catch conversation source.
+  ///
+  /// In en, this message translates to:
+  /// **'Load older Catch messages'**
+  String get hostInboxOlderMessages;
+
+  /// Short label for the WhatsApp reply route and transcript source.
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp'**
+  String get hostInboxWhatsappReplyChannel;
 }
 
 class _AppLocalizationsDelegate

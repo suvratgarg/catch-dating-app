@@ -114,6 +114,10 @@ HostInboxScreen hostInboxScreenForUri(Uri uri, {String? initialOrganizerId}) {
   final requestedAudienceId = uri.queryParameters['audienceId']?.trim();
   return HostInboxScreen(
     initialScope: initialScope,
+    initialSegment: HostInboxAudienceSegment.values.firstWhere(
+      (segment) => segment.name == uri.queryParameters['segment'],
+      orElse: () => HostInboxAudienceSegment.booked,
+    ),
     initialWorkspace: initialWorkspace,
     initialSavedAudienceId:
         uri.queryParameters['compose'] == '1' &&

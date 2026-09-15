@@ -120,10 +120,7 @@ void main() {
     );
     expect(find.text('Message 1 booked attendee'), findsNothing);
     expect(find.text('Asha Guest'), findsOneWidget);
-    expect(
-      find.text('Catch chat · Organizer · Booked · Can you help?'),
-      findsOneWidget,
-    );
+    expect(find.text('Can you help?'), findsOneWidget);
     expect(find.text('Mira Guest'), findsNothing);
 
     await tester.tap(find.text('PROSPECTIVE · 1'));
@@ -131,10 +128,7 @@ void main() {
 
     expect(find.text('Message 1 prospective attendee'), findsNothing);
     expect(find.text('Mira Guest'), findsOneWidget);
-    expect(
-      find.text('Catch chat · Organizer · Requested · Can you help?'),
-      findsOneWidget,
-    );
+    expect(find.text('Can you help?'), findsOneWidget);
     expect(find.text('Asha Guest'), findsNothing);
   });
 
@@ -355,7 +349,8 @@ void main() {
 
     expect(find.text('Event Guest'), findsOneWidget);
     expect(find.text('Where is the entrance?'), findsOneWidget);
-    expect(find.text('WhatsApp Business · Organizer number'), findsOneWidget);
+    expect(find.byType(CatchField), findsOneWidget);
+    expect(find.text('Booking status unavailable'), findsOneWidget);
     expect(find.text('General Guest'), findsNothing);
 
     await tester.tap(find.bySemanticsLabel(RegExp('Inbox scope')));
@@ -392,10 +387,7 @@ void main() {
     await pumpFeatureUi(tester);
 
     expect(find.text('Asha Guest'), findsOneWidget);
-    expect(
-      find.text('Catch chat · Organizer · General inquiry · Can you help?'),
-      findsOneWidget,
-    );
+    expect(find.text('Can you help?'), findsOneWidget);
     expect(find.text('Chat not found'), findsNothing);
   });
 
@@ -765,10 +757,7 @@ void main() {
 
     expect(find.text('GENERAL INQUIRIES'), findsOneWidget);
     expect(find.text('General Guest'), findsOneWidget);
-    expect(
-      find.text('Catch chat · Organizer · General inquiry · Can you help?'),
-      findsOneWidget,
-    );
+    expect(find.text('Can you help?'), findsOneWidget);
     expect(find.text('Event Guest'), findsNothing);
     expect(find.textContaining('Message '), findsNothing);
     expect(find.textContaining('Booked ·'), findsNothing);

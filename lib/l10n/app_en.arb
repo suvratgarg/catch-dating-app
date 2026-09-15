@@ -24465,7 +24465,7 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.inbox"
   },
-  "hostInboxPartialUnread": "At least {count} unread messages. WhatsApp read status is unavailable.",
+  "hostInboxPartialUnread": "At least {count} unread messages. Some source read counts are unavailable.",
   "@hostInboxPartialUnread": {
     "description": "Person-based Host messaging interface copy.",
     "x-audience": "host",
@@ -24572,5 +24572,9 @@
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.inbox"
-  }
+  },
+  "hostInboxOlderMessages": "Load older Catch messages",
+  "@hostInboxOlderMessages": {"description": "History pagination action for a Catch conversation source.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.inbox.host_person_conversation"},
+  "hostInboxWhatsappReplyChannel": "WhatsApp",
+  "@hostInboxWhatsappReplyChannel": {"description": "Short label for the WhatsApp reply route and transcript source.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.inbox"}
 }

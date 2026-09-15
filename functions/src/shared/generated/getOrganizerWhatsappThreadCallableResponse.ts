@@ -6,6 +6,10 @@ export interface GetOrganizerWhatsappThreadCallableResponse {
   organizerId: string;
   threadId: string;
   contactId: string;
+  /**
+   * Verified current account identity for this organizer contact; absent on older servers and null for unresolved, merged, hidden or deleted identities.
+   */
+  linkedUid?: string | null;
   displayName: string;
   lastInboundAtMillis: number;
   serviceWindowExpiresAtMillis: number;

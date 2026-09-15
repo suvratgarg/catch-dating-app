@@ -17825,7 +17825,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String hostInboxPartialUnread({required int count}) {
-    return 'At least $count unread messages. WhatsApp read status is unavailable.';
+    return 'At least $count unread messages. Some source read counts are unavailable.';
   }
 
   @override
@@ -17874,4 +17874,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostInboxProspectiveStatus => 'Prospective';
+
+  @override
+  String get hostInboxOlderMessages => 'Load older Catch messages';
+
+  @override
+  String get hostInboxWhatsappReplyChannel => 'WhatsApp';
 }
