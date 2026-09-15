@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.136.0
+version: 1.137.0
 updated: 2026-09-15
 owner: recursive_audit_loop
 status: active
@@ -115,9 +115,12 @@ The existing legacy `disconnected` actor status is still readable; its prior
 attendance cannot be recovered, and reconnect alone cannot manufacture arrival.
 An explicit arrival action restores that physical fact. Host and guest callable
 projections carry connection state separately, with native attention counts and
-the guest connection notice retaining that distinction. Late-join and practical-help rehearsal
-commands now use the transaction adapters described below; other assistance
-families still require rehearsal integration.
+the guest connection notice retaining that distinction. Rehearsal now exercises
+late join, practical help, participation, membership and handovers, scoped staff
+duties, movement, checkpoints, accountability, delivery takeover, runtime
+settings and attendance closeout through the transaction adapters described
+below. Catalog families without a registered executor remain modeled coverage
+rather than runnable rehearsal behavior.
 
 Scheduled rehearsal behaviors now resolve their guests against the configured
 2–50-person roster. Existing guest indices remain stable when present; roles
@@ -2047,8 +2050,8 @@ A temporary strong authentication subscription revokes that pending state even
 while the closed editor's normal dependencies are paused. Definitive conflicts
 require fresh review. Confirmation refreshes membership and Host assistance reads;
 it does not optimistically assign a group or change attendance. These native
-bindings still need Host roster and delegated-operator screen composition; pending
-requests are not persisted across app restarts.
+bindings are composed into the shared Host roster, live-assistance and rehearsal
+surfaces. Pending requests are not persisted across app restarts.
 
 Group-specific joining guidance now checks accepted membership at publication,
 link issuance, guest view/reply resolution and the shared SMS/WhatsApp dispatch
@@ -2056,10 +2059,10 @@ boundary. Pending transfers keep old-group instructions usable; acceptance,
 removal, a replaced source or a new participation episode withholds stale group
 instructions. The next valid publication can update the existing workflow link.
 This does not infer a guest's location, check-in or actual arrival at a checkpoint.
-Host roster controls, bulk setup, operator handover queues, explicit responsibility
-reassignment and the remaining rehearsal adapters remain integration work. The dormant live
-late-join worker now consumes membership-change signals; it does not execute
-automatic reassignment or other membership workflows.
+Host roster controls, runtime enrollment, operator handovers, checkpoint
+responsibility reassignment and matching rehearsal adapters use the reviewed
+commands above. The live late-join worker consumes membership-change signals;
+it does not execute automatic reassignment or other catalog workflows.
 
 ### Shared message delivery
 
@@ -2547,38 +2550,35 @@ Firestore emulator, not an enabled provider integration. Gupshup is the first
 candidate adapter; account selection and actual use-case/DLT approvals remain
 unconfirmed. The channel-specific worker only accepts SMS-only intents;
 multi-route intents use `EventMessageWorker` and its shared authority reader.
-Before activation, complete the remaining consent/withdrawal entry points,
-audited sender/budget provisioning, activation of the dormant coordination,
+Before activation, complete audited sender/budget provisioning, activation of
+the dormant coordination,
 verified callback activation and lookup/reconciliation, provider freshness/expiry behavior,
 financial reconciliation and retention. Provision the guest signing key and
 verify the deployed branded response route. No fabricated approval receipt,
-fixture permission or quote can satisfy live onboarding. Host/rehearsal
-projections remain the next delivery slice; independent RCS work has resumed
-while their shared schema/UI files are being migrated.
+fixture permission or quote can satisfy live onboarding. Host and rehearsal
+projections now expose runtime configuration, guest help, movement, checkpoint,
+delivery and attendance-closeout state without widening provider authority.
 
-With the shared execution and SMS/WhatsApp boundaries in source, the next
+With the shared execution and SMS/WhatsApp/RCS boundaries in source, the next
 implementation sequence is:
 
-1. Complete one Host journey from Today attention through live assistance,
-   guest response and rehearsal, using the existing Event Success runtime.
-   Surface actionable state, current authority and configuration gaps; reuse
-   typed commands and simulate external effects during rehearsal.
-2. Extend the remaining workflow families with their applicable commands,
+1. Extend the remaining workflow families with their applicable commands,
    overrides and Host projections. A catalog definition alone is not executable
    coverage.
-3. Complete consent and sender/budget onboarding, verify SMS and WhatsApp
-   activation, integrate and deploy, and verify the journey on device.
+2. Complete audited consent and sender/budget onboarding, verify SMS, WhatsApp
+   and RCS activation, integrate and deploy, and verify the journey on device.
 
-RCS must not block these items. The initial contracts and rendering draft is
-preserved on [`codex/event-assistance-rcs-backlog`](https://github.com/suvratgarg/catch-dating-app/tree/codex/event-assistance-rcs-backlog)
+The initial RCS contracts and rendering draft are preserved on
+[`codex/event-assistance-rcs-backlog`](https://github.com/suvratgarg/catch-dating-app/tree/codex/event-assistance-rcs-backlog)
 at commit `bed3e804249ee553d95be4ab2cb1014268cf599e`. Its reviewed replacement
 now supplies the canonical Google RBM sender configuration and rendering
 boundary described below; generated outputs come from the current generator.
 The RCS backend now includes consent and withdrawal APIs, capability/readiness
 checks, shared outbox dispatch, OAuth loading, authenticated HTTP ingress, and
-delivery/native-reply consumers. Remaining work includes audited sender/budget onboarding, retention and financial reconciliation,
-provider registration, deployment, activation and end-to-end verification. On 2026-09-08 the user resumed independent RCS work while the
-Host UI handoff is pending. Neither the parked prototype nor the restored
+delivery/native-reply consumers. Remaining work includes audited sender/budget
+onboarding, retention and financial reconciliation, provider registration,
+deployment, activation and end-to-end verification. The Host and Consumer
+source handoffs are integrated. Neither the parked prototype nor the restored
 source establishes live provider selection, provisioning or readiness.
 
 Catalog membership describes an
@@ -3141,8 +3141,8 @@ phone, token or guest link. The adapter remains injectable; the production
 worker factory supplies its network client and credential loader. Event-scoped
 RCS preference APIs, message-link withdrawal, sender rendering, transactional
 dispatch, signed callback persistence and consumers are implemented in source.
-The verified web opt-in flow is implemented above. Consumer app consent,
-audited provisioning, deployment and provider activation remain open.
+The verified web and Consumer-app consent flows are implemented above. Audited
+provisioning, deployment and provider activation remain open.
 
 ## Format Mapping And Wiring
 
