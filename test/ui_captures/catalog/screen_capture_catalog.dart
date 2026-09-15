@@ -4418,7 +4418,7 @@ Future<void> _openHostManageCheckInQr(WidgetTester tester) async {
 Future<void> _verifyScheduleLockedCapture(WidgetTester tester) async {
   expect(find.text('Schedule locked'), findsOneWidget);
   expect(
-    find.byType(ReadOnlyHostedEventScheduleCard, skipOffstage: false),
+    find.byType(HostedEventScheduleSection, skipOffstage: false),
     findsOneWidget,
   );
 }

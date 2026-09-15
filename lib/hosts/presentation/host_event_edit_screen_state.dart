@@ -197,7 +197,9 @@ class HostEventEditFieldDisplayState {
       ),
       policy: HostEventEditPolicyFieldState.from(
         currencyCode: event.currency,
-        admissionPreset: _admissionPresetForPolicy(policy),
+        admissionPreset: HostEventEditPolicyFieldState.admissionPresetForPolicy(
+          policy,
+        ),
         cohortCapsEnabled: policy.usesFixedCohortCaps,
         dynamicPricingEnabled: policy.usesDemandPricing,
         cancellationPolicyId: policy.cancellationPolicy.id,
@@ -384,6 +386,19 @@ class HostEventEditPolicyFieldState {
           admissionPreset == EventAdmissionPreset.balancedSingles &&
           dynamicPricingEnabled,
     );
+  }
+
+  static EventAdmissionPreset admissionPresetForPolicy(
+    EventPolicyBundle policy,
+  ) {
+    if (policy.usesInviteOnly) return EventAdmissionPreset.inviteOnly;
+    if (policy.admissionPolicy.manualApprovalRequired) {
+      return EventAdmissionPreset.requestToJoin;
+    }
+    if (policy.usesBalancedRatio) {
+      return EventAdmissionPreset.balancedSingles;
+    }
+    return EventAdmissionPreset.openCapacity;
   }
 
   final String currencyCode;
@@ -591,15 +606,6 @@ String hostEventEditDateLabel(DateTime date) {
   return '${date.day.toString().padLeft(2, '0')}/'
       '${date.month.toString().padLeft(2, '0')}/'
       '${date.year}';
-}
-
-EventAdmissionPreset _admissionPresetForPolicy(EventPolicyBundle policy) {
-  if (policy.usesInviteOnly) return EventAdmissionPreset.inviteOnly;
-  if (policy.admissionPolicy.manualApprovalRequired) {
-    return EventAdmissionPreset.requestToJoin;
-  }
-  if (policy.usesBalancedRatio) return EventAdmissionPreset.balancedSingles;
-  return EventAdmissionPreset.openCapacity;
 }
 
 String? _trimInviteCode(String? value) {

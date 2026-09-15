@@ -8623,32 +8623,27 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'EditableHostedEventPolicyCard',
+            name: 'HostedEventPolicySection',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Editable policy states',
                 builder: _widgetbook_workspace_hosts_operations_edit_event
-                    .editableHostedEventPolicyCardCatalogStates,
+                    .editableHostedEventPolicySectionCatalogStates,
               ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'ReadOnlyHostedEventPolicyCard',
-            useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Read-only policy states',
                 builder: _widgetbook_workspace_hosts_operations_edit_event
-                    .readOnlyHostedEventPolicyCardCatalogStates,
+                    .readOnlyHostedEventPolicySectionCatalogStates,
               ),
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'ReadOnlyHostedEventScheduleCard',
+            name: 'HostedEventScheduleSection',
             useCases: [
               _widgetbook.WidgetbookUseCase(
-                name: 'Read-only schedule states',
+                name: 'Schedule states',
                 builder: _widgetbook_workspace_hosts_operations_edit_event
-                    .readOnlyHostedEventScheduleCardCatalogStates,
+                    .hostedEventScheduleSectionCatalogStates,
               ),
             ],
           ),

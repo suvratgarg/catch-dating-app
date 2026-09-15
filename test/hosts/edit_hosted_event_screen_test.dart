@@ -694,11 +694,11 @@ void main() {
       findsNothing,
     );
     expect(
-      find.byType(ReadOnlyHostedEventScheduleCard, skipOffstage: false),
+      find.byType(HostedEventScheduleSection, skipOffstage: false),
       findsOneWidget,
     );
     expect(
-      find.byType(ReadOnlyHostedEventPolicyCard, skipOffstage: false),
+      find.byType(HostedEventPolicySection, skipOffstage: false),
       findsOneWidget,
     );
     await _expectVisibleText(tester, event.timeRangeLabel);
