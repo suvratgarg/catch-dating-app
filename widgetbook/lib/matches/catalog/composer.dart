@@ -3,7 +3,7 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
 class WidgetbookMatchesComposerStatesPreview extends StatefulWidget {
-  const WidgetbookMatchesComposerStatesPreview();
+  const WidgetbookMatchesComposerStatesPreview({super.key});
 
   @override
   State<WidgetbookMatchesComposerStatesPreview> createState() =>

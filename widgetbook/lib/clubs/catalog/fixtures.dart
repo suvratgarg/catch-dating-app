@@ -4,7 +4,6 @@ import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
-import 'package:flutter/material.dart';
 
 const widgetbookClubViewerUid = 'widgetbook-club-viewer';
 

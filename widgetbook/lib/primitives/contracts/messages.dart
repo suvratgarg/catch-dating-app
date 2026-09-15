@@ -489,7 +489,7 @@ Widget notificationRowContractStates(BuildContext context) {
 }
 
 class _MessageFrame extends StatelessWidget {
-  const _MessageFrame({super.key, required this.child});
+  const _MessageFrame({required this.child});
 
   final Widget child;
 

@@ -2,7 +2,6 @@ import 'package:catch_dating_app/design_fixtures/catches_surface_fixtures.dart';
 import 'package:catch_dating_app/swipes/presentation/catches_hub_screen_state.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_hub_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/widgets/attended_event_tile.dart';
-import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;

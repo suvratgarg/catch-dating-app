@@ -145,7 +145,7 @@ class WidgetbookClubClubComposedPreview extends StatelessWidget {
 }
 
 class WidgetbookClubClubReadOnlyPreview extends StatelessWidget {
-  const WidgetbookClubClubReadOnlyPreview();
+  const WidgetbookClubClubReadOnlyPreview({super.key});
 
   @override
   Widget build(BuildContext context) {
