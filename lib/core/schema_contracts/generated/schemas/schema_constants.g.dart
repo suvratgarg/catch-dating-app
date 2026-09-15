@@ -258,6 +258,8 @@ export 'event_rehearsal_reproduction_callable_response.g.dart';
 export 'event_roster_handoff_document.g.dart';
 export 'event_runtime_access.g.dart';
 export 'event_runtime_claim_request_document.g.dart';
+export 'event_runtime_data_request_document.g.dart';
+export 'event_runtime_data_request_receipt_document.g.dart';
 export 'event_runtime_participant_document.g.dart';
 export 'event_safety_report_document.g.dart';
 export 'event_share_intent_document.g.dart';

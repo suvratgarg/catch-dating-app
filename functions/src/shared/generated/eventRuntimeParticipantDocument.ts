@@ -54,6 +54,10 @@ export interface EventRuntimeParticipantDocument {
     | "questionnaireAnswerIds"
     | "teamName"
   )[];
+  /**
+   * Monotonic accepted runtime-profile submission revision. Legacy documents omit it and read as zero.
+   */
+  profileRevision?: number;
   runtimeProfile: {
     displayName: string;
     gender: ("man" | "woman" | "nonBinary" | "other") | null;

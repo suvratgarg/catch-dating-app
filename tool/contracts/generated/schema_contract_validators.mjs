@@ -245,6 +245,8 @@ import {
   eventAttendeeImportDocumentSchema,
   eventRosterHandoffDocumentSchema,
   eventRuntimeParticipantDocumentSchema,
+  eventRuntimeDataRequestDocumentSchema,
+  eventRuntimeDataRequestReceiptDocumentSchema,
   eventVenueSessionDocumentSchema,
   eventVenueSessionRedemptionDocumentSchema,
   eventSuccessPresenceDocumentSchema,
@@ -944,6 +946,8 @@ export const validateEventAttendeeAttendanceReceiptDocument = ajv.compile(eventA
 export const validateEventAttendeeImportDocument = ajv.compile(eventAttendeeImportDocumentSchema);
 export const validateEventRosterHandoffDocument = ajv.compile(eventRosterHandoffDocumentSchema);
 export const validateEventRuntimeParticipantDocument = ajv.compile(eventRuntimeParticipantDocumentSchema);
+export const validateEventRuntimeDataRequestDocument = ajv.compile(eventRuntimeDataRequestDocumentSchema);
+export const validateEventRuntimeDataRequestReceiptDocument = ajv.compile(eventRuntimeDataRequestReceiptDocumentSchema);
 export const validateEventVenueSessionDocument = ajv.compile(eventVenueSessionDocumentSchema);
 export const validateEventVenueSessionRedemptionDocument = ajv.compile(eventVenueSessionRedemptionDocumentSchema);
 export const validateEventSuccessPresenceDocument = ajv.compile(eventSuccessPresenceDocumentSchema);

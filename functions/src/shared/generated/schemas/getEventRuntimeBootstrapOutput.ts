@@ -762,6 +762,101 @@ export const getEventRuntimeBootstrapCallableResponseSchema: Record<string, unkn
               },
               "maxItems": 10
             },
+            "requiredDataRequest": {
+              "description": "Current event-scoped missing-data request. Omitted by older backends.",
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "revision",
+                    "fieldIds",
+                    "completedFieldIds",
+                    "status",
+                    "requestedAtMillis",
+                    "expiresAtMillis",
+                    "completedAtMillis"
+                  ],
+                  "properties": {
+                    "revision": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 9007199254740991
+                    },
+                    "fieldIds": {
+                      "type": "array",
+                      "uniqueItems": true,
+                      "minItems": 1,
+                      "maxItems": 10,
+                      "items": {
+                        "type": "string",
+                        "enum": [
+                          "displayName",
+                          "gender",
+                          "interestedInGenders",
+                          "relationshipGoal",
+                          "dateOfBirth",
+                          "paceBand",
+                          "skillBand",
+                          "dietaryAndSeatingNotes",
+                          "questionnaireAnswerIds",
+                          "teamName"
+                        ]
+                      }
+                    },
+                    "completedFieldIds": {
+                      "type": "array",
+                      "uniqueItems": true,
+                      "maxItems": 10,
+                      "items": {
+                        "type": "string",
+                        "enum": [
+                          "displayName",
+                          "gender",
+                          "interestedInGenders",
+                          "relationshipGoal",
+                          "dateOfBirth",
+                          "paceBand",
+                          "skillBand",
+                          "dietaryAndSeatingNotes",
+                          "questionnaireAnswerIds",
+                          "teamName"
+                        ]
+                      }
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "pending",
+                        "completed",
+                        "expired"
+                      ]
+                    },
+                    "requestedAtMillis": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "expiresAtMillis": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "completedAtMillis": {
+                      "type": [
+                        "integer",
+                        "null"
+                      ],
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    }
+                  }
+                }
+              ]
+            },
             "runtimeProfile": {
               "type": "object",
               "additionalProperties": false,

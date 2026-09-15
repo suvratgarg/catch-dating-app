@@ -8158,6 +8158,10 @@ export interface EventRuntimeParticipantDocument {
     | "questionnaireAnswerIds"
     | "teamName"
   )[];
+  /**
+   * Monotonic accepted runtime-profile submission revision. Legacy documents omit it and read as zero.
+   */
+  profileRevision?: number;
   runtimeProfile: {
     displayName: string;
     gender: ("man" | "woman" | "nonBinary" | "other") | null;
@@ -8192,6 +8196,95 @@ export interface EventRuntimeParticipantDocument {
   revokedAt: FirebaseFirestore.Timestamp | null;
   createdAt: FirebaseFirestore.Timestamp;
   updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Current source-fenced request for missing event-scoped runtime profile data.
+ */
+export interface EventRuntimeDataRequestDocument {
+  schemaVersion: 1;
+  requestId: string;
+  eventId: string;
+  organizerId: string;
+  attendeeId: string;
+  uid: string;
+  revision: number;
+  profileRevision: number;
+  sourceHash: string;
+  operationId: string;
+  /**
+   * @minItems 1
+   * @maxItems 10
+   */
+  fieldIds: (
+    | "displayName"
+    | "gender"
+    | "interestedInGenders"
+    | "relationshipGoal"
+    | "dateOfBirth"
+    | "paceBand"
+    | "skillBand"
+    | "dietaryAndSeatingNotes"
+    | "questionnaireAnswerIds"
+    | "teamName"
+  )[];
+  /**
+   * @maxItems 10
+   */
+  completedFieldIds: (
+    | "displayName"
+    | "gender"
+    | "interestedInGenders"
+    | "relationshipGoal"
+    | "dateOfBirth"
+    | "paceBand"
+    | "skillBand"
+    | "dietaryAndSeatingNotes"
+    | "questionnaireAnswerIds"
+    | "teamName"
+  )[];
+  status: "pending" | "completed";
+  requestedBy: "systemWithinPolicy";
+  requestedAt: FirebaseFirestore.Timestamp;
+  expiresAt: FirebaseFirestore.Timestamp;
+  completedAt: FirebaseFirestore.Timestamp | null;
+  updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Immutable idempotency receipt for one required-data command.
+ */
+export interface EventRuntimeDataRequestReceiptDocument {
+  schemaVersion: 1;
+  receiptId: string;
+  requestId: string;
+  eventId: string;
+  organizerId: string;
+  attendeeId: string;
+  uid: string;
+  operationId: string;
+  requestHash: string;
+  requestRevision: number;
+  profileRevision: number;
+  sourceHash: string;
+  /**
+   * @minItems 1
+   * @maxItems 10
+   */
+  fieldIds: (
+    | "displayName"
+    | "gender"
+    | "interestedInGenders"
+    | "relationshipGoal"
+    | "dateOfBirth"
+    | "paceBand"
+    | "skillBand"
+    | "dietaryAndSeatingNotes"
+    | "questionnaireAnswerIds"
+    | "teamName"
+  )[];
+  expiresAt: FirebaseFirestore.Timestamp;
+  createdAt: FirebaseFirestore.Timestamp;
 }
 
 /**

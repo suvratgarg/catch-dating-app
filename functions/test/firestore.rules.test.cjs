@@ -1491,6 +1491,30 @@ describe("firestore.rules", () => {
         "event-1_runner-1",
       ), eventRuntimeParticipant()));
 
+      for (const collectionName of [
+        "eventRuntimeDataRequests",
+        "eventRuntimeDataRequestReceipts",
+      ]) {
+        await seed([collectionName, "runtime-data-1"], {
+          eventId: "event-1",
+          organizerId: "club-1",
+          attendeeId: "attendee-1",
+          uid: "runner-1",
+        });
+        for (const uid of ["runner-1", "host-1"]) {
+          await assertFails(getDoc(doc(
+            authedDb(uid), collectionName, "runtime-data-1",
+          )));
+          await assertFails(setDoc(doc(
+            authedDb(uid), collectionName, "runtime-data-2",
+          ), {eventId: "event-1", uid}));
+        }
+        await assertFails(getDocs(query(
+          collection(authedDb("runner-1"), collectionName),
+          where("eventId", "==", "event-1"),
+        )));
+      }
+
       await assertSucceeds(getDoc(doc(
         authedDb("host-1"),
         "eventRuntimeClaimRequests",

@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.122.0
+version: 1.123.0
 updated: 2026-09-16
 owner: recursive_audit_loop
 status: active
@@ -1969,6 +1969,19 @@ required; sensitive or compatibility fields are requested only when an enabled
 module needs them. Saving the answers as a later Catch onboarding prefill is a
 separate explicit consent. A prefill remains private and must never overwrite a
 completed Consumer profile or create a public projection.
+
+`eventRuntimeDataRequests/{requestId}` is the server-only current source for a
+typed `requestRequiredData` instruction. The internal coordinator accepts only
+the canonical runtime field enum, fields derived from the current event format
+and selected modules, and fields still missing from the event-scoped profile.
+The command is fenced by the profile revision, current request revision and a
+hash of the event, attendee and profile facts. Its deadline cannot outlive the
+event. `eventRuntimeDataRequestReceipts/{receiptId}` makes an exact operation
+retry idempotent and rejects reuse with changed content. Both collections deny
+all client access. The participant-write trigger creates the typed command for
+current missing required fields, runtime bootstrap returns the bounded request,
+and accepted profile submission reconciles it to completion. This completes the
+live source binding without granting Host authority or activating a deployment.
 
 ### Organizer Communication Preferences And CRM
 

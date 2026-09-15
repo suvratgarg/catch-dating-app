@@ -764,6 +764,101 @@ const schemaGetEventRuntimeBootstrapCallableResponseSchema = <String, Object?>{
               },
               'maxItems': 10,
             },
+            'requiredDataRequest': <String, Object?>{
+              'description': 'Current event-scoped missing-data request. Omitted by older backends.',
+              'anyOf': <Object?>[
+                <String, Object?>{
+                  'type': 'null',
+                },
+                <String, Object?>{
+                  'type': 'object',
+                  'additionalProperties': false,
+                  'required': <Object?>[
+                    'revision',
+                    'fieldIds',
+                    'completedFieldIds',
+                    'status',
+                    'requestedAtMillis',
+                    'expiresAtMillis',
+                    'completedAtMillis',
+                  ],
+                  'properties': <String, Object?>{
+                    'revision': <String, Object?>{
+                      'type': 'integer',
+                      'minimum': 1,
+                      'maximum': 9007199254740991,
+                    },
+                    'fieldIds': <String, Object?>{
+                      'type': 'array',
+                      'uniqueItems': true,
+                      'minItems': 1,
+                      'maxItems': 10,
+                      'items': <String, Object?>{
+                        'type': 'string',
+                        'enum': <Object?>[
+                          'displayName',
+                          'gender',
+                          'interestedInGenders',
+                          'relationshipGoal',
+                          'dateOfBirth',
+                          'paceBand',
+                          'skillBand',
+                          'dietaryAndSeatingNotes',
+                          'questionnaireAnswerIds',
+                          'teamName',
+                        ],
+                      },
+                    },
+                    'completedFieldIds': <String, Object?>{
+                      'type': 'array',
+                      'uniqueItems': true,
+                      'maxItems': 10,
+                      'items': <String, Object?>{
+                        'type': 'string',
+                        'enum': <Object?>[
+                          'displayName',
+                          'gender',
+                          'interestedInGenders',
+                          'relationshipGoal',
+                          'dateOfBirth',
+                          'paceBand',
+                          'skillBand',
+                          'dietaryAndSeatingNotes',
+                          'questionnaireAnswerIds',
+                          'teamName',
+                        ],
+                      },
+                    },
+                    'status': <String, Object?>{
+                      'type': 'string',
+                      'enum': <Object?>[
+                        'pending',
+                        'completed',
+                        'expired',
+                      ],
+                    },
+                    'requestedAtMillis': <String, Object?>{
+                      'type': 'integer',
+                      'minimum': 0,
+                      'maximum': 9007199254740991,
+                    },
+                    'expiresAtMillis': <String, Object?>{
+                      'type': 'integer',
+                      'minimum': 0,
+                      'maximum': 9007199254740991,
+                    },
+                    'completedAtMillis': <String, Object?>{
+                      'type': <Object?>[
+                        'integer',
+                        'null',
+                      ],
+                      'minimum': 0,
+                      'maximum': 9007199254740991,
+                    },
+                  },
+                },
+              ],
+            },
             'runtimeProfile': <String, Object?>{
               'type': 'object',
               'additionalProperties': false,

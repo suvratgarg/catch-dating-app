@@ -80,7 +80,7 @@ void main() {
     expect(
       byKind[EventAssistanceWorkflowKind.requiredGuestData]
           ?.implementationStatus,
-      EventAssistanceWorkflowImplementationStatus.partial,
+      EventAssistanceWorkflowImplementationStatus.complete,
     );
     expect(
       byKind[EventAssistanceWorkflowKind.financialReconciliation]
@@ -95,11 +95,11 @@ void main() {
               command.kind == EventAssistanceCommandKind.requestRequiredData,
         );
     expect(requiredData?.actor, EventAssistanceCommandActor.automatic);
-    expect(requiredData?.binding.coverage, EventAssistanceCommandCoverage.none);
     expect(
-      requiredData?.binding.missingCapability,
-      EventAssistanceMissingCapability.liveRequiredDataRequest,
+      requiredData?.binding.coverage,
+      EventAssistanceCommandCoverage.complete,
     );
+    expect(requiredData?.binding.missingCapability, isNull);
   });
 
   test('projects complete plan-change coverage in both modes', () {

@@ -387,9 +387,14 @@ export const eventAssistanceCommandBindingCatalog = {
     {
       "commandKind": "requestRequiredData",
       "live": {
-        "bindingType": "contractOnly",
-        "operations": [],
-        "missingCapability": "liveRequiredDataRequest"
+        "bindingType": "internalCoordinator",
+        "operations": [
+          "onEventRuntimeParticipantWritten",
+          "EventRuntimeRequiredDataStore.request",
+          "getEventRuntimeBootstrap",
+          "submitEventRuntimeProfile"
+        ],
+        "missingCapability": null
       },
       "rehearsal": {
         "bindingType": "contractOnly",

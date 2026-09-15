@@ -105,7 +105,6 @@ test("unimplemented live commands name their missing capability", () => {
       definition.live.missingCapability,
     ]));
   assert.deepEqual(gaps, {
-    requestRequiredData: "liveRequiredDataRequest",
     reconcileFinance: "eventPaymentCaseResolution",
   });
 });
@@ -259,7 +258,7 @@ test("action plans preserve every implementation status", () => {
 
   assert.equal(byKind.venueReadiness.implementationStatus, "external");
   assert.equal(byKind.rosterReadiness.implementationStatus, "complete");
-  assert.equal(byKind.requiredGuestData.implementationStatus, "partial");
+  assert.equal(byKind.requiredGuestData.implementationStatus, "complete");
   assert.equal(
     byKind.financialReconciliation.implementationStatus,
     "unavailable"
@@ -272,10 +271,12 @@ test("action plans preserve every implementation status", () => {
   assert.deepEqual(requiredData, {
     kind: "requestRequiredData",
     actor: "automatic",
-    coverage: "none",
-    bindingType: "contractOnly",
-    operations: [],
-    missingCapability: "liveRequiredDataRequest",
+    coverage: "complete",
+    bindingType: "internalCoordinator",
+    operations: ["onEventRuntimeParticipantWritten",
+      "EventRuntimeRequiredDataStore.request", "getEventRuntimeBootstrap",
+      "submitEventRuntimeProfile"],
+    missingCapability: null,
     variantField: null,
     implementedVariants: [],
     missingVariants: [],

@@ -214,6 +214,47 @@ export interface GetEventRuntimeBootstrapCallableResponse {
      * @maxItems 10
      */
     completedFieldIds: string[];
+    /**
+     * Current event-scoped missing-data request. Omitted by older backends.
+     */
+    requiredDataRequest?: null | {
+      revision: number;
+      /**
+       * @minItems 1
+       * @maxItems 10
+       */
+      fieldIds: (
+        | "displayName"
+        | "gender"
+        | "interestedInGenders"
+        | "relationshipGoal"
+        | "dateOfBirth"
+        | "paceBand"
+        | "skillBand"
+        | "dietaryAndSeatingNotes"
+        | "questionnaireAnswerIds"
+        | "teamName"
+      )[];
+      /**
+       * @maxItems 10
+       */
+      completedFieldIds: (
+        | "displayName"
+        | "gender"
+        | "interestedInGenders"
+        | "relationshipGoal"
+        | "dateOfBirth"
+        | "paceBand"
+        | "skillBand"
+        | "dietaryAndSeatingNotes"
+        | "questionnaireAnswerIds"
+        | "teamName"
+      )[];
+      status: "pending" | "completed" | "expired";
+      requestedAtMillis: number;
+      expiresAtMillis: number;
+      completedAtMillis: number | null;
+    };
     runtimeProfile: {
       displayName: string;
       gender: "man" | "woman" | "nonBinary" | "other" | null;

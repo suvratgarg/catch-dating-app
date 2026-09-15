@@ -1463,6 +1463,16 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // Required-data automation is projected through bounded runtime/Host
+    // callables. Current requests and immutable command receipts are private.
+    match /eventRuntimeDataRequests/{requestId} {
+      allow read, write: if false;
+    }
+
+    match /eventRuntimeDataRequestReceipts/{receiptId} {
+      allow read, write: if false;
+    }
+
     // Dress rehearsal is a separate callable-only product domain. Hosts and
     // anonymous guests receive bounded projections from Functions; no client
     // can use rehearsal state as a path into live event or attendee data.

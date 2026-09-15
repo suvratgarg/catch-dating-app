@@ -69019,7 +69019,10 @@ export const eventAssistanceCommandSchema = {
           "required": [
             "attendeeId",
             "fieldIds",
-            "expiresAt"
+            "expiresAt",
+            "expectedProfileRevision",
+            "expectedRequestRevision",
+            "expectedSourceHash"
           ],
           "properties": {
             "attendeeId": {
@@ -69030,20 +69033,44 @@ export const eventAssistanceCommandSchema = {
             },
             "fieldIds": {
               "type": "array",
+              "uniqueItems": true,
               "minItems": 1,
-              "maxItems": 1000,
+              "maxItems": 10,
               "items": {
                 "type": "string",
-                "minLength": 1,
-                "maxLength": 2000
-              },
-              "uniqueItems": true
+                "enum": [
+                  "displayName",
+                  "gender",
+                  "interestedInGenders",
+                  "relationshipGoal",
+                  "dateOfBirth",
+                  "paceBand",
+                  "skillBand",
+                  "dietaryAndSeatingNotes",
+                  "questionnaireAnswerIds",
+                  "teamName"
+                ]
+              }
             },
             "expiresAt": {
               "type": "integer",
               "minimum": 0,
               "maximum": 9007199254740991,
               "description": "UTC milliseconds."
+            },
+            "expectedProfileRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "expectedRequestRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "expectedSourceHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
             }
           }
         }
@@ -112913,6 +112940,12 @@ export const eventRuntimeParticipantDocumentSchema = {
         ]
       }
     },
+    "profileRevision": {
+      "description": "Monotonic accepted runtime-profile submission revision. Legacy documents omit it and read as zero.",
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
     "runtimeProfile": {
       "type": "object",
       "additionalProperties": false,
@@ -113179,6 +113212,378 @@ export const eventRuntimeParticipantDocumentSchema = {
       }
     },
     "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    }
+  }
+};
+
+export const eventRuntimeDataRequestDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_runtime_data_requests.schema.json",
+  "title": "EventRuntimeDataRequestDocument",
+  "description": "Current source-fenced request for missing event-scoped runtime profile data.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventRuntimeDataRequests",
+  "x-firestore-path": "eventRuntimeDataRequests/{requestId}",
+  "x-document-id-field": "requestId",
+  "x-owner": "server-only Event Runtime required-data coordinator",
+  "required": [
+    "schemaVersion",
+    "requestId",
+    "eventId",
+    "organizerId",
+    "attendeeId",
+    "uid",
+    "revision",
+    "profileRevision",
+    "sourceHash",
+    "operationId",
+    "fieldIds",
+    "completedFieldIds",
+    "status",
+    "requestedBy",
+    "requestedAt",
+    "expiresAt",
+    "completedAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "integer",
+      "const": 1
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "attendeeId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "profileRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "sourceHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "operationId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "fieldIds": {
+      "type": "array",
+      "uniqueItems": true,
+      "minItems": 1,
+      "maxItems": 10,
+      "items": {
+        "type": "string",
+        "enum": [
+          "displayName",
+          "gender",
+          "interestedInGenders",
+          "relationshipGoal",
+          "dateOfBirth",
+          "paceBand",
+          "skillBand",
+          "dietaryAndSeatingNotes",
+          "questionnaireAnswerIds",
+          "teamName"
+        ]
+      }
+    },
+    "completedFieldIds": {
+      "type": "array",
+      "uniqueItems": true,
+      "maxItems": 10,
+      "items": {
+        "type": "string",
+        "enum": [
+          "displayName",
+          "gender",
+          "interestedInGenders",
+          "relationshipGoal",
+          "dateOfBirth",
+          "paceBand",
+          "skillBand",
+          "dietaryAndSeatingNotes",
+          "questionnaireAnswerIds",
+          "teamName"
+        ]
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "completed"
+      ]
+    },
+    "requestedBy": {
+      "type": "string",
+      "const": "systemWithinPolicy"
+    },
+    "requestedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "expiresAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "completedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    }
+  }
+};
+
+export const eventRuntimeDataRequestReceiptDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_runtime_data_request_receipts.schema.json",
+  "title": "EventRuntimeDataRequestReceiptDocument",
+  "description": "Immutable idempotency receipt for one required-data command.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventRuntimeDataRequestReceipts",
+  "x-firestore-path": "eventRuntimeDataRequestReceipts/{receiptId}",
+  "x-document-id-field": "receiptId",
+  "x-owner": "server-only Event Runtime required-data coordinator",
+  "required": [
+    "schemaVersion",
+    "receiptId",
+    "requestId",
+    "eventId",
+    "organizerId",
+    "attendeeId",
+    "uid",
+    "operationId",
+    "requestHash",
+    "requestRevision",
+    "profileRevision",
+    "sourceHash",
+    "fieldIds",
+    "expiresAt",
+    "createdAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "integer",
+      "const": 1
+    },
+    "receiptId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "attendeeId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "operationId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "requestHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "requestRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "profileRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "sourceHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "fieldIds": {
+      "type": "array",
+      "uniqueItems": true,
+      "minItems": 1,
+      "maxItems": 10,
+      "items": {
+        "type": "string",
+        "enum": [
+          "displayName",
+          "gender",
+          "interestedInGenders",
+          "relationshipGoal",
+          "dateOfBirth",
+          "paceBand",
+          "skillBand",
+          "dietaryAndSeatingNotes",
+          "questionnaireAnswerIds",
+          "teamName"
+        ]
+      }
+    },
+    "expiresAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "createdAt": {
       "type": "object",
       "description": "Serialized Firestore Timestamp fixture shape.",
       "x-firestore-type": "timestamp",
@@ -174938,6 +175343,101 @@ export const getEventRuntimeBootstrapCallableResponseSchema = {
               },
               "maxItems": 10
             },
+            "requiredDataRequest": {
+              "description": "Current event-scoped missing-data request. Omitted by older backends.",
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "revision",
+                    "fieldIds",
+                    "completedFieldIds",
+                    "status",
+                    "requestedAtMillis",
+                    "expiresAtMillis",
+                    "completedAtMillis"
+                  ],
+                  "properties": {
+                    "revision": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 9007199254740991
+                    },
+                    "fieldIds": {
+                      "type": "array",
+                      "uniqueItems": true,
+                      "minItems": 1,
+                      "maxItems": 10,
+                      "items": {
+                        "type": "string",
+                        "enum": [
+                          "displayName",
+                          "gender",
+                          "interestedInGenders",
+                          "relationshipGoal",
+                          "dateOfBirth",
+                          "paceBand",
+                          "skillBand",
+                          "dietaryAndSeatingNotes",
+                          "questionnaireAnswerIds",
+                          "teamName"
+                        ]
+                      }
+                    },
+                    "completedFieldIds": {
+                      "type": "array",
+                      "uniqueItems": true,
+                      "maxItems": 10,
+                      "items": {
+                        "type": "string",
+                        "enum": [
+                          "displayName",
+                          "gender",
+                          "interestedInGenders",
+                          "relationshipGoal",
+                          "dateOfBirth",
+                          "paceBand",
+                          "skillBand",
+                          "dietaryAndSeatingNotes",
+                          "questionnaireAnswerIds",
+                          "teamName"
+                        ]
+                      }
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "pending",
+                        "completed",
+                        "expired"
+                      ]
+                    },
+                    "requestedAtMillis": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "expiresAtMillis": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "completedAtMillis": {
+                      "type": [
+                        "integer",
+                        "null"
+                      ],
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    }
+                  }
+                }
+              ]
+            },
             "runtimeProfile": {
               "type": "object",
               "additionalProperties": false,
@@ -208682,9 +209182,14 @@ export const eventAssistanceCommandBindingCatalog = {
     {
       "commandKind": "requestRequiredData",
       "live": {
-        "bindingType": "contractOnly",
-        "operations": [],
-        "missingCapability": "liveRequiredDataRequest"
+        "bindingType": "internalCoordinator",
+        "operations": [
+          "onEventRuntimeParticipantWritten",
+          "EventRuntimeRequiredDataStore.request",
+          "getEventRuntimeBootstrap",
+          "submitEventRuntimeProfile"
+        ],
+        "missingCapability": null
       },
       "rehearsal": {
         "bindingType": "contractOnly",

@@ -1150,10 +1150,47 @@
       "exportedFunctions": [
         "claimEventRuntimeAccess",
         "submitEventRuntimeProfile",
-        "approveEventRuntimeClaim"
+        "approveEventRuntimeClaim",
+        "onEventRuntimeParticipantWritten"
       ],
       "migrationNotes": [
         "Event-scoped runtime identity only; it does not imply a Consumer profile, event participation, dating match, or marketing grant."
+      ]
+    },
+    {
+      "id": "eventRuntimeDataRequests",
+      "path": "eventRuntimeDataRequests/{requestId}",
+      "rulesMatch": "/eventRuntimeDataRequests/{requestId}",
+      "typescriptInterface": "EventRuntimeDataRequestDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "server-only Event Runtime required-data coordinator",
+      "read": "server only; future callers receive a bounded guest or Host projection",
+      "write": "server only",
+      "exportedFunctions": [
+        "onEventRuntimeParticipantWritten",
+        "getEventRuntimeBootstrap",
+        "submitEventRuntimeProfile"
+      ],
+      "migrationNotes": [
+        "One current source-fenced request per event attendee; guest bootstrap exposes only the bounded request fields and lifecycle."
+      ]
+    },
+    {
+      "id": "eventRuntimeDataRequestReceipts",
+      "path": "eventRuntimeDataRequestReceipts/{receiptId}",
+      "rulesMatch": "/eventRuntimeDataRequestReceipts/{receiptId}",
+      "typescriptInterface": "EventRuntimeDataRequestReceiptDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "server-only Event Runtime required-data coordinator",
+      "read": "server only",
+      "write": "server only and immutable",
+      "exportedFunctions": [
+        "onEventRuntimeParticipantWritten"
+      ],
+      "migrationNotes": [
+        "Operation id plus exact command hash prevents duplicate or changed retries."
       ]
     },
     {

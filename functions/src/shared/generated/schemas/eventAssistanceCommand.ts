@@ -3696,7 +3696,10 @@ export const eventAssistanceCommandSchema: Record<string, unknown> = {
           "required": [
             "attendeeId",
             "fieldIds",
-            "expiresAt"
+            "expiresAt",
+            "expectedProfileRevision",
+            "expectedRequestRevision",
+            "expectedSourceHash"
           ],
           "properties": {
             "attendeeId": {
@@ -3707,20 +3710,44 @@ export const eventAssistanceCommandSchema: Record<string, unknown> = {
             },
             "fieldIds": {
               "type": "array",
+              "uniqueItems": true,
               "minItems": 1,
-              "maxItems": 1000,
+              "maxItems": 10,
               "items": {
                 "type": "string",
-                "minLength": 1,
-                "maxLength": 2000
-              },
-              "uniqueItems": true
+                "enum": [
+                  "displayName",
+                  "gender",
+                  "interestedInGenders",
+                  "relationshipGoal",
+                  "dateOfBirth",
+                  "paceBand",
+                  "skillBand",
+                  "dietaryAndSeatingNotes",
+                  "questionnaireAnswerIds",
+                  "teamName"
+                ]
+              }
             },
             "expiresAt": {
               "type": "integer",
               "minimum": 0,
               "maximum": 9007199254740991,
               "description": "UTC milliseconds."
+            },
+            "expectedProfileRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "expectedRequestRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "expectedSourceHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
             }
           }
         }

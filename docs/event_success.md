@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.143.0
+version: 1.144.0
 updated: 2026-09-16
 owner: recursive_audit_loop
 status: active
@@ -3797,6 +3797,8 @@ occurrence, not an in-place flag flip against shared inventory.
 | `eventAttendees/{attendeeId}` | Host-visible event-scoped operational person, imported contact/source, attendance and optional `linkedUid`. |
 | `eventParticipations/{eventId_uid}` | Catch booking, payment, waitlist and Consumer-network lifecycle. It is optional for Event Success. |
 | `eventRuntimeParticipants/{eventId_uid}` | Participant-private access, roster claim, disclosures, minimal runtime profile and readiness. |
+| `eventRuntimeDataRequests/{requestId}` | Server-only current missing-data request, fenced to one participant profile and event source. |
+| `eventRuntimeDataRequestReceipts/{receiptId}` | Immutable exact-command receipt; never a guest or Host read surface. |
 
 The deterministic runtime-participant id is `${eventId}_${uid}`. Its required
 shape is:
@@ -3813,6 +3815,7 @@ shape is:
   "accessStatus": "needsInput | ready | optedOut | revoked",
   "requiredFieldIds": [],
   "completedFieldIds": [],
+  "profileRevision": 0,
   "runtimeProfile": {
     "displayName": "Attendee supplied name",
     "gender": null,
@@ -3902,6 +3905,15 @@ window, capability, hidden safety state and deterministic ids.
 | `setEventRuntimeModuleOptOut` | Purpose-scoped opt-out that does not cancel attendance or identity. |
 | `checkInEventRuntime` | Redeem a current signed Host venue session after identity/profile readiness and apply absolute attendance; never a blind toggle. |
 | `approveEventRuntimeClaim` | Host approves one pending UID-to-attendee claim or rejects it with a bounded reason. |
+
+The internal `EventRuntimeRequiredDataStore` owns the source-fenced typed
+request boundary. It reviews current plan-derived fields and atomically writes
+one request plus an immutable receipt. It is intentionally not a Host callable:
+`requestRequiredData` has `systemWithinPolicy` authority. A participant-write
+trigger creates the command only for current missing required fields, bootstrap
+returns its bounded guest projection, and accepted profile submission records
+completion. The live source binding is complete; deployment and rehearsal
+support remain separate.
 
 Static join URLs use opaque `publicRuntimeId`, never event id plus phone. An
 attendee token is random, single-purpose, revocable and hashed at rest. A venue

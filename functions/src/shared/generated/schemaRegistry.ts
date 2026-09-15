@@ -247,6 +247,8 @@ export {eventAttendeeAttendanceReceiptDocumentSchema} from "./schemas/eventAtten
 export {eventAttendeeImportDocumentSchema} from "./schemas/eventAttendeeImportDocument";
 export {eventRosterHandoffDocumentSchema} from "./schemas/eventRosterHandoffDocument";
 export {eventRuntimeParticipantDocumentSchema} from "./schemas/eventRuntimeParticipantDocument";
+export {eventRuntimeDataRequestDocumentSchema} from "./schemas/eventRuntimeDataRequestDocument";
+export {eventRuntimeDataRequestReceiptDocumentSchema} from "./schemas/eventRuntimeDataRequestReceiptDocument";
 export {eventVenueSessionDocumentSchema} from "./schemas/eventVenueSessionDocument";
 export {eventVenueSessionRedemptionDocumentSchema} from "./schemas/eventVenueSessionRedemptionDocument";
 export {eventSuccessPresenceDocumentSchema} from "./schemas/eventSuccessPresenceDocument";

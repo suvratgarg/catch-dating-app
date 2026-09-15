@@ -82,10 +82,23 @@ import {
   organizerEventSuccessLayoutDocumentId,
   publicEventSuccessLayout,
 } from "./spatialLayout";
-
-type RuntimeFieldId =
-  EventRuntimeParticipantDocument["requiredFieldIds"][number];
-type RuntimeProfile = EventRuntimeParticipantDocument["runtimeProfile"];
+import {
+  completedRuntimeFieldIds,
+  optionalRuntimeFieldIds,
+  preEventRuntimeFieldId,
+  requiredRuntimeFieldIds,
+  runtimeAccessStatus,
+  type RuntimeFieldId,
+  type RuntimeProfile,
+} from "./runtimeProfile";
+import {readRuntimeDataRequestProjection, reconcileRuntimeDataRequest} from
+  "./operations/runtimeRequiredDataStore";
+export {
+  completedRuntimeFieldIds,
+  optionalRuntimeFieldIds,
+  preEventRuntimeFieldId,
+  requiredRuntimeFieldIds,
+} from "./runtimeProfile";
 
 interface EventRuntimeDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -103,13 +116,6 @@ const defaultDeps: EventRuntimeDeps = {
     admin.firestore.Timestamp.fromMillis(millis),
   verifyVenueSessionToken: verifyEventVenueSessionToken,
 };
-
-const PREFERENCE_AWARE_MODULE_IDS = new Set([
-  "first_hello_check_in",
-  "guided_rotations",
-  "micro_pods",
-  "wingman_requests",
-]);
 
 /** Returns the bounded public event projection and the caller's own state. */
 export async function getEventRuntimeBootstrapHandler(
@@ -159,6 +165,13 @@ export async function getEventRuntimeBootstrapHandler(
       now,
     });
   }
+  const requiredDataRequest = participant?.eventAttendeeId ?
+    await readRuntimeDataRequestProjection({db,
+      context: {mode: "live", eventId: resolved.eventId,
+        organizerId: resolved.event.organizerId ?? resolved.event.clubId},
+      attendeeId: participant.eventAttendeeId, uid: participant.uid,
+      completedFieldIds: participant.completedFieldIds,
+      now: now.toMillis()}) : null;
   let attendeeStatus: EventAttendeeDocument["status"] | null = null;
   if (participant?.eventAttendeeId) {
     const attendeeSnap = await db
@@ -196,6 +209,15 @@ export async function getEventRuntimeBootstrapHandler(
       organizerId: participant.organizerId ?? participant.clubId,
       requiredFieldIds: participant.requiredFieldIds,
       completedFieldIds: participant.completedFieldIds,
+      requiredDataRequest: requiredDataRequest ? {
+        revision: requiredDataRequest.revision,
+        fieldIds: requiredDataRequest.fieldIds,
+        completedFieldIds: requiredDataRequest.completedFieldIds,
+        status: requiredDataRequest.status,
+        requestedAtMillis: requiredDataRequest.requestedAt,
+        expiresAtMillis: requiredDataRequest.expiresAt,
+        completedAtMillis: requiredDataRequest.completedAt,
+      } : null,
       runtimeProfile: runtimeProfileResponse(participant.runtimeProfile),
     } : null,
   };
@@ -329,6 +351,7 @@ export async function claimEventRuntimeAccessHandler(
       accessStatus,
       requiredFieldIds,
       completedFieldIds,
+      profileRevision: 0,
       runtimeProfile: profile,
       consents: {
         runtimeTermsVersion: payload.runtimeTermsVersion,
@@ -435,6 +458,13 @@ export async function submitEventRuntimeProfileHandler(
       );
     }
     const now = deps.timestamp();
+    if (participant.eventAttendeeId) {
+      await reconcileRuntimeDataRequest({db, tx,
+        context: {mode: "live", eventId: resolved.eventId,
+          organizerId: resolved.event.organizerId ?? resolved.event.clubId},
+        attendeeId: participant.eventAttendeeId, uid,
+        completedFieldIds, now});
+    }
     if (profile.questionnaireAnswerIds.length > 0) {
       const responseRef = db.collection("eventSuccessCompatibilityResponses")
         .doc(eventRuntimeParticipantId(resolved.eventId, uid));
@@ -460,6 +490,7 @@ export async function submitEventRuntimeProfileHandler(
     tx.update(participantRef, {
       requiredFieldIds,
       completedFieldIds,
+      profileRevision: (participant.profileRevision ?? 0) + 1,
       runtimeProfile: profile,
       accessStatus,
       consents: {
@@ -729,81 +760,6 @@ export function eventRuntimeParticipantId(
   uid: string
 ): string {
   return `${eventId}_${uid}`;
-}
-
-export function requiredRuntimeFieldIds(
-  event: EventDocument,
-  _plan?: EventSuccessPlanDocument | null
-): RuntimeFieldId[] {
-  void _plan;
-  const preEventFieldId = preEventRuntimeFieldId(event);
-  return preEventFieldId ? ["displayName", preEventFieldId] : ["displayName"];
-}
-
-/** Selects the single pre-event payload from resolved format variables. */
-export function preEventRuntimeFieldId(
-  event: EventDocument
-): RuntimeFieldId | null {
-  switch (eventSuccessPrimitivesFor(event.eventFormat).interactionModel) {
-  case "pacePods":
-    return "paceBand";
-  case "pairedRotations":
-    return "skillBand";
-  case "seatedTable":
-    return "dietaryAndSeatingNotes";
-  case "freeFormMixer":
-    return "questionnaireAnswerIds";
-  case "teamRotations":
-    return "teamName";
-  case "hostLedProgram":
-  case "openFormat":
-    return null;
-  }
-}
-
-/** Sensitive preference fields offered by this plan, but never required. */
-export function optionalRuntimeFieldIds(
-  event: EventDocument,
-  plan: EventSuccessPlanDocument | null
-): RuntimeFieldId[] {
-  if (!plan?.selectedModuleIds.some((id) =>
-    PREFERENCE_AWARE_MODULE_IDS.has(id))) return [];
-  const policy = eventSuccessPrimitivesFor(event.eventFormat)
-    .compatibilityPolicy;
-  if (policy !== "mutualInterestOnly" &&
-      policy !== "socialCohortBalance") return [];
-  return ["gender", "interestedInGenders"];
-}
-
-export function completedRuntimeFieldIds(
-  profile: RuntimeProfile
-): RuntimeFieldId[] {
-  const fields: RuntimeFieldId[] = [];
-  if (profile.displayName.trim().length > 0) fields.push("displayName");
-  if (profile.gender !== null) fields.push("gender");
-  if (profile.interestedInGenders.length > 0) {
-    fields.push("interestedInGenders");
-  }
-  if (profile.relationshipGoal !== null) fields.push("relationshipGoal");
-  if (profile.dateOfBirth !== null) fields.push("dateOfBirth");
-  if (profile.paceBand != null) fields.push("paceBand");
-  if (profile.skillBand != null) fields.push("skillBand");
-  if (profile.dietaryAndSeatingNotes != null) {
-    fields.push("dietaryAndSeatingNotes");
-  }
-  if ((profile.questionnaireAnswerIds?.length ?? 0) > 0) {
-    fields.push("questionnaireAnswerIds");
-  }
-  if (profile.teamName != null) fields.push("teamName");
-  return fields;
-}
-
-function runtimeAccessStatus(
-  required: RuntimeFieldId[],
-  completed: RuntimeFieldId[]
-): "needsInput" | "ready" {
-  return required.every((field) => completed.includes(field)) ?
-    "ready" : "needsInput";
 }
 
 async function resolveRuntimeEvent(

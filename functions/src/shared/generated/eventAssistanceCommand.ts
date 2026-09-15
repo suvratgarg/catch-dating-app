@@ -735,13 +735,27 @@ export type EventAssistanceCommand =
         attendeeId: string;
         /**
          * @minItems 1
-         * @maxItems 1000
+         * @maxItems 10
          */
-        fieldIds: string[];
+        fieldIds: (
+          | "displayName"
+          | "gender"
+          | "interestedInGenders"
+          | "relationshipGoal"
+          | "dateOfBirth"
+          | "paceBand"
+          | "skillBand"
+          | "dietaryAndSeatingNotes"
+          | "questionnaireAnswerIds"
+          | "teamName"
+        )[];
         /**
          * UTC milliseconds.
          */
         expiresAt: number;
+        expectedProfileRevision: number;
+        expectedRequestRevision: number;
+        expectedSourceHash: string;
       };
     }
   | {

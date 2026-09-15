@@ -254,6 +254,8 @@ Do not edit it by hand.
 | EventAttendeeImportDocument | `firestore/event_attendee_imports.schema.json` | `functions/src/shared/generated/eventAttendeeImportDocument.ts` |
 | EventRosterHandoffDocument | `firestore/event_roster_handoffs.schema.json` | `functions/src/shared/generated/eventRosterHandoffDocument.ts` |
 | EventRuntimeParticipantDocument | `firestore/event_runtime_participants.schema.json` | `functions/src/shared/generated/eventRuntimeParticipantDocument.ts` |
+| EventRuntimeDataRequestDocument | `firestore/event_runtime_data_requests.schema.json` | `functions/src/shared/generated/eventRuntimeDataRequestDocument.ts` |
+| EventRuntimeDataRequestReceiptDocument | `firestore/event_runtime_data_request_receipts.schema.json` | `functions/src/shared/generated/eventRuntimeDataRequestReceiptDocument.ts` |
 | EventVenueSessionDocument | `firestore/event_venue_sessions.schema.json` | `functions/src/shared/generated/eventVenueSessionDocument.ts` |
 | EventVenueSessionRedemptionDocument | `firestore/event_venue_session_redemptions.schema.json` | `functions/src/shared/generated/eventVenueSessionRedemptionDocument.ts` |
 | EventSuccessPresenceDocument | `firestore/event_success_presence.schema.json` | `functions/src/shared/generated/eventSuccessPresenceDocument.ts` |
@@ -934,6 +936,8 @@ Do not edit it by hand.
 | `schemaEventAttendeeImportDocumentSchema` | EventAttendeeImportDocument | `firestore/event_attendee_imports.schema.json` | `lib/core/schema_contracts/generated/schemas/event_attendee_import_document.g.dart` |
 | `schemaEventRosterHandoffDocumentSchema` | EventRosterHandoffDocument | `firestore/event_roster_handoffs.schema.json` | `lib/core/schema_contracts/generated/schemas/event_roster_handoff_document.g.dart` |
 | `schemaEventRuntimeParticipantDocumentSchema` | EventRuntimeParticipantDocument | `firestore/event_runtime_participants.schema.json` | `lib/core/schema_contracts/generated/schemas/event_runtime_participant_document.g.dart` |
+| `schemaEventRuntimeDataRequestDocumentSchema` | EventRuntimeDataRequestDocument | `firestore/event_runtime_data_requests.schema.json` | `lib/core/schema_contracts/generated/schemas/event_runtime_data_request_document.g.dart` |
+| `schemaEventRuntimeDataRequestReceiptDocumentSchema` | EventRuntimeDataRequestReceiptDocument | `firestore/event_runtime_data_request_receipts.schema.json` | `lib/core/schema_contracts/generated/schemas/event_runtime_data_request_receipt_document.g.dart` |
 | `schemaEventVenueSessionDocumentSchema` | EventVenueSessionDocument | `firestore/event_venue_sessions.schema.json` | `lib/core/schema_contracts/generated/schemas/event_venue_session_document.g.dart` |
 | `schemaEventVenueSessionRedemptionDocumentSchema` | EventVenueSessionRedemptionDocument | `firestore/event_venue_session_redemptions.schema.json` | `lib/core/schema_contracts/generated/schemas/event_venue_session_redemption_document.g.dart` |
 | `schemaEventSuccessPresenceDocumentSchema` | EventSuccessPresenceDocument | `firestore/event_success_presence.schema.json` | `lib/core/schema_contracts/generated/schemas/event_success_presence_document.g.dart` |

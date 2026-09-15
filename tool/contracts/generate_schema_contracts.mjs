@@ -1281,6 +1281,19 @@ const schemaSpecs = [
       "functions/src/shared/generated/eventRuntimeParticipantDocument.ts",
   },
   {
+    name: "EventRuntimeDataRequestDocument",
+    source: "firestore/event_runtime_data_requests.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/eventRuntimeDataRequestDocument.ts",
+  },
+  {
+    name: "EventRuntimeDataRequestReceiptDocument",
+    source: "firestore/event_runtime_data_request_receipts.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "eventRuntimeDataRequestReceiptDocument.ts",
+  },
+  {
     name: "EventVenueSessionDocument",
     source: "firestore/event_venue_sessions.schema.json",
     typeOutput:

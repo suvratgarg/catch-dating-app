@@ -247,6 +247,8 @@ export {validateEventAttendeeAttendanceReceiptDocument} from "./validators/event
 export {validateEventAttendeeImportDocument} from "./validators/eventAttendeeImportDocument";
 export {validateEventRosterHandoffDocument} from "./validators/eventRosterHandoffDocument";
 export {validateEventRuntimeParticipantDocument} from "./validators/eventRuntimeParticipantDocument";
+export {validateEventRuntimeDataRequestDocument} from "./validators/eventRuntimeDataRequestDocument";
+export {validateEventRuntimeDataRequestReceiptDocument} from "./validators/eventRuntimeDataRequestReceiptDocument";
 export {validateEventVenueSessionDocument} from "./validators/eventVenueSessionDocument";
 export {validateEventVenueSessionRedemptionDocument} from "./validators/eventVenueSessionRedemptionDocument";
 export {validateEventSuccessPresenceDocument} from "./validators/eventSuccessPresenceDocument";

@@ -3699,6 +3699,9 @@ const schemaEventAssistanceCommandSchema = <String, Object?>{
             'attendeeId',
             'fieldIds',
             'expiresAt',
+            'expectedProfileRevision',
+            'expectedRequestRevision',
+            'expectedSourceHash',
           ],
           'properties': <String, Object?>{
             'attendeeId': <String, Object?>{
@@ -3709,20 +3712,44 @@ const schemaEventAssistanceCommandSchema = <String, Object?>{
             },
             'fieldIds': <String, Object?>{
               'type': 'array',
+              'uniqueItems': true,
               'minItems': 1,
-              'maxItems': 1000,
+              'maxItems': 10,
               'items': <String, Object?>{
                 'type': 'string',
-                'minLength': 1,
-                'maxLength': 2000,
+                'enum': <Object?>[
+                  'displayName',
+                  'gender',
+                  'interestedInGenders',
+                  'relationshipGoal',
+                  'dateOfBirth',
+                  'paceBand',
+                  'skillBand',
+                  'dietaryAndSeatingNotes',
+                  'questionnaireAnswerIds',
+                  'teamName',
+                ],
               },
-              'uniqueItems': true,
             },
             'expiresAt': <String, Object?>{
               'type': 'integer',
               'minimum': 0,
               'maximum': 9007199254740991,
               'description': 'UTC milliseconds.',
+            },
+            'expectedProfileRevision': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 9007199254740991,
+            },
+            'expectedRequestRevision': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 9007199254740991,
+            },
+            'expectedSourceHash': <String, Object?>{
+              'type': 'string',
+              'pattern': '^[a-f0-9]{64}\$',
             },
           },
         },

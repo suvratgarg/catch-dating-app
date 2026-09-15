@@ -70,6 +70,8 @@ export {
   getEventRuntimeBootstrap,
   submitEventRuntimeProfile,
 } from "./eventSuccess/eventRuntime";
+export {onEventRuntimeParticipantWritten} from
+  "./eventSuccess/operations/runtimeRequiredDataTrigger";
 export {
   getEventAssistanceSmsWithdrawal, withdrawEventAssistanceSms,
 } from "./eventSuccess/operations/smsWithdrawalHandlers";
