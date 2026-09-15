@@ -42,10 +42,6 @@
       "maxLines": 1140
     },
     {
-      "path": "lib/hosts/presentation/club_management/create/create_club_screen.dart",
-      "maxLines": 870
-    },
-    {
       "path": "lib/hosts/presentation/customers/host_saved_audience_editor.dart",
       "maxLines": 933
     },
