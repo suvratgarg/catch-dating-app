@@ -1,7 +1,7 @@
 ---
 doc_id: event_success
-version: 1.137.0
-updated: 2026-09-15
+version: 1.138.0
+updated: 2026-09-16
 owner: recursive_audit_loop
 status: active
 ---
@@ -1119,6 +1119,24 @@ The existing outbox independently gates retry/fallback and ambiguous submissions
 Disabling, replacing or reducing the authority of a setting withholds queued sends.
 A different ready sender cannot substitute for the frozen sender selection.
 
+Plan-change and post-event follow-up notices can now carry a separate strict
+`operationalNotice` automation binding. It ties the notice purpose, workflow
+occurrence, source revision, semantic content hash, selected setting revision
+and ordered sender routes together. Only those two command variants can use the
+binding; a changed body, source revision, workflow or route list fails contract
+parsing. The shared delivery coordinator and SMS, RCS and WhatsApp workers can
+execute a correctly bound notice. They recheck the saved setting at reservation
+and claim time, including its current source, execution authority, policy
+version and expiry ceiling. Pausing, replacing or narrowing the setting stops a
+queued notice before a provider call.
+
+This binding is transport and policy infrastructure. A trusted plan-change or
+follow-up source adapter still has to read the authoritative domain change,
+enforce the configured per-guest publication cap and create the notice. Until
+those adapters exist, the corresponding `sendOperationalMessage` variants stay
+partial in the command catalog. Explicit operational notices remain outside the
+automatic coordinator when the binding is absent.
+
 `prepareGuestMessagePublication` and `prepareLiveLateJoinPublication` complete all
 reads before returning their write-staging closures, allowing a fenced
 Operations checkpoint to share the commit. The automatic preparation expires after
@@ -2224,10 +2242,11 @@ separate steps.
 
 ### Durable message delivery coordination
 
-Automatic late-join publication with a saved runtime binding now creates its
-`liveMessageDelivery` Operations run/item in the same transaction as the
-message/thread. Explicit legacy publications and rehearsal intents do not enroll
-automatic delivery. Retries reuse the immutable message identity and one
+Automatic late-join publication with a saved runtime binding, and a trusted
+source-bound plan-change or follow-up notice, create a `liveMessageDelivery`
+Operations run/item in the same transaction as the message/thread. Explicit
+legacy publications, unbound operational notices and rehearsal intents do not
+enroll automatic delivery. Retries reuse the immutable message identity and one
 per-message guest grant across channel attempts. A publication counter still
 means an intent was created; it does not measure provider submission or delivery.
 

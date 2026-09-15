@@ -48498,6 +48498,143 @@ export const eventAssistanceMessageDocumentSchema = {
                   }
                 }
               }
+            },
+            "automation": {
+              "type": "object",
+              "description": "Trusted live publisher binding for plan-change and follow-up notices. The delivery worker rechecks the saved assistance setting and every channel permission before sending. Absence denotes an explicit publisher path without automatic delivery authority.",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "noticeKind",
+                "policyVersion",
+                "groupId",
+                "settingId",
+                "settingRevision",
+                "sourceId",
+                "sourceRevision",
+                "contentHash",
+                "routes"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "operationalNotice"
+                },
+                "noticeKind": {
+                  "type": "string",
+                  "enum": [
+                    "planChanged",
+                    "followUp"
+                  ]
+                },
+                "policyVersion": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160
+                },
+                "groupId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                },
+                "settingId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                },
+                "settingRevision": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                },
+                "sourceId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                },
+                "sourceRevision": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                },
+                "contentHash": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "routes": {
+                  "type": "array",
+                  "minItems": 1,
+                  "maxItems": 3,
+                  "uniqueItems": true,
+                  "items": {
+                    "oneOf": [
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "routeId",
+                          "senderId"
+                        ],
+                        "properties": {
+                          "routeId": {
+                            "type": "string",
+                            "const": "catchEventSms"
+                          },
+                          "senderId": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 160,
+                            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                          }
+                        }
+                      },
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "routeId",
+                          "senderId"
+                        ],
+                        "properties": {
+                          "routeId": {
+                            "type": "string",
+                            "const": "organizerEventWhatsapp"
+                          },
+                          "senderId": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 160,
+                            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                          }
+                        }
+                      },
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "routeId",
+                          "senderId"
+                        ],
+                        "properties": {
+                          "routeId": {
+                            "type": "string",
+                            "const": "catchEventRcs"
+                          },
+                          "senderId": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 160,
+                            "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
             }
           }
         }
@@ -51629,6 +51766,143 @@ export const eventAssistanceMessageIntentSchema = {
                           "comfortSafety",
                           "other"
                         ]
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "automation": {
+          "type": "object",
+          "description": "Trusted live publisher binding for plan-change and follow-up notices. The delivery worker rechecks the saved assistance setting and every channel permission before sending. Absence denotes an explicit publisher path without automatic delivery authority.",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "noticeKind",
+            "policyVersion",
+            "groupId",
+            "settingId",
+            "settingRevision",
+            "sourceId",
+            "sourceRevision",
+            "contentHash",
+            "routes"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "operationalNotice"
+            },
+            "noticeKind": {
+              "type": "string",
+              "enum": [
+                "planChanged",
+                "followUp"
+              ]
+            },
+            "policyVersion": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "groupId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+            },
+            "settingId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+            },
+            "settingRevision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "sourceId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+            },
+            "sourceRevision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "contentHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "routes": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 3,
+              "uniqueItems": true,
+              "items": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "routeId",
+                      "senderId"
+                    ],
+                    "properties": {
+                      "routeId": {
+                        "type": "string",
+                        "const": "catchEventSms"
+                      },
+                      "senderId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 160,
+                        "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "routeId",
+                      "senderId"
+                    ],
+                    "properties": {
+                      "routeId": {
+                        "type": "string",
+                        "const": "organizerEventWhatsapp"
+                      },
+                      "senderId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 160,
+                        "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "routeId",
+                      "senderId"
+                    ],
+                    "properties": {
+                      "routeId": {
+                        "type": "string",
+                        "const": "catchEventRcs"
+                      },
+                      "senderId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 160,
+                        "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
                       }
                     }
                   }
@@ -118223,6 +118497,143 @@ export const eventRehearsalMessageDocumentSchema = {
                                   "comfortSafety",
                                   "other"
                                 ]
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                },
+                "automation": {
+                  "type": "object",
+                  "description": "Trusted live publisher binding for plan-change and follow-up notices. The delivery worker rechecks the saved assistance setting and every channel permission before sending. Absence denotes an explicit publisher path without automatic delivery authority.",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "noticeKind",
+                    "policyVersion",
+                    "groupId",
+                    "settingId",
+                    "settingRevision",
+                    "sourceId",
+                    "sourceRevision",
+                    "contentHash",
+                    "routes"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "type": "string",
+                      "const": "operationalNotice"
+                    },
+                    "noticeKind": {
+                      "type": "string",
+                      "enum": [
+                        "planChanged",
+                        "followUp"
+                      ]
+                    },
+                    "policyVersion": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160
+                    },
+                    "groupId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                    },
+                    "settingId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                    },
+                    "settingRevision": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 9007199254740991
+                    },
+                    "sourceId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                    },
+                    "sourceRevision": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 9007199254740991
+                    },
+                    "contentHash": {
+                      "type": "string",
+                      "pattern": "^[a-f0-9]{64}$"
+                    },
+                    "routes": {
+                      "type": "array",
+                      "minItems": 1,
+                      "maxItems": 3,
+                      "uniqueItems": true,
+                      "items": {
+                        "oneOf": [
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "routeId",
+                              "senderId"
+                            ],
+                            "properties": {
+                              "routeId": {
+                                "type": "string",
+                                "const": "catchEventSms"
+                              },
+                              "senderId": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 160,
+                                "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "routeId",
+                              "senderId"
+                            ],
+                            "properties": {
+                              "routeId": {
+                                "type": "string",
+                                "const": "organizerEventWhatsapp"
+                              },
+                              "senderId": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 160,
+                                "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "routeId",
+                              "senderId"
+                            ],
+                            "properties": {
+                              "routeId": {
+                                "type": "string",
+                                "const": "catchEventRcs"
+                              },
+                              "senderId": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 160,
+                                "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
                               }
                             }
                           }
@@ -205450,7 +205861,7 @@ export const eventAssistanceCommandBindingCatalog = {
         "operations": [
           "LiveMessageDispatcher.dispatch"
         ],
-        "missingCapability": "liveNonJoiningMessagePublication"
+        "missingCapability": "trustedOperationalNoticeSourcePublication"
       },
       "rehearsal": {
         "bindingType": "domainAdapter",

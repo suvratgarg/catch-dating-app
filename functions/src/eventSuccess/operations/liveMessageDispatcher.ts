@@ -67,12 +67,13 @@ export class LiveMessageDispatcher {
 export function createLiveMessageWorker(db: Firestore, message: MessageRecord,
   keys: GuestLinkSigningKeys, clock: () => number = Date.now,
   deps: ChannelDependencies = channelDefaults) {
-  if (message.intent.kind !== "joiningUpdate" ||
-        !message.intent.automation?.runtimeBinding) {
+  const automation = message.intent.automation;
+  if (!automation || (message.intent.kind === "joiningUpdate" &&
+      !message.intent.automation?.runtimeBinding)) {
     throw new Error("Automatic sender selection unavailable");
   }
   const workers: ConstructorParameters<typeof EventMessageWorker>[1] = {};
-  for (const route of message.intent.automation.routes) {
+  for (const route of automation.routes) {
     if (route.routeId === "catchEventSms") {
       workers.sms = new EventSmsWorker(new SmsDispatchStore(db,
         route.senderId, keys, clock), undefined, undefined, clock);

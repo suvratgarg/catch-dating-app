@@ -93,7 +93,7 @@ export const eventAssistanceCommandBindingCatalog = {
         "operations": [
           "LiveMessageDispatcher.dispatch"
         ],
-        "missingCapability": "liveNonJoiningMessagePublication"
+        "missingCapability": "trustedOperationalNoticeSourcePublication"
       },
       "rehearsal": {
         "bindingType": "domainAdapter",

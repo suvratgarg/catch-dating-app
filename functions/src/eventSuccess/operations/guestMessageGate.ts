@@ -9,6 +9,8 @@ import {
 import {joiningGuidanceIsCurrent} from "./groupProgressReader";
 import {assistanceMessageId} from "./messageOutbox";
 import {readLateJoinDispatchPolicy} from "./lateJoinDispatchPolicy";
+import {readOperationalNoticeDispatchPolicy} from
+  "./operationalNoticeDispatchPolicy";
 
 /** Event/roster authority shared by all live channel fact readers. */
 export async function readEventAssistanceMessageGate(
@@ -59,7 +61,9 @@ export async function readEventAssistanceMessageGate(
   if (!await joiningGuidanceIsCurrent(db, tx, intent, now)) {
     return {kind: "stop", reason: "superseded"};
   }
-  const policy = await readLateJoinDispatchPolicy(db, tx, intent, now);
+  const policy = intent.kind === "joiningUpdate" ?
+    await readLateJoinDispatchPolicy(db, tx, intent, now) :
+    await readOperationalNoticeDispatchPolicy(db, tx, intent, now);
   if (policy?.kind === "stop") return policy;
   return {kind: "allow", checkedAt: now,
     validUntil: Math.min(now + 30_000, intent.expiresAt,

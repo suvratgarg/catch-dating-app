@@ -22,6 +22,18 @@ import {
   sameMessageContext,
 } from "./messagingPolicy";
 
+export type OperationalNoticeIntent = Extract<MessageIntent,
+  {kind: "operationalNotice"}>;
+
+/** Stable semantic content bound by a trusted operational source record. */
+export function operationalNoticeContentHash(intent: OperationalNoticeIntent) {
+  return operationContentHash({context: intent.context, eventId: intent.eventId,
+    attendeeId: intent.attendeeId, episodeId: intent.episodeId,
+    workflow: intent.workflow, expiresAt: intent.expiresAt,
+    noticeKind: intent.noticeKind, title: intent.title, body: intent.body,
+    instructionRevision: intent.instructionRevision, choices: intent.choices});
+}
+
 export function parseMessageIntent(value: unknown): MessageIntent {
   if (!validateEventAssistanceMessageIntent(value)) {
     throw new Error("Invalid message intent");
@@ -40,6 +52,23 @@ export function parseMessageIntent(value: unknown): MessageIntent {
         operationContentHash(routes) !==
           operationContentHash(value.permittedRoutes)) {
       throw new Error("Automatic message has inconsistent route authority");
+    }
+  }
+  if (value.kind === "operationalNotice" && value.automation) {
+    const binding = value.automation;
+    const expectedWorkflow = binding.noticeKind === "planChanged" ?
+      "planChangeCommunication" : "postEventFollowUp";
+    const routes = binding.routes.map((route) => route.routeId);
+    if (value.context.mode !== "live" ||
+        binding.noticeKind !== value.noticeKind ||
+        value.workflow.kind !== expectedWorkflow ||
+        binding.sourceId !== value.workflow.occurrenceId ||
+        binding.sourceRevision !== value.instructionRevision ||
+        new Set(routes).size !== routes.length ||
+        operationContentHash(routes) !==
+          operationContentHash(value.permittedRoutes) ||
+        binding.contentHash !== operationalNoticeContentHash(value)) {
+      throw new Error("Automatic notice has inconsistent source authority");
     }
   }
   const ids = new Set<string>();

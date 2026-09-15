@@ -3099,6 +3099,38 @@ export interface EventAssistanceMessageDocument {
                   | "other";
               };
         }[];
+        /**
+         * Trusted live publisher binding for plan-change and follow-up notices. The delivery worker rechecks the saved assistance setting and every channel permission before sending. Absence denotes an explicit publisher path without automatic delivery authority.
+         */
+        automation?: {
+          kind: "operationalNotice";
+          noticeKind: "planChanged" | "followUp";
+          policyVersion: string;
+          groupId: string;
+          settingId: string;
+          settingRevision: number;
+          sourceId: string;
+          sourceRevision: number;
+          contentHash: string;
+          /**
+           * @minItems 1
+           * @maxItems 3
+           */
+          routes: (
+            | {
+                routeId: "catchEventSms";
+                senderId: string;
+              }
+            | {
+                routeId: "organizerEventWhatsapp";
+                senderId: string;
+              }
+            | {
+                routeId: "catchEventRcs";
+                senderId: string;
+              }
+          )[];
+        };
       };
   lifecycle: "active" | "cancelled" | "superseded" | "responded";
   /**

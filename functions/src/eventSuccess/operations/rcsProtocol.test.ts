@@ -170,7 +170,8 @@ test("text-only capability keeps the guest link and native replies", () => {
 });
 
 test("every supported purpose keeps its full instruction and title", () => {
-  const {guidance, ...base} = rcsTestIntent();
+  const {guidance, automation, ...base} = rcsTestIntent();
+  void automation;
   for (const noticeKind of rcsTestConfig().allowedPurposes) {
     if (noticeKind === "joiningUpdate") continue;
     const intent: Intent = {...base, kind: "operationalNotice", noticeKind,

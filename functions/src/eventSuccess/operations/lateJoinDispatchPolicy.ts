@@ -9,7 +9,7 @@ import {ASSISTANCE_POLICY_VERSION} from "./policySettings";
 /** Another ready sender cannot replace the automatic selection. */
 export function messageAllowsSender(intent: MessageRecord["intent"],
   routeId: EventServiceRouteId, senderId: string): boolean {
-  if (intent.kind !== "joiningUpdate" || !intent.automation) return true;
+  if (!intent.automation) return true;
   return intent.automation.routes.some((route) =>
     route.routeId === routeId && "senderId" in route &&
       route.senderId === senderId);

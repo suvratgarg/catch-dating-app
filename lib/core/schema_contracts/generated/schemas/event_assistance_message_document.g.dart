@@ -1113,6 +1113,143 @@ const schemaEventAssistanceMessageDocumentSchema = <String, Object?>{
                 },
               },
             },
+            'automation': <String, Object?>{
+              'type': 'object',
+              'description': 'Trusted live publisher binding for plan-change and follow-up notices. The delivery worker rechecks the saved assistance setting and every channel permission before sending. Absence denotes an explicit publisher path without automatic delivery authority.',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'kind',
+                'noticeKind',
+                'policyVersion',
+                'groupId',
+                'settingId',
+                'settingRevision',
+                'sourceId',
+                'sourceRevision',
+                'contentHash',
+                'routes',
+              ],
+              'properties': <String, Object?>{
+                'kind': <String, Object?>{
+                  'type': 'string',
+                  'const': 'operationalNotice',
+                },
+                'noticeKind': <String, Object?>{
+                  'type': 'string',
+                  'enum': <Object?>[
+                    'planChanged',
+                    'followUp',
+                  ],
+                },
+                'policyVersion': <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 160,
+                },
+                'groupId': <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 160,
+                  'pattern': '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+                },
+                'settingId': <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 160,
+                  'pattern': '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+                },
+                'settingRevision': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 1,
+                  'maximum': 9007199254740991,
+                },
+                'sourceId': <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 160,
+                  'pattern': '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+                },
+                'sourceRevision': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 1,
+                  'maximum': 9007199254740991,
+                },
+                'contentHash': <String, Object?>{
+                  'type': 'string',
+                  'pattern': '^[a-f0-9]{64}\$',
+                },
+                'routes': <String, Object?>{
+                  'type': 'array',
+                  'minItems': 1,
+                  'maxItems': 3,
+                  'uniqueItems': true,
+                  'items': <String, Object?>{
+                    'oneOf': <Object?>[
+                      <String, Object?>{
+                        'type': 'object',
+                        'additionalProperties': false,
+                        'required': <Object?>[
+                          'routeId',
+                          'senderId',
+                        ],
+                        'properties': <String, Object?>{
+                          'routeId': <String, Object?>{
+                            'type': 'string',
+                            'const': 'catchEventSms',
+                          },
+                          'senderId': <String, Object?>{
+                            'type': 'string',
+                            'minLength': 1,
+                            'maxLength': 160,
+                            'pattern': '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+                          },
+                        },
+                      },
+                      <String, Object?>{
+                        'type': 'object',
+                        'additionalProperties': false,
+                        'required': <Object?>[
+                          'routeId',
+                          'senderId',
+                        ],
+                        'properties': <String, Object?>{
+                          'routeId': <String, Object?>{
+                            'type': 'string',
+                            'const': 'organizerEventWhatsapp',
+                          },
+                          'senderId': <String, Object?>{
+                            'type': 'string',
+                            'minLength': 1,
+                            'maxLength': 160,
+                            'pattern': '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+                          },
+                        },
+                      },
+                      <String, Object?>{
+                        'type': 'object',
+                        'additionalProperties': false,
+                        'required': <Object?>[
+                          'routeId',
+                          'senderId',
+                        ],
+                        'properties': <String, Object?>{
+                          'routeId': <String, Object?>{
+                            'type': 'string',
+                            'const': 'catchEventRcs',
+                          },
+                          'senderId': <String, Object?>{
+                            'type': 'string',
+                            'minLength': 1,
+                            'maxLength': 160,
+                            'pattern': '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+                          },
+                        },
+                      },
+                    ],
+                  },
+                },
+              },
+            },
           },
         },
       ],

@@ -262,8 +262,8 @@ test("native help buttons preserve their exact category",
 test("operational acknowledgement buttons retain the instruction revision",
   async () => {
     const f = await fixture();
-    const {guidance, kind, ...base} = f.intent;
-    void [guidance, kind];
+    const {guidance, kind, automation, ...base} = f.intent;
+    void [guidance, kind, automation];
     const intent: MessageRecord["intent"] = {...base, intentId: "notice-1",
       kind: "operationalNotice", noticeKind: "planChanged",
       workflow: {kind: "planChangeCommunication", occurrenceId: "notice-s1"},

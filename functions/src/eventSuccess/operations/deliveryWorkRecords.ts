@@ -25,9 +25,9 @@ export function deliveryWorkIds(messageId: string) {
 }
 
 export function hasAutomaticDelivery(message: MessageRecord) {
-  return message.intent.context.mode === "live" &&
-    message.intent.kind === "joiningUpdate" &&
-    !!message.intent.automation?.runtimeBinding;
+  if (message.intent.context.mode !== "live") return false;
+  return message.intent.kind === "joiningUpdate" ?
+    !!message.intent.automation?.runtimeBinding : !!message.intent.automation;
 }
 
 export function deliveryWorkBasis(payload: DeliveryWork) {

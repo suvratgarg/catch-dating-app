@@ -19809,6 +19809,13 @@ abstract final class CatchContractConstraints {
     pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
   );
 
+  static const eventAssistanceMessageDocumentIntentAutomationContentHash = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.intent.automation.contentHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
   static const eventAssistanceMessageDocumentIntentAutomationGroupId = CatchContractFieldConstraints(
     path: 'eventAssistanceMessageDocument.intent.automation.groupId',
     maxLength: 160,
@@ -19824,19 +19831,19 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const eventAssistanceMessageDocumentIntentAutomationNoticeKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.intent.automation.noticeKind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['planChanged', 'followUp'],
+  );
+
   static const eventAssistanceMessageDocumentIntentAutomationPolicyVersion = CatchContractFieldConstraints(
     path: 'eventAssistanceMessageDocument.intent.automation.policyVersion',
     maxLength: 160,
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
-  );
-
-  static const eventAssistanceMessageDocumentIntentAutomationResponseDeadline = CatchContractFieldConstraints(
-    path: 'eventAssistanceMessageDocument.intent.automation.responseDeadline',
-    valueTypes: <String>['integer'],
-    minimum: 0,
-    maximum: 9007199254740991,
   );
 
   static const eventAssistanceMessageDocumentIntentAutomationRoutes = CatchContractFieldConstraints(
@@ -19864,21 +19871,6 @@ abstract final class CatchContractConstraints {
     pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
   );
 
-  static const eventAssistanceMessageDocumentIntentAutomationRuntimeBindingRevision = CatchContractFieldConstraints(
-    path: 'eventAssistanceMessageDocument.intent.automation.runtimeBinding.revision',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 1,
-    maximum: 9007199254740991,
-  );
-
-  static const eventAssistanceMessageDocumentIntentAutomationRuntimeBindingRuntimeId = CatchContractFieldConstraints(
-    path: 'eventAssistanceMessageDocument.intent.automation.runtimeBinding.runtimeId',
-    required: true,
-    valueTypes: <String>['string'],
-    pattern: '^runtime:lateJoin:[a-f0-9]{64}\$',
-  );
-
   static const eventAssistanceMessageDocumentIntentAutomationSettingId = CatchContractFieldConstraints(
     path: 'eventAssistanceMessageDocument.intent.automation.settingId',
     maxLength: 160,
@@ -19892,7 +19884,24 @@ abstract final class CatchContractConstraints {
     path: 'eventAssistanceMessageDocument.intent.automation.settingRevision',
     required: true,
     valueTypes: <String>['integer'],
-    minimum: 0,
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceMessageDocumentIntentAutomationSourceId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.intent.automation.sourceId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceMessageDocumentIntentAutomationSourceRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.intent.automation.sourceRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
     maximum: 9007199254740991,
   );
 
@@ -20282,6 +20291,13 @@ abstract final class CatchContractConstraints {
     pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
   );
 
+  static const eventAssistanceMessageIntentAutomationContentHash = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageIntent.automation.contentHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
   static const eventAssistanceMessageIntentAutomationGroupId = CatchContractFieldConstraints(
     path: 'eventAssistanceMessageIntent.automation.groupId',
     maxLength: 160,
@@ -20297,19 +20313,19 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const eventAssistanceMessageIntentAutomationNoticeKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageIntent.automation.noticeKind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['planChanged', 'followUp'],
+  );
+
   static const eventAssistanceMessageIntentAutomationPolicyVersion = CatchContractFieldConstraints(
     path: 'eventAssistanceMessageIntent.automation.policyVersion',
     maxLength: 160,
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
-  );
-
-  static const eventAssistanceMessageIntentAutomationResponseDeadline = CatchContractFieldConstraints(
-    path: 'eventAssistanceMessageIntent.automation.responseDeadline',
-    valueTypes: <String>['integer'],
-    minimum: 0,
-    maximum: 9007199254740991,
   );
 
   static const eventAssistanceMessageIntentAutomationRoutes = CatchContractFieldConstraints(
@@ -20337,21 +20353,6 @@ abstract final class CatchContractConstraints {
     pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
   );
 
-  static const eventAssistanceMessageIntentAutomationRuntimeBindingRevision = CatchContractFieldConstraints(
-    path: 'eventAssistanceMessageIntent.automation.runtimeBinding.revision',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 1,
-    maximum: 9007199254740991,
-  );
-
-  static const eventAssistanceMessageIntentAutomationRuntimeBindingRuntimeId = CatchContractFieldConstraints(
-    path: 'eventAssistanceMessageIntent.automation.runtimeBinding.runtimeId',
-    required: true,
-    valueTypes: <String>['string'],
-    pattern: '^runtime:lateJoin:[a-f0-9]{64}\$',
-  );
-
   static const eventAssistanceMessageIntentAutomationSettingId = CatchContractFieldConstraints(
     path: 'eventAssistanceMessageIntent.automation.settingId',
     maxLength: 160,
@@ -20365,7 +20366,24 @@ abstract final class CatchContractConstraints {
     path: 'eventAssistanceMessageIntent.automation.settingRevision',
     required: true,
     valueTypes: <String>['integer'],
-    minimum: 0,
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceMessageIntentAutomationSourceId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageIntent.automation.sourceId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceMessageIntentAutomationSourceRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageIntent.automation.sourceRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
     maximum: 9007199254740991,
   );
 
@@ -38690,6 +38708,13 @@ abstract final class CatchContractConstraints {
     pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
   );
 
+  static const eventRehearsalMessageDocumentRecordIntentAutomationContentHash = CatchContractFieldConstraints(
+    path: 'eventRehearsalMessageDocument.record.intent.automation.contentHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
   static const eventRehearsalMessageDocumentRecordIntentAutomationGroupId = CatchContractFieldConstraints(
     path: 'eventRehearsalMessageDocument.record.intent.automation.groupId',
     maxLength: 160,
@@ -38705,19 +38730,19 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const eventRehearsalMessageDocumentRecordIntentAutomationNoticeKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalMessageDocument.record.intent.automation.noticeKind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['planChanged', 'followUp'],
+  );
+
   static const eventRehearsalMessageDocumentRecordIntentAutomationPolicyVersion = CatchContractFieldConstraints(
     path: 'eventRehearsalMessageDocument.record.intent.automation.policyVersion',
     maxLength: 160,
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
-  );
-
-  static const eventRehearsalMessageDocumentRecordIntentAutomationResponseDeadline = CatchContractFieldConstraints(
-    path: 'eventRehearsalMessageDocument.record.intent.automation.responseDeadline',
-    valueTypes: <String>['integer'],
-    minimum: 0,
-    maximum: 9007199254740991,
   );
 
   static const eventRehearsalMessageDocumentRecordIntentAutomationRoutes = CatchContractFieldConstraints(
@@ -38745,21 +38770,6 @@ abstract final class CatchContractConstraints {
     pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
   );
 
-  static const eventRehearsalMessageDocumentRecordIntentAutomationRuntimeBindingRevision = CatchContractFieldConstraints(
-    path: 'eventRehearsalMessageDocument.record.intent.automation.runtimeBinding.revision',
-    required: true,
-    valueTypes: <String>['integer'],
-    minimum: 1,
-    maximum: 9007199254740991,
-  );
-
-  static const eventRehearsalMessageDocumentRecordIntentAutomationRuntimeBindingRuntimeId = CatchContractFieldConstraints(
-    path: 'eventRehearsalMessageDocument.record.intent.automation.runtimeBinding.runtimeId',
-    required: true,
-    valueTypes: <String>['string'],
-    pattern: '^runtime:lateJoin:[a-f0-9]{64}\$',
-  );
-
   static const eventRehearsalMessageDocumentRecordIntentAutomationSettingId = CatchContractFieldConstraints(
     path: 'eventRehearsalMessageDocument.record.intent.automation.settingId',
     maxLength: 160,
@@ -38773,7 +38783,24 @@ abstract final class CatchContractConstraints {
     path: 'eventRehearsalMessageDocument.record.intent.automation.settingRevision',
     required: true,
     valueTypes: <String>['integer'],
-    minimum: 0,
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalMessageDocumentRecordIntentAutomationSourceId = CatchContractFieldConstraints(
+    path: 'eventRehearsalMessageDocument.record.intent.automation.sourceId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+  );
+
+  static const eventRehearsalMessageDocumentRecordIntentAutomationSourceRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalMessageDocument.record.intent.automation.sourceRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
     maximum: 9007199254740991,
   );
 
@@ -95424,17 +95451,18 @@ abstract final class CatchContractConstraints {
     'eventAssistanceMessageDocument.handoff.at': eventAssistanceMessageDocumentHandoffAt,
     'eventAssistanceMessageDocument.handoff.operationId': eventAssistanceMessageDocumentHandoffOperationId,
     'eventAssistanceMessageDocument.intent.attendeeId': eventAssistanceMessageDocumentIntentAttendeeId,
+    'eventAssistanceMessageDocument.intent.automation.contentHash': eventAssistanceMessageDocumentIntentAutomationContentHash,
     'eventAssistanceMessageDocument.intent.automation.groupId': eventAssistanceMessageDocumentIntentAutomationGroupId,
     'eventAssistanceMessageDocument.intent.automation.kind': eventAssistanceMessageDocumentIntentAutomationKind,
+    'eventAssistanceMessageDocument.intent.automation.noticeKind': eventAssistanceMessageDocumentIntentAutomationNoticeKind,
     'eventAssistanceMessageDocument.intent.automation.policyVersion': eventAssistanceMessageDocumentIntentAutomationPolicyVersion,
-    'eventAssistanceMessageDocument.intent.automation.responseDeadline': eventAssistanceMessageDocumentIntentAutomationResponseDeadline,
     'eventAssistanceMessageDocument.intent.automation.routes': eventAssistanceMessageDocumentIntentAutomationRoutes,
     'eventAssistanceMessageDocument.intent.automation.routes.items.routeId': eventAssistanceMessageDocumentIntentAutomationRoutesItemsRouteId,
     'eventAssistanceMessageDocument.intent.automation.routes.items.senderId': eventAssistanceMessageDocumentIntentAutomationRoutesItemsSenderId,
-    'eventAssistanceMessageDocument.intent.automation.runtimeBinding.revision': eventAssistanceMessageDocumentIntentAutomationRuntimeBindingRevision,
-    'eventAssistanceMessageDocument.intent.automation.runtimeBinding.runtimeId': eventAssistanceMessageDocumentIntentAutomationRuntimeBindingRuntimeId,
     'eventAssistanceMessageDocument.intent.automation.settingId': eventAssistanceMessageDocumentIntentAutomationSettingId,
     'eventAssistanceMessageDocument.intent.automation.settingRevision': eventAssistanceMessageDocumentIntentAutomationSettingRevision,
+    'eventAssistanceMessageDocument.intent.automation.sourceId': eventAssistanceMessageDocumentIntentAutomationSourceId,
+    'eventAssistanceMessageDocument.intent.automation.sourceRevision': eventAssistanceMessageDocumentIntentAutomationSourceRevision,
     'eventAssistanceMessageDocument.intent.body': eventAssistanceMessageDocumentIntentBody,
     'eventAssistanceMessageDocument.intent.choices': eventAssistanceMessageDocumentIntentChoices,
     'eventAssistanceMessageDocument.intent.choices.items.choiceId': eventAssistanceMessageDocumentIntentChoicesItemsChoiceId,
@@ -95484,17 +95512,18 @@ abstract final class CatchContractConstraints {
     'eventAssistanceMessageDocument.schemaVersion': eventAssistanceMessageDocumentSchemaVersion,
     'eventAssistanceMessageDocument.updatedAt': eventAssistanceMessageDocumentUpdatedAt,
     'eventAssistanceMessageIntent.attendeeId': eventAssistanceMessageIntentAttendeeId,
+    'eventAssistanceMessageIntent.automation.contentHash': eventAssistanceMessageIntentAutomationContentHash,
     'eventAssistanceMessageIntent.automation.groupId': eventAssistanceMessageIntentAutomationGroupId,
     'eventAssistanceMessageIntent.automation.kind': eventAssistanceMessageIntentAutomationKind,
+    'eventAssistanceMessageIntent.automation.noticeKind': eventAssistanceMessageIntentAutomationNoticeKind,
     'eventAssistanceMessageIntent.automation.policyVersion': eventAssistanceMessageIntentAutomationPolicyVersion,
-    'eventAssistanceMessageIntent.automation.responseDeadline': eventAssistanceMessageIntentAutomationResponseDeadline,
     'eventAssistanceMessageIntent.automation.routes': eventAssistanceMessageIntentAutomationRoutes,
     'eventAssistanceMessageIntent.automation.routes.items.routeId': eventAssistanceMessageIntentAutomationRoutesItemsRouteId,
     'eventAssistanceMessageIntent.automation.routes.items.senderId': eventAssistanceMessageIntentAutomationRoutesItemsSenderId,
-    'eventAssistanceMessageIntent.automation.runtimeBinding.revision': eventAssistanceMessageIntentAutomationRuntimeBindingRevision,
-    'eventAssistanceMessageIntent.automation.runtimeBinding.runtimeId': eventAssistanceMessageIntentAutomationRuntimeBindingRuntimeId,
     'eventAssistanceMessageIntent.automation.settingId': eventAssistanceMessageIntentAutomationSettingId,
     'eventAssistanceMessageIntent.automation.settingRevision': eventAssistanceMessageIntentAutomationSettingRevision,
+    'eventAssistanceMessageIntent.automation.sourceId': eventAssistanceMessageIntentAutomationSourceId,
+    'eventAssistanceMessageIntent.automation.sourceRevision': eventAssistanceMessageIntentAutomationSourceRevision,
     'eventAssistanceMessageIntent.body': eventAssistanceMessageIntentBody,
     'eventAssistanceMessageIntent.choices': eventAssistanceMessageIntentChoices,
     'eventAssistanceMessageIntent.choices.items.choiceId': eventAssistanceMessageIntentChoicesItemsChoiceId,
@@ -97956,17 +97985,18 @@ abstract final class CatchContractConstraints {
     'eventRehearsalMessageDocument.record.handoff.at': eventRehearsalMessageDocumentRecordHandoffAt,
     'eventRehearsalMessageDocument.record.handoff.operationId': eventRehearsalMessageDocumentRecordHandoffOperationId,
     'eventRehearsalMessageDocument.record.intent.attendeeId': eventRehearsalMessageDocumentRecordIntentAttendeeId,
+    'eventRehearsalMessageDocument.record.intent.automation.contentHash': eventRehearsalMessageDocumentRecordIntentAutomationContentHash,
     'eventRehearsalMessageDocument.record.intent.automation.groupId': eventRehearsalMessageDocumentRecordIntentAutomationGroupId,
     'eventRehearsalMessageDocument.record.intent.automation.kind': eventRehearsalMessageDocumentRecordIntentAutomationKind,
+    'eventRehearsalMessageDocument.record.intent.automation.noticeKind': eventRehearsalMessageDocumentRecordIntentAutomationNoticeKind,
     'eventRehearsalMessageDocument.record.intent.automation.policyVersion': eventRehearsalMessageDocumentRecordIntentAutomationPolicyVersion,
-    'eventRehearsalMessageDocument.record.intent.automation.responseDeadline': eventRehearsalMessageDocumentRecordIntentAutomationResponseDeadline,
     'eventRehearsalMessageDocument.record.intent.automation.routes': eventRehearsalMessageDocumentRecordIntentAutomationRoutes,
     'eventRehearsalMessageDocument.record.intent.automation.routes.items.routeId': eventRehearsalMessageDocumentRecordIntentAutomationRoutesItemsRouteId,
     'eventRehearsalMessageDocument.record.intent.automation.routes.items.senderId': eventRehearsalMessageDocumentRecordIntentAutomationRoutesItemsSenderId,
-    'eventRehearsalMessageDocument.record.intent.automation.runtimeBinding.revision': eventRehearsalMessageDocumentRecordIntentAutomationRuntimeBindingRevision,
-    'eventRehearsalMessageDocument.record.intent.automation.runtimeBinding.runtimeId': eventRehearsalMessageDocumentRecordIntentAutomationRuntimeBindingRuntimeId,
     'eventRehearsalMessageDocument.record.intent.automation.settingId': eventRehearsalMessageDocumentRecordIntentAutomationSettingId,
     'eventRehearsalMessageDocument.record.intent.automation.settingRevision': eventRehearsalMessageDocumentRecordIntentAutomationSettingRevision,
+    'eventRehearsalMessageDocument.record.intent.automation.sourceId': eventRehearsalMessageDocumentRecordIntentAutomationSourceId,
+    'eventRehearsalMessageDocument.record.intent.automation.sourceRevision': eventRehearsalMessageDocumentRecordIntentAutomationSourceRevision,
     'eventRehearsalMessageDocument.record.intent.body': eventRehearsalMessageDocumentRecordIntentBody,
     'eventRehearsalMessageDocument.record.intent.choices': eventRehearsalMessageDocumentRecordIntentChoices,
     'eventRehearsalMessageDocument.record.intent.choices.items.choiceId': eventRehearsalMessageDocumentRecordIntentChoicesItemsChoiceId,
