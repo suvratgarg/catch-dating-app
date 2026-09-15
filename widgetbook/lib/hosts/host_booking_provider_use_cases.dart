@@ -1,8 +1,11 @@
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/domain/event_attendee.dart';
+import 'package:catch_dating_app/hosts/data/host_attendance_outbox.dart';
 import 'package:catch_dating_app/hosts/data/host_provider_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operational_roster_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_booking_provider_section.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_luma_connection_sheet.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_operational_roster_panel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
@@ -106,6 +109,75 @@ Widget hostLumaEventChoiceSheetStates(BuildContext context) =>
       ],
     );
 
+@widgetbook.UseCase(
+  name: 'Pending and review states',
+  type: HostAttendanceOutboxNotice,
+  path: '[P1 product surfaces]/Host/Roster',
+)
+Widget hostAttendanceOutboxNoticeStates(BuildContext context) =>
+    WidgetbookScrollCatalogFrame(
+      title: 'HostAttendanceOutboxNotice',
+      catalogId: 'host.attendance_outbox_notice',
+      children: [
+        for (final status in HostAttendanceOutboxStatus.values)
+          WidgetbookPageStateCard(
+            label: status == HostAttendanceOutboxStatus.pending
+                ? 'Waiting to sync'
+                : 'Needs review',
+            child: WidgetbookContentFrame(
+              child: HostAttendanceOutboxNotice(
+                summary: HostAttendanceOutboxSummary([
+                  HostAttendanceOutboxEntry(
+                    eventId: 'preview-event',
+                    attendeeId: 'preview-attendee',
+                    desiredCheckedIn: true,
+                    expectedRevision: 1,
+                    clientOperationId: 'preview-operation',
+                    createdAt: DateTime(2026, 7, 14, 20),
+                    status: status,
+                  ),
+                ]),
+                onRetry: _noop,
+                onDiscardConflicts: _noop,
+              ),
+            ),
+          ),
+      ],
+    );
+
+@widgetbook.UseCase(
+  name: 'Forwarding channels',
+  type: HostRosterHandoffSheet,
+  path: '[P1 product surfaces]/Host/Roster',
+)
+Widget hostRosterHandoffSheetState(BuildContext context) =>
+    WidgetbookViewportFrame.sheet(
+      size: const Size(390, 760),
+      child: HostRosterHandoffSheet(
+        instructions: EventRosterHandoffInstructions(
+          eventId: 'preview-event',
+          expiresAt: DateTime(2026, 7, 15, 20),
+          emailStatus: EventRosterHandoffChannelStatus.available,
+          emailAlias: 'guests@example.catch.app',
+          whatsappStatus: EventRosterHandoffChannelStatus.available,
+          whatsappNumber: '+91 90000 00000',
+          whatsappMessage: 'Send the guest list for Tuesday trivia.',
+        ),
+        onCopy: _noopCopy,
+      ),
+    );
+
+@widgetbook.UseCase(
+  name: 'Manual guest entry',
+  type: HostManualAttendeeSheet,
+  path: '[P1 product surfaces]/Host/Roster',
+)
+Widget hostManualAttendeeSheetState(BuildContext context) =>
+    const WidgetbookViewportFrame.sheet(
+      size: Size(390, 760),
+      child: HostManualAttendeeSheet(),
+    );
+
 const _capabilities = HostProviderCapabilities(
   fileImport: true,
   eventList: true,
@@ -196,3 +268,5 @@ class _PreviewRosterController implements HostOperationalRosterController {
 }
 
 void _noop() {}
+
+Future<void> _noopCopy(String value) async {}

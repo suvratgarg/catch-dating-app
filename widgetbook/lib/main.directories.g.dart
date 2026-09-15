@@ -8226,6 +8226,17 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'Roster',
             children: [
               _widgetbook.WidgetbookComponent(
+                name: 'HostAttendanceOutboxNotice',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Pending and review states',
+                    builder:
+                        _widgetbook_workspace_hosts_host_booking_provider_use_cases
+                            .hostAttendanceOutboxNoticeStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostBookingProviderSection',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -8255,6 +8266,28 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_host_booking_provider_use_cases
                             .hostLumaEventChoiceSheetStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostManualAttendeeSheet',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Manual guest entry',
+                    builder:
+                        _widgetbook_workspace_hosts_host_booking_provider_use_cases
+                            .hostManualAttendeeSheetState,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostRosterHandoffSheet',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Forwarding channels',
+                    builder:
+                        _widgetbook_workspace_hosts_host_booking_provider_use_cases
+                            .hostRosterHandoffSheetState,
                   ),
                 ],
               ),

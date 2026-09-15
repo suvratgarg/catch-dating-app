@@ -78,10 +78,6 @@
       "maxLines": 1352
     },
     {
-      "path": "lib/hosts/presentation/widgets/host_operational_roster_panel.dart",
-      "maxLines": 1545
-    },
-    {
       "path": "lib/onboarding/presentation/pages/welcome_page.dart",
       "maxLines": 891
     },
