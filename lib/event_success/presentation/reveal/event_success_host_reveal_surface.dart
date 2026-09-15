@@ -11,6 +11,7 @@ import 'package:catch_dating_app/event_success/presentation/reveal/event_success
 import 'package:catch_dating_app/event_success/presentation/reveal/event_success_outcome_section.dart';
 import 'package:catch_dating_app/event_success/presentation/reveal/event_success_reveal_action_row.dart';
 import 'package:catch_dating_app/event_success/presentation/reveal/event_success_reveal_assignment_kind.dart';
+import 'package:catch_dating_app/event_success/presentation/reveal/event_success_reveal_clock_mixin.dart';
 import 'package:catch_dating_app/event_success/presentation/reveal/event_success_reveal_copy.dart';
 import 'package:catch_dating_app/event_success/presentation/reveal/event_success_reveal_header.dart';
 import 'package:catch_dating_app/event_success/presentation/reveal/event_success_reveal_progress_indicator.dart';
@@ -24,8 +25,6 @@ import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
-
-import 'package:catch_dating_app/event_success/presentation/reveal/event_success_reveal_clock_mixin.dart';
 
 class EventSuccessHostRevealSurface extends StatefulWidget {
   const EventSuccessHostRevealSurface({

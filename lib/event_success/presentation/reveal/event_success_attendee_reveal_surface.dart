@@ -5,6 +5,7 @@ import 'package:catch_dating_app/event_success/presentation/reveal/event_success
 import 'package:catch_dating_app/event_success/presentation/reveal/event_success_group_rotation_row_list.dart';
 import 'package:catch_dating_app/event_success/presentation/reveal/event_success_pod_assignment_section.dart';
 import 'package:catch_dating_app/event_success/presentation/reveal/event_success_reveal_assignment_kind.dart';
+import 'package:catch_dating_app/event_success/presentation/reveal/event_success_reveal_clock_mixin.dart';
 import 'package:catch_dating_app/event_success/presentation/reveal/event_success_reveal_copy.dart';
 import 'package:catch_dating_app/event_success/presentation/reveal/event_success_reveal_round_stepper.dart';
 import 'package:catch_dating_app/event_success/presentation/reveal/event_success_reveal_waiting_notice.dart';
@@ -16,8 +17,6 @@ import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
-
-import 'package:catch_dating_app/event_success/presentation/reveal/event_success_reveal_clock_mixin.dart';
 
 class EventSuccessAttendeeRevealSurface extends StatefulWidget {
   const EventSuccessAttendeeRevealSurface({
