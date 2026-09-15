@@ -70,7 +70,7 @@ void _registerEventSuccessHostSetupTests() {
             body: SafeArea(
               child: Padding(
                 padding: const EdgeInsets.all(16),
-                child: EventSuccessHostPanel(
+                child: EventSuccessHostWorkspacePageBody(
                   event: event,
                   plan: plan,
                   planIsPersisted: true,
@@ -169,7 +169,7 @@ void _registerEventSuccessHostSetupTests() {
         child: MaterialApp(
           theme: AppTheme.light,
           home: Scaffold(
-            body: EventSuccessHostPanel(
+            body: EventSuccessHostWorkspacePageBody(
               event: event,
               plan: plan,
               planIsPersisted: true,
@@ -230,7 +230,7 @@ void _registerEventSuccessHostSetupTests() {
                 body: SafeArea(
                   child: Padding(
                     padding: const EdgeInsets.all(16),
-                    child: EventSuccessHostPanel(
+                    child: EventSuccessHostWorkspacePageBody(
                       event: event,
                       plan: plan,
                       planIsPersisted: true,
@@ -320,7 +320,7 @@ void _registerEventSuccessHostSetupTests() {
         child: MaterialApp(
           theme: AppTheme.light,
           home: Scaffold(
-            body: EventSuccessHostPanel(
+            body: EventSuccessHostWorkspacePageBody(
               event: event,
               plan: plan,
               planIsPersisted: true,
@@ -363,7 +363,7 @@ void _registerEventSuccessHostSetupTests() {
             body: SafeArea(
               child: Padding(
                 padding: const EdgeInsets.all(16),
-                child: EventSuccessHostPanel(
+                child: EventSuccessHostWorkspacePageBody(
                   event: event,
                   plan: plan,
                   planIsPersisted: false,
@@ -803,7 +803,7 @@ void _registerEventSuccessHostSetupTests() {
             body: SafeArea(
               child: Padding(
                 padding: const EdgeInsets.all(16),
-                child: EventSuccessHostPanel(
+                child: EventSuccessHostWorkspacePageBody(
                   event: event,
                   plan: plan,
                   planIsPersisted: true,
@@ -840,7 +840,7 @@ void _registerEventSuccessHostSetupTests() {
             body: SafeArea(
               child: Padding(
                 padding: const EdgeInsets.all(16),
-                child: EventSuccessHostPanel(
+                child: EventSuccessHostWorkspacePageBody(
                   event: event,
                   plan: plan,
                   planIsPersisted: true,

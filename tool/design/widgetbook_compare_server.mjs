@@ -1614,7 +1614,7 @@ function buildCandidates() {
       names: [
         "CatchNotice",
         "CatchBanner",
-        "NoticeCard",
+        "EventSuccessSetupNoticeBanner",
         "EditHostedEventScopeNotice",
         "PaymentConfirmationHeadsUp",
         "IntegrationNotesCard",
@@ -1676,7 +1676,7 @@ function buildCandidates() {
         "EventStatsGrid",
         "HostAnalyticsMetricGrid",
         "HostOrganizerMetricGrid",
-        "HostReportSignalGrid",
+        "EventSuccessReportQualitySection",
       ],
     },
     {
@@ -1825,7 +1825,7 @@ function buildCandidates() {
         "DashboardSectionStateCard",
         "StageCard",
         "ModuleCard",
-        "NoticeCard",
+        "EventSuccessSetupNoticeBanner",
         "PromiseCard",
         "RecommendCard",
         "PresetReviewCard",
@@ -1946,9 +1946,9 @@ function buildCandidates() {
         "EventSuccessHostTabBar",
         "PreviewTab",
         "ProfileTab",
-        "SetupTab",
+        "EventSuccessHostSetupPageBody",
         "EventSuccessHostLivePageBody",
-        "ReportTab",
+        "EventSuccessHostReportPageBody",
       ],
     },
     {

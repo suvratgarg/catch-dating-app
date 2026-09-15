@@ -1,9 +1,10 @@
-import 'package:catch_dating_app/event_success/presentation/host_components/event_success_live_workspace_tab_bar.dart';
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_layout.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_host_screen.dart';
+import 'package:catch_dating_app/event_success/presentation/event_success_host_workspace_page_body.dart';
+import 'package:catch_dating_app/event_success/presentation/host_components/event_success_live_workspace_tab_bar.dart';
 import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -25,7 +26,7 @@ void main() {
         child: MaterialApp(
           theme: AppTheme.light,
           home: Scaffold(
-            body: EventSuccessHostPanel(
+            body: EventSuccessHostWorkspacePageBody(
               event: event,
               plan: plan,
               planIsPersisted: true,
@@ -78,7 +79,7 @@ void main() {
         child: MaterialApp(
           theme: AppTheme.light,
           home: Scaffold(
-            body: EventSuccessHostPanel(
+            body: EventSuccessHostWorkspacePageBody(
               event: event,
               plan: plan,
               planIsPersisted: true,
@@ -141,7 +142,7 @@ void main() {
           child: MaterialApp(
             theme: AppTheme.light,
             home: Scaffold(
-              body: EventSuccessHostPanel(
+              body: EventSuccessHostWorkspacePageBody(
                 event: event,
                 plan: plan,
                 planIsPersisted: true,
@@ -244,7 +245,7 @@ void main() {
           child: MaterialApp(
             theme: AppTheme.light,
             home: Scaffold(
-              body: EventSuccessHostPanel(
+              body: EventSuccessHostWorkspacePageBody(
                 event: event,
                 plan: plan,
                 planIsPersisted: true,
@@ -317,7 +318,7 @@ void main() {
               child: child!,
             ),
             home: Scaffold(
-              body: EventSuccessHostPanel(
+              body: EventSuccessHostWorkspacePageBody(
                 event: event,
                 plan: plan,
                 planIsPersisted: true,
@@ -388,7 +389,7 @@ void main() {
         child: MaterialApp(
           theme: AppTheme.light,
           home: Scaffold(
-            body: EventSuccessHostPanel(
+            body: EventSuccessHostWorkspacePageBody(
               event: event,
               plan: plan,
               planIsPersisted: true,

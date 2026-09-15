@@ -97,6 +97,8 @@ import 'package:widgetbook_workspace/event_success/host_live_components_use_case
     as _widgetbook_workspace_event_success_host_live_components_use_cases;
 import 'package:widgetbook_workspace/event_success/host_reveal_components_use_cases.dart'
     as _widgetbook_workspace_event_success_host_reveal_components_use_cases;
+import 'package:widgetbook_workspace/event_success/host_workspace_components_use_cases.dart'
+    as _widgetbook_workspace_event_success_host_workspace_components_use_cases;
 import 'package:widgetbook_workspace/event_success/specimens/companion_paper.dart'
     as _widgetbook_workspace_event_success_specimens_companion_paper;
 import 'package:widgetbook_workspace/event_success/specimens/companion_social.dart'
@@ -6637,6 +6639,176 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookFolder(
+            name: 'Host workspace components',
+            children: [
+              _widgetbook.WidgetbookComponent(
+                name: 'EventSuccessFunnelSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Ready',
+                    builder:
+                        _widgetbook_workspace_event_success_host_workspace_components_use_cases
+                            .eventSuccessStrictHostFunnelSummary,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventSuccessHostReportPageBody',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Ready',
+                    builder:
+                        _widgetbook_workspace_event_success_host_workspace_components_use_cases
+                            .eventSuccessStrictReportTab,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventSuccessHostSectionSkeleton',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Ready',
+                    builder:
+                        _widgetbook_workspace_event_success_host_workspace_components_use_cases
+                            .eventSuccessStrictEventSuccessHostSectionSkeleton,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventSuccessHostSetupPageBody',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Ready',
+                    builder:
+                        _widgetbook_workspace_event_success_host_workspace_components_use_cases
+                            .eventSuccessStrictSetupTab,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventSuccessHostWorkspacePageBody',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Ready',
+                    builder:
+                        _widgetbook_workspace_event_success_host_workspace_components_use_cases
+                            .eventSuccessStrictEventSuccessHostPanel,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventSuccessLiveTabSkeleton',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Ready',
+                    builder:
+                        _widgetbook_workspace_event_success_host_workspace_components_use_cases
+                            .eventSuccessStrictEventSuccessLiveTabSkeleton,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventSuccessReadinessField',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Ready',
+                    builder:
+                        _widgetbook_workspace_event_success_host_workspace_components_use_cases
+                            .eventSuccessStrictReadinessIssues,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventSuccessReportEmptyState',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Ready',
+                    builder:
+                        _widgetbook_workspace_event_success_host_workspace_components_use_cases
+                            .previewEventSuccessReportEmptyState,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventSuccessReportMetricsSkeleton',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Ready',
+                    builder:
+                        _widgetbook_workspace_event_success_host_workspace_components_use_cases
+                            .eventSuccessStrictEventSuccessReportMetricsSkeleton,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventSuccessReportQualitySection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Ready',
+                    builder:
+                        _widgetbook_workspace_event_success_host_workspace_components_use_cases
+                            .eventSuccessStrictHostReportSignalGrid,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventSuccessReportTabSkeleton',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Ready',
+                    builder:
+                        _widgetbook_workspace_event_success_host_workspace_components_use_cases
+                            .eventSuccessStrictEventSuccessReportTabSkeleton,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventSuccessSetupControlsSkeleton',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Ready',
+                    builder:
+                        _widgetbook_workspace_event_success_host_workspace_components_use_cases
+                            .eventSuccessStrictEventSuccessSetupControlsSkeleton,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventSuccessSetupNoticeBanner',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Ready',
+                    builder:
+                        _widgetbook_workspace_event_success_host_workspace_components_use_cases
+                            .eventSuccessStrictNoticeCard,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventSuccessSetupTabSkeleton',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Ready',
+                    builder:
+                        _widgetbook_workspace_event_success_host_workspace_components_use_cases
+                            .eventSuccessStrictEventSuccessSetupTabSkeleton,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventSuccessTargetAttendeesField',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Ready',
+                    builder:
+                        _widgetbook_workspace_event_success_host_workspace_components_use_cases
+                            .eventSuccessStrictTargetAttendeeControl,
+                  ),
+                ],
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookFolder(
             name: 'Reveal components',
             children: [
               _widgetbook.WidgetbookComponent(
@@ -7572,62 +7744,12 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'Host folded states',
             children: [
               _widgetbook.WidgetbookComponent(
-                name: 'EventSuccessHostPanel',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'EventSuccessHostPanel',
-                    builder: _widgetbook_workspace_event_success_specimens_host
-                        .eventSuccessStrictEventSuccessHostPanel,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
                 name: 'EventSuccessHostSection',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'EventSuccessHostSection',
                     builder: _widgetbook_workspace_event_success_specimens_host
                         .eventSuccessStrictEventSuccessHostSection,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'EventSuccessHostSectionSkeleton',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'EventSuccessHostSectionSkeleton',
-                    builder: _widgetbook_workspace_event_success_specimens_host
-                        .eventSuccessStrictEventSuccessHostSectionSkeleton,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'EventSuccessLiveTabSkeleton',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'EventSuccessLiveTabSkeleton',
-                    builder: _widgetbook_workspace_event_success_specimens_host
-                        .eventSuccessStrictEventSuccessLiveTabSkeleton,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'EventSuccessReportMetricsSkeleton',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'EventSuccessReportMetricsSkeleton',
-                    builder: _widgetbook_workspace_event_success_specimens_host
-                        .eventSuccessStrictEventSuccessReportMetricsSkeleton,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'EventSuccessReportTabSkeleton',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'EventSuccessReportTabSkeleton',
-                    builder: _widgetbook_workspace_event_success_specimens_host
-                        .eventSuccessStrictEventSuccessReportTabSkeleton,
                   ),
                 ],
               ),
@@ -7643,102 +7765,12 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'EventSuccessSetupControlsSkeleton',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'EventSuccessSetupControlsSkeleton',
-                    builder: _widgetbook_workspace_event_success_specimens_host
-                        .eventSuccessStrictEventSuccessSetupControlsSkeleton,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'EventSuccessSetupTabSkeleton',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'EventSuccessSetupTabSkeleton',
-                    builder: _widgetbook_workspace_event_success_specimens_host
-                        .eventSuccessStrictEventSuccessSetupTabSkeleton,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
                 name: 'EventSuccessSkeletonSurface',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'EventSuccessSkeletonSurface',
                     builder: _widgetbook_workspace_event_success_specimens_host
                         .eventSuccessStrictEventSuccessSkeletonSurface,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostFunnelSummary',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'HostFunnelSummary',
-                    builder: _widgetbook_workspace_event_success_specimens_host
-                        .eventSuccessStrictHostFunnelSummary,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostReportSignalGrid',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'HostReportSignalGrid',
-                    builder: _widgetbook_workspace_event_success_specimens_host
-                        .eventSuccessStrictHostReportSignalGrid,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'NoticeCard',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'NoticeCard',
-                    builder: _widgetbook_workspace_event_success_specimens_host
-                        .eventSuccessStrictNoticeCard,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'ReadinessIssues',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'ReadinessIssues',
-                    builder: _widgetbook_workspace_event_success_specimens_host
-                        .eventSuccessStrictReadinessIssues,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'ReportTab',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'ReportTab',
-                    builder: _widgetbook_workspace_event_success_specimens_host
-                        .eventSuccessStrictReportTab,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'SetupTab',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'SetupTab',
-                    builder: _widgetbook_workspace_event_success_specimens_host
-                        .eventSuccessStrictSetupTab,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'TargetAttendeeControl',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'TargetAttendeeControl',
-                    builder: _widgetbook_workspace_event_success_specimens_host
-                        .eventSuccessStrictTargetAttendeeControl,
                   ),
                 ],
               ),

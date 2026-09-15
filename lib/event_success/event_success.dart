@@ -41,3 +41,15 @@ export 'presentation/host_live/event_success_accountability_section.dart'; // pu
 export 'presentation/host_live/event_success_control_room_page_body.dart'; // public-api: shared presentation contract used outside this feature
 export 'presentation/host_live/event_success_host_live_page_body.dart'; // public-api: shared presentation contract used outside this feature
 export 'presentation/host_live/event_success_step_action_row.dart'; // public-api: shared presentation contract used outside this feature
+
+export 'presentation/host_components/event_success_host_section_skeleton.dart'; // public-api: Host presentation contract used outside this feature
+export 'presentation/event_success_host_workspace_page_body.dart'; // public-api: Host presentation contract used outside this feature
+export 'presentation/host_setup/event_success_host_setup_page_body.dart'; // public-api: Host presentation contract used outside this feature
+export 'presentation/host_setup/event_success_target_attendees_field.dart'; // public-api: Host presentation contract used outside this feature
+export 'presentation/host_setup/event_success_readiness_field.dart'; // public-api: Host presentation contract used outside this feature
+export 'presentation/host_setup/event_success_setup_notice_banner.dart'; // public-api: Host presentation contract used outside this feature
+export 'presentation/host_report/event_success_host_report_page_body.dart'; // public-api: Host presentation contract used outside this feature
+export 'presentation/host_report/event_success_report_empty_state.dart'; // public-api: Host presentation contract used outside this feature
+export 'presentation/host_report/event_success_report_quality_section.dart'; // public-api: Host presentation contract used outside this feature
+export 'presentation/host_report/event_success_funnel_section.dart'; // public-api: Host presentation contract used outside this feature
+export 'presentation/host_report/event_success_report_copy.dart'; // public-api: Host presentation contract used outside this feature

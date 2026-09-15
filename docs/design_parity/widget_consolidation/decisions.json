@@ -1523,11 +1523,11 @@
           "action": "keep"
         },
         {
-          "name": "HostFunnelSummary",
+          "name": "EventSuccessFunnelSection",
           "action": "keep"
         },
         {
-          "name": "HostReportSignalGrid",
+          "name": "EventSuccessReportQualitySection",
           "action": "keep"
         },
         {
@@ -1539,7 +1539,7 @@
           "action": "keep"
         },
         {
-          "name": "NoticeCard",
+          "name": "EventSuccessSetupNoticeBanner",
           "action": "keep"
         },
         {
@@ -2881,7 +2881,7 @@
           "action": "keep"
         },
         {
-          "name": "HostFunnelSummary",
+          "name": "EventSuccessFunnelSection",
           "action": "keep"
         }
       ],
@@ -3926,7 +3926,7 @@
           "action": "keep"
         },
         {
-          "name": "HostReportSignalGrid",
+          "name": "EventSuccessReportQualitySection",
           "action": "keep"
         }
       ],
@@ -4340,7 +4340,7 @@
           "action": "keep"
         },
         {
-          "name": "EventSuccessHostPanel",
+          "name": "EventSuccessHostWorkspacePageBody",
           "action": "keep"
         }
       ],
@@ -6263,8 +6263,8 @@
       "clusterId": "concept-discovery:host-report-metric-sections",
       "decision": "keep-distinct",
       "members": [
-        {"name": "HostFunnelSummary", "action": "keep"},
-        {"name": "HostReportSignalGrid", "action": "keep"}
+        {"name": "EventSuccessFunnelSection", "action": "keep"},
+        {"name": "EventSuccessReportQualitySection", "action": "keep"}
       ],
       "rationale": "K5 reconciliation of prior c002-afterglow-beat-row: both deliberately compose CatchSection and CatchAnalyticsMetricGrid, while one owns event-funnel metrics and the other report-reliability signals. The shared renderer is already canonical; the classes are domain data adapters, not new concepts.",
       "decidedBy": "codex-rule:K5 -> prior-reviewed-ledger",
