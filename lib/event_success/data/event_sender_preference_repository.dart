@@ -1,10 +1,10 @@
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callables/get_event_assistance_sms_preference_callable_request.g.dart';
-import 'package:catch_dating_app/core/schema_contracts/generated/callables/list_event_sms_preferences_callable_request.g.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callables/get_event_rcs_preference_callable_request.g.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callables/get_event_whatsapp_preference_callable_request.g.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callables/list_event_rcs_preferences_callable_request.g.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/callables/list_event_sms_preferences_callable_request.g.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callables/list_event_whatsapp_preferences_callable_request.g.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_parsing.dart';
 import 'package:catch_dating_app/event_success/domain/event_sender_preference.dart';

@@ -1,10 +1,10 @@
 import 'package:catch_dating_app/core/schema_contracts/generated/schemas/event_assistance_sms_preference_callable_response.g.dart';
-import 'package:catch_dating_app/core/schema_contracts/generated/schemas/list_event_sms_preferences_callable_response.g.dart';
-import 'package:catch_dating_app/core/schema_contracts/generated/schemas/set_event_assistance_sms_preference_callable_payload.g.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/schemas/event_rcs_preference_callable_response.g.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/schemas/event_whatsapp_preference_callable_response.g.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/schemas/list_event_rcs_preferences_callable_response.g.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/schemas/list_event_sms_preferences_callable_response.g.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/schemas/list_event_whatsapp_preferences_callable_response.g.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/schemas/set_event_assistance_sms_preference_callable_payload.g.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/schemas/set_event_rcs_preference_callable_payload.g.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/schemas/set_event_whatsapp_preference_callable_payload.g.dart';
 import 'package:catch_dating_app/event_success/domain/event_sender_preference.dart';
