@@ -669,6 +669,11 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/eventAssistanceRosterWork.ts",
   },
   {
+    name: "EventAssistanceOperationalNoticeFanout",
+    source: "operations/event_assistance_operational_notice_fanout.schema.json",
+    typeOutput: "functions/src/shared/generated/eventAssistanceOperationalNoticeFanout.ts",
+  },
+  {
     name: "EventAssistanceLiveWork",
     source: "operations/event_assistance_live_work.schema.json",
     typeOutput: "functions/src/shared/generated/eventAssistanceLiveWork.ts",
@@ -4577,6 +4582,18 @@ async function main() {
   const commandKinds = commandSchema.oneOf.map(
     (variant) => variant.properties.kind.const
   );
+  const commandCoverageFields = new Set(["intent"]);
+  for (const row of eventAssistanceCommandBindingCatalog.definitions) {
+    for (const mode of [row.live, row.rehearsal]) {
+      if (mode.coverage?.variantField) {
+        commandCoverageFields.add(mode.coverage.variantField);
+      }
+    }
+  }
+  const commandCoverageVariants = [...new Set(commandSchema.oneOf.flatMap(
+    (variant) => [...commandCoverageFields].flatMap((field) =>
+      variant.properties.payload?.properties?.[field]?.enum ?? [])
+  ))];
   addTextOutput(
     "lib/core/schema_contracts/generated/event_assistance_kinds.g.dart",
     renderDartEventAssistanceCatalog({
@@ -4584,6 +4601,7 @@ async function main() {
       commandBindingCatalog: eventAssistanceCommandBindingCatalog,
       workflowKinds,
       commandKinds,
+      coverageVariants: commandCoverageVariants,
     })
   );
   const bundledSchemas = new Map();
@@ -5325,6 +5343,7 @@ function renderDartEventAssistanceCatalog({
   commandBindingCatalog,
   workflowKinds,
   commandKinds,
+  coverageVariants,
 }) {
   const enumText = (name, values) => {
     const compact = `enum ${name} { ${
@@ -5366,14 +5385,6 @@ function renderDartEventAssistanceCatalog({
     (row) => [row.live.bindingType, row.rehearsal.bindingType]
   ))];
   const bindingCoverages = ["none", "partial", "complete"];
-  const coverageVariants = [...new Set(
-    commandBindingCatalog.definitions.flatMap((row) =>
-      [row.live, row.rehearsal].flatMap((binding) => [
-        ...(binding.coverage?.implementedVariants ?? []),
-        ...(binding.coverage?.missingVariants ?? []),
-      ])
-    )
-  )];
   const coverageKind = (binding) => binding.coverage?.kind ??
     (binding.bindingType === "contractOnly" ? "none" : "complete");
   const missingCapabilities = [...new Set(

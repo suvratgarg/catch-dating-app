@@ -1,6 +1,6 @@
 ---
 doc_id: operations_platform
-version: 1.27.0
+version: 1.28.0
 updated: 2026-09-16
 owner: operations_platform
 status: active
@@ -703,6 +703,24 @@ a later correction retains the effective reporter when reopening work.
 
 ### Source changes and due-work recovery
 
+`OperationalNoticeFanoutStore` persists each plan-change or post-event
+follow-up audience as one `operationalNoticeFanout` Operations run/item. Its
+identity freezes the event context, immutable source id/revision/timestamps and
+exact saved-policy setting revision. Before every page it rechecks the source,
+organizer, event state and selected policy; source or policy drift stops the
+run. Plan changes are due immediately. A terminal Event Success plan creates a
+follow-up run due at the scheduled event end and only checked-in attendees are
+eligible when publication executes.
+
+Fanout reads attendees in document-id order, visits at most 20 per page and
+uses the shared current-guest enrollment boundary so every notice is bound to
+the attendee's stable registration episode. A source receipt prevents duplicate
+publication after retries. The checkpoint records visited, published, skipped
+and failed targets. Limits are 10,000 visited attendees, 100 retained failures
+and five retry rounds; exhaustion produces an explicit Host-review item rather
+than dropping the remaining audience. Its work-item trigger, source triggers
+and scheduler target remain dormant in deployment policy.
+
 `AssistanceSourceWorkStore` persists each source delivery and target scope as
 one `liveSourceWake` Operations run/item, enforced by
 `event_assistance_source_work.schema.json`. The source `eventId` is the
@@ -766,9 +784,10 @@ refresh current evidence; they do not infer arrival or close a discrepancy.
 
 `onAssistanceWorkChanged` advances currently due saved work. The once-per-minute
 `evaluateDueEventAssistanceWork` scheduler recovers at most five roster items,
-10 source, 30 guest, 10 delivery and 10 checkpoint items per invocation; one failure does not skip
+10 source, 10 operational-notice, 30 guest, 10 delivery and 10 checkpoint items
+per invocation; one failure does not skip
 the other selected items. Future due times remain saved until reached. All
-twenty source triggers, the direct `onAssistanceCheckpointChanged` report hook,
+source triggers, the direct `onAssistanceCheckpointChanged` report hook,
 the work-item trigger and scheduler are in the dormant target policy and
 cannot enter current logical or exact deployment plans. Source wiring and
 local emulator verification do not claim deployed execution or message delivery.

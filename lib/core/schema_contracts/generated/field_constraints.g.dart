@@ -20729,6 +20729,212 @@ abstract final class CatchContractConstraints {
     pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
   );
 
+  static const eventAssistanceOperationalNoticeFanoutCheckpointCursor = CatchContractFieldConstraints(
+    path: 'eventAssistanceOperationalNoticeFanout.checkpoint.cursor',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceOperationalNoticeFanoutCheckpointDueAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceOperationalNoticeFanout.checkpoint.dueAt',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceOperationalNoticeFanoutCheckpointFailures = CatchContractFieldConstraints(
+    path: 'eventAssistanceOperationalNoticeFanout.checkpoint.failures',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 100,
+  );
+
+  static const eventAssistanceOperationalNoticeFanoutCheckpointFailuresItemsAttendeeId = CatchContractFieldConstraints(
+    path: 'eventAssistanceOperationalNoticeFanout.checkpoint.failures.items.attendeeId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceOperationalNoticeFanoutCheckpointFailuresItemsReason = CatchContractFieldConstraints(
+    path: 'eventAssistanceOperationalNoticeFanout.checkpoint.failures.items.reason',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['unavailable'],
+  );
+
+  static const eventAssistanceOperationalNoticeFanoutCheckpointPhase = CatchContractFieldConstraints(
+    path: 'eventAssistanceOperationalNoticeFanout.checkpoint.phase',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['scan', 'retry', 'complete', 'review', 'expired', 'stopped'],
+  );
+
+  static const eventAssistanceOperationalNoticeFanoutCheckpointPublished = CatchContractFieldConstraints(
+    path: 'eventAssistanceOperationalNoticeFanout.checkpoint.published',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 10000,
+  );
+
+  static const eventAssistanceOperationalNoticeFanoutCheckpointRetries = CatchContractFieldConstraints(
+    path: 'eventAssistanceOperationalNoticeFanout.checkpoint.retries',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 5,
+  );
+
+  static const eventAssistanceOperationalNoticeFanoutCheckpointSkipped = CatchContractFieldConstraints(
+    path: 'eventAssistanceOperationalNoticeFanout.checkpoint.skipped',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 10000,
+  );
+
+  static const eventAssistanceOperationalNoticeFanoutCheckpointStopReason = CatchContractFieldConstraints(
+    path: 'eventAssistanceOperationalNoticeFanout.checkpoint.stopReason',
+    required: true,
+    enumValues: <String>['policyUnavailable', 'policyChanged', 'sourceChanged'],
+  );
+
+  static const eventAssistanceOperationalNoticeFanoutCheckpointVisited = CatchContractFieldConstraints(
+    path: 'eventAssistanceOperationalNoticeFanout.checkpoint.visited',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 10000,
+  );
+
+  static const eventAssistanceOperationalNoticeFanoutContextEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceOperationalNoticeFanout.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceOperationalNoticeFanoutContextMode = CatchContractFieldConstraints(
+    path: 'eventAssistanceOperationalNoticeFanout.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceOperationalNoticeFanoutContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventAssistanceOperationalNoticeFanout.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceOperationalNoticeFanoutExpiresAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceOperationalNoticeFanout.expiresAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceOperationalNoticeFanoutKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceOperationalNoticeFanout.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceOperationalNoticeFanoutPolicyBindingGroupId = CatchContractFieldConstraints(
+    path: 'eventAssistanceOperationalNoticeFanout.policyBinding.groupId',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceOperationalNoticeFanoutPolicyBindingSettingId = CatchContractFieldConstraints(
+    path: 'eventAssistanceOperationalNoticeFanout.policyBinding.settingId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceOperationalNoticeFanoutPolicyBindingSettingRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceOperationalNoticeFanout.policyBinding.settingRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceOperationalNoticeFanoutPolicyBindingWorkflowKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceOperationalNoticeFanout.policyBinding.workflowKind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['planChangeCommunication', 'postEventFollowUp'],
+  );
+
+  static const eventAssistanceOperationalNoticeFanoutSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventAssistanceOperationalNoticeFanout.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventAssistanceOperationalNoticeFanoutSignalId = CatchContractFieldConstraints(
+    path: 'eventAssistanceOperationalNoticeFanout.signalId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceOperationalNoticeFanoutSourceKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceOperationalNoticeFanout.source.kind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['planChange', 'followUp'],
+  );
+
+  static const eventAssistanceOperationalNoticeFanoutSourceOccurredAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceOperationalNoticeFanout.source.occurredAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceOperationalNoticeFanoutSourceRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceOperationalNoticeFanout.source.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceOperationalNoticeFanoutSourceSourceId = CatchContractFieldConstraints(
+    path: 'eventAssistanceOperationalNoticeFanout.source.sourceId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceOperationalNoticeFanoutSourceValidUntil = CatchContractFieldConstraints(
+    path: 'eventAssistanceOperationalNoticeFanout.source.validUntil',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
   static const eventAssistanceOperationalNoticePublicationDocumentAttendeeId = CatchContractFieldConstraints(
     path: 'eventAssistanceOperationalNoticePublicationDocument.attendeeId',
     maxLength: 160,
@@ -96039,6 +96245,33 @@ abstract final class CatchContractConstraints {
     'eventAssistanceMessageIntent.title': eventAssistanceMessageIntentTitle,
     'eventAssistanceMessageIntent.workflow.kind': eventAssistanceMessageIntentWorkflowKind,
     'eventAssistanceMessageIntent.workflow.occurrenceId': eventAssistanceMessageIntentWorkflowOccurrenceId,
+    'eventAssistanceOperationalNoticeFanout.checkpoint.cursor': eventAssistanceOperationalNoticeFanoutCheckpointCursor,
+    'eventAssistanceOperationalNoticeFanout.checkpoint.dueAt': eventAssistanceOperationalNoticeFanoutCheckpointDueAt,
+    'eventAssistanceOperationalNoticeFanout.checkpoint.failures': eventAssistanceOperationalNoticeFanoutCheckpointFailures,
+    'eventAssistanceOperationalNoticeFanout.checkpoint.failures.items.attendeeId': eventAssistanceOperationalNoticeFanoutCheckpointFailuresItemsAttendeeId,
+    'eventAssistanceOperationalNoticeFanout.checkpoint.failures.items.reason': eventAssistanceOperationalNoticeFanoutCheckpointFailuresItemsReason,
+    'eventAssistanceOperationalNoticeFanout.checkpoint.phase': eventAssistanceOperationalNoticeFanoutCheckpointPhase,
+    'eventAssistanceOperationalNoticeFanout.checkpoint.published': eventAssistanceOperationalNoticeFanoutCheckpointPublished,
+    'eventAssistanceOperationalNoticeFanout.checkpoint.retries': eventAssistanceOperationalNoticeFanoutCheckpointRetries,
+    'eventAssistanceOperationalNoticeFanout.checkpoint.skipped': eventAssistanceOperationalNoticeFanoutCheckpointSkipped,
+    'eventAssistanceOperationalNoticeFanout.checkpoint.stopReason': eventAssistanceOperationalNoticeFanoutCheckpointStopReason,
+    'eventAssistanceOperationalNoticeFanout.checkpoint.visited': eventAssistanceOperationalNoticeFanoutCheckpointVisited,
+    'eventAssistanceOperationalNoticeFanout.context.eventId': eventAssistanceOperationalNoticeFanoutContextEventId,
+    'eventAssistanceOperationalNoticeFanout.context.mode': eventAssistanceOperationalNoticeFanoutContextMode,
+    'eventAssistanceOperationalNoticeFanout.context.organizerId': eventAssistanceOperationalNoticeFanoutContextOrganizerId,
+    'eventAssistanceOperationalNoticeFanout.expiresAt': eventAssistanceOperationalNoticeFanoutExpiresAt,
+    'eventAssistanceOperationalNoticeFanout.kind': eventAssistanceOperationalNoticeFanoutKind,
+    'eventAssistanceOperationalNoticeFanout.policyBinding.groupId': eventAssistanceOperationalNoticeFanoutPolicyBindingGroupId,
+    'eventAssistanceOperationalNoticeFanout.policyBinding.settingId': eventAssistanceOperationalNoticeFanoutPolicyBindingSettingId,
+    'eventAssistanceOperationalNoticeFanout.policyBinding.settingRevision': eventAssistanceOperationalNoticeFanoutPolicyBindingSettingRevision,
+    'eventAssistanceOperationalNoticeFanout.policyBinding.workflowKind': eventAssistanceOperationalNoticeFanoutPolicyBindingWorkflowKind,
+    'eventAssistanceOperationalNoticeFanout.schemaVersion': eventAssistanceOperationalNoticeFanoutSchemaVersion,
+    'eventAssistanceOperationalNoticeFanout.signalId': eventAssistanceOperationalNoticeFanoutSignalId,
+    'eventAssistanceOperationalNoticeFanout.source.kind': eventAssistanceOperationalNoticeFanoutSourceKind,
+    'eventAssistanceOperationalNoticeFanout.source.occurredAt': eventAssistanceOperationalNoticeFanoutSourceOccurredAt,
+    'eventAssistanceOperationalNoticeFanout.source.revision': eventAssistanceOperationalNoticeFanoutSourceRevision,
+    'eventAssistanceOperationalNoticeFanout.source.sourceId': eventAssistanceOperationalNoticeFanoutSourceSourceId,
+    'eventAssistanceOperationalNoticeFanout.source.validUntil': eventAssistanceOperationalNoticeFanoutSourceValidUntil,
     'eventAssistanceOperationalNoticePublicationDocument.attendeeId': eventAssistanceOperationalNoticePublicationDocumentAttendeeId,
     'eventAssistanceOperationalNoticePublicationDocument.contentHash': eventAssistanceOperationalNoticePublicationDocumentContentHash,
     'eventAssistanceOperationalNoticePublicationDocument.context.clockId': eventAssistanceOperationalNoticePublicationDocumentContextClockId,

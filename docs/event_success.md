@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.141.0
+version: 1.142.0
 updated: 2026-09-16
 owner: recursive_audit_loop
 status: active
@@ -137,11 +137,13 @@ Flutter mirrors this projection in
 binding descriptors directly. The resulting action and command lists are
 immutable and preserve the distinct live and rehearsal coverage states.
 
-The live `sendOperationalMessage` binding is partial. Late-join `joining`
-messages run through `LiveMessageDispatcher`. `planChange` and `followUp` have
-trusted source readers and share the same publication and dispatch boundary,
-but still need durable audience enrollment and bounded fanout before automatic
-execution is complete.
+The live `sendOperationalMessage` binding is complete. Late-join `joining`
+messages run through the guest worker. `planChange` and `followUp` use a durable
+Operations fanout that enrolls the current event attendee episode, verifies an
+immutable source revision and exact saved-policy revision, then invokes the
+same publication and dispatch boundary per guest. The functions remain dormant
+in deployment policy, so complete source coverage does not claim live
+activation or provider delivery.
 
 Seven workflows intentionally resolve through existing product domains instead
 of duplicating Event Assistance commands. Venue, route and format readiness use
@@ -1149,10 +1151,13 @@ an attendee-relevant event edit. It rejects superseded revisions and roster
 rows created after the change. `PostEventFollowUpSourceReader` reads the
 terminal Event Success plan revision and admits only checked-in attendees after
 the scheduled end. Both derive bounded copy and acknowledgement/help choices
-from source facts. The variants remain partial in the command catalog because
-no durable coordinator yet enrolls the affected audience and fans publication
-out per guest. Explicit operational notices remain outside the automatic
-coordinator when the binding is absent.
+from source facts. `OperationalNoticeFanoutStore` owns the durable coordinator:
+it freezes the immutable source and selected policy revision, scans at most 20
+attendees per checkpoint, creates or reuses their stable current enrollment,
+and publishes one source-bound notice per eligible guest. Plan changes are due
+immediately; post-event follow-up waits until the scheduled event end. A source
+or policy revision change stops unfinished work instead of silently changing
+the audience, copy, routes or authority mid-run.
 
 `prepareGuestMessagePublication` and `prepareLiveLateJoinPublication` complete all
 reads before returning their write-staging closures, allowing a fenced

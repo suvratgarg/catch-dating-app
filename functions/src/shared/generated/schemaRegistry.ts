@@ -141,6 +141,7 @@ export {eventAssistanceSourceWorkSchema} from "./schemas/eventAssistanceSourceWo
 export {eventAssistanceCheckpointWorkSchema} from "./schemas/eventAssistanceCheckpointWork";
 export {eventAssistanceDeliveryWorkSchema} from "./schemas/eventAssistanceDeliveryWork";
 export {eventAssistanceRosterWorkSchema} from "./schemas/eventAssistanceRosterWork";
+export {eventAssistanceOperationalNoticeFanoutSchema} from "./schemas/eventAssistanceOperationalNoticeFanout";
 export {eventAssistanceLiveWorkSchema} from "./schemas/eventAssistanceLiveWork";
 export {eventAssistanceLateJoinInputSchema} from "./schemas/eventAssistanceLateJoinInput";
 export {eventAssistanceLateJoinDecisionSchema} from "./schemas/eventAssistanceLateJoinDecision";

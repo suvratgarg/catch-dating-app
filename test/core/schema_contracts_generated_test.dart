@@ -91,16 +91,11 @@ void main() {
         .live;
     expect(
       messageBinding.coverage,
-      schema_contracts.EventAssistanceCommandCoverage.partial,
+      schema_contracts.EventAssistanceCommandCoverage.complete,
     );
-    expect(messageBinding.variantField, 'intent');
-    expect(messageBinding.implementedVariants, [
-      schema_contracts.EventAssistanceCommandCoverageVariant.joining,
-    ]);
-    expect(messageBinding.missingVariants, [
-      schema_contracts.EventAssistanceCommandCoverageVariant.planChange,
-      schema_contracts.EventAssistanceCommandCoverageVariant.followUp,
-    ]);
+    expect(messageBinding.variantField, isNull);
+    expect(messageBinding.implementedVariants, isEmpty);
+    expect(messageBinding.missingVariants, isEmpty);
   });
 
   test('generated profile prompt constants match contract limits', () {

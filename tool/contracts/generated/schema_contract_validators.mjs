@@ -139,6 +139,7 @@ import {
   eventAssistanceCheckpointWorkSchema,
   eventAssistanceDeliveryWorkSchema,
   eventAssistanceRosterWorkSchema,
+  eventAssistanceOperationalNoticeFanoutSchema,
   eventAssistanceLiveWorkSchema,
   eventAssistanceLateJoinInputSchema,
   eventAssistanceLateJoinDecisionSchema,
@@ -836,6 +837,7 @@ export const validateEventAssistanceSourceWork = ajv.compile(eventAssistanceSour
 export const validateEventAssistanceCheckpointWork = ajv.compile(eventAssistanceCheckpointWorkSchema);
 export const validateEventAssistanceDeliveryWork = ajv.compile(eventAssistanceDeliveryWorkSchema);
 export const validateEventAssistanceRosterWork = ajv.compile(eventAssistanceRosterWorkSchema);
+export const validateEventAssistanceOperationalNoticeFanout = ajv.compile(eventAssistanceOperationalNoticeFanoutSchema);
 export const validateEventAssistanceLiveWork = ajv.compile(eventAssistanceLiveWorkSchema);
 export const validateEventAssistanceLateJoinInput = ajv.compile(eventAssistanceLateJoinInputSchema);
 export const validateEventAssistanceLateJoinDecision = ajv.compile(eventAssistanceLateJoinDecisionSchema);

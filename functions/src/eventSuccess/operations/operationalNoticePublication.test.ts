@@ -22,7 +22,8 @@ async function setup(maximumPerGuest = 1, realDb?: Firestore) {
   const settingScope = {context: h.context, groupId: "event:whole",
     workflowKind: "planChangeCommunication" as const};
   const view = (await settings.get("host-1", settingScope)).view;
-  await settings.set("host-1", {...settingScope, requestId: randomUUID(),
+  const saved = await settings.set("host-1", {...settingScope,
+    requestId: randomUUID(),
     expectedRevision: view.ownRevision, expectedSourceHash: view.sourceHash,
     preference: {kind: "configured", template: {
       kind: "planChangeCommunication", version: 1,
@@ -48,8 +49,12 @@ async function setup(maximumPerGuest = 1, realDb?: Firestore) {
   };
   const publisher = new OperationalNoticePublisher(h.db, reader,
     () => h.clock.now);
+  assert.ok(saved.view.own);
   const request = {context: h.context, attendeeId: h.scope.attendeeId,
-    episodeId: h.intent.episodeId, source: {kind: "planChange" as const,
+    episodeId: h.intent.episodeId, policyBinding: {
+      groupId: saved.view.own.groupId, settingId: saved.view.own.settingId,
+      expectedRevision: saved.view.own.revision},
+    source: {kind: "planChange" as const,
       sourceId: source.sourceId, expectedRevision: source.revision}};
   return {h, settings, settingScope, publisher, request,
     source: () => source,

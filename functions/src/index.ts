@@ -123,6 +123,7 @@ export {
   onAssistanceWhatsappStopChanged,
   onAssistanceWhatsappSuppressionChanged,
   onAssistanceWorkChanged, evaluateDueEventAssistanceWork,
+  onAssistancePlanChangeChanged,
 } from "./eventSuccess/operations/liveWorkTriggers";
 export {getEventAssistanceRuntimeConfig, setEventAssistanceRuntimeConfig} from
   "./eventSuccess/operations/runtimeConfigHandlers";

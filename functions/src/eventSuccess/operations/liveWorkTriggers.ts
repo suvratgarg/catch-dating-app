@@ -9,6 +9,10 @@ import {AssistanceCheckpointWorkStore} from "./checkpointWorkStore";
 import {LiveAssistanceWorkRunner} from "./liveWorkRunner";
 import {enqueueAssistanceSourceChange} from "./sourceWorkSignals";
 import type {SourceWork} from "./sourceWorkRecords";
+import {OperationalNoticeFanoutStore} from
+  "./operationalNoticeFanoutStore";
+import {enqueuePlanChangeNoticeFanout,
+  enqueuePostEventFollowUpFanout} from "./operationalNoticeFanoutSignals";
 
 type Collection = SourceWork["source"]["collection"];
 type WorkPorts = {
@@ -16,6 +20,7 @@ type WorkPorts = {
   delivery: Pick<AssistanceDeliveryWorkStore, "process" | "listDue">;
   roster: Pick<AssistanceRosterWorkStore, "process" | "listDue">;
   source: Pick<AssistanceSourceWorkStore, "process" | "listDue">;
+  notice?: Pick<OperationalNoticeFanoutStore, "process" | "listDue">;
   guest: Pick<LiveAssistanceWorkRunner, "process"> & {
     store: Pick<LiveAssistanceWorkRunner["store"], "listDue">;
   };
@@ -26,6 +31,7 @@ function ports(db: Firestore, clock: () => number): WorkPorts {
     checkpoint: new AssistanceCheckpointWorkStore(db, clock),
     delivery: new AssistanceDeliveryWorkStore(db, clock),
     source: new AssistanceSourceWorkStore(db, clock),
+    notice: new OperationalNoticeFanoutStore(db, clock),
     guest: new LiveAssistanceWorkRunner(db, clock)};
 }
 
@@ -47,6 +53,9 @@ export async function processChangedAssistanceWork(workItemId: string,
     busy = (await worker.roster.process(workItemId)).kind === "busy";
   } else if (payload?.kind === "liveSourceWake") {
     busy = (await worker.source.process(workItemId)).kind === "busy";
+  } else if (payload?.kind === "operationalNoticeFanout") {
+    if (!worker.notice) return;
+    busy = (await worker.notice.process(workItemId)).kind === "busy";
   } else if (payload?.kind === "liveLateJoin") {
     busy = (await worker.guest.process(workItemId,
       {kind: "evaluate"})).kind === "busy";
@@ -56,9 +65,10 @@ export async function processChangedAssistanceWork(workItemId: string,
 
 /** Scheduled recovery evaluates saved due work, never an inferred event. */
 export async function evaluateDueAssistanceWork(worker: WorkPorts) {
-  const [rosters, sources, guests, deliveries, checkpoints] =
+  const [rosters, sources, notices, guests, deliveries, checkpoints] =
     await Promise.all([
       worker.roster.listDue(5), worker.source.listDue(10),
+      worker.notice?.listDue(10) ?? Promise.resolve([]),
       worker.guest.store.listDue(30), worker.delivery.listDue(10),
       worker.checkpoint.listDue(10)]);
   const failed: string[] = [];
@@ -66,6 +76,7 @@ export async function evaluateDueAssistanceWork(worker: WorkPorts) {
   for (const [kind, id] of [
     ...rosters.map((id) => ["roster", id] as const),
     ...sources.map((id) => ["source", id] as const),
+    ...notices.map((id) => ["notice", id] as const),
     ...guests.map((item) => ["guest", item.workItemId] as const),
     ...deliveries.map((id) => ["delivery", id] as const),
     ...checkpoints.map((id) => ["checkpoint", id] as const),
@@ -73,9 +84,10 @@ export async function evaluateDueAssistanceWork(worker: WorkPorts) {
     try {
       const result = kind === "roster" ? await worker.roster.process(id) :
         kind === "source" ? await worker.source.process(id) :
-          kind === "delivery" ? await worker.delivery.process(id) :
-            kind === "checkpoint" ? await worker.checkpoint.process(id) :
-              await worker.guest.process(id, {kind: "evaluate"});
+          kind === "notice" ? await worker.notice!.process(id) :
+            kind === "delivery" ? await worker.delivery.process(id) :
+              kind === "checkpoint" ? await worker.checkpoint.process(id) :
+                await worker.guest.process(id, {kind: "evaluate"});
       if (result.kind === "busy") busy += 1;
     } catch {
       failed.push(id);
@@ -87,6 +99,7 @@ export async function evaluateDueAssistanceWork(worker: WorkPorts) {
     throw new Error("Some event assistance work could not advance");
   }
   return {rosterItems: rosters.length, sourceItems: sources.length,
+    noticeItems: notices.length,
     guestItems: guests.length, deliveryItems: deliveries.length,
     checkpointItems: checkpoints.length, busy};
 }
@@ -106,6 +119,10 @@ function sourceTrigger(collection: Collection) {
           occurredAt: Date.parse(event.time)},
         before: snapshot("before"), after: snapshot("after"),
       }, new AssistanceRosterWorkStore(getFirestore()));
+    if (collection === "eventSuccessPlans" && event.data.after.exists) {
+      await enqueuePostEventFollowUpFanout(getFirestore(),
+        event.params.documentId, event.data.after.data());
+    }
     if (collection === "eventAssistanceMessages" && event.data.after.exists) {
       const result = await new AssistanceDeliveryWorkStore(getFirestore())
         .processMessage(event.params.documentId);
@@ -113,6 +130,15 @@ function sourceTrigger(collection: Collection) {
     }
   });
 }
+
+export const onAssistancePlanChangeChanged = onDocumentWritten({
+  document: "eventPlanChanges/{sourceId}", retry: true,
+  timeoutSeconds: 60, maxInstances: 5,
+}, async (event) => {
+  if (!event.data?.after.exists) return;
+  await enqueuePlanChangeNoticeFanout(getFirestore(), event.params.sourceId,
+    event.data.after.data());
+});
 
 export const onAssistanceEventChanged = sourceTrigger("events");
 export const onAssistanceRosterChanged = sourceTrigger("eventAttendees");

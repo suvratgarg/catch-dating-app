@@ -141,6 +141,7 @@ export {validateEventAssistanceSourceWork} from "./validators/eventAssistanceSou
 export {validateEventAssistanceCheckpointWork} from "./validators/eventAssistanceCheckpointWork";
 export {validateEventAssistanceDeliveryWork} from "./validators/eventAssistanceDeliveryWork";
 export {validateEventAssistanceRosterWork} from "./validators/eventAssistanceRosterWork";
+export {validateEventAssistanceOperationalNoticeFanout} from "./validators/eventAssistanceOperationalNoticeFanout";
 export {validateEventAssistanceLiveWork} from "./validators/eventAssistanceLiveWork";
 export {validateEventAssistanceLateJoinInput} from "./validators/eventAssistanceLateJoinInput";
 export {validateEventAssistanceLateJoinDecision} from "./validators/eventAssistanceLateJoinDecision";

@@ -2,10 +2,7 @@ import {runAssistanceTransaction as transact} from "./transactionCallback";
 import type {Firestore} from "firebase-admin/firestore";
 import {operationCollections} from "../../operations/collections";
 import {operationContentHash} from "../../operations/durableActions";
-import {validateEventAttendeeDocument} from
-  "../../shared/generated/validators/eventAttendeeDocument";
-import {Guest, currentGuest, guestCollections, guestIdentity,
-  guestSourceFactsFromSnapshots, parseGuest} from "./guestRecords";
+import {prepareCurrentGuestEnrollment} from "./currentGuestEnrollment";
 import {invalidWork, liveWorkBasis, liveWorkIds, newLiveWorkRecords,
   parseLiveWork, readLiveWorkRecords} from "./liveWorkRecords";
 import {readRuntimeConfigAuthority, RuntimeBinding, RuntimeContext,
@@ -25,7 +22,6 @@ export class LiveAssistanceEnrollmentStore {
   async ensure(context: RuntimeContext, attendeeId: string,
     binding: RuntimeBinding): Promise<EnrollmentResult> {
     const frozen = structuredClone({context, attendeeId, binding});
-    const guestId = guestIdentity(frozen.context, frozen.attendeeId);
     return transact(this.db, async (tx) => {
       const now = this.clock();
       const authority = await readRuntimeConfigAuthority(this.db, tx,
@@ -33,43 +29,10 @@ export class LiveAssistanceEnrollmentStore {
       if (authority.kind !== "ready") {
         return {kind: "held", reason: authority.reason};
       }
-      const guestRef = this.db.collection(guestCollections.guests).doc(guestId);
-      const [eventSnap, attendeeSnap, guestSnap] = await tx.getAll(
-        this.db.collection("events").doc(frozen.context.eventId),
-        this.db.collection("eventAttendees").doc(frozen.attendeeId), guestRef);
-      if (!attendeeSnap.exists) {
-        return {kind: "held", reason: "attendeeUnavailable"};
-      }
-      const attendee = attendeeSnap.data();
-      if (!validateEventAttendeeDocument(attendee)) throw invalidWork();
-      const source = guestSourceFactsFromSnapshots(frozen.context,
-        frozen.attendeeId, eventSnap, attendeeSnap);
-      if (source.attendeeStatus !== "registered" &&
-          source.attendeeStatus !== "checkedIn") {
-        return {kind: "held", reason: "attendeeUnavailable"};
-      }
-      const existing = guestSnap.exists ? parseGuest(guestSnap.data()) : null;
-      if (existing && (existing.guestId !== guestId ||
-          existing.updatedAt > now)) throw invalidWork();
-      const sameRegistration = existing !== null &&
-        existing.sourceGeneration === source.sourceGeneration &&
-        existing.attendeeGeneration === source.attendeeGeneration;
-      // Closure, breaks, departure and not-coming are never re-entry signals.
-      if (sameRegistration && !currentGuest(existing!, source)) {
-        return {kind: "held", reason: "participationUnavailable"};
-      }
-      const guest: Guest = sameRegistration ? existing! : parseGuest({
-        schemaVersion: 1, guestId, context: frozen.context,
-        attendeeId: frozen.attendeeId,
-        attendeeGeneration: source.attendeeGeneration,
-        sourceGeneration: source.sourceGeneration,
-        episodeId: "episode:" + operationContentHash([
-          "roster-enrollment/v1", guestId, source.sourceGeneration,
-          source.attendeeGeneration]),
-        participation: {state: "active", resumeAtUnit: null},
-        revision: existing ? existing.revision + 1 : 0, lifecycle: "active",
-        intention: {kind: "unknown"}, createdAt: existing?.createdAt ?? now,
-        updatedAt: now});
+      const enrollment = await prepareCurrentGuestEnrollment(this.db, tx,
+        frozen.context, frozen.attendeeId, now);
+      if (enrollment.kind === "held") return enrollment;
+      const guest = enrollment.guest;
       const payload = parseLiveWork({schemaVersion: 1, kind: "liveLateJoin",
         scope: {context: frozen.context, attendeeId: frozen.attendeeId,
           episodeId: guest.episodeId}, ...authority.configuration,
@@ -86,7 +49,7 @@ export class LiveAssistanceEnrollmentStore {
         binding: frozen.binding};
       if (runSnap.exists || itemSnap.exists) {
         // Missing participation cannot be recreated over existing work.
-        if (!sameRegistration) throw invalidWork();
+        if (enrollment.created) throw invalidWork();
         const records = readLiveWorkRecords(runSnap.data(), itemSnap.data(),
           ids.workItemId, now);
         if (records.run.status === "completed") {
@@ -104,7 +67,7 @@ export class LiveAssistanceEnrollmentStore {
       if (committedAt < now || committedAt >= payload.expiresAt) {
         throw invalidWork();
       }
-      if (!sameRegistration) tx.set(guestRef, guest);
+      enrollment.commit();
       tx.create(runRef, records.run);
       tx.create(itemRef, records.item);
       return {...result, kind: "enrolled"};

@@ -56,6 +56,11 @@ export interface OperationalNoticeSourceRequest<K extends
   context: LiveContext;
   attendeeId: string;
   episodeId: string;
+  policyBinding: {
+    groupId: string;
+    settingId: string;
+    expectedRevision: number;
+  };
   source: {kind: K; sourceId: string; expectedRevision: number};
 }
 
@@ -141,6 +146,9 @@ export async function prepareOperationalNoticePublication<K extends
   const resolved = resolveSetting(settingState);
   const template = resolved.template;
   if (resolved.status !== "configured" || !resolved.selected || !template ||
+      resolved.selected.groupId !== request.policyBinding.groupId ||
+      resolved.selected.settingId !== request.policyBinding.settingId ||
+      resolved.selected.revision !== request.policyBinding.expectedRevision ||
       template.kind !== descriptor.workflowKind ||
       template.config.templateIntent !== request.source.kind ||
       template.setting.kind !== "enabled" ||
@@ -272,6 +280,12 @@ function validateRequest<K extends OperationalNoticeSourceKind>(
   requireDocumentId(request.context.eventId);
   requireDocumentId(request.attendeeId);
   requireDocumentId(request.episodeId);
+  requireDocumentId(request.policyBinding.groupId);
+  requireDocumentId(request.policyBinding.settingId);
+  if (!Number.isSafeInteger(request.policyBinding.expectedRevision) ||
+      request.policyBinding.expectedRevision < 1) {
+    throw new Error("Invalid operational notice policy binding");
+  }
   requireDocumentId(request.source.sourceId);
   if (request.context.mode !== "live" || request.source.kind !== readerKind ||
       !Number.isSafeInteger(request.source.expectedRevision) ||

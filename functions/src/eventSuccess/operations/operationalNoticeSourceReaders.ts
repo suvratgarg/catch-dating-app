@@ -167,7 +167,7 @@ function planChangeCopy(change: EventPlanChangeDocument) {
     "Check the event page for the latest details."};
 }
 
-function timestampMillis(value: unknown) {
+export function timestampMillis(value: unknown) {
   if (!value || typeof value !== "object") {
     throw new Error("Invalid operational notice timestamp");
   }

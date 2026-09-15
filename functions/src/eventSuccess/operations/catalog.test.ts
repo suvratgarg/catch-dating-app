@@ -86,23 +86,14 @@ test("command bindings account for every command and mode", () => {
   }
 });
 
-test("partial command bindings account for every payload variant", () => {
-  const partial = commandBinding("sendOperationalMessage", "live");
-  assert.ok("coverage" in partial);
-  assert.deepEqual(partial.coverage, {
-    kind: "partial",
-    variantField: "intent",
-    implementedVariants: ["joining"],
-    missingVariants: ["planChange", "followUp"],
-  });
-  assert.equal(
-    partial.missingCapability,
-    "operationalNoticeFanout"
-  );
+test("operational message variants have one complete live binding", () => {
+  const binding = commandBinding("sendOperationalMessage", "live");
+  assert.equal("coverage" in binding, false);
+  assert.equal(binding.missingCapability, null);
   assert.equal(commandHasExecutor("sendOperationalMessage", "live"), true);
   assert.equal(
     commandIsFullyImplemented("sendOperationalMessage", "live"),
-    false
+    true
   );
 });
 
@@ -273,7 +264,7 @@ test("action plans preserve every implementation status", () => {
     byKind.financialReconciliation.implementationStatus,
     "unavailable"
   );
-  assert.equal(byKind.postEventFollowUp.implementationStatus, "partial");
+  assert.equal(byKind.postEventFollowUp.implementationStatus, "complete");
 
   const requiredData = byKind.requiredGuestData.commands.find((command) =>
     command.kind === "requestRequiredData"
@@ -291,22 +282,25 @@ test("action plans preserve every implementation status", () => {
   });
 });
 
-test("planned commands expose partial variant coverage", () => {
+test("planned commands expose complete operational message coverage", () => {
   assert.deepEqual(
     plannedWorkflowCommand("sendOperationalMessage", "automatic", "live"),
     {
       kind: "sendOperationalMessage",
       actor: "automatic",
-      coverage: "partial",
+      coverage: "complete",
       bindingType: "internalCoordinator",
-      operations: ["EventPlanChangeSourceReader.read",
+      operations: ["prepareLiveLateJoinPublication",
+        "OperationalNoticeFanoutStore.process",
+        "ensureCurrentGuestEnrollment",
+        "EventPlanChangeSourceReader.read",
         "PostEventFollowUpSourceReader.read",
         "prepareOperationalNoticePublication",
         "LiveMessageDispatcher.dispatch"],
-      missingCapability: "operationalNoticeFanout",
-      variantField: "intent",
-      implementedVariants: ["joining"],
-      missingVariants: ["planChange", "followUp"],
+      missingCapability: null,
+      variantField: null,
+      implementedVariants: [],
+      missingVariants: [],
     }
   );
 });

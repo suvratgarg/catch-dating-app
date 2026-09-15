@@ -192,6 +192,7 @@ options when specific functions need higher or lower limits.
 | `onOrganizerFormExportRequested` | `src/organizers/organizerFormExports.ts` | Materializes an authorized asynchronous form export and stores a time-bounded download receipt |
 | `onEventAssistanceWhatsappEventCreated` | `src/eventSuccess/operations/whatsappWebhookProcessing.ts` | Retry-enabled consumer of authenticated delivery and native reply evidence, with independent durable checkpoints and idempotent guest effects |
 | `onAssistanceEventChanged` | `src/eventSuccess/operations/liveWorkTriggers.ts` | Relevant event configuration and lifecycle changes enqueue bounded, resumable source work for enrolled live episodes; dormant pending activation |
+| `onAssistancePlanChangeChanged` | `src/eventSuccess/operations/liveWorkTriggers.ts` | Immutable event plan changes enqueue policy-bound, bounded operational-notice fanout; dormant pending activation |
 | `onAssistanceRosterChanged` | `src/eventSuccess/operations/liveWorkTriggers.ts` | Canonical roster and check-in changes enqueue bounded, resumable source work for enrolled live episodes; dormant pending activation |
 | `onAssistanceRuntimeChanged` | `src/eventSuccess/operations/liveWorkTriggers.ts` | Live plan status changes enqueue bounded, resumable source work for enrolled live episodes; dormant pending activation |
 | `onAssistanceGuestChanged` | `src/eventSuccess/operations/liveWorkTriggers.ts` | Participation episode and guest reply changes enqueue bounded, resumable source work for enrolled live episodes; dormant pending activation |
@@ -203,7 +204,7 @@ options when specific functions need higher or lower limits.
 | `onAssistanceSmsPermissionChanged` / `onAssistanceWhatsappPermissionChanged` | `src/eventSuccess/operations/liveWorkTriggers.ts` | Event-specific consent changes wake scoped guest and delivery work with replay-safe receipts; dormant pending activation |
 | `onAssistanceSmsSenderChanged` / `onAssistanceSmsBudgetChanged` / `onAssistanceWhatsappSenderChanged` / `onAssistanceWhatsappPolicyChanged` / `onAssistanceWhatsappTemplateChanged` / `onAssistanceWhatsappBudgetChanged` / `onAssistanceWhatsappStopChanged` / `onAssistanceWhatsappSuppressionChanged` | `src/eventSuccess/operations/liveWorkTriggers.ts` | Sender, template, budget and endpoint suppression changes discover bounded event/guest scopes and wake existing assistance work; dormant pending activation |
 | `onAssistanceStaffChanged` / `onAssistanceCheckpointChanged` | `src/eventSuccess/operations/liveWorkTriggers.ts` | Current staff changes wake bounded event work; checkpoint report changes wake their original request, including corrections; dormant pending activation |
-| `onAssistanceWorkChanged` | `src/eventSuccess/operations/liveWorkTriggers.ts` | Advances due roster, source, guest, delivery or checkpoint work under Operations leases; dormant pending activation |
+| `onAssistanceWorkChanged` | `src/eventSuccess/operations/liveWorkTriggers.ts` | Advances due roster, source, operational-notice, guest, delivery or checkpoint work under Operations leases; dormant pending activation |
 | `onOrganizerMessagingWebhookEventCreated` | `src/organizers/organizerWhatsappWebhook.ts` | Authenticated provider receipts update campaign delivery projections without retaining message bodies |
 | `moderateChatMessage` | `src/moderation/` | `matches/{id}/messages/{id}` onCreate — banned-word filter |
 
@@ -218,7 +219,7 @@ options when specific functions need higher or lower limits.
 | `dispatchScheduledOrganizerCampaigns` | `src/organizers/organizerCampaignDispatcher.ts` | Dispatches due, approved organizer campaign snapshots |
 | `dispatchPendingOrganizerFollowerUpdates` | `src/organizers/organizerPostDelivery.ts` | Every 5 minutes — resumes pending or expired-lease follower Activity delivery without duplicate push attempts |
 | `expireEventRehearsals` | `src/eventRehearsal/` | Hourly deletion of expired rehearsal sessions and isolated child projections |
-| `evaluateDueEventAssistanceWork` | `src/eventSuccess/operations/liveWorkTriggers.ts` | Every minute: bounded recovery of saved roster, source, guest, delivery and checkpoint work; dormant pending operating-budget approval |
+| `evaluateDueEventAssistanceWork` | `src/eventSuccess/operations/liveWorkTriggers.ts` | Every minute: bounded recovery of saved roster, source, operational-notice, guest, delivery and checkpoint work; dormant pending operating-budget approval |
 
 ### Storage-triggered
 

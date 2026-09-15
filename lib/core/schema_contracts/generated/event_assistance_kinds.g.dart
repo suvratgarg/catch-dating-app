@@ -161,7 +161,6 @@ enum EventAssistanceCommandCoverage { none, partial, complete }
 enum EventAssistanceCommandCoverageVariant { joining, planChange, followUp }
 
 enum EventAssistanceMissingCapability {
-  operationalNoticeFanout,
   rehearsalAllocationProposal,
   rehearsalAllocationPublication,
   rehearsalProgrammeControl,
@@ -1414,22 +1413,20 @@ const eventAssistanceCommandBindingCatalog =
     commandKind: EventAssistanceCommandKind.sendOperationalMessage,
     live: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.internalCoordinator,
-      coverage: EventAssistanceCommandCoverage.partial,
-      variantField: 'intent',
-      implementedVariants: <EventAssistanceCommandCoverageVariant>[
-        EventAssistanceCommandCoverageVariant.joining,
-      ],
-      missingVariants: <EventAssistanceCommandCoverageVariant>[
-        EventAssistanceCommandCoverageVariant.planChange,
-        EventAssistanceCommandCoverageVariant.followUp,
-      ],
+      coverage: EventAssistanceCommandCoverage.complete,
+      variantField: null,
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[],
       operations: <String>[
+        'prepareLiveLateJoinPublication',
+        'OperationalNoticeFanoutStore.process',
+        'ensureCurrentGuestEnrollment',
         'EventPlanChangeSourceReader.read',
         'PostEventFollowUpSourceReader.read',
         'prepareOperationalNoticePublication',
         'LiveMessageDispatcher.dispatch',
       ],
-      missingCapability: EventAssistanceMissingCapability.operationalNoticeFanout,
+      missingCapability: null,
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.domainAdapter,

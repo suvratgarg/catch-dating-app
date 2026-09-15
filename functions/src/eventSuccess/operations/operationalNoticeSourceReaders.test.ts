@@ -53,7 +53,8 @@ test("plan change reader derives copy only for an affected current guest",
       validUntil: stamp(end), createdBy: "host-1",
     });
     const request = {context: h.context, attendeeId: h.attendeeId,
-      episodeId: "episode-1", source: {kind: "planChange" as const,
+      episodeId: "episode-1", policyBinding: dummyPolicyBinding,
+      source: {kind: "planChange" as const,
         sourceId, expectedRevision: revision}};
     const reader = new EventPlanChangeSourceReader();
     const source = await h.db.runTransaction((tx) =>
@@ -88,6 +89,7 @@ test("plan change reader rejects a superseded immutable revision", async () => {
   const reader = new EventPlanChangeSourceReader();
   const source = await h.db.runTransaction((tx) => reader.read(h.db, tx, {
     context: h.context, attendeeId: h.attendeeId, episodeId: "episode-1",
+    policyBinding: dummyPolicyBinding,
     source: {kind: "planChange", sourceId, expectedRevision: 1},
   }, start));
   assert.equal(source, null);
@@ -103,7 +105,8 @@ test("post-event reader uses terminal completion for checked-in guests",
     });
     const sourceId = postEventFollowUpSourceId(h.context, revision);
     const request = {context: h.context, attendeeId: h.attendeeId,
-      episodeId: "episode-1", source: {kind: "followUp" as const,
+      episodeId: "episode-1", policyBinding: dummyPolicyBinding,
+      source: {kind: "followUp" as const,
         sourceId, expectedRevision: revision}};
     const reader = new PostEventFollowUpSourceReader();
     const source = await h.db.runTransaction((tx) =>
@@ -142,11 +145,15 @@ test("trusted plan-change source publishes through the notice boundary",
       meetingPoint: "Second venue", itineraryStopCount: 2,
       occurredAt: stamp(start), validUntil: stamp(end), createdBy: "host-1",
     });
-    await configure(h, "planChangeCommunication", "planChange");
+    const saved = await configure(h, "planChangeCommunication", "planChange");
+    assert.ok(saved.view.own);
     const publisher = new OperationalNoticePublisher(h.db,
       new EventPlanChangeSourceReader(), () => h.clock.now);
     const result = await publisher.publish({context: h.context,
       attendeeId: h.scope.attendeeId, episodeId: h.intent.episodeId,
+      policyBinding: {groupId: saved.view.own.groupId,
+        settingId: saved.view.own.settingId,
+        expectedRevision: saved.view.own.revision},
       source: {kind: "planChange", sourceId, expectedRevision: 1}});
     assert.equal(result.kind, "published");
     assert.equal(result.intent.noticeKind, "planChanged");
@@ -169,3 +176,6 @@ async function configure(h: Awaited<ReturnType<typeof rcsHarness>>,
           senderId: h.rcsConfig.senderId}], policy: {maxAttempts: 2,
           maxAttemptsPerRoute: 1, minimumRetrySeconds: 1}}}}}});
 }
+
+const dummyPolicyBinding = {groupId: "event:whole", settingId: "setting-1",
+  expectedRevision: 1};

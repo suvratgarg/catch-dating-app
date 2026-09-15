@@ -40,6 +40,25 @@
       "if": {
         "properties": {
           "normalizedPayload": {
+            "type": "object", "required": ["kind"],
+            "properties": {"kind": {"const": "operationalNoticeFanout"}}
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "workflowId": {"const": "event-assistance"},
+          "entityKind": {"const": "notice_fanout"},
+          "normalizedPayload": {
+            "$ref": "event_assistance_operational_notice_fanout.schema.json"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "normalizedPayload": {
             "type": "object",
             "required": [
               "kind"

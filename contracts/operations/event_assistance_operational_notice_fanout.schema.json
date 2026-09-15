@@ -1,0 +1,141 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/operations/event_assistance_operational_notice_fanout.schema.json",
+  "title": "EventAssistanceOperationalNoticeFanout",
+  "description": "Private bounded attendee fanout for one trusted plan-change or post-event source. The work binds a reviewed policy revision and grants no provider authority by itself.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "kind",
+    "signalId",
+    "context",
+    "source",
+    "policyBinding",
+    "expiresAt",
+    "checkpoint"
+  ],
+  "properties": {
+    "schemaVersion": {"type": "integer", "const": 1},
+    "kind": {"type": "string", "const": "operationalNoticeFanout"},
+    "signalId": {"$ref": "common.schema.json#/definitions/id"},
+    "context": {
+      "$ref": "../shared/event_assistance_guest.schema.json#/definitions/liveContext"
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "sourceId",
+        "revision",
+        "occurredAt",
+        "validUntil"
+      ],
+      "properties": {
+        "kind": {"type": "string", "enum": ["planChange", "followUp"]},
+        "sourceId": {"$ref": "common.schema.json#/definitions/id"},
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "occurredAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "validUntil": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      }
+    },
+    "policyBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "groupId",
+        "workflowKind",
+        "settingId",
+        "settingRevision"
+      ],
+      "properties": {
+        "groupId": {"type": "string", "const": "event:whole"},
+        "workflowKind": {
+          "type": "string",
+          "enum": ["planChangeCommunication", "postEventFollowUp"]
+        },
+        "settingId": {"$ref": "common.schema.json#/definitions/id"},
+        "settingRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      }
+    },
+    "expiresAt": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "checkpoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "phase",
+        "cursor",
+        "visited",
+        "published",
+        "skipped",
+        "dueAt",
+        "failures",
+        "retries",
+        "stopReason"
+      ],
+      "properties": {
+        "phase": {
+          "type": "string",
+          "enum": ["scan", "retry", "complete", "review", "expired", "stopped"]
+        },
+        "cursor": {
+          "anyOf": [
+            {"$ref": "common.schema.json#/definitions/id"},
+            {"type": "null"}
+          ]
+        },
+        "visited": {"type": "integer", "minimum": 0, "maximum": 10000},
+        "published": {"type": "integer", "minimum": 0, "maximum": 10000},
+        "skipped": {"type": "integer", "minimum": 0, "maximum": 10000},
+        "dueAt": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            {"type": "null"}
+          ]
+        },
+        "failures": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["attendeeId", "reason"],
+            "properties": {
+              "attendeeId": {"$ref": "common.schema.json#/definitions/id"},
+              "reason": {"type": "string", "enum": ["unavailable"]}
+            }
+          }
+        },
+        "retries": {"type": "integer", "minimum": 0, "maximum": 5},
+        "stopReason": {
+          "enum": [null, "policyUnavailable", "policyChanged", "sourceChanged"]
+        }
+      }
+    }
+  }
+}

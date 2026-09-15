@@ -12,6 +12,7 @@ const defaultRepoRoot = path.resolve(toolDir, "../..");
 export const dormantFirebaseFunctionTargets = Object.freeze([
   "functions:eventAssistanceSmsDeliveryWebhook",
   "functions:onAssistanceEventChanged",
+  "functions:onAssistancePlanChangeChanged",
   "functions:onAssistanceRosterChanged",
   "functions:onAssistanceStaffChanged",
   "functions:onAssistanceCheckpointChanged",

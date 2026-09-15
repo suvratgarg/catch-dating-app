@@ -697,6 +697,11 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
     schema: schemaEventAssistanceRosterWorkSchema,
   ),
   SchemaContractDefinition(
+    name: 'EventAssistanceOperationalNoticeFanout',
+    source: 'operations/event_assistance_operational_notice_fanout.schema.json',
+    schema: schemaEventAssistanceOperationalNoticeFanoutSchema,
+  ),
+  SchemaContractDefinition(
     name: 'EventAssistanceLiveWork',
     source: 'operations/event_assistance_live_work.schema.json',
     schema: schemaEventAssistanceLiveWorkSchema,
@@ -3520,6 +3525,7 @@ const schemaContractsByName = <String, Map<String, Object?>>{
   'EventAssistanceCheckpointWork': schemaEventAssistanceCheckpointWorkSchema,
   'EventAssistanceDeliveryWork': schemaEventAssistanceDeliveryWorkSchema,
   'EventAssistanceRosterWork': schemaEventAssistanceRosterWorkSchema,
+  'EventAssistanceOperationalNoticeFanout': schemaEventAssistanceOperationalNoticeFanoutSchema,
   'EventAssistanceLiveWork': schemaEventAssistanceLiveWorkSchema,
   'EventAssistanceLateJoinInput': schemaEventAssistanceLateJoinInputSchema,
   'EventAssistanceLateJoinDecision': schemaEventAssistanceLateJoinDecisionSchema,
@@ -4196,6 +4202,7 @@ const schemaContractsBySource = <String, Map<String, Object?>>{
   'operations/event_assistance_checkpoint_work.schema.json': schemaEventAssistanceCheckpointWorkSchema,
   'operations/event_assistance_delivery_work.schema.json': schemaEventAssistanceDeliveryWorkSchema,
   'operations/event_assistance_roster_work.schema.json': schemaEventAssistanceRosterWorkSchema,
+  'operations/event_assistance_operational_notice_fanout.schema.json': schemaEventAssistanceOperationalNoticeFanoutSchema,
   'operations/event_assistance_live_work.schema.json': schemaEventAssistanceLiveWorkSchema,
   'operations/event_assistance_late_join_input.schema.json': schemaEventAssistanceLateJoinInputSchema,
   'operations/event_assistance_late_join_decision.schema.json': schemaEventAssistanceLateJoinDecisionSchema,

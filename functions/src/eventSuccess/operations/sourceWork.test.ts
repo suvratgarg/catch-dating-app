@@ -447,7 +447,7 @@ test("due orchestration selects saved work and ignores unrelated writes",
       guest: {store: {listDue: async () =>
         [{workItemId: "guest", revision: 1}]}, process: busy}};
     assert.deepEqual(await evaluateDueAssistanceWork(fakePorts),
-      {rosterItems: 0, sourceItems: 1, guestItems: 1,
+      {rosterItems: 0, sourceItems: 1, noticeItems: 0, guestItems: 1,
         deliveryItems: 1, checkpointItems: 0, busy: 3});
     assert.deepEqual(calls, ["source", "guest", "delivery"]);
     calls.length = 0;

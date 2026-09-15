@@ -148,6 +148,7 @@ Do not edit it by hand.
 | EventAssistanceCheckpointWork | `operations/event_assistance_checkpoint_work.schema.json` | `functions/src/shared/generated/eventAssistanceCheckpointWork.ts` |
 | EventAssistanceDeliveryWork | `operations/event_assistance_delivery_work.schema.json` | `functions/src/shared/generated/eventAssistanceDeliveryWork.ts` |
 | EventAssistanceRosterWork | `operations/event_assistance_roster_work.schema.json` | `functions/src/shared/generated/eventAssistanceRosterWork.ts` |
+| EventAssistanceOperationalNoticeFanout | `operations/event_assistance_operational_notice_fanout.schema.json` | `functions/src/shared/generated/eventAssistanceOperationalNoticeFanout.ts` |
 | EventAssistanceLiveWork | `operations/event_assistance_live_work.schema.json` | `functions/src/shared/generated/eventAssistanceLiveWork.ts` |
 | EventAssistanceLateJoinInput | `operations/event_assistance_late_join_input.schema.json` | `functions/src/shared/generated/eventAssistanceLateJoinInput.ts` |
 | EventAssistanceLateJoinDecision | `operations/event_assistance_late_join_decision.schema.json` | `functions/src/shared/generated/eventAssistanceLateJoinDecision.ts` |
@@ -826,6 +827,7 @@ Do not edit it by hand.
 | `schemaEventAssistanceCheckpointWorkSchema` | EventAssistanceCheckpointWork | `operations/event_assistance_checkpoint_work.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_checkpoint_work.g.dart` |
 | `schemaEventAssistanceDeliveryWorkSchema` | EventAssistanceDeliveryWork | `operations/event_assistance_delivery_work.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_delivery_work.g.dart` |
 | `schemaEventAssistanceRosterWorkSchema` | EventAssistanceRosterWork | `operations/event_assistance_roster_work.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_roster_work.g.dart` |
+| `schemaEventAssistanceOperationalNoticeFanoutSchema` | EventAssistanceOperationalNoticeFanout | `operations/event_assistance_operational_notice_fanout.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_operational_notice_fanout.g.dart` |
 | `schemaEventAssistanceLiveWorkSchema` | EventAssistanceLiveWork | `operations/event_assistance_live_work.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_live_work.g.dart` |
 | `schemaEventAssistanceLateJoinInputSchema` | EventAssistanceLateJoinInput | `operations/event_assistance_late_join_input.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_late_join_input.g.dart` |
 | `schemaEventAssistanceLateJoinDecisionSchema` | EventAssistanceLateJoinDecision | `operations/event_assistance_late_join_decision.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_late_join_decision.g.dart` |

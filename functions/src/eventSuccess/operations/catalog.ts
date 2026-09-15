@@ -50,6 +50,12 @@ export type CommandExecutionMode = "live" | "rehearsal";
 export type CommandBinding =
   (typeof commandBindingDefinitions)[number][CommandExecutionMode];
 export type CommandCoverage = "none" | "partial" | "complete";
+interface PartialCommandCoverage {
+  kind: "partial";
+  variantField: string;
+  implementedVariants: readonly string[];
+  missingVariants: readonly string[];
+}
 export type WorkflowCommandActor = "automatic" | "host" | "guest";
 export type WorkflowImplementationStatus =
   | "external"
@@ -109,7 +115,8 @@ export function commandCoverage(
   mode: CommandExecutionMode
 ): CommandCoverage {
   const binding = commandBinding(kind, mode);
-  if ("coverage" in binding) return binding.coverage.kind;
+  const partial = partialCommandCoverage(binding);
+  if (partial) return partial.kind;
   return binding.bindingType === "contractOnly" ? "none" : "complete";
 }
 
@@ -127,7 +134,7 @@ export function plannedWorkflowCommand(
   mode: CommandExecutionMode
 ): PlannedWorkflowCommand {
   const binding = commandBinding(kind, mode);
-  const partial = "coverage" in binding ? binding.coverage : null;
+  const partial = partialCommandCoverage(binding);
   return {
     kind,
     actor,
@@ -139,6 +146,13 @@ export function plannedWorkflowCommand(
     implementedVariants: partial?.implementedVariants ?? [],
     missingVariants: partial?.missingVariants ?? [],
   };
+}
+
+function partialCommandCoverage(
+  binding: CommandBinding
+): PartialCommandCoverage | null {
+  const coverage = (binding as {coverage?: PartialCommandCoverage}).coverage;
+  return coverage ?? null;
 }
 
 type CommandsAvailableTo<A extends Authority> = {

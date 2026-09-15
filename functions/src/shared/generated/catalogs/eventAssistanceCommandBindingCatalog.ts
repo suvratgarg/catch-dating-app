@@ -79,24 +79,16 @@ export const eventAssistanceCommandBindingCatalog = {
       "commandKind": "sendOperationalMessage",
       "live": {
         "bindingType": "internalCoordinator",
-        "coverage": {
-          "kind": "partial",
-          "variantField": "intent",
-          "implementedVariants": [
-            "joining"
-          ],
-          "missingVariants": [
-            "planChange",
-            "followUp"
-          ]
-        },
         "operations": [
+          "prepareLiveLateJoinPublication",
+          "OperationalNoticeFanoutStore.process",
+          "ensureCurrentGuestEnrollment",
           "EventPlanChangeSourceReader.read",
           "PostEventFollowUpSourceReader.read",
           "prepareOperationalNoticePublication",
           "LiveMessageDispatcher.dispatch"
         ],
-        "missingCapability": "operationalNoticeFanout"
+        "missingCapability": null
       },
       "rehearsal": {
         "bindingType": "domainAdapter",
