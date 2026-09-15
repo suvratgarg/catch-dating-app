@@ -135,7 +135,7 @@ Widget _feedbackPartPreview(Widget child) {
         body: SafeArea(
           child: Padding(
             padding: CatchInsets.content,
-            child: IgnorePointer(child: StagePanel(child: child)),
+            child: IgnorePointer(child: CompanionStageSurface(child: child)),
           ),
         ),
       );

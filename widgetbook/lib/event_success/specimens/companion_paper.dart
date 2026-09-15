@@ -5,169 +5,169 @@ import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 import 'preview.dart';
 
 @widgetbook.UseCase(
-  name: "PaperBarcode",
-  type: PaperBarcode,
+  name: "CompanionPaperTicketImage",
+  type: CompanionPaperTicketImage,
   path:
       "[P1 product surfaces]/Event Success strict coverage/Companion folded states",
 )
-Widget eventSuccessStrictPaperBarcode(BuildContext context) {
+Widget eventSuccessStrictCompanionPaperTicketImage(BuildContext context) {
   return eventSuccessStrictPreview(
     context,
     surface: EventSuccessStrictSurface.companion,
-    componentName: "PaperBarcode",
+    componentName: "CompanionPaperTicketImage",
   );
 }
 
 @widgetbook.UseCase(
-  name: "PaperCompanionNav",
-  type: PaperCompanionNav,
+  name: "CompanionPaperNavigationRow",
+  type: CompanionPaperNavigationRow,
   path:
       "[P1 product surfaces]/Event Success strict coverage/Companion folded states",
 )
-Widget eventSuccessStrictPaperCompanionNav(BuildContext context) {
+Widget eventSuccessStrictCompanionPaperNavigationRow(BuildContext context) {
   return eventSuccessStrictPreview(
     context,
     surface: EventSuccessStrictSurface.companion,
-    componentName: "PaperCompanionNav",
+    componentName: "CompanionPaperNavigationRow",
   );
 }
 
 @widgetbook.UseCase(
-  name: "PaperCompanionTicket",
-  type: PaperCompanionTicket,
+  name: "CompanionPaperTicket",
+  type: CompanionPaperTicket,
   path:
       "[P1 product surfaces]/Event Success strict coverage/Companion folded states",
 )
-Widget eventSuccessStrictPaperCompanionTicket(BuildContext context) {
+Widget eventSuccessStrictCompanionPaperTicket(BuildContext context) {
   return eventSuccessStrictPreview(
     context,
     surface: EventSuccessStrictSurface.companion,
-    componentName: "PaperCompanionTicket",
+    componentName: "CompanionPaperTicket",
   );
 }
 
 @widgetbook.UseCase(
-  name: "PaperExpectationCard",
-  type: PaperExpectationCard,
+  name: "CompanionExpectationSection",
+  type: CompanionExpectationSection,
   path:
       "[P1 product surfaces]/Event Success strict coverage/Companion folded states",
 )
-Widget eventSuccessStrictPaperExpectationCard(BuildContext context) {
+Widget eventSuccessStrictCompanionExpectationSection(BuildContext context) {
   return eventSuccessStrictPreview(
     context,
     surface: EventSuccessStrictSurface.companion,
-    componentName: "PaperExpectationCard",
+    componentName: "CompanionExpectationSection",
   );
 }
 
 @widgetbook.UseCase(
-  name: "PaperExpectationRow",
-  type: PaperExpectationRow,
+  name: "CompanionExpectationRow",
+  type: CompanionExpectationRow,
   path:
       "[P1 product surfaces]/Event Success strict coverage/Companion folded states",
 )
-Widget eventSuccessStrictPaperExpectationRow(BuildContext context) {
+Widget eventSuccessStrictCompanionExpectationRow(BuildContext context) {
   return eventSuccessStrictPreview(
     context,
     surface: EventSuccessStrictSurface.companion,
-    componentName: "PaperExpectationRow",
+    componentName: "CompanionExpectationRow",
   );
 }
 
 @widgetbook.UseCase(
-  name: "PaperPrivacyCard",
-  type: PaperPrivacyCard,
+  name: "CompanionPrivacySection",
+  type: CompanionPrivacySection,
   path:
       "[P1 product surfaces]/Event Success strict coverage/Companion folded states",
 )
-Widget eventSuccessStrictPaperPrivacyCard(BuildContext context) {
+Widget eventSuccessStrictCompanionPrivacySection(BuildContext context) {
   return eventSuccessStrictPreview(
     context,
     surface: EventSuccessStrictSurface.companion,
-    componentName: "PaperPrivacyCard",
+    componentName: "CompanionPrivacySection",
   );
 }
 
 @widgetbook.UseCase(
-  name: "PaperProgressRail",
-  type: PaperProgressRail,
+  name: "CompanionPaperProgressIndicator",
+  type: CompanionPaperProgressIndicator,
   path:
       "[P1 product surfaces]/Event Success strict coverage/Companion folded states",
 )
-Widget eventSuccessStrictPaperProgressRail(BuildContext context) {
+Widget eventSuccessStrictCompanionPaperProgressIndicator(BuildContext context) {
   return eventSuccessStrictPreview(
     context,
     surface: EventSuccessStrictSurface.companion,
-    componentName: "PaperProgressRail",
+    componentName: "CompanionPaperProgressIndicator",
   );
 }
 
 @widgetbook.UseCase(
-  name: "PaperSelfCheckInBar",
-  type: PaperSelfCheckInBar,
+  name: "CompanionSelfCheckInSection",
+  type: CompanionSelfCheckInSection,
   path:
       "[P1 product surfaces]/Event Success strict coverage/Companion folded states",
 )
-Widget eventSuccessStrictPaperSelfCheckInBar(BuildContext context) {
+Widget eventSuccessStrictCompanionSelfCheckInSection(BuildContext context) {
   return eventSuccessStrictPreview(
     context,
     surface: EventSuccessStrictSurface.companion,
-    componentName: "PaperSelfCheckInBar",
+    componentName: "CompanionSelfCheckInSection",
   );
 }
 
 @widgetbook.UseCase(
-  name: "PaperTicketDetail",
-  type: PaperTicketDetail,
+  name: "CompanionPaperTicketRow",
+  type: CompanionPaperTicketRow,
   path:
       "[P1 product surfaces]/Event Success strict coverage/Companion folded states",
 )
-Widget eventSuccessStrictPaperTicketDetail(BuildContext context) {
+Widget eventSuccessStrictCompanionPaperTicketRow(BuildContext context) {
   return eventSuccessStrictPreview(
     context,
     surface: EventSuccessStrictSurface.companion,
-    componentName: "PaperTicketDetail",
+    componentName: "CompanionPaperTicketRow",
   );
 }
 
 @widgetbook.UseCase(
-  name: "PaperTicketHeader",
-  type: PaperTicketHeader,
+  name: "CompanionPaperTicketHeader",
+  type: CompanionPaperTicketHeader,
   path:
       "[P1 product surfaces]/Event Success strict coverage/Companion folded states",
 )
-Widget eventSuccessStrictPaperTicketHeader(BuildContext context) {
+Widget eventSuccessStrictCompanionPaperTicketHeader(BuildContext context) {
   return eventSuccessStrictPreview(
     context,
     surface: EventSuccessStrictSurface.companion,
-    componentName: "PaperTicketHeader",
+    componentName: "CompanionPaperTicketHeader",
   );
 }
 
 @widgetbook.UseCase(
-  name: "PaperTicketPerforation",
-  type: PaperTicketPerforation,
+  name: "CompanionPaperTicketDivider",
+  type: CompanionPaperTicketDivider,
   path:
       "[P1 product surfaces]/Event Success strict coverage/Companion folded states",
 )
-Widget eventSuccessStrictPaperTicketPerforation(BuildContext context) {
+Widget eventSuccessStrictCompanionPaperTicketDivider(BuildContext context) {
   return eventSuccessStrictPreview(
     context,
     surface: EventSuccessStrictSurface.companion,
-    componentName: "PaperTicketPerforation",
+    componentName: "CompanionPaperTicketDivider",
   );
 }
 
 @widgetbook.UseCase(
-  name: "PaperTicketSerial",
-  type: PaperTicketSerial,
+  name: "CompanionPaperTicketText",
+  type: CompanionPaperTicketText,
   path:
       "[P1 product surfaces]/Event Success strict coverage/Companion folded states",
 )
-Widget eventSuccessStrictPaperTicketSerial(BuildContext context) {
+Widget eventSuccessStrictCompanionPaperTicketText(BuildContext context) {
   return eventSuccessStrictPreview(
     context,
     surface: EventSuccessStrictSurface.companion,
-    componentName: "PaperTicketSerial",
+    componentName: "CompanionPaperTicketText",
   );
 }

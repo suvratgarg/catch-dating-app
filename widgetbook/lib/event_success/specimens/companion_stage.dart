@@ -5,58 +5,58 @@ import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 import 'preview.dart';
 
 @widgetbook.UseCase(
-  name: "AnimatedStageMotifBackground",
-  type: AnimatedStageMotifBackground,
+  name: "CompanionStageMotifImage",
+  type: CompanionStageMotifImage,
   path:
       "[P1 product surfaces]/Event Success strict coverage/Companion folded states",
 )
-Widget eventSuccessStrictAnimatedStageMotifBackground(BuildContext context) {
+Widget eventSuccessStrictCompanionStageMotifImage(BuildContext context) {
   return eventSuccessStrictPreview(
     context,
     surface: EventSuccessStrictSurface.companion,
-    componentName: "AnimatedStageMotifBackground",
+    componentName: "CompanionStageMotifImage",
   );
 }
 
 @widgetbook.UseCase(
-  name: "CompanionHero",
-  type: CompanionHero,
+  name: "CompanionHeroSection",
+  type: CompanionHeroSection,
   path:
       "[P1 product surfaces]/Event Success strict coverage/Companion folded states",
 )
-Widget eventSuccessStrictCompanionHero(BuildContext context) {
+Widget eventSuccessStrictCompanionHeroSection(BuildContext context) {
   return eventSuccessStrictPreview(
     context,
     surface: EventSuccessStrictSurface.companion,
-    componentName: "CompanionHero",
+    componentName: "CompanionHeroSection",
   );
 }
 
 @widgetbook.UseCase(
-  name: "CompanionMomentStage",
-  type: CompanionMomentStage,
+  name: "CompanionMomentViewport",
+  type: CompanionMomentViewport,
   path:
       "[P1 product surfaces]/Event Success strict coverage/Companion folded states",
 )
-Widget eventSuccessStrictCompanionMomentStage(BuildContext context) {
+Widget eventSuccessStrictCompanionMomentViewport(BuildContext context) {
   return eventSuccessStrictPreview(
     context,
     surface: EventSuccessStrictSurface.companion,
-    componentName: "CompanionMomentStage",
+    componentName: "CompanionMomentViewport",
   );
 }
 
 @widgetbook.UseCase(
-  name: "CompanionMomentStageContent",
-  type: CompanionMomentStageContent,
+  name: "CompanionMomentPageBody",
+  type: CompanionMomentPageBody,
   path:
       "[P1 product surfaces]/Event Success strict coverage/Companion folded states",
 )
-Widget eventSuccessStrictCompanionMomentStageContent(BuildContext context) {
+Widget eventSuccessStrictCompanionMomentPageBody(BuildContext context) {
   return eventSuccessStrictPreview(
     context,
     surface: EventSuccessStrictSurface.companion,
-    componentName: "CompanionMomentStageContent",
+    componentName: "CompanionMomentPageBody",
   );
 }
 
@@ -75,16 +75,18 @@ Widget eventSuccessStrictCompanionPaperScaffold(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: "CompanionStageContentTransition",
-  type: CompanionStageContentTransition,
+  name: "CompanionStageTransitionViewport",
+  type: CompanionStageTransitionViewport,
   path:
       "[P1 product surfaces]/Event Success strict coverage/Companion folded states",
 )
-Widget eventSuccessStrictCompanionStageContentTransition(BuildContext context) {
+Widget eventSuccessStrictCompanionStageTransitionViewport(
+  BuildContext context,
+) {
   return eventSuccessStrictPreview(
     context,
     surface: EventSuccessStrictSurface.companion,
-    componentName: "CompanionStageContentTransition",
+    componentName: "CompanionStageTransitionViewport",
   );
 }
 
@@ -103,44 +105,44 @@ Widget eventSuccessStrictCompanionStageScaffold(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: "StageActionDock",
-  type: StageActionDock,
+  name: "CompanionStageActionSection",
+  type: CompanionStageActionSection,
   path:
       "[P1 product surfaces]/Event Success strict coverage/Companion folded states",
 )
-Widget eventSuccessStrictStageActionDock(BuildContext context) {
+Widget eventSuccessStrictCompanionStageActionSection(BuildContext context) {
   return eventSuccessStrictPreview(
     context,
     surface: EventSuccessStrictSurface.companion,
-    componentName: "StageActionDock",
+    componentName: "CompanionStageActionSection",
   );
 }
 
 @widgetbook.UseCase(
-  name: "StageBouncyChip",
-  type: StageBouncyChip,
+  name: "CompanionBouncyChip",
+  type: CompanionBouncyChip,
   path:
       "[P1 product surfaces]/Event Success strict coverage/Companion folded states",
 )
-Widget eventSuccessStrictStageBouncyChip(BuildContext context) {
+Widget eventSuccessStrictCompanionBouncyChip(BuildContext context) {
   return eventSuccessStrictPreview(
     context,
     surface: EventSuccessStrictSurface.companion,
-    componentName: "StageBouncyChip",
+    componentName: "CompanionBouncyChip",
   );
 }
 
 @widgetbook.UseCase(
-  name: "StageBouncyPress",
-  type: StageBouncyPress,
+  name: "CompanionBouncySurface",
+  type: CompanionBouncySurface,
   path:
       "[P1 product surfaces]/Event Success strict coverage/Companion folded states",
 )
-Widget eventSuccessStrictStageBouncyPress(BuildContext context) {
+Widget eventSuccessStrictCompanionBouncySurface(BuildContext context) {
   return eventSuccessStrictPreview(
     context,
     surface: EventSuccessStrictSurface.companion,
-    componentName: "StageBouncyPress",
+    componentName: "CompanionBouncySurface",
   );
 }
 
@@ -173,58 +175,58 @@ Widget eventSuccessStrictStageCueLine(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: "StageGlyph",
-  type: StageGlyph,
+  name: "CompanionStageImage",
+  type: CompanionStageImage,
   path:
       "[P1 product surfaces]/Event Success strict coverage/Companion folded states",
 )
-Widget eventSuccessStrictStageGlyph(BuildContext context) {
+Widget eventSuccessStrictCompanionStageImage(BuildContext context) {
   return eventSuccessStrictPreview(
     context,
     surface: EventSuccessStrictSurface.companion,
-    componentName: "StageGlyph",
+    componentName: "CompanionStageImage",
   );
 }
 
 @widgetbook.UseCase(
-  name: "StageNav",
-  type: StageNav,
+  name: "CompanionStageNavigationRow",
+  type: CompanionStageNavigationRow,
   path:
       "[P1 product surfaces]/Event Success strict coverage/Companion folded states",
 )
-Widget eventSuccessStrictStageNav(BuildContext context) {
+Widget eventSuccessStrictCompanionStageNavigationRow(BuildContext context) {
   return eventSuccessStrictPreview(
     context,
     surface: EventSuccessStrictSurface.companion,
-    componentName: "StageNav",
+    componentName: "CompanionStageNavigationRow",
   );
 }
 
 @widgetbook.UseCase(
-  name: "StagePanel",
-  type: StagePanel,
+  name: "CompanionStageSurface",
+  type: CompanionStageSurface,
   path:
       "[P1 product surfaces]/Event Success strict coverage/Companion folded states",
 )
-Widget eventSuccessStrictStagePanel(BuildContext context) {
+Widget eventSuccessStrictCompanionStageSurface(BuildContext context) {
   return eventSuccessStrictPreview(
     context,
     surface: EventSuccessStrictSurface.companion,
-    componentName: "StagePanel",
+    componentName: "CompanionStageSurface",
   );
 }
 
 @widgetbook.UseCase(
-  name: "StagePrivacyLine",
-  type: StagePrivacyLine,
+  name: "CompanionPrivacyText",
+  type: CompanionPrivacyText,
   path:
       "[P1 product surfaces]/Event Success strict coverage/Companion folded states",
 )
-Widget eventSuccessStrictStagePrivacyLine(BuildContext context) {
+Widget eventSuccessStrictCompanionPrivacyText(BuildContext context) {
   return eventSuccessStrictPreview(
     context,
     surface: EventSuccessStrictSurface.companion,
-    componentName: "StagePrivacyLine",
+    componentName: "CompanionPrivacyText",
   );
 }
 
@@ -257,15 +259,15 @@ Widget eventSuccessStrictStageSectionLabel(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: "StageSoftBand",
-  type: StageSoftBand,
+  name: "CompanionStageBanner",
+  type: CompanionStageBanner,
   path:
       "[P1 product surfaces]/Event Success strict coverage/Companion folded states",
 )
-Widget eventSuccessStrictStageSoftBand(BuildContext context) {
+Widget eventSuccessStrictCompanionStageBanner(BuildContext context) {
   return eventSuccessStrictPreview(
     context,
     surface: EventSuccessStrictSurface.companion,
-    componentName: "StageSoftBand",
+    componentName: "CompanionStageBanner",
   );
 }
