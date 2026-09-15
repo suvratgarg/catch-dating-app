@@ -164,7 +164,7 @@ void _registerHostOperationsClubWorkspaceTests() {
       ],
     );
 
-    expect(find.text('STARTS IN 5H'), findsOneWidget);
+    expect(find.text('STARTS IN 5H 0M'), findsOneWidget);
     expect(find.text('Review waitlist'), findsOneWidget);
     expect(
       find.text('3 people are waiting for ${later.title}.'),
@@ -295,7 +295,7 @@ void _registerHostOperationsClubWorkspaceTests() {
       ],
     );
 
-    expect(find.text('STARTS IN 5H'), findsOneWidget);
+    expect(find.text('STARTS IN 5H 0M'), findsOneWidget);
     expect(find.text('Continue setup'), findsOneWidget);
     final createAction = find.byKey(
       const ValueKey<String>('host-today-create-event'),

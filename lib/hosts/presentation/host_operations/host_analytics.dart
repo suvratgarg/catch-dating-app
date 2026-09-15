@@ -69,34 +69,47 @@ class _HostClubInsightsPaneState extends ConsumerState<HostClubInsightsPane> {
         fallbackTimezone;
     final query = _hostAnalyticsQueryFor(_state.query, timezone: timezone);
     final analyticsAsync = ref.watch(hostAnalyticsProvider(query));
-    return CatchAsyncBoundary<HostAnalyticsReport>(
-      value: analyticsAsync,
-      onRetry: () => ref.invalidate(hostAnalyticsProvider(query)),
-      loadingBuilder: (_) => const HostAnalyticsReportSkeleton(),
-      errorBuilder: (_, error, _, onBoundaryRetry) => CatchLocalizedErrorState(
-        error,
-        context: AppErrorContext.club,
-        onRetry: onBoundaryRetry,
-      ),
-      builder: (context, report) => HostAnalyticsReportView(
-        report: report,
-        rangePreset: _state.rangePreset,
-        currencyCode: currencyCodeForCityName(widget.club.location),
-        allTimeOverview: HostClubOrganizerOverviewController(club: widget.club),
-        onRangeChanged: (preset) {
-          setState(() => _state = _state.selectRange(preset));
-        },
-        onOpenEventReport: widget.onOpenEventReport ?? _openEventReport,
-        onOpenAllEvents:
-            widget.onOpenAllEvents ??
-            () => context.goNamed(Routes.hostEventsScreen.name),
-        onOpenEventDefaults:
-            widget.onOpenEventDefaults ??
-            () => context.pushNamed(
-              Routes.hostClubEventDefaultsScreen.name,
-              queryParameters: {'clubId': widget.club.id},
+    return CatchSectionList(
+      emptyStateOmitted: true,
+      children: [
+        HostAnalyticsPeriodControl(
+          selected: _state.rangePreset,
+          onChanged: (preset) =>
+              setState(() => _state = _state.selectRange(preset)),
+        ),
+        CatchAsyncBoundary<HostAnalyticsReport>(
+          value: analyticsAsync,
+          onRetry: () => ref.invalidate(hostAnalyticsProvider(query)),
+          loadingBuilder: (_) =>
+              CatchSection.content(child: const HostAnalyticsReportSkeleton()),
+          errorBuilder: (_, error, _, onBoundaryRetry) => CatchSection.content(
+            child: CatchLocalizedErrorState(
+              error,
+              context: AppErrorContext.club,
+              onRetry: onBoundaryRetry,
             ),
-      ),
+          ),
+          builder: (context, report) => HostAnalyticsReportView(
+            report: report,
+            rangePreset: _state.rangePreset,
+            currencyCode: currencyCodeForCityName(widget.club.location),
+            onOpenEventReport: widget.onOpenEventReport ?? _openEventReport,
+            onOpenAllEvents:
+                widget.onOpenAllEvents ??
+                () => context.goNamed(Routes.hostEventsScreen.name),
+            onOpenEventDefaults:
+                widget.onOpenEventDefaults ??
+                () => context.pushNamed(
+                  Routes.hostClubEventDefaultsScreen.name,
+                  queryParameters: {'clubId': widget.club.id},
+                ),
+          ),
+        ),
+        CatchSection.content(
+          title: context.l10n.hostsHostAnalyticsLabelAllTime,
+          child: HostClubOrganizerOverviewController(club: widget.club),
+        ),
+      ],
     );
   }
 
@@ -259,8 +272,6 @@ class HostAnalyticsReportView extends StatefulWidget {
     required this.report,
     required this.rangePreset,
     required this.currencyCode,
-    required this.allTimeOverview,
-    required this.onRangeChanged,
     required this.onOpenEventReport,
     required this.onOpenAllEvents,
     required this.onOpenEventDefaults,
@@ -270,8 +281,6 @@ class HostAnalyticsReportView extends StatefulWidget {
   final HostAnalyticsReport report;
   final HostClubInsightsRangePreset rangePreset;
   final String currencyCode;
-  final Widget allTimeOverview;
-  final ValueChanged<HostClubInsightsRangePreset> onRangeChanged;
   final ValueChanged<String> onOpenEventReport;
   final VoidCallback onOpenAllEvents;
   final VoidCallback onOpenEventDefaults;
@@ -300,12 +309,10 @@ class _HostAnalyticsReportViewState extends State<HostAnalyticsReportView> {
           (card) => card.status != HostAnalyticsMetricStatus.ready,
         );
 
-    return CatchSectionList.inset(
+    return CatchSectionList(
       emptyStateOmitted: true,
-      padding: EdgeInsets.zero,
       children: [
-        CatchSection.divided(
-          first: true,
+        CatchSection.content(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -337,39 +344,7 @@ class _HostAnalyticsReportViewState extends State<HostAnalyticsReportView> {
             ],
           ),
         ),
-        CatchSection.divided(
-          title: context.l10n.hostsHostAnalyticsLabelAllTime,
-          child: widget.allTimeOverview,
-        ),
-        CatchSection.divided(
-          title: context.l10n.hostsHostAnalyticsLabelPerformancePeriod,
-          child: CatchChoiceInput<HostClubInsightsRangePreset>.segmented(
-            contract: CatchContractConstraints
-                .hostAnalyticsQueryCallablePayloadRangePreset,
-            contractValueBuilder: (preset) => switch (preset) {
-              HostClubInsightsRangePreset.thirtyDays => '30d',
-              HostClubInsightsRangePreset.ninetyDays => '90d',
-              HostClubInsightsRangePreset.twelveMonths => '12m',
-            },
-            selected: widget.rangePreset,
-            onChanged: widget.onRangeChanged,
-            options: [
-              CatchOption(
-                value: HostClubInsightsRangePreset.thirtyDays,
-                label: context.l10n.hostsHostAnalyticsLabel30Days,
-              ),
-              CatchOption(
-                value: HostClubInsightsRangePreset.ninetyDays,
-                label: context.l10n.hostsHostAnalyticsLabel90Days,
-              ),
-              CatchOption(
-                value: HostClubInsightsRangePreset.twelveMonths,
-                label: context.l10n.hostsHostAnalyticsLabel12Months,
-              ),
-            ],
-          ),
-        ),
-        CatchSection.divided(
+        CatchSection.content(
           title: context.l10n.hostsHostAnalyticsLabelPerformance,
           child: Column(
             children: [
@@ -385,47 +360,50 @@ class _HostAnalyticsReportViewState extends State<HostAnalyticsReportView> {
                     ),
                 ],
               ),
-              gapH12,
-              // Composite exception: the disclosure reveals a complete
-              // secondary analytics grid, not a scalar field choice.
-              CatchField.control(
-                copy: catchFieldCopy(context.l10n),
-                key: const ValueKey('host-analytics-more-metrics'),
-                title: context.l10n.hostsHostAnalyticsLabelMoreMetrics,
-                contractExemption:
-                    'Disclosure-only analytics layout; no editable value is '
-                    'submitted or persisted.',
-                body: context.l10n.hostsHostAnalyticsBodyCheckoutChatsAndSaves,
-                disclosureMode: _moreMetricsOpen
-                    ? CatchFieldMode.controlledExpanded
-                    : CatchFieldMode.controlledCollapsed,
-                onOpenChanged: (open) {
-                  setState(() => _moreMetricsOpen = open);
-                },
-                child: CatchMetricSection.dataQuality(
-                  key: const ValueKey('host-analytics-secondary-grid'),
-                  metrics: [
-                    for (final metric in secondaryMetrics)
-                      _hostMetricCardData(
-                        context,
-                        metric,
-                        rangePreset: widget.rangePreset,
-                        currencyCode: widget.currencyCode,
-                      ),
-                  ],
-                ),
-              ),
             ],
           ),
+        ),
+        CatchSection.rows(
+          entries: [
+            // Composite exception: the disclosure reveals a complete
+            // secondary analytics grid, not a scalar field choice.
+            CatchField.control(
+              copy: catchFieldCopy(context.l10n),
+              key: const ValueKey('host-analytics-more-metrics'),
+              title: context.l10n.hostsHostAnalyticsLabelMoreMetrics,
+              contractExemption:
+                  'Disclosure-only analytics layout; no editable value is '
+                  'submitted or persisted.',
+              body: context.l10n.hostsHostAnalyticsBodyCheckoutChatsAndSaves,
+              disclosureMode: _moreMetricsOpen
+                  ? CatchFieldMode.controlledExpanded
+                  : CatchFieldMode.controlledCollapsed,
+              onOpenChanged: (open) {
+                setState(() => _moreMetricsOpen = open);
+              },
+              child: CatchMetricSection.dataQuality(
+                key: const ValueKey('host-analytics-secondary-grid'),
+                metrics: [
+                  for (final metric in secondaryMetrics)
+                    _hostMetricCardData(
+                      context,
+                      metric,
+                      rangePreset: widget.rangePreset,
+                      currencyCode: widget.currencyCode,
+                    ),
+                ],
+              ),
+            ),
+          ],
         ),
         HostAnalyticsTrendPanel(
           points: widget.report.trend,
           granularity: _granularityFor(widget.rangePreset),
         ),
         if (coachRecommendations.isNotEmpty)
-          CatchSection.fieldRows(
+          CatchSection.rows(
             title: context.l10n.hostsHostAnalyticsTitleCoach,
-            children: [
+            entries: [
               for (final recommendation in coachRecommendations)
                 switch (recommendation.kind) {
                   HostAnalyticsCoachRecommendationKind.attendance =>
@@ -516,7 +494,7 @@ class _HostAnalyticsTrendPanelState extends State<HostAnalyticsTrendPanel> {
         ? null
         : widget.points[_selectedIndex!];
 
-    return CatchSection.divided(
+    return CatchSection.content(
       title: context.l10n.hostsHostAnalyticsLabelTrendBookingsVsDemand,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -720,63 +698,50 @@ class HostAnalyticsEventList extends StatelessWidget {
     required this.onOpenEventReport,
     required this.onOpenAllEvents,
   });
-
   final List<HostAnalyticsEventRow> events;
   final ValueChanged<String> onOpenEventReport;
   final VoidCallback onOpenAllEvents;
 
   @override
-  Widget build(BuildContext context) {
-    return CatchSection.fieldRows(
-      title: context.l10n.hostsHostAnalyticsLabelRecentEvents,
-      children: [
-        if (events.isEmpty)
-          Padding(
-            padding: CatchInsets.content,
-            child: Text(
-              context.l10n.hostsHostAnalyticsTextNoEventsInThis,
-              style: CatchTextStyles.supporting(
-                context,
-                color: CatchTokens.of(context).ink2,
-              ),
-            ),
-          )
-        else
-          for (final event in events.take(5))
-            HostAnalyticsEventTile(
-              event: event,
-              onTap: () => onOpenEventReport(event.eventId),
-            ),
-        CatchField.nav(
-          copy: catchFieldCopy(context.l10n),
+  Widget build(BuildContext context) => CatchSection.rows(
+    title: context.l10n.hostsHostAnalyticsLabelRecentEvents,
+    entries: [
+      if (events.isEmpty)
+        CatchField.read(
+          content: CatchRecordLayout(
+            title: context.l10n.hostsHostAnalyticsTextNoEventsInThis,
+            icon: CatchIcons.eventOutlined,
+          ),
+        ),
+      for (final event in events.take(5))
+        CatchField.navigate(
+          key: ValueKey('host-analytics-event-${event.eventId}'),
+          content: hostAnalyticsEventLayout(context, event),
+          onActivate: () => onOpenEventReport(event.eventId),
+        ),
+      CatchField.navigate(
+        content: CatchRecordLayout(
           title: context.l10n.hostsHostAnalyticsLabelAllEvents,
           icon: CatchIcons.calendarMonthOutlined,
-          onTap: onOpenAllEvents,
         ),
-      ],
-    );
-  }
+        onActivate: onOpenAllEvents,
+      ),
+    ],
+  );
 }
 
-class HostAnalyticsEventTile extends StatelessWidget {
-  const HostAnalyticsEventTile({
-    super.key,
-    required this.event,
-    required this.onTap,
-  });
-
-  final HostAnalyticsEventRow event;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final hasPaymentIssues =
-        event.paymentFailedCount > 0 || event.checkoutDropoffCount > 0;
-    final dateAndStatus = context.l10n.hostsHostAnalyticsTextEventDateStatus(
-      date: EventFormatters.shortDate(event.startTime),
-      status: _analyticsEventStatusLabel(context, event.status),
-    );
-    final attendance = event.operationalAttendeeCount > 0
+CatchRecordLayout hostAnalyticsEventLayout(
+  BuildContext context,
+  HostAnalyticsEventRow event,
+) => CatchRecordLayout(
+  title: event.title,
+  icon: CatchIcons.eventOutlined,
+  metadata: context.l10n.hostsHostAnalyticsTextEventDateStatus(
+    date: EventFormatters.shortDate(event.startTime),
+    status: _analyticsEventStatusLabel(context, event.status),
+  ),
+  facts: [
+    event.operationalAttendeeCount > 0
         ? context.l10n.hostsHostAnalyticsTextRosterAttendedExternal(
             roster: event.operationalAttendeeCount,
             attended: event.operationalCheckedInCount,
@@ -786,30 +751,15 @@ class HostAnalyticsEventTile extends StatelessWidget {
             booked: event.bookedCount,
             attended: event.checkedInCount,
             matches: event.mutualMatchCount,
-          );
-    return CatchFieldLanes.single(
-      child: CatchField.nav(
-        copy: catchFieldCopy(context.l10n),
-        key: ValueKey('host-analytics-event-${event.eventId}'),
-        title: event.title,
-        body: '$dateAndStatus\n$attendance',
-        icon: CatchIcons.eventOutlined,
-        onTap: onTap,
-        showChevron: false,
-        valueText: EventFormatters.priceInPaise(
-          event.grossRevenueMinor,
-          currencyCode: event.currency,
-        ),
-        actions: hasPaymentIssues
-            ? CatchBadge(
-                label: context.l10n.hostsHostAnalyticsLabelPaymentIssues,
-                tone: CatchBadgeTone.warning,
-              )
-            : null,
-      ),
-    );
-  }
-}
+          ),
+    EventFormatters.priceInPaise(
+      event.grossRevenueMinor,
+      currencyCode: event.currency,
+    ),
+    if (event.paymentFailedCount > 0 || event.checkoutDropoffCount > 0)
+      context.l10n.hostsHostAnalyticsLabelPaymentIssues,
+  ],
+);
 
 class HostAnalyticsReviewsPanel extends StatelessWidget {
   const HostAnalyticsReviewsPanel({super.key, required this.report});
@@ -818,7 +768,7 @@ class HostAnalyticsReviewsPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchSection.divided(
+    return CatchSection.content(
       title: context.l10n.hostsHostAnalyticsLabelReviews,
       child: CatchSurface(
         padding: CatchInsets.content,
@@ -1135,4 +1085,43 @@ String _trendDetailPeriod(DateTime date, HostAnalyticsGranularity granularity) {
   return granularity == HostAnalyticsGranularity.month
       ? AppTimeFormatters.longMonth(date)
       : AppTimeFormatters.shortDate(date);
+}
+
+class HostAnalyticsPeriodControl extends StatelessWidget {
+  const HostAnalyticsPeriodControl({
+    super.key,
+    required this.selected,
+    required this.onChanged,
+  });
+  final HostClubInsightsRangePreset selected;
+  final ValueChanged<HostClubInsightsRangePreset> onChanged;
+  @override
+  Widget build(BuildContext context) => CatchSection.content(
+    title: context.l10n.hostsHostAnalyticsLabelPerformancePeriod,
+    child: CatchChoiceInput<HostClubInsightsRangePreset>.segmented(
+      contract:
+          CatchContractConstraints.hostAnalyticsQueryCallablePayloadRangePreset,
+      contractValueBuilder: (preset) => switch (preset) {
+        HostClubInsightsRangePreset.thirtyDays => '30d',
+        HostClubInsightsRangePreset.ninetyDays => '90d',
+        HostClubInsightsRangePreset.twelveMonths => '12m',
+      },
+      selected: selected,
+      onChanged: onChanged,
+      options: [
+        CatchOption(
+          value: HostClubInsightsRangePreset.thirtyDays,
+          label: context.l10n.hostsHostAnalyticsLabel30Days,
+        ),
+        CatchOption(
+          value: HostClubInsightsRangePreset.ninetyDays,
+          label: context.l10n.hostsHostAnalyticsLabel90Days,
+        ),
+        CatchOption(
+          value: HostClubInsightsRangePreset.twelveMonths,
+          label: context.l10n.hostsHostAnalyticsLabel12Months,
+        ),
+      ],
+    ),
+  );
 }

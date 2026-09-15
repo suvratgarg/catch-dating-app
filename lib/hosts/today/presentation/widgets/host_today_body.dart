@@ -34,10 +34,9 @@ class HostTodayBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchRootScreenScaffold.standard(
+    return CatchRootScreenScaffold.fullBleed(
       scrollKey: const ValueKey<String>('host-today-scroll-view'),
       title: HostTodayHeader(now: now),
-      maxContentExtent: CatchLayout.hostTodayWorkspacePageMaxExtent,
       children: [
         switch (state.status) {
           HostTodayStatus.loading => const SliverToBoxAdapter(
@@ -49,9 +48,11 @@ class HostTodayBody extends StatelessWidget {
             onRetry: onRetry,
           ),
           HostTodayStatus.empty => SliverToBoxAdapter(
-            child: HostTodayQuietState(
-              onViewEvents: onViewEvents,
-              onStartRehearsal: onStartRehearsal,
+            child: CatchSection.content(
+              child: HostTodayQuietState(
+                onViewEvents: onViewEvents,
+                onStartRehearsal: onStartRehearsal,
+              ),
             ),
           ),
           HostTodayStatus.content => SliverToBoxAdapter(

@@ -78,8 +78,7 @@ void _registerHostOperationsAnalyticsTeamTests() {
       expect(currentPage.includeTerminalPadding, isTrue);
       expect(
         currentPage.constrainToContentWidth,
-        constrainToContentWidth ??
-            find.byType(HostClubInsightsPane).evaluate().isNotEmpty,
+        constrainToContentWidth ?? false,
       );
     }
 
@@ -107,7 +106,7 @@ void _registerHostOperationsAnalyticsTeamTests() {
       closeTo(CatchInsets.pageBody.top, 0.5),
     );
     expect(
-      find.byKey(const ValueKey('host-club-insights-summary')),
+      find.byKey(const ValueKey('host-analytics-primary-grid')),
       findsNothing,
     );
 
@@ -136,11 +135,9 @@ void _registerHostOperationsAnalyticsTeamTests() {
     expect(editScroll.pixels, greaterThan(0));
 
     await tester.tap(tab('Insights'));
+    await pumpUntilFound(tester, find.byType(HostAnalyticsPeriodControl));
     await pumpFeatureUi(tester);
-    expect(
-      find.byKey(const ValueKey('host-club-insights-summary')),
-      findsOneWidget,
-    );
+    expect(find.byType(HostAnalyticsPeriodControl), findsOneWidget);
 
     expectSharedChrome();
     expect(find.byType(HostClubInsightsPane), findsOneWidget);
@@ -155,7 +152,7 @@ void _registerHostOperationsAnalyticsTeamTests() {
           (padding) =>
               padding.padding == CatchInsets.pageBody.copyWith(bottom: 0),
         );
-    expect(insightsBodyPadding, hasLength(1));
+    expect(insightsBodyPadding, isEmpty);
     expect(find.byType(HostAnalyticsTrendPanel), findsOneWidget);
     expect(find.text('SAKET · INDORE'), findsNothing);
     expect(find.byTooltip('Back to Organizer'), findsNothing);

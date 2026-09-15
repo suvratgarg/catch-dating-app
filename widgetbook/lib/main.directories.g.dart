@@ -8959,32 +8959,12 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'HostTodayAttentionCard',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Attention card states',
-                    builder: _widgetbook_workspace_hosts_operations_home_routes
-                        .hostTodayAttentionCardStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
                 name: 'HostTodayBody',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Covered by Today route states',
                     builder: _widgetbook_workspace_hosts_operations_home_routes
                         .hostTodayBodyStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostTodayEventDateBlock',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Covered by Today route states',
-                    builder: _widgetbook_workspace_hosts_operations_home_routes
-                        .hostTodayEventDateBlockStates,
                   ),
                 ],
               ),
@@ -9005,16 +8985,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                     name: 'Operational metric states',
                     builder: _widgetbook_workspace_hosts_operations_home_routes
                         .hostTodayEventMetricStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostTodayEventRow',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Covered by Today route states',
-                    builder: _widgetbook_workspace_hosts_operations_home_routes
-                        .hostTodayEventRowStates,
                   ),
                 ],
               ),
@@ -9901,16 +9871,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                     name: 'Exact catalog',
                     builder: _widgetbook_workspace_hosts_operations_analytics
                         .hostStrictHostAnalyticsEventListCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostAnalyticsEventTile',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder: _widgetbook_workspace_hosts_operations_analytics
-                        .hostStrictHostAnalyticsEventTileCatalogStates,
                   ),
                 ],
               ),

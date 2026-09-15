@@ -235,10 +235,6 @@ Widget _hostHomePreviewFor(BuildContext context, String focus) {
       value: '10',
       label: 'Going',
     ),
-    'HostTodayAttentionCard' => HostTodayAttentionCard(
-      data: tasks.first,
-      onPrimary: () {},
-    ),
     _ => Text('No exact preview registered for $focus.'),
   };
 }

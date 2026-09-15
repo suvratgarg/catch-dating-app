@@ -124,16 +124,10 @@ Widget _hostAnalyticsPreviewFor(String focus) {
       onOpenEventReport: (_) {},
       onOpenAllEvents: () {},
     ),
-    'HostAnalyticsEventTile' => HostAnalyticsEventTile(
-      event: report.topEvents.first,
-      onTap: () {},
-    ),
     'HostAnalyticsReportView' => HostAnalyticsReportView(
       report: report,
       rangePreset: HostClubInsightsRangePreset.thirtyDays,
       currencyCode: 'INR',
-      allTimeOverview: const Text('All-time club metrics'),
-      onRangeChanged: (_) {},
       onOpenEventReport: (_) {},
       onOpenAllEvents: () {},
       onOpenEventDefaults: () {},
@@ -272,14 +266,6 @@ Widget hostStrictCatchBarIndicatorCatalogStates(BuildContext context) =>
 )
 Widget hostStrictHostAnalyticsEventListCatalogStates(BuildContext context) =>
     _hostAnalyticsExactCatalog(context, 'HostAnalyticsEventList');
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostAnalyticsEventTile,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostAnalyticsEventTileCatalogStates(BuildContext context) =>
-    _hostAnalyticsExactCatalog(context, 'HostAnalyticsEventTile');
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
