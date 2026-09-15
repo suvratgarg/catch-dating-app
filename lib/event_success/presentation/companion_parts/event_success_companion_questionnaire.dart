@@ -67,7 +67,7 @@ class _CompatibilityQuestionnaireSectionState
     final hasAnswers = _answerIds.isNotEmpty;
     final dirty = !_sameAnswers(_answerIds, widget.response?.answerIds);
     final saving = widget.actionState.isSaving || _fixtureSavePending;
-    return StagePanel(
+    return CompanionStageSurface(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -131,7 +131,7 @@ class _CompatibilityQuestionnaireSectionState
           ),
           if ((widget.event.checkedInCount ?? 0) > 0) ...[
             gapH8,
-            LiveOthersInRoomLine(
+            CompanionOthersInRoomText(
               checkedInCount: widget.event.checkedInCount ?? 0,
             ),
           ],
@@ -155,7 +155,7 @@ class _CompatibilityQuestionnaireSectionState
                     runSpacing: CatchSpacing.s2,
                     children: [
                       for (final option in activeQuestion.options)
-                        StageBouncyChip(
+                        CompanionBouncyChip(
                           label: option.label,
                           active: _answerIds.contains(option.id),
                           onTap: () => setState(() {
@@ -187,7 +187,7 @@ class _CompatibilityQuestionnaireSectionState
             gapH10,
           ],
           gapH16,
-          StageActionDock(
+          CompanionStageActionSection(
             child: CatchButton(
               label: widget.response == null
                   ? context
@@ -286,7 +286,7 @@ class QuestionProgressRail extends StatelessWidget {
                 .eventSuccessEventSuccessCompanionQuestionnaireMessageQuestionValue1(
                   value1: index + 1,
                 ),
-            child: StageBouncyPress(
+            child: CompanionBouncySurface(
               borderRadius: BorderRadius.circular(CatchRadius.pill),
               glowColor: t.primary,
               semanticLabel: context.l10n

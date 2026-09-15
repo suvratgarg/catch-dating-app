@@ -5,7 +5,6 @@ import 'dart:math' as math;
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
-import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
@@ -30,13 +29,16 @@ import 'package:catch_dating_app/event_success/domain/event_success_standings.da
 import 'package:catch_dating_app/event_success/domain/event_success_structure.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_wingman_request.dart';
 import 'package:catch_dating_app/event_success/event_success_companion_clock.dart';
+import 'package:catch_dating_app/event_success/presentation/companion/event_success_companion_loading_page_body.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_companion_screen_state.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_controller.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_conversation_cue_copy.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_live_effects_controller.dart';
-import 'package:catch_dating_app/event_success/presentation/event_success_live_reveal_card.dart';
+import 'package:catch_dating_app/event_success/presentation/event_success_moment_presentation_state.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_motion_contract.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_room_map.dart';
+import 'package:catch_dating_app/event_success/presentation/reveal/event_success_attendee_reveal_surface.dart';
+import 'package:catch_dating_app/event_success/presentation/reveal/event_success_reveal_assignment_kind.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -57,12 +59,20 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lottie/lottie.dart';
 
 part 'companion_parts/event_success_companion_afterglow.dart';
+part 'companion_parts/event_success_companion_arrival_section.dart';
 part 'companion_parts/event_success_companion_arrival_mission.dart';
 part 'companion_parts/event_success_companion_feedback.dart';
+part 'companion_parts/event_success_companion_check_in_qr_scanner_sheet.dart';
+part 'companion_parts/event_success_companion_group_rotation_slot_row.dart';
 part 'companion_parts/event_success_companion_live_cards.dart';
+part 'companion_parts/event_success_companion_motion_viewport.dart';
+part 'companion_parts/event_success_companion_paper_section.dart';
+part 'companion_parts/event_success_companion_people_token_row.dart';
 part 'companion_parts/event_success_companion_questionnaire.dart';
 part 'companion_parts/event_success_companion_reveal_cinematic.dart';
+part 'companion_parts/event_success_companion_rotation_slot_row.dart';
 part 'companion_parts/event_success_companion_shared.dart';
+part 'companion_parts/event_success_companion_stage_viewport.dart';
 part 'companion_parts/event_success_companion_wingman.dart';
 part 'event_success_companion_body_screen.dart';
 
@@ -112,108 +122,8 @@ class CompanionLoading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const CompanionScaffold(body: EventSuccessCompanionLoadingBody());
-  }
-}
-
-class EventSuccessCompanionLoadingBody extends StatelessWidget {
-  const EventSuccessCompanionLoadingBody({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: CatchInsets.pageBodyRelaxed,
-      child: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(
-            maxWidth: CatchLayout.maxContentWidth,
-          ),
-          child: const Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              CompanionStageSkeleton(),
-              gapH16,
-              CompanionPrimaryActionSkeleton(),
-              gapH16,
-              CatchSkeleton.rows(
-                titleWidth: CatchLayout.skeletonTextSectionWideWidth,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class CompanionStageSkeleton extends StatelessWidget {
-  const CompanionStageSkeleton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return CatchSurface(
-      borderColor: t.line,
-      padding: CatchInsets.contentRelaxed,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          CatchSkeleton.box(
-            width: CatchLayout.skeletonTextPillWidth,
-            height: CatchLayout.badgeActionHeight,
-            radius: CatchRadius.pill,
-          ),
-          gapH16,
-          CatchSkeleton.text(width: CatchLayout.skeletonTextFeatureWidth),
-          gapH10,
-          CatchSkeleton.textBlock(),
-          gapH18,
-          Row(
-            children: [
-              Expanded(
-                child: CatchSkeleton.box(
-                  height: CatchLayout.controlMdMinHeight,
-                  radius: CatchRadius.sm,
-                ),
-              ),
-              gapW10,
-              CatchSkeleton.box(
-                width: CatchLayout.controlMdMinHeight,
-                height: CatchLayout.controlMdMinHeight,
-                radius: CatchRadius.sm,
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class CompanionPrimaryActionSkeleton extends StatelessWidget {
-  const CompanionPrimaryActionSkeleton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return CatchSurface(
-      borderColor: t.line,
-      padding: CatchInsets.content,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          CatchSkeleton.text(width: CatchLayout.skeletonTextActionLabelWidth),
-          gapH12,
-          CatchSkeleton.textBlock(lines: 2),
-          gapH16,
-          CatchSkeleton.box(
-            height: CatchLayout.controlMdMinHeight,
-            radius: CatchRadius.sm,
-          ),
-        ],
-      ),
+    return const CompanionScaffold(
+      body: EventSuccessCompanionLoadingPageBody(),
     );
   }
 }
@@ -290,10 +200,6 @@ Future<String?> showEventVenueSessionScanner({
   builder: (context) => EventCheckInQrScannerSheet(eventId: eventId),
 );
 
-CatchAsyncState<T> _catchAsyncState<T>(AsyncValue<T> value) {
-  return catchAsyncStateFromAsyncValue(value);
-}
-
 class EventSuccessCompanionRouteScreen extends ConsumerWidget {
   const EventSuccessCompanionRouteScreen({
     super.key,
@@ -324,16 +230,16 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
         : ref.watch(watchEventParticipationProvider(eventId, watchedUid));
     var routeState = EventSuccessCompanionRouteState.resolveCore(
       l10n: context.l10n,
-      eventState: _catchAsyncState(eventAsync),
+      eventState: catchAsyncStateFromAsyncValue(eventAsync),
       initialEvent: initialEvent,
-      uidState: _catchAsyncState(uidAsync),
+      uidState: catchAsyncStateFromAsyncValue(uidAsync),
       profileState: profileAsync == null
           ? null
-          : _catchAsyncState(profileAsync),
+          : catchAsyncStateFromAsyncValue(profileAsync),
       participationState: participationAsync == null
           ? null
-          : _catchAsyncState(participationAsync),
-      planState: _catchAsyncState(planAsync),
+          : catchAsyncStateFromAsyncValue(participationAsync),
+      planState: catchAsyncStateFromAsyncValue(planAsync),
       referenceNow: referenceNow,
     );
 
@@ -487,7 +393,7 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
     // Wave 2: arrival mission resolves before the attendee moment so First
     // Hello can preempt questionnaire/check-in when the module is enabled.
     routeState = routeState.withArrivalMission(
-      _catchAsyncState(arrivalMissionAsync),
+      catchAsyncStateFromAsyncValue(arrivalMissionAsync),
     );
     if (routeState.status != EventSuccessCompanionRouteStatus.ready) {
       return _CompanionRouteGate(
@@ -512,7 +418,7 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
 
     // Wave 2: compatibility response, resolved before the attendee moment.
     routeState = routeState.withCompatibilityResponse(
-      _catchAsyncState(compatibilityAsync),
+      catchAsyncStateFromAsyncValue(compatibilityAsync),
     );
     if (routeState.status != EventSuccessCompanionRouteStatus.ready) {
       return _CompanionRouteGate(
@@ -584,13 +490,13 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
 
     // Wave 3: moment-specific feedback, preference, wingman, and assignments.
     routeState = routeState.withMomentData(
-      feedbackState: _catchAsyncState(feedbackAsync),
-      preferenceState: _catchAsyncState(preferenceAsync),
-      wingmanCandidatesState: _catchAsyncState(candidatesAsync),
-      wingmanRequestState: _catchAsyncState(wingmanRequestAsync),
-      assignmentState: _catchAsyncState(assignmentAsync),
-      rotationState: _catchAsyncState(rotationAsync),
-      standingsState: _catchAsyncState(standingsAsync),
+      feedbackState: catchAsyncStateFromAsyncValue(feedbackAsync),
+      preferenceState: catchAsyncStateFromAsyncValue(preferenceAsync),
+      wingmanCandidatesState: catchAsyncStateFromAsyncValue(candidatesAsync),
+      wingmanRequestState: catchAsyncStateFromAsyncValue(wingmanRequestAsync),
+      assignmentState: catchAsyncStateFromAsyncValue(assignmentAsync),
+      rotationState: catchAsyncStateFromAsyncValue(rotationAsync),
+      standingsState: catchAsyncStateFromAsyncValue(standingsAsync),
     );
     if (routeState.status != EventSuccessCompanionRouteStatus.ready) {
       return _CompanionRouteGate(

@@ -3,7 +3,7 @@
   "version": 2,
   "generatedFrom": "design/features/notifications.feature.json",
   "generatedFor": "2026-07-23",
-  "sourceDigest": "sha256:43fa1d1178e44c2e412709dcedb75d10acd8849cc32bf88952ddeb32ce956ec9",
+  "sourceDigest": "sha256:9857e74fdeb534cff237afc5a947091b573fb9eeda30ce434a45e1bd4d1f97d3",
   "resolvedDigest": "sha256:bd6790856b96290cddd3feccc1916d7efb5d6564e4b4561a5b27f0f0af5ed7a1",
   "feature": {
     "id": "feature.notifications",
@@ -40,8 +40,8 @@
       },
       "bindings": {
         "previewSources": [
-          "widgetbook/lib/dashboard/dashboard_use_cases.dart",
-          "widgetbook/lib/utility/p3_utility_use_cases.dart"
+          "widgetbook/lib/dashboard/catalog/activity.dart",
+          "widgetbook/lib/utility/notifications.dart"
         ],
         "actionOwners": [
           {

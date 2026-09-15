@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:catch_dating_app/clubs/data/club_posts_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
@@ -8,19 +6,20 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/events/data/event_callable_responses.dart';
-import 'package:catch_dating_app/events/data/event_participation_repository.dart';
-import 'package:catch_dating_app/events/data/event_repository.dart';
-import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
-import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
+import 'package:catch_dating_app/hosts/data/crm/host_campaign_repository.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_campaign.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_send_summary.dart';
 import 'package:catch_dating_app/hosts/presentation/host_audience_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_club_post_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_broadcast_composer_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_campaign_composer.dart';
+import 'package:catch_dating_app/hosts/presentation/inbox/host_event_announcement_field.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_follower_update_composer.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_broadcast_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_manual_send_queue.dart';
+import 'package:catch_dating_app/hosts/presentation/inbox/host_send_intent_menu.dart';
+import 'package:catch_dating_app/hosts/presentation/inbox/host_sends_back_button.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -94,7 +93,7 @@ class _HostSendsWorkspaceSliverState
   @override
   Widget build(BuildContext context) {
     final content = _choosingIntent
-        ? _HostSendsIntentPicker(
+        ? HostSendIntentMenu(
             club: widget.club,
             onBack: _showHistory,
             onOpenInbox: widget.onOpenInbox,
@@ -222,7 +221,7 @@ class _HostSendsWorkspaceSliverState
   }
 
   Future<void> _composeEventAnnouncement(
-    _HostEventAnnouncementTarget target,
+    HostEventAnnouncementTarget target,
   ) async {
     if (_busy) return;
     HostInboxBroadcastController.reset(ref);
@@ -432,317 +431,6 @@ class _HostSendsHistory extends ConsumerWidget {
   }
 }
 
-class _HostSendsIntentPicker extends ConsumerWidget {
-  const _HostSendsIntentPicker({
-    required this.club,
-    required this.onBack,
-    required this.onOpenInbox,
-    required this.onStartCampaign,
-    required this.onStartEventAnnouncement,
-    required this.onStartFollowerUpdate,
-    required this.preferredEventId,
-    required this.initialSegment,
-    required this.broadcastEnabled,
-    required this.now,
-  });
-
-  final Club club;
-  final VoidCallback onBack;
-  final VoidCallback onOpenInbox;
-  final VoidCallback onStartCampaign;
-  final Future<void> Function(_HostEventAnnouncementTarget target)
-  onStartEventAnnouncement;
-  final Future<void> Function(int remainingQuota) onStartFollowerUpdate;
-  final String? preferredEventId;
-  final HostInboxAudienceSegment initialSegment;
-  final bool broadcastEnabled;
-  final DateTime now;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final setup = ref.watch(hostMessagingSetupProvider(club.id));
-    final followerQuota = ref.watch(
-      watchClubPostRemainingWeeklyQuotaProvider(club.id),
-    );
-    final campaignField = setup.when<Widget>(
-      loading: () => CatchFieldLanes.single(
-        child: CatchField.read(
-          copy: catchFieldCopy(context.l10n),
-          key: const ValueKey('host-send-intent-saved-audience'),
-          title: context.l10n.hostSendsSavedAudienceIntent,
-          body: context.l10n.hostSendsChannelChecking,
-        ),
-      ),
-      error: (_, _) => CatchFieldLanes.single(
-        child: CatchField.read(
-          copy: catchFieldCopy(context.l10n),
-          key: const ValueKey('host-send-intent-saved-audience'),
-          title: context.l10n.hostSendsSavedAudienceIntent,
-          body: context.l10n.hostSendsChannelUnavailable,
-          valueText: context.l10n.hostSendsSetupRequired,
-        ),
-      ),
-      data: (value) => CatchFieldLanes.single(
-        child: value.canComposeCampaign
-            ? CatchField.nav(
-                copy: catchFieldCopy(context.l10n),
-                key: const ValueKey('host-send-intent-saved-audience'),
-                title: context.l10n.hostSendsSavedAudienceIntent,
-                body: context.l10n.hostSendsSavedAudienceIntentBody,
-                onTap: onStartCampaign,
-              )
-            : CatchField.read(
-                copy: catchFieldCopy(context.l10n),
-                key: const ValueKey('host-send-intent-saved-audience'),
-                title: context.l10n.hostSendsSavedAudienceIntent,
-                body: context.l10n.hostSendsSavedAudienceSetupBody,
-                valueText: context.l10n.hostSendsSetupRequired,
-              ),
-      ),
-    );
-    final followerUpdateField = followerQuota.when<Widget>(
-      loading: () => CatchFieldLanes.single(
-        child: CatchField.read(
-          copy: catchFieldCopy(context.l10n),
-          key: const ValueKey('host-send-intent-follower-update'),
-          title: context.l10n.hostSendsFollowerUpdateIntent,
-          body: context.l10n.hostSendsChannelChecking,
-        ),
-      ),
-      error: (_, _) => CatchFieldLanes.single(
-        child: CatchField.read(
-          copy: catchFieldCopy(context.l10n),
-          key: const ValueKey('host-send-intent-follower-update'),
-          title: context.l10n.hostSendsFollowerUpdateIntent,
-          body: context.l10n.hostSendsChannelUnavailable,
-        ),
-      ),
-      data: (remainingQuota) => CatchFieldLanes.single(
-        child: remainingQuota > 0
-            ? CatchField.nav(
-                copy: catchFieldCopy(context.l10n),
-                key: const ValueKey('host-send-intent-follower-update'),
-                title: context.l10n.hostSendsFollowerUpdateIntent,
-                body: context.l10n.hostSendsFollowerUpdateDescription,
-                onTap: () => unawaited(onStartFollowerUpdate(remainingQuota)),
-              )
-            : CatchField.read(
-                copy: catchFieldCopy(context.l10n),
-                key: const ValueKey('host-send-intent-follower-update'),
-                title: context.l10n.hostSendsFollowerUpdateIntent,
-                body: context.l10n.hostSendsFollowerUpdateQuotaUsed,
-                valueText: context.l10n.hostSendsWeeklyLimit,
-              ),
-      ),
-    );
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        _HostSendsBackButton(onPressed: onBack),
-        gapH12,
-        CatchSection.divided(
-          title: context.l10n.hostSendsIntentTitle,
-          children: [
-            CatchFieldLanes.single(
-              child: CatchField.nav(
-                copy: catchFieldCopy(context.l10n),
-                key: const ValueKey('host-send-intent-conversation'),
-                title: context.l10n.hostSendsConversationIntent,
-                body: context.l10n.hostSendsConversationIntentBody,
-                onTap: onOpenInbox,
-              ),
-            ),
-            campaignField,
-            _HostEventAnnouncementIntent(
-              organizerId: club.id,
-              preferredEventId: preferredEventId,
-              initialSegment: initialSegment,
-              sendingEnabled: broadcastEnabled,
-              now: now,
-              onStart: onStartEventAnnouncement,
-            ),
-            followerUpdateField,
-          ],
-        ),
-        gapH12,
-        CatchButton(
-          label: context.l10n.hostSendsSettings,
-          variant: CatchButtonVariant.secondary,
-          onPressed: () => context.pushNamed(
-            Routes.hostOrganizerMessagingScreen.name,
-            pathParameters: {'clubId': club.id},
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _HostEventAnnouncementTarget {
-  const _HostEventAnnouncementTarget({
-    required this.event,
-    required this.bookedCount,
-    required this.prospectiveCount,
-  });
-
-  final Event event;
-  final int bookedCount;
-  final int prospectiveCount;
-}
-
-class _HostEventAnnouncementIntent extends ConsumerWidget {
-  const _HostEventAnnouncementIntent({
-    required this.organizerId,
-    required this.preferredEventId,
-    required this.initialSegment,
-    required this.sendingEnabled,
-    required this.now,
-    required this.onStart,
-  });
-
-  final String organizerId;
-  final String? preferredEventId;
-  final HostInboxAudienceSegment initialSegment;
-  final bool sendingEnabled;
-  final DateTime now;
-  final Future<void> Function(_HostEventAnnouncementTarget target) onStart;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final events = ref.watch(watchEventsForClubProvider(organizerId));
-    return events.when(
-      loading: () => CatchFieldLanes.single(
-        child: CatchField.read(
-          copy: catchFieldCopy(context.l10n),
-          key: const ValueKey('host-send-intent-event-announcement'),
-          title: context.l10n.hostSendsEventAnnouncementIntent,
-          body: context.l10n.hostSendsEventAnnouncementChecking,
-        ),
-      ),
-      error: (_, _) => CatchFieldLanes.single(
-        child: CatchField.read(
-          copy: catchFieldCopy(context.l10n),
-          key: const ValueKey('host-send-intent-event-announcement'),
-          title: context.l10n.hostSendsEventAnnouncementIntent,
-          body: context.l10n.hostSendsEventAnnouncementUnavailable,
-        ),
-      ),
-      data: (events) {
-        final event = _eventForAnnouncement(
-          events,
-          preferredEventId: preferredEventId,
-          now: now,
-        );
-        if (event == null) {
-          return CatchFieldLanes.single(
-            child: CatchField.read(
-              copy: catchFieldCopy(context.l10n),
-              key: const ValueKey('host-send-intent-event-announcement'),
-              title: context.l10n.hostSendsEventAnnouncementIntent,
-              body: context.l10n.hostSendsEventAnnouncementEmpty,
-            ),
-          );
-        }
-        final participations = ref.watch(
-          watchEventParticipationsForEventProvider(event.id),
-        );
-        return participations.when(
-          loading: () => CatchFieldLanes.single(
-            child: CatchField.read(
-              copy: catchFieldCopy(context.l10n),
-              key: const ValueKey('host-send-intent-event-announcement'),
-              title: context.l10n.hostSendsEventAnnouncementIntent,
-              body: context.l10n.hostSendsEventAnnouncementCheckingAudience,
-            ),
-          ),
-          error: (_, _) => CatchFieldLanes.single(
-            child: CatchField.read(
-              copy: catchFieldCopy(context.l10n),
-              key: const ValueKey('host-send-intent-event-announcement'),
-              title: context.l10n.hostSendsEventAnnouncementIntent,
-              body: context.l10n.hostSendsEventAnnouncementUnavailable,
-            ),
-          ),
-          data: (participations) {
-            final roster = EventParticipationRoster.fromParticipations(
-              participations
-                  .where((participation) => participation.eventId == event.id)
-                  .toList(growable: false),
-            );
-            final target = _HostEventAnnouncementTarget(
-              event: event,
-              bookedCount: roster.bookedCount,
-              prospectiveCount: roster.waitlistedCount,
-            );
-            final selectedCount =
-                initialSegment == HostInboxAudienceSegment.booked
-                ? target.bookedCount
-                : target.prospectiveCount;
-            final hasAudience =
-                target.bookedCount + target.prospectiveCount > 0;
-            final canStart =
-                sendingEnabled &&
-                !event.isCancelled &&
-                event.endTime.isAfter(now) &&
-                hasAudience;
-            final body = context.l10n.hostSendsEventAnnouncementIntentBody(
-              eventTitle: event.title,
-              bookedCount: target.bookedCount,
-              prospectiveCount: target.prospectiveCount,
-            );
-            return CatchFieldLanes.single(
-              child: canStart
-                  ? CatchField.nav(
-                      copy: catchFieldCopy(context.l10n),
-                      key: const ValueKey(
-                        'host-send-intent-event-announcement',
-                      ),
-                      title: context.l10n.hostSendsEventAnnouncementIntent,
-                      body: body,
-                      valueText: context.l10n.hostSendsEventAudienceSelected(
-                        count: selectedCount,
-                      ),
-                      onTap: () => unawaited(onStart(target)),
-                    )
-                  : CatchField.read(
-                      copy: catchFieldCopy(context.l10n),
-                      key: const ValueKey(
-                        'host-send-intent-event-announcement',
-                      ),
-                      title: context.l10n.hostSendsEventAnnouncementIntent,
-                      body: body,
-                      valueText: hasAudience
-                          ? context
-                                .l10n
-                                .hostSendsEventAnnouncementUnavailableShort
-                          : context.l10n.hostSendsEventAnnouncementNoAudience,
-                    ),
-            );
-          },
-        );
-      },
-    );
-  }
-}
-
-Event? _eventForAnnouncement(
-  List<Event> events, {
-  required String? preferredEventId,
-  required DateTime now,
-}) {
-  final eligible = orderHostInboxEvents(
-    events,
-    now: now,
-  ).where((event) => !event.isCancelled && event.endTime.isAfter(now)).toList();
-  if (preferredEventId != null) {
-    for (final event in eligible) {
-      if (event.id == preferredEventId) return event;
-    }
-  }
-  return eligible.firstOrNull;
-}
-
 class _HostSendsHistoryPage extends StatelessWidget {
   const _HostSendsHistoryPage({
     required this.page,
@@ -880,7 +568,7 @@ class _HostSendsComposer extends StatelessWidget {
   Widget build(BuildContext context) => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
-      _HostSendsBackButton(onPressed: onBack),
+      HostSendsBackButton(onPressed: onBack),
       gapH12,
       HostCampaignComposer(
         club: club,
@@ -914,7 +602,7 @@ class _HostSendsCampaignReport extends StatelessWidget {
   Widget build(BuildContext context) => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
-      _HostSendsBackButton(onPressed: busy ? null : onBack),
+      HostSendsBackButton(onPressed: busy ? null : onBack),
       gapH12,
       CatchSection.divided(
         title: context.l10n.hostSendsCampaignType,
@@ -945,7 +633,7 @@ class _HostSendsAnnouncementReport extends StatelessWidget {
   Widget build(BuildContext context) => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
-      _HostSendsBackButton(onPressed: onBack),
+      HostSendsBackButton(onPressed: onBack),
       gapH12,
       CatchSection.divided(
         title: context.l10n.hostSendsAnnouncementType,
@@ -984,7 +672,7 @@ class _HostSendsFollowerUpdateReport extends StatelessWidget {
   Widget build(BuildContext context) => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
-      _HostSendsBackButton(onPressed: onBack),
+      HostSendsBackButton(onPressed: onBack),
       gapH12,
       CatchSection.divided(
         title: context.l10n.hostSendsFollowerUpdateChannel,
@@ -1012,22 +700,6 @@ class _HostSendsFollowerUpdateReport extends StatelessWidget {
         ),
       ),
     ],
-  );
-}
-
-class _HostSendsBackButton extends StatelessWidget {
-  const _HostSendsBackButton({required this.onPressed});
-
-  final VoidCallback? onPressed;
-
-  @override
-  Widget build(BuildContext context) => Align(
-    alignment: Alignment.centerLeft,
-    child: CatchButton(
-      label: context.l10n.hostMessagingWorkspaceSends,
-      variant: CatchButtonVariant.ghost,
-      onPressed: onPressed,
-    ),
   );
 }
 

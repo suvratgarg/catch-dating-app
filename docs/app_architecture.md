@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.63.1
-updated: 2026-09-14
+version: 1.65.8
+updated: 2026-09-15
 owner: app_architecture
 status: active
 ---
@@ -393,6 +393,20 @@ The first folder-boundary cleanup applied after this spec uses these owners:
 - Club display-name lookup is a data/provider seam in `lib/clubs/data`.
 
 ### Explore discovery scope and filter boundary
+
+Explore display models are split by responsibility: `explore_screen_state.dart`
+owns route branches and empty recovery; `explore_chrome_state.dart` owns search,
+city and map-launcher display; `explore_filter_state.dart` owns filter choices
+and live counts; `explore_event_display_state.dart` and
+`explore_club_display_state.dart` own event and organizer labels;
+`explore_mixed_feed_state.dart` owns feed ordering and grouping. These libraries
+accept plain values and keep provider reads in the route boundary.
+The screen mounts `ExploreScreenEmptyState`, `ExploreClearButton`, and
+`ExploreFeedSkeleton` from their component files; empty-state callbacks and
+loading shapes retain their existing contracts.
+`explore_feed_view_model.dart` owns feed values and cover selection;
+`explore_feed_providers.dart` owns Riverpod reads, discovery orchestration, and
+recommendation loading. Screens import the provider seam explicitly.
 
 Explore's visible date strip is an intent selector, not a set of overlapping
 weekly taxonomies. `Tonight`, the next six local dates, and `Any` are the only
@@ -3077,6 +3091,28 @@ growth fails. Split by coherent behavior group and keep shared fixtures in the
 same Dart test library when that avoids duplication without hiding source-level
 failure locations.
 
+## Source Size Budgets
+
+New or split handwritten Dart files in `lib/**`, `packages/**`, and
+`widgetbook/lib/**` stay at or below 800 lines. Split by domain responsibility,
+screen pane, or component family; a file split must expose a useful ownership
+boundary rather than distribute one monolith across `part` files.
+
+`node tool/run.mjs check audit:flutter-source-size` checks tracked and untracked
+source against `tool/architecture/flutter_source_size_baseline.json`. Existing
+oversized files may only shrink. Deleted or now-bounded entries must leave the
+baseline, and reductions must be recorded in the same change. Git history
+prevents a baseline refresh from admitting new oversized files or raising an
+existing ceiling. Refresh after a reduction with
+`node tool/architecture/check_flutter_source_size.mjs --write-baseline`.
+
+The only exception is the `CatchField` constructor facade at
+`packages/catch_ui/lib/src/components/catch_field.dart`: at most 1,150 lines,
+with decrease-only protection. Configuration, resolution, state, and rendering
+files remain within 800 lines. Known generated suffixes, configured localization
+outputs, and exact vendored icon-generator outputs are excluded; a directory
+named `generated` or a generated-file comment alone grants no exemption.
+
 ## Enforcement And Overrides
 
 Use three enforcement levels.
@@ -3085,8 +3121,17 @@ The enforcement registry is checked by
 `node tool/check_enforcement_integrity.mjs`. When a rule gains, loses, or
 changes enforcement, update `tool/policy/rules.json`,
 `tool/tools_manifest.json`, the owner-doc anchor, and the known-bad proof or
-baseline receipt together. Manual enforcement is explicit with `stage: manual`;
+baseline reduction together. Manual enforcement is explicit with `stage: manual`;
 absence of an enforcement entry is drift.
+
+Every `*_baseline.json`, including checked-in test fixtures, declares `owner`
+(the owning source document's `doc_id`) and `targetPhase` (a repository Markdown
+heading reference to its target-zero phase). Enforcement integrity discovers
+these files directly, including unregistered baselines, and rejects missing
+metadata or broken phase references. Refresh commands retain this metadata.
+The source-budget split targets Phase 5; remaining domain-owned debt targets
+Phase 6's continuous conformance lanes. A target is an outstanding obligation,
+not evidence that a baseline is already empty.
 
 ### Screen chrome contracts
 
@@ -3302,7 +3347,8 @@ Reference files:
 
 - `functions/src/communications/organizerCommunicationPlan.ts`
 - `functions/src/organizers/organizerCommunicationPlans.ts`
-- `lib/hosts/data/host_crm_repository.dart`
+- `lib/hosts/domain/crm/host_communication_plan.dart`
+- `lib/hosts/data/crm/host_communication_repository.dart`
 - `lib/hosts/presentation/customers/host_customer_detail_screen.dart`
 - `lib/hosts/presentation/customers/host_customer_detail_cards.dart`
 
@@ -3359,7 +3405,8 @@ Reference files:
 
 - `contracts/firestore/organizer_manual_send_tasks.schema.json`
 - `functions/src/organizers/organizerManualSendTasks.ts`
-- `lib/hosts/data/host_crm_repository.dart`
+- `lib/hosts/domain/crm/host_manual_send_task.dart`
+- `lib/hosts/data/crm/host_communication_repository.dart`
 - `lib/hosts/presentation/customers/host_customer_detail_screen.dart`
 - `lib/hosts/presentation/inbox/host_manual_send_queue.dart`
 - `test/hosts/host_crm_repository_test.dart`
@@ -3422,7 +3469,8 @@ Reference files:
 - `contracts/firestore/organizer_saved_audiences.schema.json`
 - `functions/src/organizers/organizerSavedAudiences.ts`
 - `functions/src/organizers/organizerCampaigns.ts`
-- `lib/hosts/data/host_crm_repository.dart`
+- `lib/hosts/domain/crm/host_saved_audience.dart`
+- `lib/hosts/data/crm/host_saved_audience_repository.dart`
 - `lib/hosts/presentation/customers/host_customers_screen.dart`
 - `lib/hosts/presentation/customers/host_saved_audiences_workspace.dart`
 - `lib/hosts/presentation/customers/host_saved_audience_editor.dart`
@@ -3527,8 +3575,8 @@ Reference files:
 - `lib/clubs/presentation/detail/widgets/club_hero_app_bar.dart`
 - `lib/swipes/shared/profile_surface/catch_profile_view.dart`
 - `design/components/catch.components.json`
-- `widgetbook/lib/clubs/club_detail_use_cases.dart`
-- `widgetbook/lib/catches/catches_use_cases.dart`
+- `widgetbook/lib/clubs/catalog/poster.dart`
+- `widgetbook/lib/catches/catalog/profile_media.dart`
 
 Entity material is a presentation contract, not feature-local decoration:
 events use the ticket family, organizer identity uses
@@ -3732,7 +3780,7 @@ Reference files:
 - `test/events/event_detail_controller_test.dart`
 - `test/events/event_detail_widgets_test.dart`
 - `design/screens/catch.screens.json`
-- `widgetbook/lib/events/event_detail_use_cases.dart`
+- `widgetbook/lib/events/catalog/detail_screen.dart`
 
 Use this pattern for route-level or major navigable feature screens. The screen
 owns route parameters, provider watches, top-level async/error branches, route
@@ -4101,6 +4149,14 @@ Current Host adopters:
 - `lib/hosts/events/presentation/widgets/host_events_list.dart`
 - `test/hosts/host_operations_screen_test.dart`
 
+Host Manage keeps lifecycle, event actions and summary state in
+`host_event_manage_screen_state.dart`. Invitation access and link display live
+in `host_invite_link_state.dart`; roster filtering, lookup and mutation
+snapshots live in `host_roster_display_state.dart`; setup/live/report row
+policy lives in `host_roster_row_state.dart`. These adapters receive plain
+data and callbacks. The booking controller owns single-versus-bulk mutation
+key selection; provider reads and route effects remain at their existing edges.
+
 `HostTodayState` and `HostTodayAttentionData` apply the boundary to the
 command-centre projection: `HostTodayScreen` translates provider snapshots at
 the route edge, the provider-free builder prioritizes live before upcoming,
@@ -4356,7 +4412,7 @@ Use this order for architecture cleanup:
      completion state.
 
 2. Inventory the current surface.
-   - `python3 tool/scan_architecture.py`
+   - `node tool/run.mjs check audit:dependency-direction audit:adopted-architecture-boundaries audit:mutation-error-surfaces`
    - `bash tool/widget_cleanup_scan.sh --summary`
    - `dart tool/audit/backend_error_candidates.dart`
    - `dart tool/audit/frontend_error_candidates.dart`

@@ -1,7 +1,7 @@
 ---
 doc_id: ui_system_blueprint_conformance
-version: 1.17.0
-updated: 2026-09-14
+version: 1.18.0
+updated: 2026-09-15
 owner: app_architecture
 status: active
 ---
@@ -1210,6 +1210,27 @@ DoD: ratchet green; monolith baseline reduced to ≤ 4 `lib/**` entries and
 zero `widgetbook/lib/**` entries; net check
 count strictly lower than the Phase 0 snapshot (record both numbers in the
 PR); every baseline names owner + target phase.
+
+**Completion measurement (2026-09-15).** Phase 5 is implemented by this
+change and closes when its required PR checks pass. The source-size scanner
+covers 1,627 handwritten Dart files. Seven decrease-only entries remain: four
+under app `lib/**`, three under shared packages, and zero under
+`widgetbook/lib/**`. The original CRM, Event Success, form-builder, token, and
+Widgetbook monolith split plans are executed; every remaining baseline entry
+has an owner and target phase, as enforced by `meta:enforcement-integrity`.
+
+For D8's executable-estate measurement, check count means active IDs emitted
+by `node tool/run.mjs list --json`; internal validators and retained manifest
+history are not runnable gates. The exact Phase 0 merge (`fff43783f`) contains
+251 active IDs, and this change emits 250. The earlier 293 figure in the
+point-in-time audit is retained as the dated total-registration snapshot, not
+as the executable DoD comparator.
+
+The locally permitted derived gates passed, including 52 root goldens, two
+consecutive 566-test Widgetbook golden runs, 27 headless app-shell tests, and
+the five-test hosted macOS smoke. Workspace analysis, Riverpod/plugin smoke,
+Catch UI lint/drift, and resolved-analysis collectors remain required PR gates
+under the owner-approved CI-only exception for this machine.
 
 ### Phase 6 — Continuous conformance (folds into existing lanes)
 

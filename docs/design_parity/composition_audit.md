@@ -1,7 +1,7 @@
 ---
 doc_id: composition_audit
-version: 0.1.10
-updated: 2026-08-11
+version: 0.1.11
+updated: 2026-09-15
 owner: design_parity_review
 status: active
 ---
@@ -68,8 +68,9 @@ and a systemic rail-defaults problem that extends beyond this screen.
 `widgets/dashboard_full.dart` defines `DashboardFull`, which rebuilds the
 entire screen shell (Scaffold + SafeArea + CustomScrollView + sliver header
 + `DashboardFullSliverBody`) and re-derives the header and view model from
-providers. Its only constructor call site is
-`widgetbook/lib/dashboard/dashboard_use_cases.dart:638` — the real app path
+providers. At the audit, its only constructor call site was the
+`dashboardFullReview` case (now in
+`widgetbook/lib/dashboard/catalog/home.dart`) — the real app path
 is `DashboardScreen → DashboardHomeScreen`. It has already drifted: it lacks
 the `Semantics(label: 'Home')` wrapper and the notifications action that
 `DashboardHomeScreen` has.

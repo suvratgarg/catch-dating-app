@@ -6,8 +6,9 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
+import 'package:catch_dating_app/hosts/data/crm/host_saved_audience_repository.dart';
 import 'package:catch_dating_app/hosts/data/host_application_repository.dart';
-import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_saved_audience_filter_options.dart';
 import 'package:catch_dating_app/hosts/domain/host_application_import.dart';
 import 'package:catch_dating_app/hosts/domain/host_roster_import.dart';
 import 'package:catch_dating_app/hosts/presentation/applications/host_application_context.dart';
@@ -20,7 +21,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-
 part 'host_application_detail_screen.dart';
 
 class HostApplicationsScreen extends ConsumerStatefulWidget {

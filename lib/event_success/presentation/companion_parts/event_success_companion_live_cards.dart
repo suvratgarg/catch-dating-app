@@ -57,7 +57,7 @@ class MicroPodCard extends StatelessWidget {
     final profilesByUid = {
       for (final profile in peerProfiles) profile.uid: profile,
     };
-    return StagePanel(
+    return CompanionStageSurface(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -126,7 +126,7 @@ class MicroPodCard extends StatelessWidget {
               ),
           ],
           gapH14,
-          StageActionDock(
+          CompanionStageActionSection(
             child: IncludeMeToggle(
               label: context
                   .l10n
@@ -137,83 +137,6 @@ class MicroPodCard extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class GroupRotationSlotRow extends StatelessWidget {
-  const GroupRotationSlotRow({
-    super.key,
-    required this.slot,
-    required this.profilesByUid,
-  });
-
-  final EventSuccessGroupRotationSlot slot;
-  final Map<String, PublicProfile> profilesByUid;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final timeRange = context.l10n
-        .eventSuccessEventSuccessCompanionLiveCardsVisiblecopyFormatFormat2(
-          format: TimeOfDay.fromDateTime(slot.startsAt).format(context),
-          format2: TimeOfDay.fromDateTime(slot.endsAt).format(context),
-        );
-    final peerNames = slot.peerUids
-        .map((uid) => profilesByUid[uid]?.name)
-        .whereType<String>()
-        .toList(growable: false);
-    return Padding(
-      padding: _companionRotationSlotGap,
-      child: CatchSurface(
-        backgroundColor: t.primarySoft,
-        radius: CatchRadius.sm,
-        borderWidth: 0,
-        padding: CatchInsets.contentDense,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Wrap(
-              spacing: CatchSpacing.s2,
-              runSpacing: CatchSpacing.s2,
-              crossAxisAlignment: WrapCrossAlignment.center,
-              children: [
-                CatchBadge(
-                  label: slot.label,
-                  tone: _isStrongRotationSignal(slot.compatibility)
-                      ? CatchBadgeTone.success
-                      : CatchBadgeTone.neutral,
-                ),
-                CatchBadge(
-                  label: slot.unitLabel,
-                  icon: CatchIcons.tableRestaurantOutlined,
-                ),
-              ],
-            ),
-            gapH8,
-            Text(timeRange, style: CatchTextStyles.supporting(context)),
-            gapH8,
-            Wrap(
-              spacing: CatchSpacing.s2,
-              runSpacing: CatchSpacing.s2,
-              children: [
-                CatchBadge(
-                  label: context.l10n
-                      .eventSuccessEventSuccessCompanionLiveCardsLabelValue1People(
-                        value1: slot.peerUids.length + 1,
-                      ),
-                  icon: CatchIcons.groupOutlined,
-                ),
-                for (final name in peerNames)
-                  CatchBadge(
-                    label: name,
-                    icon: CatchIcons.personOutlineRounded,
-                  ),
-              ],
-            ),
-          ],
-        ),
       ),
     );
   }
@@ -245,7 +168,7 @@ class RotationScheduleCard extends StatelessWidget {
     final profilesByUid = {
       for (final profile in peerProfiles) profile.uid: profile,
     };
-    return StagePanel(
+    return CompanionStageSurface(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -305,7 +228,7 @@ class RotationScheduleCard extends StatelessWidget {
               ),
           ],
           gapH14,
-          StageActionDock(
+          CompanionStageActionSection(
             child: IncludeMeToggle(
               label: context
                   .l10n
@@ -321,57 +244,6 @@ class RotationScheduleCard extends StatelessWidget {
   }
 }
 
-class RotationSlotRow extends StatelessWidget {
-  const RotationSlotRow({
-    super.key,
-    required this.slot,
-    required this.peerName,
-  });
-
-  final EventSuccessRotationSlot slot;
-  final String peerName;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final timeRange = context.l10n
-        .eventSuccessEventSuccessCompanionLiveCardsVisiblecopyFormatFormat2(
-          format: TimeOfDay.fromDateTime(slot.startsAt).format(context),
-          format2: TimeOfDay.fromDateTime(slot.endsAt).format(context),
-        );
-    return Padding(
-      padding: _companionRotationSlotGap,
-      child: CatchSurface(
-        backgroundColor: t.primarySoft,
-        radius: CatchRadius.sm,
-        borderWidth: 0,
-        padding: CatchInsets.contentDense,
-        child: Row(
-          children: [
-            CatchBadge(
-              label: slot.label,
-              tone: _isStrongRotationSignal(slot.compatibility)
-                  ? CatchBadgeTone.success
-                  : CatchBadgeTone.neutral,
-            ),
-            gapW8,
-            Expanded(
-              child: Text(
-                context.l10n
-                    .eventSuccessEventSuccessCompanionLiveCardsTextTimerangePeername(
-                      timeRange: timeRange,
-                      peerName: peerName,
-                    ),
-                style: CatchTextStyles.supporting(context),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
 class LiveStepContextCard extends StatelessWidget {
   const LiveStepContextCard({super.key, required this.step});
 
@@ -381,7 +253,7 @@ class LiveStepContextCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final activeStep = step;
-    return StagePanel(
+    return CompanionStageSurface(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -475,7 +347,7 @@ class PreCheckInPlanningCard extends StatelessWidget {
               .eventSuccessEventSuccessCompanionLiveCardsTextYouCanAskThe,
         ),
     ];
-    return StagePanel(
+    return CompanionStageSurface(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -598,7 +470,7 @@ class _SelfCheckInCardState extends State<SelfCheckInCard> {
   Widget build(BuildContext context) {
     final busy = widget.actionState.isCheckingIn || _checkingIn;
     final t = CatchTokens.of(context);
-    return StagePanel(
+    return CompanionStageSurface(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -624,7 +496,7 @@ class _SelfCheckInCardState extends State<SelfCheckInCard> {
             style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
           gapH14,
-          StageActionDock(
+          CompanionStageActionSection(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -680,145 +552,6 @@ class _SelfCheckInCardState extends State<SelfCheckInCard> {
   }
 }
 
-class EventCheckInQrScannerSheet extends StatefulWidget {
-  const EventCheckInQrScannerSheet({super.key, required this.eventId});
-
-  final String eventId;
-
-  @override
-  State<EventCheckInQrScannerSheet> createState() =>
-      _EventCheckInQrScannerSheetState();
-}
-
-class _EventCheckInQrScannerSheetState
-    extends State<EventCheckInQrScannerSheet> {
-  String? _errorText;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final height = math.min(MediaQuery.sizeOf(context).height * 0.72, 560.0);
-    return SizedBox(
-      height: height,
-      child: Padding(
-        padding: _companionQrSheetPadding,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(CatchIcons.qrCodeScannerRounded, color: t.primary),
-                gapW10,
-                Expanded(
-                  child: Text(
-                    context
-                        .l10n
-                        .eventSuccessEventSuccessCompanionLiveCardsTextScanHostQr,
-                    style: CatchTextStyles.sectionTitle(context),
-                  ),
-                ),
-                Tooltip(
-                  message: context
-                      .l10n
-                      .eventSuccessEventSuccessCompanionLiveCardsMessageClose,
-                  child: CatchIconAction(
-                    onPressed: () => Navigator.of(context).maybePop(),
-                    child: Icon(
-                      CatchIcons.closeRounded,
-                      size: CatchIcon.md,
-                      color: t.ink2,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            gapH10,
-            Expanded(
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(CatchRadius.sm),
-                child: Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    EventCheckInQrScanner(
-                      eventId: widget.eventId,
-                      onResult: _handleScanResult,
-                    ),
-                    CatchSurface(
-                      tone: CatchSurfaceTone.transparent,
-                      radius: CatchRadius.sm,
-                      borderColor: t.primary,
-                      borderWidth: CatchStroke.selection,
-                      padding: EdgeInsets.zero,
-                      duration: Duration.zero,
-                      child: const SizedBox.expand(),
-                    ),
-                    if (_errorText != null)
-                      Align(
-                        alignment: Alignment.bottomCenter,
-                        child: CatchSurface(
-                          width: double.infinity,
-                          padding: CatchInsets.contentDense,
-                          backgroundColor: t.ink.withValues(
-                            alpha: CatchOpacity.eventSuccessQrErrorFill,
-                          ),
-                          borderWidth: 0,
-                          radius: CatchRadius.none,
-                          child: Text(
-                            _errorText!,
-                            style: CatchTextStyles.supporting(
-                              context,
-                              color: CatchTokens.editorialWhite,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-            ),
-            gapH10,
-            Text(
-              context
-                  .l10n
-                  .eventSuccessEventSuccessCompanionLiveCardsTextLocationStillVerifiesThe,
-              style: CatchTextStyles.supporting(context, color: t.ink2),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _handleScanResult(EventCheckInQrScan scan) {
-    switch (scan.result) {
-      case EventCheckInQrScanResult.ignored:
-        return;
-      case EventCheckInQrScanResult.invalid:
-        setState(
-          () => _errorText = context
-              .l10n
-              .eventSuccessEventSuccessCompanionLiveCardsVisiblecopyThisIsNotA,
-        );
-      case EventCheckInQrScanResult.wrongEvent:
-        setState(
-          () => _errorText = context
-              .l10n
-              .eventSuccessEventSuccessCompanionLiveCardsVisiblecopyThisQrBelongsTo,
-        );
-      case EventCheckInQrScanResult.printableJoinOnly:
-        setState(
-          () => _errorText = context
-              .l10n
-              .eventSuccessEventSuccessCompanionLiveCardsTextLocationStillVerifiesThe,
-        );
-      case EventCheckInQrScanResult.matchedVenueSession:
-        unawaited(HapticFeedback.lightImpact());
-        Navigator.of(context).maybePop(scan.venueSessionToken);
-    }
-  }
-}
-
 class StagePromptCard extends StatelessWidget {
   const StagePromptCard({super.key, required this.prompt, this.title});
 
@@ -828,7 +561,7 @@ class StagePromptCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return StagePanel(
+    return CompanionStageSurface(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -867,7 +600,7 @@ class StageConversationCueCard extends StatelessWidget {
       EventSuccessConversationCueMoment.live => CatchIcons.forumOutlined,
       EventSuccessConversationCueMoment.postEvent => CatchIcons.chatOutlined,
     };
-    return StagePanel(
+    return CompanionStageSurface(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -990,43 +723,6 @@ class StageSectionLabel extends StatelessWidget {
             style: CatchTextStyles.labelL(context, color: color),
           ),
         ),
-      ],
-    );
-  }
-}
-
-class PeopleTokenRow extends StatelessWidget {
-  const PeopleTokenRow({
-    super.key,
-    required this.countLabel,
-    required this.loading,
-    required this.loadingLabel,
-    required this.profiles,
-  });
-
-  final String countLabel;
-  final bool loading;
-  final String loadingLabel;
-  final List<PublicProfile> profiles;
-
-  @override
-  Widget build(BuildContext context) {
-    return Wrap(
-      spacing: CatchSpacing.s2,
-      runSpacing: CatchSpacing.s2,
-      children: [
-        CatchBadge(label: countLabel, icon: CatchIcons.groupOutlined),
-        if (loading)
-          CatchBadge(
-            label: loadingLabel,
-            icon: CatchIcons.hourglassEmptyRounded,
-          )
-        else
-          for (final profile in profiles)
-            CatchBadge(
-              label: profile.name,
-              icon: CatchIcons.personOutlineRounded,
-            ),
       ],
     );
   }

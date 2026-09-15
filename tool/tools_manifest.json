@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-09-08",
+  "updated": "2026-09-15",
   "ciImpact": {
     "mandatoryCheckIds": [
       "docs:metadata",
@@ -66,7 +66,7 @@
         ]
       },
       "role": "gate",
-      "description": "Validates active rule-to-tool enforcement bindings, manifest roles, doc anchors, sunset reviews, vacuity proofs, architecture scanner ownership, and ratchet baselines without requiring tracked metric receipts.",
+      "description": "Validates active rule-to-tool enforcement bindings, manifest roles, doc anchors, sunset reviews, vacuity proofs, architecture scanner ownership, and baseline ownership and target-zero phase references without requiring tracked metric receipts.",
       "checks": [
         "node --check tool/check_enforcement_integrity.mjs",
         "node --test tool/check_enforcement_integrity.test.mjs",
@@ -80,7 +80,9 @@
           "fails satisfied sunset signals without review",
           "fails role-less covered runtime tools",
           "fails gate tools that only run count or syntax checks",
-          "accepts ratchet baselines without a separate metric receipt"
+          "accepts ratchet baselines without a separate metric receipt",
+          "every baseline requires ownership and a real target phase even without a tool binding",
+          "baseline ownership rejects placeholders and missing phase anchors while accepting owned fixtures"
         ]
       }
     },
@@ -1182,19 +1184,6 @@
       }
     },
     {
-      "id": "audit:architecture-scan",
-      "category": "audit",
-      "path": "tool/scan_architecture.py",
-      "command": "python3 tool/scan_architecture.py",
-      "safety": "local-writes-build-artifacts",
-      "status": "active",
-      "description": "Scans async-state handling, repository error wrapping, controller mutations, and structural widget overlap.",
-      "checks": [
-        "python3 -B -c \"import ast,pathlib; ast.parse(pathlib.Path('tool/scan_architecture.py').read_text())\""
-      ],
-      "role": "generator"
-    },
-    {
       "id": "audit:adopted-architecture-boundaries",
       "category": "audit",
       "path": "tool/architecture/check_adopted_architecture_boundaries.mjs",
@@ -1378,7 +1367,6 @@
       "checks": [
         "bash -n tool/widget_cleanup_scan.sh",
         "node --test tool/lib/widget_cleanup_ratchet.test.mjs",
-        "node tool/design/check_ui_lint_promotion_parity.mjs",
         "bash tool/widget_cleanup_scan.sh --check"
       ],
       "role": "ratchet",
@@ -1475,7 +1463,10 @@
       "description": "Ratchets user-visible marketing website strings into website/src/content without requiring a big-bang migration.",
       "ciRequirements": {
         "repositoryView": "full",
-        "setup": ["node", "root-npm"]
+        "setup": [
+          "node",
+          "root-npm"
+        ]
       },
       "checks": [
         "node --check tool/web/check_website_copy_ownership.mjs",
@@ -1583,7 +1574,7 @@
       "path": "tool/copy/check_mobile_copy_catalog_test.mjs",
       "command": "node tool/copy/check_mobile_copy_catalog_test.mjs",
       "safety": "local",
-      "status": "active",
+      "status": "internal",
       "description": "Runs seeded metadata validation probes for the Flutter ARB copy catalog.",
       "checks": [
         "node tool/copy/check_mobile_copy_catalog_test.mjs"
@@ -1681,7 +1672,9 @@
       "description": "Checks React marketing website app, content, feature, shared, generated, and service import boundaries.",
       "ciRequirements": {
         "repositoryView": "full",
-        "setup": ["node"]
+        "setup": [
+          "node"
+        ]
       },
       "checks": [
         "node --check tool/web/check_website_import_boundaries.mjs",
@@ -1700,7 +1693,9 @@
       "description": "Checks React website/admin feature code does not hand-roll native interactive controls outside shared UI primitive owners.",
       "ciRequirements": {
         "repositoryView": "full",
-        "setup": ["node"]
+        "setup": [
+          "node"
+        ]
       },
       "checks": [
         "node --check tool/web/check_react_ui_primitives.mjs",
@@ -1718,7 +1713,9 @@
       "description": "Checks React website/admin app, feature, and story code does not pass className directly outside shared primitive owner files.",
       "ciRequirements": {
         "repositoryView": "full",
-        "setup": ["node"]
+        "setup": [
+          "node"
+        ]
       },
       "checks": [
         "node --check tool/web/check_react_classname_boundaries.mjs",
@@ -1744,7 +1741,9 @@
       "description": "Checks React website/admin feature code routes governed component families through shared primitives, and verifies adopted admin form families declare valid shared field-row interaction modes directly from current source and authored component contracts.",
       "ciRequirements": {
         "repositoryView": "full",
-        "setup": ["node"]
+        "setup": [
+          "node"
+        ]
       },
       "checks": [
         "node --check tool/web/check_react_component_governance.mjs",
@@ -1771,7 +1770,9 @@
       "description": "Checks admin feature UI only exports route/workspace entry components; reusable panels/cards/lists must live in shared admin primitives or stay private.",
       "ciRequirements": {
         "repositoryView": "full",
-        "setup": ["node"]
+        "setup": [
+          "node"
+        ]
       },
       "checks": [
         "node --check tool/web/check_admin_feature_exports.mjs",
@@ -1846,7 +1847,9 @@
       "description": "Validates design/admin/components.json against admin route/workspace exports, shared admin UI primitives, feedback providers, and ready Storybook catchComponent coverage.",
       "ciRequirements": {
         "repositoryView": "full",
-        "setup": ["node"]
+        "setup": [
+          "node"
+        ]
       },
       "checks": [
         "node --check tool/web/check_admin_components.mjs",
@@ -1872,7 +1875,9 @@
       "description": "Checks React website/admin feature boundaries for route-owned state and cross-feature ownership drift.",
       "ciRequirements": {
         "repositoryView": "full",
-        "setup": ["node"]
+        "setup": [
+          "node"
+        ]
       },
       "checks": [
         "node --check tool/web/check_react_architecture_boundaries.mjs",
@@ -1895,7 +1900,9 @@
       "description": "Ratchets React feature controller and use-hook manual async/loading state so new server-state work moves to TanStack Query instead of local loading flags.",
       "ciRequirements": {
         "repositoryView": "full",
-        "setup": ["node"]
+        "setup": [
+          "node"
+        ]
       },
       "checks": [
         "node --check tool/web/check_react_query_state.mjs",
@@ -1974,11 +1981,12 @@
         "tool/lib/lint_probe_batch.mjs",
         "tool/lib/lint_probe_batch.test.mjs"
       ],
-      "alsoCheckIds": ["lint:probe-batch-protocol"],
+      "alsoCheckIds": [
+        "lint:probe-batch-protocol"
+      ],
       "checks": [
         "bash -n tool/check_catch_ui_lints.sh",
         "node tool/design/build_lint_enforcement_tables.mjs --check",
-        "node tool/design/check_ui_lint_promotion_parity.mjs",
         "bash tool/check_catch_ui_lints.sh"
       ],
       "role": "gate",
@@ -2085,30 +2093,6 @@
         "path": "tool/design/check_component_enforcement_coverage.test.mjs",
         "contains": [
           "requires decisions, executable verification, live waivers, ownership, and probes"
-        ]
-      }
-    },
-    {
-      "id": "design:ui-lint-promotion-parity",
-      "category": "design",
-      "path": "tool/design/check_ui_lint_promotion_parity.mjs",
-      "command": "node tool/design/check_ui_lint_promotion_parity.mjs",
-      "safety": "local",
-      "status": "active",
-      "description": "Proves promoted regex scanner categories have seeded analyzer-plugin fixtures before retirement.",
-      "checks": [
-        "node --test tool/design/check_ui_lint_promotion_parity.test.mjs",
-        "node tool/design/check_ui_lint_promotion_parity.mjs"
-      ],
-      "role": "gate",
-      "rules": [
-        "UI-LINT-001"
-      ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/design/check_ui_lint_promotion_parity.test.mjs",
-        "contains": [
-          "rejects retired categories and missing seeded fixtures"
         ]
       }
     },
@@ -2290,6 +2274,48 @@
         "contains": [
           "known-bad new oversized Flutter test spec fails closed",
           "ratchet rejects growth and asks reductions to refresh the baseline"
+        ]
+      }
+    },
+    {
+      "id": "audit:flutter-source-size",
+      "category": "audit",
+      "path": "tool/architecture/check_flutter_source_size.mjs",
+      "command": "node tool/architecture/check_flutter_source_size.mjs --check",
+      "safety": "local-readonly",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        "lib/**/*.dart",
+        "packages/**/*.dart",
+        "widgetbook/lib/**/*.dart",
+        "tool/architecture/flutter_source_size_baseline.json",
+        "tool/architecture/check_flutter_source_size.test.mjs",
+        "tool/test/check_flutter_test_size.mjs"
+      ],
+      "description": "Keeps new and split handwritten Dart sources within 800 lines, ratchets legacy debt against Git history, and bounds the exact CatchField facade exception at 1,150 lines.",
+      "checks": [
+        "node --check tool/architecture/check_flutter_source_size.mjs",
+        "node --test tool/architecture/check_flutter_source_size.test.mjs",
+        "node tool/architecture/check_flutter_source_size.mjs --check"
+      ],
+      "role": "ratchet",
+      "rules": [
+        "FLUTTER-SOURCE-MAINTAINABILITY-001"
+      ],
+      "baseline": "tool/architecture/flutter_source_size_baseline.json",
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/architecture/check_flutter_source_size.test.mjs",
+        "contains": [
+          "known-bad new source at 801 lines fails in every owned source root",
+          "CLI known-bad Field over-cap fails even when a baseline records the same size",
+          "CLI sees untracked source, permits reductions, and rejects a hand-broadened baseline"
         ]
       }
     },
@@ -3159,7 +3185,7 @@
       "path": "tool/flutter_with_env.sh",
       "command": "./tool/flutter_with_env.sh",
       "safety": "local-build-run",
-      "status": "active",
+      "status": "internal",
       "description": "Runs Flutter with active Firebase environment and dart defines, with a bounded CI-only retry for the exact CocoaPods GitHub self-signed-certificate failure.",
       "checks": [
         "bash -n tool/flutter_with_env.sh",
@@ -3191,7 +3217,9 @@
       ],
       "ciRequirements": {
         "repositoryView": "full",
-        "setup": ["node"]
+        "setup": [
+          "node"
+        ]
       },
       "category": "env",
       "path": "tool/ci/check_toolchain_consistency.sh",
@@ -3238,7 +3266,7 @@
       "command": "node tool/platform/check_app_package_graph.mjs",
       "safety": "local-readonly",
       "status": "active",
-      "description": "Verifies Consumer-only native SDK declarations in clean checkouts, enriches reports with generated plugin metadata when available, keeps both apps on one repository workspace lock, and enforces the Flutter-only catch_tokens dependency boundary.",
+      "description": "Verifies app-role native SDK declarations, one workspace lock, the Flutter-only catch_tokens boundary, and the provider/backend/app-free catch_ui dependency boundary with Skeletonizer pinned to 2.1.3.",
       "checks": [
         "node --check tool/platform/check_app_package_graph.mjs",
         "node --test tool/platform/check_app_package_graph.test.mjs",
@@ -3253,7 +3281,9 @@
         "type": "test",
         "path": "tool/platform/check_app_package_graph.test.mjs",
         "contains": [
-          "rejects consumer SDKs in the Host graph"
+          "rejects consumer SDKs in the Host graph",
+          "token package rejects every dependency outside Flutter",
+          "UI package rejects app, state, backend and unrelated dependencies"
         ]
       }
     },
@@ -4490,7 +4520,9 @@
       "description": "Validates Organizer Intake reads completed Supply Intake runs from Firestore, every review channel writes through an audited callable-backed Firestore collection, and retired Admin operational JSON snapshots are not reintroduced.",
       "ciRequirements": {
         "repositoryView": "full",
-        "setup": ["node"]
+        "setup": [
+          "node"
+        ]
       },
       "checks": [
         "node --check tool/organizer_intake/check_admin_review_bridge.mjs",
@@ -4610,7 +4642,7 @@
       "path": "website/scripts/verifyHosting404.mjs",
       "command": "node website/scripts/verifyHosting404.mjs",
       "safety": "remote-read",
-      "status": "active",
+      "status": "internal",
       "description": "Asserts that a unique unknown URL on a supplied marketing Hosting origin returns HTTP 404 without following redirects.",
       "checks": [
         "node --check website/scripts/verifyHosting404.mjs"
@@ -4623,7 +4655,7 @@
       "path": "tool/marketing/website_meta_contract.mjs",
       "command": "node --test tool/marketing/website_meta_contract.test.mjs",
       "safety": "local",
-      "status": "active",
+      "status": "internal",
       "description": "Validates the shared static website metadata content used by client and postbuild readers.",
       "checks": [
         "node --check tool/marketing/website_meta_contract.mjs",
@@ -4631,9 +4663,6 @@
         "node --test tool/marketing/website_meta_contract.test.mjs"
       ],
       "role": "gate",
-      "rules": [
-        "WEB-ROUTE-001"
-      ],
       "vacuityProof": {
         "type": "test",
         "path": "tool/marketing/website_meta_contract.test.mjs",
@@ -4696,7 +4725,7 @@
       "path": "tool/marketing/frame_device_capture.dart",
       "command": "dart run tool/marketing/frame_device_capture.dart",
       "safety": "local-writes-artifacts",
-      "status": "active",
+      "status": "internal",
       "description": "Wraps a raw app capture in the configured marketing device frame.",
       "checks": [
         "dart analyze tool/marketing/frame_device_capture.dart"
@@ -4902,7 +4931,7 @@
       "path": "tool/ui_capture/check_route_inventory_test.mjs",
       "command": "node --test tool/ui_capture/check_route_inventory_test.mjs",
       "safety": "local",
-      "status": "active",
+      "status": "internal",
       "description": "Pins redirect-only route exceptions plus deterministic normalized presentation expressions and presentation targets.",
       "checks": [
         "node --test tool/ui_capture/check_route_inventory_test.mjs"
@@ -5252,7 +5281,7 @@
       "path": "tool/design/component_concepts.mjs",
       "command": "node --test tool/design/component_concepts.test.mjs",
       "safety": "local",
-      "status": "active",
+      "status": "internal",
       "description": "Provides deterministic component-concept identity, collision-key, topology, and metric helpers.",
       "checks": [
         "node --check tool/design/component_concepts.mjs",
@@ -5341,7 +5370,7 @@
       "path": "tool/design/claude_design_handoff.mjs",
       "command": "node --check tool/design/claude_design_handoff.mjs",
       "safety": "local-readonly",
-      "status": "active",
+      "status": "internal",
       "role": "generator",
       "description": "Generates the deterministic Badge + Field Claude Design request and validates a referenced receipt against source, concept, and supported-state digests.",
       "checks": [
@@ -5721,6 +5750,7 @@
       "description": "Validates component contracts, primitive contract-state previews, and screen preview ids against generated Widgetbook directories.",
       "checks": [
         "node --check tool/design/check_widgetbook_contract_refs.mjs",
+        "node --test tool/design/check_widgetbook_contract_refs.test.mjs",
         "node tool/design/check_widgetbook_contract_refs.mjs --check"
       ],
       "role": "finder"
@@ -6073,42 +6103,6 @@
       ]
     },
     {
-      "id": "design:preview-app",
-      "category": "design",
-      "path": "tool/design/design_personality_preview_app.dart",
-      "command": "flutter run -t tool/design/design_personality_preview_app.dart",
-      "safety": "local-ui",
-      "status": "active",
-      "description": "Legacy preview app for locked light, dark event, and activity editorial identity checks.",
-      "checks": [
-        "flutter analyze --no-fatal-infos tool/design/design_personality_preview_app.dart"
-      ]
-    },
-    {
-      "id": "design:render-personality",
-      "category": "design",
-      "path": "tool/design/render_design_personality_previews.dart",
-      "command": "dart tool/design/render_design_personality_previews.dart",
-      "safety": "local-writes-assets",
-      "status": "active",
-      "description": "Renders legacy locked identity preview strips.",
-      "checks": [
-        "flutter analyze --no-fatal-infos tool/design/render_design_personality_previews.dart"
-      ]
-    },
-    {
-      "id": "design:visual-review",
-      "category": "design",
-      "path": "tool/design/visual_review_app.dart",
-      "command": "flutter run -t tool/design/visual_review_app.dart",
-      "safety": "local-ui",
-      "status": "active",
-      "description": "Visual review app entrypoint.",
-      "checks": [
-        "flutter analyze --no-fatal-infos tool/design/visual_review_app.dart"
-      ]
-    },
-    {
       "id": "audit:fn-rate-limits",
       "category": "audit",
       "path": "tool/audit/check_fn_rate_limits.mjs",
@@ -6456,7 +6450,11 @@
       "status": "active",
       "ciRequirements": {
         "repositoryView": "full",
-        "setup": ["node", "root-npm", "playwright"]
+        "setup": [
+          "node",
+          "root-npm",
+          "playwright"
+        ]
       },
       "description": "Builds the marketing Storybook, then captures and compares current-platform desktop/mobile screenshots for registry-ready website and shared web-ui stories, retaining actual and diff artifacts on failure.",
       "checks": [
@@ -6656,7 +6654,7 @@
       ],
       "command": "dart run --packages=tool/widget_dedupe/.dart_tool/package_config.json test:test tool/widget_dedupe/test/fingerprint_extractor_test.dart",
       "safety": "local",
-      "status": "active",
+      "status": "internal",
       "ciRequirements": {
         "repositoryView": "full",
         "setup": [

@@ -157,7 +157,7 @@ class _EventSuccessCompanionScreenState
       momentContents.add(
         momentKey == null
             ? content
-            : CompanionStageContentTransition(
+            : CompanionStageTransitionViewport(
                 momentKey: momentKey,
                 child: content,
               ),
@@ -392,7 +392,7 @@ class _EventSuccessCompanionScreenState
       final isRotations =
           screenState.revealKind == EventSuccessRevealAssignmentKind.rotations;
       addMomentContent(
-        EventSuccessLiveRevealAttendeeCard(
+        EventSuccessAttendeeRevealSurface(
           event: event,
           plan: plan,
           kind: screenState.revealKind!,
@@ -481,7 +481,7 @@ class _EventSuccessCompanionScreenState
     }
     if (!attendeeMoment.hasVisibleModule) {
       addMomentContent(
-        const NoCompanionActionsCard(),
+        const CompanionActionsEmptyState(),
         momentKey: screenState.transitionKey(
           context
               .l10n
@@ -517,7 +517,7 @@ class _EventSuccessCompanionScreenState
       ),
       momentKind: attendeeMoment.kind,
       referenceNow: referenceNow,
-      content: CompanionMomentStageContent(children: momentContents),
+      content: CompanionMomentPageBody(children: momentContents),
     );
   }
 

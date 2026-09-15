@@ -4,8 +4,8 @@
   "source": {
     "path": "lib/routing/route_contract.dart",
     "runtimePath": "lib/routing/go_router.dart",
-    "normalizedFileSha256": "102246558f20a52299fe4fa7a266354ea28df93c9c3ef408f2d21b81afd58924",
-    "routeContractSha256": "a4a0b4b309a2cd5840a71d355897e1f832b0c98b53915ee132e4558ff8272113",
+    "normalizedFileSha256": "d58dc7023764a3566ce20f74b583ce7fc62c8c7785feb6bfc86362cee39f45eb",
+    "routeContractSha256": "201100c69a1d9af09e2701ec817a5abe998e8d9171d1634df6cbf75922c6c234",
     "goRouteCount": 86,
     "shellBranchCount": 9,
     "enumRouteCount": 71,
@@ -668,7 +668,7 @@
       "runtimeParentId": "hostAudienceScreen",
       "runtimePathExpression": "'forms/:formId'",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>HostFormBuilderScreen(organizerId:state.uri.queryParameters['organizerId']??'',formId:state.pathParameters['formId']!,initialView:HostFormWorkspaceView.values.where((view)=>view.name==state.uri.queryParameters['view']).firstOrNull)",
+      "presentationExpression": "(context,state)=>HostFormBuilderScreen(organizerId:state.uri.queryParameters['organizerId']??'',formId:state.pathParameters['formId']!,initialView:hostFormViewFromQuery(state.uri.queryParameters['view']))",
       "presentationTarget": "HostFormBuilderScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
@@ -1168,9 +1168,9 @@
   ],
   "imperativePageRoutes": [
     {
-      "siteId": "material-page:lib/core/widgets/ordered_photo_picker.dart:1",
-      "sourcePath": "lib/core/widgets/ordered_photo_picker.dart",
-      "line": 200,
+      "siteId": "material-page:lib/core/widgets/ordered_photo_picker_actions.dart:1",
+      "sourcePath": "lib/core/widgets/ordered_photo_picker_actions.dart",
+      "line": 9,
       "ordinal": 1,
       "presentationExpression": "(_)=>OrderedPhotoManagerScreen(photos:photos,onAddPhotos:widget.onAddPhotos,onRemovePhoto:widget.onRemovePhoto,onReorderPhoto:widget.onReorderPhoto,onRetryPhoto:widget.onRetryPhoto,onAddPhotosInManager:widget.onAddPhotosInManager,canAdd:widget.maxPhotos==null||photos.length<widget.maxPhotos!)",
       "presentationTarget": "OrderedPhotoManagerScreen",
@@ -1195,36 +1195,36 @@
       "fullscreenDialogExpression": "true"
     },
     {
-      "siteId": "material-page:lib/hosts/presentation/edit_hosted_event_screen.dart:1",
-      "sourcePath": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 865,
+      "siteId": "material-page:lib/hosts/presentation/edit_hosted_event_actions.dart:1",
+      "sourcePath": "lib/hosts/presentation/edit_hosted_event_actions.dart",
+      "line": 56,
       "ordinal": 1,
       "presentationExpression": "(_)=>LocationPickerScreen(countryIsoCode:countryIsoCodeForCityName(widget.club.location),initialLocation:locationState.startingPoint,initialCenter:locationState.startingPoint??deviceLocation,initialLabel:locationState.pickerInitialLabel,loadMapTiles:widget.loadMapTiles)",
       "presentationTarget": "LocationPickerScreen",
       "fullscreenDialogExpression": "true"
     },
     {
-      "siteId": "material-page:lib/hosts/presentation/edit_hosted_event_screen.dart:2",
-      "sourcePath": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-      "line": 1043,
+      "siteId": "material-page:lib/hosts/presentation/edit_hosted_event_actions.dart:2",
+      "sourcePath": "lib/hosts/presentation/edit_hosted_event_actions.dart",
+      "line": 234,
       "ordinal": 2,
       "presentationExpression": "(_)=>LocationPickerScreen(countryIsoCode:countryIsoCodeForCityName(widget.club.location),initialLocation:current==null?null:LocationCoordinate(current.latitude,current.longitude),initialCenter:(current==null?_startingPoint:LocationCoordinate(current.latitude,current.longitude))??deviceLocation,initialLabel:current?.name,loadMapTiles:widget.loadMapTiles)",
       "presentationTarget": "LocationPickerScreen",
       "fullscreenDialogExpression": "true"
     },
     {
-      "siteId": "material-page:lib/hosts/presentation/event_management/create/create_event_screen.dart:1",
-      "sourcePath": "lib/hosts/presentation/event_management/create/create_event_screen.dart",
-      "line": 389,
+      "siteId": "material-page:lib/hosts/presentation/event_management/create/create_event_actions.dart:1",
+      "sourcePath": "lib/hosts/presentation/event_management/create/create_event_actions.dart",
+      "line": 49,
       "ordinal": 1,
       "presentationExpression": "(_)=>LocationPickerScreen(countryIsoCode:countryIsoCodeForCityName(widget.club.location),initialLocation:_locationState.startingPoint,initialCenter:_locationState.initialCenter(deviceLocation),initialLabel:_locationState.initialLabel(meetingPoint:_meetingPointController.text),loadMapTiles:widget.loadMapTiles)",
       "presentationTarget": "LocationPickerScreen",
       "fullscreenDialogExpression": "true"
     },
     {
-      "siteId": "material-page:lib/hosts/presentation/event_management/create/create_event_screen.dart:2",
-      "sourcePath": "lib/hosts/presentation/event_management/create/create_event_screen.dart",
-      "line": 439,
+      "siteId": "material-page:lib/hosts/presentation/event_management/create/create_event_actions.dart:2",
+      "sourcePath": "lib/hosts/presentation/event_management/create/create_event_actions.dart",
+      "line": 99,
       "ordinal": 2,
       "presentationExpression": "(_)=>LocationPickerScreen(countryIsoCode:countryIsoCodeForCityName(widget.club.location),initialLocation:current==null?null:LocationCoordinate(current.latitude,current.longitude),initialCenter:(current==null?_locationState.startingPoint:LocationCoordinate(current.latitude,current.longitude))??deviceLocation,initialLabel:current?.name,loadMapTiles:widget.loadMapTiles)",
       "presentationTarget": "LocationPickerScreen",

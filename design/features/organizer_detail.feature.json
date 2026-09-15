@@ -23,7 +23,9 @@
       },
       "bindings": {
         "previewSources": [
-          "widgetbook/lib/clubs/club_detail_use_cases.dart"
+          "widgetbook/lib/clubs/catalog/dock.dart",
+          "widgetbook/lib/clubs/catalog/schedule.dart",
+          "widgetbook/lib/clubs/catalog/screen.dart"
         ],
         "actionOwners": [
           {
@@ -605,7 +607,7 @@
       },
       "bindings": {
         "previewSources": [
-          "widgetbook/lib/hosts/host_operations_use_cases.dart"
+          "widgetbook/lib/hosts/operations/club_preview.dart"
         ],
         "actionOwners": [
           {

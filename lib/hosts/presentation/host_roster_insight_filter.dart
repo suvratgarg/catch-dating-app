@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_event_roster_insights.dart';
 
 enum HostRosterInsightFilter {
   all,

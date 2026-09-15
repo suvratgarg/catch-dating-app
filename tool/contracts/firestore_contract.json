@@ -679,7 +679,7 @@
       "path": "organizerManualSendTasks/{taskId}",
       "rulesMatch": "/organizerManualSendTasks/{taskId}",
       "typescriptInterface": "OrganizerManualSendTaskDocument",
-      "dartModel": "lib/hosts/data/host_crm_repository.dart",
+      "dartModel": "lib/hosts/domain/crm/host_manual_send_task.dart",
       "rulesTestFile": "functions/test/firestore.rules.test.cjs",
       "rulesTestNames": [
         "keeps invite secrets, touches, share intents, and attribution server-only"
@@ -978,7 +978,7 @@
       "path": "organizerWhatsappThreads/{threadId}",
       "rulesMatch": "/organizerWhatsappThreads/{threadId}",
       "typescriptInterface": "OrganizerWhatsappThreadDocument",
-      "dartModel": "lib/hosts/data/host_crm_repository.dart",
+      "dartModel": "lib/hosts/domain/crm/host_whatsapp_thread.dart",
       "rulesTestFile": "functions/test/firestore.rules.test.cjs",
       "owner": "organizer WhatsApp inbox and reply callables",
       "read": "server only; managers receive a sanitized callable projection",
@@ -997,7 +997,7 @@
       "path": "organizerWhatsappMessages/{messageId}",
       "rulesMatch": "/organizerWhatsappMessages/{messageId}",
       "typescriptInterface": "OrganizerWhatsappMessageDocument",
-      "dartModel": "lib/hosts/data/host_crm_repository.dart",
+      "dartModel": "lib/hosts/domain/crm/host_whatsapp_thread.dart",
       "rulesTestFile": "functions/test/firestore.rules.test.cjs",
       "owner": "organizer WhatsApp inbox and reply callables",
       "read": "server only; managers receive bounded retained bodies through a callable",

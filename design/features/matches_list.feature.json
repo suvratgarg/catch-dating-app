@@ -23,7 +23,7 @@
       },
       "bindings": {
         "previewSources": [
-          "widgetbook/lib/matches/matches_chat_use_cases.dart"
+          "widgetbook/lib/matches/catalog/consumer_inbox.dart"
         ],
         "actionOwners": [
           {

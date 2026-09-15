@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/routing/app_deep_links.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
+import 'package:catch_dating_app/routing/host_legacy_redirects.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

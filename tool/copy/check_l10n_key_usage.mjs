@@ -377,6 +377,8 @@ export function evaluateOrphanRatchet(orphanedKeys, baseline) {
 
 export function baselineFromOrphans(orphanedKeys) {
   return {
+    owner: "app_architecture",
+    targetPhase: "docs/plans/ui_system_blueprint_and_conformance_audit.md#phase-6--continuous-conformance-folds-into-existing-lanes",
     version: 1,
     generatedBy: "node tool/copy/check_l10n_key_usage.mjs --write-baseline",
     checkCommand: "node tool/copy/check_l10n_key_usage.mjs --check",

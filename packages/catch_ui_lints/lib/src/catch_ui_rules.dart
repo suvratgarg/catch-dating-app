@@ -86,7 +86,7 @@ class _CatchFeedbackVisitor extends SimpleAstVisitor<void> {
             'package:catch_dating_app/core/riverpod_ui/catch_notice_overlay.dart' &&
         !const {
           '/lib/app.dart',
-          '/widgetbook/lib/primitives/core_catalog_use_cases.dart',
+          '/widgetbook/lib/primitives/catalog/feedback.dart',
         }.any(path.endsWith)) {
       rule.reportAtNode(
         node,
@@ -111,7 +111,7 @@ class _CatchFeedbackVisitor extends SimpleAstVisitor<void> {
           '/packages/catch_ui/lib/src/patterns/catch_root_screen_scroll_view.dart',
           '/lib/core/widgets/catch_tabbed_screen.dart',
           '/packages/catch_ui/lib/src/patterns/catch_route_scaffold.dart',
-          '/widgetbook/lib/primitives/primitive_contract_use_cases.dart',
+          '/widgetbook/lib/primitives/contracts/feedback.dart',
         }.any(path.endsWith)) {
       rule.reportAtNode(
         node,

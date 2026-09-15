@@ -1,7 +1,7 @@
 ---
 doc_id: claude_widgetbook_inventory
-version: 0.3.0
-updated: 2026-09-14
+version: 0.3.4
+updated: 2026-09-15
 owner: product_design_parity
 status: active
 ---
@@ -31,7 +31,7 @@ The goal of this pass is to answer:
 | Claude foundation CSS | `/Users/suvratgarg/Downloads/Catch Design System (2)/colors_and_type.css` | CSS variables, spacing, radius, shadows, typography roles, font roles, photo grade, and dark theme. |
 | Claude templates | `/Users/suvratgarg/Downloads/Catch Design System (2)/templates/` | Screen blueprints composed from components. Not treated as primitive inventory unless a reusable component is exported in the manifest. |
 | Local Widgetbook | `widgetbook/lib/main.directories.g.dart` | Generated source of truth for currently visible Widgetbook entries. |
-| Local Widgetbook sources | `widgetbook/lib/primitives/core_catalog_use_cases.dart`, `widgetbook/lib/primitives/primitive_contract_use_cases.dart` | Annotated use cases for broad catalog and formal contract previews. |
+| Local Widgetbook sources | `widgetbook/lib/primitives/catalog/`, `widgetbook/lib/primitives/contracts/` | Annotated use cases for broad catalog and formal contract previews. |
 | Local component contracts | `design/components/catch.components.json` | Current allowed cross-tool component contract registry. |
 | Local design tokens | `design/tokens/catch.tokens.json` | DTCG-shaped token source mirrored into generated Dart/CSS. |
 | Local Dart token/style sources | `lib/core/theme/catch_tokens.dart`, `lib/core/theme/catch_spacing.dart`, `lib/core/theme/catch_text_styles.dart`, `lib/core/theme/catch_icons.dart`, `lib/core/theme/activity_palette.dart` | Runtime token, gap, style, icon, and activity palette implementations. |
@@ -696,7 +696,7 @@ they still need inventory tracking until the direct/alias mapping is settled.
 | `ContactRow` | `_ContactRow` | Private source-backed candidate in `lib/clubs/presentation/detail/widgets/club_detail_body.dart`; reusable contract decision pending because the current widget is club-detail private. |
 | `ConflictSheet` | `BookingConflictSheet` | Source-backed Widgetbook entry added under `[Event Detail]/Sheets`; capacity/sold-out is not part of the current primitive API. |
 | `ConversationTopBar` | `CatchTopBar.identity` | Source-backed Widgetbook entry added under `[P1 product surfaces]/Matches and chat/Primitives`; alias still needs formal component-contract decision. |
-| `LiveConsole` | event-success host live widgets | Source-backed candidate in `lib/event_success/presentation/host_parts/event_success_host_live.dart`; direct reusable boundary still pending because the implementation is screen/section-level. |
+| `LiveConsole` | `EventSuccessControlRoomPageBody` | Production console in `lib/event_success/presentation/host_live/event_success_control_room_page_body.dart`, directly mounted in `[P1 product surfaces]/Event Success/Host live components`. Preview tests cover both themes at text scales 1.0 and 2.0. |
 | `MetricGrid` | `_HostAnalyticsMetricGrid` / `_UserAnalyticsMetricGrid` | Private source-backed candidates exist in host and user analytics panels; needs shared analytics-grid extraction before formal component coverage. |
 | `PhotoGrid` | `PhotoGrid` | Source-backed widget exists in `lib/image_uploads/presentation/photo_grid.dart` and is embedded in profile Widgetbook states; standalone component entry still pending. |
 | `ProfilePhoto` | `ProfilePhoto` / `ProfilePhotoEditorScreen` | Domain model and editor route exist; design component boundary likely belongs to photo slot/grid rather than the data model. |
@@ -705,7 +705,7 @@ they still need inventory tracking until the direct/alias mapping is settled.
 | `RosterRow` | `CatchRosterRow` | Formal `catch.roster_row` contract under `[Core primitives]/Host operations`; no duplicate catalog page remains. |
 | `RosterTable` | `CatchRosterTable` | Formal `catch.roster_table` contract under `[Core primitives]/Host operations`; no duplicate catalog page remains. |
 | `RosterTiles` | `CatchRosterTiles` | Formal `catch.roster_tiles` contract under `[Core primitives]/Host operations`; no duplicate catalog page remains. |
-| `RotationCard` | event-success live reveal widgets | Source-backed candidate in `lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart`; code comment explicitly maps the design-system `RotationCard` round list. |
+| `RotationCard` | event-success live reveal widgets | Source-backed candidate in `lib/event_success/presentation/reveal/event_success_reveal_round_row_list.dart`; code comment explicitly maps the design-system `RotationCard` round list. |
 | `ScreenBody` | `CatchScreenBody` | Formal `catch.screen_body` contract under `[Core primitives]/Sections`; no duplicate catalog page remains. |
 | `SectionStack` | `CatchSectionStack` | Formal `catch.section_stack` contract under `[Core primitives]/Sections`; no duplicate catalog page remains. |
 | `StrideCard` | `DashboardStrideSection` / `StrideCard` | Source-backed Widgetbook entry added under `[P1 product surfaces]/Dashboard primitives`; direct card-vs-section contract split remains a design decision. |

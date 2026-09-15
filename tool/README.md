@@ -212,6 +212,11 @@ enum/path handling, subcommands, and every apply or production confirmation
 boundary. Do not broaden this helper by moving product or remote-write policy
 into a generic parser.
 
+`meta:enforcement-integrity` discovers every repository `*_baseline.json`
+and requires an `owner` identifying its source document plus a `targetPhase` Markdown heading
+reference. Fixture baselines obey the same rule. Baseline refreshers must emit
+both fields; metadata belongs in the existing baseline, not a separate ledger.
+
 ## Flutter Test Evidence
 
 `tool/test/flutter_coverage_report.mjs` converts `coverage/lcov.info` into
@@ -233,6 +238,22 @@ node --test tool/test/flutter_coverage_report.test.mjs
 node tool/test/flutter_coverage_report.mjs --lcov coverage/lcov.info
 node tool/test/check_flutter_test_size.mjs --check
 ```
+
+## Flutter Source Budgets
+
+`node tool/run.mjs check audit:flutter-source-size` enforces the architecture
+owner's 800-line handwritten source budget across app, packages, and Widgetbook.
+The exact Field constructor facade has its approved 1,150-line ceiling; both
+ordinary debt and the facade can only shrink. Git comparison prevents manually
+adding new or split oversized files to the legacy baseline. The check uses Node
+and repository source directly, so it does not start a Flutter analyzer.
+
+After a coherent split, run
+`node tool/architecture/check_flutter_source_size.mjs --write-baseline` and
+commit the reduction with the source changes. `--base` defaults to `origin/main`;
+an unresolved comparison base fails closed. Generated source is excluded only
+by the producer identities documented in
+`docs/app_architecture.md#source-size-budgets`.
 
 ## Analyzer-Backed UI Gate
 
@@ -266,6 +287,14 @@ repository-root `dart analyze --format machine` census and
 complete zero-diagnostic invariant. In this workspace,
 `flutter analyze` and `dart analyze lib` do not load the Catch plugin; never
 use either command as proof that a Catch UI rule is clean.
+
+Phase 5 also retired the broad `tool/scan_architecture.py` report in favor of
+the focused dependency, adopted-boundary, mutation-error, error-catalog,
+source-size, and widget-classification gates. The three unreferenced Dart
+personality/visual-review entrypoints are removed; Widgetbook goldens, UI
+captures, and registered reference-screen comparisons own visual review.
+Validators already executed by a canonical aggregate check are `internal` in
+the manifest, so the same probes run without advertising duplicate check IDs.
 
 Use `--summary` for review-friendly output, `--count` for cheap automated
 checks that only need a numeric debt signal, and

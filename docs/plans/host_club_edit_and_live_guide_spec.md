@@ -68,7 +68,7 @@ Non-goals:
   `contracts/` schemas in Phases 0–3. Phase 4 touches domain semantics but
   MUST NOT rewrite stored documents (see §8 back-compat rules).
 - No redesign of the per-event live companion / reveal / wingman runtime
-  surfaces (`event_success_companion_*`, `live_reveal_parts/`).
+  surfaces (`event_success_companion_*`, `presentation/reveal/`).
 - No new visual identity work; everything composes existing `CatchField` /
   `CatchSection` / `CatchSurface` primitives.
 - No changes to `packages/catch_ui_lints` (editing the analyzer plugin
@@ -142,7 +142,7 @@ Non-goals:
    `widgetbook/lib/hosts/` and `widgetbook/lib/event_success/`.
 8. **Do not** modify `EventSuccessPlan` runtime consumption, reveal/companion
    flows, or anything under `lib/event_success/presentation/companion_parts/`
-   and `live_reveal_parts/`.
+   and `presentation/reveal/`.
 
 ## 4. Phase 0 — Hygiene groundwork (no visual redesign)
 

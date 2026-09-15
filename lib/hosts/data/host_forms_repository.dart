@@ -3,8 +3,16 @@ import 'package:catch_dating_app/core/data/read_limit_policy.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
-import 'package:catch_dating_app/hosts/domain/host_form.dart';
-import 'package:catch_dating_app/hosts/domain/host_form_operations.dart';
+import 'package:catch_dating_app/hosts/domain/forms/host_form_analytics.dart';
+import 'package:catch_dating_app/hosts/domain/forms/host_form_automation.dart';
+import 'package:catch_dating_app/hosts/domain/forms/host_form_configuration.dart';
+import 'package:catch_dating_app/hosts/domain/forms/host_form_conversion.dart';
+import 'package:catch_dating_app/hosts/domain/forms/host_form_definition.dart';
+import 'package:catch_dating_app/hosts/domain/forms/host_form_editor.dart';
+import 'package:catch_dating_app/hosts/domain/forms/host_form_export.dart';
+import 'package:catch_dating_app/hosts/domain/forms/host_form_response.dart';
+import 'package:catch_dating_app/hosts/domain/forms/host_form_share.dart';
+import 'package:catch_dating_app/hosts/domain/forms/host_form_summary.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 

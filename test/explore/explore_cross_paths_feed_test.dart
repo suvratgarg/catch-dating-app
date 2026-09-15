@@ -4,7 +4,7 @@ import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/viewer_event_availability.dart';
 import 'package:catch_dating_app/explore/presentation/explore_cross_paths_provider.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
-import 'package:catch_dating_app/explore/presentation/explore_screen_state.dart';
+import 'package:catch_dating_app/explore/presentation/explore_mixed_feed_state.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../clubs/clubs_test_helpers.dart' as clubs;

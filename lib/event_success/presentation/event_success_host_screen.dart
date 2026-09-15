@@ -1,45 +1,34 @@
 import 'dart:async';
-import 'dart:math' as math;
 
-import 'package:catch_dating_app/core/app_error_message.dart';
-import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
-import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
-import 'package:catch_dating_app/core/responsive/component_breakpoints.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
-import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
-import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_activity_profile.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_assignment.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_exclusion_ledger.dart';
-import 'package:catch_dating_app/event_success/domain/event_success_feature_state.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_layout.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_models.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_playbooks.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_preference.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_presence.dart';
-import 'package:catch_dating_app/event_success/domain/event_success_runtime.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_standings.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_structure.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_wingman_request.dart';
+import 'package:catch_dating_app/event_success/presentation/assignments/event_success_assignment_profiles.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_controller.dart';
-import 'package:catch_dating_app/event_success/presentation/event_success_conversation_cue_copy.dart';
-import 'package:catch_dating_app/event_success/presentation/event_success_feature_blocks.dart';
+import 'package:catch_dating_app/event_success/presentation/event_success_host_fixture_actions.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_host_screen_state.dart';
+import 'package:catch_dating_app/event_success/presentation/event_success_host_state_adapter.dart';
+import 'package:catch_dating_app/event_success/presentation/event_success_host_workspace_page_body.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_live_effects_controller.dart';
-import 'package:catch_dating_app/event_success/presentation/event_success_live_reveal_card.dart';
-import 'package:catch_dating_app/event_success/presentation/event_success_room_map.dart';
-import 'package:catch_dating_app/event_success/presentation/event_success_room_setup_section.dart';
-import 'package:catch_dating_app/event_success/presentation/event_success_setup_body.dart';
-import 'package:catch_dating_app/event_success/presentation/event_success_skeletons.dart';
+import 'package:catch_dating_app/event_success/presentation/event_success_live_reveal_card_state.dart';
+import 'package:catch_dating_app/event_success/presentation/host_components/event_success_host_resource_error_state.dart';
+import 'package:catch_dating_app/event_success/presentation/host_components/event_success_host_section_skeleton.dart';
 import 'package:catch_dating_app/events/data/event_attendee_repository.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_attendee.dart';
 import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
-import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -47,52 +36,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+export 'package:catch_dating_app/event_success/presentation/event_success_host_fixture_actions.dart';
 export 'package:catch_dating_app/event_success/presentation/event_success_host_screen_state.dart';
-
-part 'host_parts/event_success_host_live.dart';
-part 'host_parts/event_success_host_overrides.dart';
-part 'host_parts/event_success_host_report.dart';
-part 'host_parts/event_success_host_setup.dart';
-part 'host_parts/event_success_host_shared.dart';
-
-abstract final class EventSuccessHostKeys {
-  static const scrollView = ValueKey<String>('event_success.host.scroll_view');
-}
-
-const EdgeInsets _hostLaunchIssueGap = EdgeInsets.only(bottom: CatchSpacing.s1);
-final EdgeInsets _hostWingmanRequestNotePadding = CatchInsets.pageHorizontal
-    .copyWith(bottom: CatchSpacing.s2);
-
-CatchAsyncState<T> _catchAsyncState<T>(AsyncValue<T> value) {
-  return catchAsyncStateFromAsyncValue(value);
-}
+part 'event_success_host_actions.dart';
 
 Object? _mutationError(MutationState<dynamic> state) {
   return state.hasError ? (state as MutationError).error : null;
-}
-
-EventSuccessSpatialLayoutState _eventSuccessSpatialLayoutState({
-  required EventSuccessPlan? plan,
-  required AsyncValue<EventSuccessLayout?> value,
-}) {
-  if (plan == null ||
-      plan.structureConfig.unitKind == EventSuccessUnitKind.wholeGroup) {
-    return const EventSuccessSpatialLayoutState.notApplicable();
-  }
-  if (plan.layoutId == null) {
-    return const EventSuccessSpatialLayoutState.unconfigured();
-  }
-  if (value.isLoading) {
-    return const EventSuccessSpatialLayoutState.loading();
-  }
-  if (value.hasError) {
-    return EventSuccessSpatialLayoutState.error(value.error!);
-  }
-  final layout = value.asData?.value;
-  if (layout == null) {
-    return const EventSuccessSpatialLayoutState.unconfigured();
-  }
-  return EventSuccessSpatialLayoutState.ready(layout);
 }
 
 class EventSuccessHostSection extends ConsumerStatefulWidget {
@@ -245,7 +194,7 @@ class _EventSuccessHostSectionState
                 EventSuccessUnitKind.wholeGroup
         ? ref.watch(eventSuccessSpatialLayoutProvider(event.id))
         : const AsyncData<EventSuccessLayout?>(null);
-    final spatialLayoutState = _eventSuccessSpatialLayoutState(
+    final spatialLayoutState = eventSuccessHostSpatialLayoutState(
       plan: persistedPlan,
       value: spatialLayoutAsync,
     );
@@ -285,7 +234,7 @@ class _EventSuccessHostSectionState
     final assignmentsPreview =
         assignmentsAsync.asData?.value ?? const <EventSuccessAssignment>[];
     final assignmentParticipantUidsKey = eventSuccessPeerUidsKey(
-      _rotationParticipantUids(assignmentsPreview),
+      eventSuccessAssignmentParticipantUids(assignmentsPreview),
     );
     final AsyncValue<List<PublicProfile>> assignmentParticipantProfilesAsync =
         shouldLoadAssignments && assignmentParticipantUidsKey.isNotEmpty
@@ -314,7 +263,7 @@ class _EventSuccessHostSectionState
         rotationAssignmentsAsync.asData?.value ??
         const <EventSuccessAssignment>[];
     final rotationParticipantUidsKey = eventSuccessPeerUidsKey(
-      _rotationParticipantUids(rotationAssignmentsPreview),
+      eventSuccessAssignmentParticipantUids(rotationAssignmentsPreview),
     );
     final AsyncValue<List<PublicProfile>> rotationParticipantProfilesAsync =
         shouldLoadAssignments && rotationParticipantUidsKey.isNotEmpty
@@ -333,7 +282,7 @@ class _EventSuccessHostSectionState
         ? ref.watch(watchEventSuccessWingmanRequestsProvider(event.id))
         : const AsyncData(<EventSuccessWingmanRequest>[]);
     final wingmanProfilesKey = eventSuccessPeerUidsKey(
-      _wingmanRequestProfileUids(
+      eventSuccessWingmanProfileUids(
         wingmanRequestsAsync.asData?.value ??
             const <EventSuccessWingmanRequest>[],
       ),
@@ -348,21 +297,23 @@ class _EventSuccessHostSectionState
     final state = EventSuccessHostSectionState.resolve(
       event: event,
       now: referenceNow,
-      planState: _catchAsyncState(planAsync),
-      rosterState: _catchAsyncState(rosterAsync),
-      scorecardState: _catchAsyncState(scorecardAsync),
-      assignmentsState: _catchAsyncState(assignmentsAsync),
-      assignmentParticipantProfilesState: _catchAsyncState(
+      planState: catchAsyncStateFromAsyncValue(planAsync),
+      rosterState: catchAsyncStateFromAsyncValue(rosterAsync),
+      scorecardState: catchAsyncStateFromAsyncValue(scorecardAsync),
+      assignmentsState: catchAsyncStateFromAsyncValue(assignmentsAsync),
+      assignmentParticipantProfilesState: catchAsyncStateFromAsyncValue(
         assignmentParticipantProfilesAsync,
       ),
-      rotationAssignmentsState: _catchAsyncState(rotationAssignmentsAsync),
-      rotationDraftsState: _catchAsyncState(rotationDraftsAsync),
-      rotationParticipantProfilesState: _catchAsyncState(
+      rotationAssignmentsState: catchAsyncStateFromAsyncValue(
+        rotationAssignmentsAsync,
+      ),
+      rotationDraftsState: catchAsyncStateFromAsyncValue(rotationDraftsAsync),
+      rotationParticipantProfilesState: catchAsyncStateFromAsyncValue(
         rotationParticipantProfilesAsync,
       ),
-      preferencesState: _catchAsyncState(preferencesAsync),
-      wingmanRequestsState: _catchAsyncState(wingmanRequestsAsync),
-      wingmanProfilesState: _catchAsyncState(wingmanProfilesAsync),
+      preferencesState: catchAsyncStateFromAsyncValue(preferencesAsync),
+      wingmanRequestsState: catchAsyncStateFromAsyncValue(wingmanRequestsAsync),
+      wingmanProfilesState: catchAsyncStateFromAsyncValue(wingmanProfilesAsync),
     );
 
     Widget frameCompactLiveState(Widget child) => compactLiveControls
@@ -380,7 +331,7 @@ class _EventSuccessHostSectionState
       case EventSuccessHostSectionStatus.error:
         final retryIntent = state.retryIntent!;
         return frameCompactLiveState(
-          EventSuccessHostResourceError(
+          EventSuccessHostResourceErrorState(
             failure: EventSuccessHostResourceFailure(
               retryIntent: retryIntent,
               error: state.error!,
@@ -398,13 +349,15 @@ class _EventSuccessHostSectionState
         break;
     }
 
-    return EventSuccessHostPanel(
+    return EventSuccessHostWorkspacePageBody(
       event: event,
       plan: state.plan,
       planIsPersisted: state.planIsPersisted,
       spatialLayout: spatialLayoutAsync.asData?.value,
       spatialLayoutState: spatialLayoutState,
-      organizerLayoutsState: _catchAsyncState(organizerLayoutsAsync),
+      organizerLayoutsState: catchAsyncStateFromAsyncValue(
+        organizerLayoutsAsync,
+      ),
       layoutSavePending: upsertLayoutMutation.isPending,
       layoutSaveError: upsertLayoutMutation.hasError
           ? _mutationError(upsertLayoutMutation)
@@ -629,1098 +582,4 @@ class _EventSuccessHostSectionState
       referenceNow: referenceNow,
     );
   }
-
-  Future<void> _saveEventSuccessSetup(EventSuccessSetupSaveRequest request) {
-    return EventSuccessController.saveSetupMutation.run(ref, (tx) async {
-      final basePlan = request.planIsPersisted
-          ? request.plan
-          : await tx
-                .get(eventSuccessControllerProvider.notifier)
-                .ensurePlan(request.event);
-      await tx
-          .get(eventSuccessControllerProvider.notifier)
-          .saveSetup(
-            plan: basePlan,
-            draft: request.draft,
-            layoutId: request.layoutId,
-            attendeePrompt: request.attendeePrompt,
-          );
-    });
-  }
-
-  Future<EventSuccessSpatialActionResult> _controlEventSuccessSpatial({
-    required String eventId,
-    required int expectedRevision,
-    required EventSuccessSpatialAction action,
-    required EventSuccessAssignment assignment,
-    String? destinationUnitId,
-    EventSuccessSpatialScope? scope,
-  }) => EventSuccessController.spatialControlMutation.run(
-    ref,
-    (tx) => tx
-        .get(eventSuccessControllerProvider.notifier)
-        .controlSpatialPlacement(
-          eventId: eventId,
-          expectedRevision: expectedRevision,
-          action: action,
-          moduleId: assignment.moduleId,
-          uid: assignment.uid,
-          destinationUnitId: destinationUnitId,
-          scope: scope,
-        ),
-  );
-
-  Future<void> _generateEventSuccessMicroPods({required String eventId}) {
-    return EventSuccessController.generateMicroPodsMutation.run(
-      ref,
-      (tx) => tx
-          .get(eventSuccessControllerProvider.notifier)
-          .generateMicroPods(eventId: eventId),
-    );
-  }
-
-  Future<void> _generateEventSuccessGuidedRotations({
-    required String eventId,
-    required int expectedRevision,
-  }) {
-    return EventSuccessController.generateGuidedRotationsMutation.run(
-      ref,
-      (tx) => tx
-          .get(eventSuccessControllerProvider.notifier)
-          .generateGuidedRotations(
-            eventId: eventId,
-            expectedRevision: expectedRevision,
-          ),
-    );
-  }
-
-  Future<void> _startEventSuccessRevealCountdown({
-    required String eventId,
-    required int roundIndex,
-    required int expectedRevision,
-  }) {
-    return EventSuccessController.startRevealCountdownMutation.run(
-      ref,
-      (tx) => tx
-          .get(eventSuccessControllerProvider.notifier)
-          .startRevealCountdown(
-            eventId: eventId,
-            roundIndex: roundIndex,
-            expectedRevision: expectedRevision,
-            confirmed: true,
-          ),
-    );
-  }
-
-  Future<void> _revealEventSuccessRound({
-    required String eventId,
-    required int roundIndex,
-    required int expectedRevision,
-  }) {
-    return EventSuccessController.revealRoundMutation.run(
-      ref,
-      (tx) => tx
-          .get(eventSuccessControllerProvider.notifier)
-          .revealRound(
-            eventId: eventId,
-            roundIndex: roundIndex,
-            expectedRevision: expectedRevision,
-            confirmed: true,
-          ),
-    );
-  }
-
-  Future<void> _cancelEventSuccessRevealCountdown({
-    required String eventId,
-    required int expectedRevision,
-  }) {
-    return EventSuccessController.cancelRevealCountdownMutation.run(
-      ref,
-      (tx) => tx
-          .get(eventSuccessControllerProvider.notifier)
-          .cancelRevealCountdown(
-            eventId: eventId,
-            expectedRevision: expectedRevision,
-          ),
-    );
-  }
-
-  Future<void> _recordEventSuccessUnitOutcomes({
-    required String eventId,
-    required int expectedRevision,
-    required int roundIndex,
-    required List<EventSuccessUnitOutcomeEntryInput> entries,
-  }) {
-    return EventSuccessController.recordUnitOutcomesMutation.run(
-      ref,
-      (tx) => tx
-          .get(eventSuccessControllerProvider.notifier)
-          .recordUnitOutcomes(
-            eventId: eventId,
-            expectedRevision: expectedRevision,
-            roundIndex: roundIndex,
-            entries: entries,
-          ),
-    );
-  }
-
-  Future<void> _publishEventSuccessGuidedRotationRound({
-    required String eventId,
-    required int roundIndex,
-    required int expectedRevision,
-  }) {
-    return EventSuccessController.publishRotationRoundMutation.run(
-      ref,
-      (tx) => tx
-          .get(eventSuccessControllerProvider.notifier)
-          .publishGuidedRotationRound(
-            eventId: eventId,
-            roundIndex: roundIndex,
-            expectedRevision: expectedRevision,
-            confirmed: true,
-          ),
-    );
-  }
-
-  Future<void> _overrideEventSuccessGroupAssignments({
-    required String eventId,
-    required List<EventSuccessGroupOverrideRound> rounds,
-  }) {
-    return EventSuccessController.overrideGroupAssignmentsMutation.run(
-      ref,
-      (tx) => tx
-          .get(eventSuccessControllerProvider.notifier)
-          .overrideGroupAssignments(eventId: eventId, rounds: rounds),
-    );
-  }
-
-  Future<void> _overrideEventSuccessGuidedRotations({
-    required String eventId,
-    required int expectedRevision,
-    required List<EventSuccessRotationOverrideRound> rounds,
-  }) {
-    return EventSuccessController.overrideGuidedRotationsMutation.run(
-      ref,
-      (tx) => tx
-          .get(eventSuccessControllerProvider.notifier)
-          .overrideGuidedRotations(
-            eventId: eventId,
-            expectedRevision: expectedRevision,
-            rounds: rounds,
-          ),
-    );
-  }
-
-  Future<void> _setEventSuccessLiveStep({
-    required String eventId,
-    required int index,
-    required int expectedRevision,
-  }) {
-    unawaited(
-      ref
-          .read(eventSuccessLiveEffectsControllerProvider)
-          .play(EventSuccessLiveEffectKind.stepChange),
-    );
-    return EventSuccessController.updateStepMutation.run(
-      ref,
-      (tx) => tx
-          .get(eventSuccessControllerProvider.notifier)
-          .updateActiveStep(
-            eventId: eventId,
-            activeStepIndex: index,
-            expectedRevision: expectedRevision,
-          ),
-    );
-  }
-
-  Future<void> _completeEventSuccessLiveGuide({
-    required String eventId,
-    required int expectedRevision,
-    required bool accountabilityAcknowledged,
-  }) {
-    unawaited(
-      ref
-          .read(eventSuccessLiveEffectsControllerProvider)
-          .play(EventSuccessLiveEffectKind.guideComplete),
-    );
-    return EventSuccessController.completePlanMutation.run(
-      ref,
-      (tx) => tx
-          .get(eventSuccessControllerProvider.notifier)
-          .completePlan(
-            eventId: eventId,
-            expectedRevision: expectedRevision,
-            accountabilityAcknowledged: accountabilityAcknowledged,
-          ),
-    );
-  }
-
-  void _retryEventSuccessHostSection({
-    required String eventId,
-    required EventSuccessHostRetryIntent retryIntent,
-    required String assignmentParticipantUidsKey,
-    required String rotationParticipantUidsKey,
-    required String wingmanProfilesKey,
-  }) {
-    switch (retryIntent) {
-      case EventSuccessHostRetryIntent.plan:
-        ref.invalidate(watchEventSuccessPlanProvider(eventId));
-      case EventSuccessHostRetryIntent.roster:
-        ref.invalidate(watchEventParticipationRosterProvider(eventId));
-      case EventSuccessHostRetryIntent.assignments:
-        ref.invalidate(watchEventSuccessAssignmentsProvider(eventId));
-      case EventSuccessHostRetryIntent.rotationAssignments:
-        ref.invalidate(watchEventSuccessRotationAssignmentsProvider(eventId));
-      case EventSuccessHostRetryIntent.rotationDrafts:
-        ref.invalidate(watchEventSuccessRotationDraftsProvider(eventId));
-      case EventSuccessHostRetryIntent.assignmentParticipantProfiles:
-        ref.invalidate(
-          eventSuccessAssignmentPeerProfilesProvider(
-            assignmentParticipantUidsKey,
-          ),
-        );
-      case EventSuccessHostRetryIntent.rotationParticipantProfiles:
-        ref.invalidate(
-          eventSuccessAssignmentPeerProfilesProvider(
-            rotationParticipantUidsKey,
-          ),
-        );
-      case EventSuccessHostRetryIntent.preferences:
-        ref.invalidate(watchEventSuccessPreferencesProvider(eventId));
-      case EventSuccessHostRetryIntent.wingmanRequests:
-        ref.invalidate(watchEventSuccessWingmanRequestsProvider(eventId));
-      case EventSuccessHostRetryIntent.wingmanProfiles:
-        ref.invalidate(
-          eventSuccessAssignmentPeerProfilesProvider(wingmanProfilesKey),
-        );
-      case EventSuccessHostRetryIntent.scorecard:
-        ref.invalidate(watchEventSuccessScorecardProvider(eventId));
-      case EventSuccessHostRetryIntent.spatialLayout:
-        ref.invalidate(eventSuccessSpatialLayoutProvider(eventId));
-    }
-  }
-}
-
-AppErrorContext _eventSuccessHostRetryContext(
-  EventSuccessHostRetryIntent intent,
-) {
-  return switch (intent) {
-    EventSuccessHostRetryIntent.assignmentParticipantProfiles ||
-    EventSuccessHostRetryIntent.rotationParticipantProfiles ||
-    EventSuccessHostRetryIntent.wingmanProfiles => AppErrorContext.profile,
-    EventSuccessHostRetryIntent.plan ||
-    EventSuccessHostRetryIntent.roster ||
-    EventSuccessHostRetryIntent.assignments ||
-    EventSuccessHostRetryIntent.rotationAssignments ||
-    EventSuccessHostRetryIntent.rotationDrafts ||
-    EventSuccessHostRetryIntent.preferences ||
-    EventSuccessHostRetryIntent.wingmanRequests ||
-    EventSuccessHostRetryIntent.scorecard ||
-    EventSuccessHostRetryIntent.spatialLayout => AppErrorContext.event,
-  };
-}
-
-class EventSuccessHostResourceError extends StatelessWidget {
-  const EventSuccessHostResourceError({
-    super.key,
-    required this.failure,
-    this.onRetry,
-    this.compact = false,
-  });
-
-  final EventSuccessHostResourceFailure failure;
-  final VoidCallback? onRetry;
-  final bool compact;
-
-  @override
-  Widget build(BuildContext context) {
-    final errorContext = _eventSuccessHostRetryContext(failure.retryIntent);
-    final descriptor = appErrorDescriptor(
-      failure.error,
-      l10n: context.l10n,
-      context: errorContext,
-    );
-    final resource = switch (failure.retryIntent) {
-      EventSuccessHostRetryIntent.plan =>
-        context.l10n.eventSuccessHostResourceLiveGuide,
-      EventSuccessHostRetryIntent.roster =>
-        context.l10n.eventSuccessHostResourceGuestRoster,
-      EventSuccessHostRetryIntent.assignments =>
-        context.l10n.eventSuccessHostResourceMicroPodAssignments,
-      EventSuccessHostRetryIntent.rotationAssignments =>
-        context.l10n.eventSuccessHostResourcePublishedRotations,
-      EventSuccessHostRetryIntent.rotationDrafts =>
-        context.l10n.eventSuccessHostResourceRotationDrafts,
-      EventSuccessHostRetryIntent.assignmentParticipantProfiles =>
-        context.l10n.eventSuccessHostResourceMicroPodProfiles,
-      EventSuccessHostRetryIntent.rotationParticipantProfiles =>
-        context.l10n.eventSuccessHostResourceRotationProfiles,
-      EventSuccessHostRetryIntent.preferences =>
-        context.l10n.eventSuccessHostResourceAttendeePreferences,
-      EventSuccessHostRetryIntent.wingmanRequests =>
-        context.l10n.eventSuccessHostResourceHostHelpRequests,
-      EventSuccessHostRetryIntent.wingmanProfiles =>
-        context.l10n.eventSuccessHostResourceHostHelpProfiles,
-      EventSuccessHostRetryIntent.scorecard =>
-        context.l10n.eventSuccessHostResourceEventReport,
-      EventSuccessHostRetryIntent.spatialLayout =>
-        context.l10n.eventSuccessHostResourceRoomLayout,
-    };
-    return CatchErrorState(
-      title: context.l10n.eventSuccessHostResourceUnavailableTitle(
-        resource: resource,
-      ),
-      message: descriptor.message,
-      icon: descriptor.icon,
-      retryLabel: descriptor.retryLabel,
-      onRetry: onRetry,
-      mode: (compact)
-          ? CatchErrorStateMode.compact
-          : CatchErrorStateMode.inline,
-    );
-  }
-}
-
-class EventSuccessHostSectionSkeleton extends StatelessWidget {
-  const EventSuccessHostSectionSkeleton({
-    super.key,
-    this.initialTab = EventSuccessHostTab.setup,
-    this.showTabs = true,
-  });
-
-  final EventSuccessHostTab initialTab;
-  final bool showTabs;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        if (showTabs) ...[
-          const CatchSkeleton.boxes(
-            count: 3,
-            height: CatchLayout.controlCompactMinHeight,
-            radius: CatchRadius.sm,
-            gap: CatchSpacing.s2,
-          ),
-          gapH16,
-        ],
-        switch (initialTab) {
-          EventSuccessHostTab.setup => const EventSuccessSetupTabSkeleton(),
-          EventSuccessHostTab.live => const EventSuccessLiveTabSkeleton(),
-          EventSuccessHostTab.report => const EventSuccessReportTabSkeleton(),
-        },
-      ],
-    );
-  }
-}
-
-class EventSuccessSetupTabSkeleton extends StatelessWidget {
-  const EventSuccessSetupTabSkeleton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const CatchSectionList.inset(
-      emptyStateOmitted: true,
-      padding: EdgeInsets.zero,
-      gap: CatchSpacing.s3,
-      children: [
-        EventSuccessSkeletonSurface(
-          titleWidth: CatchLayout.skeletonTextActionLabelWidth,
-          textLines: 3,
-          trailingCount: 3,
-        ),
-        EventSuccessSetupControlsSkeleton(),
-        EventSuccessSkeletonSurface(
-          titleWidth: CatchLayout.skeletonTextWideWidth,
-          textLines: 2,
-          trailingCount: 2,
-        ),
-      ],
-    );
-  }
-}
-
-class EventSuccessLiveTabSkeleton extends StatelessWidget {
-  const EventSuccessLiveTabSkeleton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const CatchSectionList.inset(
-      emptyStateOmitted: true,
-      padding: EdgeInsets.zero,
-      gap: CatchSpacing.s3,
-      children: [
-        EventSuccessSkeletonSurface(
-          titleWidth: CatchLayout.skeletonTextInlineTitleWidth,
-          textLines: 2,
-          trailingCount: 2,
-        ),
-        CatchSkeleton.rows(titleWidth: CatchLayout.skeletonTextTitleWidth),
-        EventSuccessSkeletonSurface(
-          titleWidth: CatchLayout.skeletonTextLongWidth,
-          textLines: 3,
-          trailingCount: 0,
-        ),
-      ],
-    );
-  }
-}
-
-class EventSuccessReportTabSkeleton extends StatelessWidget {
-  const EventSuccessReportTabSkeleton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const CatchSectionList.inset(
-      emptyStateOmitted: true,
-      padding: EdgeInsets.zero,
-      gap: CatchSpacing.s3,
-      children: [
-        EventSuccessReportMetricsSkeleton(),
-        EventSuccessSkeletonSurface(
-          titleWidth: CatchLayout.skeletonTextCardTitleWidth,
-          textLines: 3,
-          trailingCount: 2,
-        ),
-        EventSuccessSkeletonSurface(
-          titleWidth: CatchLayout.skeletonTextBodyWideWidth,
-          textLines: 2,
-          trailingCount: 0,
-        ),
-      ],
-    );
-  }
-}
-
-class EventSuccessSetupControlsSkeleton extends StatelessWidget {
-  const EventSuccessSetupControlsSkeleton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return CatchSurface(
-      borderColor: t.line,
-      padding: CatchInsets.content,
-      child: Column(
-        children: [
-          for (var i = 0; i < 4; i++) ...[
-            Row(
-              children: [
-                CatchSkeleton.box(
-                  width: CatchLayout.toggleTrackWidth,
-                  height: CatchLayout.toggleTrackHeight,
-                  radius: CatchRadius.pill,
-                ),
-                gapW12,
-                Expanded(child: CatchSkeleton.text()),
-              ],
-            ),
-            if (i < 3) gapH14,
-          ],
-        ],
-      ),
-    );
-  }
-}
-
-class EventSuccessReportMetricsSkeleton extends StatelessWidget {
-  const EventSuccessReportMetricsSkeleton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return CatchSurface(
-      borderColor: t.line,
-      padding: CatchInsets.content,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          CatchSkeleton.text(width: CatchLayout.skeletonTextSectionWideWidth),
-          gapH14,
-          Row(
-            children: [
-              for (var i = 0; i < 3; i++) ...[
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      CatchSkeleton.text(
-                        width: CatchLayout.skeletonTextValueWidth,
-                      ),
-                      gapH8,
-                      CatchSkeleton.text(
-                        width: CatchLayout.skeletonTextStatusWidth,
-                      ),
-                    ],
-                  ),
-                ),
-                if (i < 2) gapW12,
-              ],
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class EventSuccessHostPanel extends StatefulWidget {
-  const EventSuccessHostPanel({
-    super.key,
-    required this.event,
-    required this.plan,
-    required this.planIsPersisted,
-    this.spatialLayout,
-    this.spatialLayoutState =
-        const EventSuccessSpatialLayoutState.notApplicable(),
-    this.organizerLayoutsState = const CatchAsyncState.data([]),
-    this.layoutSavePending = false,
-    this.layoutSaveError,
-    this.onSaveLayout,
-    required this.roster,
-    this.scorecard,
-    this.assignments = const [],
-    this.assignmentParticipantProfiles = const [],
-    this.rotationAssignments = const [],
-    this.rotationDraftAssignments = const [],
-    this.rotationParticipantProfiles = const [],
-    this.preferences = const [],
-    this.standings,
-    this.presenceSummary,
-    this.presenceError,
-    this.accountabilityAttendees = const [],
-    this.accountabilityError,
-    this.loadingAccountability = false,
-    this.resolvingAccountability = false,
-    this.resolvingLateArrival = false,
-    this.lateArrivalError,
-    this.wingmanRequests = const [],
-    this.wingmanProfiles = const [],
-    this.liveResourcesLoaded = true,
-    this.resourceFailures = const [],
-    this.onRetryResource,
-    this.initialTab = EventSuccessHostTab.setup,
-    this.showTabs = true,
-    this.embedded = false,
-    this.compactLiveControls = false,
-    this.initialLiveWorkspace = EventSuccessLiveWorkspace.now,
-    this.initialSpatialSelectionUid,
-    this.operationalRosterSummary,
-    this.onOpenGuests,
-    this.guestsWorkspaceSemanticLabel,
-    this.setupActionState = const EventSuccessSetupActionState(),
-    this.onSaveSetup,
-    this.liveActionState = const EventSuccessLiveActionState(),
-    this.onSetLiveStep,
-    this.onCompleteLiveGuide,
-    this.onResolveAccountability,
-    this.onPlayLiveEffect,
-    this.microPodsGenerationState =
-        const EventSuccessAssignmentGenerationActionState(),
-    this.rotationsGenerationState =
-        const EventSuccessAssignmentGenerationActionState(),
-    this.onGenerateMicroPods,
-    this.onGenerateGuidedRotations,
-    this.onResolveLateArrival,
-    this.onPublishGuidedRotationRound,
-    this.onOverrideGroupAssignments,
-    this.onOverrideGuidedRotations,
-    this.onPreviewSpatial,
-    this.onReassignSpatial,
-    this.onConfirmSpatial,
-    this.onReleaseSpatial,
-    this.revealActionState = const EventSuccessRevealActionState(),
-    this.onStartRevealCountdown,
-    this.onRevealRound,
-    this.onResetReveal,
-    this.outcomeActionState = const EventSuccessOutcomeActionState(),
-    this.onRecordOutcomes,
-    this.fixtureActions,
-    this.exclusionAlertThreshold = defaultEventSuccessExclusionAlertThreshold,
-    this.exclusionReferenceNow,
-    this.referenceNow,
-  }) : assert(exclusionAlertThreshold > Duration.zero);
-
-  final Event event;
-  final EventSuccessPlan plan;
-  final bool planIsPersisted;
-  final EventSuccessLayout? spatialLayout;
-  final EventSuccessSpatialLayoutState spatialLayoutState;
-  final CatchAsyncState<List<EventSuccessLayout>> organizerLayoutsState;
-  final bool layoutSavePending;
-  final Object? layoutSaveError;
-  final Future<EventSuccessLayout> Function(EventSuccessLayout layout)?
-  onSaveLayout;
-  final EventParticipationRoster roster;
-  final EventSuccessScorecard? scorecard;
-  final List<EventSuccessAssignment> assignments;
-  final List<PublicProfile> assignmentParticipantProfiles;
-  final List<EventSuccessAssignment> rotationAssignments;
-  final List<EventSuccessAssignment> rotationDraftAssignments;
-  final List<PublicProfile> rotationParticipantProfiles;
-  final List<EventSuccessPreference> preferences;
-  final EventSuccessStandings? standings;
-  final EventSuccessPresenceSummary? presenceSummary;
-  final Object? presenceError;
-  final List<EventAttendee> accountabilityAttendees;
-  final Object? accountabilityError;
-  final bool loadingAccountability;
-  final bool resolvingAccountability;
-  final bool resolvingLateArrival;
-  final Object? lateArrivalError;
-  final List<EventSuccessWingmanRequest> wingmanRequests;
-  final List<PublicProfile> wingmanProfiles;
-  final bool liveResourcesLoaded;
-  final List<EventSuccessHostResourceFailure> resourceFailures;
-  final ValueChanged<EventSuccessHostRetryIntent>? onRetryResource;
-  final EventSuccessHostTab initialTab;
-  final bool showTabs;
-  final bool embedded;
-  final bool compactLiveControls;
-  final EventSuccessLiveWorkspace initialLiveWorkspace;
-  final String? initialSpatialSelectionUid;
-  final EventSuccessOperationalRosterSummary? operationalRosterSummary;
-  final VoidCallback? onOpenGuests;
-  final String? guestsWorkspaceSemanticLabel;
-  final EventSuccessSetupActionState setupActionState;
-  final Future<void> Function(EventSuccessSetupSaveRequest request)?
-  onSaveSetup;
-  final EventSuccessLiveActionState liveActionState;
-  final Future<void> Function(int stepIndex)? onSetLiveStep;
-  final Future<void> Function(bool accountabilityAcknowledged)?
-  onCompleteLiveGuide;
-  final Future<void> Function(
-    String attendeeId,
-    EventSuccessAccountabilityResolution? resolution,
-  )?
-  onResolveAccountability;
-  final Future<void> Function(EventSuccessLiveEffectKind kind)?
-  onPlayLiveEffect;
-  final EventSuccessAssignmentGenerationActionState microPodsGenerationState;
-  final EventSuccessAssignmentGenerationActionState rotationsGenerationState;
-  final Future<void> Function()? onGenerateMicroPods;
-  final Future<void> Function()? onGenerateGuidedRotations;
-  final Future<void> Function(String uid)? onResolveLateArrival;
-  final Future<void> Function(int roundIndex)? onPublishGuidedRotationRound;
-  final Future<void> Function(List<EventSuccessGroupOverrideRound> rounds)?
-  onOverrideGroupAssignments;
-  final Future<void> Function(List<EventSuccessRotationOverrideRound> rounds)?
-  onOverrideGuidedRotations;
-  final EventSuccessSpatialPreview? onPreviewSpatial;
-  final EventSuccessSpatialReassign? onReassignSpatial;
-  final Future<void> Function(EventSuccessAssignment assignment)?
-  onConfirmSpatial;
-  final Future<void> Function(EventSuccessAssignment assignment)?
-  onReleaseSpatial;
-  final EventSuccessRevealActionState revealActionState;
-  final Future<void> Function(int roundIndex, int countdownSeconds)?
-  onStartRevealCountdown;
-  final Future<void> Function(int roundIndex)? onRevealRound;
-  final Future<void> Function()? onResetReveal;
-  final EventSuccessOutcomeActionState outcomeActionState;
-  final Future<void> Function({
-    required int expectedRevision,
-    required int roundIndex,
-    required List<EventSuccessUnitOutcomeEntryInput> entries,
-  })?
-  onRecordOutcomes;
-  final EventSuccessHostFixtureActions? fixtureActions;
-  final Duration exclusionAlertThreshold;
-  final DateTime? exclusionReferenceNow;
-  final DateTime? referenceNow;
-
-  @override
-  State<EventSuccessHostPanel> createState() => _EventSuccessHostPanelState();
-}
-
-class _EventSuccessHostPanelState extends State<EventSuccessHostPanel> {
-  static const _liveActionDebounce = CatchMotion.eventSuccessActionDebounce;
-
-  late EventSuccessHostTab _selectedTab = widget.initialTab;
-  late EventSuccessLiveWorkspace _liveWorkspace = widget.initialLiveWorkspace;
-  var _liveActionPending = false;
-  String? _lastLiveActionKey;
-  DateTime? _lastLiveActionAt;
-
-  @override
-  void didUpdateWidget(covariant EventSuccessHostPanel oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.initialTab != widget.initialTab) {
-      _selectedTab = widget.initialTab;
-    }
-    if (oldWidget.initialLiveWorkspace != widget.initialLiveWorkspace) {
-      _liveWorkspace = widget.initialLiveWorkspace;
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final body = switch (_selectedTab) {
-      EventSuccessHostTab.setup => SetupTab(
-        event: widget.event,
-        plan: widget.plan,
-        planIsPersisted: widget.planIsPersisted,
-        organizerLayoutsState: widget.organizerLayoutsState,
-        layoutSavePending: widget.layoutSavePending,
-        layoutSaveError: widget.layoutSaveError,
-        onSaveLayout: widget.onSaveLayout,
-        actionState: widget.setupActionState,
-        onSaveSetup: _setupSaveCallback(),
-        referenceNow: widget.referenceNow,
-        embedded: widget.embedded,
-      ),
-      EventSuccessHostTab.live => LiveTab(
-        event: widget.event,
-        plan: widget.plan,
-        planIsPersisted: widget.planIsPersisted,
-        spatialLayout: widget.spatialLayout,
-        spatialLayoutState: widget.spatialLayoutState,
-        showRoomWorkspace: _liveWorkspace == EventSuccessLiveWorkspace.room,
-        initialSpatialSelectionUid: widget.initialSpatialSelectionUid,
-        roster: widget.roster,
-        assignments: widget.assignments,
-        assignmentParticipantProfiles: widget.assignmentParticipantProfiles,
-        rotationAssignments: widget.rotationAssignments,
-        rotationDraftAssignments: widget.rotationDraftAssignments,
-        rotationParticipantProfiles: widget.rotationParticipantProfiles,
-        preferences: widget.preferences,
-        standings: widget.standings,
-        presenceSummary: widget.presenceSummary,
-        presenceError: widget.presenceError,
-        accountabilityAttendees: widget.accountabilityAttendees,
-        accountabilityError: widget.accountabilityError,
-        loadingAccountability: widget.loadingAccountability,
-        resolvingAccountability: widget.resolvingAccountability,
-        resolvingLateArrival: widget.resolvingLateArrival,
-        lateArrivalError: widget.lateArrivalError,
-        wingmanRequests: widget.wingmanRequests,
-        wingmanProfiles: widget.wingmanProfiles,
-        resourceFailures: widget.resourceFailures,
-        onRetryResource: widget.onRetryResource,
-        compactLiveControls: widget.compactLiveControls,
-        operationalRosterSummary: widget.operationalRosterSummary,
-        onOpenGuests: widget.onOpenGuests,
-        actionState: EventSuccessLiveActionState(
-          isChangingStep:
-              widget.liveActionState.isChangingStep || _liveActionPending,
-          isCompleting:
-              widget.liveActionState.isCompleting || _liveActionPending,
-          stepError: widget.liveActionState.stepError,
-          completeError: widget.liveActionState.completeError,
-        ),
-        onPreviousStep: _liveStepCallback(
-          widget.fixtureActions?.onPreviousStep,
-        ),
-        onNextStep: _liveStepCallback(widget.fixtureActions?.onNextStep),
-        onCompleteGuide: _liveCompleteCallback(),
-        onResolveAccountability: widget.onResolveAccountability,
-        microPodsGenerationState: widget.microPodsGenerationState,
-        rotationsGenerationState: widget.rotationsGenerationState,
-        onGenerateMicroPods: _voidFixtureCallback(
-          widget.fixtureActions?.onGenerateMicroPods,
-          widget.onGenerateMicroPods,
-        ),
-        onGenerateGuidedRotations: _voidFixtureCallback(
-          widget.fixtureActions?.onGenerateGuidedRotations,
-          widget.onGenerateGuidedRotations,
-        ),
-        onResolveLateArrival: widget.onResolveLateArrival,
-        onPublishGuidedRotationRound: widget.onPublishGuidedRotationRound,
-        onOverrideGroupAssignments: _groupOverrideCallback(),
-        onOverrideGuidedRotations: _rotationOverrideCallback(),
-        onPreviewSpatial:
-            widget.fixtureActions?.onPreviewSpatial ?? widget.onPreviewSpatial,
-        onReassignSpatial:
-            widget.fixtureActions?.onReassignSpatial ??
-            widget.onReassignSpatial,
-        onConfirmSpatial:
-            widget.fixtureActions?.onConfirmSpatial ?? widget.onConfirmSpatial,
-        onReleaseSpatial:
-            widget.fixtureActions?.onReleaseSpatial ?? widget.onReleaseSpatial,
-        revealActionState: widget.revealActionState,
-        onStartRevealCountdown: _startRevealCountdownCallback(),
-        onRevealRound: _revealRoundCallback(),
-        onResetReveal: _resetRevealCallback(),
-        outcomeActionState: widget.outcomeActionState,
-        onRecordOutcomes: widget.onRecordOutcomes,
-        fixtureActions: widget.fixtureActions,
-        exclusionAlertThreshold: widget.exclusionAlertThreshold,
-        exclusionReferenceNow: widget.exclusionReferenceNow,
-        referenceNow: widget.referenceNow,
-        embedded: widget.embedded,
-      ),
-      EventSuccessHostTab.report => ReportTab(
-        event: widget.event,
-        plan: widget.plan,
-        planIsPersisted: widget.planIsPersisted,
-        scorecard: widget.scorecard,
-        assignments: widget.liveResourcesLoaded ? widget.assignments : null,
-        rotationAssignments: widget.liveResourcesLoaded
-            ? widget.rotationAssignments
-            : null,
-        preferences: widget.liveResourcesLoaded ? widget.preferences : null,
-        wingmanRequests: widget.liveResourcesLoaded
-            ? widget.wingmanRequests
-            : null,
-        resourceFailures: widget.resourceFailures,
-        onRetryResource: widget.onRetryResource,
-        embedded: widget.embedded,
-      ),
-    };
-    final workspaceBody =
-        widget.compactLiveControls && _selectedTab == EventSuccessHostTab.live
-        ? Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Padding(
-                padding: CatchInsets.pageHorizontal.copyWith(
-                  top: CatchSpacing.s3,
-                  bottom: CatchSpacing.s2,
-                ),
-                child: EventSuccessLiveWorkspacePicker(
-                  selected: _liveWorkspace,
-                  guestsSemanticLabel: widget.guestsWorkspaceSemanticLabel,
-                  onChanged: (workspace) {
-                    if (workspace == EventSuccessLiveWorkspace.guests) {
-                      widget.onOpenGuests?.call();
-                      return;
-                    }
-                    setState(() => _liveWorkspace = workspace);
-                  },
-                ),
-              ),
-              Expanded(child: body),
-            ],
-          )
-        : body;
-    if (!widget.showTabs) return workspaceBody;
-
-    final tabs = EventSuccessTabPicker(
-      selectedTab: _selectedTab,
-      onChanged: (tab) => setState(() => _selectedTab = tab),
-    );
-
-    if (widget.embedded) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [tabs, gapH16, workspaceBody],
-      );
-    }
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        tabs,
-        Expanded(child: workspaceBody),
-      ],
-    );
-  }
-
-  Future<void> Function(EventSuccessSetupSaveRequest request)?
-  _setupSaveCallback() {
-    final fixtureAction = widget.fixtureActions?.onSaveSetup;
-    if (fixtureAction != null) {
-      return (_) async => fixtureAction();
-    }
-    return widget.onSaveSetup;
-  }
-
-  Future<void> Function(int stepIndex)? _liveStepCallback(
-    VoidCallback? fixtureAction,
-  ) {
-    if (fixtureAction != null) {
-      return (stepIndex) => _runLiveAction(
-        key: 'step:$stepIndex',
-        action: () async {
-          await widget.onPlayLiveEffect?.call(
-            EventSuccessLiveEffectKind.stepChange,
-          );
-          fixtureAction();
-        },
-      );
-    }
-    final productionAction = widget.onSetLiveStep;
-    if (productionAction == null) return null;
-    return (stepIndex) => _runLiveAction(
-      key: 'step:$stepIndex',
-      action: () => productionAction(stepIndex),
-    );
-  }
-
-  Future<void> Function(bool accountabilityAcknowledged)?
-  _liveCompleteCallback() {
-    final fixtureAction = widget.fixtureActions?.onCompletePlan;
-    if (fixtureAction != null) {
-      return (_) => _runLiveAction(
-        key: 'complete',
-        action: () async {
-          await widget.onPlayLiveEffect?.call(
-            EventSuccessLiveEffectKind.guideComplete,
-          );
-          fixtureAction();
-        },
-      );
-    }
-    final productionAction = widget.onCompleteLiveGuide;
-    if (productionAction == null) return null;
-    return (accountabilityAcknowledged) => _runLiveAction(
-      key: 'complete',
-      action: () => productionAction(accountabilityAcknowledged),
-    );
-  }
-
-  Future<void> _runLiveAction({
-    required String key,
-    required Future<void> Function() action,
-  }) async {
-    final now = DateTime.now();
-    final lastAt = _lastLiveActionAt;
-    if (_lastLiveActionKey == key &&
-        lastAt != null &&
-        now.difference(lastAt) < _liveActionDebounce) {
-      return;
-    }
-    if (_liveActionPending) return;
-    _lastLiveActionKey = key;
-    _lastLiveActionAt = now;
-    setState(() => _liveActionPending = true);
-    try {
-      await action();
-    } finally {
-      if (mounted) setState(() => _liveActionPending = false);
-    }
-  }
-
-  Future<void> Function()? _voidFixtureCallback(
-    VoidCallback? fixtureAction,
-    Future<void> Function()? productionAction,
-  ) {
-    if (fixtureAction != null) {
-      return () async => fixtureAction();
-    }
-    return productionAction;
-  }
-
-  Future<void> Function(List<EventSuccessGroupOverrideRound> rounds)?
-  _groupOverrideCallback() {
-    final fixtureAction = widget.fixtureActions?.onOverrideGroupAssignments;
-    final productionAction = widget.onOverrideGroupAssignments;
-    if (fixtureAction == null && productionAction == null) return null;
-    return (rounds) async {
-      if (fixtureAction != null) {
-        fixtureAction(rounds);
-        return;
-      }
-      await productionAction?.call(rounds);
-    };
-  }
-
-  Future<void> Function(List<EventSuccessRotationOverrideRound> rounds)?
-  _rotationOverrideCallback() {
-    final fixtureAction = widget.fixtureActions?.onOverrideGuidedRotations;
-    final productionAction = widget.onOverrideGuidedRotations;
-    if (fixtureAction == null && productionAction == null) return null;
-    return (rounds) async {
-      if (fixtureAction != null) {
-        fixtureAction(rounds);
-        return;
-      }
-      await productionAction?.call(rounds);
-    };
-  }
-
-  Future<void> Function(int roundIndex, int countdownSeconds)?
-  _startRevealCountdownCallback() {
-    final fixtureAction = widget.fixtureActions?.onStartRevealCountdown;
-    final productionAction = widget.onStartRevealCountdown;
-    if (fixtureAction == null && productionAction == null) return null;
-    return (roundIndex, countdownSeconds) async {
-      await widget.onPlayLiveEffect?.call(
-        EventSuccessLiveEffectKind.countdownStart,
-      );
-      if (fixtureAction != null) {
-        fixtureAction(roundIndex, countdownSeconds);
-        return;
-      }
-      await productionAction?.call(roundIndex, countdownSeconds);
-    };
-  }
-
-  Future<void> Function(int roundIndex)? _revealRoundCallback() {
-    final fixtureAction = widget.fixtureActions?.onRevealRound;
-    final productionAction = widget.onRevealRound;
-    if (fixtureAction == null && productionAction == null) return null;
-    return (roundIndex) async {
-      await widget.onPlayLiveEffect?.call(
-        EventSuccessLiveEffectKind.assignmentRevealed,
-      );
-      if (fixtureAction != null) {
-        fixtureAction(roundIndex);
-        return;
-      }
-      await productionAction?.call(roundIndex);
-    };
-  }
-
-  Future<void> Function()? _resetRevealCallback() {
-    final fixtureAction = widget.fixtureActions?.onResetReveal;
-    final productionAction = widget.onResetReveal;
-    if (fixtureAction == null && productionAction == null) return null;
-    return () async {
-      await widget.onPlayLiveEffect?.call(
-        EventSuccessLiveEffectKind.revealReset,
-      );
-      if (fixtureAction != null) {
-        fixtureAction();
-        return;
-      }
-      await productionAction?.call();
-    };
-  }
-}
-
-class EventSuccessHostFixtureActions {
-  const EventSuccessHostFixtureActions({
-    this.onSaveSetup,
-    this.onPreviousStep,
-    this.onNextStep,
-    this.onCompletePlan,
-    this.onGenerateMicroPods,
-    this.onOverrideGroupAssignments,
-    this.onGenerateGuidedRotations,
-    this.onOverrideGuidedRotations,
-    this.onStartRevealCountdown,
-    this.onRevealRound,
-    this.onResetReveal,
-    this.onPreviewSpatial,
-    this.onReassignSpatial,
-    this.onConfirmSpatial,
-    this.onReleaseSpatial,
-    this.initialSpatialSelectionUid,
-  });
-
-  final VoidCallback? onSaveSetup;
-  final VoidCallback? onPreviousStep;
-  final VoidCallback? onNextStep;
-  final VoidCallback? onCompletePlan;
-  final VoidCallback? onGenerateMicroPods;
-  final ValueChanged<List<EventSuccessGroupOverrideRound>>?
-  onOverrideGroupAssignments;
-  final VoidCallback? onGenerateGuidedRotations;
-  final ValueChanged<List<EventSuccessRotationOverrideRound>>?
-  onOverrideGuidedRotations;
-  final void Function(int roundIndex, int countdownSeconds)?
-  onStartRevealCountdown;
-  final ValueChanged<int>? onRevealRound;
-  final VoidCallback? onResetReveal;
-  final EventSuccessSpatialPreview? onPreviewSpatial;
-  final EventSuccessSpatialReassign? onReassignSpatial;
-  final Future<void> Function(EventSuccessAssignment assignment)?
-  onConfirmSpatial;
-  final Future<void> Function(EventSuccessAssignment assignment)?
-  onReleaseSpatial;
-  final String? initialSpatialSelectionUid;
 }

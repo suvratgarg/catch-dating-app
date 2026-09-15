@@ -2,8 +2,8 @@
   "notice": "GENERATED CODE - DO NOT MODIFY BY HAND.",
   "version": 2,
   "generatedFrom": "design/features/account_settings.feature.json",
-  "generatedFor": "2026-08-05",
-  "sourceDigest": "sha256:303b25fbc307b84eb1a012446807bda3b0939a501847f786869cea3122e97904",
+  "generatedFor": "2026-09-14",
+  "sourceDigest": "sha256:b910c7277dfedf9e124a2200ef5458d75af99ca915763770985c836e6e2d8f0f",
   "resolvedDigest": "sha256:d8da06747ac14878eb11e4ff76d74432ad5eff3bcce1df05af72dd31d872049e",
   "feature": {
     "id": "feature.account_settings",
@@ -39,8 +39,15 @@
       },
       "bindings": {
         "previewSources": [
-          "widgetbook/lib/utility/p3_utility_use_cases.dart",
-          "widgetbook/lib/primitives/primitive_contract_use_cases.dart"
+          "widgetbook/lib/utility/settings.dart",
+          "widgetbook/lib/primitives/contracts/buttons.dart",
+          "widgetbook/lib/primitives/contracts/chrome.dart",
+          "widgetbook/lib/primitives/contracts/dialogs.dart",
+          "widgetbook/lib/primitives/contracts/feedback.dart",
+          "widgetbook/lib/primitives/contracts/field.dart",
+          "widgetbook/lib/primitives/contracts/inputs.dart",
+          "widgetbook/lib/primitives/contracts/messages.dart",
+          "widgetbook/lib/primitives/contracts/surfaces.dart"
         ],
         "actionOwners": [
           {

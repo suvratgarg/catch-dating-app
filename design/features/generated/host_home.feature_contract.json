@@ -3,7 +3,7 @@
   "version": 2,
   "generatedFrom": "design/features/host_home.feature.json",
   "generatedFor": "2026-09-04",
-  "sourceDigest": "sha256:b6fce0d6f26d684fe1ebc296c605c29b01b48e80de88b2be121eea1845effc70",
+  "sourceDigest": "sha256:523605cf45a5977123930d004ad497f3d2078b25336b448414a93399217335e0",
   "resolvedDigest": "sha256:8e640903f553be20ec1feb97885f1e14d7698ffdace683f129189e82f171331a",
   "feature": {
     "id": "feature.host_home",
@@ -39,7 +39,7 @@
       },
       "bindings": {
         "previewSources": [
-          "widgetbook/lib/hosts/host_operations_use_cases.dart"
+          "widgetbook/lib/hosts/operations/home_routes.dart"
         ],
         "actionOwners": [
           {

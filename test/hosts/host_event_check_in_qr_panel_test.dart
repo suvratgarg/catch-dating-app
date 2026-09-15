@@ -25,7 +25,7 @@ void main() {
     );
     await pumpEventsTestApp(
       tester,
-      HostEventCheckInQrPanel(event: event),
+      HostEventCheckInQrSection(event: event),
       overrides: [
         eventVenueSessionProvider(event.id).overrideWith(
           (ref) => Stream.value(

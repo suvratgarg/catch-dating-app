@@ -3,7 +3,7 @@
   "version": 2,
   "generatedFrom": "design/features/matches_list.feature.json",
   "generatedFor": "2026-07-23",
-  "sourceDigest": "sha256:a37aad8076f718d025972eb85326a3969868c4bf698b3bd5b7dd79d1fcaab52f",
+  "sourceDigest": "sha256:593a5bff84e825931e059000d9f7ed28b7e881adaaf9bcdd6b4ceb018bec7a59",
   "resolvedDigest": "sha256:7ec40affa382796572931f8cd541db207f843b4347f82ebd62a3fd95751653a2",
   "feature": {
     "id": "feature.matches_list",
@@ -39,7 +39,7 @@
       },
       "bindings": {
         "previewSources": [
-          "widgetbook/lib/matches/matches_chat_use_cases.dart"
+          "widgetbook/lib/matches/catalog/consumer_inbox.dart"
         ],
         "actionOwners": [
           {

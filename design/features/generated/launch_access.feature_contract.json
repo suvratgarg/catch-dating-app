@@ -3,7 +3,7 @@
   "version": 2,
   "generatedFrom": "design/features/launch_access.feature.json",
   "generatedFor": "2026-08-10",
-  "sourceDigest": "sha256:bd6746da8d1ba1d695799cbedfb572015b899741fd7bdecdc32f35f1fabc9fba",
+  "sourceDigest": "sha256:bbde17fc7567753c7e9b89edf54292f19f4501c3da324c7722193d54f614b6a2",
   "resolvedDigest": "sha256:8ac7bd496eedda083677a62908a2b9bd488215121d146313e75fb7ea27527a8e",
   "feature": {
     "id": "feature.launch_access",
@@ -40,7 +40,7 @@
       },
       "bindings": {
         "previewSources": [
-          "widgetbook/lib/utility/p3_utility_use_cases.dart"
+          "widgetbook/lib/utility/launch_access.dart"
         ],
         "actionOwners": [
           {

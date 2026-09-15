@@ -1,7 +1,7 @@
 ---
 doc_id: event_success
-version: 1.20.1
-updated: 2026-08-31
+version: 1.20.6
+updated: 2026-09-15
 owner: recursive_audit_loop
 status: active
 ---
@@ -309,10 +309,15 @@ rather than embedded in event-type logic.
 |---|---|
 | Domain/runtime/playbooks | `lib/event_success/domain/` |
 | Repository/providers | `lib/event_success/data/event_success_repository.dart` |
-| Host setup/live/report UI | `lib/event_success/presentation/event_success_host_screen.dart` and `host_parts/` |
+| Host provider and workspace boundaries | `lib/event_success/presentation/event_success_host_screen.dart` owns provider reads and mutation callbacks; `event_success_host_workspace_page_body.dart` owns tab selection, fixture callbacks and live-action debounce over explicit state. |
+| Host setup and report components | `lib/event_success/presentation/host_setup/` owns setup editing, readiness and attendee target controls; `host_report/` owns the report, data-quality metrics, funnel and empty state. Host presentation has no handwritten part files. |
+| Host live control and shared components | `lib/event_success/presentation/host_live/` owns the live workspace, control room, step actions, accountability, presence, room summary and alerts; `host_components/` owns the tab chrome, plan/activity summaries, compatibility, help and resource errors. `event_success_host_keys.dart` and `event_success_control_room_state.dart` expose their shared plain contracts. |
 | Attendee companion UI | `lib/event_success/presentation/event_success_companion_screen.dart` and `companion_parts/` |
+| Companion loading UI | `lib/event_success/presentation/companion/event_success_companion_loading_page_body.dart` (page, stage, and primary-action skeletons) |
+| Companion moment presentation | `lib/event_success/presentation/event_success_moment_presentation_state.dart` (localized copy, icons, and choreography projection) |
 | Shared Host/attendee room map | `lib/event_success/presentation/event_success_room_map.dart` |
-| Live reveal UI | `lib/event_success/presentation/event_success_live_reveal_card.dart` and `live_reveal_parts/` |
+| Assignment generation and overrides | `lib/event_success/presentation/assignments/` (pod/rotation sections, override sheets, typed draft models) |
+| Live reveal UI | `lib/event_success/presentation/reveal/` (host/attendee surfaces, countdown, assignments, standings, and shared clock state) |
 | Backend generators/wingman callables | `functions/src/eventSuccess/` |
 | No-download guest runtime | `website/src/features/eventRuntime/` |
 | Feedback scorecards/safety mirror | `functions/src/marketplace/eventSuccessScorecards.ts` |

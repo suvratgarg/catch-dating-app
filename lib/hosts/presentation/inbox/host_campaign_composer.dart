@@ -10,7 +10,12 @@ import 'package:catch_dating_app/core/schema_contracts/generated/field_constrain
 import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
+import 'package:catch_dating_app/hosts/data/crm/host_saved_audience_repository.dart';
+import 'package:catch_dating_app/hosts/data/crm/host_whatsapp_repository.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_campaign.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_campaign_policy.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_messaging_setup.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_saved_audience.dart';
 import 'package:catch_dating_app/hosts/presentation/host_audience_controller.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
@@ -36,39 +41,6 @@ enum _HostInviteDestination {
   const _HostInviteDestination(this.wireValue);
 
   final String wireValue;
-}
-
-abstract final class HostCampaignBlockers {
-  static const providerSetupRequired = 'providerSetupRequired';
-  static const senderInactive = 'senderInactive';
-  static const templateMissing = 'templateMissing';
-  static const templateUnapproved = 'templateUnapproved';
-  static const noReachableRecipients = 'noReachableRecipients';
-  static const audienceCoveragePartial = 'audienceCoveragePartial';
-  static const audienceTooLarge = 'audienceTooLarge';
-  static const eventMissing = 'eventMissing';
-  static const eventUnavailable = 'eventUnavailable';
-  static const scheduleInPast = 'scheduleInPast';
-}
-
-String? hostCampaignBridgeBlocker({
-  required bool hasPersistableAudience,
-  required HostMessagingSetup? messagingSetup,
-  required bool audienceCoverageComplete,
-}) {
-  if (!hasPersistableAudience) {
-    return HostCampaignBlockers.noReachableRecipients;
-  }
-  if (!audienceCoverageComplete) {
-    return HostCampaignBlockers.audienceCoveragePartial;
-  }
-  if (messagingSetup?.providerConfigured == false) {
-    return HostCampaignBlockers.providerSetupRequired;
-  }
-  if (messagingSetup?.connection?.isActive != true) {
-    return HostCampaignBlockers.senderInactive;
-  }
-  return null;
 }
 
 class HostCampaignComposer extends ConsumerStatefulWidget {
@@ -337,7 +309,7 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
                   });
                 },
               ),
-              if (_templateUsesInvite(template)) ...[
+              if (hostCampaignTemplateUsesInvite(template)) ...[
                 gapH12,
                 CatchField<Event>.select(
                   copy: catchFieldCopy(context.l10n),
@@ -389,7 +361,7 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
                 ],
               ],
               for (final variable in template.variableNames)
-                if (!_isInviteVariable(variable)) ...[
+                if (!hostCampaignIsInviteVariable(variable)) ...[
                   gapH12,
                   CatchField.input(
                     copy: catchFieldCopy(context.l10n),
@@ -448,10 +420,10 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
     final variables = {
       for (final entry in _variableControllers.entries)
         if (template.variableNames.contains(entry.key) &&
-            !_isInviteVariable(entry.key))
+            !hostCampaignIsInviteVariable(entry.key))
           entry.key: entry.value.text.trim(),
     };
-    final needsInvite = _templateUsesInvite(template);
+    final needsInvite = hostCampaignTemplateUsesInvite(template);
     if (_scheduledAt != null && !_scheduledAt!.isAfter(DateTime.now())) {
       setState(() {
         _scheduleError = context.l10n.hostsHostAudienceBlockerSchedule;
@@ -586,7 +558,7 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
 
   void _syncVariableControllers(HostWhatsappTemplate template) {
     final retained = template.variableNames.where(
-      (name) => !_isInviteVariable(name),
+      (name) => !hostCampaignIsInviteVariable(name),
     );
     final removed = _variableControllers.keys
         .where((name) => !retained.contains(name))
@@ -597,7 +569,7 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
     for (final name in retained) {
       _variableControllers.putIfAbsent(name, TextEditingController.new);
     }
-    if (!_templateUsesInvite(template)) {
+    if (!hostCampaignTemplateUsesInvite(template)) {
       _selectedEvent = null;
       _inviteDestination = null;
     }
@@ -613,12 +585,6 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
     _variableControllers.clear();
   }
 }
-
-bool _templateUsesInvite(HostWhatsappTemplate template) =>
-    template.variableNames.any(_isInviteVariable);
-
-bool _isInviteVariable(String name) =>
-    name == 'invite_url' || name == 'invite_token';
 
 class HostCampaignReport extends StatelessWidget {
   const HostCampaignReport({

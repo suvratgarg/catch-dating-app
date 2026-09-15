@@ -6,6 +6,11 @@ import {execFileSync} from "node:child_process";
 import test from "node:test";
 import {checkEnforcementIntegrity as checkWithRepositorySnapshot} from "./check_enforcement_integrity.mjs";
 
+const baselineMetadata = {
+  owner: "app_architecture",
+  targetPhase: "docs/app_architecture.md#phase-6--continuous-conformance",
+};
+
 function checkEnforcementIntegrity({root}) {
   return checkWithRepositorySnapshot({root, snapshot: fixtureSnapshot(root)});
 }
@@ -279,7 +284,7 @@ test("fails satisfied baseline-empty sunset signals without review", () => {
       },
     },
     files: {
-      "tool/sample_baseline.json": JSON.stringify({allowedFindings: []}),
+      "tool/sample_baseline.json": JSON.stringify({...baselineMetadata, allowedFindings: []}),
     },
   });
 
@@ -304,7 +309,7 @@ test("counts entry-list baselines for sunset signals", () => {
       },
     },
     files: {
-      "tool/sample_baseline.json": JSON.stringify({entries: ["known debt"]}),
+      "tool/sample_baseline.json": JSON.stringify({...baselineMetadata, entries: ["known debt"]}),
     },
   });
 
@@ -399,8 +404,9 @@ test("accepts ratchet baselines without a separate metric receipt", () => {
       "tool/architecture/check_max_counts.test.mjs": "flags bad input\n",
       "tool/architecture/check_allowed_findings.mjs": "#!/usr/bin/env node\n",
       "tool/architecture/check_allowed_findings.test.mjs": "flags bad input\n",
-      "tool/max_counts_baseline.json": JSON.stringify({maxCounts: {review: 1}}),
+      "tool/max_counts_baseline.json": JSON.stringify({...baselineMetadata, maxCounts: {review: 1}}),
       "tool/allowed_findings_baseline.json": JSON.stringify({
+        ...baselineMetadata,
         allowedFindings: [{rule: "sample", path: "lib/example.dart"}],
       }),
     },
@@ -448,6 +454,33 @@ test("still fails when a referenced ratchet baseline is missing", () => {
   );
 });
 
+test("every baseline requires ownership and a real target phase even without a tool binding", () => {
+  const root = createFixture({rules: {}, files: {
+    "feature/debt_baseline.json": JSON.stringify({entries: []}),
+    "tool/fixtures/unowned_baseline.json": JSON.stringify({entries: []}),
+  }});
+  const errors = checkEnforcementIntegrity({root}).errors;
+  for (const file of ["feature/debt_baseline.json", "tool/fixtures/unowned_baseline.json"]) {
+    assert.ok(errors.some(error => error.startsWith(file) && error.includes("owning source")));
+    assert.ok(errors.some(error => error.startsWith(file) && error.includes("target-zero phase")));
+  }
+});
+
+test("baseline ownership rejects placeholders and missing phase anchors while accepting owned fixtures", () => {
+  const root = createFixture({rules: {}, files: {
+    "feature/invalid_baseline.json": JSON.stringify({owner: "tbd", targetPhase: "docs/app_architecture.md#phase-99"}),
+    "tool/fixtures/valid_baseline.json": JSON.stringify({...baselineMetadata, entries: []}),
+    "feature/broken_baseline.json": "{broken",
+    "feature/array_baseline.json": "[]",
+  }});
+  const errors = checkEnforcementIntegrity({root}).errors.join("\n");
+  assert.match(errors, /invalid_baseline.json: baseline must name its owning/u);
+  assert.match(errors, /heading not found: docs\/app_architecture.md#phase-99/u);
+  assert.match(errors, /broken_baseline.json: baseline must be readable JSON/u);
+  assert.match(errors, /array_baseline.json: baseline must be an object/u);
+  assert.doesNotMatch(errors, /tool\/fixtures\/valid_baseline.json/u);
+});
+
 test("produces the same result after fixture files become sparse omitted", (context) => {
   const root = createFixture({
     rules: {
@@ -475,6 +508,7 @@ test("produces the same result after fixture files become sparse omitted", (cont
     },
   });
   context.after(() => fs.rmSync(root, {recursive: true, force: true}));
+  writeJson(root, "tool/sample_baseline.json", {...baselineMetadata, entries: []});
   git(root, ["init", "-q"]);
   git(root, ["config", "user.email", "snapshot@example.com"]);
   git(root, ["config", "user.name", "Snapshot Test"]);
@@ -482,6 +516,7 @@ test("produces the same result after fixture files become sparse omitted", (cont
   git(root, ["commit", "-qm", "fixture"]);
 
   const full = checkWithRepositorySnapshot({root});
+  assert.deepEqual(full.errors, []);
   git(root, ["sparse-checkout", "init", "--no-cone"]);
   git(root, [
     "sparse-checkout",
@@ -510,7 +545,8 @@ function createFixture({
     ...docs,
     ...files,
   })) {
-    writeFile(root, filePath, contents);
+    writeFile(root, filePath, filePath === "docs/app_architecture.md"
+      ? `${contents}\n## Phase 6 — Continuous Conformance\n` : contents);
   }
   return root;
 }

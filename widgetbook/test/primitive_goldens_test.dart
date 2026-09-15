@@ -8,7 +8,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:widgetbook/widgetbook.dart';
 import 'package:widgetbook_golden_test_core/widgetbook_golden_test_core.dart';
 import 'package:widgetbook_workspace/main.directories.g.dart';
-import 'package:widgetbook_workspace/primitives/core_catalog_use_cases.dart';
+import 'package:widgetbook_workspace/primitives/catalog/event_information.dart';
 import 'package:widgetbook_workspace/primitives/notice_provider_use_cases.dart';
 import 'package:widgetbook_workspace/support/widgetbook_harness.dart';
 
@@ -136,6 +136,76 @@ void main() {
       docks.where((dock) => dock.onPressed == null).single.label,
       'You attended this event',
     );
+  });
+
+  testWidgets('shared viewport preserves fixed and natural width contracts', (
+    tester,
+  ) async {
+    const contentKey = ValueKey('viewport-contract-content');
+    for (final (available, requested, expected) in [
+      (600.0, 100.0, 100.0),
+      (600.0, 500.0, 390.0),
+      (200.0, 500.0, 200.0),
+    ]) {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: Center(
+            child: SizedBox(
+              width: available,
+              height: 500,
+              child: WidgetbookViewportFrame.constrainedDevice(
+                size: const Size(390, 300),
+                child: SizedBox(key: contentKey, width: requested),
+              ),
+            ),
+          ),
+        ),
+      );
+      expect(tester.getSize(find.byKey(contentKey)), Size(expected, 300));
+    }
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: const WidgetbookViewportFrame.device(
+          size: Size(390, 300),
+          child: SizedBox(key: contentKey, width: 100),
+        ),
+      ),
+    );
+    expect(tester.getSize(find.byKey(contentKey)), const Size(390, 300));
+  });
+
+  testWidgets('shared sheet preserves width limits and bottom alignment', (
+    tester,
+  ) async {
+    const contentKey = ValueKey('sheet-contract-content');
+    for (final (available, expected) in [(600.0, 390.0), (200.0, 200.0)]) {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: Center(
+            child: SizedBox(
+              width: available,
+              height: 600,
+              child: const WidgetbookViewportFrame.constrainedSheet(
+                size: Size(390, 560),
+                child: SizedBox(key: contentKey, width: 120, height: 80),
+              ),
+            ),
+          ),
+        ),
+      );
+      final frame = find.descendant(
+        of: find.byType(WidgetbookViewportFrame),
+        matching: find.byType(ClipRRect),
+      );
+      expect(tester.getSize(frame), Size(expected, 560));
+      final content = tester.getRect(find.byKey(contentKey));
+      expect(content.size, const Size(120, 80));
+      expect(content.bottom, tester.getRect(frame).bottom);
+      expect(content.center.dx, tester.getRect(frame).center.dx);
+    }
   });
 
   testWidgets('shared scope preserves theme, scale and knob defaults', (

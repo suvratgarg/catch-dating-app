@@ -198,6 +198,7 @@ export function collectWidgetHelpers(
             expression,
             widgetTypeNames,
             widgetHelperNames,
+            candidate.unchangedObjectParameters,
           ),
         )
       ) {
@@ -273,6 +274,7 @@ function collectLooseHelperCandidates(code, classRanges) {
       returnType: match[2] ?? null,
       declarationKind: "function",
       returnExpressions: body,
+      unchangedObjectParameters: unchangedObjectParameters(code, open, close, owner),
     });
   }
 
@@ -294,6 +296,34 @@ function collectLooseHelperCandidates(code, classRanges) {
     });
   }
   return rows;
+}
+
+// A top-level data mapper can return its original Object input on a fallback
+// path. That is not evidence of a widget factory. Keep this proof narrow:
+// one explicit Object parameter, no default, no writes or shadowing, and a
+// block body. Other return paths still undergo the ordinary widget checks.
+function unchangedObjectParameters(code, open, close, owner) {
+  if (owner != null) return new Set();
+  const parameter = code.slice(open + 1, close).trim()
+    .match(/^Object\??\s+([A-Za-z_][A-Za-z0-9_]*)$/u)?.[1];
+  if (parameter == null) return new Set();
+  let start = close + 1;
+  while (/\s/u.test(code[start] ?? "")) start += 1;
+  if (code[start] !== "{") return new Set();
+  const end = findMatchingBrace(code, start);
+  if (end === -1) return new Set();
+  const body = code.slice(start + 1, end);
+  if (/(?<![=!<>])=(?!=|>)|\+\+|--|\b(?:var|final|late|catch|for)\b/u.test(body)) {
+    return new Set();
+  }
+  const declarations = new RegExp(
+    String.raw`\b([A-Za-z_][A-Za-z0-9_.]*(?:<[^;{}()]+>)?\??)\s+${parameter}\b`,
+    "gu",
+  );
+  if ([...body.matchAll(declarations)].some((match) => match[1] !== "return")) {
+    return new Set();
+  }
+  return new Set([parameter]);
 }
 
 const controlFlowNames = new Set([
@@ -413,6 +443,7 @@ function returnedExpressionLooksLikeWidget(
   expression,
   widgetTypeNames,
   widgetHelperNames,
+  unchangedObjectParameters = new Set(),
 ) {
   let value = expression.trim();
   let explicitConstructor = false;
@@ -461,6 +492,7 @@ function returnedExpressionLooksLikeWidget(
   )?.[1];
   if (identifier == null) return false;
   if (widgetHelperNames.has(identifier)) return true;
+  if (unchangedObjectParameters.has(identifier)) return false;
   // A bare local/field returned through Object, dynamic, or inference cannot
   // be resolved by this syntax-only gate. Treat the new/moved declaration as
   // ambiguous and require a precise non-Widget return type to clear it.

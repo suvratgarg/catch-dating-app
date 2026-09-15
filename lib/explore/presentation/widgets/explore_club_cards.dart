@@ -3,7 +3,7 @@ import 'package:catch_dating_app/clubs/shared/catch_club_cover.dart';
 import 'package:catch_dating_app/clubs/shared/catch_organizer_poster.dart';
 import 'package:catch_dating_app/clubs/shared/club_identity_atoms.dart';
 import 'package:catch_dating_app/clubs/shared/club_transition_tags.dart';
-import 'package:catch_dating_app/explore/presentation/explore_screen_state.dart';
+import 'package:catch_dating_app/explore/presentation/explore_club_display_state.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/organizers/organizers.dart';
 import 'package:catch_tokens/catch_tokens.dart';
