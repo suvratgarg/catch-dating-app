@@ -228,6 +228,7 @@ import {
   clubHostClaimDocumentSchema,
   clubClaimRequestDocumentSchema,
   eventDocumentSchema,
+  eventPlanChangeDocumentSchema,
   externalEventDocumentSchema,
   eventPrivateAccessDocumentSchema,
   eventInviteLinkDocumentSchema,
@@ -924,6 +925,7 @@ export const validateClubMembershipDocument = ajv.compile(clubMembershipDocument
 export const validateClubHostClaimDocument = ajv.compile(clubHostClaimDocumentSchema);
 export const validateClubClaimRequestDocument = ajv.compile(clubClaimRequestDocumentSchema);
 export const validateEventDocument = ajv.compile(eventDocumentSchema);
+export const validateEventPlanChangeDocument = ajv.compile(eventPlanChangeDocumentSchema);
 export const validateExternalEventDocument = ajv.compile(externalEventDocumentSchema);
 export const validateEventPrivateAccessDocument = ajv.compile(eventPrivateAccessDocumentSchema);
 export const validateEventInviteLinkDocument = ajv.compile(eventInviteLinkDocumentSchema);

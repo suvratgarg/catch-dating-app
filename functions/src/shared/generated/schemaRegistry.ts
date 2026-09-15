@@ -230,6 +230,7 @@ export {clubMembershipDocumentSchema} from "./schemas/clubMembershipDocument";
 export {clubHostClaimDocumentSchema} from "./schemas/clubHostClaimDocument";
 export {clubClaimRequestDocumentSchema} from "./schemas/clubClaimRequestDocument";
 export {eventDocumentSchema} from "./schemas/eventDocument";
+export {eventPlanChangeDocumentSchema} from "./schemas/eventPlanChangeDocument";
 export {externalEventDocumentSchema} from "./schemas/externalEventDocument";
 export {eventPrivateAccessDocumentSchema} from "./schemas/eventPrivateAccessDocument";
 export {eventInviteLinkDocumentSchema} from "./schemas/eventInviteLinkDocument";

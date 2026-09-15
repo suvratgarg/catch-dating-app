@@ -1185,6 +1185,11 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/eventDocument.ts",
   },
   {
+    name: "EventPlanChangeDocument",
+    source: "firestore/event_plan_changes.schema.json",
+    typeOutput: "functions/src/shared/generated/eventPlanChangeDocument.ts",
+  },
+  {
     name: "ExternalEventDocument",
     source: "firestore/external_events.schema.json",
     typeOutput: "functions/src/shared/generated/externalEventDocument.ts",

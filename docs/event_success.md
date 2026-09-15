@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.139.0
+version: 1.140.0
 updated: 2026-09-16
 owner: recursive_audit_loop
 status: active
@@ -138,9 +138,10 @@ binding descriptors directly. The resulting action and command lists are
 immutable and preserve the distinct live and rehearsal coverage states.
 
 The live `sendOperationalMessage` binding is partial. Late-join `joining`
-messages run through `LiveMessageDispatcher`; `planChange` and `followUp` still
-need a source-authoritative publication coordinator before they can be treated
-as executable.
+messages run through `LiveMessageDispatcher`. `planChange` and `followUp` have
+trusted source readers and share the same publication and dispatch boundary,
+but still need durable audience enrollment and bounded fanout before automatic
+execution is complete.
 
 Seven workflows intentionally resolve through existing product domains instead
 of duplicating Event Assistance commands. Venue, route and format readiness use
@@ -1140,10 +1141,15 @@ a later source revision consumes the next quota slot. Re-entering an event does
 not resend the same source occurrence, while a genuinely recreated roster row
 cannot inherit the earlier row's quota.
 
-Concrete adapters for authoritative plan-change and follow-up source records do
-not exist yet. Until they do, those `sendOperationalMessage` variants stay
-partial in the command catalog. Explicit operational notices remain outside the
-automatic coordinator when the binding is absent.
+`EventPlanChangeSourceReader` reads an immutable, monotonic source written with
+an attendee-relevant event edit. It rejects superseded revisions and roster
+rows created after the change. `PostEventFollowUpSourceReader` reads the
+terminal Event Success plan revision and admits only checked-in attendees after
+the scheduled end. Both derive bounded copy and acknowledgement/help choices
+from source facts. The variants remain partial in the command catalog because
+no durable coordinator yet enrolls the affected audience and fans publication
+out per guest. Explicit operational notices remain outside the automatic
+coordinator when the binding is absent.
 
 `prepareGuestMessagePublication` and `prepareLiveLateJoinPublication` complete all
 reads before returning their write-staging closures, allowing a fenced

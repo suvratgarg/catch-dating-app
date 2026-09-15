@@ -161,7 +161,7 @@ enum EventAssistanceCommandCoverage { none, partial, complete }
 enum EventAssistanceCommandCoverageVariant { joining, planChange, followUp }
 
 enum EventAssistanceMissingCapability {
-  planChangeAndFollowUpSourceAdapters,
+  operationalNoticeFanout,
   rehearsalAllocationProposal,
   rehearsalAllocationPublication,
   rehearsalProgrammeControl,
@@ -1424,10 +1424,12 @@ const eventAssistanceCommandBindingCatalog =
         EventAssistanceCommandCoverageVariant.followUp,
       ],
       operations: <String>[
+        'EventPlanChangeSourceReader.read',
+        'PostEventFollowUpSourceReader.read',
         'prepareOperationalNoticePublication',
         'LiveMessageDispatcher.dispatch',
       ],
-      missingCapability: EventAssistanceMissingCapability.planChangeAndFollowUpSourceAdapters,
+      missingCapability: EventAssistanceMissingCapability.operationalNoticeFanout,
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.domainAdapter,

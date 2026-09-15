@@ -7483,6 +7483,40 @@ export interface EventDocument {
     updatedBySource: "adminUpdateEventDetails" | "adminEventSearchBackfill";
   };
   updatedAt?: FirebaseFirestore.Timestamp;
+  /**
+   * Monotonic revision for immutable attendee-relevant plan change records. Missing legacy values read as zero.
+   */
+  planChangeRevision?: number;
+}
+
+/**
+ * Immutable server-authored event plan change stored at eventPlanChanges/{sourceId}. Each revision captures the attendee-relevant event facts after one committed host edit.
+ */
+export interface EventPlanChangeDocument {
+  schemaVersion: 1;
+  sourceId: string;
+  eventId: string;
+  organizerId: string;
+  revision: number;
+  /**
+   * @minItems 1
+   * @maxItems 5
+   */
+  changedFields: (
+    | "name"
+    | "schedule"
+    | "meetingLocation"
+    | "itinerary"
+    | "format"
+  )[];
+  eventTitle: string;
+  startTime: FirebaseFirestore.Timestamp;
+  endTime: FirebaseFirestore.Timestamp;
+  meetingPoint: string;
+  itineraryStopCount: number;
+  occurredAt: FirebaseFirestore.Timestamp;
+  validUntil: FirebaseFirestore.Timestamp;
+  createdBy: string;
 }
 
 /**

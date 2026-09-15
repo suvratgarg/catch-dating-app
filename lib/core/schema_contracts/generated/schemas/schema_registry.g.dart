@@ -1142,6 +1142,11 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
     schema: schemaEventDocumentSchema,
   ),
   SchemaContractDefinition(
+    name: 'EventPlanChangeDocument',
+    source: 'firestore/event_plan_changes.schema.json',
+    schema: schemaEventPlanChangeDocumentSchema,
+  ),
+  SchemaContractDefinition(
     name: 'ExternalEventDocument',
     source: 'firestore/external_events.schema.json',
     schema: schemaExternalEventDocumentSchema,
@@ -3604,6 +3609,7 @@ const schemaContractsByName = <String, Map<String, Object?>>{
   'ClubHostClaimDocument': schemaClubHostClaimDocumentSchema,
   'ClubClaimRequestDocument': schemaClubClaimRequestDocumentSchema,
   'EventDocument': schemaEventDocumentSchema,
+  'EventPlanChangeDocument': schemaEventPlanChangeDocumentSchema,
   'ExternalEventDocument': schemaExternalEventDocumentSchema,
   'EventPrivateAccessDocument': schemaEventPrivateAccessDocumentSchema,
   'EventInviteLinkDocument': schemaEventInviteLinkDocumentSchema,
@@ -4279,6 +4285,7 @@ const schemaContractsBySource = <String, Map<String, Object?>>{
   'firestore/club_host_claims.schema.json': schemaClubHostClaimDocumentSchema,
   'firestore/club_claim_requests.schema.json': schemaClubClaimRequestDocumentSchema,
   'firestore/events.schema.json': schemaEventDocumentSchema,
+  'firestore/event_plan_changes.schema.json': schemaEventPlanChangeDocumentSchema,
   'firestore/external_events.schema.json': schemaExternalEventDocumentSchema,
   'firestore/event_private_access.schema.json': schemaEventPrivateAccessDocumentSchema,
   'firestore/event_invite_links.schema.json': schemaEventInviteLinkDocumentSchema,

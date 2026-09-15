@@ -409,4 +409,8 @@ export interface EventDocument {
     _seconds: number;
     _nanoseconds: number;
   };
+  /**
+   * Monotonic revision for immutable attendee-relevant plan change records. Missing legacy values read as zero.
+   */
+  planChangeRevision?: number;
 }

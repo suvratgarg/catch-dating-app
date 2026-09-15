@@ -91,10 +91,12 @@ export const eventAssistanceCommandBindingCatalog = {
           ]
         },
         "operations": [
+          "EventPlanChangeSourceReader.read",
+          "PostEventFollowUpSourceReader.read",
           "prepareOperationalNoticePublication",
           "LiveMessageDispatcher.dispatch"
         ],
-        "missingCapability": "planChangeAndFollowUpSourceAdapters"
+        "missingCapability": "operationalNoticeFanout"
       },
       "rehearsal": {
         "bindingType": "domainAdapter",

@@ -229,6 +229,7 @@ export 'event_operator_access_callable_payload.g.dart';
 export 'event_operator_access_callable_response.g.dart';
 export 'event_origin.g.dart';
 export 'event_participation_document.g.dart';
+export 'event_plan_change_document.g.dart';
 export 'event_private_access_document.g.dart';
 export 'event_rcs_budget_document.g.dart';
 export 'event_rcs_callback_receipt_document.g.dart';

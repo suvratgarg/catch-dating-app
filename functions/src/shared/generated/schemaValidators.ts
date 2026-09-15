@@ -230,6 +230,7 @@ export {validateClubMembershipDocument} from "./validators/clubMembershipDocumen
 export {validateClubHostClaimDocument} from "./validators/clubHostClaimDocument";
 export {validateClubClaimRequestDocument} from "./validators/clubClaimRequestDocument";
 export {validateEventDocument} from "./validators/eventDocument";
+export {validateEventPlanChangeDocument} from "./validators/eventPlanChangeDocument";
 export {validateExternalEventDocument} from "./validators/externalEventDocument";
 export {validateEventPrivateAccessDocument} from "./validators/eventPrivateAccessDocument";
 export {validateEventInviteLinkDocument} from "./validators/eventInviteLinkDocument";

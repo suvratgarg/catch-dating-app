@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.119.0
+version: 1.120.0
 updated: 2026-09-16
 owner: recursive_audit_loop
 status: active
@@ -1003,9 +1003,23 @@ the prior row's quota or publication receipts.
 
 Both collections deny all direct client access and have no TTL. They record
 publication authority and idempotency only; they do not prove provider
-submission or delivery. Concrete source adapters remain responsible for proving
-that an authoritative plan change or follow-up record applies to the requested
-guest before the publisher may create either record.
+submission or delivery.
+
+`eventPlanChanges/{sourceId}` is an immutable server-only record created in the
+same transaction as an attendee-relevant `updateEvent` mutation. The event owns
+a monotonic `planChangeRevision`; the record captures the changed fact kinds,
+current destination summary, event window, author and validity bound. The
+reader accepts only the latest event revision and only a registered or checked-
+in attendee whose roster row existed when that revision committed. New guests
+cannot inherit an old notice.
+
+The post-event source reader uses the terminal `eventSuccessPlans/{eventId}`
+status, its fenced live-control revision and completion timestamp. It applies
+only to checked-in attendees, begins no earlier than the scheduled event end
+and expires with the existing 24-hour service window. Both readers derive copy
+and response choices from typed source facts; no caller supplies message text.
+Durable audience enrollment and bounded per-guest fanout remain the missing
+automatic coordinator before these two variants are live-complete.
 
 `eventAssistanceMessages/{messageId}` is server-only delivery state owned by
 trusted Event Assistance workers. Its canonical Firestore schema embeds the

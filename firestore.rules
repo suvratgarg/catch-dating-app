@@ -919,6 +919,10 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    match /eventPlanChanges/{sourceId} {
+      allow read, write: if false;
+    }
+
     match /operationRuns/{runId} {
       allow read, write: if false;
     }

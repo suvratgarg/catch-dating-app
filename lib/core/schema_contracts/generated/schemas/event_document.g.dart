@@ -1785,5 +1785,12 @@ const schemaEventDocumentSchema = <String, Object?>{
       },
       'x-catch-ownership': 'callable-owned',
     },
+    'planChangeRevision': <String, Object?>{
+      'type': 'integer',
+      'minimum': 0,
+      'maximum': 2147483647,
+      'x-catch-ownership': 'callable-owned',
+      'description': 'Monotonic revision for immutable attendee-relevant plan change records. Missing legacy values read as zero.',
+    },
   },
 };

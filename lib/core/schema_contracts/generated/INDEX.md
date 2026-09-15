@@ -237,6 +237,7 @@ Do not edit it by hand.
 | ClubHostClaimDocument | `firestore/club_host_claims.schema.json` | `functions/src/shared/generated/clubHostClaimDocument.ts` |
 | ClubClaimRequestDocument | `firestore/club_claim_requests.schema.json` | `functions/src/shared/generated/clubClaimRequestDocument.ts` |
 | EventDocument | `firestore/events.schema.json` | `functions/src/shared/generated/eventDocument.ts` |
+| EventPlanChangeDocument | `firestore/event_plan_changes.schema.json` | `functions/src/shared/generated/eventPlanChangeDocument.ts` |
 | ExternalEventDocument | `firestore/external_events.schema.json` | `functions/src/shared/generated/externalEventDocument.ts` |
 | EventPrivateAccessDocument | `firestore/event_private_access.schema.json` | `functions/src/shared/generated/eventPrivateAccessDocument.ts` |
 | EventInviteLinkDocument | `firestore/event_invite_links.schema.json` | `functions/src/shared/generated/eventInviteLinkDocument.ts` |
@@ -914,6 +915,7 @@ Do not edit it by hand.
 | `schemaClubHostClaimDocumentSchema` | ClubHostClaimDocument | `firestore/club_host_claims.schema.json` | `lib/core/schema_contracts/generated/schemas/club_host_claim_document.g.dart` |
 | `schemaClubClaimRequestDocumentSchema` | ClubClaimRequestDocument | `firestore/club_claim_requests.schema.json` | `lib/core/schema_contracts/generated/schemas/club_claim_request_document.g.dart` |
 | `schemaEventDocumentSchema` | EventDocument | `firestore/events.schema.json` | `lib/core/schema_contracts/generated/schemas/event_document.g.dart` |
+| `schemaEventPlanChangeDocumentSchema` | EventPlanChangeDocument | `firestore/event_plan_changes.schema.json` | `lib/core/schema_contracts/generated/schemas/event_plan_change_document.g.dart` |
 | `schemaExternalEventDocumentSchema` | ExternalEventDocument | `firestore/external_events.schema.json` | `lib/core/schema_contracts/generated/schemas/external_event_document.g.dart` |
 | `schemaEventPrivateAccessDocumentSchema` | EventPrivateAccessDocument | `firestore/event_private_access.schema.json` | `lib/core/schema_contracts/generated/schemas/event_private_access_document.g.dart` |
 | `schemaEventInviteLinkDocumentSchema` | EventInviteLinkDocument | `firestore/event_invite_links.schema.json` | `lib/core/schema_contracts/generated/schemas/event_invite_link_document.g.dart` |

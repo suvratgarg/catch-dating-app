@@ -27524,6 +27524,13 @@ abstract final class CatchContractConstraints {
     format: 'uri',
   );
 
+  static const eventDocumentPlanChangeRevision = CatchContractFieldConstraints(
+    path: 'eventDocument.planChangeRevision',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2147483647,
+  );
+
   static const eventDocumentPriceInPaise = CatchContractFieldConstraints(
     path: 'eventDocument.priceInPaise',
     required: true,
@@ -29015,6 +29022,151 @@ abstract final class CatchContractConstraints {
     path: 'eventParticipationDocument.waitlistOfferStatus',
     valueTypes: <String>['string'],
     enumValues: <String>['active', 'accepted', 'declined', 'expired', 'cancelled'],
+  );
+
+  static const eventPlanChangeDocumentChangedFields = CatchContractFieldConstraints(
+    path: 'eventPlanChangeDocument.changedFields',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['name', 'schedule', 'meetingLocation', 'itinerary', 'format'],
+    minItems: 1,
+    maxItems: 5,
+    uniqueItems: true,
+  );
+
+  static const eventPlanChangeDocumentChangedFieldsItems = CatchContractFieldConstraints(
+    path: 'eventPlanChangeDocument.changedFields.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['name', 'schedule', 'meetingLocation', 'itinerary', 'format'],
+  );
+
+  static const eventPlanChangeDocumentCreatedBy = CatchContractFieldConstraints(
+    path: 'eventPlanChangeDocument.createdBy',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventPlanChangeDocumentEndTimeNanoseconds = CatchContractFieldConstraints(
+    path: 'eventPlanChangeDocument.endTime._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventPlanChangeDocumentEndTimeSeconds = CatchContractFieldConstraints(
+    path: 'eventPlanChangeDocument.endTime._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventPlanChangeDocumentEventId = CatchContractFieldConstraints(
+    path: 'eventPlanChangeDocument.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventPlanChangeDocumentEventTitle = CatchContractFieldConstraints(
+    path: 'eventPlanChangeDocument.eventTitle',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventPlanChangeDocumentItineraryStopCount = CatchContractFieldConstraints(
+    path: 'eventPlanChangeDocument.itineraryStopCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 40,
+  );
+
+  static const eventPlanChangeDocumentMeetingPoint = CatchContractFieldConstraints(
+    path: 'eventPlanChangeDocument.meetingPoint',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventPlanChangeDocumentOccurredAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventPlanChangeDocument.occurredAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventPlanChangeDocumentOccurredAtSeconds = CatchContractFieldConstraints(
+    path: 'eventPlanChangeDocument.occurredAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventPlanChangeDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'eventPlanChangeDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventPlanChangeDocumentRevision = CatchContractFieldConstraints(
+    path: 'eventPlanChangeDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 2147483647,
+  );
+
+  static const eventPlanChangeDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventPlanChangeDocument.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventPlanChangeDocumentSourceId = CatchContractFieldConstraints(
+    path: 'eventPlanChangeDocument.sourceId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventPlanChangeDocumentStartTimeNanoseconds = CatchContractFieldConstraints(
+    path: 'eventPlanChangeDocument.startTime._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventPlanChangeDocumentStartTimeSeconds = CatchContractFieldConstraints(
+    path: 'eventPlanChangeDocument.startTime._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventPlanChangeDocumentValidUntilNanoseconds = CatchContractFieldConstraints(
+    path: 'eventPlanChangeDocument.validUntil._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventPlanChangeDocumentValidUntilSeconds = CatchContractFieldConstraints(
+    path: 'eventPlanChangeDocument.validUntil._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
   );
 
   static const eventPrivateAccessDocumentClubId = CatchContractFieldConstraints(
@@ -96797,6 +96949,7 @@ abstract final class CatchContractConstraints {
     'eventDocument.organizerId': eventDocumentOrganizerId,
     'eventDocument.pace': eventDocumentPace,
     'eventDocument.photoUrl': eventDocumentPhotoUrl,
+    'eventDocument.planChangeRevision': eventDocumentPlanChangeRevision,
     'eventDocument.priceInPaise': eventDocumentPriceInPaise,
     'eventDocument.publicRegistrationEnabled': eventDocumentPublicRegistrationEnabled,
     'eventDocument.runtimeAccess.enabled': eventDocumentRuntimeAccessEnabled,
@@ -97008,6 +97161,25 @@ abstract final class CatchContractConstraints {
     'eventParticipationDocument.waitlistOfferExpiresAt._seconds': eventParticipationDocumentWaitlistOfferExpiresAtSeconds,
     'eventParticipationDocument.waitlistOfferId': eventParticipationDocumentWaitlistOfferId,
     'eventParticipationDocument.waitlistOfferStatus': eventParticipationDocumentWaitlistOfferStatus,
+    'eventPlanChangeDocument.changedFields': eventPlanChangeDocumentChangedFields,
+    'eventPlanChangeDocument.changedFields.items': eventPlanChangeDocumentChangedFieldsItems,
+    'eventPlanChangeDocument.createdBy': eventPlanChangeDocumentCreatedBy,
+    'eventPlanChangeDocument.endTime._nanoseconds': eventPlanChangeDocumentEndTimeNanoseconds,
+    'eventPlanChangeDocument.endTime._seconds': eventPlanChangeDocumentEndTimeSeconds,
+    'eventPlanChangeDocument.eventId': eventPlanChangeDocumentEventId,
+    'eventPlanChangeDocument.eventTitle': eventPlanChangeDocumentEventTitle,
+    'eventPlanChangeDocument.itineraryStopCount': eventPlanChangeDocumentItineraryStopCount,
+    'eventPlanChangeDocument.meetingPoint': eventPlanChangeDocumentMeetingPoint,
+    'eventPlanChangeDocument.occurredAt._nanoseconds': eventPlanChangeDocumentOccurredAtNanoseconds,
+    'eventPlanChangeDocument.occurredAt._seconds': eventPlanChangeDocumentOccurredAtSeconds,
+    'eventPlanChangeDocument.organizerId': eventPlanChangeDocumentOrganizerId,
+    'eventPlanChangeDocument.revision': eventPlanChangeDocumentRevision,
+    'eventPlanChangeDocument.schemaVersion': eventPlanChangeDocumentSchemaVersion,
+    'eventPlanChangeDocument.sourceId': eventPlanChangeDocumentSourceId,
+    'eventPlanChangeDocument.startTime._nanoseconds': eventPlanChangeDocumentStartTimeNanoseconds,
+    'eventPlanChangeDocument.startTime._seconds': eventPlanChangeDocumentStartTimeSeconds,
+    'eventPlanChangeDocument.validUntil._nanoseconds': eventPlanChangeDocumentValidUntilNanoseconds,
+    'eventPlanChangeDocument.validUntil._seconds': eventPlanChangeDocumentValidUntilSeconds,
     'eventPrivateAccessDocument.clubId': eventPrivateAccessDocumentClubId,
     'eventPrivateAccessDocument.createdAt._nanoseconds': eventPrivateAccessDocumentCreatedAtNanoseconds,
     'eventPrivateAccessDocument.createdAt._seconds': eventPrivateAccessDocumentCreatedAtSeconds,
