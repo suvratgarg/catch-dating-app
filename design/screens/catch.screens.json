@@ -48,7 +48,7 @@
     "screen.event_success.companion": {
       "owners": [
         {"routes": ["eventSuccessCompanionScreen"], "file": "lib/event_success/presentation/event_success_companion_screen.dart", "symbol": "CompanionScaffold", "family": "immersive", "expression": "CatchScaffold.workspace", "bodyGeometry": "mixed", "topEdge": "route-chrome"},
-        {"routes": ["eventSuccessCompanionScreen"], "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart", "symbol": "CompanionStageScaffold", "family": "immersive", "expression": "CatchScaffold.workspace", "bodyGeometry": "full-bleed", "topEdge": "body-owned"},
+        {"routes": ["eventSuccessCompanionScreen"], "file": "lib/event_success/presentation/companion_parts/event_success_companion_stage_viewport.dart", "symbol": "CompanionStageScaffold", "family": "immersive", "expression": "CatchScaffold.workspace", "bodyGeometry": "full-bleed", "topEdge": "body-owned"},
         {"routes": ["eventSuccessCompanionScreen"], "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart", "symbol": "CompanionPaperScaffold", "family": "immersive", "expression": "CatchScaffold.workspace", "bodyGeometry": "mixed", "topEdge": "body-owned"}
       ],
       "reason": "Companion success deliberately switches among registered immersive stage and paper compositions."
@@ -4590,7 +4590,7 @@
               "PrivacyLine"
             ],
             "flutter": {
-              "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
+              "file": "lib/event_success/presentation/companion_parts/event_success_companion_stage_viewport.dart",
               "symbol": "CompanionStageScaffold"
             },
             "currentOwner": "EventSuccessCompanionScreen",
@@ -15069,10 +15069,10 @@
               "HostEventSummaryCard"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/host_event_manage_screen.dart",
-              "symbol": "HostEventSummaryCard"
+              "file": "lib/hosts/presentation/widgets/host_event_manage_section.dart",
+              "symbol": "HostEventSummarySection"
             },
-            "currentOwner": "HostEventManageScreen",
+            "currentOwner": "HostEventSummarySection",
             "targetOwner": "provider-free host event summary section",
             "dependencies": [
               "catch.surface"
@@ -15098,10 +15098,10 @@
               "HostPrivateAccessCard"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/host_event_manage_screen.dart",
-              "symbol": "HostPrivateAccessCard"
+              "file": "lib/hosts/presentation/widgets/host_event_private_access_section.dart",
+              "symbol": "HostPrivateAccessSection"
             },
-            "currentOwner": "_HostPrivateAccessCard",
+            "currentOwner": "HostPrivateAccessSection",
             "targetOwner": "private-access adapter plus provider-free section",
             "dependencies": [
               "catch.badge",
@@ -15130,10 +15130,10 @@
               "HostInviteLinksList"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/host_event_manage_screen.dart",
-              "symbol": "HostInviteLinksList"
+              "file": "lib/hosts/presentation/widgets/host_event_private_access_section.dart",
+              "symbol": "HostInviteLinksSection"
             },
-            "currentOwner": "_HostInviteLinksList",
+            "currentOwner": "HostInviteLinksSection",
             "targetOwner": "private-access adapter plus provider-free invite-link section",
             "dependencies": [
               "catch.button",
@@ -22421,10 +22421,10 @@
               "EditEventScheduleSection"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-              "symbol": "ReadOnlyHostedEventScheduleCard"
+              "file": "lib/hosts/presentation/hosted_event_schedule_section.dart",
+              "symbol": "HostedEventScheduleSection"
             },
-            "currentOwner": "EditHostedEventScreen",
+            "currentOwner": "HostedEventScheduleSection",
             "targetOwner": "provider-free schedule section",
             "dependencies": [
               "catch.field",
@@ -22472,10 +22472,10 @@
               "EditEventPolicySection"
             ],
             "flutter": {
-              "file": "lib/hosts/presentation/edit_hosted_event_screen.dart",
-              "symbol": "EditableHostedEventPolicyCard"
+              "file": "lib/hosts/presentation/hosted_event_policy_section.dart",
+              "symbol": "HostedEventPolicySection"
             },
-            "currentOwner": "EditHostedEventScreen private policy widgets",
+            "currentOwner": "HostedEventPolicySection",
             "targetOwner": "provider-free policy editor section",
             "dependencies": [
               "catch.chip",
