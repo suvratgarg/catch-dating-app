@@ -34,10 +34,6 @@
       "maxLines": 948
     },
     {
-      "path": "lib/events/presentation/calendar/calendar_screen.dart",
-      "maxLines": 844
-    },
-    {
       "path": "lib/events/presentation/event_detail_screen.dart",
       "maxLines": 902
     },
