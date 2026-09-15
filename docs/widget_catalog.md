@@ -454,30 +454,30 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>CompanionStageScaffold</code> | <code>lib/event_success/presentation/companion_parts/event_success_companion_stage_viewport.dart:3</code> | — | — | No class documentation or registry summary. |
 | <code>CompanionStageSurface</code> | <code>lib/event_success/presentation/companion_parts/event_success_companion_stage_viewport.dart:439</code> | — | — | Ambient stage card. The border alpha breathes on a 6s sine so the surface never reads as static — even when no content is changing. |
 | <code>WingmanRequestSection</code> | <code>lib/event_success/presentation/companion_parts/event_success_companion_wingman.dart:14</code> | — | — | No class documentation or registry summary. |
+| <code>BlockHeader</code> | <code>lib/event_success/presentation/event_success_block_header.dart:3</code> | — | — | No class documentation or registry summary. |
 | <code>CompanionError</code> | <code>lib/event_success/presentation/event_success_companion_screen.dart:132</code> | — | — | No class documentation or registry summary. |
 | <code>CompanionLoading</code> | <code>lib/event_success/presentation/event_success_companion_screen.dart:121</code> | — | — | No class documentation or registry summary. |
 | <code>CompanionMessage</code> | <code>lib/event_success/presentation/event_success_companion_screen.dart:162</code> | — | — | No class documentation or registry summary. |
 | <code>CompanionScaffold</code> | <code>lib/event_success/presentation/event_success_companion_screen.dart:93</code> | — | — | No class documentation or registry summary. |
+| <code>ConversationCueRow</code> | <code>lib/event_success/presentation/event_success_conversation_cue_row.dart:3</code> | — | — | No class documentation or registry summary. |
 | <code>EventSuccessDefaultsPanel</code> | <code>lib/event_success/presentation/event_success_defaults_panel.dart:16</code> | — | — | Create-event panel that lets the host enable the live event guide and tune the saved defaults inline. The configuration UI is shared with the Host Manage Setup tab via [EventSuccessSetupBody]. |
-| <code>BlockHeader</code> | <code>lib/event_success/presentation/event_success_feature_blocks.dart:455</code> | — | — | No class documentation or registry summary. |
-| <code>ConversationCueRow</code> | <code>lib/event_success/presentation/event_success_feature_blocks.dart:867</code> | — | — | No class documentation or registry summary. |
-| <code>EventSuccessAttendeeCompanionPreview</code> | <code>lib/event_success/presentation/event_success_feature_blocks.dart:260</code> | — | — | No class documentation or registry summary. |
-| <code>EventSuccessConversationCueCard</code> | <code>lib/event_success/presentation/event_success_feature_blocks.dart:787</code> | — | — | No class documentation or registry summary. |
-| <code>EventSuccessHostSetupFlow</code> | <code>lib/event_success/presentation/event_success_feature_blocks.dart:34</code> | — | — | No class documentation or registry summary. |
-| <code>EventSuccessLiveHostMode</code> | <code>lib/event_success/presentation/event_success_feature_blocks.dart:151</code> | — | — | No class documentation or registry summary. |
-| <code>EventSuccessMetricPill</code> | <code>lib/event_success/presentation/event_success_feature_blocks.dart:991</code> | — | — | No class documentation or registry summary. |
-| <code>EventSuccessPostEventReport</code> | <code>lib/event_success/presentation/event_success_feature_blocks.dart:344</code> | — | — | No class documentation or registry summary. |
-| <code>EventSuccessPromptCard</code> | <code>lib/event_success/presentation/event_success_feature_blocks.dart:749</code> | — | — | No class documentation or registry summary. |
-| <code>EventSuccessRecommendationTile</code> | <code>lib/event_success/presentation/event_success_feature_blocks.dart:968</code> | — | — | No class documentation or registry summary. |
-| <code>IssueList</code> | <code>lib/event_success/presentation/event_success_feature_blocks.dart:614</code> | — | — | No class documentation or registry summary. |
-| <code>LiveStepRow</code> | <code>lib/event_success/presentation/event_success_feature_blocks.dart:693</code> | — | — | No class documentation or registry summary. |
-| <code>ModuleToggleRow</code> | <code>lib/event_success/presentation/event_success_feature_blocks.dart:554</code> | — | — | No class documentation or registry summary. |
-| <code>PlaybookSummaryCard</code> | <code>lib/event_success/presentation/event_success_feature_blocks.dart:495</code> | — | — | No class documentation or registry summary. |
-| <code>ProgressRow</code> | <code>lib/event_success/presentation/event_success_feature_blocks.dart:651</code> | — | — | No class documentation or registry summary. |
-| <code>WingmanCandidateRow</code> | <code>lib/event_success/presentation/event_success_feature_blocks.dart:916</code> | — | — | No class documentation or registry summary. |
+| <code>EventSuccessAttendeeCompanionPreview</code> | <code>lib/event_success/presentation/event_success_feature_blocks.dart:266</code> | — | — | No class documentation or registry summary. |
+| <code>EventSuccessConversationCueCard</code> | <code>lib/event_success/presentation/event_success_feature_blocks.dart:595</code> | — | — | No class documentation or registry summary. |
+| <code>EventSuccessHostSetupFlow</code> | <code>lib/event_success/presentation/event_success_feature_blocks.dart:40</code> | — | — | No class documentation or registry summary. |
+| <code>EventSuccessLiveHostMode</code> | <code>lib/event_success/presentation/event_success_feature_blocks.dart:157</code> | — | — | No class documentation or registry summary. |
+| <code>EventSuccessMetricPill</code> | <code>lib/event_success/presentation/event_success_feature_blocks.dart:750</code> | — | — | No class documentation or registry summary. |
+| <code>EventSuccessPostEventReport</code> | <code>lib/event_success/presentation/event_success_feature_blocks.dart:350</code> | — | — | No class documentation or registry summary. |
+| <code>EventSuccessPromptCard</code> | <code>lib/event_success/presentation/event_success_feature_blocks.dart:557</code> | — | — | No class documentation or registry summary. |
+| <code>EventSuccessRecommendationTile</code> | <code>lib/event_success/presentation/event_success_feature_blocks.dart:727</code> | — | — | No class documentation or registry summary. |
+| <code>IssueList</code> | <code>lib/event_success/presentation/event_success_feature_blocks.dart:520</code> | — | — | No class documentation or registry summary. |
+| <code>PlaybookSummaryCard</code> | <code>lib/event_success/presentation/event_success_feature_blocks.dart:461</code> | — | — | No class documentation or registry summary. |
+| <code>WingmanCandidateRow</code> | <code>lib/event_success/presentation/event_success_feature_blocks.dart:675</code> | — | — | No class documentation or registry summary. |
 | <code>EventSuccessHeroSurface</code> | <code>lib/event_success/presentation/event_success_hero_surface.dart:6</code> | — | — | Accent-to-ink diagonal gradient hero shell for event_success surfaces. |
 | <code>EventSuccessHostSection</code> | <code>lib/event_success/presentation/event_success_host_screen.dart:48</code> | — | — | No class documentation or registry summary. |
 | <code>EventSuccessHostWorkspacePageBody</code> | <code>lib/event_success/presentation/event_success_host_workspace_page_body.dart:29</code> | — | — | No class documentation or registry summary. |
+| <code>LiveStepRow</code> | <code>lib/event_success/presentation/event_success_live_step_row.dart:3</code> | — | — | No class documentation or registry summary. |
+| <code>ModuleToggleRow</code> | <code>lib/event_success/presentation/event_success_module_toggle_row.dart:3</code> | — | — | No class documentation or registry summary. |
+| <code>ProgressRow</code> | <code>lib/event_success/presentation/event_success_progress_row.dart:3</code> | — | — | No class documentation or registry summary. |
 | <code>CustomQuestionnaireFields</code> | <code>lib/event_success/presentation/event_success_questionnaire_config_editor.dart:157</code> | — | — | No class documentation or registry summary. |
 | <code>EventSuccessQuestionnaireConfigEditor</code> | <code>lib/event_success/presentation/event_success_questionnaire_config_editor.dart:11</code> | — | — | No class documentation or registry summary. |
 | <code>EventSuccessRoomMap</code> | <code>lib/event_success/presentation/event_success_room_map.dart:36</code> | — | — | Shared normalized room map used by Host and attendee runtimes. |

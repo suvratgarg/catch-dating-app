@@ -10,10 +10,6 @@
       "maxLines": 905
     },
     {
-      "path": "lib/event_success/presentation/event_success_feature_blocks.dart",
-      "maxLines": 1011
-    },
-    {
       "path": "lib/event_success/presentation/event_success_room_map.dart",
       "maxLines": 1089
     },
