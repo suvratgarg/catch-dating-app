@@ -91,6 +91,7 @@ class _EventSuccessHostSectionState
     final fixtureActions = widget.fixtureActions;
     final referenceNow = widget.referenceNow ?? DateTime.now();
     final planAsync = ref.watch(watchEventSuccessPlanProvider(event.id));
+    final planState = catchAsyncStateFromAsyncValue(planAsync);
     final ensureMutation = ref.watch(EventSuccessController.ensurePlanMutation);
     final saveSetupMutation = ref.watch(
       EventSuccessController.saveSetupMutation,
@@ -131,7 +132,7 @@ class _EventSuccessHostSectionState
     final accountabilityResolutionMutation = ref.watch(
       EventSuccessController.accountabilityResolutionMutation,
     );
-    final persistedPlan = planAsync.asData?.value;
+    final persistedPlan = planState.value;
     final eventIsInProgress =
         !event.startTime.isAfter(referenceNow) &&
         event.endTime.isAfter(referenceNow);
@@ -172,12 +173,16 @@ class _EventSuccessHostSectionState
         shouldLoadStandings
         ? ref.watch(watchEventSuccessStandingsProvider(event.id))
         : const AsyncData<EventSuccessStandings?>(null);
+    final standingsState = catchAsyncStateFromAsyncValue(standingsAsync);
     final AsyncValue<EventSuccessPresenceSummary?> presenceSummaryAsync =
         shouldLoadAssignments
         ? ref
               .watch(watchEventSuccessPresenceSummaryProvider(event.id))
               .whenData((summary) => summary)
         : const AsyncData<EventSuccessPresenceSummary?>(null);
+    final presenceSummaryState = catchAsyncStateFromAsyncValue(
+      presenceSummaryAsync,
+    );
     final shouldLoadOperationalAttendees =
         shouldLoadAssignments &&
         (eventSuccessProfile.accountability ==
@@ -187,6 +192,9 @@ class _EventSuccessHostSectionState
         shouldLoadOperationalAttendees
         ? ref.watch(watchEventAttendeesProvider(event.id))
         : const AsyncData(<EventAttendee>[]);
+    final accountabilityAttendeesState = catchAsyncStateFromAsyncValue(
+      accountabilityAttendeesAsync,
+    );
     final AsyncValue<EventSuccessLayout?> spatialLayoutAsync =
         shouldLoadAssignments &&
             persistedPlan.layoutId != null &&
@@ -198,9 +206,13 @@ class _EventSuccessHostSectionState
       plan: persistedPlan,
       value: spatialLayoutAsync,
     );
+    final spatialLayoutAsyncState = catchAsyncStateFromAsyncValue(
+      spatialLayoutAsync,
+    );
     final AsyncValue<EventParticipationRoster> rosterAsync = shouldLoadRoster
         ? ref.watch(watchEventParticipationRosterProvider(event.id))
         : AsyncData(EventParticipationRoster.empty());
+    final rosterState = catchAsyncStateFromAsyncValue(rosterAsync);
     final ensureError = ensureMutation.hasError
         ? _mutationError(ensureMutation)
         : null;
@@ -227,12 +239,14 @@ class _EventSuccessHostSectionState
         shouldLoadScorecard
         ? ref.watch(watchEventSuccessScorecardProvider(event.id))
         : const AsyncData<EventSuccessScorecard?>(null);
+    final scorecardState = catchAsyncStateFromAsyncValue(scorecardAsync);
     final AsyncValue<List<EventSuccessAssignment>> assignmentsAsync =
         shouldLoadAssignments
         ? ref.watch(watchEventSuccessAssignmentsProvider(event.id))
         : const AsyncData(<EventSuccessAssignment>[]);
+    final assignmentsState = catchAsyncStateFromAsyncValue(assignmentsAsync);
     final assignmentsPreview =
-        assignmentsAsync.asData?.value ?? const <EventSuccessAssignment>[];
+        assignmentsState.value ?? const <EventSuccessAssignment>[];
     final assignmentParticipantUidsKey = eventSuccessPeerUidsKey(
       eventSuccessAssignmentParticipantUids(assignmentsPreview),
     );
@@ -244,10 +258,16 @@ class _EventSuccessHostSectionState
             ),
           )
         : const AsyncData(<PublicProfile>[]);
+    final assignmentParticipantProfilesState = catchAsyncStateFromAsyncValue(
+      assignmentParticipantProfilesAsync,
+    );
     final AsyncValue<List<EventSuccessAssignment>> rotationAssignmentsAsync =
         shouldLoadAssignments
         ? ref.watch(watchEventSuccessRotationAssignmentsProvider(event.id))
         : const AsyncData(<EventSuccessAssignment>[]);
+    final rotationAssignmentsState = catchAsyncStateFromAsyncValue(
+      rotationAssignmentsAsync,
+    );
     final shouldLoadRotationDrafts =
         shouldLoadAssignments &&
         persistedPlan.hasModule(EventSuccessModuleCatalog.guidedRotations.id) &&
@@ -256,11 +276,14 @@ class _EventSuccessHostSectionState
         shouldLoadRotationDrafts
         ? ref.watch(watchEventSuccessRotationDraftsProvider(event.id))
         : const AsyncData(<EventSuccessAssignmentDraft>[]);
+    final rotationDraftsState = catchAsyncStateFromAsyncValue(
+      rotationDraftsAsync,
+    );
     final rotationAssignmentsPreview =
-        rotationDraftsAsync.asData?.value
-            .map((draft) => draft.assignment)
+        rotationDraftsState.value
+            ?.map((draft) => draft.assignment)
             .toList(growable: false) ??
-        rotationAssignmentsAsync.asData?.value ??
+        rotationAssignmentsState.value ??
         const <EventSuccessAssignment>[];
     final rotationParticipantUidsKey = eventSuccessPeerUidsKey(
       eventSuccessAssignmentParticipantUids(rotationAssignmentsPreview),
@@ -273,18 +296,24 @@ class _EventSuccessHostSectionState
             ),
           )
         : const AsyncData(<PublicProfile>[]);
+    final rotationParticipantProfilesState = catchAsyncStateFromAsyncValue(
+      rotationParticipantProfilesAsync,
+    );
     final AsyncValue<List<EventSuccessPreference>> preferencesAsync =
         shouldLoadPreferences
         ? ref.watch(watchEventSuccessPreferencesProvider(event.id))
         : const AsyncData(<EventSuccessPreference>[]);
+    final preferencesState = catchAsyncStateFromAsyncValue(preferencesAsync);
     final AsyncValue<List<EventSuccessWingmanRequest>> wingmanRequestsAsync =
         shouldLoadWingmanRequests
         ? ref.watch(watchEventSuccessWingmanRequestsProvider(event.id))
         : const AsyncData(<EventSuccessWingmanRequest>[]);
+    final wingmanRequestsState = catchAsyncStateFromAsyncValue(
+      wingmanRequestsAsync,
+    );
     final wingmanProfilesKey = eventSuccessPeerUidsKey(
       eventSuccessWingmanProfileUids(
-        wingmanRequestsAsync.asData?.value ??
-            const <EventSuccessWingmanRequest>[],
+        wingmanRequestsState.value ?? const <EventSuccessWingmanRequest>[],
       ),
     );
     final AsyncValue<List<PublicProfile>> wingmanProfilesAsync =
@@ -293,27 +322,24 @@ class _EventSuccessHostSectionState
             eventSuccessAssignmentPeerProfilesProvider(wingmanProfilesKey),
           )
         : const AsyncData(<PublicProfile>[]);
+    final wingmanProfilesState = catchAsyncStateFromAsyncValue(
+      wingmanProfilesAsync,
+    );
 
     final state = EventSuccessHostSectionState.resolve(
       event: event,
       now: referenceNow,
-      planState: catchAsyncStateFromAsyncValue(planAsync),
-      rosterState: catchAsyncStateFromAsyncValue(rosterAsync),
-      scorecardState: catchAsyncStateFromAsyncValue(scorecardAsync),
-      assignmentsState: catchAsyncStateFromAsyncValue(assignmentsAsync),
-      assignmentParticipantProfilesState: catchAsyncStateFromAsyncValue(
-        assignmentParticipantProfilesAsync,
-      ),
-      rotationAssignmentsState: catchAsyncStateFromAsyncValue(
-        rotationAssignmentsAsync,
-      ),
-      rotationDraftsState: catchAsyncStateFromAsyncValue(rotationDraftsAsync),
-      rotationParticipantProfilesState: catchAsyncStateFromAsyncValue(
-        rotationParticipantProfilesAsync,
-      ),
-      preferencesState: catchAsyncStateFromAsyncValue(preferencesAsync),
-      wingmanRequestsState: catchAsyncStateFromAsyncValue(wingmanRequestsAsync),
-      wingmanProfilesState: catchAsyncStateFromAsyncValue(wingmanProfilesAsync),
+      planState: planState,
+      rosterState: rosterState,
+      scorecardState: scorecardState,
+      assignmentsState: assignmentsState,
+      assignmentParticipantProfilesState: assignmentParticipantProfilesState,
+      rotationAssignmentsState: rotationAssignmentsState,
+      rotationDraftsState: rotationDraftsState,
+      rotationParticipantProfilesState: rotationParticipantProfilesState,
+      preferencesState: preferencesState,
+      wingmanRequestsState: wingmanRequestsState,
+      wingmanProfilesState: wingmanProfilesState,
     );
 
     Widget frameCompactLiveState(Widget child) => compactLiveControls
@@ -353,7 +379,7 @@ class _EventSuccessHostSectionState
       event: event,
       plan: state.plan,
       planIsPersisted: state.planIsPersisted,
-      spatialLayout: spatialLayoutAsync.asData?.value,
+      spatialLayout: spatialLayoutAsyncState.value,
       spatialLayoutState: spatialLayoutState,
       organizerLayoutsState: catchAsyncStateFromAsyncValue(
         organizerLayoutsAsync,
@@ -376,19 +402,18 @@ class _EventSuccessHostSectionState
       rotationDraftAssignments: state.rotationDraftAssignments,
       rotationParticipantProfiles: state.rotationParticipantProfiles,
       preferences: state.preferences,
-      standings: standingsAsync.asData?.value,
-      presenceSummary: presenceSummaryAsync.asData?.value,
-      presenceError: presenceSummaryAsync.hasError
-          ? presenceSummaryAsync.error
+      standings: standingsState.value,
+      presenceSummary: presenceSummaryState.value,
+      presenceError: presenceSummaryState.hasError
+          ? presenceSummaryState.error
           : null,
-      accountabilityAttendees:
-          accountabilityAttendeesAsync.asData?.value ?? const [],
-      accountabilityError: accountabilityAttendeesAsync.hasError
-          ? accountabilityAttendeesAsync.error
+      accountabilityAttendees: accountabilityAttendeesState.value ?? const [],
+      accountabilityError: accountabilityAttendeesState.hasError
+          ? accountabilityAttendeesState.error
           : accountabilityResolutionMutation.hasError
           ? _mutationError(accountabilityResolutionMutation)
           : null,
-      loadingAccountability: accountabilityAttendeesAsync.isLoading,
+      loadingAccountability: accountabilityAttendeesState.isLoading,
       resolvingAccountability: accountabilityResolutionMutation.isPending,
       resolvingLateArrival: resolveLateArrivalMutation.isPending,
       lateArrivalError: resolveLateArrivalMutation.hasError
@@ -480,7 +505,7 @@ class _EventSuccessHostSectionState
                 eventId: event.id,
                 uid: uid,
                 expectedRevision:
-                    presenceSummaryAsync.asData?.value?.liveControlRevision ??
+                    presenceSummaryState.value?.liveControlRevision ??
                     state.plan.liveControlRevision,
               ),
         );
@@ -561,9 +586,9 @@ class _EventSuccessHostSectionState
       ),
       outcomeActionState: EventSuccessOutcomeActionState(
         isLoading:
-            standingsAsync.isLoading || recordUnitOutcomesMutation.isPending,
-        error: standingsAsync.hasError
-            ? standingsAsync.error
+            standingsState.isLoading || recordUnitOutcomesMutation.isPending,
+        error: standingsState.hasError
+            ? standingsState.error
             : recordUnitOutcomesError,
       ),
       onRecordOutcomes:

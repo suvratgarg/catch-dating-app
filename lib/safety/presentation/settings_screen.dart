@@ -4,6 +4,7 @@ import 'package:catch_dating_app/auth/presentation/auth_session_controller.dart'
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
@@ -175,12 +176,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final packageInfo = ref.watch(appPackageInfoProvider).asData?.value;
+    final packageInfoAsync = ref.watch(appPackageInfoProvider);
+    final packageInfo = catchAsyncStateFromAsyncValue(packageInfoAsync).value;
     final version = packageInfo?.version ?? '—';
     final userProfileAsync = ref.watch(watchUserProfileProvider);
-    final userProfile = userProfileAsync.asData?.value;
+    final userProfile = catchAsyncStateFromAsyncValue(userProfileAsync).value;
     final blockedUsersAsync = ref.watch(watchBlockedUsersProvider);
-    final blockedUsers = blockedUsersAsync.asData?.value;
+    final blockedUsers = catchAsyncStateFromAsyncValue(blockedUsersAsync).value;
     final blockedProfilesAsync = blockedUsers == null || blockedUsers.isEmpty
         ? const AsyncData(<String, PublicProfile>{})
         : ref.watch(

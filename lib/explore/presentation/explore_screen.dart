@@ -12,6 +12,7 @@ import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/domain/city_data.dart';
 import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_sliver_error_state.dart';
 import 'package:catch_dating_app/cross_paths/cross_paths.dart';
@@ -99,38 +100,44 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
   Widget build(BuildContext context) {
     final uidAsync = ref.watch(uidProvider);
     final feedAsync = ref.watch(exploreFeedViewModelProvider);
+    final uidState = catchAsyncStateFromAsyncValue(uidAsync);
+    final feedState = catchAsyncStateFromAsyncValue(feedAsync);
+    final crossPathsState = catchAsyncStateFromAsyncValue(
+      ref.watch(exploreCrossPathsSuggestionsProvider),
+    );
     final crossPathsSuggestions =
-        ref.watch(exploreCrossPathsSuggestionsProvider).asData?.value ??
-        const <CrossPathsSuggestion>[];
+        crossPathsState.value ?? const <CrossPathsSuggestion>[];
     final recommendationsAsync = ref.watch(exploreRecommendationsProvider);
     final viewModelAsync = ref.watch(exploreClubsViewModelProvider);
+    final viewModelState = catchAsyncStateFromAsyncValue(viewModelAsync);
     ref.watch(exploreCityControllerProvider);
     final city = ref.watch(selectedExploreCityProvider);
     final cityListAsync = ref.watch(cityListProvider);
-    final cityOptions = cityListAsync.asData?.value ?? const <CityData>[];
+    final cityListState = catchAsyncStateFromAsyncValue(cityListAsync);
+    final cityOptions = cityListState.value ?? const <CityData>[];
     final cityPickerState = ExploreCityPickerState.from(
       selectedCity: city,
       cities: cityOptions,
-      cityListLoading: cityListAsync.isLoading && cityOptions.isEmpty,
-      cityListError: cityListAsync.hasError ? cityListAsync.error : null,
+      cityListLoading: cityListState.isLoading && cityOptions.isEmpty,
+      cityListError: cityListState.hasError ? cityListState.error : null,
     );
     final query = ref.watch(exploreSearchQueryProvider).trim();
     final filters = ref.watch(exploreFiltersProvider);
-    final uidData = uidAsync.asData;
     final showAccountControls = exploreShowsAccountControls(
-      authResolved: uidData != null,
-      uid: uidData?.value,
+      authResolved: uidState.hasData,
+      uid: uidState.value,
     );
-    if (uidData?.value == null && uidData != null && filters.joinedOnly) {
+    if (uidState.value == null && uidState.hasData && filters.joinedOnly) {
       _scheduleGuestJoinedFilterReset();
     }
     final visibleFilters = showAccountControls
         ? filters
         : filters.copyWith(joinedOnly: false);
     final sourceClubsAsync = ref.watch(exploreSourceClubsProvider);
-    final sourceClubs = sourceClubsAsync.asData?.value ?? const [];
+    final sourceClubsState = catchAsyncStateFromAsyncValue(sourceClubsAsync);
+    final sourceClubs = sourceClubsState.value ?? const [];
     final hasSourceClubs = sourceClubs.isNotEmpty;
-    final featuredItem = feedAsync.asData?.value.featuredItem;
+    final featuredItem = feedState.value?.featuredItem;
     final showFeaturedCover =
         featuredItem != null && !_searchRequested && query.isEmpty;
     final filterRailState = ExploreFilterRailState.from(
@@ -138,7 +145,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
       l10n: context.l10n,
     );
     final dateStripState = ExploreDateStripState.from(
-      viewModel: feedAsync.asData?.value,
+      viewModel: feedState.value,
       l10n: context.l10n,
       now: ref.watch(exploreDiscoveryReferenceNowProvider),
     );
@@ -146,8 +153,8 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
       filters: visibleFilters,
       sourceClubs: sourceClubs,
       l10n: context.l10n,
-      viewModel: feedAsync.asData?.value,
-      feedLoading: feedAsync.isLoading,
+      viewModel: feedState.value,
+      feedLoading: feedState.isLoading,
     );
     final screenState = ExploreDiscoveryScreenState.from(
       l10n: context.l10n,
@@ -155,13 +162,13 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
       query: query,
       filters: visibleFilters,
       hasSourceClubs: hasSourceClubs,
-      mappableEventCount: feedAsync.asData?.value.mappableEventCount,
-      viewModelLoading: viewModelAsync.isLoading,
-      viewModelError: viewModelAsync.hasError ? viewModelAsync.error : null,
-      viewModel: viewModelAsync.asData?.value,
-      eventFeedLoading: feedAsync.isLoading,
-      eventFeedError: feedAsync.hasError ? feedAsync.error : null,
-      eventFeedHasContent: feedAsync.asData?.value.isEmpty == false,
+      mappableEventCount: feedState.value?.mappableEventCount,
+      viewModelLoading: viewModelState.isLoading,
+      viewModelError: viewModelState.hasError ? viewModelState.error : null,
+      viewModel: viewModelState.value,
+      eventFeedLoading: feedState.isLoading,
+      eventFeedError: feedState.hasError ? feedState.error : null,
+      eventFeedHasContent: feedState.value?.isEmpty == false,
     );
     final bodyState = screenState.bodyState;
     _syncInitialLoadDeadline(bodyState.kind == ExploreScreenBodyKind.loading);
@@ -366,8 +373,11 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
             builder: (sheetContext, ref, _) {
               final liveFilters = ref.watch(exploreFiltersProvider);
               final liveFeed = ref.watch(exploreFeedViewModelProvider);
-              final liveUidData = ref.watch(uidProvider).asData;
-              final showJoinedOnly = liveUidData?.value != null;
+              final liveFeedState = catchAsyncStateFromAsyncValue(liveFeed);
+              final liveUidState = catchAsyncStateFromAsyncValue(
+                ref.watch(uidProvider),
+              );
+              final showJoinedOnly = liveUidState.value != null;
               final visibleLiveFilters = showJoinedOnly
                   ? liveFilters
                   : liveFilters.copyWith(joinedOnly: false);
@@ -375,8 +385,8 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                 filters: visibleLiveFilters,
                 state: filterSheetState.withLiveResults(
                   filters: visibleLiveFilters,
-                  viewModel: liveFeed.asData?.value,
-                  feedLoading: liveFeed.isLoading,
+                  viewModel: liveFeedState.value,
+                  feedLoading: liveFeedState.isLoading,
                   l10n: sheetContext.l10n,
                 ),
                 onDistanceFilterSelected: (filter) =>
@@ -462,7 +472,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                   ref.read(exploreSearchQueryProvider.notifier).clear(),
               onClearFilters: () =>
                   ref.read(exploreFiltersProvider.notifier).clear(),
-              onLoadMore: () => unawaited(_loadMore(feedAsync.asData?.value)),
+              onLoadMore: () => unawaited(_loadMore(feedState.value)),
               onSetTimeFilter: (filter) => ref
                   .read(exploreFiltersProvider.notifier)
                   .setTimeFilter(filter),
@@ -491,7 +501,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                     ref.read(exploreSearchQueryProvider.notifier).clear(),
                 onClearFilters: () =>
                     ref.read(exploreFiltersProvider.notifier).clear(),
-                onLoadMore: () => unawaited(_loadMore(feedAsync.asData?.value)),
+                onLoadMore: () => unawaited(_loadMore(feedState.value)),
                 onSetTimeFilter: (filter) => ref
                     .read(exploreFiltersProvider.notifier)
                     .setTimeFilter(filter),

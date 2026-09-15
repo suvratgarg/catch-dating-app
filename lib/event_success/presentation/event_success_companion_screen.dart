@@ -215,11 +215,13 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final uidAsync = ref.watch(uidProvider);
-    final watchedUid = uidAsync.asData?.value;
+    final uidState = catchAsyncStateFromAsyncValue(uidAsync);
+    final watchedUid = uidState.value;
     final eventAsync = ref.watch(watchEventProvider(eventId));
     final planAsync = ref.watch(watchEventSuccessPlanProvider(eventId));
+    final referenceNowAsync = ref.watch(eventSuccessCompanionClockProvider);
     final referenceNow =
-        ref.watch(eventSuccessCompanionClockProvider).asData?.value ??
+        catchAsyncStateFromAsyncValue(referenceNowAsync).value ??
         DateTime.now();
 
     final profileAsync = watchedUid == null
@@ -232,7 +234,7 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
       l10n: context.l10n,
       eventState: catchAsyncStateFromAsyncValue(eventAsync),
       initialEvent: initialEvent,
-      uidState: catchAsyncStateFromAsyncValue(uidAsync),
+      uidState: uidState,
       profileState: profileAsync == null
           ? null
           : catchAsyncStateFromAsyncValue(profileAsync),
@@ -375,11 +377,17 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
             ),
           )
         : const AsyncData<EventSuccessLateArrivalResolution?>(null);
+    final lateArrivalResolutionState = catchAsyncStateFromAsyncValue(
+      lateArrivalResolutionAsync,
+    );
     final AsyncValue<EventSuccessLayout?> spatialLayoutAsync =
         plan.layoutId != null &&
             plan.structureConfig.unitKind != EventSuccessUnitKind.wholeGroup
         ? ref.watch(eventSuccessSpatialLayoutProvider(eventId))
         : const AsyncData<EventSuccessLayout?>(null);
+    final spatialLayoutState = catchAsyncStateFromAsyncValue(
+      spatialLayoutAsync,
+    );
     final AsyncValue<EventSuccessArrivalMission?> arrivalMissionAsync =
         routeState.firstHelloAvailable
         ? ref.watch(
@@ -436,10 +444,10 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
             watchUserEventSuccessPreferenceProvider(eventId: eventId, uid: uid),
           )
         : const AsyncData<EventSuccessPreference?>(null);
-    final microPodsOptedOut =
-        preferenceAsync.asData?.value?.microPodsOptedOut ?? false;
+    final preferenceState = catchAsyncStateFromAsyncValue(preferenceAsync);
+    final microPodsOptedOut = preferenceState.value?.microPodsOptedOut ?? false;
     final guidedRotationsOptedOut =
-        preferenceAsync.asData?.value?.guidedRotationsOptedOut ?? false;
+        preferenceState.value?.guidedRotationsOptedOut ?? false;
     final AsyncValue<EventSuccessFeedback?> feedbackAsync =
         routeState.shouldLoadFeedback
         ? ref.watch(
@@ -466,7 +474,7 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
         : const AsyncData<EventSuccessWingmanRequest?>(null);
     final AsyncValue<EventSuccessAssignment?> assignmentAsync =
         routeState.shouldLoadAssignment &&
-            !preferenceAsync.isLoading &&
+            !preferenceState.isLoading &&
             !microPodsOptedOut
         ? ref.watch(
             watchUserEventSuccessAssignmentProvider(eventId: eventId, uid: uid),
@@ -474,7 +482,7 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
         : const AsyncData<EventSuccessAssignment?>(null);
     final AsyncValue<EventSuccessAssignment?> rotationAsync =
         routeState.shouldLoadRotations &&
-            !preferenceAsync.isLoading &&
+            !preferenceState.isLoading &&
             !guidedRotationsOptedOut
         ? ref.watch(
             watchUserEventSuccessRotationAssignmentProvider(
@@ -487,16 +495,24 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
         routeState.shouldLoadStandings
         ? ref.watch(watchEventSuccessStandingsProvider(eventId))
         : const AsyncData<EventSuccessStandings?>(null);
+    final feedbackState = catchAsyncStateFromAsyncValue(feedbackAsync);
+    final candidatesState = catchAsyncStateFromAsyncValue(candidatesAsync);
+    final wingmanRequestState = catchAsyncStateFromAsyncValue(
+      wingmanRequestAsync,
+    );
+    final assignmentState = catchAsyncStateFromAsyncValue(assignmentAsync);
+    final rotationState = catchAsyncStateFromAsyncValue(rotationAsync);
+    final standingsState = catchAsyncStateFromAsyncValue(standingsAsync);
 
     // Wave 3: moment-specific feedback, preference, wingman, and assignments.
     routeState = routeState.withMomentData(
-      feedbackState: catchAsyncStateFromAsyncValue(feedbackAsync),
-      preferenceState: catchAsyncStateFromAsyncValue(preferenceAsync),
-      wingmanCandidatesState: catchAsyncStateFromAsyncValue(candidatesAsync),
-      wingmanRequestState: catchAsyncStateFromAsyncValue(wingmanRequestAsync),
-      assignmentState: catchAsyncStateFromAsyncValue(assignmentAsync),
-      rotationState: catchAsyncStateFromAsyncValue(rotationAsync),
-      standingsState: catchAsyncStateFromAsyncValue(standingsAsync),
+      feedbackState: feedbackState,
+      preferenceState: preferenceState,
+      wingmanCandidatesState: candidatesState,
+      wingmanRequestState: wingmanRequestState,
+      assignmentState: assignmentState,
+      rotationState: rotationState,
+      standingsState: standingsState,
     );
     if (routeState.status != EventSuccessCompanionRouteStatus.ready) {
       return _CompanionRouteGate(
@@ -513,6 +529,7 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
     final peersAsync = peerUidsKey.isEmpty
         ? const AsyncData(<PublicProfile>[])
         : ref.watch(eventSuccessAssignmentPeerProfilesProvider(peerUidsKey));
+    final peersState = catchAsyncStateFromAsyncValue(peersAsync);
     final rotationPeerUidsKey = rotationAssignment == null
         ? ''
         : eventSuccessPeerUidsKey(rotationAssignment.allPeerUids);
@@ -521,6 +538,9 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
         : ref.watch(
             eventSuccessAssignmentPeerProfilesProvider(rotationPeerUidsKey),
           );
+    final rotationPeersState = catchAsyncStateFromAsyncValue(
+      rotationPeersAsync,
+    );
     final compatibilityMutation = ref.watch(
       EventSuccessController.compatibilityResponseMutation,
     );
@@ -564,7 +584,7 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
     return EventSuccessCompanionScreen(
       event: event,
       plan: plan,
-      spatialLayout: spatialLayoutAsync.asData?.value,
+      spatialLayout: spatialLayoutState.value,
       userProfile: profile,
       participation: participation,
       wingmanRequestCandidates: routeState.wingmanRequestCandidates,
@@ -572,17 +592,15 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
       compatibilityResponse: routeState.compatibilityResponse,
       existingFeedback: routeState.feedback,
       assignment: assignment,
-      assignmentPeerProfiles:
-          peersAsync.asData?.value ?? const <PublicProfile>[],
-      assignmentPeersLoading: peersAsync.isLoading,
+      assignmentPeerProfiles: peersState.value ?? const <PublicProfile>[],
+      assignmentPeersLoading: peersState.isLoading,
       microPodsOptedOut: routeState.microPodsOptedOut,
       rotationAssignment: rotationAssignment,
       standings: routeState.standings,
-      rotationPeerProfiles:
-          rotationPeersAsync.asData?.value ?? const <PublicProfile>[],
-      rotationPeersLoading: rotationPeersAsync.isLoading,
+      rotationPeerProfiles: rotationPeersState.value ?? const <PublicProfile>[],
+      rotationPeersLoading: rotationPeersState.isLoading,
       guidedRotationsOptedOut: routeState.guidedRotationsOptedOut,
-      lateArrivalResolution: lateArrivalResolutionAsync.asData?.value,
+      lateArrivalResolution: lateArrivalResolutionState.value,
       arrivalMission: routeState.activeArrivalMission,
       now: routeState.referenceNow!,
       compatibilityActionState: CompatibilityQuestionnaireActionState(

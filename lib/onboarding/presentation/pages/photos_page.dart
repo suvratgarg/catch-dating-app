@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_grid.dart';
 import 'package:catch_dating_app/image_uploads/shared/photo_upload_controller.dart';
 import 'package:catch_dating_app/image_uploads/shared/profile_photo_editor_screen.dart';
@@ -21,13 +22,11 @@ class PhotosPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final profileState = catchAsyncStateFromAsyncValue(
+      ref.watch(watchUserProfileProvider),
+    );
     final profilePhotos =
-        ref
-            .watch(watchUserProfileProvider)
-            .asData
-            ?.value
-            ?.effectiveProfilePhotos ??
-        const [];
+        profileState.value?.effectiveProfilePhotos ?? const [];
     final uploadState = ref.watch(photoUploadControllerProvider);
     final state = OnboardingPhotosState.from(
       profilePhotos: profilePhotos,

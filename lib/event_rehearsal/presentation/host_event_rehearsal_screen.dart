@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/event_rehearsal/data/event_rehearsal_repository.dart';
@@ -56,6 +57,7 @@ class _HostEventRehearsalScreenState
   @override
   Widget build(BuildContext context) {
     final rehearsalAsync = ref.watch(eventRehearsalProvider(widget.sessionId));
+    final rehearsalState = catchAsyncStateFromAsyncValue(rehearsalAsync);
     final setupMutation = ref.watch(EventRehearsalController.setupMutation);
     final controlMutation = ref.watch(EventRehearsalController.controlMutation);
     final behaviorMutation = ref.watch(
@@ -100,7 +102,7 @@ class _HostEventRehearsalScreenState
     );
     return CatchRouteScaffold(
       statuses: [
-        if (rehearsalAsync.asData?.value case final rehearsal?)
+        if (rehearsalState.value case final rehearsal?)
           CatchBannerStatus(
             id: 'rehearsal.${rehearsal.session.id}',
             label: context.l10n.hostEventRehearsalBadge,
@@ -135,7 +137,7 @@ class _HostEventRehearsalScreenState
         contentCrossAxisAlignment: CrossAxisAlignment.start,
         eyebrow: context.l10n.hostEventRehearsalManageSubtitle,
         title:
-            rehearsalAsync.asData?.value.session.setup.title ??
+            rehearsalState.value?.session.setup.title ??
             context.l10n.hostEventRehearsalTitle,
         titleMaxLines: topBarTitleMaxLines,
         navigation: const CatchTopBarNavigation(
@@ -144,8 +146,7 @@ class _HostEventRehearsalScreenState
         leading: CatchIconAction.toolbar(
           tooltip: MaterialLocalizations.of(context).backButtonTooltip,
           icon: CatchIcons.arrowBackIosNewRounded,
-          onPressed: () =>
-              _leaveRehearsal(rehearsalAsync.asData?.value.session),
+          onPressed: () => _leaveRehearsal(rehearsalState.value?.session),
         ),
         emphasis: scrolledUnder
             ? CatchTopBarEmphasis.divided

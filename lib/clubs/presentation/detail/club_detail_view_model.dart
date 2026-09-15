@@ -4,6 +4,7 @@ import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/domain/club_membership.dart';
 import 'package:catch_dating_app/core/app_config.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
@@ -47,29 +48,32 @@ AsyncValue<ClubDetailViewModel?> clubDetailViewModel(Ref ref, String clubId) {
   final reviewsAsync = ref.watch(watchReviewsForClubProvider(clubId));
   final userProfileAsync = ref.watch(watchUserProfileProvider);
   final uidAsync = ref.watch(uidProvider);
-  final uid = uidAsync.asData?.value;
+  final reviewsState = catchAsyncStateFromAsyncValue(reviewsAsync);
+  final userProfileState = catchAsyncStateFromAsyncValue(userProfileAsync);
+  final uidState = catchAsyncStateFromAsyncValue(uidAsync);
+  final uid = uidState.value;
   final membershipAsync = uid == null
       ? const AsyncData<ClubMembership?>(null)
       : ref.watch(watchClubMembershipProvider(clubId, uid));
 
   // Log errors from secondary (non-blocking) providers so they don't
-  // silently disappear when discarded via .asData?.value in
+  // silently disappear when discarded while building
   // buildClubDetailViewModel.
-  if (reviewsAsync.hasError) {
+  if (reviewsState.hasError) {
     ref
         .read(errorLoggerProvider)
         .logError(
-          reviewsAsync.error!,
-          reviewsAsync.stackTrace,
+          reviewsState.error!,
+          reviewsState.stackTrace,
           reason: 'Failed to load reviews for club $clubId',
         );
   }
-  if (userProfileAsync.hasError) {
+  if (userProfileState.hasError) {
     ref
         .read(errorLoggerProvider)
         .logError(
-          userProfileAsync.error!,
-          userProfileAsync.stackTrace,
+          userProfileState.error!,
+          userProfileState.stackTrace,
           reason: 'Failed to load user profile in club detail',
         );
   }
@@ -95,75 +99,72 @@ AsyncValue<ClubDetailViewModel?> buildClubDetailViewModel({
   AppRole appRole = AppRole.consumer,
   DateTime? now,
 }) {
-  final uid = uidAsync.asData?.value;
-  final isAuthenticated = uid != null;
+  final club = catchAsyncStateFromAsyncValue(clubAsync);
+  final events = catchAsyncStateFromAsyncValue(eventsAsync);
+  final reviews = catchAsyncStateFromAsyncValue(reviewsAsync);
+  final userProfile = catchAsyncStateFromAsyncValue(userProfileAsync);
+  final uid = catchAsyncStateFromAsyncValue(uidAsync);
+  final membership = catchAsyncStateFromAsyncValue(membershipAsync);
+  final uidValue = uid.value;
+  final isAuthenticated = uidValue != null;
 
   // Always block on core data needed for the route and schedule.
-  if (clubAsync.isLoading || eventsAsync.isLoading || uidAsync.isLoading) {
+  if (club.isLoading || events.isLoading || uid.isLoading) {
     return const AsyncLoading();
   }
 
-  if (clubAsync.hasError) {
-    return AsyncError(
-      clubAsync.error!,
-      clubAsync.stackTrace ?? StackTrace.current,
-    );
+  if (club.hasError) {
+    return AsyncError(club.error!, club.stackTrace ?? StackTrace.current);
   }
-  if (eventsAsync.hasError) {
-    return AsyncError(
-      eventsAsync.error!,
-      eventsAsync.stackTrace ?? StackTrace.current,
-    );
+  if (events.hasError) {
+    return AsyncError(events.error!, events.stackTrace ?? StackTrace.current);
   }
-  if (uidAsync.hasError) {
-    return AsyncError(
-      uidAsync.error!,
-      uidAsync.stackTrace ?? StackTrace.current,
-    );
+  if (uid.hasError) {
+    return AsyncError(uid.error!, uid.stackTrace ?? StackTrace.current);
   }
-  final club = clubAsync.asData?.value;
-  if (club == null) return const AsyncData(null);
-  final isOwnedHostRoute = uid != null && club.isHostedBy(uid);
+  final clubValue = club.value;
+  if (clubValue == null) return const AsyncData(null);
+  final isOwnedHostRoute = uidValue != null && clubValue.isHostedBy(uidValue);
   if (appRole.isHost && !isOwnedHostRoute) {
     return const AsyncData(null);
   }
-  if (!appRole.isHost && !club.isPubliclyBrowseable) {
+  if (!appRole.isHost && !clubValue.isPubliclyBrowseable) {
     return const AsyncData(null);
   }
   // Membership only controls the consumer join/leave dock. An organizer owner
   // must not lose access to their own page when that unrelated edge is loading
   // or unavailable.
-  if (isAuthenticated && !isOwnedHostRoute && membershipAsync.isLoading) {
+  if (isAuthenticated && !isOwnedHostRoute && membership.isLoading) {
     return const AsyncLoading();
   }
-  if (isAuthenticated && !isOwnedHostRoute && membershipAsync.hasError) {
+  if (isAuthenticated && !isOwnedHostRoute && membership.hasError) {
     return AsyncError(
-      membershipAsync.error!,
-      membershipAsync.stackTrace ?? StackTrace.current,
+      membership.error!,
+      membership.stackTrace ?? StackTrace.current,
     );
   }
 
-  final events = eventsAsync.asData?.value ?? const [];
+  final eventValues = events.value ?? const <Event>[];
   final effectiveNow = now ?? DateTime.now();
   final upcomingEvents =
-      events.where((event) => event.isUpcomingAt(effectiveNow)).toList()
+      eventValues.where((event) => event.isUpcomingAt(effectiveNow)).toList()
         ..sort((a, b) => a.startTime.compareTo(b.startTime));
-  final reviews = isAuthenticated
-      ? (reviewsAsync.asData?.value ?? const [])
+  final reviewValues = isAuthenticated
+      ? (reviews.value ?? const <Review>[])
       : const <Review>[];
-  final userProfile = isAuthenticated ? (userProfileAsync.asData?.value) : null;
-  final membership = membershipAsync.asData?.value;
-  final isActiveMember = membership?.status == ClubMembershipStatus.active;
+  final userProfileValue = isAuthenticated ? userProfile.value : null;
+  final membershipValue = membership.value;
+  final isActiveMember = membershipValue?.status == ClubMembershipStatus.active;
 
   return AsyncData(
     ClubDetailViewModel(
-      club: club,
-      isHost: isAuthenticated && club.isHostedBy(uid),
+      club: clubValue,
+      isHost: isAuthenticated && clubValue.isHostedBy(uidValue),
       isMember: isAuthenticated && isActiveMember,
       upcomingEvents: upcomingEvents,
-      reviews: reviews,
-      userProfile: userProfile,
-      uid: uid,
+      reviews: reviewValues,
+      userProfile: userProfileValue,
+      uid: uidValue,
       isAuthenticated: isAuthenticated,
     ),
   );

@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -20,14 +21,18 @@ class ReviewsHistoryScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final uidAsync = ref.watch(uidProvider);
-    final uid = uidAsync.asData?.value;
+    final uidState = catchAsyncStateFromAsyncValue(uidAsync);
+    final uid = uidState.value;
     final userAsync = uid == null
         ? const AsyncData<UserProfile?>(null)
         : ref.watch(watchUserProfileProvider);
     final reviewsAsync = uid == null
         ? null
         : ref.watch(watchReviewsByUserProvider(uid));
-    final reviews = reviewsAsync?.asData?.value;
+    final reviewsState = reviewsAsync == null
+        ? null
+        : catchAsyncStateFromAsyncValue(reviewsAsync);
+    final reviews = reviewsState?.value;
     AsyncValue<List<Event>> eventsAsync = const AsyncData<List<Event>>([]);
     if (reviews != null && reviews.isNotEmpty) {
       final eventIds = ReviewsHistoryState.eventIdsFor(reviews);
@@ -48,9 +53,9 @@ class ReviewsHistoryScreen extends ConsumerWidget {
       data: (uid) => buildReviewsHistoryState(
         l10n: context.l10n,
         uid: uid,
-        user: userAsync,
-        reviews: reviewsAsync,
-        events: eventsAsync,
+        user: catchAsyncStateFromAsyncValue(userAsync),
+        reviews: reviewsState,
+        events: catchAsyncStateFromAsyncValue(eventsAsync),
       ),
     );
     void onRetryProfile() => ref.invalidate(watchUserProfileProvider);

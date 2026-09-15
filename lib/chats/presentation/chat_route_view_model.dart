@@ -8,6 +8,7 @@ import 'package:catch_dating_app/chats/presentation/chat_thread_lookup_state.dar
 import 'package:catch_dating_app/chats/presentation/host_chat_screen_state.dart';
 import 'package:catch_dating_app/chats/presentation/suvbot_controller.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
+import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
@@ -23,12 +24,14 @@ part 'chat_route_view_model.g.dart';
 @riverpod
 ChatRouteState chatRouteState(Ref ref, ChatRouteStateArgs args) {
   final uidAsync = ref.watch(uidProvider);
-  final uid = uidAsync.asData?.value;
+  final uidState = _catchAsyncState(uidAsync);
+  final uid = uidState.value;
   final messagesAsync = ref.watch(
     watchConversationMessagesProvider(args.matchId),
   );
   final matchAsync = ref.watch(matchStreamProvider(args.matchId));
-  final match = matchAsync.asData?.value;
+  final matchState = _catchAsyncState(matchAsync);
+  final match = matchState.value;
 
   final initialLookupState = ChatThreadLookupState.resolve(
     matchId: args.matchId,
@@ -36,12 +39,10 @@ ChatRouteState chatRouteState(Ref ref, ChatRouteStateArgs args) {
     match: match,
     routeProfile: args.initialProfile,
   );
-  final hostInquiryClub = initialLookupState.hostInquiryClubId == null
-      ? null
-      : ref
-            .watch(watchClubProvider(initialLookupState.hostInquiryClubId!))
-            .asData
-            ?.value;
+  final hostInquiryClubAsync = initialLookupState.hostInquiryClubId == null
+      ? const AsyncData<Club?>(null)
+      : ref.watch(watchClubProvider(initialLookupState.hostInquiryClubId!));
+  final hostInquiryClub = _catchAsyncState(hostInquiryClubAsync).value;
   final lookupState = ChatThreadLookupState.resolve(
     matchId: args.matchId,
     uid: uid,
@@ -60,8 +61,8 @@ ChatRouteState chatRouteState(Ref ref, ChatRouteStateArgs args) {
       ? ref.watch(suvbotActionsProvider)
       : const AsyncData(<SuvbotActionItem>[]);
 
-  final profile = otherProfileAsync.asData?.value ?? lookupState.initialProfile;
-  final matchState = _catchAsyncState(matchAsync);
+  final profile =
+      _catchAsyncState(otherProfileAsync).value ?? lookupState.initialProfile;
   final messagesState = _catchAsyncState(messagesAsync);
   final suvbotActionsState = _catchAsyncState(suvbotActionsAsync);
   final chatState = HostChatScreenState.resolve(
@@ -77,7 +78,7 @@ ChatRouteState chatRouteState(Ref ref, ChatRouteStateArgs args) {
   );
 
   return ChatRouteState(
-    uidAsync: _catchAsyncState(uidAsync),
+    uidAsync: uidState,
     uid: uid,
     matchAsync: matchState,
     messagesAsync: messagesState,

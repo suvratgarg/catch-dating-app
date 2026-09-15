@@ -4191,11 +4191,11 @@ branch. Retrying without credible data selects loading, terminal failure
 selects error, and stale data remains available under an explicit error policy.
 `CatchAsyncState` itself stays provider-free.
 
-Host presentation code must not branch directly on `isLoading`, `hasError`,
+Feature presentation code must not branch directly on `isLoading`, `hasError`,
 `hasValue`, `asData`, or `valueOrNull` from a watched `AsyncValue`. The
 `catch_async_requires_state_surface` analyzer diagnostic enforces this route
-edge throughout Host presentation folders under `lib/hosts/`. Convert the
-snapshot once, then let
+edge throughout consumer and Host presentation folders. Convert the snapshot
+once, then let
 a feature-owned display state decide whether the result is a full-screen load,
 empty success, missing resource, primary failure, or optional enrichment. This
 keeps Riverpod transition semantics out of feature widgets and prevents a

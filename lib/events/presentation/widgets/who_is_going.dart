@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/presentation/event_attendee_lookup_controller.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_detail_surface_style.dart';
@@ -51,19 +52,19 @@ class WhoIsGoing extends ConsumerWidget {
     final referenceNow = now ?? DateTime.now();
     final isUpcoming = event.isUpcomingAt(referenceNow);
     final totalCount = isUpcoming ? event.signedUpCount : event.attendedCount;
-    final avatarItems = isUpcoming || totalCount <= 0
+    final avatarItemsState = isUpcoming || totalCount <= 0
         ? null
-        : ref
-              .watch(
-                eventHypeAvatarsProvider(
-                  EventHypeAvatarQuery(
-                    eventId: event.id,
-                    limit: _whoIsGoingAvatarLimit,
-                  ),
+        : catchAsyncStateFromAsyncValue(
+            ref.watch(
+              eventHypeAvatarsProvider(
+                EventHypeAvatarQuery(
+                  eventId: event.id,
+                  limit: _whoIsGoingAvatarLimit,
                 ),
-              )
-              .asData
-              ?.value;
+              ),
+            ),
+          );
+    final avatarItems = avatarItemsState?.value;
     return WhoIsGoingContent(
       event: event,
       totalCount: totalCount,

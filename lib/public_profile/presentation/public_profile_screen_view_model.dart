@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/public_profile/presentation/public_profile_controller.dart';
@@ -14,7 +15,8 @@ PublicProfileScreenState publicProfileScreenState(
   PublicProfileScreenStateArgs args,
 ) {
   final profileAsync = ref.watch(watchPublicProfileProvider(args.uid));
-  final viewerProfile = ref.watch(watchUserProfileProvider).asData?.value;
+  final viewerProfileAsync = ref.watch(watchUserProfileProvider);
+  final viewerProfile = catchAsyncStateFromAsyncValue(viewerProfileAsync).value;
   final blockMutation = ref.watch(PublicProfileController.blockUserMutation);
   final reportMutation = ref.watch(PublicProfileController.reportUserMutation);
 

@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/clubs/data/club_membership_repository.dart';
 import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_sliver_error_state.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_empty.dart';
@@ -152,9 +153,12 @@ class NotificationsAction extends ConsumerWidget {
     final notificationsAsync = ref.watch(
       watchActivityNotificationsProvider(uid),
     );
+    final notificationsState = catchAsyncStateFromAsyncValue(
+      notificationsAsync,
+    );
     final unreadCount =
-        notificationsAsync.asData?.value
-            .where((notification) => notification.isUnread)
+        notificationsState.value
+            ?.where((notification) => notification.isUnread)
             .length ??
         0;
 

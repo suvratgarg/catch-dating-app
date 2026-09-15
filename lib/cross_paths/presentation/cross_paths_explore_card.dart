@@ -3,6 +3,7 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart'
 import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
 import 'package:catch_dating_app/core/widgets/event_visual_atoms.dart';
@@ -250,7 +251,8 @@ class CrossPathsProfilePreviewSheet extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final t = CatchTokens.of(context);
-    final uid = ref.watch(uidProvider).asData?.value;
+    final uidAsync = ref.watch(uidProvider);
+    final uid = catchAsyncStateFromAsyncValue(uidAsync).value;
     final invitationAsync = uid == null
         ? const AsyncValue<CrossPathsInvitation?>.data(null)
         : ref.watch(
@@ -259,7 +261,8 @@ class CrossPathsProfilePreviewSheet extends ConsumerWidget {
               suggestion.event.eventId,
             ),
           );
-    final invitation = invitationAsync.asData?.value;
+    final invitationState = catchAsyncStateFromAsyncValue(invitationAsync);
+    final invitation = invitationState.value;
     final mutation = ref.watch(crossPathsInvitationControllerProvider);
     final invitationController = ref.read(
       crossPathsInvitationControllerProvider.notifier,
@@ -358,7 +361,7 @@ class CrossPathsProfilePreviewSheet extends ConsumerWidget {
                         context,
                         invitationController,
                         analytics,
-                        invitationAsync,
+                        invitationState.hasData,
                         invitation,
                         pairInvitationEnabled: pairInvitationEnabled,
                       ),
@@ -405,14 +408,14 @@ class CrossPathsProfilePreviewSheet extends ConsumerWidget {
     BuildContext context,
     CrossPathsInvitationController invitationController,
     AppAnalytics analytics,
-    AsyncValue<CrossPathsInvitation?> invitationAsync,
+    bool invitationResolved,
     CrossPathsInvitation? invitation, {
     required bool pairInvitationEnabled,
   }) {
     if (!suggestion.viewerIsBooked && !pairInvitationEnabled) {
       return onEventSelected;
     }
-    if (!invitationAsync.hasValue) return null;
+    if (!invitationResolved) return null;
     return switch (invitation?.status) {
       null => () => _sendInvitation(context, invitationController, analytics),
       CrossPathsInvitationStatus.pending => () => _cancelInvitation(
