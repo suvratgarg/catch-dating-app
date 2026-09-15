@@ -5,7 +5,7 @@
 export const hostAttentionPolicyCatalog = {
   "schemaVersion": 1,
   "kind": "hostAttentionPolicies",
-  "policyVersion": 2,
+  "policyVersion": 3,
   "horizonHours": 168,
   "immediateHours": 24,
   "soonHours": 72,
@@ -51,6 +51,27 @@ export const hostAttentionPolicyCatalog = {
       "deliveryMode": "serverProjected",
       "readiness": "sourceReady",
       "readinessReason": "Practical help ownership, open status, organizer, event, and receipt time are canonical server-owned case facts."
+    },
+    {
+      "kind": "eventAssistanceDeliveryReview",
+      "scope": "event",
+      "sourceOwner": "operationWorkItems",
+      "sourceIdPolicy": "Canonical event id grouping validated live message-delivery work items in the host-review phase.",
+      "sourceRevisionPolicy": "SHA-256 fingerprint of the event schedule and sorted work ids, work revisions, candidate hashes, review reasons, message revisions, and source update times.",
+      "triggerPredicate": "An active live event has one or more validated message-delivery work items whose checkpoint phase is review and whose Operations projection requires human review.",
+      "resolutionPredicate": "Every delivery item leaves host review, the event ends or is cancelled, or the work source leaves the bounded live scope.",
+      "permissionPredicate": "Caller is a canonical manager of the event organizer; recipient endpoints, routes, bearer links, and provider receipts remain private.",
+      "consequence": "risksGuestExperience",
+      "dueAtPolicy": "Earliest review checkpoint dueAt, bounded by the event endTime.",
+      "expiresAtPolicy": "Event endTime.",
+      "destination": {
+        "route": "hostEventManage",
+        "section": "live"
+      },
+      "dedupePolicy": "kind + eventId",
+      "deliveryMode": "serverProjected",
+      "readiness": "sourceReady",
+      "readinessReason": "The delivery checkpoint review phase and matching Operations human-review projection are explicit server-owned facts."
     },
     {
       "kind": "eventWaitlistReview",

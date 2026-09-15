@@ -566,10 +566,14 @@ contains one coverage row per catalog kind so clients and tests can distinguish
 complete server coverage, required local merging, shortcuts, and missing truth.
 
 The source-ready server kinds are live-event operations, open practical guest-
-help review, ordinary waitlist review, manual join-request review, application
-review, provider-sync failure, form-automation failure, and payout setup.
+help review, delivery work that explicitly requires host review, ordinary
+waitlist review, manual join-request review, application review, provider-sync
+failure, form-automation failure, and payout setup.
 Practical help is aggregated per active event from event-lead-owned cases;
-safety-owned cases remain inside their restricted operator boundary. Attendance retry/conflict work is
+safety-owned cases remain inside their restricted operator boundary. Delivery
+review is aggregated only from validated `liveMessageDelivery` Operations work
+whose checkpoint and human-review projection agree; message status alone cannot
+create a task. Attendance retry/conflict work is
 merged from the local Host outbox. Flutter consumes the callable through
 `HostAttentionRepository`, parses the closed item and coverage vocabularies
 into typed domain values, verifies the requested organizer, and rejects any

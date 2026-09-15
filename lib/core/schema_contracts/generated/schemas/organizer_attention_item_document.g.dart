@@ -66,6 +66,7 @@ const schemaOrganizerAttentionItemDocumentSchema = <String, Object?>{
       'enum': <Object?>[
         'eventLiveOperations',
         'eventAssistanceCaseReview',
+        'eventAssistanceDeliveryReview',
         'eventWaitlistReview',
         'eventJoinRequestReview',
         'applicationReview',
@@ -107,6 +108,7 @@ const schemaOrganizerAttentionItemDocumentSchema = <String, Object?>{
         'hostPaymentAccounts',
         'hostAttendanceOutbox',
         'eventAssistanceCases',
+        'operationWorkItems',
         'eventSuccessPlans',
         'eventRehearsals',
         'eventStaffGrants',

@@ -6562,6 +6562,20 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String hostTodayAttentionDeliveryBody({
+    required int count,
+    required Object eventName,
+  }) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count guest updates need delivery review for $eventName.',
+      one: 'One guest update needs delivery review for $eventName.',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String hostTodayAttentionWaitlistBody({
     required Object count,
     required Object eventName,

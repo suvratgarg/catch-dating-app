@@ -2,6 +2,8 @@ import {createHash} from "crypto";
 import {eventPolicyFromEvent} from "../events/eventPolicy";
 import type {EventAssistanceCaseDocument} from
   "../shared/generated/eventAssistanceCaseDocument";
+import type {EventAssistanceDeliveryWork} from
+  "../shared/generated/eventAssistanceDeliveryWork";
 import type {
   EventDocument,
   EventParticipationDocument,
@@ -30,11 +32,27 @@ export interface AttentionSourceRow<T> {
   sourceUpdatedAtMillis: number;
 }
 
+export interface DeliveryReviewAttentionSource {
+  workItemId: string;
+  revision: number;
+  candidateHash: string;
+  reviewDueAtMillis: number;
+  payload: EventAssistanceDeliveryWork & {
+    checkpoint: Extract<
+      EventAssistanceDeliveryWork["checkpoint"],
+      {phase: "review"}
+    >;
+  };
+}
+
 export interface OrganizerAttentionSources {
   organizer: AttentionSourceRow<OrganizerDocument>;
   events: Array<AttentionSourceRow<EventDocument>>;
   eventAssistanceCases: Array<
     AttentionSourceRow<EventAssistanceCaseDocument>
+  >;
+  deliveryReviewWorkItems: Array<
+    AttentionSourceRow<DeliveryReviewAttentionSource>
   >;
   eventParticipations: Array<AttentionSourceRow<EventParticipationDocument>>;
   applications: Array<AttentionSourceRow<OrganizerApplicationDocument>>;
@@ -205,6 +223,70 @@ export function deriveOrganizerAttentionItems(params: {
         count: ordered.length,
       }),
       dedupeKey: `eventAssistanceCaseReview:${eventId}`,
+      assignedHostUid: null,
+      sourceUpdatedAtMillis: Math.max(
+        event.sourceUpdatedAtMillis,
+        ...ordered.map((row) => row.sourceUpdatedAtMillis)
+      ),
+      nowMillis: params.nowMillis,
+    }));
+  }
+
+  const deliveryReviewsByEvent = new Map<
+    string,
+    Array<AttentionSourceRow<DeliveryReviewAttentionSource>>
+  >();
+  for (const row of params.sources.deliveryReviewWorkItems) {
+    const review = row.data;
+    const context = review.payload.scope.context;
+    if (review.payload.checkpoint.phase !== "review" ||
+        context.organizerId !== params.organizerId ||
+        !activeEventsById.has(context.eventId)) continue;
+    const reviews = deliveryReviewsByEvent.get(context.eventId) ?? [];
+    reviews.push(row);
+    deliveryReviewsByEvent.set(context.eventId, reviews);
+  }
+  for (const [eventId, reviews] of deliveryReviewsByEvent) {
+    const event = activeEventsById.get(eventId)!;
+    const ordered = [...reviews].sort((left, right) =>
+      left.data.reviewDueAtMillis - right.data.reviewDueAtMillis ||
+      left.id.localeCompare(right.id));
+    const endMillis = event.data.endTime.toMillis();
+    items.push(buildItem({
+      kind: "eventAssistanceDeliveryReview",
+      scope: "event",
+      sourceOwner: "operationWorkItems",
+      sourceId: eventId,
+      sourceRevision: revisionOf({
+        eventId,
+        startMillis: event.data.startTime.toMillis(),
+        endMillis,
+        reviews: ordered.map((row) => ({
+          workItemId: row.data.workItemId,
+          revision: row.data.revision,
+          candidateHash: row.data.candidateHash,
+          reason: row.data.payload.checkpoint.reason,
+          messageRevision: row.data.payload.checkpoint.messageRevision,
+          messageHash: row.data.payload.checkpoint.messageHash,
+          reviewDueAtMillis: row.data.reviewDueAtMillis,
+          sourceUpdatedAtMillis: row.sourceUpdatedAtMillis,
+        })),
+      }),
+      eventId,
+      consequence: "risksGuestExperience",
+      blocking: false,
+      dueAtMillis: Math.min(ordered[0].data.reviewDueAtMillis, endMillis),
+      expiresAtMillis: endMillis,
+      destination: destination({
+        route: "hostEventManage",
+        section: "live",
+        eventId,
+      }),
+      context: context({
+        eventName: displayEventName(event.data),
+        count: ordered.length,
+      }),
+      dedupeKey: `eventAssistanceDeliveryReview:${eventId}`,
       assignedHostUid: null,
       sourceUpdatedAtMillis: Math.max(
         event.sourceUpdatedAtMillis,

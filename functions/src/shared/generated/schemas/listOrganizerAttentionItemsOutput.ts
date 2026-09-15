@@ -77,6 +77,7 @@ export const listOrganizerAttentionItemsCallableResponseSchema: Record<string, u
             "enum": [
               "eventLiveOperations",
               "eventAssistanceCaseReview",
+              "eventAssistanceDeliveryReview",
               "eventWaitlistReview",
               "eventJoinRequestReview",
               "applicationReview",
@@ -116,6 +117,7 @@ export const listOrganizerAttentionItemsCallableResponseSchema: Record<string, u
               "hostPaymentAccounts",
               "hostAttendanceOutbox",
               "eventAssistanceCases",
+              "operationWorkItems",
               "eventSuccessPlans",
               "eventRehearsals",
               "eventStaffGrants",
@@ -323,8 +325,8 @@ export const listOrganizerAttentionItemsCallableResponseSchema: Record<string, u
     },
     "coverage": {
       "type": "array",
-      "minItems": 16,
-      "maxItems": 16,
+      "minItems": 17,
+      "maxItems": 17,
       "items": {
         "type": "object",
         "additionalProperties": false,
@@ -339,6 +341,7 @@ export const listOrganizerAttentionItemsCallableResponseSchema: Record<string, u
             "enum": [
               "eventLiveOperations",
               "eventAssistanceCaseReview",
+              "eventAssistanceDeliveryReview",
               "eventWaitlistReview",
               "eventJoinRequestReview",
               "applicationReview",

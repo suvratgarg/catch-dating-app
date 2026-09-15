@@ -72,6 +72,8 @@ Typed handoffs:
 - `contracts/firestore/event_assistance_cases.schema.json`
 - `contracts/firestore/events.schema.json`
 - `contracts/firestore/organizer_attention_items.schema.json`
+- `contracts/operations/event_assistance_delivery_work.schema.json`
+- `contracts/operations/work_item.schema.json`
 - `contracts/shared/host_attention_common.schema.json`
 
 ## Focused tests

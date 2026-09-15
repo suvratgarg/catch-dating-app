@@ -167,6 +167,7 @@ void main() {
     final kinds = [
       HostAttentionKind.eventLiveOperations,
       HostAttentionKind.eventAssistanceCaseReview,
+      HostAttentionKind.eventAssistanceDeliveryReview,
       HostAttentionKind.eventWaitlistReview,
       HostAttentionKind.eventJoinRequestReview,
       HostAttentionKind.applicationReview,

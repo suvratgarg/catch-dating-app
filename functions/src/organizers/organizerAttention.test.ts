@@ -2,6 +2,13 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import * as admin from "firebase-admin";
 import {CallableRequest, HttpsError} from "firebase-functions/v2/https";
+import {operationContentHash} from "../operations/durableActions";
+import type {OperationWorkItem} from "../operations/models";
+import {
+  deliveryWorkBasis,
+  deliveryWorkIds,
+  deliveryWorkProjection,
+} from "../eventSuccess/operations/deliveryWorkRecords";
 import type {EventAssistanceCaseDocument} from
   "../shared/generated/eventAssistanceCaseDocument";
 import type {
@@ -19,9 +26,11 @@ import {
   buildOrganizerAttentionProjectionPlan,
   listOrganizerAttentionItemsHandler,
   maxAttentionSourceRows,
+  parseDeliveryReviewAttentionSource,
 } from "./organizerAttention";
 import {
   AttentionSourceRow,
+  DeliveryReviewAttentionSource,
   deriveOrganizerAttentionItems,
   DesiredHostAttentionItem,
   hostAttentionCoverage,
@@ -166,6 +175,83 @@ test("aggregates open practical help by active event", () => {
     "an event-level aggregate must not claim one case assignee");
 });
 
+test("aggregates validated delivery reviews by active event", () => {
+  const sources = emptySources();
+  sources.events = [row("event-1", event(), nowMillis - hourMillis)];
+  sources.deliveryReviewWorkItems = [
+    row("work:delivery:one", deliveryReview({
+      workItemId: "work:delivery:one",
+      reviewDueAtMillis: nowMillis + 2 * hourMillis,
+      reason: "noEligibleRoute",
+    }), nowMillis - 5 * 60 * 1000),
+    row("work:delivery:two", deliveryReview({
+      workItemId: "work:delivery:two",
+      reviewDueAtMillis: nowMillis + hourMillis,
+      reason: "recipientNeedsReview",
+    }), nowMillis - 10 * 60 * 1000),
+  ];
+
+  const items = deriveOrganizerAttentionItems({
+    organizerId: "organizer-1",
+    nowMillis,
+    sources,
+  });
+  const review = items.find((item) =>
+    item.kind === "eventAssistanceDeliveryReview");
+  assert.ok(review);
+  assert.equal(review.context.count, 2);
+  assert.equal(review.dueAtMillis, nowMillis + hourMillis);
+  assert.equal(review.destination.section, "live");
+  assert.equal(review.sourceOwner, "operationWorkItems");
+});
+
+test("accepts only canonical Operations delivery review projections", () => {
+  const source = deliveryReview({
+    reviewDueAtMillis: nowMillis + hourMillis,
+  });
+  const payload = source.payload;
+  const ids = deliveryWorkIds(payload.messageId);
+  const projection = deliveryWorkProjection(payload);
+  const item: OperationWorkItem = {
+    schemaVersion: 1,
+    ...ids,
+    workflowId: "event-assistance",
+    entityKind: "message_delivery",
+    externalKey: payload.messageId,
+    revision: source.revision,
+    candidateHash: operationContentHash(deliveryWorkBasis(payload)),
+    ...projection,
+    warningCodes: [],
+    priority: 0,
+    attemptCount: source.revision,
+    evidenceRefs: [],
+    fieldProvenance: [],
+    normalizedPayload: {...payload},
+    decisionId: null,
+    publicationPlanId: null,
+    createdAt: new Date(payload.createdAt).toISOString(),
+    updatedAt: new Date(nowMillis).toISOString(),
+    staleAt: null,
+    expiresAt: new Date(payload.expiresAt).toISOString(),
+  };
+
+  const parsed = parseDeliveryReviewAttentionSource(
+    item,
+    item.workItemId,
+    nowMillis
+  );
+  assert.equal(parsed.reviewDueAtMillis, payload.checkpoint.dueAt);
+  assert.equal(parsed.payload.checkpoint.phase, "review");
+  assert.throws(
+    () => parseDeliveryReviewAttentionSource(
+      {...item, taskFlags: []},
+      item.workItemId,
+      nowMillis
+    ),
+    HttpsError
+  );
+});
+
 test("applies the seven-day horizon and exposes all policy gaps", () => {
   const sources = emptySources();
   sources.events = [row("later-event", event({
@@ -182,8 +268,8 @@ test("applies the seven-day horizon and exposes all policy gaps", () => {
   assert.deepEqual(items, []);
 
   const coverage = hostAttentionCoverage();
-  assert.equal(coverage.length, 16);
-  assert.equal(new Set(coverage.map((entry) => entry.kind)).size, 16);
+  assert.equal(coverage.length, 17);
+  assert.equal(new Set(coverage.map((entry) => entry.kind)).size, 17);
   assert.equal(coverage.find((entry) =>
     entry.kind === "attendanceSync")?.state, "clientMergeRequired");
   assert.equal(coverage.find((entry) =>
@@ -318,7 +404,7 @@ test(
     });
     assert.deepEqual(actions, ["listOrganizerAttentionItems"]);
     assert.equal(result.generatedAtMillis, nowMillis);
-    assert.equal(result.coverage.length, 16);
+    assert.equal(result.coverage.length, 17);
     assert.equal(result.items.length, 6);
   }
 );
@@ -380,12 +466,56 @@ function emptySources(): OrganizerAttentionSources {
     organizer: row("organizer-1", organizer(), nowMillis - 10 * hourMillis),
     events: [],
     eventAssistanceCases: [],
+    deliveryReviewWorkItems: [],
     eventParticipations: [],
     applications: [],
     providerSyncRuns: [],
     automationRules: [],
     automationRuns: [],
     paymentAccounts: {},
+  };
+}
+
+function deliveryReview(overrides: {
+  workItemId?: string;
+  reviewDueAtMillis?: number;
+  reason?: DeliveryReviewAttentionSource["payload"]["checkpoint"]["reason"];
+} = {}): DeliveryReviewAttentionSource {
+  const workItemId = overrides.workItemId ?? "work:delivery:one";
+  const reviewDueAtMillis = overrides.reviewDueAtMillis ??
+    nowMillis + hourMillis;
+  return {
+    workItemId,
+    revision: 2,
+    candidateHash: "e".repeat(64),
+    reviewDueAtMillis,
+    payload: {
+      schemaVersion: 1,
+      kind: "liveMessageDelivery",
+      messageId: `outbox:${"f".repeat(64)}`,
+      intentHash: "1".repeat(64),
+      threadId: "thread-1",
+      scope: {
+        context: {
+          mode: "live",
+          eventId: "event-1",
+          organizerId: "organizer-1",
+        },
+        attendeeId: "attendee-1",
+        episodeId: "episode-1",
+      },
+      createdAt: nowMillis - 2 * hourMillis,
+      expiresAt: reviewDueAtMillis,
+      checkpoint: {
+        phase: "review",
+        reason: overrides.reason ?? "noEligibleRoute",
+        dueAt: reviewDueAtMillis,
+        messageRevision: 2,
+        messageHash: "2".repeat(64),
+        failures: 1,
+        evaluations: 2,
+      },
+    },
   };
 }
 

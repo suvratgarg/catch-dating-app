@@ -10441,6 +10441,15 @@ abstract class AppLocalizations {
     required Object eventName,
   });
 
+  /// Body for the event-level aggregate of message deliveries that need a host decision on Host Today.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{One guest update needs delivery review for {eventName}.} other{{count} guest updates need delivery review for {eventName}.}}'**
+  String hostTodayAttentionDeliveryBody({
+    required int count,
+    required Object eventName,
+  });
+
   /// Body for an ordinary event waitlist task on Host Today.
   ///
   /// In en, this message translates to:

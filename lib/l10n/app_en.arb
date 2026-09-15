@@ -12108,6 +12108,14 @@
     "x-owner": "product",
     "x-surface": "hosts.today"
   },
+  "hostTodayAttentionDeliveryBody": "{count, plural, =1{One guest update needs delivery review for {eventName}.} other{{count} guest updates need delivery review for {eventName}.}}",
+  "@hostTodayAttentionDeliveryBody": {
+    "description": "Body for the event-level aggregate of message deliveries that need a host decision on Host Today.",
+    "placeholders": {"count": {"type": "int"}, "eventName": {}},
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today"
+  },
   "hostTodayAttentionWaitlistBody": "{count} people are waiting for {eventName}.",
   "@hostTodayAttentionWaitlistBody": {
     "description": "Body for an ordinary event waitlist task on Host Today.",

@@ -2218,8 +2218,10 @@ it does not grant a new provider submission.
 
 Recorded delivery evidence remains readable after sender or event authority
 changes. Completed Operations work never reopens; later contradictory or delayed
-receipts remain in the outbox, whose current state informs the Host delivery review above. A delivery review
-flag is not yet a surfaced Host notification.
+receipts remain in the outbox, whose current state informs the Host delivery
+review above. Validated live delivery work in the explicit review phase now
+projects as one event-level Host Today task without exposing private recipient,
+route, link, or receipt details.
 Relevant event/guest changes and event-specific SMS/WhatsApp/RCS consent now also
 wake saved delivery work, including unsent items held for missing permission.
 The bounded source job revalidates each target's scope and forwards only a

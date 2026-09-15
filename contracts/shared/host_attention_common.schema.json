@@ -10,6 +10,7 @@
       "enum": [
         "eventLiveOperations",
         "eventAssistanceCaseReview",
+        "eventAssistanceDeliveryReview",
         "eventWaitlistReview",
         "eventJoinRequestReview",
         "applicationReview",
@@ -42,6 +43,7 @@
         "hostPaymentAccounts",
         "hostAttendanceOutbox",
         "eventAssistanceCases",
+        "operationWorkItems",
         "eventSuccessPlans",
         "eventRehearsals",
         "eventStaffGrants",

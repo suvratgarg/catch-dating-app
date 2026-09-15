@@ -1,6 +1,8 @@
 import * as admin from "firebase-admin";
 import {CallableRequest, HttpsError, onCall} from
   "firebase-functions/v2/https";
+import {operationContentHash} from "../operations/durableActions";
+import {validateOperationWorkItem} from "../operations/validation";
 import {findHostPaymentAccount} from "../payments/hostPaymentAccounts";
 import type {EventAssistanceCaseDocument} from
   "../shared/generated/eventAssistanceCaseDocument";
@@ -40,7 +42,14 @@ import {requireOrganizerManager} from
 import {checkRateLimit} from "../shared/rateLimit";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import {
+  deliveryWorkBasis,
+  deliveryWorkIds,
+  deliveryWorkProjection,
+  parseDeliveryWork,
+} from "../eventSuccess/operations/deliveryWorkRecords";
+import {
   AttentionSourceRow,
+  DeliveryReviewAttentionSource,
   deriveOrganizerAttentionItems,
   DesiredHostAttentionItem,
   HostAttentionItem,
@@ -136,6 +145,7 @@ export async function loadOrganizerAttentionSources(
     canonicalJoinRequests,
     compatibilityJoinRequests,
     openPracticalCases,
+    deliveryReviewWorkItems,
     applications,
     providerRuns,
     automationRules,
@@ -170,6 +180,18 @@ export async function loadOrganizerAttentionSources(
       .orderBy("receivedAt")
       .orderBy(admin.firestore.FieldPath.documentId())
       .limit(maxAttentionSourceRows + 1).get(),
+    db.collection("operationWorkItems")
+      .where("workflowId", "==", "event-assistance")
+      .where("normalizedPayload.kind", "==", "liveMessageDelivery")
+      .where(
+        "normalizedPayload.scope.context.organizerId",
+        "==",
+        organizerId
+      )
+      .where("normalizedPayload.checkpoint.phase", "==", "review")
+      .orderBy("normalizedPayload.checkpoint.dueAt")
+      .orderBy(admin.firestore.FieldPath.documentId())
+      .limit(maxAttentionSourceRows + 1).get(),
     db.collection("organizerApplications")
       .where("organizerId", "==", organizerId)
       .where("reviewStatus", "in", ["submitted", "inReview"])
@@ -199,6 +221,10 @@ export async function loadOrganizerAttentionSources(
     "compatible event join requests"
   );
   assertBoundedSnapshot(openPracticalCases, "open practical help cases");
+  assertBoundedSnapshot(
+    deliveryReviewWorkItems,
+    "message delivery review work items"
+  );
   assertBoundedSnapshot(applications, "open organizer applications");
   assertBoundedSnapshot(providerRuns, "unexpired provider sync runs");
   assertBoundedSnapshot(automationRules, "form automation rules");
@@ -259,6 +285,8 @@ export async function loadOrganizerAttentionSources(
     events: [...eventRows.values()],
     eventAssistanceCases: openPracticalCases.docs.map((doc) =>
       sourceRow<EventAssistanceCaseDocument>(doc)),
+    deliveryReviewWorkItems: deliveryReviewWorkItems.docs.map((doc) =>
+      deliveryReviewSourceRow(doc, now.toMillis())),
     eventParticipations: [...participationRows.values()],
     applications: applications.docs.map((doc) =>
       sourceRow<OrganizerApplicationDocument>(doc)),
@@ -269,6 +297,65 @@ export async function loadOrganizerAttentionSources(
     automationRuns: automationRuns.docs.map((doc) =>
       sourceRow<OrganizerFormAutomationRunDocument>(doc)),
     paymentAccounts,
+  };
+}
+
+function deliveryReviewSourceRow(
+  snapshot: FirebaseFirestore.DocumentSnapshot,
+  nowMillis: number
+): AttentionSourceRow<DeliveryReviewAttentionSource> {
+  const raw = requireDoc<unknown>(snapshot, "delivery review work item");
+  return sourceRowFromSnapshot(
+    snapshot,
+    parseDeliveryReviewAttentionSource(raw, snapshot.id, nowMillis)
+  );
+}
+
+/** Reduces a private Operations row to the facts safe for Today projection. */
+export function parseDeliveryReviewAttentionSource(
+  raw: unknown,
+  documentId: string,
+  nowMillis: number
+): DeliveryReviewAttentionSource {
+  const result = validateOperationWorkItem(raw);
+  if (!result.ok) {
+    throw new HttpsError(
+      "internal",
+      "A delivery review work item failed its canonical contract."
+    );
+  }
+  const item = result.value;
+  const payload = parseDeliveryWork(item.normalizedPayload, nowMillis);
+  const checkpoint = payload.checkpoint;
+  const projection = deliveryWorkProjection(payload);
+  const ids = deliveryWorkIds(payload.messageId);
+  const reviewDueAtMillis = checkpoint.dueAt;
+  if (checkpoint.phase !== "review" || reviewDueAtMillis === null ||
+      item.workItemId !== documentId || item.workItemId !== ids.workItemId ||
+      item.runId !== ids.runId || item.workflowId !== "event-assistance" ||
+      item.entityKind !== "message_delivery" ||
+      item.externalKey !== payload.messageId ||
+      item.candidateHash !== operationContentHash(deliveryWorkBasis(payload)) ||
+      item.primaryStage !== projection.primaryStage ||
+      item.lifecycleStatus !== projection.lifecycleStatus ||
+      item.outcome !== projection.outcome ||
+      JSON.stringify(item.taskFlags) !== JSON.stringify(projection.taskFlags) ||
+      JSON.stringify(item.blockerCodes) !==
+        JSON.stringify(projection.blockerCodes) ||
+      item.expiresAt !== new Date(payload.expiresAt).toISOString() ||
+      Date.parse(item.updatedAt) < payload.createdAt ||
+      Date.parse(item.updatedAt) > nowMillis) {
+    throw new HttpsError(
+      "internal",
+      "A delivery review work item has inconsistent runtime evidence."
+    );
+  }
+  return {
+    workItemId: item.workItemId,
+    revision: item.revision,
+    candidateHash: item.candidateHash,
+    reviewDueAtMillis,
+    payload: payload as DeliveryReviewAttentionSource["payload"],
   };
 }
 
