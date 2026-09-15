@@ -9,9 +9,19 @@ import {operationContentHash as hash} from "../operations/durableActions";
 import {practiceMovementSource, Movement} from "./movementSource";
 import {parsePracticeMovement, practiceMovementId, rehearsalMovements} from
   "./movementRecords";
+import {parsePracticeRouteDecision, readPracticeRouteDecision,
+  RouteDecision} from "./routeDecisions";
 
 type Plan = Message["plan"];
-export type PracticeDepartures = ReadonlyMap<string, Movement | null>;
+export interface PracticeProgress {
+  movement: Movement;
+  progressRevision: number;
+  destination: Movement["departure"]["destination"];
+  sourceHash: string;
+}
+export type PracticeDepartures = ReadonlyMap<string,
+  PracticeProgress | Movement | null>;
+export type PendingPracticeProgress = Movement | RouteDecision | null;
 export function practicePlanGroup(plan: Plan): string {
   return plan.guidance.destination.kind === "groupCheckpoint" ?
     plan.guidance.destination.groupId : "event:whole";
@@ -20,7 +30,7 @@ export function practicePlanGroup(plan: Plan): string {
 /** Read only the latest saved departure in each requested synthetic group. */
 export async function readPracticeDepartures(db: Firestore, tx: Transaction,
   sessionId: string, session: Session, plans: readonly Plan[],
-  pending?: Movement | null,
+  pending?: PendingPracticeProgress,
   additionalGroups: readonly string[] = []): Promise<PracticeDepartures> {
   const groups = [...new Set([...plans.map(practicePlanGroup),
     ...additionalGroups])];
@@ -35,21 +45,43 @@ export async function readPracticeDepartures(db: Firestore, tx: Transaction,
       if (!(error instanceof HttpsError)) throw error;
       return [groupId, null] as const;
     }
-    // A parent departure transaction supplies its validated pending record.
+    // A parent movement transaction supplies its validated pending progress.
     // Transport failures are never swallowed as missing movement evidence.
-    const snaps = pending?.groupId === groupId ? null : await tx.get(
-      db.collection(rehearsalMovements).where("sessionId", "==", sessionId)
+    const pendingMovement = pending?.groupId === groupId &&
+      "departure" in pending ? pending : null;
+    const pendingDecision = pending?.groupId === groupId &&
+      !("departure" in pending) ? pending : null;
+    const [snaps, savedDecision] = await Promise.all([
+      pendingMovement ? null : tx.get(db.collection(rehearsalMovements)
+        .where("sessionId", "==", sessionId)
         .where("clockId", "==", source.context.clockId)
         .where("groupId", "==", groupId)
-        .orderBy("progressRevision", "desc").limit(1));
+        .orderBy("progressRevision", "desc").limit(1)),
+      pendingDecision ? null : readPracticeRouteDecision(db, tx, source),
+    ]);
     const snap = snaps?.docs[0];
-    if (!snap && pending?.groupId !== groupId) return [groupId, null] as const;
+    if (!snap && !pendingMovement) return [groupId, null] as const;
     try {
-      const record = parsePracticeMovement(snap ? snap.data() : pending,
-        source);
+      const movement = parsePracticeMovement(snap ? snap.data() :
+        pendingMovement,
+      source);
       if (snap && snap.id !== practiceMovementId(source,
-        record.progressRevision)) return [groupId, null] as const;
-      return [groupId, record] as const;
+        movement.progressRevision)) return [groupId, null] as const;
+      const decision = pendingDecision ? parsePracticeRouteDecision(
+        pendingDecision, source) : savedDecision;
+      if (decision &&
+          (decision.progressRevision === movement.progressRevision ||
+          decision.progressRevision > movement.progressRevision &&
+            decision.departureRevision !== movement.progressRevision)) {
+        return [groupId, null] as const;
+      }
+      const active = decision &&
+        decision.progressRevision > movement.progressRevision ? decision : null;
+      return [groupId, {movement,
+        progressRevision: active?.progressRevision ?? movement.progressRevision,
+        destination: active?.destination ?? movement.departure.destination,
+        sourceHash: active?.sourceHash ?? movement.departure.sourceHash}] as
+        const;
     } catch (error) {
       if (!(error instanceof HttpsError)) throw error;
       return [groupId, null] as const;
@@ -63,15 +95,16 @@ export async function readPracticeDepartures(db: Firestore, tx: Transaction,
 export function resolvePracticeGuidance(session: Session, actor: Actor,
   plan: Plan, departures: PracticeDepartures) {
   const groupId = practicePlanGroup(plan);
-  const record = departures.get(groupId);
-  if (!record) return null;
+  const saved = departures.get(groupId);
+  if (!saved) return null;
+  const progress = practiceProgress(saved);
   try {
     const source = practiceMovementSource(actor.sessionId, session, groupId);
-    parsePracticeMovement(record, source);
+    parsePracticeMovement(progress.movement, source);
     const destination = source.destinations.find((d) =>
-      hash(d.target) === hash(record.departure.destination));
+      hash(d.target) === hash(progress.destination));
     if (!source.eventOpen || !source.runtimeLive || !destination ||
-        record.departure.sourceHash !== source.sourceHash) return null;
+        progress.sourceHash !== source.sourceHash) return null;
     // A configured entry rule can restrict a confirmed venue, never create
     // movement or relax a restriction. Route/checkpoint targets stay exact.
     const target = destination.target.kind === "fixedPlace" &&
@@ -80,19 +113,28 @@ export function resolvePracticeGuidance(session: Session, actor: Actor,
       plan.policy.destination.placeId === destination.target.placeId ?
       {...destination.target, lateEntry: plan.policy.destination.lateEntry} :
       destination.target;
-    const guidance = {revision: record.progressRevision,
+    const guidance = {revision: progress.progressRevision,
       destination: target,
       materialKey: hash([source.sourceHash, target]),
       text: destination.text, validUntil: source.endAt};
     return {plan: {...plan, departureConfirmed: true, guidance,
       ...(plan.laterChoices ? {laterChoices: plan.laterChoices.filter((c) =>
         source.destinations.some((d) => hash(d.target) === hash(c.target)))} :
-        {})}, binding: {groupId, progressRevision: record.progressRevision,
+        {})}, binding: {groupId, progressRevision: progress.progressRevision,
       sourceHash: source.sourceHash}};
   } catch (error) {
     if (!(error instanceof HttpsError)) throw error;
     return null;
   }
+}
+
+/** Normalizes older in-memory callers that still provide a movement record. */
+export function practiceProgress(
+  value: PracticeProgress | Movement): PracticeProgress {
+  return "movement" in value ? value : {movement: value,
+    progressRevision: value.progressRevision,
+    destination: value.departure.destination,
+    sourceHash: value.departure.sourceHash};
 }
 
 /** Reconfirming an unchanged destination must not create another message. */

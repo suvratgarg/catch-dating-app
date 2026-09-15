@@ -255,6 +255,7 @@ export {eventSuccessPresenceDocumentSchema} from "./schemas/eventSuccessPresence
 export {eventLivePositionDocumentSchema} from "./schemas/eventLivePositionDocument";
 export {eventSuccessLateArrivalDocumentSchema} from "./schemas/eventSuccessLateArrivalDocument";
 export {eventRehearsalMovementDocumentSchema} from "./schemas/eventRehearsalMovementDocument";
+export {eventRehearsalRouteDecisionDocumentSchema} from "./schemas/eventRehearsalRouteDecisionDocument";
 export {getEventRehearsalMovementCallablePayloadSchema} from "./schemas/getEventRehearsalMovementInput";
 export {eventRehearsalMovementCallableResponseSchema} from "./schemas/eventRehearsalMovementOutput";
 export {eventRehearsalDocumentSchema} from "./schemas/eventRehearsalDocument";

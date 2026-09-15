@@ -17,6 +17,7 @@ import {practiceMovementSource, Movement} from "./movementSource";
 import {resolvePracticeGuidance} from "./movementGuidance";
 import {operationContentHash as hash} from "../operations/durableActions";
 import {rehearsalMovements} from "./movementRecords";
+import {rehearsalRouteDecisions} from "./routeDecisions";
 import {practiceMessageView, readPracticeMessage, PracticeMessage,
   rehearsalMessages} from "./assistanceRuntime";
 
@@ -76,6 +77,27 @@ async function harness(count = 2, cap = 4) {
     actors = next;
     session.runtimeRevision++; session.actionCount++;
   };
+  const reroute = async (stopId: string) => {
+    const next = await db.runTransaction(async (tx) => {
+      const review = await practiceMovementReview(db, tx, id, session, actors,
+        {groupId: "event:whole"}, authority);
+      const target = review.progress.destinations.find((destination) =>
+        destination.target.kind === "itineraryStop" &&
+          destination.target.stopId === stopId)!;
+      const change = await preparePracticeMovementCommand(db, tx, id,
+        session, actors, {kind: "changeRoute", payload: {
+          groupId: "event:whole", routeRevision: review.progress.revision,
+          expectedSourceHash: review.progress.sourceHash,
+          alternativeId: target.alternativeId,
+          decisionId: "route-choice-" + stopId}}, authority, randomUUID());
+      const nextActors = await applyPracticeAutomations(db, tx, session,
+        actors, change.routeDecision);
+      change.commit();
+      return nextActors;
+    });
+    actors = next;
+    session.runtimeRevision++; session.actionCount++;
+  };
   const all = () => fake.entries().filter(([p]) =>
     p.startsWith(rehearsalMessages + "/")).map(([, m]) =>
     m as unknown as PracticeMessage);
@@ -95,8 +117,8 @@ async function harness(count = 2, cap = 4) {
     applyPracticeGuestReply(db, tx, session, actors[0], {
       messageId: m.record.messageId, intentRevision: m.record.intent.revision,
       choiceId: "on-my-way", requestId: randomUUID(), actionId: randomUUID()}));
-  return {id, session, fake, db, plan, confirm, all, message, departures,
-    advance, reply, actors: () => actors};
+  return {id, session, fake, db, plan, confirm, reroute, all, message,
+    departures, advance, reply, actors: () => actors};
 }
 
 test("saved departure starts outreach; caller flags and copy do not",
@@ -142,6 +164,25 @@ test("new stop refreshes the page immediately and retains cooldown and cap",
       assert.equal(replied.assistance?.intention.kind, "onMyWay");
       assert.equal(replied.status, "expected");
     }
+  });
+
+test("route recovery refreshes guidance without another departure",
+  async () => {
+    const h = await harness();
+    await h.confirm("first");
+    const original = h.message();
+    await h.reroute("second");
+    const current = h.message();
+    assert.notEqual(current.record.messageId, original.record.messageId);
+    assert.equal(current.plan.guidance.text, "Join us at second.");
+    assert.equal(current.movementBinding?.progressRevision, 2);
+    assert.equal(h.fake.entries().filter(([path]) =>
+      path.startsWith(rehearsalMovements + "/")).length, 1);
+    assert.equal(h.fake.entries().filter(([path]) =>
+      path.startsWith(rehearsalRouteDecisions + "/")).length, 1);
+    const retired = h.all().find((message) =>
+      message.record.messageId === original.record.messageId)!;
+    assert.equal(retired.record.lifecycle, "superseded");
   });
 
 test(

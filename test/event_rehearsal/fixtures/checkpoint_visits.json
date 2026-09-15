@@ -52,6 +52,7 @@
         "runtimeLive": true,
         "destinations": [
           {
+            "alternativeId": "alternative:c268b4766d189d31d01cedbb2236bda8bf6e40027f12260f73ac32b668d7bb4f",
             "target": {
               "kind": "fixedPlace",
               "placeId": "meeting",
@@ -61,6 +62,7 @@
             "text": "Join us at Practice venue."
           },
           {
+            "alternativeId": "alternative:00337da73b7c7dcd251c3cb618532238914f278b7e1e308ad8ccfb668e175eef",
             "target": {
               "kind": "itineraryStop",
               "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
@@ -70,6 +72,7 @@
             "text": "Join us at Stop one."
           },
           {
+            "alternativeId": "alternative:8ef46cf82fb97ce4d2623933c9abd4dce8d794cf9c44a5abc05ea80bd552ebcb",
             "target": {
               "kind": "itineraryStop",
               "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
@@ -129,6 +132,7 @@
             "reportedAt": 1000
           }
         },
+        "routeDecision": null,
         "guidance": {
           "revision": 1,
           "destination": {
@@ -595,6 +599,7 @@
         "runtimeLive": true,
         "destinations": [
           {
+            "alternativeId": "alternative:c268b4766d189d31d01cedbb2236bda8bf6e40027f12260f73ac32b668d7bb4f",
             "target": {
               "kind": "fixedPlace",
               "placeId": "meeting",
@@ -604,6 +609,7 @@
             "text": "Join us at Practice venue."
           },
           {
+            "alternativeId": "alternative:00337da73b7c7dcd251c3cb618532238914f278b7e1e308ad8ccfb668e175eef",
             "target": {
               "kind": "itineraryStop",
               "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
@@ -613,6 +619,7 @@
             "text": "Join us at Stop one."
           },
           {
+            "alternativeId": "alternative:8ef46cf82fb97ce4d2623933c9abd4dce8d794cf9c44a5abc05ea80bd552ebcb",
             "target": {
               "kind": "itineraryStop",
               "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
@@ -672,6 +679,7 @@
             "reportedAt": 1000
           }
         },
+        "routeDecision": null,
         "guidance": {
           "revision": 1,
           "destination": {
@@ -1137,6 +1145,7 @@
         "runtimeLive": true,
         "destinations": [
           {
+            "alternativeId": "alternative:c268b4766d189d31d01cedbb2236bda8bf6e40027f12260f73ac32b668d7bb4f",
             "target": {
               "kind": "fixedPlace",
               "placeId": "meeting",
@@ -1146,6 +1155,7 @@
             "text": "Join us at Practice venue."
           },
           {
+            "alternativeId": "alternative:00337da73b7c7dcd251c3cb618532238914f278b7e1e308ad8ccfb668e175eef",
             "target": {
               "kind": "itineraryStop",
               "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
@@ -1155,6 +1165,7 @@
             "text": "Join us at Stop one."
           },
           {
+            "alternativeId": "alternative:8ef46cf82fb97ce4d2623933c9abd4dce8d794cf9c44a5abc05ea80bd552ebcb",
             "target": {
               "kind": "itineraryStop",
               "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
@@ -1214,6 +1225,7 @@
             "reportedAt": 1000
           }
         },
+        "routeDecision": null,
         "guidance": {
           "revision": 1,
           "destination": {
@@ -1687,6 +1699,7 @@
         "runtimeLive": true,
         "destinations": [
           {
+            "alternativeId": "alternative:c268b4766d189d31d01cedbb2236bda8bf6e40027f12260f73ac32b668d7bb4f",
             "target": {
               "kind": "fixedPlace",
               "placeId": "meeting",
@@ -1696,6 +1709,7 @@
             "text": "Join us at Practice venue."
           },
           {
+            "alternativeId": "alternative:00337da73b7c7dcd251c3cb618532238914f278b7e1e308ad8ccfb668e175eef",
             "target": {
               "kind": "itineraryStop",
               "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
@@ -1705,6 +1719,7 @@
             "text": "Join us at Stop one."
           },
           {
+            "alternativeId": "alternative:8ef46cf82fb97ce4d2623933c9abd4dce8d794cf9c44a5abc05ea80bd552ebcb",
             "target": {
               "kind": "itineraryStop",
               "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
@@ -1764,6 +1779,7 @@
             "reportedAt": 1000
           }
         },
+        "routeDecision": null,
         "guidance": {
           "revision": 1,
           "destination": {
@@ -2230,6 +2246,7 @@
         "runtimeLive": true,
         "destinations": [
           {
+            "alternativeId": "alternative:c268b4766d189d31d01cedbb2236bda8bf6e40027f12260f73ac32b668d7bb4f",
             "target": {
               "kind": "fixedPlace",
               "placeId": "meeting",
@@ -2239,6 +2256,7 @@
             "text": "Join us at Practice venue."
           },
           {
+            "alternativeId": "alternative:00337da73b7c7dcd251c3cb618532238914f278b7e1e308ad8ccfb668e175eef",
             "target": {
               "kind": "itineraryStop",
               "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
@@ -2248,6 +2266,7 @@
             "text": "Join us at Stop one."
           },
           {
+            "alternativeId": "alternative:8ef46cf82fb97ce4d2623933c9abd4dce8d794cf9c44a5abc05ea80bd552ebcb",
             "target": {
               "kind": "itineraryStop",
               "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
@@ -2307,6 +2326,7 @@
             "reportedAt": 1000
           }
         },
+        "routeDecision": null,
         "guidance": {
           "revision": 1,
           "destination": {

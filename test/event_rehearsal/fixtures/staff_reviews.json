@@ -638,6 +638,7 @@
         "runtimeLive": true,
         "destinations": [
           {
+            "alternativeId": "alternative:d223c91cc89419fe6ed4f58975a2be3f56b47d6ccf1c4b5f99d06662ed75c02c",
             "target": {
               "kind": "groupCheckpoint",
               "routeId": "practice:5d4b43fddc738df3b3918b70be5551d43c36cbd20e301882d9f3fa6fc0732d9d:route",
@@ -648,6 +649,7 @@
             "text": "Join us at Stop one."
           },
           {
+            "alternativeId": "alternative:b428524aca01393a8992fd2ca33af4542c1a282140302561ab41a127b3f4acc7",
             "target": {
               "kind": "groupCheckpoint",
               "routeId": "practice:5d4b43fddc738df3b3918b70be5551d43c36cbd20e301882d9f3fa6fc0732d9d:route",
@@ -659,6 +661,7 @@
           }
         ],
         "current": null,
+        "routeDecision": null,
         "guidance": null
       },
       "roster": {
@@ -1305,6 +1308,7 @@
         "runtimeLive": true,
         "destinations": [
           {
+            "alternativeId": "alternative:d223c91cc89419fe6ed4f58975a2be3f56b47d6ccf1c4b5f99d06662ed75c02c",
             "target": {
               "kind": "groupCheckpoint",
               "routeId": "practice:5d4b43fddc738df3b3918b70be5551d43c36cbd20e301882d9f3fa6fc0732d9d:route",
@@ -1315,6 +1319,7 @@
             "text": "Join us at Stop one."
           },
           {
+            "alternativeId": "alternative:b428524aca01393a8992fd2ca33af4542c1a282140302561ab41a127b3f4acc7",
             "target": {
               "kind": "groupCheckpoint",
               "routeId": "practice:5d4b43fddc738df3b3918b70be5551d43c36cbd20e301882d9f3fa6fc0732d9d:route",
@@ -1326,6 +1331,7 @@
           }
         ],
         "current": null,
+        "routeDecision": null,
         "guidance": null
       },
       "roster": {
@@ -1962,6 +1968,7 @@
         "runtimeLive": true,
         "destinations": [
           {
+            "alternativeId": "alternative:d223c91cc89419fe6ed4f58975a2be3f56b47d6ccf1c4b5f99d06662ed75c02c",
             "target": {
               "kind": "groupCheckpoint",
               "routeId": "practice:5d4b43fddc738df3b3918b70be5551d43c36cbd20e301882d9f3fa6fc0732d9d:route",
@@ -1972,6 +1979,7 @@
             "text": "Join us at Stop one."
           },
           {
+            "alternativeId": "alternative:b428524aca01393a8992fd2ca33af4542c1a282140302561ab41a127b3f4acc7",
             "target": {
               "kind": "groupCheckpoint",
               "routeId": "practice:5d4b43fddc738df3b3918b70be5551d43c36cbd20e301882d9f3fa6fc0732d9d:route",
@@ -1983,6 +1991,7 @@
           }
         ],
         "current": null,
+        "routeDecision": null,
         "guidance": null
       },
       "roster": {
@@ -2619,6 +2628,7 @@
         "runtimeLive": true,
         "destinations": [
           {
+            "alternativeId": "alternative:d223c91cc89419fe6ed4f58975a2be3f56b47d6ccf1c4b5f99d06662ed75c02c",
             "target": {
               "kind": "groupCheckpoint",
               "routeId": "practice:5d4b43fddc738df3b3918b70be5551d43c36cbd20e301882d9f3fa6fc0732d9d:route",
@@ -2629,6 +2639,7 @@
             "text": "Join us at Stop one."
           },
           {
+            "alternativeId": "alternative:b428524aca01393a8992fd2ca33af4542c1a282140302561ab41a127b3f4acc7",
             "target": {
               "kind": "groupCheckpoint",
               "routeId": "practice:5d4b43fddc738df3b3918b70be5551d43c36cbd20e301882d9f3fa6fc0732d9d:route",
@@ -2681,6 +2692,7 @@
           },
           "report": null
         },
+        "routeDecision": null,
         "guidance": {
           "revision": 1,
           "destination": {
@@ -3505,6 +3517,7 @@
         "runtimeLive": true,
         "destinations": [
           {
+            "alternativeId": "alternative:d223c91cc89419fe6ed4f58975a2be3f56b47d6ccf1c4b5f99d06662ed75c02c",
             "target": {
               "kind": "groupCheckpoint",
               "routeId": "practice:5d4b43fddc738df3b3918b70be5551d43c36cbd20e301882d9f3fa6fc0732d9d:route",
@@ -3515,6 +3528,7 @@
             "text": "Join us at Stop one."
           },
           {
+            "alternativeId": "alternative:b428524aca01393a8992fd2ca33af4542c1a282140302561ab41a127b3f4acc7",
             "target": {
               "kind": "groupCheckpoint",
               "routeId": "practice:5d4b43fddc738df3b3918b70be5551d43c36cbd20e301882d9f3fa6fc0732d9d:route",
@@ -3576,6 +3590,7 @@
             "reportedAt": 1000
           }
         },
+        "routeDecision": null,
         "guidance": {
           "revision": 1,
           "destination": {
@@ -4426,6 +4441,7 @@
         "runtimeLive": true,
         "destinations": [
           {
+            "alternativeId": "alternative:d223c91cc89419fe6ed4f58975a2be3f56b47d6ccf1c4b5f99d06662ed75c02c",
             "target": {
               "kind": "groupCheckpoint",
               "routeId": "practice:5d4b43fddc738df3b3918b70be5551d43c36cbd20e301882d9f3fa6fc0732d9d:route",
@@ -4436,6 +4452,7 @@
             "text": "Join us at Stop one."
           },
           {
+            "alternativeId": "alternative:b428524aca01393a8992fd2ca33af4542c1a282140302561ab41a127b3f4acc7",
             "target": {
               "kind": "groupCheckpoint",
               "routeId": "practice:5d4b43fddc738df3b3918b70be5551d43c36cbd20e301882d9f3fa6fc0732d9d:route",
@@ -4497,6 +4514,7 @@
             "reportedAt": 1000
           }
         },
+        "routeDecision": null,
         "guidance": {
           "revision": 1,
           "destination": {
@@ -5358,6 +5376,7 @@
         "runtimeLive": true,
         "destinations": [
           {
+            "alternativeId": "alternative:d223c91cc89419fe6ed4f58975a2be3f56b47d6ccf1c4b5f99d06662ed75c02c",
             "target": {
               "kind": "groupCheckpoint",
               "routeId": "practice:5d4b43fddc738df3b3918b70be5551d43c36cbd20e301882d9f3fa6fc0732d9d:route",
@@ -5368,6 +5387,7 @@
             "text": "Join us at Stop one."
           },
           {
+            "alternativeId": "alternative:b428524aca01393a8992fd2ca33af4542c1a282140302561ab41a127b3f4acc7",
             "target": {
               "kind": "groupCheckpoint",
               "routeId": "practice:5d4b43fddc738df3b3918b70be5551d43c36cbd20e301882d9f3fa6fc0732d9d:route",
@@ -5429,6 +5449,7 @@
             "reportedAt": 1000
           }
         },
+        "routeDecision": null,
         "guidance": {
           "revision": 1,
           "destination": {
@@ -6311,6 +6332,7 @@
         "runtimeLive": true,
         "destinations": [
           {
+            "alternativeId": "alternative:0fdc1e3423ba4526529a4159609a88c80fa9b34b247f74439bb7268e8158e367",
             "target": {
               "kind": "groupCheckpoint",
               "routeId": "practice:5d4b43fddc738df3b3918b70be5551d43c36cbd20e301882d9f3fa6fc0732d9d:route",
@@ -6321,6 +6343,7 @@
             "text": "Join us at Stop one."
           },
           {
+            "alternativeId": "alternative:b0f204eb3e1600337ed8032d5681983e25abf572d05c3f13e321bf0a7d27c2bf",
             "target": {
               "kind": "groupCheckpoint",
               "routeId": "practice:5d4b43fddc738df3b3918b70be5551d43c36cbd20e301882d9f3fa6fc0732d9d:route",
@@ -6332,6 +6355,7 @@
           }
         ],
         "current": null,
+        "routeDecision": null,
         "guidance": null
       },
       "roster": {
@@ -7002,6 +7026,7 @@
         "runtimeLive": true,
         "destinations": [
           {
+            "alternativeId": "alternative:d223c91cc89419fe6ed4f58975a2be3f56b47d6ccf1c4b5f99d06662ed75c02c",
             "target": {
               "kind": "groupCheckpoint",
               "routeId": "practice:5d4b43fddc738df3b3918b70be5551d43c36cbd20e301882d9f3fa6fc0732d9d:route",
@@ -7012,6 +7037,7 @@
             "text": "Join us at Stop one."
           },
           {
+            "alternativeId": "alternative:b428524aca01393a8992fd2ca33af4542c1a282140302561ab41a127b3f4acc7",
             "target": {
               "kind": "groupCheckpoint",
               "routeId": "practice:5d4b43fddc738df3b3918b70be5551d43c36cbd20e301882d9f3fa6fc0732d9d:route",
@@ -7073,6 +7099,7 @@
             "reportedAt": 1000
           }
         },
+        "routeDecision": null,
         "guidance": {
           "revision": 1,
           "destination": {
@@ -7955,6 +7982,7 @@
         "runtimeLive": true,
         "destinations": [
           {
+            "alternativeId": "alternative:0fdc1e3423ba4526529a4159609a88c80fa9b34b247f74439bb7268e8158e367",
             "target": {
               "kind": "groupCheckpoint",
               "routeId": "practice:5d4b43fddc738df3b3918b70be5551d43c36cbd20e301882d9f3fa6fc0732d9d:route",
@@ -7965,6 +7993,7 @@
             "text": "Join us at Stop one."
           },
           {
+            "alternativeId": "alternative:b0f204eb3e1600337ed8032d5681983e25abf572d05c3f13e321bf0a7d27c2bf",
             "target": {
               "kind": "groupCheckpoint",
               "routeId": "practice:5d4b43fddc738df3b3918b70be5551d43c36cbd20e301882d9f3fa6fc0732d9d:route",
@@ -7976,6 +8005,7 @@
           }
         ],
         "current": null,
+        "routeDecision": null,
         "guidance": null
       },
       "roster": {
@@ -8647,6 +8677,7 @@
         "runtimeLive": true,
         "destinations": [
           {
+            "alternativeId": "alternative:d223c91cc89419fe6ed4f58975a2be3f56b47d6ccf1c4b5f99d06662ed75c02c",
             "target": {
               "kind": "groupCheckpoint",
               "routeId": "practice:5d4b43fddc738df3b3918b70be5551d43c36cbd20e301882d9f3fa6fc0732d9d:route",
@@ -8657,6 +8688,7 @@
             "text": "Join us at Stop one."
           },
           {
+            "alternativeId": "alternative:b428524aca01393a8992fd2ca33af4542c1a282140302561ab41a127b3f4acc7",
             "target": {
               "kind": "groupCheckpoint",
               "routeId": "practice:5d4b43fddc738df3b3918b70be5551d43c36cbd20e301882d9f3fa6fc0732d9d:route",
@@ -8718,6 +8750,7 @@
             "reportedAt": 1000
           }
         },
+        "routeDecision": null,
         "guidance": {
           "revision": 1,
           "destination": {

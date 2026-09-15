@@ -1854,6 +1854,58 @@ export const controlEventRehearsalCallablePayloadSchema: Record<string, unknown>
           "additionalProperties": false,
           "required": [
             "kind",
+            "payload"
+          ],
+          "properties": {
+            "kind": {
+              "const": "changeRoute"
+            },
+            "payload": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "routeRevision",
+                "groupId",
+                "expectedSourceHash",
+                "alternativeId",
+                "decisionId"
+              ],
+              "properties": {
+                "routeRevision": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991,
+                  "description": "Nonnegative safe integer revision."
+                },
+                "groupId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "expectedSourceHash": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "alternativeId": {
+                  "type": "string",
+                  "pattern": "^alternative:[a-f0-9]{64}$"
+                },
+                "decisionId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
             "payload",
             "expectedSourceHash"
           ],

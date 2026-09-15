@@ -1330,6 +1330,12 @@ const schemaSpecs = [
       "functions/src/shared/generated/eventRehearsalMovementDocument.ts",
   },
   {
+    name: "EventRehearsalRouteDecisionDocument",
+    source: "firestore/event_rehearsal_route_decisions.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/eventRehearsalRouteDecisionDocument.ts",
+  },
+  {
     name: "GetEventRehearsalMovementCallablePayload",
     source: "callables/get_event_rehearsal_movement_payload.schema.json",
     typeOutput:

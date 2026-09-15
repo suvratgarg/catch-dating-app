@@ -1500,6 +1500,10 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    match /eventRehearsalRouteDecisions/{decisionDocumentId} {
+      allow read, write: if false;
+    }
+
     match /eventRehearsalCases/{caseId} {
       allow read, write: if false;
     }

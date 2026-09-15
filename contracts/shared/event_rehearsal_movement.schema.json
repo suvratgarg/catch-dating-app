@@ -54,11 +54,16 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
+        "alternativeId",
         "target",
         "label",
         "text"
       ],
       "properties": {
+        "alternativeId": {
+          "type": "string",
+          "pattern": "^alternative:[a-f0-9]{64}$"
+        },
         "target": {
           "$ref": "event_assistance_common.schema.json#/definitions/JoiningTarget"
         },
@@ -142,6 +147,77 @@
               "type": "null"
             }
           ]
+        }
+      }
+    },
+    "RouteDecision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sessionId",
+        "clockId",
+        "groupId",
+        "progressRevision",
+        "previousRevision",
+        "departureRevision",
+        "sourceHash",
+        "alternativeId",
+        "destination",
+        "decisionId",
+        "operationId",
+        "decidedBy",
+        "decidedAt"
+      ],
+      "properties": {
+        "sessionId": {
+          "$ref": "event_common.schema.json#/definitions/documentId"
+        },
+        "clockId": {
+          "type": "string",
+          "pattern": "^clock:[a-f0-9]{64}$"
+        },
+        "groupId": {
+          "$ref": "event_common.schema.json#/definitions/documentId"
+        },
+        "progressRevision": {
+          "type": "integer",
+          "minimum": 2,
+          "maximum": 500
+        },
+        "previousRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 499
+        },
+        "departureRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 499
+        },
+        "sourceHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "alternativeId": {
+          "type": "string",
+          "pattern": "^alternative:[a-f0-9]{64}$"
+        },
+        "destination": {
+          "$ref": "event_assistance_common.schema.json#/definitions/JoiningTarget"
+        },
+        "decisionId": {
+          "$ref": "event_common.schema.json#/definitions/documentId"
+        },
+        "operationId": {
+          "$ref": "event_common.schema.json#/definitions/documentId"
+        },
+        "decidedBy": {
+          "$ref": "event_common.schema.json#/definitions/documentId"
+        },
+        "decidedAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
         }
       }
     },
@@ -277,6 +353,7 @@
         "runtimeLive",
         "destinations",
         "current",
+        "routeDecision",
         "guidance"
       ],
       "properties": {
@@ -306,6 +383,16 @@
           "anyOf": [
             {
               "$ref": "#/definitions/Record"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "routeDecision": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/RouteDecision"
             },
             {
               "type": "null"
@@ -660,6 +747,22 @@
     },
     "Command": {
       "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "payload"
+          ],
+          "properties": {
+            "kind": {
+              "const": "changeRoute"
+            },
+            "payload": {
+              "$ref": "event_assistance_common.schema.json#/definitions/ChangeRouteCommand/properties/payload"
+            }
+          }
+        },
         {
           "type": "object",
           "additionalProperties": false,

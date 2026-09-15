@@ -262,6 +262,7 @@ Do not edit it by hand.
 | EventLivePositionDocument | `firestore/event_live_positions.schema.json` | `functions/src/shared/generated/eventLivePositionDocument.ts` |
 | EventSuccessLateArrivalDocument | `firestore/event_success_late_arrivals.schema.json` | `functions/src/shared/generated/eventSuccessLateArrivalDocument.ts` |
 | EventRehearsalMovementDocument | `firestore/event_rehearsal_movements.schema.json` | `functions/src/shared/generated/eventRehearsalMovementDocument.ts` |
+| EventRehearsalRouteDecisionDocument | `firestore/event_rehearsal_route_decisions.schema.json` | `functions/src/shared/generated/eventRehearsalRouteDecisionDocument.ts` |
 | GetEventRehearsalMovementCallablePayload | `callables/get_event_rehearsal_movement_payload.schema.json` | `functions/src/shared/generated/getEventRehearsalMovementCallablePayload.ts` |
 | EventRehearsalMovementCallableResponse | `callable_responses/event_rehearsal_movement_response.schema.json` | `functions/src/shared/generated/eventRehearsalMovementCallableResponse.ts` |
 | EventRehearsalDocument | `firestore/event_rehearsals.schema.json` | `functions/src/shared/generated/eventRehearsalDocument.ts` |
@@ -944,6 +945,7 @@ Do not edit it by hand.
 | `schemaEventLivePositionDocumentSchema` | EventLivePositionDocument | `firestore/event_live_positions.schema.json` | `lib/core/schema_contracts/generated/schemas/event_live_position_document.g.dart` |
 | `schemaEventSuccessLateArrivalDocumentSchema` | EventSuccessLateArrivalDocument | `firestore/event_success_late_arrivals.schema.json` | `lib/core/schema_contracts/generated/schemas/event_success_late_arrival_document.g.dart` |
 | `schemaEventRehearsalMovementDocumentSchema` | EventRehearsalMovementDocument | `firestore/event_rehearsal_movements.schema.json` | `lib/core/schema_contracts/generated/schemas/event_rehearsal_movement_document.g.dart` |
+| `schemaEventRehearsalRouteDecisionDocumentSchema` | EventRehearsalRouteDecisionDocument | `firestore/event_rehearsal_route_decisions.schema.json` | `lib/core/schema_contracts/generated/schemas/event_rehearsal_route_decision_document.g.dart` |
 | `schemaGetEventRehearsalMovementCallablePayloadSchema` | GetEventRehearsalMovementCallablePayload | `callables/get_event_rehearsal_movement_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/get_event_rehearsal_movement_callable_payload.g.dart` |
 | `schemaEventRehearsalMovementCallableResponseSchema` | EventRehearsalMovementCallableResponse | `callable_responses/event_rehearsal_movement_response.schema.json` | `lib/core/schema_contracts/generated/schemas/event_rehearsal_movement_callable_response.g.dart` |
 | `schemaEventRehearsalDocumentSchema` | EventRehearsalDocument | `firestore/event_rehearsals.schema.json` | `lib/core/schema_contracts/generated/schemas/event_rehearsal_document.g.dart` |

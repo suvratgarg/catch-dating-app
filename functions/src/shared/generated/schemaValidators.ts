@@ -255,6 +255,7 @@ export {validateEventSuccessPresenceDocument} from "./validators/eventSuccessPre
 export {validateEventLivePositionDocument} from "./validators/eventLivePositionDocument";
 export {validateEventSuccessLateArrivalDocument} from "./validators/eventSuccessLateArrivalDocument";
 export {validateEventRehearsalMovementDocument} from "./validators/eventRehearsalMovementDocument";
+export {validateEventRehearsalRouteDecisionDocument} from "./validators/eventRehearsalRouteDecisionDocument";
 export {validateGetEventRehearsalMovementCallablePayload} from "./validators/getEventRehearsalMovementInput";
 export {validateEventRehearsalMovementCallableResponse} from "./validators/eventRehearsalMovementOutput";
 export {validateEventRehearsalDocument} from "./validators/eventRehearsalDocument";

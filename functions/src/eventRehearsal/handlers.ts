@@ -14,6 +14,7 @@ import {validateEventRehearsalMovementCallableResponse} from
 import {practiceMovementReview, preparePracticeMovementCommand,
   practiceMovementScope} from "./movement";
 import {rehearsalMovements, MovementScope} from "./movementRecords";
+import {rehearsalRouteDecisions} from "./routeDecisions";
 import {practiceAccountabilityProjection} from "./accountability";
 import {createHash, randomBytes, timingSafeEqual} from "node:crypto";
 import * as admin from "firebase-admin";
@@ -425,12 +426,14 @@ export async function controlEventRehearsalHandler(
           requireDoc<EventRehearsalActorDocument>(doc,
             "EventRehearsalActorDocument")), command,
         roleAuthority, data.clientActionId);
-      const nextActors = commit.confirmedDeparture ?
+      const pendingProgress = commit.confirmedDeparture ??
+        commit.routeDecision;
+      const nextActors = pendingProgress ?
         await applyPracticeAutomations(db, tx,
           {...session, runtimeRevision: session.runtimeRevision + 1},
           actorSnaps.docs.map((doc) =>
             requireDoc<EventRehearsalActorDocument>(doc,
-              "EventRehearsalActorDocument")), commit.confirmedDeparture) :
+              "EventRehearsalActorDocument")), pendingProgress) :
         commit.actorChanges ?? [];
       const now = admin.firestore.Timestamp.now();
       if (session.expiresAt.toMillis() <= now.toMillis()) {
@@ -1824,6 +1827,7 @@ async function deleteSessionChildren(
     deleteBySession(db, rehearsalMessages, sessionId),
     deleteBySession(db, rehearsalCases, sessionId),
     deleteBySession(db, rehearsalMovements, sessionId),
+    deleteBySession(db, rehearsalRouteDecisions, sessionId),
   ]);
 }
 

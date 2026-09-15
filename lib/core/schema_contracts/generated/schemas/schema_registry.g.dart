@@ -1267,6 +1267,11 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
     schema: schemaEventRehearsalMovementDocumentSchema,
   ),
   SchemaContractDefinition(
+    name: 'EventRehearsalRouteDecisionDocument',
+    source: 'firestore/event_rehearsal_route_decisions.schema.json',
+    schema: schemaEventRehearsalRouteDecisionDocumentSchema,
+  ),
+  SchemaContractDefinition(
     name: 'GetEventRehearsalMovementCallablePayload',
     source: 'callables/get_event_rehearsal_movement_payload.schema.json',
     schema: schemaGetEventRehearsalMovementCallablePayloadSchema,
@@ -3654,6 +3659,7 @@ const schemaContractsByName = <String, Map<String, Object?>>{
   'EventLivePositionDocument': schemaEventLivePositionDocumentSchema,
   'EventSuccessLateArrivalDocument': schemaEventSuccessLateArrivalDocumentSchema,
   'EventRehearsalMovementDocument': schemaEventRehearsalMovementDocumentSchema,
+  'EventRehearsalRouteDecisionDocument': schemaEventRehearsalRouteDecisionDocumentSchema,
   'GetEventRehearsalMovementCallablePayload': schemaGetEventRehearsalMovementCallablePayloadSchema,
   'EventRehearsalMovementCallableResponse': schemaEventRehearsalMovementCallableResponseSchema,
   'EventRehearsalDocument': schemaEventRehearsalDocumentSchema,
@@ -4334,6 +4340,7 @@ const schemaContractsBySource = <String, Map<String, Object?>>{
   'firestore/event_live_positions.schema.json': schemaEventLivePositionDocumentSchema,
   'firestore/event_success_late_arrivals.schema.json': schemaEventSuccessLateArrivalDocumentSchema,
   'firestore/event_rehearsal_movements.schema.json': schemaEventRehearsalMovementDocumentSchema,
+  'firestore/event_rehearsal_route_decisions.schema.json': schemaEventRehearsalRouteDecisionDocumentSchema,
   'callables/get_event_rehearsal_movement_payload.schema.json': schemaGetEventRehearsalMovementCallablePayloadSchema,
   'callable_responses/event_rehearsal_movement_response.schema.json': schemaEventRehearsalMovementCallableResponseSchema,
   'firestore/event_rehearsals.schema.json': schemaEventRehearsalDocumentSchema,

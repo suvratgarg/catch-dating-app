@@ -1,7 +1,7 @@
 import {practiceMovementSource} from "./movementSource";
 import {practiceIsManager} from "./groupStaff";
-import {readPracticeDepartures, practiceRecipeKey} from "./movementGuidance";
-import type {Movement} from "./movementSource";
+import {readPracticeDepartures, practiceRecipeKey,
+  PendingPracticeProgress} from "./movementGuidance";
 import {resolvePracticeAccountability} from "./accountability";
 import {transferPracticeMembership} from "./membership";
 import type {Firestore, Transaction} from "firebase-admin/firestore";
@@ -81,7 +81,7 @@ function persistMessages(db: Firestore, tx: Transaction, session: Session,
 /** All actor histories are read before any writes in the parent transaction. */
 export async function applyPracticeAutomations(db: Firestore, tx: Transaction,
   session: Session, actors: readonly Actor[],
-  pending?: Movement | null): Promise<Actor[]> {
+  pending?: PendingPracticeProgress): Promise<Actor[]> {
   const plans = actors.flatMap((a) => a.assistanceAutomation ?
     [a.assistanceAutomation.plan] : []);
   const groups = actors.length && session.assistanceSettings?.runtime ?

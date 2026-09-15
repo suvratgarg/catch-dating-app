@@ -1,0 +1,11 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_rehearsal_route_decisions.schema.json",
+  "title": "EventRehearsalRouteDecisionDocument",
+  "$ref": "../shared/event_rehearsal_movement.schema.json#/definitions/RouteDecision",
+  "description": "An immutable synthetic route override layered on a recorded rehearsal departure.",
+  "x-firestore-collection": "eventRehearsalRouteDecisions",
+  "x-firestore-path": "eventRehearsalRouteDecisions/{decisionDocumentId}",
+  "x-document-id-field": "id",
+  "x-owner": "event rehearsal callables"
+}

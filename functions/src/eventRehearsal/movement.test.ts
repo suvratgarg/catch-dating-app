@@ -1,4 +1,5 @@
-import {harness, departure, report} from "./movementTestFixtures";
+import {harness, departure, report, changeRoute} from
+  "./movementTestFixtures";
 import assert from "node:assert/strict";
 import test from "node:test";
 import {readFileSync, writeFileSync} from "node:fs";
@@ -12,6 +13,7 @@ import {operationContentHash as hash} from "../operations/durableActions";
 import {buildRehearsalActors, applyRehearsalBehavior} from "./engine";
 import {rehearsalMovements, MovementScope, practiceMovementId} from
   "./movementRecords";
+import {rehearsalRouteDecisions} from "./routeDecisions";
 import {practiceMovementSource} from "./movementSource";
 
 type Command = NonNullable<Control["movement"]>;
@@ -35,6 +37,38 @@ test("candidates and schedules cannot confirm movement", async () => {
   assert.equal(r.checkpoint?.report, null);
   assert.deepEqual(structuredClone(h.actors), before);
 });
+
+test("route decisions advance guidance without inventing a departure",
+  async () => {
+    const h = harness(); h.arrive();
+    let review = await h.read();
+    await assert.rejects(h.execute(changeRoute(review)),
+      /Confirm group departure/u);
+    await h.execute(departure(review, [h.actors[0].actorId]));
+    review = await h.read();
+    const original = review.progress.current!;
+    const stale = changeRoute(review, 0, "stale-route");
+    await h.execute(changeRoute(review, 0, "route-two"));
+    review = await h.read();
+    assert.equal(review.progress.revision, 2);
+    assert.equal(review.progress.current?.progressRevision, 1);
+    assert.equal(review.progress.routeDecision?.departureRevision, 1);
+    assert.equal(review.progress.routeDecision?.decisionId, "route-two");
+    assert.deepEqual(review.progress.current, original);
+    assert.deepEqual(review.progress.guidance?.destination,
+      review.progress.routeDecision?.destination);
+    assert.equal(h.fake.entries().filter(([path]) =>
+      path.startsWith(rehearsalMovements + "/")).length, 1);
+    assert.equal(h.fake.entries().filter(([path]) =>
+      path.startsWith(rehearsalRouteDecisions + "/")).length, 1);
+    await assert.rejects(h.execute(stale), {code: "aborted"});
+    await h.execute(departure(review, [h.actors[0].actorId]));
+    review = await h.read();
+    assert.equal(review.progress.revision, 3);
+    assert.equal(review.progress.current?.progressRevision, 3);
+    assert.equal(review.progress.routeDecision, null);
+    assert.equal(review.history.length, 2);
+  });
 
 test("omitted and empty rosters remain distinct", async () => {
   const h = harness();
@@ -279,6 +313,20 @@ test("Firestore movement uses parent receipts, current authority and reset", {
   const page = await read(request(scope));
   assert.equal(page.history.length, 25);
   assert.equal(page.nextBeforeRevision, 3);
+  current = page;
+  const routeInput = input(changeRoute(current, 0, "route-recovery"));
+  const routeResults = await Promise.all([control(request(routeInput)),
+    control(request(routeInput))]);
+  assert.ok(routeResults.every((result) =>
+    result.movementReview?.progress.revision === 28));
+  assert.ok(routeResults.every((result) =>
+    result.movementReview?.progress.current?.progressRevision === 27));
+  assert.ok(routeResults.every((result) =>
+    result.movementReview?.progress.routeDecision?.decisionId ===
+      "route-recovery"));
+  assert.ok(routeResults.every((result) => result.session.actionCount === 30));
+  assert.equal((await db.collection(rehearsalRouteDecisions)
+    .where("sessionId", "==", h.id).get()).size, 1);
   const last = await read(request({...scope,
     scope: {...scope.scope, beforeRevision: 3, progressRevision: 1}}));
   assert.deepEqual(last.history.map((d) => d.progressRevision), [2, 1]);
@@ -291,6 +339,8 @@ test("Firestore movement uses parent receipts, current authority and reset", {
     {code: "permission-denied"});
   await reset(request({sessionId: h.id, fork: false, seed: null}));
   assert.equal((await db.collection(rehearsalMovements)
+    .where("sessionId", "==", h.id).get()).empty, true);
+  assert.equal((await db.collection(rehearsalRouteDecisions)
     .where("sessionId", "==", h.id).get()).empty, true);
   await assert.rejects(control(request(confirmation)), {code: "aborted"});
   await assert.rejects(read(request(scope)), {code: "aborted"});
@@ -346,6 +396,9 @@ test("native movement fixtures retain selected departures and real source " +
   await h.execute(departure(ready, h.actors.map((a) => a.actorId), true),
     "departure_0001");
   let r = await sample("departed");
+  await h.execute(changeRoute(r, 0, "route-choice-0001"),
+    "route_action_0001");
+  r = await sample("rerouted");
   await h.execute(report(r, [h.actors[0].actorId]), "report_0001");
   await sample("partial");
   h.leave(); h.arrive();
@@ -363,10 +416,10 @@ test("native movement fixtures retain selected departures and real source " +
   await h.execute(fixed, "departure_0004");
   await sample("fixed");
   await h.execute(departure(await h.read(), []), "departure_0005");
-  r = await sample("oldFixed", {groupId: "event:whole", progressRevision: 4});
+  r = await sample("oldFixed", {groupId: "event:whole", progressRevision: 5});
   assert.equal(r.selected?.departure.destination.kind, "fixedPlace");
-  assert.equal(r.selected?.progressRevision, 4);
-  assert.equal(r.progress.revision, 5);
+  assert.equal(r.selected?.progressRevision, 5);
+  assert.equal(r.progress.revision, 6);
   assert.equal(r.checkpoint, null);
   h.session.status = "complete";
   await sample("complete", {groupId: "event:whole", progressRevision: 1});

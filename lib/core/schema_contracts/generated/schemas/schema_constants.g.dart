@@ -255,6 +255,7 @@ export 'event_rehearsal_message_document.g.dart';
 export 'event_rehearsal_movement_callable_response.g.dart';
 export 'event_rehearsal_movement_document.g.dart';
 export 'event_rehearsal_reproduction_callable_response.g.dart';
+export 'event_rehearsal_route_decision_document.g.dart';
 export 'event_roster_handoff_document.g.dart';
 export 'event_runtime_access.g.dart';
 export 'event_runtime_claim_request_document.g.dart';

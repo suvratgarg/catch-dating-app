@@ -99,3 +99,16 @@ export function report(r: Review, ids: string[],
       expectedCheckpointRevision: c.revision, checkpointId: c.checkpointId,
       accountedFor: ids, correctionReason}};
 }
+
+export function changeRoute(r: Review, alternativeIndex = 0,
+  decisionId = "route-choice"): Command {
+  const current = r.progress.guidance?.destination;
+  const choices = r.progress.destinations.filter((destination) =>
+    JSON.stringify(destination.target) !== JSON.stringify(current));
+  const alternative = choices[alternativeIndex];
+  if (!alternative) throw new Error("No route alternative available.");
+  return {kind: "changeRoute", payload: {groupId: r.groupId,
+    routeRevision: r.progress.revision,
+    expectedSourceHash: r.progress.sourceHash,
+    alternativeId: alternative.alternativeId, decisionId}};
+}

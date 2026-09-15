@@ -24,7 +24,9 @@ export type CheckpointObservationReview = Pick<Checkpoint["view"],
   readonly previouslyAccountedFor: readonly string[];
 };
 export type RouteReview = Pick<Progress["view"],
-  "revision" | "sourceHash" | "eventOpen" | "runtimeLive" | "progress"> & {
+  "revision" | "sourceHash" | "eventOpen" | "runtimeLive"> & {
+    readonly progress: null | Pick<
+      NonNullable<Progress["view"]["progress"]>, "destination">;
     readonly destinations: readonly Pick<
       Progress["view"]["destinations"][number],
       "alternativeId" | "target">[];

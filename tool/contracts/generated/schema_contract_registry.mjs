@@ -114788,6 +114788,181 @@ export const eventRehearsalMovementDocumentSchema = {
   "x-owner": "event rehearsal callables"
 };
 
+export const eventRehearsalRouteDecisionDocumentSchema = {
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "sessionId",
+    "clockId",
+    "groupId",
+    "progressRevision",
+    "previousRevision",
+    "departureRevision",
+    "sourceHash",
+    "alternativeId",
+    "destination",
+    "decisionId",
+    "operationId",
+    "decidedBy",
+    "decidedAt"
+  ],
+  "properties": {
+    "sessionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "clockId": {
+      "type": "string",
+      "pattern": "^clock:[a-f0-9]{64}$"
+    },
+    "groupId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "progressRevision": {
+      "type": "integer",
+      "minimum": 2,
+      "maximum": 500
+    },
+    "previousRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 499
+    },
+    "departureRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 499
+    },
+    "sourceHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "alternativeId": {
+      "type": "string",
+      "pattern": "^alternative:[a-f0-9]{64}$"
+    },
+    "destination": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "placeId",
+            "lateEntry"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "fixedPlace"
+            },
+            "placeId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "lateEntry": {
+              "type": "string",
+              "enum": [
+                "allowed",
+                "hostDecision",
+                "closed"
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "itineraryId",
+            "stopId"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "itineraryStop"
+            },
+            "itineraryId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "stopId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "routeId",
+            "groupId",
+            "checkpointId"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "groupCheckpoint"
+            },
+            "routeId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "groupId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "checkpointId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            }
+          }
+        }
+      ]
+    },
+    "decisionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "operationId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "decidedBy": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "decidedAt": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  },
+  "title": "EventRehearsalRouteDecisionDocument",
+  "description": "An immutable synthetic route override layered on a recorded rehearsal departure.",
+  "x-firestore-collection": "eventRehearsalRouteDecisions",
+  "x-firestore-path": "eventRehearsalRouteDecisions/{decisionDocumentId}",
+  "x-document-id-field": "id",
+  "x-owner": "event rehearsal callables"
+};
+
 export const getEventRehearsalMovementCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/get_event_rehearsal_movement_payload.schema.json",
@@ -114935,6 +115110,7 @@ export const eventRehearsalMovementCallableResponseSchema = {
         "runtimeLive",
         "destinations",
         "current",
+        "routeDecision",
         "guidance"
       ],
       "properties": {
@@ -114960,11 +115136,16 @@ export const eventRehearsalMovementCallableResponseSchema = {
             "type": "object",
             "additionalProperties": false,
             "required": [
+              "alternativeId",
               "target",
               "label",
               "text"
             ],
             "properties": {
+              "alternativeId": {
+                "type": "string",
+                "pattern": "^alternative:[a-f0-9]{64}$"
+              },
               "target": {
                 "anyOf": [
                   {
@@ -115630,6 +115811,181 @@ export const eventRehearsalMovementCallableResponseSchema = {
                       "maxLength": 180
                     }
                   }
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "routeDecision": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "sessionId",
+                "clockId",
+                "groupId",
+                "progressRevision",
+                "previousRevision",
+                "departureRevision",
+                "sourceHash",
+                "alternativeId",
+                "destination",
+                "decisionId",
+                "operationId",
+                "decidedBy",
+                "decidedAt"
+              ],
+              "properties": {
+                "sessionId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "clockId": {
+                  "type": "string",
+                  "pattern": "^clock:[a-f0-9]{64}$"
+                },
+                "groupId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "progressRevision": {
+                  "type": "integer",
+                  "minimum": 2,
+                  "maximum": 500
+                },
+                "previousRevision": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 499
+                },
+                "departureRevision": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 499
+                },
+                "sourceHash": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "alternativeId": {
+                  "type": "string",
+                  "pattern": "^alternative:[a-f0-9]{64}$"
+                },
+                "destination": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "placeId",
+                        "lateEntry"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "type": "string",
+                          "const": "fixedPlace"
+                        },
+                        "placeId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 160,
+                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                        },
+                        "lateEntry": {
+                          "type": "string",
+                          "enum": [
+                            "allowed",
+                            "hostDecision",
+                            "closed"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "itineraryId",
+                        "stopId"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "type": "string",
+                          "const": "itineraryStop"
+                        },
+                        "itineraryId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 2000
+                        },
+                        "stopId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 2000
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "routeId",
+                        "groupId",
+                        "checkpointId"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "type": "string",
+                          "const": "groupCheckpoint"
+                        },
+                        "routeId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 2000
+                        },
+                        "groupId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 160,
+                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                        },
+                        "checkpointId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 2000
+                        }
+                      }
+                    }
+                  ]
+                },
+                "decisionId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "operationId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "decidedBy": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "decidedAt": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
                 }
               }
             },
@@ -161698,6 +162054,7 @@ export const eventRehearsalBootstrapCallableResponseSchema = {
             "runtimeLive",
             "destinations",
             "current",
+            "routeDecision",
             "guidance"
           ],
           "properties": {
@@ -161723,11 +162080,16 @@ export const eventRehearsalBootstrapCallableResponseSchema = {
                 "type": "object",
                 "additionalProperties": false,
                 "required": [
+                  "alternativeId",
                   "target",
                   "label",
                   "text"
                 ],
                 "properties": {
+                  "alternativeId": {
+                    "type": "string",
+                    "pattern": "^alternative:[a-f0-9]{64}$"
+                  },
                   "target": {
                     "anyOf": [
                       {
@@ -162393,6 +162755,181 @@ export const eventRehearsalBootstrapCallableResponseSchema = {
                           "maxLength": 180
                         }
                       }
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "routeDecision": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "sessionId",
+                    "clockId",
+                    "groupId",
+                    "progressRevision",
+                    "previousRevision",
+                    "departureRevision",
+                    "sourceHash",
+                    "alternativeId",
+                    "destination",
+                    "decisionId",
+                    "operationId",
+                    "decidedBy",
+                    "decidedAt"
+                  ],
+                  "properties": {
+                    "sessionId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    "clockId": {
+                      "type": "string",
+                      "pattern": "^clock:[a-f0-9]{64}$"
+                    },
+                    "groupId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    "progressRevision": {
+                      "type": "integer",
+                      "minimum": 2,
+                      "maximum": 500
+                    },
+                    "previousRevision": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 499
+                    },
+                    "departureRevision": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 499
+                    },
+                    "sourceHash": {
+                      "type": "string",
+                      "pattern": "^[a-f0-9]{64}$"
+                    },
+                    "alternativeId": {
+                      "type": "string",
+                      "pattern": "^alternative:[a-f0-9]{64}$"
+                    },
+                    "destination": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "kind",
+                            "placeId",
+                            "lateEntry"
+                          ],
+                          "properties": {
+                            "kind": {
+                              "type": "string",
+                              "const": "fixedPlace"
+                            },
+                            "placeId": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 160,
+                              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                            },
+                            "lateEntry": {
+                              "type": "string",
+                              "enum": [
+                                "allowed",
+                                "hostDecision",
+                                "closed"
+                              ]
+                            }
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "kind",
+                            "itineraryId",
+                            "stopId"
+                          ],
+                          "properties": {
+                            "kind": {
+                              "type": "string",
+                              "const": "itineraryStop"
+                            },
+                            "itineraryId": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 2000
+                            },
+                            "stopId": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 2000
+                            }
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "kind",
+                            "routeId",
+                            "groupId",
+                            "checkpointId"
+                          ],
+                          "properties": {
+                            "kind": {
+                              "type": "string",
+                              "const": "groupCheckpoint"
+                            },
+                            "routeId": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 2000
+                            },
+                            "groupId": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 160,
+                              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                            },
+                            "checkpointId": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 2000
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    "decisionId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    "operationId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    "decidedBy": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    "decidedAt": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
                     }
                   }
                 },
@@ -166216,11 +166753,16 @@ export const eventRehearsalBootstrapCallableResponseSchema = {
                       "type": "object",
                       "additionalProperties": false,
                       "required": [
+                        "alternativeId",
                         "target",
                         "label",
                         "text"
                       ],
                       "properties": {
+                        "alternativeId": {
+                          "type": "string",
+                          "pattern": "^alternative:[a-f0-9]{64}$"
+                        },
                         "target": {
                           "anyOf": [
                             {
@@ -170927,6 +171469,58 @@ export const controlEventRehearsalCallablePayloadSchema = {
     },
     "movement": {
       "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "payload"
+          ],
+          "properties": {
+            "kind": {
+              "const": "changeRoute"
+            },
+            "payload": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "routeRevision",
+                "groupId",
+                "expectedSourceHash",
+                "alternativeId",
+                "decisionId"
+              ],
+              "properties": {
+                "routeRevision": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991,
+                  "description": "Nonnegative safe integer revision."
+                },
+                "groupId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "expectedSourceHash": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "alternativeId": {
+                  "type": "string",
+                  "pattern": "^alternative:[a-f0-9]{64}$"
+                },
+                "decisionId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            }
+          }
+        },
         {
           "type": "object",
           "additionalProperties": false,
@@ -209068,9 +209662,12 @@ export const eventAssistanceCommandBindingCatalog = {
         "missingCapability": null
       },
       "rehearsal": {
-        "bindingType": "contractOnly",
-        "operations": [],
-        "missingCapability": "rehearsalRouteDecision"
+        "bindingType": "directCommand",
+        "operations": [
+          "controlEventRehearsal",
+          "getEventRehearsalMovement"
+        ],
+        "missingCapability": null
       }
     },
     {

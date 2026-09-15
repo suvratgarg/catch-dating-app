@@ -3,7 +3,7 @@ import type {EventRehearsalDocument as Session,
   EventRehearsalActorDocument as Actor} from
   "../shared/generated/firestoreAdminTypes";
 import type {PracticePlan} from "./assistanceRuntime";
-import type {PracticeDepartures} from "./movementGuidance";
+import {practiceProgress, type PracticeDepartures} from "./movementGuidance";
 import {practiceContext, practiceEpisode} from "./assistanceIdentity";
 import {practiceMovementSource} from "./movementSource";
 import {practiceMembershipSource} from "./membershipSource";
@@ -53,12 +53,13 @@ function resolveRecipe(session: Session, actor: Actor,
   if (group.status === "disabled") return {kind: "disabled"};
   if (!source.eventOpen || !group.effective ||
       group.status !== "configured") return {kind: "unavailable"};
-  const movement = departures.get(groupId);
-  if (!movement) return {kind: "unavailable"};
-  parsePracticeMovement(movement, source);
+  const saved = departures.get(groupId);
+  if (!saved) return {kind: "unavailable"};
+  const progress = practiceProgress(saved);
+  parsePracticeMovement(progress.movement, source);
   const destination = source.destinations.find((d) =>
-    hash(d.target) === hash(movement.departure.destination));
-  if (!destination || movement.departure.sourceHash !== source.sourceHash) {
+    hash(d.target) === hash(progress.destination));
+  if (!destination || progress.sourceHash !== source.sourceHash) {
     return {kind: "unavailable"};
   }
   const policy = bindPolicyTemplate(group.effective,
@@ -76,7 +77,7 @@ function resolveRecipe(session: Session, actor: Actor,
     destination.target;
   const plan: PracticePlan = {policy: policy.config,
     setting: group.effective.setting,
-    guidance: {revision: movement.progressRevision, destination: target,
+    guidance: {revision: progress.progressRevision, destination: target,
       materialKey: hash([source.sourceHash, target]), text: destination.text,
       validUntil: source.endAt}, departureConfirmed: true,
     responseDeadline: config.responseDeadline, routes: config.routes,

@@ -134,6 +134,14 @@ test("direct live bindings only name command-consuming callables", () => {
   });
 });
 
+test("rehearsal route recovery names its movement command boundary", () => {
+  const binding = commandBinding("changeRoute", "rehearsal");
+  assert.equal(binding.bindingType, "directCommand");
+  assert.deepEqual(binding.operations,
+    ["controlEventRehearsal", "getEventRehearsalMovement"]);
+  assert.equal(binding.missingCapability, null);
+});
+
 test("every workflow names its command or external resolution boundary", () => {
   const externallyResolved = Object.fromEntries(
     workflowDefinitions

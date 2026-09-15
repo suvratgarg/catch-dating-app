@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.123.0
+version: 1.124.0
 updated: 2026-09-16
 owner: recursive_audit_loop
 status: active
@@ -1157,7 +1157,7 @@ provider account/version before Event Assistance activates it.
 
 ### Event Dress Rehearsal Isolation Contract
 
-Event rehearsal is a separate bounded domain with seven callable-owned,
+Event rehearsal is a separate bounded domain with eight callable-owned,
 server-only collections:
 
 | Collection | Purpose | Limits and authority |
@@ -1169,6 +1169,7 @@ server-only collections:
 | `eventRehearsalMessages/{messageDocumentId}` | Typed practice plan, joining instruction, simulated delivery evidence and response | Created only by a counted Host action; at most 200 messages per actor and run; no live sender binding or production outbox reference |
 | `eventRehearsalCases/{caseDocumentId}` | Clock-scoped practical requests and their reviewed handling | Callable-owned synthetic cases; guest projections omit handling and authority evidence |
 | `eventRehearsalMovements/{movementId}` | Clock/group/revision-bound immutable departure and separately revised checkpoint report | At most one departure per counted Host action, 500 per session, 50 selected synthetic visits; manager-only read pages contain at most 25 departures |
+| `eventRehearsalRouteDecisions/{decisionDocumentId}` | Immutable source-fenced route override layered on a recorded synthetic departure | Manager-only typed command; advances the shared progress revision without changing the departure roster, checkpoint, itinerary or route setup |
 
 The schemas under `contracts/firestore/event_rehearsal_*.schema.json` and
 `contracts/callables/*event_rehearsal*.schema.json` are authoritative.

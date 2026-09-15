@@ -75,7 +75,7 @@ options when specific functions need higher or lower limits.
 | `listEventAssistanceDepartureRosters` | `src/eventSuccess/operations/departureHistoryHandlers.ts` | Page immutable departures under current scoped staff authority |
 | `getEventAttendanceDisposition` / `recordEventNoShow` | `src/events/attendanceDispositionHandlers.ts` | Review one guest's attendance closeout and explicitly record a source-fenced no-show with an immutable receipt |
 | `getEventAttendanceReport` | `src/events/attendanceReportHandlers.ts` | Read the current operational attendance report without inferring attendance from guest intentions |
-| `getEventRehearsalMovement` | `src/eventRehearsal/handlers.ts` | Read the rehearsal-owned movement projection for the shared Event Success runtime |
+| `getEventRehearsalMovement` | `src/eventRehearsal/handlers.ts` | Read rehearsal-owned departure, route-decision and checkpoint progress for the shared Event Success runtime |
 | `getEventAssistanceSmsPreference` / `setEventAssistanceSmsPreference` | `src/eventSuccess/operations/smsPreferenceHandlers.ts` | Read and update verified participant event-service SMS choices with immutable receipts and withdrawal fences |
 | `eventAssistanceRcsWebhook` | `src/eventSuccess/operations/rcsDeliveryWebhook.ts` | Receive verified, bounded RCS callback evidence through the default-disabled HTTP boundary |
 | `onEventAssistanceRcsCallbackCreated` | `src/eventSuccess/operations/rcsWebhookProcessing.ts` | Consume private RCS callback evidence using the original dispatch and reply bindings |

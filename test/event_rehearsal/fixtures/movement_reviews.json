@@ -52,6 +52,7 @@
         "runtimeLive": true,
         "destinations": [
           {
+            "alternativeId": "alternative:c268b4766d189d31d01cedbb2236bda8bf6e40027f12260f73ac32b668d7bb4f",
             "target": {
               "kind": "fixedPlace",
               "placeId": "meeting",
@@ -61,6 +62,7 @@
             "text": "Join us at Practice venue."
           },
           {
+            "alternativeId": "alternative:00337da73b7c7dcd251c3cb618532238914f278b7e1e308ad8ccfb668e175eef",
             "target": {
               "kind": "itineraryStop",
               "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
@@ -70,6 +72,7 @@
             "text": "Join us at Stop one."
           },
           {
+            "alternativeId": "alternative:8ef46cf82fb97ce4d2623933c9abd4dce8d794cf9c44a5abc05ea80bd552ebcb",
             "target": {
               "kind": "itineraryStop",
               "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
@@ -80,6 +83,7 @@
           }
         ],
         "current": null,
+        "routeDecision": null,
         "guidance": null
       },
       "roster": {
@@ -313,6 +317,7 @@
         "runtimeLive": true,
         "destinations": [
           {
+            "alternativeId": "alternative:c268b4766d189d31d01cedbb2236bda8bf6e40027f12260f73ac32b668d7bb4f",
             "target": {
               "kind": "fixedPlace",
               "placeId": "meeting",
@@ -322,6 +327,7 @@
             "text": "Join us at Practice venue."
           },
           {
+            "alternativeId": "alternative:00337da73b7c7dcd251c3cb618532238914f278b7e1e308ad8ccfb668e175eef",
             "target": {
               "kind": "itineraryStop",
               "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
@@ -331,6 +337,7 @@
             "text": "Join us at Stop one."
           },
           {
+            "alternativeId": "alternative:8ef46cf82fb97ce4d2623933c9abd4dce8d794cf9c44a5abc05ea80bd552ebcb",
             "target": {
               "kind": "itineraryStop",
               "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
@@ -341,6 +348,7 @@
           }
         ],
         "current": null,
+        "routeDecision": null,
         "guidance": null
       },
       "roster": {
@@ -586,6 +594,7 @@
         "runtimeLive": true,
         "destinations": [
           {
+            "alternativeId": "alternative:c268b4766d189d31d01cedbb2236bda8bf6e40027f12260f73ac32b668d7bb4f",
             "target": {
               "kind": "fixedPlace",
               "placeId": "meeting",
@@ -595,6 +604,7 @@
             "text": "Join us at Practice venue."
           },
           {
+            "alternativeId": "alternative:00337da73b7c7dcd251c3cb618532238914f278b7e1e308ad8ccfb668e175eef",
             "target": {
               "kind": "itineraryStop",
               "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
@@ -604,6 +614,7 @@
             "text": "Join us at Stop one."
           },
           {
+            "alternativeId": "alternative:8ef46cf82fb97ce4d2623933c9abd4dce8d794cf9c44a5abc05ea80bd552ebcb",
             "target": {
               "kind": "itineraryStop",
               "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
@@ -654,6 +665,7 @@
           },
           "report": null
         },
+        "routeDecision": null,
         "guidance": {
           "revision": 1,
           "destination": {
@@ -1046,7 +1058,7 @@
       }
     ]
   },
-  "partial": {
+  "rerouted": {
     "review": {
       "sessionId": "session-1",
       "organizerId": "organizer-1",
@@ -1093,12 +1105,13 @@
         ]
       },
       "progress": {
-        "revision": 1,
+        "revision": 2,
         "sourceHash": "f117e89434a530ead9eda87235b1a3e7e77f6f574d795c42f12c3355d4bb0a98",
         "eventOpen": true,
         "runtimeLive": true,
         "destinations": [
           {
+            "alternativeId": "alternative:c268b4766d189d31d01cedbb2236bda8bf6e40027f12260f73ac32b668d7bb4f",
             "target": {
               "kind": "fixedPlace",
               "placeId": "meeting",
@@ -1108,6 +1121,7 @@
             "text": "Join us at Practice venue."
           },
           {
+            "alternativeId": "alternative:00337da73b7c7dcd251c3cb618532238914f278b7e1e308ad8ccfb668e175eef",
             "target": {
               "kind": "itineraryStop",
               "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
@@ -1117,6 +1131,542 @@
             "text": "Join us at Stop one."
           },
           {
+            "alternativeId": "alternative:8ef46cf82fb97ce4d2623933c9abd4dce8d794cf9c44a5abc05ea80bd552ebcb",
+            "target": {
+              "kind": "itineraryStop",
+              "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
+              "stopId": "two"
+            },
+            "label": "Stop two",
+            "text": "Join us at Stop two."
+          }
+        ],
+        "current": {
+          "sessionId": "session-1",
+          "clockId": "clock:972433a3265af5d743117c62f9861175057fea66de936ae57edbcbf4018c7f47",
+          "groupId": "event:whole",
+          "progressRevision": 1,
+          "departure": {
+            "sourceHash": "f117e89434a530ead9eda87235b1a3e7e77f6f574d795c42f12c3355d4bb0a98",
+            "destination": {
+              "kind": "itineraryStop",
+              "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
+              "stopId": "one"
+            },
+            "confirmedBy": "host-1",
+            "confirmedAt": 1000,
+            "operationId": "departure_0001",
+            "roster": {
+              "members": [
+                {
+                  "attendeeId": "actor-01",
+                  "displayName": "Diya",
+                  "visitHash": "c25bd62091cca5520e5c32f5d1888f29bd1fdc59ca4b0b992613d1908ef79f00",
+                  "episodeId": "episode:2d9f65dad9cf88acc9b8c6772273058bcac814012f0d48bc4e3918f8b5d205bf",
+                  "membershipHash": null
+                },
+                {
+                  "attendeeId": "actor-02",
+                  "displayName": "Kabir",
+                  "visitHash": "db214bda45251a7e8b740a1904465f0085870ed988b32db47b8a6c5cbfbe13da",
+                  "episodeId": "episode:b77d18be4b8b5831c688f8c4da46218eb61de4bb128782b509a8f6ade33fef1f",
+                  "membershipHash": null
+                }
+              ],
+              "selectionHash": "86e2d31ef44df89edaf44f24588e4e6026256d5e6d879b18145537d0b35a9c55"
+            },
+            "checkpointRequest": {
+              "responsibleOperatorId": "host-2",
+              "dueAt": 61000
+            }
+          },
+          "report": null
+        },
+        "routeDecision": {
+          "sessionId": "session-1",
+          "clockId": "clock:972433a3265af5d743117c62f9861175057fea66de936ae57edbcbf4018c7f47",
+          "groupId": "event:whole",
+          "progressRevision": 2,
+          "previousRevision": 1,
+          "departureRevision": 1,
+          "sourceHash": "f117e89434a530ead9eda87235b1a3e7e77f6f574d795c42f12c3355d4bb0a98",
+          "alternativeId": "alternative:c268b4766d189d31d01cedbb2236bda8bf6e40027f12260f73ac32b668d7bb4f",
+          "destination": {
+            "kind": "fixedPlace",
+            "placeId": "meeting",
+            "lateEntry": "allowed"
+          },
+          "decisionId": "route-choice-0001",
+          "operationId": "route_action_0001",
+          "decidedBy": "host-1",
+          "decidedAt": 1000
+        },
+        "guidance": {
+          "revision": 2,
+          "destination": {
+            "kind": "fixedPlace",
+            "placeId": "meeting",
+            "lateEntry": "allowed"
+          },
+          "materialKey": "3ef13d91be2606d9debc213d96f27d443a63ae0d9d184c54b08695c9dacacb36",
+          "text": "Join us at Practice venue.",
+          "validUntil": 7200000
+        }
+      },
+      "roster": {
+        "members": [
+          {
+            "attendeeId": "actor-01",
+            "displayName": "Diya",
+            "visitHash": "c25bd62091cca5520e5c32f5d1888f29bd1fdc59ca4b0b992613d1908ef79f00",
+            "episodeId": "episode:2d9f65dad9cf88acc9b8c6772273058bcac814012f0d48bc4e3918f8b5d205bf",
+            "membershipHash": null
+          },
+          {
+            "attendeeId": "actor-02",
+            "displayName": "Kabir",
+            "visitHash": "db214bda45251a7e8b740a1904465f0085870ed988b32db47b8a6c5cbfbe13da",
+            "episodeId": "episode:b77d18be4b8b5831c688f8c4da46218eb61de4bb128782b509a8f6ade33fef1f",
+            "membershipHash": null
+          }
+        ],
+        "unavailable": [],
+        "coverage": "boundedSession",
+        "sourceHash": "e9813827e2275a7e8b28b00fde06f4a8ccbafea29d8010e04f28d4b70198c718"
+      },
+      "selected": {
+        "sessionId": "session-1",
+        "clockId": "clock:972433a3265af5d743117c62f9861175057fea66de936ae57edbcbf4018c7f47",
+        "groupId": "event:whole",
+        "progressRevision": 1,
+        "departure": {
+          "sourceHash": "f117e89434a530ead9eda87235b1a3e7e77f6f574d795c42f12c3355d4bb0a98",
+          "destination": {
+            "kind": "itineraryStop",
+            "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
+            "stopId": "one"
+          },
+          "confirmedBy": "host-1",
+          "confirmedAt": 1000,
+          "operationId": "departure_0001",
+          "roster": {
+            "members": [
+              {
+                "attendeeId": "actor-01",
+                "displayName": "Diya",
+                "visitHash": "c25bd62091cca5520e5c32f5d1888f29bd1fdc59ca4b0b992613d1908ef79f00",
+                "episodeId": "episode:2d9f65dad9cf88acc9b8c6772273058bcac814012f0d48bc4e3918f8b5d205bf",
+                "membershipHash": null
+              },
+              {
+                "attendeeId": "actor-02",
+                "displayName": "Kabir",
+                "visitHash": "db214bda45251a7e8b740a1904465f0085870ed988b32db47b8a6c5cbfbe13da",
+                "episodeId": "episode:b77d18be4b8b5831c688f8c4da46218eb61de4bb128782b509a8f6ade33fef1f",
+                "membershipHash": null
+              }
+            ],
+            "selectionHash": "86e2d31ef44df89edaf44f24588e4e6026256d5e6d879b18145537d0b35a9c55"
+          },
+          "checkpointRequest": {
+            "responsibleOperatorId": "host-2",
+            "dueAt": 61000
+          }
+        },
+        "report": null
+      },
+      "checkpoint": {
+        "progressRevision": 1,
+        "checkpointId": "one",
+        "sourceHash": "63f7ba2c01bb8d2e599f4df18fbad30864f108c89bffd0db9a1b9893dc35f9e4",
+        "revision": 0,
+        "report": null,
+        "availability": {
+          "kind": "ready",
+          "rosterId": "departure-roster:842af85bf35ef1d71c2211c6f8a6cf329c8f50914f6b869329f67b77a4f026c4",
+          "label": "Stop one",
+          "reportStatus": "unreported",
+          "members": [
+            {
+              "attendeeId": "actor-01",
+              "visit": {
+                "kind": "current"
+              },
+              "observation": "unconfirmed",
+              "disposition": {
+                "kind": "unresolved"
+              }
+            },
+            {
+              "attendeeId": "actor-02",
+              "visit": {
+                "kind": "current"
+              },
+              "observation": "unconfirmed",
+              "disposition": {
+                "kind": "unresolved"
+              }
+            }
+          ]
+        },
+        "departure": {
+          "sourceHash": "f117e89434a530ead9eda87235b1a3e7e77f6f574d795c42f12c3355d4bb0a98",
+          "destination": {
+            "kind": "itineraryStop",
+            "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
+            "stopId": "one"
+          },
+          "confirmedBy": "host-1",
+          "confirmedAt": 1000,
+          "operationId": "departure_0001",
+          "roster": {
+            "members": [
+              {
+                "attendeeId": "actor-01",
+                "displayName": "Diya",
+                "visitHash": "c25bd62091cca5520e5c32f5d1888f29bd1fdc59ca4b0b992613d1908ef79f00",
+                "episodeId": "episode:2d9f65dad9cf88acc9b8c6772273058bcac814012f0d48bc4e3918f8b5d205bf",
+                "membershipHash": null
+              },
+              {
+                "attendeeId": "actor-02",
+                "displayName": "Kabir",
+                "visitHash": "db214bda45251a7e8b740a1904465f0085870ed988b32db47b8a6c5cbfbe13da",
+                "episodeId": "episode:b77d18be4b8b5831c688f8c4da46218eb61de4bb128782b509a8f6ade33fef1f",
+                "membershipHash": null
+              }
+            ],
+            "selectionHash": "86e2d31ef44df89edaf44f24588e4e6026256d5e6d879b18145537d0b35a9c55"
+          },
+          "checkpointRequest": {
+            "responsibleOperatorId": "host-2",
+            "dueAt": 61000
+          }
+        },
+        "assignment": {
+          "revision": 0,
+          "change": null,
+          "sourceHash": "cc05d54cee5841fa85b6474ff081e074bca09d4e7aba390c877620ee15207c8f"
+        },
+        "closeout": {
+          "revision": 0,
+          "change": null,
+          "state": {
+            "kind": "open"
+          },
+          "eligibility": {
+            "kind": "unavailable",
+            "reason": "reportMissing",
+            "attendeeIds": []
+          },
+          "sourceHash": "263a6d6c59ef9efc862f62bf6e706c75a4fd979f0683bcb99ed8684bb2656d06"
+        },
+        "accountabilityReviews": [
+          {
+            "attendeeId": "actor-01",
+            "visitHash": "c25bd62091cca5520e5c32f5d1888f29bd1fdc59ca4b0b992613d1908ef79f00",
+            "revision": 0,
+            "disposition": "unresolved",
+            "availability": {
+              "kind": "ready"
+            },
+            "sourceHash": "47c6ff4180b30be9d0cd0ba79402937fca21d5829fd6d59076c8a049b1d720e8",
+            "canResolve": true
+          },
+          {
+            "attendeeId": "actor-02",
+            "visitHash": "db214bda45251a7e8b740a1904465f0085870ed988b32db47b8a6c5cbfbe13da",
+            "revision": 0,
+            "disposition": "unresolved",
+            "availability": {
+              "kind": "ready"
+            },
+            "sourceHash": "70f014e54e3fbb6eb97e623098b09b29392474c61c0aa88495faec863418a7c5",
+            "canResolve": true
+          }
+        ],
+        "request": {
+          "responsibleOperatorId": "host-2",
+          "dueAt": 61000,
+          "state": "awaitingReport",
+          "ownerAvailability": "current"
+        },
+        "reporterOptions": {
+          "actorUid": "host-1",
+          "sourceHash": "cc05d54cee5841fa85b6474ff081e074bca09d4e7aba390c877620ee15207c8f",
+          "validUntil": 1801000,
+          "reporters": [
+            {
+              "operatorId": "host-1",
+              "displayName": "Subrath",
+              "validUntil": 9007199254740991
+            },
+            {
+              "operatorId": "host-2",
+              "displayName": null,
+              "validUntil": 9007199254740991
+            }
+          ]
+        }
+      },
+      "history": [
+        {
+          "progressRevision": 1,
+          "destination": {
+            "kind": "itineraryStop",
+            "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
+            "stopId": "one"
+          },
+          "confirmedAt": 1000,
+          "rosterSize": 2,
+          "reportRevision": 0,
+          "accountedForCount": 0,
+          "checkpointRequest": {
+            "responsibleOperatorId": "host-2",
+            "dueAt": 61000
+          }
+        }
+      ],
+      "nextBeforeRevision": null
+    },
+    "session": {
+      "id": "session-1",
+      "organizerId": "organizer-1",
+      "clubId": "organizer-1",
+      "ownerUid": "host-1",
+      "sourceEventId": null,
+      "sourceEventRevision": null,
+      "publicRehearsalId": "practicepublic1234567890",
+      "viewerTokenHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "scenarioId": "lateAndNoShow",
+      "seed": 1,
+      "actorCount": 2,
+      "actionCount": 2,
+      "status": "running",
+      "setup": {
+        "title": "Practice",
+        "locationName": "Practice venue",
+        "durationMinutes": 120,
+        "hostGoal": "Learn",
+        "attendeePrompt": "Say hello",
+        "moduleIds": [
+          "arrival"
+        ],
+        "movementSimulation": {
+          "routePlan": null,
+          "livePositions": [],
+          "lateArrivalGuidance": null,
+          "itinerary": [
+            {
+              "id": "one",
+              "kind": "stop",
+              "offsetMinutes": 0,
+              "title": "Stop one",
+              "location": {
+                "name": "Stop one",
+                "latitude": 22.7,
+                "longitude": 75.8
+              }
+            },
+            {
+              "id": "two",
+              "kind": "stop",
+              "offsetMinutes": 30,
+              "title": "Stop two",
+              "location": {
+                "name": "Stop two",
+                "latitude": 22.7,
+                "longitude": 75.8
+              }
+            }
+          ]
+        }
+      },
+      "setupRevision": 0,
+      "runtimeRevision": 3,
+      "activeStepIndex": 1,
+      "virtualStartedAt": {
+        "_seconds": 0,
+        "_nanoseconds": 0
+      },
+      "virtualNow": {
+        "_seconds": 1,
+        "_nanoseconds": 0
+      },
+      "faultId": "none",
+      "faultConsumed": false,
+      "createdAt": {
+        "_seconds": 0,
+        "_nanoseconds": 0
+      },
+      "updatedAt": {
+        "_seconds": 0,
+        "_nanoseconds": 0
+      },
+      "expiresAt": {
+        "_seconds": 86400,
+        "_nanoseconds": 0
+      },
+      "completedAt": null,
+      "virtualStartedAtMillis": 0,
+      "virtualNowMillis": 1000,
+      "expiresAtMillis": 86400000
+    },
+    "actors": [
+      {
+        "sessionId": "session-1",
+        "actorId": "actor-01",
+        "displayName": "Diya",
+        "persona": "regular",
+        "status": "present",
+        "visit": {
+          "attendanceRevision": 1,
+          "checkedInAtMillis": 1000,
+          "accountabilityRevision": 0,
+          "resolution": null
+        },
+        "participation": {
+          "revision": 0,
+          "episodeRevision": 0,
+          "state": "active"
+        },
+        "connectionState": "connected",
+        "guestMoment": "checkIn",
+        "optedOut": false,
+        "keepApartActorIds": [],
+        "helpRequested": false,
+        "untrackedHelpRequested": false,
+        "promptCompleted": false,
+        "layoutUnitId": "table-1",
+        "confirmedLayoutUnitId": "table-1",
+        "lastActionAt": {
+          "_seconds": 1,
+          "_nanoseconds": 0
+        },
+        "createdAt": {
+          "_seconds": 0,
+          "_nanoseconds": 0
+        },
+        "updatedAt": {
+          "_seconds": 1,
+          "_nanoseconds": 0
+        }
+      },
+      {
+        "sessionId": "session-1",
+        "actorId": "actor-02",
+        "displayName": "Kabir",
+        "persona": "quiet",
+        "status": "present",
+        "visit": {
+          "attendanceRevision": 1,
+          "checkedInAtMillis": 1000,
+          "accountabilityRevision": 0,
+          "resolution": null
+        },
+        "participation": {
+          "revision": 0,
+          "episodeRevision": 0,
+          "state": "active"
+        },
+        "connectionState": "connected",
+        "guestMoment": "checkIn",
+        "optedOut": false,
+        "keepApartActorIds": [],
+        "helpRequested": false,
+        "untrackedHelpRequested": false,
+        "promptCompleted": false,
+        "layoutUnitId": "table-1",
+        "confirmedLayoutUnitId": "table-1",
+        "lastActionAt": {
+          "_seconds": 1,
+          "_nanoseconds": 0
+        },
+        "createdAt": {
+          "_seconds": 0,
+          "_nanoseconds": 0
+        },
+        "updatedAt": {
+          "_seconds": 1,
+          "_nanoseconds": 0
+        }
+      }
+    ]
+  },
+  "partial": {
+    "review": {
+      "sessionId": "session-1",
+      "organizerId": "organizer-1",
+      "clockId": "clock:972433a3265af5d743117c62f9861175057fea66de936ae57edbcbf4018c7f47",
+      "setupRevision": 0,
+      "runtimeRevision": 4,
+      "actorUid": "host-1",
+      "serverTime": 1000,
+      "groupId": "event:whole",
+      "groups": [
+        {
+          "groupId": "event:whole",
+          "label": "Whole event"
+        }
+      ],
+      "staffReview": {
+        "clockId": "clock:972433a3265af5d743117c62f9861175057fea66de936ae57edbcbf4018c7f47",
+        "revision": 0,
+        "sourceHash": "4479e4434766a00ce2f3aa6be078e050d40730f9fcddda675f3ecb41efd4ee0f",
+        "hostUid": "host-1",
+        "actorUid": "host-1",
+        "practiceOperatorId": null,
+        "serverTime": 1000,
+        "canAssign": true,
+        "operators": [],
+        "groups": [
+          {
+            "groupId": "event:whole",
+            "label": "Whole event",
+            "sourceHash": "206e0215d917ef7847f5c24fe2a9b6e9f529b92a1492a4da23656ce1ef5cec95",
+            "availableDuties": [
+              "lead",
+              "sweep"
+            ],
+            "permissions": [
+              "readProgress",
+              "confirmDeparture",
+              "transferGroup",
+              "recordCheckpoint",
+              "resolveAccountability"
+            ],
+            "validUntil": 9007199254740991
+          }
+        ]
+      },
+      "progress": {
+        "revision": 2,
+        "sourceHash": "f117e89434a530ead9eda87235b1a3e7e77f6f574d795c42f12c3355d4bb0a98",
+        "eventOpen": true,
+        "runtimeLive": true,
+        "destinations": [
+          {
+            "alternativeId": "alternative:c268b4766d189d31d01cedbb2236bda8bf6e40027f12260f73ac32b668d7bb4f",
+            "target": {
+              "kind": "fixedPlace",
+              "placeId": "meeting",
+              "lateEntry": "allowed"
+            },
+            "label": "Practice venue",
+            "text": "Join us at Practice venue."
+          },
+          {
+            "alternativeId": "alternative:00337da73b7c7dcd251c3cb618532238914f278b7e1e308ad8ccfb668e175eef",
+            "target": {
+              "kind": "itineraryStop",
+              "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
+              "stopId": "one"
+            },
+            "label": "Stop one",
+            "text": "Join us at Stop one."
+          },
+          {
+            "alternativeId": "alternative:8ef46cf82fb97ce4d2623933c9abd4dce8d794cf9c44a5abc05ea80bd552ebcb",
             "target": {
               "kind": "itineraryStop",
               "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
@@ -1176,15 +1726,34 @@
             "reportedAt": 1000
           }
         },
-        "guidance": {
-          "revision": 1,
+        "routeDecision": {
+          "sessionId": "session-1",
+          "clockId": "clock:972433a3265af5d743117c62f9861175057fea66de936ae57edbcbf4018c7f47",
+          "groupId": "event:whole",
+          "progressRevision": 2,
+          "previousRevision": 1,
+          "departureRevision": 1,
+          "sourceHash": "f117e89434a530ead9eda87235b1a3e7e77f6f574d795c42f12c3355d4bb0a98",
+          "alternativeId": "alternative:c268b4766d189d31d01cedbb2236bda8bf6e40027f12260f73ac32b668d7bb4f",
           "destination": {
-            "kind": "itineraryStop",
-            "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
-            "stopId": "one"
+            "kind": "fixedPlace",
+            "placeId": "meeting",
+            "lateEntry": "allowed"
           },
-          "materialKey": "fd92a495de23e822521be3b6a785cfed215b732a44ef348d47be17b13d449e2d",
-          "text": "Join us at Stop one.",
+          "decisionId": "route-choice-0001",
+          "operationId": "route_action_0001",
+          "decidedBy": "host-1",
+          "decidedAt": 1000
+        },
+        "guidance": {
+          "revision": 2,
+          "destination": {
+            "kind": "fixedPlace",
+            "placeId": "meeting",
+            "lateEntry": "allowed"
+          },
+          "materialKey": "3ef13d91be2606d9debc213d96f27d443a63ae0d9d184c54b08695c9dacacb36",
+          "text": "Join us at Practice venue.",
           "validUntil": 7200000
         }
       },
@@ -1207,7 +1776,7 @@
         ],
         "unavailable": [],
         "coverage": "boundedSession",
-        "sourceHash": "16e6fd85b577880967ddeb2cd5ed15d9b3189727af77a22b9a21a4b231e5b4b1"
+        "sourceHash": "e9813827e2275a7e8b28b00fde06f4a8ccbafea29d8010e04f28d4b70198c718"
       },
       "selected": {
         "sessionId": "session-1",
@@ -1436,7 +2005,7 @@
       "scenarioId": "lateAndNoShow",
       "seed": 1,
       "actorCount": 2,
-      "actionCount": 2,
+      "actionCount": 3,
       "status": "running",
       "setup": {
         "title": "Practice",
@@ -1478,7 +2047,7 @@
         }
       },
       "setupRevision": 0,
-      "runtimeRevision": 3,
+      "runtimeRevision": 4,
       "activeStepIndex": 1,
       "virtualStartedAt": {
         "_seconds": 0,
@@ -1594,7 +2163,7 @@
       "organizerId": "organizer-1",
       "clockId": "clock:972433a3265af5d743117c62f9861175057fea66de936ae57edbcbf4018c7f47",
       "setupRevision": 0,
-      "runtimeRevision": 3,
+      "runtimeRevision": 4,
       "actorUid": "host-1",
       "serverTime": 1000,
       "groupId": "event:whole",
@@ -1635,12 +2204,13 @@
         ]
       },
       "progress": {
-        "revision": 1,
+        "revision": 2,
         "sourceHash": "f117e89434a530ead9eda87235b1a3e7e77f6f574d795c42f12c3355d4bb0a98",
         "eventOpen": true,
         "runtimeLive": true,
         "destinations": [
           {
+            "alternativeId": "alternative:c268b4766d189d31d01cedbb2236bda8bf6e40027f12260f73ac32b668d7bb4f",
             "target": {
               "kind": "fixedPlace",
               "placeId": "meeting",
@@ -1650,6 +2220,7 @@
             "text": "Join us at Practice venue."
           },
           {
+            "alternativeId": "alternative:00337da73b7c7dcd251c3cb618532238914f278b7e1e308ad8ccfb668e175eef",
             "target": {
               "kind": "itineraryStop",
               "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
@@ -1659,6 +2230,7 @@
             "text": "Join us at Stop one."
           },
           {
+            "alternativeId": "alternative:8ef46cf82fb97ce4d2623933c9abd4dce8d794cf9c44a5abc05ea80bd552ebcb",
             "target": {
               "kind": "itineraryStop",
               "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
@@ -1718,15 +2290,34 @@
             "reportedAt": 1000
           }
         },
-        "guidance": {
-          "revision": 1,
+        "routeDecision": {
+          "sessionId": "session-1",
+          "clockId": "clock:972433a3265af5d743117c62f9861175057fea66de936ae57edbcbf4018c7f47",
+          "groupId": "event:whole",
+          "progressRevision": 2,
+          "previousRevision": 1,
+          "departureRevision": 1,
+          "sourceHash": "f117e89434a530ead9eda87235b1a3e7e77f6f574d795c42f12c3355d4bb0a98",
+          "alternativeId": "alternative:c268b4766d189d31d01cedbb2236bda8bf6e40027f12260f73ac32b668d7bb4f",
           "destination": {
-            "kind": "itineraryStop",
-            "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
-            "stopId": "one"
+            "kind": "fixedPlace",
+            "placeId": "meeting",
+            "lateEntry": "allowed"
           },
-          "materialKey": "fd92a495de23e822521be3b6a785cfed215b732a44ef348d47be17b13d449e2d",
-          "text": "Join us at Stop one.",
+          "decisionId": "route-choice-0001",
+          "operationId": "route_action_0001",
+          "decidedBy": "host-1",
+          "decidedAt": 1000
+        },
+        "guidance": {
+          "revision": 2,
+          "destination": {
+            "kind": "fixedPlace",
+            "placeId": "meeting",
+            "lateEntry": "allowed"
+          },
+          "materialKey": "3ef13d91be2606d9debc213d96f27d443a63ae0d9d184c54b08695c9dacacb36",
+          "text": "Join us at Practice venue.",
           "validUntil": 7200000
         }
       },
@@ -1749,7 +2340,7 @@
         ],
         "unavailable": [],
         "coverage": "boundedSession",
-        "sourceHash": "e8c2ab38050d4ecc9c38674a15607ee6d74f0b041823c20c41ffee98a1d70ecc"
+        "sourceHash": "d7571e9585eba5940dcf493cd67e59ebf77757147eadc0139825c99e240a5129"
       },
       "selected": {
         "sessionId": "session-1",
@@ -1981,7 +2572,7 @@
       "scenarioId": "lateAndNoShow",
       "seed": 1,
       "actorCount": 2,
-      "actionCount": 2,
+      "actionCount": 3,
       "status": "running",
       "setup": {
         "title": "Practice",
@@ -2023,7 +2614,7 @@
         }
       },
       "setupRevision": 0,
-      "runtimeRevision": 3,
+      "runtimeRevision": 4,
       "activeStepIndex": 1,
       "virtualStartedAt": {
         "_seconds": 0,
@@ -2139,7 +2730,7 @@
       "organizerId": "organizer-1",
       "clockId": "clock:972433a3265af5d743117c62f9861175057fea66de936ae57edbcbf4018c7f47",
       "setupRevision": 0,
-      "runtimeRevision": 4,
+      "runtimeRevision": 5,
       "actorUid": "host-1",
       "serverTime": 1000,
       "groupId": "event:whole",
@@ -2180,12 +2771,13 @@
         ]
       },
       "progress": {
-        "revision": 1,
+        "revision": 2,
         "sourceHash": "f117e89434a530ead9eda87235b1a3e7e77f6f574d795c42f12c3355d4bb0a98",
         "eventOpen": true,
         "runtimeLive": true,
         "destinations": [
           {
+            "alternativeId": "alternative:c268b4766d189d31d01cedbb2236bda8bf6e40027f12260f73ac32b668d7bb4f",
             "target": {
               "kind": "fixedPlace",
               "placeId": "meeting",
@@ -2195,6 +2787,7 @@
             "text": "Join us at Practice venue."
           },
           {
+            "alternativeId": "alternative:00337da73b7c7dcd251c3cb618532238914f278b7e1e308ad8ccfb668e175eef",
             "target": {
               "kind": "itineraryStop",
               "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
@@ -2204,6 +2797,7 @@
             "text": "Join us at Stop one."
           },
           {
+            "alternativeId": "alternative:8ef46cf82fb97ce4d2623933c9abd4dce8d794cf9c44a5abc05ea80bd552ebcb",
             "target": {
               "kind": "itineraryStop",
               "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
@@ -2264,15 +2858,34 @@
             "reportedAt": 1000
           }
         },
-        "guidance": {
-          "revision": 1,
+        "routeDecision": {
+          "sessionId": "session-1",
+          "clockId": "clock:972433a3265af5d743117c62f9861175057fea66de936ae57edbcbf4018c7f47",
+          "groupId": "event:whole",
+          "progressRevision": 2,
+          "previousRevision": 1,
+          "departureRevision": 1,
+          "sourceHash": "f117e89434a530ead9eda87235b1a3e7e77f6f574d795c42f12c3355d4bb0a98",
+          "alternativeId": "alternative:c268b4766d189d31d01cedbb2236bda8bf6e40027f12260f73ac32b668d7bb4f",
           "destination": {
-            "kind": "itineraryStop",
-            "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
-            "stopId": "one"
+            "kind": "fixedPlace",
+            "placeId": "meeting",
+            "lateEntry": "allowed"
           },
-          "materialKey": "fd92a495de23e822521be3b6a785cfed215b732a44ef348d47be17b13d449e2d",
-          "text": "Join us at Stop one.",
+          "decisionId": "route-choice-0001",
+          "operationId": "route_action_0001",
+          "decidedBy": "host-1",
+          "decidedAt": 1000
+        },
+        "guidance": {
+          "revision": 2,
+          "destination": {
+            "kind": "fixedPlace",
+            "placeId": "meeting",
+            "lateEntry": "allowed"
+          },
+          "materialKey": "3ef13d91be2606d9debc213d96f27d443a63ae0d9d184c54b08695c9dacacb36",
+          "text": "Join us at Practice venue.",
           "validUntil": 7200000
         }
       },
@@ -2295,7 +2908,7 @@
         ],
         "unavailable": [],
         "coverage": "boundedSession",
-        "sourceHash": "e8c2ab38050d4ecc9c38674a15607ee6d74f0b041823c20c41ffee98a1d70ecc"
+        "sourceHash": "d7571e9585eba5940dcf493cd67e59ebf77757147eadc0139825c99e240a5129"
       },
       "selected": {
         "sessionId": "session-1",
@@ -2511,385 +3124,6 @@
       "scenarioId": "lateAndNoShow",
       "seed": 1,
       "actorCount": 2,
-      "actionCount": 3,
-      "status": "running",
-      "setup": {
-        "title": "Practice",
-        "locationName": "Practice venue",
-        "durationMinutes": 120,
-        "hostGoal": "Learn",
-        "attendeePrompt": "Say hello",
-        "moduleIds": [
-          "arrival"
-        ],
-        "movementSimulation": {
-          "routePlan": null,
-          "livePositions": [],
-          "lateArrivalGuidance": null,
-          "itinerary": [
-            {
-              "id": "one",
-              "kind": "stop",
-              "offsetMinutes": 0,
-              "title": "Stop one",
-              "location": {
-                "name": "Stop one",
-                "latitude": 22.7,
-                "longitude": 75.8
-              }
-            },
-            {
-              "id": "two",
-              "kind": "stop",
-              "offsetMinutes": 30,
-              "title": "Stop two",
-              "location": {
-                "name": "Stop two",
-                "latitude": 22.7,
-                "longitude": 75.8
-              }
-            }
-          ]
-        }
-      },
-      "setupRevision": 0,
-      "runtimeRevision": 4,
-      "activeStepIndex": 1,
-      "virtualStartedAt": {
-        "_seconds": 0,
-        "_nanoseconds": 0
-      },
-      "virtualNow": {
-        "_seconds": 1,
-        "_nanoseconds": 0
-      },
-      "faultId": "none",
-      "faultConsumed": false,
-      "createdAt": {
-        "_seconds": 0,
-        "_nanoseconds": 0
-      },
-      "updatedAt": {
-        "_seconds": 0,
-        "_nanoseconds": 0
-      },
-      "expiresAt": {
-        "_seconds": 86400,
-        "_nanoseconds": 0
-      },
-      "completedAt": null,
-      "virtualStartedAtMillis": 0,
-      "virtualNowMillis": 1000,
-      "expiresAtMillis": 86400000
-    },
-    "actors": [
-      {
-        "sessionId": "session-1",
-        "actorId": "actor-01",
-        "displayName": "Diya",
-        "persona": "regular",
-        "status": "present",
-        "visit": {
-          "attendanceRevision": 3,
-          "checkedInAtMillis": 1000,
-          "accountabilityRevision": 0,
-          "resolution": null
-        },
-        "participation": {
-          "state": "active",
-          "revision": 2,
-          "episodeRevision": 1
-        },
-        "connectionState": "connected",
-        "guestMoment": "checkIn",
-        "optedOut": false,
-        "keepApartActorIds": [],
-        "helpRequested": false,
-        "untrackedHelpRequested": false,
-        "promptCompleted": false,
-        "layoutUnitId": "table-1",
-        "confirmedLayoutUnitId": "table-1",
-        "lastActionAt": {
-          "_seconds": 1,
-          "_nanoseconds": 0
-        },
-        "createdAt": {
-          "_seconds": 0,
-          "_nanoseconds": 0
-        },
-        "updatedAt": {
-          "_seconds": 1,
-          "_nanoseconds": 0
-        }
-      },
-      {
-        "sessionId": "session-1",
-        "actorId": "actor-02",
-        "displayName": "Kabir",
-        "persona": "quiet",
-        "status": "present",
-        "visit": {
-          "attendanceRevision": 1,
-          "checkedInAtMillis": 1000,
-          "accountabilityRevision": 0,
-          "resolution": null
-        },
-        "participation": {
-          "revision": 0,
-          "episodeRevision": 0,
-          "state": "active"
-        },
-        "connectionState": "connected",
-        "guestMoment": "checkIn",
-        "optedOut": false,
-        "keepApartActorIds": [],
-        "helpRequested": false,
-        "untrackedHelpRequested": false,
-        "promptCompleted": false,
-        "layoutUnitId": "table-1",
-        "confirmedLayoutUnitId": "table-1",
-        "lastActionAt": {
-          "_seconds": 1,
-          "_nanoseconds": 0
-        },
-        "createdAt": {
-          "_seconds": 0,
-          "_nanoseconds": 0
-        },
-        "updatedAt": {
-          "_seconds": 1,
-          "_nanoseconds": 0
-        }
-      }
-    ]
-  },
-  "omitted": {
-    "review": {
-      "sessionId": "session-1",
-      "organizerId": "organizer-1",
-      "clockId": "clock:972433a3265af5d743117c62f9861175057fea66de936ae57edbcbf4018c7f47",
-      "setupRevision": 0,
-      "runtimeRevision": 5,
-      "actorUid": "host-1",
-      "serverTime": 1000,
-      "groupId": "event:whole",
-      "groups": [
-        {
-          "groupId": "event:whole",
-          "label": "Whole event"
-        }
-      ],
-      "staffReview": {
-        "clockId": "clock:972433a3265af5d743117c62f9861175057fea66de936ae57edbcbf4018c7f47",
-        "revision": 0,
-        "sourceHash": "4479e4434766a00ce2f3aa6be078e050d40730f9fcddda675f3ecb41efd4ee0f",
-        "hostUid": "host-1",
-        "actorUid": "host-1",
-        "practiceOperatorId": null,
-        "serverTime": 1000,
-        "canAssign": true,
-        "operators": [],
-        "groups": [
-          {
-            "groupId": "event:whole",
-            "label": "Whole event",
-            "sourceHash": "206e0215d917ef7847f5c24fe2a9b6e9f529b92a1492a4da23656ce1ef5cec95",
-            "availableDuties": [
-              "lead",
-              "sweep"
-            ],
-            "permissions": [
-              "readProgress",
-              "confirmDeparture",
-              "transferGroup",
-              "recordCheckpoint",
-              "resolveAccountability"
-            ],
-            "validUntil": 9007199254740991
-          }
-        ]
-      },
-      "progress": {
-        "revision": 2,
-        "sourceHash": "f117e89434a530ead9eda87235b1a3e7e77f6f574d795c42f12c3355d4bb0a98",
-        "eventOpen": true,
-        "runtimeLive": true,
-        "destinations": [
-          {
-            "target": {
-              "kind": "fixedPlace",
-              "placeId": "meeting",
-              "lateEntry": "allowed"
-            },
-            "label": "Practice venue",
-            "text": "Join us at Practice venue."
-          },
-          {
-            "target": {
-              "kind": "itineraryStop",
-              "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
-              "stopId": "one"
-            },
-            "label": "Stop one",
-            "text": "Join us at Stop one."
-          },
-          {
-            "target": {
-              "kind": "itineraryStop",
-              "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
-              "stopId": "two"
-            },
-            "label": "Stop two",
-            "text": "Join us at Stop two."
-          }
-        ],
-        "current": {
-          "sessionId": "session-1",
-          "clockId": "clock:972433a3265af5d743117c62f9861175057fea66de936ae57edbcbf4018c7f47",
-          "groupId": "event:whole",
-          "progressRevision": 2,
-          "departure": {
-            "sourceHash": "f117e89434a530ead9eda87235b1a3e7e77f6f574d795c42f12c3355d4bb0a98",
-            "destination": {
-              "kind": "itineraryStop",
-              "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
-              "stopId": "one"
-            },
-            "confirmedBy": "host-1",
-            "confirmedAt": 1000,
-            "operationId": "departure_0002",
-            "roster": null,
-            "checkpointRequest": null
-          },
-          "report": null
-        },
-        "guidance": {
-          "revision": 2,
-          "destination": {
-            "kind": "itineraryStop",
-            "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
-            "stopId": "one"
-          },
-          "materialKey": "fd92a495de23e822521be3b6a785cfed215b732a44ef348d47be17b13d449e2d",
-          "text": "Join us at Stop one.",
-          "validUntil": 7200000
-        }
-      },
-      "roster": {
-        "members": [
-          {
-            "attendeeId": "actor-01",
-            "displayName": "Diya",
-            "visitHash": "a503ed2e65ad8060ddee433c6a1589068332871c63df290d83045451874c5752",
-            "episodeId": "episode:afad05841cab38606f7558e799d94ac46ee2b0e8eeae4e3645549e512b2aa92f",
-            "membershipHash": null
-          },
-          {
-            "attendeeId": "actor-02",
-            "displayName": "Kabir",
-            "visitHash": "db214bda45251a7e8b740a1904465f0085870ed988b32db47b8a6c5cbfbe13da",
-            "episodeId": "episode:b77d18be4b8b5831c688f8c4da46218eb61de4bb128782b509a8f6ade33fef1f",
-            "membershipHash": null
-          }
-        ],
-        "unavailable": [],
-        "coverage": "boundedSession",
-        "sourceHash": "d7571e9585eba5940dcf493cd67e59ebf77757147eadc0139825c99e240a5129"
-      },
-      "selected": {
-        "sessionId": "session-1",
-        "clockId": "clock:972433a3265af5d743117c62f9861175057fea66de936ae57edbcbf4018c7f47",
-        "groupId": "event:whole",
-        "progressRevision": 2,
-        "departure": {
-          "sourceHash": "f117e89434a530ead9eda87235b1a3e7e77f6f574d795c42f12c3355d4bb0a98",
-          "destination": {
-            "kind": "itineraryStop",
-            "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
-            "stopId": "one"
-          },
-          "confirmedBy": "host-1",
-          "confirmedAt": 1000,
-          "operationId": "departure_0002",
-          "roster": null,
-          "checkpointRequest": null
-        },
-        "report": null
-      },
-      "checkpoint": {
-        "progressRevision": 2,
-        "checkpointId": "one",
-        "sourceHash": "4588326b7b8fab65b8588a1c8f6619ee2761d49663e28a853f49a946343d26cf",
-        "revision": 0,
-        "report": null,
-        "availability": {
-          "kind": "unavailable",
-          "reason": "rosterNotRecorded"
-        },
-        "departure": {
-          "sourceHash": "f117e89434a530ead9eda87235b1a3e7e77f6f574d795c42f12c3355d4bb0a98",
-          "destination": {
-            "kind": "itineraryStop",
-            "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
-            "stopId": "one"
-          },
-          "confirmedBy": "host-1",
-          "confirmedAt": 1000,
-          "operationId": "departure_0002",
-          "roster": null,
-          "checkpointRequest": null
-        },
-        "assignment": null,
-        "closeout": null,
-        "accountabilityReviews": [],
-        "request": null,
-        "reporterOptions": null
-      },
-      "history": [
-        {
-          "progressRevision": 2,
-          "destination": {
-            "kind": "itineraryStop",
-            "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
-            "stopId": "one"
-          },
-          "confirmedAt": 1000,
-          "rosterSize": null,
-          "reportRevision": 0,
-          "accountedForCount": 0,
-          "checkpointRequest": null
-        },
-        {
-          "progressRevision": 1,
-          "destination": {
-            "kind": "itineraryStop",
-            "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
-            "stopId": "one"
-          },
-          "confirmedAt": 1000,
-          "rosterSize": 2,
-          "reportRevision": 2,
-          "accountedForCount": 2,
-          "checkpointRequest": {
-            "responsibleOperatorId": "host-2",
-            "dueAt": 61000
-          }
-        }
-      ],
-      "nextBeforeRevision": null
-    },
-    "session": {
-      "id": "session-1",
-      "organizerId": "organizer-1",
-      "clubId": "organizer-1",
-      "ownerUid": "host-1",
-      "sourceEventId": null,
-      "sourceEventRevision": null,
-      "publicRehearsalId": "practicepublic1234567890",
-      "viewerTokenHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-      "scenarioId": "lateAndNoShow",
-      "seed": 1,
-      "actorCount": 2,
       "actionCount": 4,
       "status": "running",
       "setup": {
@@ -3042,7 +3276,7 @@
       }
     ]
   },
-  "empty": {
+  "omitted": {
     "review": {
       "sessionId": "session-1",
       "organizerId": "organizer-1",
@@ -3095,6 +3329,7 @@
         "runtimeLive": true,
         "destinations": [
           {
+            "alternativeId": "alternative:c268b4766d189d31d01cedbb2236bda8bf6e40027f12260f73ac32b668d7bb4f",
             "target": {
               "kind": "fixedPlace",
               "placeId": "meeting",
@@ -3104,6 +3339,7 @@
             "text": "Join us at Practice venue."
           },
           {
+            "alternativeId": "alternative:00337da73b7c7dcd251c3cb618532238914f278b7e1e308ad8ccfb668e175eef",
             "target": {
               "kind": "itineraryStop",
               "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
@@ -3113,6 +3349,7 @@
             "text": "Join us at Stop one."
           },
           {
+            "alternativeId": "alternative:8ef46cf82fb97ce4d2623933c9abd4dce8d794cf9c44a5abc05ea80bd552ebcb",
             "target": {
               "kind": "itineraryStop",
               "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
@@ -3136,18 +3373,13 @@
             },
             "confirmedBy": "host-1",
             "confirmedAt": 1000,
-            "operationId": "departure_0003",
-            "roster": {
-              "members": [],
-              "selectionHash": "d7571e9585eba5940dcf493cd67e59ebf77757147eadc0139825c99e240a5129"
-            },
-            "checkpointRequest": {
-              "responsibleOperatorId": "host-2",
-              "dueAt": 61000
-            }
+            "operationId": "departure_0002",
+            "roster": null,
+            "checkpointRequest": null
           },
           "report": null
         },
+        "routeDecision": null,
         "guidance": {
           "revision": 3,
           "destination": {
@@ -3195,30 +3427,21 @@
           },
           "confirmedBy": "host-1",
           "confirmedAt": 1000,
-          "operationId": "departure_0003",
-          "roster": {
-            "members": [],
-            "selectionHash": "d7571e9585eba5940dcf493cd67e59ebf77757147eadc0139825c99e240a5129"
-          },
-          "checkpointRequest": {
-            "responsibleOperatorId": "host-2",
-            "dueAt": 61000
-          }
+          "operationId": "departure_0002",
+          "roster": null,
+          "checkpointRequest": null
         },
         "report": null
       },
       "checkpoint": {
         "progressRevision": 3,
         "checkpointId": "one",
-        "sourceHash": "e783677167352820217dac492354d42a07897403385850c8883fec26166c63c6",
+        "sourceHash": "25f8a4a48713568970bc8432b7b41ece7b7a468e7a13ddbc4125f48db12b3863",
         "revision": 0,
         "report": null,
         "availability": {
-          "kind": "ready",
-          "rosterId": "departure-roster:c671bf40a15996b39d695d0d7a2d22c33760d4758b5a1f4faeedfadf7341e7d5",
-          "label": "Stop one",
-          "reportStatus": "unreported",
-          "members": []
+          "kind": "unavailable",
+          "reason": "rosterNotRecorded"
         },
         "departure": {
           "sourceHash": "f117e89434a530ead9eda87235b1a3e7e77f6f574d795c42f12c3355d4bb0a98",
@@ -3229,78 +3452,19 @@
           },
           "confirmedBy": "host-1",
           "confirmedAt": 1000,
-          "operationId": "departure_0003",
-          "roster": {
-            "members": [],
-            "selectionHash": "d7571e9585eba5940dcf493cd67e59ebf77757147eadc0139825c99e240a5129"
-          },
-          "checkpointRequest": {
-            "responsibleOperatorId": "host-2",
-            "dueAt": 61000
-          }
+          "operationId": "departure_0002",
+          "roster": null,
+          "checkpointRequest": null
         },
-        "assignment": {
-          "revision": 0,
-          "change": null,
-          "sourceHash": "aaed37ab489b0623e4312b5872ca1a45c42543d11f5936a38ba77502b2db987b"
-        },
-        "closeout": {
-          "revision": 0,
-          "change": null,
-          "state": {
-            "kind": "open"
-          },
-          "eligibility": {
-            "kind": "unavailable",
-            "reason": "reportMissing",
-            "attendeeIds": []
-          },
-          "sourceHash": "8daa00d51dbb19d4f58dd1ac5ac423d27a69e8849f387d317819a6686ed8002a"
-        },
+        "assignment": null,
+        "closeout": null,
         "accountabilityReviews": [],
-        "request": {
-          "responsibleOperatorId": "host-2",
-          "dueAt": 61000,
-          "state": "awaitingReport",
-          "ownerAvailability": "current"
-        },
-        "reporterOptions": {
-          "actorUid": "host-1",
-          "sourceHash": "aaed37ab489b0623e4312b5872ca1a45c42543d11f5936a38ba77502b2db987b",
-          "validUntil": 1801000,
-          "reporters": [
-            {
-              "operatorId": "host-1",
-              "displayName": "Subrath",
-              "validUntil": 9007199254740991
-            },
-            {
-              "operatorId": "host-2",
-              "displayName": null,
-              "validUntil": 9007199254740991
-            }
-          ]
-        }
+        "request": null,
+        "reporterOptions": null
       },
       "history": [
         {
           "progressRevision": 3,
-          "destination": {
-            "kind": "itineraryStop",
-            "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
-            "stopId": "one"
-          },
-          "confirmedAt": 1000,
-          "rosterSize": 0,
-          "reportRevision": 0,
-          "accountedForCount": 0,
-          "checkpointRequest": {
-            "responsibleOperatorId": "host-2",
-            "dueAt": 61000
-          }
-        },
-        {
-          "progressRevision": 2,
           "destination": {
             "kind": "itineraryStop",
             "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
@@ -3495,7 +3659,7 @@
       }
     ]
   },
-  "fixed": {
+  "empty": {
     "review": {
       "sessionId": "session-1",
       "organizerId": "organizer-1",
@@ -3548,6 +3712,7 @@
         "runtimeLive": true,
         "destinations": [
           {
+            "alternativeId": "alternative:c268b4766d189d31d01cedbb2236bda8bf6e40027f12260f73ac32b668d7bb4f",
             "target": {
               "kind": "fixedPlace",
               "placeId": "meeting",
@@ -3557,6 +3722,7 @@
             "text": "Join us at Practice venue."
           },
           {
+            "alternativeId": "alternative:00337da73b7c7dcd251c3cb618532238914f278b7e1e308ad8ccfb668e175eef",
             "target": {
               "kind": "itineraryStop",
               "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
@@ -3566,6 +3732,7 @@
             "text": "Join us at Stop one."
           },
           {
+            "alternativeId": "alternative:8ef46cf82fb97ce4d2623933c9abd4dce8d794cf9c44a5abc05ea80bd552ebcb",
             "target": {
               "kind": "itineraryStop",
               "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
@@ -3583,27 +3750,34 @@
           "departure": {
             "sourceHash": "f117e89434a530ead9eda87235b1a3e7e77f6f574d795c42f12c3355d4bb0a98",
             "destination": {
-              "kind": "fixedPlace",
-              "placeId": "meeting",
-              "lateEntry": "allowed"
+              "kind": "itineraryStop",
+              "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
+              "stopId": "one"
             },
             "confirmedBy": "host-1",
             "confirmedAt": 1000,
-            "operationId": "departure_0004",
-            "roster": null,
-            "checkpointRequest": null
+            "operationId": "departure_0003",
+            "roster": {
+              "members": [],
+              "selectionHash": "7c509bc5094802e1b610ea77262d95d3a9b06444e74ca69bdded737feb1a2276"
+            },
+            "checkpointRequest": {
+              "responsibleOperatorId": "host-2",
+              "dueAt": 61000
+            }
           },
           "report": null
         },
+        "routeDecision": null,
         "guidance": {
           "revision": 4,
           "destination": {
-            "kind": "fixedPlace",
-            "placeId": "meeting",
-            "lateEntry": "allowed"
+            "kind": "itineraryStop",
+            "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
+            "stopId": "one"
           },
-          "materialKey": "3ef13d91be2606d9debc213d96f27d443a63ae0d9d184c54b08695c9dacacb36",
-          "text": "Join us at Practice venue.",
+          "materialKey": "fd92a495de23e822521be3b6a785cfed215b732a44ef348d47be17b13d449e2d",
+          "text": "Join us at Stop one.",
           "validUntil": 7200000
         }
       },
@@ -3636,35 +3810,102 @@
         "departure": {
           "sourceHash": "f117e89434a530ead9eda87235b1a3e7e77f6f574d795c42f12c3355d4bb0a98",
           "destination": {
-            "kind": "fixedPlace",
-            "placeId": "meeting",
-            "lateEntry": "allowed"
+            "kind": "itineraryStop",
+            "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
+            "stopId": "one"
           },
           "confirmedBy": "host-1",
           "confirmedAt": 1000,
-          "operationId": "departure_0004",
-          "roster": null,
-          "checkpointRequest": null
+          "operationId": "departure_0003",
+          "roster": {
+            "members": [],
+            "selectionHash": "7c509bc5094802e1b610ea77262d95d3a9b06444e74ca69bdded737feb1a2276"
+          },
+          "checkpointRequest": {
+            "responsibleOperatorId": "host-2",
+            "dueAt": 61000
+          }
         },
         "report": null
       },
-      "checkpoint": null,
+      "checkpoint": {
+        "progressRevision": 4,
+        "checkpointId": "one",
+        "sourceHash": "8bc096be891f3e82f9154ac21d8ada999ed49ea2dfcbc313494b9ba426bc233d",
+        "revision": 0,
+        "report": null,
+        "availability": {
+          "kind": "ready",
+          "rosterId": "departure-roster:c0bcf8da14d8bb3004e1d7b5cbc776680c64d6830ec074df20d8f8175579a086",
+          "label": "Stop one",
+          "reportStatus": "unreported",
+          "members": []
+        },
+        "departure": {
+          "sourceHash": "f117e89434a530ead9eda87235b1a3e7e77f6f574d795c42f12c3355d4bb0a98",
+          "destination": {
+            "kind": "itineraryStop",
+            "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
+            "stopId": "one"
+          },
+          "confirmedBy": "host-1",
+          "confirmedAt": 1000,
+          "operationId": "departure_0003",
+          "roster": {
+            "members": [],
+            "selectionHash": "7c509bc5094802e1b610ea77262d95d3a9b06444e74ca69bdded737feb1a2276"
+          },
+          "checkpointRequest": {
+            "responsibleOperatorId": "host-2",
+            "dueAt": 61000
+          }
+        },
+        "assignment": {
+          "revision": 0,
+          "change": null,
+          "sourceHash": "0f50a8ebfe6f098bdc90d0c504f16182e50949997e939cb2971b4ba33d3ffbbf"
+        },
+        "closeout": {
+          "revision": 0,
+          "change": null,
+          "state": {
+            "kind": "open"
+          },
+          "eligibility": {
+            "kind": "unavailable",
+            "reason": "reportMissing",
+            "attendeeIds": []
+          },
+          "sourceHash": "99d81ff89c9243155a64e8262d4baa93ab1ff4baf57638c7af4e4f4fdae7ad01"
+        },
+        "accountabilityReviews": [],
+        "request": {
+          "responsibleOperatorId": "host-2",
+          "dueAt": 61000,
+          "state": "awaitingReport",
+          "ownerAvailability": "current"
+        },
+        "reporterOptions": {
+          "actorUid": "host-1",
+          "sourceHash": "0f50a8ebfe6f098bdc90d0c504f16182e50949997e939cb2971b4ba33d3ffbbf",
+          "validUntil": 1801000,
+          "reporters": [
+            {
+              "operatorId": "host-1",
+              "displayName": "Subrath",
+              "validUntil": 9007199254740991
+            },
+            {
+              "operatorId": "host-2",
+              "displayName": null,
+              "validUntil": 9007199254740991
+            }
+          ]
+        }
+      },
       "history": [
         {
           "progressRevision": 4,
-          "destination": {
-            "kind": "fixedPlace",
-            "placeId": "meeting",
-            "lateEntry": "allowed"
-          },
-          "confirmedAt": 1000,
-          "rosterSize": null,
-          "reportRevision": 0,
-          "accountedForCount": 0,
-          "checkpointRequest": null
-        },
-        {
-          "progressRevision": 3,
           "destination": {
             "kind": "itineraryStop",
             "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
@@ -3680,7 +3921,7 @@
           }
         },
         {
-          "progressRevision": 2,
+          "progressRevision": 3,
           "destination": {
             "kind": "itineraryStop",
             "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
@@ -3875,7 +4116,7 @@
       }
     ]
   },
-  "oldFixed": {
+  "fixed": {
     "review": {
       "sessionId": "session-1",
       "organizerId": "organizer-1",
@@ -3928,6 +4169,7 @@
         "runtimeLive": true,
         "destinations": [
           {
+            "alternativeId": "alternative:c268b4766d189d31d01cedbb2236bda8bf6e40027f12260f73ac32b668d7bb4f",
             "target": {
               "kind": "fixedPlace",
               "placeId": "meeting",
@@ -3937,6 +4179,7 @@
             "text": "Join us at Practice venue."
           },
           {
+            "alternativeId": "alternative:00337da73b7c7dcd251c3cb618532238914f278b7e1e308ad8ccfb668e175eef",
             "target": {
               "kind": "itineraryStop",
               "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
@@ -3946,6 +4189,7 @@
             "text": "Join us at Stop one."
           },
           {
+            "alternativeId": "alternative:8ef46cf82fb97ce4d2623933c9abd4dce8d794cf9c44a5abc05ea80bd552ebcb",
             "target": {
               "kind": "itineraryStop",
               "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
@@ -3963,30 +4207,28 @@
           "departure": {
             "sourceHash": "f117e89434a530ead9eda87235b1a3e7e77f6f574d795c42f12c3355d4bb0a98",
             "destination": {
-              "kind": "itineraryStop",
-              "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
-              "stopId": "one"
+              "kind": "fixedPlace",
+              "placeId": "meeting",
+              "lateEntry": "allowed"
             },
             "confirmedBy": "host-1",
             "confirmedAt": 1000,
-            "operationId": "departure_0005",
-            "roster": {
-              "members": [],
-              "selectionHash": "29f965e7188377c1d51690a7b1cf9c4b6a8e53aef9a3b462a85800cc8bebb0a1"
-            },
+            "operationId": "departure_0004",
+            "roster": null,
             "checkpointRequest": null
           },
           "report": null
         },
+        "routeDecision": null,
         "guidance": {
           "revision": 5,
           "destination": {
-            "kind": "itineraryStop",
-            "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
-            "stopId": "one"
+            "kind": "fixedPlace",
+            "placeId": "meeting",
+            "lateEntry": "allowed"
           },
-          "materialKey": "fd92a495de23e822521be3b6a785cfed215b732a44ef348d47be17b13d449e2d",
-          "text": "Join us at Stop one.",
+          "materialKey": "3ef13d91be2606d9debc213d96f27d443a63ae0d9d184c54b08695c9dacacb36",
+          "text": "Join us at Practice venue.",
           "validUntil": 7200000
         }
       },
@@ -4015,7 +4257,7 @@
         "sessionId": "session-1",
         "clockId": "clock:972433a3265af5d743117c62f9861175057fea66de936ae57edbcbf4018c7f47",
         "groupId": "event:whole",
-        "progressRevision": 4,
+        "progressRevision": 5,
         "departure": {
           "sourceHash": "f117e89434a530ead9eda87235b1a3e7e77f6f574d795c42f12c3355d4bb0a98",
           "destination": {
@@ -4036,19 +4278,6 @@
         {
           "progressRevision": 5,
           "destination": {
-            "kind": "itineraryStop",
-            "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
-            "stopId": "one"
-          },
-          "confirmedAt": 1000,
-          "rosterSize": 0,
-          "reportRevision": 0,
-          "accountedForCount": 0,
-          "checkpointRequest": null
-        },
-        {
-          "progressRevision": 4,
-          "destination": {
             "kind": "fixedPlace",
             "placeId": "meeting",
             "lateEntry": "allowed"
@@ -4060,7 +4289,7 @@
           "checkpointRequest": null
         },
         {
-          "progressRevision": 3,
+          "progressRevision": 4,
           "destination": {
             "kind": "itineraryStop",
             "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
@@ -4076,7 +4305,7 @@
           }
         },
         {
-          "progressRevision": 2,
+          "progressRevision": 3,
           "destination": {
             "kind": "itineraryStop",
             "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
@@ -4271,13 +4500,413 @@
       }
     ]
   },
+  "oldFixed": {
+    "review": {
+      "sessionId": "session-1",
+      "organizerId": "organizer-1",
+      "clockId": "clock:972433a3265af5d743117c62f9861175057fea66de936ae57edbcbf4018c7f47",
+      "setupRevision": 0,
+      "runtimeRevision": 9,
+      "actorUid": "host-1",
+      "serverTime": 1000,
+      "groupId": "event:whole",
+      "groups": [
+        {
+          "groupId": "event:whole",
+          "label": "Whole event"
+        }
+      ],
+      "staffReview": {
+        "clockId": "clock:972433a3265af5d743117c62f9861175057fea66de936ae57edbcbf4018c7f47",
+        "revision": 0,
+        "sourceHash": "4479e4434766a00ce2f3aa6be078e050d40730f9fcddda675f3ecb41efd4ee0f",
+        "hostUid": "host-1",
+        "actorUid": "host-1",
+        "practiceOperatorId": null,
+        "serverTime": 1000,
+        "canAssign": true,
+        "operators": [],
+        "groups": [
+          {
+            "groupId": "event:whole",
+            "label": "Whole event",
+            "sourceHash": "206e0215d917ef7847f5c24fe2a9b6e9f529b92a1492a4da23656ce1ef5cec95",
+            "availableDuties": [
+              "lead",
+              "sweep"
+            ],
+            "permissions": [
+              "readProgress",
+              "confirmDeparture",
+              "transferGroup",
+              "recordCheckpoint",
+              "resolveAccountability"
+            ],
+            "validUntil": 9007199254740991
+          }
+        ]
+      },
+      "progress": {
+        "revision": 6,
+        "sourceHash": "f117e89434a530ead9eda87235b1a3e7e77f6f574d795c42f12c3355d4bb0a98",
+        "eventOpen": true,
+        "runtimeLive": true,
+        "destinations": [
+          {
+            "alternativeId": "alternative:c268b4766d189d31d01cedbb2236bda8bf6e40027f12260f73ac32b668d7bb4f",
+            "target": {
+              "kind": "fixedPlace",
+              "placeId": "meeting",
+              "lateEntry": "allowed"
+            },
+            "label": "Practice venue",
+            "text": "Join us at Practice venue."
+          },
+          {
+            "alternativeId": "alternative:00337da73b7c7dcd251c3cb618532238914f278b7e1e308ad8ccfb668e175eef",
+            "target": {
+              "kind": "itineraryStop",
+              "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
+              "stopId": "one"
+            },
+            "label": "Stop one",
+            "text": "Join us at Stop one."
+          },
+          {
+            "alternativeId": "alternative:8ef46cf82fb97ce4d2623933c9abd4dce8d794cf9c44a5abc05ea80bd552ebcb",
+            "target": {
+              "kind": "itineraryStop",
+              "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
+              "stopId": "two"
+            },
+            "label": "Stop two",
+            "text": "Join us at Stop two."
+          }
+        ],
+        "current": {
+          "sessionId": "session-1",
+          "clockId": "clock:972433a3265af5d743117c62f9861175057fea66de936ae57edbcbf4018c7f47",
+          "groupId": "event:whole",
+          "progressRevision": 6,
+          "departure": {
+            "sourceHash": "f117e89434a530ead9eda87235b1a3e7e77f6f574d795c42f12c3355d4bb0a98",
+            "destination": {
+              "kind": "itineraryStop",
+              "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
+              "stopId": "one"
+            },
+            "confirmedBy": "host-1",
+            "confirmedAt": 1000,
+            "operationId": "departure_0005",
+            "roster": {
+              "members": [],
+              "selectionHash": "e208d9f52797bed39d21310ccfb8812dc161f1ab8faa10c7b917e552c181cbfd"
+            },
+            "checkpointRequest": null
+          },
+          "report": null
+        },
+        "routeDecision": null,
+        "guidance": {
+          "revision": 6,
+          "destination": {
+            "kind": "itineraryStop",
+            "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
+            "stopId": "one"
+          },
+          "materialKey": "fd92a495de23e822521be3b6a785cfed215b732a44ef348d47be17b13d449e2d",
+          "text": "Join us at Stop one.",
+          "validUntil": 7200000
+        }
+      },
+      "roster": {
+        "members": [
+          {
+            "attendeeId": "actor-01",
+            "displayName": "Diya",
+            "visitHash": "a503ed2e65ad8060ddee433c6a1589068332871c63df290d83045451874c5752",
+            "episodeId": "episode:afad05841cab38606f7558e799d94ac46ee2b0e8eeae4e3645549e512b2aa92f",
+            "membershipHash": null
+          },
+          {
+            "attendeeId": "actor-02",
+            "displayName": "Kabir",
+            "visitHash": "db214bda45251a7e8b740a1904465f0085870ed988b32db47b8a6c5cbfbe13da",
+            "episodeId": "episode:b77d18be4b8b5831c688f8c4da46218eb61de4bb128782b509a8f6ade33fef1f",
+            "membershipHash": null
+          }
+        ],
+        "unavailable": [],
+        "coverage": "boundedSession",
+        "sourceHash": "879d1e9a62f53c840873fca120b4c6455d268aeb3031bdba17cdcb51b095d6f5"
+      },
+      "selected": {
+        "sessionId": "session-1",
+        "clockId": "clock:972433a3265af5d743117c62f9861175057fea66de936ae57edbcbf4018c7f47",
+        "groupId": "event:whole",
+        "progressRevision": 5,
+        "departure": {
+          "sourceHash": "f117e89434a530ead9eda87235b1a3e7e77f6f574d795c42f12c3355d4bb0a98",
+          "destination": {
+            "kind": "fixedPlace",
+            "placeId": "meeting",
+            "lateEntry": "allowed"
+          },
+          "confirmedBy": "host-1",
+          "confirmedAt": 1000,
+          "operationId": "departure_0004",
+          "roster": null,
+          "checkpointRequest": null
+        },
+        "report": null
+      },
+      "checkpoint": null,
+      "history": [
+        {
+          "progressRevision": 6,
+          "destination": {
+            "kind": "itineraryStop",
+            "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
+            "stopId": "one"
+          },
+          "confirmedAt": 1000,
+          "rosterSize": 0,
+          "reportRevision": 0,
+          "accountedForCount": 0,
+          "checkpointRequest": null
+        },
+        {
+          "progressRevision": 5,
+          "destination": {
+            "kind": "fixedPlace",
+            "placeId": "meeting",
+            "lateEntry": "allowed"
+          },
+          "confirmedAt": 1000,
+          "rosterSize": null,
+          "reportRevision": 0,
+          "accountedForCount": 0,
+          "checkpointRequest": null
+        },
+        {
+          "progressRevision": 4,
+          "destination": {
+            "kind": "itineraryStop",
+            "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
+            "stopId": "one"
+          },
+          "confirmedAt": 1000,
+          "rosterSize": 0,
+          "reportRevision": 0,
+          "accountedForCount": 0,
+          "checkpointRequest": {
+            "responsibleOperatorId": "host-2",
+            "dueAt": 61000
+          }
+        },
+        {
+          "progressRevision": 3,
+          "destination": {
+            "kind": "itineraryStop",
+            "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
+            "stopId": "one"
+          },
+          "confirmedAt": 1000,
+          "rosterSize": null,
+          "reportRevision": 0,
+          "accountedForCount": 0,
+          "checkpointRequest": null
+        },
+        {
+          "progressRevision": 1,
+          "destination": {
+            "kind": "itineraryStop",
+            "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
+            "stopId": "one"
+          },
+          "confirmedAt": 1000,
+          "rosterSize": 2,
+          "reportRevision": 2,
+          "accountedForCount": 2,
+          "checkpointRequest": {
+            "responsibleOperatorId": "host-2",
+            "dueAt": 61000
+          }
+        }
+      ],
+      "nextBeforeRevision": null
+    },
+    "session": {
+      "id": "session-1",
+      "organizerId": "organizer-1",
+      "clubId": "organizer-1",
+      "ownerUid": "host-1",
+      "sourceEventId": null,
+      "sourceEventRevision": null,
+      "publicRehearsalId": "practicepublic1234567890",
+      "viewerTokenHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "scenarioId": "lateAndNoShow",
+      "seed": 1,
+      "actorCount": 2,
+      "actionCount": 8,
+      "status": "running",
+      "setup": {
+        "title": "Practice",
+        "locationName": "Practice venue",
+        "durationMinutes": 120,
+        "hostGoal": "Learn",
+        "attendeePrompt": "Say hello",
+        "moduleIds": [
+          "arrival"
+        ],
+        "movementSimulation": {
+          "routePlan": null,
+          "livePositions": [],
+          "lateArrivalGuidance": null,
+          "itinerary": [
+            {
+              "id": "one",
+              "kind": "stop",
+              "offsetMinutes": 0,
+              "title": "Stop one",
+              "location": {
+                "name": "Stop one",
+                "latitude": 22.7,
+                "longitude": 75.8
+              }
+            },
+            {
+              "id": "two",
+              "kind": "stop",
+              "offsetMinutes": 30,
+              "title": "Stop two",
+              "location": {
+                "name": "Stop two",
+                "latitude": 22.7,
+                "longitude": 75.8
+              }
+            }
+          ]
+        }
+      },
+      "setupRevision": 0,
+      "runtimeRevision": 9,
+      "activeStepIndex": 1,
+      "virtualStartedAt": {
+        "_seconds": 0,
+        "_nanoseconds": 0
+      },
+      "virtualNow": {
+        "_seconds": 1,
+        "_nanoseconds": 0
+      },
+      "faultId": "none",
+      "faultConsumed": false,
+      "createdAt": {
+        "_seconds": 0,
+        "_nanoseconds": 0
+      },
+      "updatedAt": {
+        "_seconds": 0,
+        "_nanoseconds": 0
+      },
+      "expiresAt": {
+        "_seconds": 86400,
+        "_nanoseconds": 0
+      },
+      "completedAt": null,
+      "virtualStartedAtMillis": 0,
+      "virtualNowMillis": 1000,
+      "expiresAtMillis": 86400000
+    },
+    "actors": [
+      {
+        "sessionId": "session-1",
+        "actorId": "actor-01",
+        "displayName": "Diya",
+        "persona": "regular",
+        "status": "present",
+        "visit": {
+          "attendanceRevision": 3,
+          "checkedInAtMillis": 1000,
+          "accountabilityRevision": 0,
+          "resolution": null
+        },
+        "participation": {
+          "state": "active",
+          "revision": 2,
+          "episodeRevision": 1
+        },
+        "connectionState": "connected",
+        "guestMoment": "checkIn",
+        "optedOut": false,
+        "keepApartActorIds": [],
+        "helpRequested": false,
+        "untrackedHelpRequested": false,
+        "promptCompleted": false,
+        "layoutUnitId": "table-1",
+        "confirmedLayoutUnitId": "table-1",
+        "lastActionAt": {
+          "_seconds": 1,
+          "_nanoseconds": 0
+        },
+        "createdAt": {
+          "_seconds": 0,
+          "_nanoseconds": 0
+        },
+        "updatedAt": {
+          "_seconds": 1,
+          "_nanoseconds": 0
+        }
+      },
+      {
+        "sessionId": "session-1",
+        "actorId": "actor-02",
+        "displayName": "Kabir",
+        "persona": "quiet",
+        "status": "present",
+        "visit": {
+          "attendanceRevision": 1,
+          "checkedInAtMillis": 1000,
+          "accountabilityRevision": 0,
+          "resolution": null
+        },
+        "participation": {
+          "revision": 0,
+          "episodeRevision": 0,
+          "state": "active"
+        },
+        "connectionState": "connected",
+        "guestMoment": "checkIn",
+        "optedOut": false,
+        "keepApartActorIds": [],
+        "helpRequested": false,
+        "untrackedHelpRequested": false,
+        "promptCompleted": false,
+        "layoutUnitId": "table-1",
+        "confirmedLayoutUnitId": "table-1",
+        "lastActionAt": {
+          "_seconds": 1,
+          "_nanoseconds": 0
+        },
+        "createdAt": {
+          "_seconds": 0,
+          "_nanoseconds": 0
+        },
+        "updatedAt": {
+          "_seconds": 1,
+          "_nanoseconds": 0
+        }
+      }
+    ]
+  },
   "complete": {
     "review": {
       "sessionId": "session-1",
       "organizerId": "organizer-1",
       "clockId": "clock:972433a3265af5d743117c62f9861175057fea66de936ae57edbcbf4018c7f47",
       "setupRevision": 0,
-      "runtimeRevision": 8,
+      "runtimeRevision": 9,
       "actorUid": "host-1",
       "serverTime": 1000,
       "groupId": "event:whole",
@@ -4318,12 +4947,13 @@
         ]
       },
       "progress": {
-        "revision": 5,
+        "revision": 6,
         "sourceHash": "f117e89434a530ead9eda87235b1a3e7e77f6f574d795c42f12c3355d4bb0a98",
         "eventOpen": false,
         "runtimeLive": false,
         "destinations": [
           {
+            "alternativeId": "alternative:c268b4766d189d31d01cedbb2236bda8bf6e40027f12260f73ac32b668d7bb4f",
             "target": {
               "kind": "fixedPlace",
               "placeId": "meeting",
@@ -4333,6 +4963,7 @@
             "text": "Join us at Practice venue."
           },
           {
+            "alternativeId": "alternative:00337da73b7c7dcd251c3cb618532238914f278b7e1e308ad8ccfb668e175eef",
             "target": {
               "kind": "itineraryStop",
               "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
@@ -4342,6 +4973,7 @@
             "text": "Join us at Stop one."
           },
           {
+            "alternativeId": "alternative:8ef46cf82fb97ce4d2623933c9abd4dce8d794cf9c44a5abc05ea80bd552ebcb",
             "target": {
               "kind": "itineraryStop",
               "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
@@ -4355,7 +4987,7 @@
           "sessionId": "session-1",
           "clockId": "clock:972433a3265af5d743117c62f9861175057fea66de936ae57edbcbf4018c7f47",
           "groupId": "event:whole",
-          "progressRevision": 5,
+          "progressRevision": 6,
           "departure": {
             "sourceHash": "f117e89434a530ead9eda87235b1a3e7e77f6f574d795c42f12c3355d4bb0a98",
             "destination": {
@@ -4368,12 +5000,13 @@
             "operationId": "departure_0005",
             "roster": {
               "members": [],
-              "selectionHash": "29f965e7188377c1d51690a7b1cf9c4b6a8e53aef9a3b462a85800cc8bebb0a1"
+              "selectionHash": "e208d9f52797bed39d21310ccfb8812dc161f1ab8faa10c7b917e552c181cbfd"
             },
             "checkpointRequest": null
           },
           "report": null
         },
+        "routeDecision": null,
         "guidance": null
       },
       "roster": {
@@ -4395,7 +5028,7 @@
         ],
         "unavailable": [],
         "coverage": "boundedSession",
-        "sourceHash": "e208d9f52797bed39d21310ccfb8812dc161f1ab8faa10c7b917e552c181cbfd"
+        "sourceHash": "879d1e9a62f53c840873fca120b4c6455d268aeb3031bdba17cdcb51b095d6f5"
       },
       "selected": {
         "sessionId": "session-1",
@@ -4581,7 +5214,7 @@
       },
       "history": [
         {
-          "progressRevision": 5,
+          "progressRevision": 6,
           "destination": {
             "kind": "itineraryStop",
             "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
@@ -4594,7 +5227,7 @@
           "checkpointRequest": null
         },
         {
-          "progressRevision": 4,
+          "progressRevision": 5,
           "destination": {
             "kind": "fixedPlace",
             "placeId": "meeting",
@@ -4607,7 +5240,7 @@
           "checkpointRequest": null
         },
         {
-          "progressRevision": 3,
+          "progressRevision": 4,
           "destination": {
             "kind": "itineraryStop",
             "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
@@ -4623,7 +5256,7 @@
           }
         },
         {
-          "progressRevision": 2,
+          "progressRevision": 3,
           "destination": {
             "kind": "itineraryStop",
             "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
@@ -4666,7 +5299,7 @@
       "scenarioId": "lateAndNoShow",
       "seed": 1,
       "actorCount": 2,
-      "actionCount": 7,
+      "actionCount": 8,
       "status": "complete",
       "setup": {
         "title": "Practice",
@@ -4708,7 +5341,7 @@
         }
       },
       "setupRevision": 0,
-      "runtimeRevision": 8,
+      "runtimeRevision": 9,
       "activeStepIndex": 1,
       "virtualStartedAt": {
         "_seconds": 0,
@@ -4824,336 +5457,6 @@
       "organizerId": "organizer-1",
       "clockId": "clock:972433a3265af5d743117c62f9861175057fea66de936ae57edbcbf4018c7f47",
       "setupRevision": 0,
-      "runtimeRevision": 8,
-      "actorUid": "host-1",
-      "serverTime": 1000,
-      "groupId": "easy",
-      "groups": [
-        {
-          "groupId": "event:whole",
-          "label": "Whole event"
-        },
-        {
-          "groupId": "easy",
-          "label": "Easy pace"
-        }
-      ],
-      "staffReview": {
-        "clockId": "clock:972433a3265af5d743117c62f9861175057fea66de936ae57edbcbf4018c7f47",
-        "revision": 0,
-        "sourceHash": "51ee95ca581401efe4bcb32f94bc7cca07fb3f63ba81c31d88d2efb07f18aa4b",
-        "hostUid": "host-1",
-        "actorUid": "host-1",
-        "practiceOperatorId": null,
-        "serverTime": 1000,
-        "canAssign": true,
-        "operators": [],
-        "groups": [
-          {
-            "groupId": "event:whole",
-            "label": "Whole event",
-            "sourceHash": "1435943e588c4c6b2d25958d3e22d30beda4573e8e1456a1c6571cfadc72c326",
-            "availableDuties": [
-              "lead",
-              "sweep"
-            ],
-            "permissions": [
-              "readProgress",
-              "confirmDeparture",
-              "transferGroup",
-              "recordCheckpoint",
-              "resolveAccountability"
-            ],
-            "validUntil": 9007199254740991
-          },
-          {
-            "groupId": "easy",
-            "label": "Easy pace",
-            "sourceHash": "8958d23e1c1273e6c72d961ca334014777b0c1893b95d701367c77c631b7f7d0",
-            "availableDuties": [
-              "lead",
-              "pacer",
-              "sweep"
-            ],
-            "permissions": [
-              "readProgress",
-              "confirmDeparture",
-              "transferGroup",
-              "recordCheckpoint",
-              "resolveAccountability"
-            ],
-            "validUntil": 9007199254740991
-          }
-        ]
-      },
-      "progress": {
-        "revision": 0,
-        "sourceHash": "78aa81443c381ada126fc685ed826b7bbb229538168b788d31d27693750baa5c",
-        "eventOpen": true,
-        "runtimeLive": true,
-        "destinations": [
-          {
-            "target": {
-              "kind": "groupCheckpoint",
-              "routeId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:route",
-              "groupId": "easy",
-              "checkpointId": "one"
-            },
-            "label": "Stop one",
-            "text": "Join us at Stop one."
-          },
-          {
-            "target": {
-              "kind": "groupCheckpoint",
-              "routeId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:route",
-              "groupId": "easy",
-              "checkpointId": "two"
-            },
-            "label": "Stop two",
-            "text": "Join us at Stop two."
-          }
-        ],
-        "current": null,
-        "guidance": null
-      },
-      "roster": {
-        "members": [
-          {
-            "attendeeId": "actor-01",
-            "displayName": "Diya",
-            "visitHash": "a503ed2e65ad8060ddee433c6a1589068332871c63df290d83045451874c5752",
-            "episodeId": "episode:afad05841cab38606f7558e799d94ac46ee2b0e8eeae4e3645549e512b2aa92f",
-            "membershipHash": "c0a05fc66df17b75f59a41ab580bc6f3b536c4993f3f49abeb88da4d21e79261"
-          }
-        ],
-        "unavailable": [
-          {
-            "attendeeId": "actor-02",
-            "reason": "membershipUnavailable"
-          }
-        ],
-        "coverage": "boundedSession",
-        "sourceHash": "a3aa93abc6769768e81397ccbd6dcac99b4285156ac1f84881ecad3df073c957"
-      },
-      "selected": null,
-      "checkpoint": null,
-      "history": [],
-      "nextBeforeRevision": null
-    },
-    "session": {
-      "id": "session-1",
-      "organizerId": "organizer-1",
-      "clubId": "organizer-1",
-      "ownerUid": "host-1",
-      "sourceEventId": null,
-      "sourceEventRevision": null,
-      "publicRehearsalId": "practicepublic1234567890",
-      "viewerTokenHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-      "scenarioId": "lateAndNoShow",
-      "seed": 1,
-      "actorCount": 2,
-      "actionCount": 7,
-      "status": "running",
-      "setup": {
-        "title": "Practice",
-        "locationName": "Practice venue",
-        "durationMinutes": 120,
-        "hostGoal": "Learn",
-        "attendeePrompt": "Say hello",
-        "moduleIds": [
-          "arrival"
-        ],
-        "movementSimulation": {
-          "routePlan": {
-            "version": 2,
-            "movementMode": "run",
-            "routeShape": "loop",
-            "groupStrategy": "paceGroups",
-            "stopCadence": "hostedStops",
-            "stopKinds": [
-              "regroup"
-            ],
-            "roleKinds": [
-              "pacer"
-            ],
-            "paceGroups": [
-              {
-                "id": "easy",
-                "label": "Easy pace",
-                "sortOrder": 0
-              }
-            ],
-            "path": [
-              {
-                "latitude": 22.7,
-                "longitude": 75.8
-              },
-              {
-                "latitude": 22.71,
-                "longitude": 75.81
-              }
-            ]
-          },
-          "livePositions": [],
-          "lateArrivalGuidance": null,
-          "itinerary": [
-            {
-              "id": "one",
-              "kind": "stop",
-              "offsetMinutes": 0,
-              "title": "Stop one",
-              "location": {
-                "name": "Stop one",
-                "latitude": 22.7,
-                "longitude": 75.8
-              }
-            },
-            {
-              "id": "two",
-              "kind": "stop",
-              "offsetMinutes": 30,
-              "title": "Stop two",
-              "location": {
-                "name": "Stop two",
-                "latitude": 22.7,
-                "longitude": 75.8
-              }
-            }
-          ]
-        }
-      },
-      "setupRevision": 0,
-      "runtimeRevision": 8,
-      "activeStepIndex": 1,
-      "virtualStartedAt": {
-        "_seconds": 0,
-        "_nanoseconds": 0
-      },
-      "virtualNow": {
-        "_seconds": 1,
-        "_nanoseconds": 0
-      },
-      "faultId": "none",
-      "faultConsumed": false,
-      "createdAt": {
-        "_seconds": 0,
-        "_nanoseconds": 0
-      },
-      "updatedAt": {
-        "_seconds": 0,
-        "_nanoseconds": 0
-      },
-      "expiresAt": {
-        "_seconds": 86400,
-        "_nanoseconds": 0
-      },
-      "completedAt": null,
-      "virtualStartedAtMillis": 0,
-      "virtualNowMillis": 1000,
-      "expiresAtMillis": 86400000
-    },
-    "actors": [
-      {
-        "sessionId": "session-1",
-        "actorId": "actor-01",
-        "displayName": "Diya",
-        "persona": "regular",
-        "status": "present",
-        "visit": {
-          "attendanceRevision": 3,
-          "checkedInAtMillis": 1000,
-          "accountabilityRevision": 0,
-          "resolution": null
-        },
-        "participation": {
-          "state": "active",
-          "revision": 2,
-          "episodeRevision": 1
-        },
-        "connectionState": "connected",
-        "guestMoment": "checkIn",
-        "optedOut": false,
-        "keepApartActorIds": [],
-        "helpRequested": false,
-        "untrackedHelpRequested": false,
-        "promptCompleted": false,
-        "layoutUnitId": "table-1",
-        "confirmedLayoutUnitId": "table-1",
-        "lastActionAt": {
-          "_seconds": 1,
-          "_nanoseconds": 0
-        },
-        "createdAt": {
-          "_seconds": 0,
-          "_nanoseconds": 0
-        },
-        "updatedAt": {
-          "_seconds": 1,
-          "_nanoseconds": 0
-        },
-        "groupMembership": {
-          "accepted": {
-            "groupId": "easy",
-            "groupSourceHash": "8958d23e1c1273e6c72d961ca334014777b0c1893b95d701367c77c631b7f7d0",
-            "responsibleOperatorId": "host-1",
-            "acceptedAt": 1000
-          },
-          "transfer": null,
-          "assignmentRevision": 1,
-          "clockId": "clock:972433a3265af5d743117c62f9861175057fea66de936ae57edbcbf4018c7f47",
-          "episodeId": "episode:afad05841cab38606f7558e799d94ac46ee2b0e8eeae4e3645549e512b2aa92f",
-          "revision": 1,
-          "createdAt": 1000,
-          "updatedAt": 1000
-        }
-      },
-      {
-        "sessionId": "session-1",
-        "actorId": "actor-02",
-        "displayName": "Kabir",
-        "persona": "quiet",
-        "status": "present",
-        "visit": {
-          "attendanceRevision": 1,
-          "checkedInAtMillis": 1000,
-          "accountabilityRevision": 0,
-          "resolution": null
-        },
-        "participation": {
-          "revision": 0,
-          "episodeRevision": 0,
-          "state": "active"
-        },
-        "connectionState": "connected",
-        "guestMoment": "checkIn",
-        "optedOut": false,
-        "keepApartActorIds": [],
-        "helpRequested": false,
-        "untrackedHelpRequested": false,
-        "promptCompleted": false,
-        "layoutUnitId": "table-1",
-        "confirmedLayoutUnitId": "table-1",
-        "lastActionAt": {
-          "_seconds": 1,
-          "_nanoseconds": 0
-        },
-        "createdAt": {
-          "_seconds": 0,
-          "_nanoseconds": 0
-        },
-        "updatedAt": {
-          "_seconds": 1,
-          "_nanoseconds": 0
-        }
-      }
-    ]
-  },
-  "groupDeparted": {
-    "review": {
-      "sessionId": "session-1",
-      "organizerId": "organizer-1",
-      "clockId": "clock:972433a3265af5d743117c62f9861175057fea66de936ae57edbcbf4018c7f47",
-      "setupRevision": 0,
       "runtimeRevision": 9,
       "actorUid": "host-1",
       "serverTime": 1000,
@@ -5217,12 +5520,13 @@
         ]
       },
       "progress": {
-        "revision": 1,
+        "revision": 0,
         "sourceHash": "78aa81443c381ada126fc685ed826b7bbb229538168b788d31d27693750baa5c",
         "eventOpen": true,
         "runtimeLive": true,
         "destinations": [
           {
+            "alternativeId": "alternative:eabd64f33cd2b4e92ea69d9c24182060e2bc4f15d76b93000230c839285eb5ec",
             "target": {
               "kind": "groupCheckpoint",
               "routeId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:route",
@@ -5233,6 +5537,7 @@
             "text": "Join us at Stop one."
           },
           {
+            "alternativeId": "alternative:55115db9789e251181b5fa583e16d1e1f1eb5bcccb369e8ddf67bfbd46ff53a4",
             "target": {
               "kind": "groupCheckpoint",
               "routeId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:route",
@@ -5243,53 +5548,9 @@
             "text": "Join us at Stop two."
           }
         ],
-        "current": {
-          "sessionId": "session-1",
-          "clockId": "clock:972433a3265af5d743117c62f9861175057fea66de936ae57edbcbf4018c7f47",
-          "groupId": "easy",
-          "progressRevision": 1,
-          "departure": {
-            "sourceHash": "78aa81443c381ada126fc685ed826b7bbb229538168b788d31d27693750baa5c",
-            "destination": {
-              "kind": "groupCheckpoint",
-              "routeId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:route",
-              "groupId": "easy",
-              "checkpointId": "one"
-            },
-            "confirmedBy": "host-1",
-            "confirmedAt": 1000,
-            "operationId": "group_departure_1",
-            "roster": {
-              "members": [
-                {
-                  "attendeeId": "actor-01",
-                  "displayName": "Diya",
-                  "visitHash": "a503ed2e65ad8060ddee433c6a1589068332871c63df290d83045451874c5752",
-                  "episodeId": "episode:afad05841cab38606f7558e799d94ac46ee2b0e8eeae4e3645549e512b2aa92f",
-                  "membershipHash": "c0a05fc66df17b75f59a41ab580bc6f3b536c4993f3f49abeb88da4d21e79261"
-                }
-              ],
-              "selectionHash": "a3aa93abc6769768e81397ccbd6dcac99b4285156ac1f84881ecad3df073c957"
-            },
-            "checkpointRequest": {
-              "responsibleOperatorId": "host-2",
-              "dueAt": 61000
-            }
-          },
-          "report": null
-        },
-        "guidance": {
-          "revision": 1,
-          "destination": {
-            "kind": "groupCheckpoint",
-            "routeId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:route",
-            "groupId": "easy",
-            "checkpointId": "one"
-          },
-          "materialKey": "774c136c6231a75371a624b50a2adc1c9c0e4d12259925bd0ef1d696526ec8bf",
-          "text": "Join us at Stop one.",
-          "validUntil": 7200000
-        }
+        "current": null,
+        "routeDecision": null,
+        "guidance": null
       },
       "roster": {
         "members": [
@@ -5308,169 +5569,11 @@
           }
         ],
         "coverage": "boundedSession",
-        "sourceHash": "04a915ed9300cebca88ee8a939e6b32fc9f74a0dcadc8110402d021a5e635962"
+        "sourceHash": "a3aa93abc6769768e81397ccbd6dcac99b4285156ac1f84881ecad3df073c957"
       },
-      "selected": {
-        "sessionId": "session-1",
-        "clockId": "clock:972433a3265af5d743117c62f9861175057fea66de936ae57edbcbf4018c7f47",
-        "groupId": "easy",
-        "progressRevision": 1,
-        "departure": {
-          "sourceHash": "78aa81443c381ada126fc685ed826b7bbb229538168b788d31d27693750baa5c",
-          "destination": {
-            "kind": "groupCheckpoint",
-            "routeId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:route",
-            "groupId": "easy",
-            "checkpointId": "one"
-          },
-          "confirmedBy": "host-1",
-          "confirmedAt": 1000,
-          "operationId": "group_departure_1",
-          "roster": {
-            "members": [
-              {
-                "attendeeId": "actor-01",
-                "displayName": "Diya",
-                "visitHash": "a503ed2e65ad8060ddee433c6a1589068332871c63df290d83045451874c5752",
-                "episodeId": "episode:afad05841cab38606f7558e799d94ac46ee2b0e8eeae4e3645549e512b2aa92f",
-                "membershipHash": "c0a05fc66df17b75f59a41ab580bc6f3b536c4993f3f49abeb88da4d21e79261"
-              }
-            ],
-            "selectionHash": "a3aa93abc6769768e81397ccbd6dcac99b4285156ac1f84881ecad3df073c957"
-          },
-          "checkpointRequest": {
-            "responsibleOperatorId": "host-2",
-            "dueAt": 61000
-          }
-        },
-        "report": null
-      },
-      "checkpoint": {
-        "progressRevision": 1,
-        "checkpointId": "one",
-        "sourceHash": "68822514e89b3986f86ce0910b9200afac867fdb1663757392fe6c9e5415c687",
-        "revision": 0,
-        "report": null,
-        "availability": {
-          "kind": "ready",
-          "rosterId": "departure-roster:9ad31352d44dbf13905ef56d3706364d8a02540b8237717815961e7e688d5882",
-          "label": "Stop one",
-          "reportStatus": "unreported",
-          "members": [
-            {
-              "attendeeId": "actor-01",
-              "visit": {
-                "kind": "current"
-              },
-              "observation": "unconfirmed",
-              "disposition": {
-                "kind": "unresolved"
-              }
-            }
-          ]
-        },
-        "departure": {
-          "sourceHash": "78aa81443c381ada126fc685ed826b7bbb229538168b788d31d27693750baa5c",
-          "destination": {
-            "kind": "groupCheckpoint",
-            "routeId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:route",
-            "groupId": "easy",
-            "checkpointId": "one"
-          },
-          "confirmedBy": "host-1",
-          "confirmedAt": 1000,
-          "operationId": "group_departure_1",
-          "roster": {
-            "members": [
-              {
-                "attendeeId": "actor-01",
-                "displayName": "Diya",
-                "visitHash": "a503ed2e65ad8060ddee433c6a1589068332871c63df290d83045451874c5752",
-                "episodeId": "episode:afad05841cab38606f7558e799d94ac46ee2b0e8eeae4e3645549e512b2aa92f",
-                "membershipHash": "c0a05fc66df17b75f59a41ab580bc6f3b536c4993f3f49abeb88da4d21e79261"
-              }
-            ],
-            "selectionHash": "a3aa93abc6769768e81397ccbd6dcac99b4285156ac1f84881ecad3df073c957"
-          },
-          "checkpointRequest": {
-            "responsibleOperatorId": "host-2",
-            "dueAt": 61000
-          }
-        },
-        "assignment": {
-          "revision": 0,
-          "change": null,
-          "sourceHash": "1362966365a1f2a3f729e2b808cfac78110817951e5e5d7b8554eaff0581df63"
-        },
-        "closeout": {
-          "revision": 0,
-          "change": null,
-          "state": {
-            "kind": "open"
-          },
-          "eligibility": {
-            "kind": "unavailable",
-            "reason": "reportMissing",
-            "attendeeIds": []
-          },
-          "sourceHash": "41bf51b3413377807e2d6cd058331f069e55405f899a521385603f2f1f30b902"
-        },
-        "accountabilityReviews": [
-          {
-            "attendeeId": "actor-01",
-            "visitHash": "a503ed2e65ad8060ddee433c6a1589068332871c63df290d83045451874c5752",
-            "revision": 0,
-            "disposition": "unresolved",
-            "availability": {
-              "kind": "ready"
-            },
-            "sourceHash": "0aad8d40921415939879d6da0c6894daad5cd470bd1e22a3202dea90066debee",
-            "canResolve": true
-          }
-        ],
-        "request": {
-          "responsibleOperatorId": "host-2",
-          "dueAt": 61000,
-          "state": "awaitingReport",
-          "ownerAvailability": "current"
-        },
-        "reporterOptions": {
-          "actorUid": "host-1",
-          "sourceHash": "1362966365a1f2a3f729e2b808cfac78110817951e5e5d7b8554eaff0581df63",
-          "validUntil": 1801000,
-          "reporters": [
-            {
-              "operatorId": "host-1",
-              "displayName": "Subrath",
-              "validUntil": 9007199254740991
-            },
-            {
-              "operatorId": "host-2",
-              "displayName": null,
-              "validUntil": 9007199254740991
-            }
-          ]
-        }
-      },
-      "history": [
-        {
-          "progressRevision": 1,
-          "destination": {
-            "kind": "groupCheckpoint",
-            "routeId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:route",
-            "groupId": "easy",
-            "checkpointId": "one"
-          },
-          "confirmedAt": 1000,
-          "rosterSize": 1,
-          "reportRevision": 0,
-          "accountedForCount": 0,
-          "checkpointRequest": {
-            "responsibleOperatorId": "host-2",
-            "dueAt": 61000
-          }
-        }
-      ],
+      "selected": null,
+      "checkpoint": null,
+      "history": [],
       "nextBeforeRevision": null
     },
     "session": {
@@ -5681,6 +5784,542 @@
       }
     ]
   },
+  "groupDeparted": {
+    "review": {
+      "sessionId": "session-1",
+      "organizerId": "organizer-1",
+      "clockId": "clock:972433a3265af5d743117c62f9861175057fea66de936ae57edbcbf4018c7f47",
+      "setupRevision": 0,
+      "runtimeRevision": 10,
+      "actorUid": "host-1",
+      "serverTime": 1000,
+      "groupId": "easy",
+      "groups": [
+        {
+          "groupId": "event:whole",
+          "label": "Whole event"
+        },
+        {
+          "groupId": "easy",
+          "label": "Easy pace"
+        }
+      ],
+      "staffReview": {
+        "clockId": "clock:972433a3265af5d743117c62f9861175057fea66de936ae57edbcbf4018c7f47",
+        "revision": 0,
+        "sourceHash": "51ee95ca581401efe4bcb32f94bc7cca07fb3f63ba81c31d88d2efb07f18aa4b",
+        "hostUid": "host-1",
+        "actorUid": "host-1",
+        "practiceOperatorId": null,
+        "serverTime": 1000,
+        "canAssign": true,
+        "operators": [],
+        "groups": [
+          {
+            "groupId": "event:whole",
+            "label": "Whole event",
+            "sourceHash": "1435943e588c4c6b2d25958d3e22d30beda4573e8e1456a1c6571cfadc72c326",
+            "availableDuties": [
+              "lead",
+              "sweep"
+            ],
+            "permissions": [
+              "readProgress",
+              "confirmDeparture",
+              "transferGroup",
+              "recordCheckpoint",
+              "resolveAccountability"
+            ],
+            "validUntil": 9007199254740991
+          },
+          {
+            "groupId": "easy",
+            "label": "Easy pace",
+            "sourceHash": "8958d23e1c1273e6c72d961ca334014777b0c1893b95d701367c77c631b7f7d0",
+            "availableDuties": [
+              "lead",
+              "pacer",
+              "sweep"
+            ],
+            "permissions": [
+              "readProgress",
+              "confirmDeparture",
+              "transferGroup",
+              "recordCheckpoint",
+              "resolveAccountability"
+            ],
+            "validUntil": 9007199254740991
+          }
+        ]
+      },
+      "progress": {
+        "revision": 1,
+        "sourceHash": "78aa81443c381ada126fc685ed826b7bbb229538168b788d31d27693750baa5c",
+        "eventOpen": true,
+        "runtimeLive": true,
+        "destinations": [
+          {
+            "alternativeId": "alternative:eabd64f33cd2b4e92ea69d9c24182060e2bc4f15d76b93000230c839285eb5ec",
+            "target": {
+              "kind": "groupCheckpoint",
+              "routeId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:route",
+              "groupId": "easy",
+              "checkpointId": "one"
+            },
+            "label": "Stop one",
+            "text": "Join us at Stop one."
+          },
+          {
+            "alternativeId": "alternative:55115db9789e251181b5fa583e16d1e1f1eb5bcccb369e8ddf67bfbd46ff53a4",
+            "target": {
+              "kind": "groupCheckpoint",
+              "routeId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:route",
+              "groupId": "easy",
+              "checkpointId": "two"
+            },
+            "label": "Stop two",
+            "text": "Join us at Stop two."
+          }
+        ],
+        "current": {
+          "sessionId": "session-1",
+          "clockId": "clock:972433a3265af5d743117c62f9861175057fea66de936ae57edbcbf4018c7f47",
+          "groupId": "easy",
+          "progressRevision": 1,
+          "departure": {
+            "sourceHash": "78aa81443c381ada126fc685ed826b7bbb229538168b788d31d27693750baa5c",
+            "destination": {
+              "kind": "groupCheckpoint",
+              "routeId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:route",
+              "groupId": "easy",
+              "checkpointId": "one"
+            },
+            "confirmedBy": "host-1",
+            "confirmedAt": 1000,
+            "operationId": "group_departure_1",
+            "roster": {
+              "members": [
+                {
+                  "attendeeId": "actor-01",
+                  "displayName": "Diya",
+                  "visitHash": "a503ed2e65ad8060ddee433c6a1589068332871c63df290d83045451874c5752",
+                  "episodeId": "episode:afad05841cab38606f7558e799d94ac46ee2b0e8eeae4e3645549e512b2aa92f",
+                  "membershipHash": "c0a05fc66df17b75f59a41ab580bc6f3b536c4993f3f49abeb88da4d21e79261"
+                }
+              ],
+              "selectionHash": "a3aa93abc6769768e81397ccbd6dcac99b4285156ac1f84881ecad3df073c957"
+            },
+            "checkpointRequest": {
+              "responsibleOperatorId": "host-2",
+              "dueAt": 61000
+            }
+          },
+          "report": null
+        },
+        "routeDecision": null,
+        "guidance": {
+          "revision": 1,
+          "destination": {
+            "kind": "groupCheckpoint",
+            "routeId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:route",
+            "groupId": "easy",
+            "checkpointId": "one"
+          },
+          "materialKey": "774c136c6231a75371a624b50a2adc1c9c0e4d12259925bd0ef1d696526ec8bf",
+          "text": "Join us at Stop one.",
+          "validUntil": 7200000
+        }
+      },
+      "roster": {
+        "members": [
+          {
+            "attendeeId": "actor-01",
+            "displayName": "Diya",
+            "visitHash": "a503ed2e65ad8060ddee433c6a1589068332871c63df290d83045451874c5752",
+            "episodeId": "episode:afad05841cab38606f7558e799d94ac46ee2b0e8eeae4e3645549e512b2aa92f",
+            "membershipHash": "c0a05fc66df17b75f59a41ab580bc6f3b536c4993f3f49abeb88da4d21e79261"
+          }
+        ],
+        "unavailable": [
+          {
+            "attendeeId": "actor-02",
+            "reason": "membershipUnavailable"
+          }
+        ],
+        "coverage": "boundedSession",
+        "sourceHash": "04a915ed9300cebca88ee8a939e6b32fc9f74a0dcadc8110402d021a5e635962"
+      },
+      "selected": {
+        "sessionId": "session-1",
+        "clockId": "clock:972433a3265af5d743117c62f9861175057fea66de936ae57edbcbf4018c7f47",
+        "groupId": "easy",
+        "progressRevision": 1,
+        "departure": {
+          "sourceHash": "78aa81443c381ada126fc685ed826b7bbb229538168b788d31d27693750baa5c",
+          "destination": {
+            "kind": "groupCheckpoint",
+            "routeId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:route",
+            "groupId": "easy",
+            "checkpointId": "one"
+          },
+          "confirmedBy": "host-1",
+          "confirmedAt": 1000,
+          "operationId": "group_departure_1",
+          "roster": {
+            "members": [
+              {
+                "attendeeId": "actor-01",
+                "displayName": "Diya",
+                "visitHash": "a503ed2e65ad8060ddee433c6a1589068332871c63df290d83045451874c5752",
+                "episodeId": "episode:afad05841cab38606f7558e799d94ac46ee2b0e8eeae4e3645549e512b2aa92f",
+                "membershipHash": "c0a05fc66df17b75f59a41ab580bc6f3b536c4993f3f49abeb88da4d21e79261"
+              }
+            ],
+            "selectionHash": "a3aa93abc6769768e81397ccbd6dcac99b4285156ac1f84881ecad3df073c957"
+          },
+          "checkpointRequest": {
+            "responsibleOperatorId": "host-2",
+            "dueAt": 61000
+          }
+        },
+        "report": null
+      },
+      "checkpoint": {
+        "progressRevision": 1,
+        "checkpointId": "one",
+        "sourceHash": "68822514e89b3986f86ce0910b9200afac867fdb1663757392fe6c9e5415c687",
+        "revision": 0,
+        "report": null,
+        "availability": {
+          "kind": "ready",
+          "rosterId": "departure-roster:9ad31352d44dbf13905ef56d3706364d8a02540b8237717815961e7e688d5882",
+          "label": "Stop one",
+          "reportStatus": "unreported",
+          "members": [
+            {
+              "attendeeId": "actor-01",
+              "visit": {
+                "kind": "current"
+              },
+              "observation": "unconfirmed",
+              "disposition": {
+                "kind": "unresolved"
+              }
+            }
+          ]
+        },
+        "departure": {
+          "sourceHash": "78aa81443c381ada126fc685ed826b7bbb229538168b788d31d27693750baa5c",
+          "destination": {
+            "kind": "groupCheckpoint",
+            "routeId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:route",
+            "groupId": "easy",
+            "checkpointId": "one"
+          },
+          "confirmedBy": "host-1",
+          "confirmedAt": 1000,
+          "operationId": "group_departure_1",
+          "roster": {
+            "members": [
+              {
+                "attendeeId": "actor-01",
+                "displayName": "Diya",
+                "visitHash": "a503ed2e65ad8060ddee433c6a1589068332871c63df290d83045451874c5752",
+                "episodeId": "episode:afad05841cab38606f7558e799d94ac46ee2b0e8eeae4e3645549e512b2aa92f",
+                "membershipHash": "c0a05fc66df17b75f59a41ab580bc6f3b536c4993f3f49abeb88da4d21e79261"
+              }
+            ],
+            "selectionHash": "a3aa93abc6769768e81397ccbd6dcac99b4285156ac1f84881ecad3df073c957"
+          },
+          "checkpointRequest": {
+            "responsibleOperatorId": "host-2",
+            "dueAt": 61000
+          }
+        },
+        "assignment": {
+          "revision": 0,
+          "change": null,
+          "sourceHash": "1362966365a1f2a3f729e2b808cfac78110817951e5e5d7b8554eaff0581df63"
+        },
+        "closeout": {
+          "revision": 0,
+          "change": null,
+          "state": {
+            "kind": "open"
+          },
+          "eligibility": {
+            "kind": "unavailable",
+            "reason": "reportMissing",
+            "attendeeIds": []
+          },
+          "sourceHash": "41bf51b3413377807e2d6cd058331f069e55405f899a521385603f2f1f30b902"
+        },
+        "accountabilityReviews": [
+          {
+            "attendeeId": "actor-01",
+            "visitHash": "a503ed2e65ad8060ddee433c6a1589068332871c63df290d83045451874c5752",
+            "revision": 0,
+            "disposition": "unresolved",
+            "availability": {
+              "kind": "ready"
+            },
+            "sourceHash": "0aad8d40921415939879d6da0c6894daad5cd470bd1e22a3202dea90066debee",
+            "canResolve": true
+          }
+        ],
+        "request": {
+          "responsibleOperatorId": "host-2",
+          "dueAt": 61000,
+          "state": "awaitingReport",
+          "ownerAvailability": "current"
+        },
+        "reporterOptions": {
+          "actorUid": "host-1",
+          "sourceHash": "1362966365a1f2a3f729e2b808cfac78110817951e5e5d7b8554eaff0581df63",
+          "validUntil": 1801000,
+          "reporters": [
+            {
+              "operatorId": "host-1",
+              "displayName": "Subrath",
+              "validUntil": 9007199254740991
+            },
+            {
+              "operatorId": "host-2",
+              "displayName": null,
+              "validUntil": 9007199254740991
+            }
+          ]
+        }
+      },
+      "history": [
+        {
+          "progressRevision": 1,
+          "destination": {
+            "kind": "groupCheckpoint",
+            "routeId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:route",
+            "groupId": "easy",
+            "checkpointId": "one"
+          },
+          "confirmedAt": 1000,
+          "rosterSize": 1,
+          "reportRevision": 0,
+          "accountedForCount": 0,
+          "checkpointRequest": {
+            "responsibleOperatorId": "host-2",
+            "dueAt": 61000
+          }
+        }
+      ],
+      "nextBeforeRevision": null
+    },
+    "session": {
+      "id": "session-1",
+      "organizerId": "organizer-1",
+      "clubId": "organizer-1",
+      "ownerUid": "host-1",
+      "sourceEventId": null,
+      "sourceEventRevision": null,
+      "publicRehearsalId": "practicepublic1234567890",
+      "viewerTokenHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "scenarioId": "lateAndNoShow",
+      "seed": 1,
+      "actorCount": 2,
+      "actionCount": 9,
+      "status": "running",
+      "setup": {
+        "title": "Practice",
+        "locationName": "Practice venue",
+        "durationMinutes": 120,
+        "hostGoal": "Learn",
+        "attendeePrompt": "Say hello",
+        "moduleIds": [
+          "arrival"
+        ],
+        "movementSimulation": {
+          "routePlan": {
+            "version": 2,
+            "movementMode": "run",
+            "routeShape": "loop",
+            "groupStrategy": "paceGroups",
+            "stopCadence": "hostedStops",
+            "stopKinds": [
+              "regroup"
+            ],
+            "roleKinds": [
+              "pacer"
+            ],
+            "paceGroups": [
+              {
+                "id": "easy",
+                "label": "Easy pace",
+                "sortOrder": 0
+              }
+            ],
+            "path": [
+              {
+                "latitude": 22.7,
+                "longitude": 75.8
+              },
+              {
+                "latitude": 22.71,
+                "longitude": 75.81
+              }
+            ]
+          },
+          "livePositions": [],
+          "lateArrivalGuidance": null,
+          "itinerary": [
+            {
+              "id": "one",
+              "kind": "stop",
+              "offsetMinutes": 0,
+              "title": "Stop one",
+              "location": {
+                "name": "Stop one",
+                "latitude": 22.7,
+                "longitude": 75.8
+              }
+            },
+            {
+              "id": "two",
+              "kind": "stop",
+              "offsetMinutes": 30,
+              "title": "Stop two",
+              "location": {
+                "name": "Stop two",
+                "latitude": 22.7,
+                "longitude": 75.8
+              }
+            }
+          ]
+        }
+      },
+      "setupRevision": 0,
+      "runtimeRevision": 10,
+      "activeStepIndex": 1,
+      "virtualStartedAt": {
+        "_seconds": 0,
+        "_nanoseconds": 0
+      },
+      "virtualNow": {
+        "_seconds": 1,
+        "_nanoseconds": 0
+      },
+      "faultId": "none",
+      "faultConsumed": false,
+      "createdAt": {
+        "_seconds": 0,
+        "_nanoseconds": 0
+      },
+      "updatedAt": {
+        "_seconds": 0,
+        "_nanoseconds": 0
+      },
+      "expiresAt": {
+        "_seconds": 86400,
+        "_nanoseconds": 0
+      },
+      "completedAt": null,
+      "virtualStartedAtMillis": 0,
+      "virtualNowMillis": 1000,
+      "expiresAtMillis": 86400000
+    },
+    "actors": [
+      {
+        "sessionId": "session-1",
+        "actorId": "actor-01",
+        "displayName": "Diya",
+        "persona": "regular",
+        "status": "present",
+        "visit": {
+          "attendanceRevision": 3,
+          "checkedInAtMillis": 1000,
+          "accountabilityRevision": 0,
+          "resolution": null
+        },
+        "participation": {
+          "state": "active",
+          "revision": 2,
+          "episodeRevision": 1
+        },
+        "connectionState": "connected",
+        "guestMoment": "checkIn",
+        "optedOut": false,
+        "keepApartActorIds": [],
+        "helpRequested": false,
+        "untrackedHelpRequested": false,
+        "promptCompleted": false,
+        "layoutUnitId": "table-1",
+        "confirmedLayoutUnitId": "table-1",
+        "lastActionAt": {
+          "_seconds": 1,
+          "_nanoseconds": 0
+        },
+        "createdAt": {
+          "_seconds": 0,
+          "_nanoseconds": 0
+        },
+        "updatedAt": {
+          "_seconds": 1,
+          "_nanoseconds": 0
+        },
+        "groupMembership": {
+          "accepted": {
+            "groupId": "easy",
+            "groupSourceHash": "8958d23e1c1273e6c72d961ca334014777b0c1893b95d701367c77c631b7f7d0",
+            "responsibleOperatorId": "host-1",
+            "acceptedAt": 1000
+          },
+          "transfer": null,
+          "assignmentRevision": 1,
+          "clockId": "clock:972433a3265af5d743117c62f9861175057fea66de936ae57edbcbf4018c7f47",
+          "episodeId": "episode:afad05841cab38606f7558e799d94ac46ee2b0e8eeae4e3645549e512b2aa92f",
+          "revision": 1,
+          "createdAt": 1000,
+          "updatedAt": 1000
+        }
+      },
+      {
+        "sessionId": "session-1",
+        "actorId": "actor-02",
+        "displayName": "Kabir",
+        "persona": "quiet",
+        "status": "present",
+        "visit": {
+          "attendanceRevision": 1,
+          "checkedInAtMillis": 1000,
+          "accountabilityRevision": 0,
+          "resolution": null
+        },
+        "participation": {
+          "revision": 0,
+          "episodeRevision": 0,
+          "state": "active"
+        },
+        "connectionState": "connected",
+        "guestMoment": "checkIn",
+        "optedOut": false,
+        "keepApartActorIds": [],
+        "helpRequested": false,
+        "untrackedHelpRequested": false,
+        "promptCompleted": false,
+        "layoutUnitId": "table-1",
+        "confirmedLayoutUnitId": "table-1",
+        "lastActionAt": {
+          "_seconds": 1,
+          "_nanoseconds": 0
+        },
+        "createdAt": {
+          "_seconds": 0,
+          "_nanoseconds": 0
+        },
+        "updatedAt": {
+          "_seconds": 1,
+          "_nanoseconds": 0
+        }
+      }
+    ]
+  },
   "uiDeparted": {
     "review": {
       "sessionId": "session-1",
@@ -5734,6 +6373,7 @@
         "runtimeLive": true,
         "destinations": [
           {
+            "alternativeId": "alternative:c268b4766d189d31d01cedbb2236bda8bf6e40027f12260f73ac32b668d7bb4f",
             "target": {
               "kind": "fixedPlace",
               "placeId": "meeting",
@@ -5743,6 +6383,7 @@
             "text": "Join us at Practice venue."
           },
           {
+            "alternativeId": "alternative:00337da73b7c7dcd251c3cb618532238914f278b7e1e308ad8ccfb668e175eef",
             "target": {
               "kind": "itineraryStop",
               "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
@@ -5752,6 +6393,7 @@
             "text": "Join us at Stop one."
           },
           {
+            "alternativeId": "alternative:8ef46cf82fb97ce4d2623933c9abd4dce8d794cf9c44a5abc05ea80bd552ebcb",
             "target": {
               "kind": "itineraryStop",
               "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
@@ -5802,6 +6444,7 @@
           },
           "report": null
         },
+        "routeDecision": null,
         "guidance": {
           "revision": 1,
           "destination": {

@@ -8470,6 +8470,41 @@ export interface EventRehearsalMovementDocument {
 }
 
 /**
+ * An immutable synthetic route override layered on a recorded rehearsal departure.
+ */
+export interface EventRehearsalRouteDecisionDocument {
+  sessionId: string;
+  clockId: string;
+  groupId: string;
+  progressRevision: number;
+  previousRevision: number;
+  departureRevision: number;
+  sourceHash: string;
+  alternativeId: string;
+  destination:
+    | {
+        kind: "fixedPlace";
+        placeId: string;
+        lateEntry: "allowed" | "hostDecision" | "closed";
+      }
+    | {
+        kind: "itineraryStop";
+        itineraryId: string;
+        stopId: string;
+      }
+    | {
+        kind: "groupCheckpoint";
+        routeId: string;
+        groupId: string;
+        checkpointId: string;
+      };
+  decisionId: string;
+  operationId: string;
+  decidedBy: string;
+  decidedAt: number;
+}
+
+/**
  * Server-owned isolated Host rehearsal session stored at eventRehearsals/{sessionId}.
  */
 export interface EventRehearsalDocument {

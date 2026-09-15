@@ -165,7 +165,6 @@ enum EventAssistanceMissingCapability {
   rehearsalAllocationPublication,
   rehearsalProgrammeControl,
   rehearsalOutcomeRecording,
-  rehearsalRouteDecision,
   rehearsalRequiredDataRequest,
   rehearsalRosterReconciliation,
   eventPaymentCaseResolution,
@@ -1697,13 +1696,16 @@ const eventAssistanceCommandBindingCatalog =
       missingCapability: null,
     ),
     rehearsal: EventAssistanceModeBinding(
-      bindingType: EventAssistanceCommandBindingType.contractOnly,
-      coverage: EventAssistanceCommandCoverage.none,
+      bindingType: EventAssistanceCommandBindingType.directCommand,
+      coverage: EventAssistanceCommandCoverage.complete,
       variantField: null,
       implementedVariants: <EventAssistanceCommandCoverageVariant>[],
       missingVariants: <EventAssistanceCommandCoverageVariant>[],
-      operations: <String>[],
-      missingCapability: EventAssistanceMissingCapability.rehearsalRouteDecision,
+      operations: <String>[
+        'controlEventRehearsal',
+        'getEventRehearsalMovement',
+      ],
+      missingCapability: null,
     ),
   ),
   EventAssistanceCommandBindingDescriptor(

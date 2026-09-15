@@ -432,6 +432,19 @@ export type ControlEventRehearsalCallablePayload = {
   expectedSetupRevision?: number;
   movement?:
     | {
+        kind: "changeRoute";
+        payload: {
+          /**
+           * Nonnegative safe integer revision.
+           */
+          routeRevision: number;
+          groupId: string;
+          expectedSourceHash: string;
+          alternativeId: string;
+          decisionId: string;
+        };
+      }
+    | {
         kind: "confirmDeparture";
         payload: {
           groupId: string;

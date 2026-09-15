@@ -1857,6 +1857,58 @@ const schemaControlEventRehearsalCallablePayloadSchema = <String, Object?>{
           'required': <Object?>[
             'kind',
             'payload',
+          ],
+          'properties': <String, Object?>{
+            'kind': <String, Object?>{
+              'const': 'changeRoute',
+            },
+            'payload': <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'routeRevision',
+                'groupId',
+                'expectedSourceHash',
+                'alternativeId',
+                'decisionId',
+              ],
+              'properties': <String, Object?>{
+                'routeRevision': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 0,
+                  'maximum': 9007199254740991,
+                  'description': 'Nonnegative safe integer revision.',
+                },
+                'groupId': <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 160,
+                  'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                },
+                'expectedSourceHash': <String, Object?>{
+                  'type': 'string',
+                  'pattern': '^[a-f0-9]{64}\$',
+                },
+                'alternativeId': <String, Object?>{
+                  'type': 'string',
+                  'pattern': '^alternative:[a-f0-9]{64}\$',
+                },
+                'decisionId': <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 160,
+                  'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                },
+              },
+            },
+          },
+        },
+        <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'kind',
+            'payload',
             'expectedSourceHash',
           ],
           'properties': <String, Object?>{

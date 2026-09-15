@@ -273,9 +273,12 @@ export const eventAssistanceCommandBindingCatalog = {
         "missingCapability": null
       },
       "rehearsal": {
-        "bindingType": "contractOnly",
-        "operations": [],
-        "missingCapability": "rehearsalRouteDecision"
+        "bindingType": "directCommand",
+        "operations": [
+          "controlEventRehearsal",
+          "getEventRehearsalMovement"
+        ],
+        "missingCapability": null
       }
     },
     {

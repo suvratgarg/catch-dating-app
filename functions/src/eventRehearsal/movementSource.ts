@@ -7,7 +7,7 @@ import type {EventRehearsalMovementCallableResponse as Review} from
 import type {EventRehearsalMovementDocument as Movement} from
   "../shared/generated/eventRehearsalMovementDocument";
 import {operationContentHash as hash} from "../operations/durableActions";
-import {timestampEvidence, invalidSource} from
+import {timestampEvidence, invalidSource, routeAlternativeId} from
   "../eventSuccess/operations/groupProgressSource";
 import {practiceContext} from "./assistanceIdentity";
 import {practiceMembershipSource, practiceMembershipEpisode} from
@@ -38,9 +38,11 @@ export function practiceMovementSource(sessionId: string, session: Session,
   }
   const destinations: Review["progress"]["destinations"] = [];
   if (groupId === "event:whole" && session.setup.locationName.trim()) {
-    destinations.push({target: {kind: "fixedPlace", placeId: "meeting",
-      lateEntry: "allowed"}, label: session.setup.locationName,
-    text: "Join us at " + session.setup.locationName + "."});
+    const target = {kind: "fixedPlace" as const, placeId: "meeting",
+      lateEntry: "allowed" as const};
+    destinations.push({alternativeId: routeAlternativeId(target), target,
+      label: session.setup.locationName,
+      text: "Join us at " + session.setup.locationName + "."});
   }
   for (const stop of itinerary) {
     if (!stop.location) continue;
@@ -53,7 +55,8 @@ export function practiceMovementSource(sessionId: string, session: Session,
           routeId: context.virtualEventId + ":route", groupId,
           checkpointId: stop.id} : null;
     if (target) {
-      destinations.push({target, label: stop.title,
+      destinations.push({alternativeId: routeAlternativeId(target), target,
+        label: stop.title,
         text: ["Join us at " + stop.location.name + ".", stop.location.address,
           stop.location.notes].filter(Boolean).join("\n")});
     }

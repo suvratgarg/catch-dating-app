@@ -8,6 +8,7 @@ import type {GetEventRehearsalMovementCallablePayload as Input} from
   "../shared/generated/getEventRehearsalMovementCallablePayload";
 import {invalidSource} from "../eventSuccess/operations/groupProgressSource";
 import type {Movement, MovementSource} from "./movementSource";
+import {readPracticeRouteDecision} from "./routeDecisions";
 
 export const rehearsalMovements = "eventRehearsalMovements";
 export type MovementScope = Input["scope"];
@@ -92,9 +93,10 @@ export async function readPracticeMovements(db: Firestore, tx: Transaction,
     .where("groupId", "==", source.groupId);
   const pageQuery = scope.beforeRevision === undefined ? base :
     base.where("progressRevision", "<", scope.beforeRevision);
-  const [latestSnaps, pageSnaps] = await Promise.all([
+  const [latestSnaps, pageSnaps, latestRouteDecision] = await Promise.all([
     tx.get(base.orderBy("progressRevision", "desc").limit(1)),
     tx.get(pageQuery.orderBy("progressRevision", "desc").limit(26)),
+    readPracticeRouteDecision(db, tx, source),
   ]);
   const read = (snap: DocumentSnapshot) => {
     const value = parsePracticeMovement(snap.data(), source);
@@ -104,6 +106,17 @@ export async function readPracticeMovements(db: Firestore, tx: Transaction,
     return value;
   };
   const current = latestSnaps.empty ? null : read(latestSnaps.docs[0]);
+  if (latestRouteDecision && (!current ||
+      latestRouteDecision.progressRevision === current.progressRevision ||
+      latestRouteDecision.progressRevision > current.progressRevision &&
+        latestRouteDecision.departureRevision !== current.progressRevision)) {
+    throw invalidSource();
+  }
+  const routeDecision = current && latestRouteDecision &&
+    latestRouteDecision.progressRevision > current.progressRevision ?
+    latestRouteDecision : null;
+  const currentRevision = routeDecision?.progressRevision ??
+    current?.progressRevision ?? 0;
   const page = pageSnaps.docs.map(read);
   let selected = current;
   if (scope.progressRevision !== undefined) {
@@ -118,7 +131,8 @@ export async function readPracticeMovements(db: Firestore, tx: Transaction,
       throw invalidSource();
     }
   }
-  return {current, selected, page: page.slice(0, 25),
+  return {current, currentRevision, routeDecision, selected,
+    page: page.slice(0, 25),
     nextBeforeRevision: page.length > 25 ? page[24].progressRevision : null};
 }
 export type MovementRecords = Awaited<ReturnType<typeof readPracticeMovements>>;

@@ -4452,6 +4452,7 @@ describe("firestore.rules", () => {
         "eventRehearsalGuestViews",
         "eventRehearsalMessages",
         "eventRehearsalMovements",
+        "eventRehearsalRouteDecisions",
         "eventRehearsalCases",
       ];
       for (const collectionName of collections) {

@@ -12,7 +12,8 @@ import {operationContentHash as hash} from "../operations/durableActions";
 import {requirePracticeGroupPermission, practiceGroupPermission,
   practiceStaffProjection, practiceIsManager} from "./groupStaff";
 import {prepareDepartureDecision, prepareCheckpointObservation,
-  departureConflict} from "../eventSuccess/operations/movementDecisions";
+  prepareRouteDecision, departureConflict} from
+  "../eventSuccess/operations/movementDecisions";
 import {assertCheckpointRequestDeadline, assertCheckpointReporterSelection} from
   "../eventSuccess/operations/checkpointRequest";
 import {practiceMovementSource, practiceDepartureRoster,
@@ -21,12 +22,17 @@ import {practiceMovementSource, practiceDepartureRoster,
 import {readPracticeMovements, parsePracticeMovement, practiceMovementId,
   rehearsalMovements, MovementScope, MovementRecords} from "./movementRecords";
 import type {PracticeCaseAuthority} from "./assistanceCases";
+import {parsePracticeRouteDecision, practiceRouteDecisionId,
+  rehearsalRouteDecisions} from "./routeDecisions";
 
 type Command = NonNullable<Control["movement"]>;
 
 export function practiceMovementScope(command: Command): MovementScope {
-  return {groupId: command.payload.groupId, progressRevision:
-    command.payload.expectedProgressRevision +
+  if (command.kind === "changeRoute") {
+    return {groupId: command.payload.groupId};
+  }
+  return {groupId: command.payload.groupId,
+    progressRevision: command.payload.expectedProgressRevision +
       (command.kind === "confirmDeparture" ? 1 : 0)};
 }
 
@@ -44,10 +50,14 @@ function projectMovement(session: Session, source: MovementSource,
   actors: readonly Actor[], records: MovementRecords,
   authority: PracticeCaseAuthority): Review {
   const {current, selected} = records;
-  const revision = current?.progressRevision ?? 0;
-  const destination = current && current.departure.sourceHash ===
+  const revision = records.currentRevision;
+  const activeDestination = records.routeDecision?.destination ??
+    current?.departure.destination;
+  const activeSourceHash = records.routeDecision?.sourceHash ??
+    current?.departure.sourceHash;
+  const destination = activeDestination && activeSourceHash ===
     source.sourceHash ? source.destinations.find((d) =>
-      hash(d.target) === hash(current.departure.destination)) : null;
+      hash(d.target) === hash(activeDestination)) : null;
   return {sessionId: source.sessionId, organizerId: session.organizerId,
     clockId: source.context.clockId, setupRevision: session.setupRevision,
     runtimeRevision: session.runtimeRevision, actorUid: authority.actorUid,
@@ -56,6 +66,7 @@ function projectMovement(session: Session, source: MovementSource,
     progress: {revision, sourceHash: source.sourceHash,
       eventOpen: source.eventOpen, runtimeLive: source.runtimeLive,
       destinations: source.destinations, current,
+      routeDecision: records.routeDecision,
       guidance: destination && source.eventOpen && source.runtimeLive ?
         {revision, destination: destination.target,
           materialKey: hash([source.sourceHash, destination.target]),
@@ -84,14 +95,20 @@ export async function preparePracticeMovementCommand(db: Firestore,
   requirePracticeGroupPermission(sessionId, session, authority,
     command.payload.groupId, command.kind === "confirmDeparture" ?
       "confirmDeparture" : command.kind === "resolveAccountability" ?
-        "resolveAccountability" : "recordCheckpoint");
+        "resolveAccountability" : command.kind === "changeRoute" ?
+          "readProgress" : "recordCheckpoint");
+  if (command.kind === "changeRoute" && !practiceIsManager(authority)) {
+    throw new HttpsError("permission-denied",
+      "Only the rehearsal Host can change the active route.");
+  }
   if (!["running", "paused", "complete"].includes(session.status) ||
       session.actionCount >= 500 || session.runtimeRevision >= 2147483647) {
     throw new HttpsError("failed-precondition", "Practice movement is closed.");
   }
   const source = practiceMovementSource(sessionId, session,
     command.payload.groupId);
-  const scope = command.kind !== "confirmDeparture" ?
+  const scope = command.kind !== "confirmDeparture" &&
+    command.kind !== "changeRoute" ?
     practiceMovementScope(command) : {groupId: command.payload.groupId};
   const records = await readPracticeMovements(db, tx, source, scope);
   const review = projectMovement(session, source, actors, records, authority);
@@ -123,7 +140,7 @@ export async function preparePracticeMovementCommand(db: Firestore,
       assertCheckpointRequestDeadline(checkpointRequest,
         until, source.now, source.endAt);
     }
-    const progressRevision = review.progress.revision + 1;
+    const progressRevision = records.currentRevision + 1;
     const value = parsePracticeMovement({sessionId,
       clockId: source.context.clockId, groupId: source.groupId,
       progressRevision, departure: {sourceHash: source.sourceHash,
@@ -132,9 +149,33 @@ export async function preparePracticeMovementCommand(db: Firestore,
         roster: members ? {members, selectionHash: review.roster.sourceHash} :
           null, checkpointRequest: checkpointRequest ?? null}, report: null},
     source);
-    return {confirmedDeparture: value, commit: () => tx.create(
-      db.collection(rehearsalMovements).doc(
-        practiceMovementId(source, progressRevision)), value)};
+    return {confirmedDeparture: value, routeDecision: null,
+      commit: () => tx.create(
+        db.collection(rehearsalMovements).doc(
+          practiceMovementId(source, progressRevision)), value)};
+  }
+  if (command.kind === "changeRoute") {
+    const current = records.current;
+    const destination = records.routeDecision?.destination ??
+      current?.departure.destination;
+    const target = prepareRouteDecision({revision: records.currentRevision,
+      sourceHash: source.sourceHash, eventOpen: source.eventOpen,
+      runtimeLive: source.runtimeLive,
+      progress: destination ? {destination} : null,
+      destinations: source.destinations}, command.payload);
+    const progressRevision = records.currentRevision + 1;
+    const value = parsePracticeRouteDecision({sessionId,
+      clockId: source.context.clockId, groupId: source.groupId,
+      progressRevision, previousRevision: records.currentRevision,
+      departureRevision: current!.progressRevision,
+      sourceHash: source.sourceHash,
+      alternativeId: target.alternativeId, destination: target.target,
+      decisionId: command.payload.decisionId, operationId,
+      decidedBy: authority.actorUid, decidedAt: source.now}, source,
+    progressRevision);
+    return {confirmedDeparture: null, routeDecision: value,
+      commit: () => tx.create(db.collection(rehearsalRouteDecisions).doc(
+        practiceRouteDecisionId(source, progressRevision)), value)};
   }
   const record = records.selected;
   const checkpoint = review.checkpoint;
@@ -146,7 +187,8 @@ export async function preparePracticeMovementCommand(db: Firestore,
   if (command.kind === "resolveAccountability") {
     const actor = preparePracticeCheckpointVisit(session, checkpoint, actors,
       command, authority);
-    return {confirmedDeparture: null, actorChanges: [actor],
+    return {confirmedDeparture: null, routeDecision: null,
+      actorChanges: [actor],
       commit: () => undefined};
   }
   let updates: Partial<Pick<MovementRecords["page"][number],
@@ -163,7 +205,8 @@ export async function preparePracticeMovementCommand(db: Firestore,
       source, command, authority, operationId, session);
   }
   parsePracticeMovement({...record, ...updates}, source);
-  return {confirmedDeparture: null, commit: () => tx.update(
-    db.collection(rehearsalMovements).doc(
-      practiceMovementId(source, record.progressRevision)), updates)};
+  return {confirmedDeparture: null, routeDecision: null,
+    commit: () => tx.update(
+      db.collection(rehearsalMovements).doc(
+        practiceMovementId(source, record.progressRevision)), updates)};
 }

@@ -34845,6 +34845,13 @@ abstract final class CatchContractConstraints {
     maxItems: 41,
   );
 
+  static const eventRehearsalBootstrapCallableResponseMovementReviewProgressDestinationsItemsAlternativeId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.progress.destinations.items.alternativeId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^alternative:[a-f0-9]{64}\$',
+  );
+
   static const eventRehearsalBootstrapCallableResponseMovementReviewProgressDestinationsItemsLabel = CatchContractFieldConstraints(
     path: 'eventRehearsalBootstrapCallableResponse.movementReview.progress.destinations.items.label',
     maxLength: 500,
@@ -35031,6 +35038,162 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
     minimum: 0,
     maximum: 500,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewProgressRouteDecisionAlternativeId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.progress.routeDecision.alternativeId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^alternative:[a-f0-9]{64}\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewProgressRouteDecisionClockId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.progress.routeDecision.clockId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^clock:[a-f0-9]{64}\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewProgressRouteDecisionDecidedAt = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.progress.routeDecision.decidedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewProgressRouteDecisionDecidedBy = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.progress.routeDecision.decidedBy',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewProgressRouteDecisionDecisionId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.progress.routeDecision.decisionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewProgressRouteDecisionDepartureRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.progress.routeDecision.departureRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 499,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewProgressRouteDecisionDestinationCheckpointId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.progress.routeDecision.destination.checkpointId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewProgressRouteDecisionDestinationGroupId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.progress.routeDecision.destination.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewProgressRouteDecisionDestinationItineraryId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.progress.routeDecision.destination.itineraryId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewProgressRouteDecisionDestinationKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.progress.routeDecision.destination.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewProgressRouteDecisionDestinationLateEntry = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.progress.routeDecision.destination.lateEntry',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['allowed', 'hostDecision', 'closed'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewProgressRouteDecisionDestinationPlaceId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.progress.routeDecision.destination.placeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewProgressRouteDecisionDestinationRouteId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.progress.routeDecision.destination.routeId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewProgressRouteDecisionDestinationStopId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.progress.routeDecision.destination.stopId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewProgressRouteDecisionGroupId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.progress.routeDecision.groupId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewProgressRouteDecisionOperationId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.progress.routeDecision.operationId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewProgressRouteDecisionPreviousRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.progress.routeDecision.previousRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 499,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewProgressRouteDecisionProgressRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.progress.routeDecision.progressRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 2,
+    maximum: 500,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewProgressRouteDecisionSessionId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.progress.routeDecision.sessionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewProgressRouteDecisionSourceHash = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.progress.routeDecision.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
   );
 
   static const eventRehearsalBootstrapCallableResponseMovementReviewProgressRuntimeLive = CatchContractFieldConstraints(
@@ -36506,6 +36669,13 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['array'],
     itemValueTypes: <String>['object'],
     maxItems: 41,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsSetupDestinationsItemsAlternativeId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.setup.destinations.items.alternativeId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^alternative:[a-f0-9]{64}\$',
   );
 
   static const eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsSetupDestinationsItemsLabel = CatchContractFieldConstraints(
@@ -41488,6 +41658,13 @@ abstract final class CatchContractConstraints {
     maxItems: 41,
   );
 
+  static const eventRehearsalMovementCallableResponseProgressDestinationsItemsAlternativeId = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.progress.destinations.items.alternativeId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^alternative:[a-f0-9]{64}\$',
+  );
+
   static const eventRehearsalMovementCallableResponseProgressDestinationsItemsLabel = CatchContractFieldConstraints(
     path: 'eventRehearsalMovementCallableResponse.progress.destinations.items.label',
     maxLength: 500,
@@ -41674,6 +41851,162 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
     minimum: 0,
     maximum: 500,
+  );
+
+  static const eventRehearsalMovementCallableResponseProgressRouteDecisionAlternativeId = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.progress.routeDecision.alternativeId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^alternative:[a-f0-9]{64}\$',
+  );
+
+  static const eventRehearsalMovementCallableResponseProgressRouteDecisionClockId = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.progress.routeDecision.clockId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^clock:[a-f0-9]{64}\$',
+  );
+
+  static const eventRehearsalMovementCallableResponseProgressRouteDecisionDecidedAt = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.progress.routeDecision.decidedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalMovementCallableResponseProgressRouteDecisionDecidedBy = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.progress.routeDecision.decidedBy',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalMovementCallableResponseProgressRouteDecisionDecisionId = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.progress.routeDecision.decisionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalMovementCallableResponseProgressRouteDecisionDepartureRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.progress.routeDecision.departureRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 499,
+  );
+
+  static const eventRehearsalMovementCallableResponseProgressRouteDecisionDestinationCheckpointId = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.progress.routeDecision.destination.checkpointId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalMovementCallableResponseProgressRouteDecisionDestinationGroupId = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.progress.routeDecision.destination.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRehearsalMovementCallableResponseProgressRouteDecisionDestinationItineraryId = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.progress.routeDecision.destination.itineraryId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalMovementCallableResponseProgressRouteDecisionDestinationKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.progress.routeDecision.destination.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalMovementCallableResponseProgressRouteDecisionDestinationLateEntry = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.progress.routeDecision.destination.lateEntry',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['allowed', 'hostDecision', 'closed'],
+  );
+
+  static const eventRehearsalMovementCallableResponseProgressRouteDecisionDestinationPlaceId = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.progress.routeDecision.destination.placeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRehearsalMovementCallableResponseProgressRouteDecisionDestinationRouteId = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.progress.routeDecision.destination.routeId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalMovementCallableResponseProgressRouteDecisionDestinationStopId = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.progress.routeDecision.destination.stopId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalMovementCallableResponseProgressRouteDecisionGroupId = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.progress.routeDecision.groupId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalMovementCallableResponseProgressRouteDecisionOperationId = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.progress.routeDecision.operationId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalMovementCallableResponseProgressRouteDecisionPreviousRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.progress.routeDecision.previousRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 499,
+  );
+
+  static const eventRehearsalMovementCallableResponseProgressRouteDecisionProgressRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.progress.routeDecision.progressRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 2,
+    maximum: 500,
+  );
+
+  static const eventRehearsalMovementCallableResponseProgressRouteDecisionSessionId = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.progress.routeDecision.sessionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalMovementCallableResponseProgressRouteDecisionSourceHash = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.progress.routeDecision.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
   );
 
   static const eventRehearsalMovementCallableResponseProgressRuntimeLive = CatchContractFieldConstraints(
@@ -43360,6 +43693,162 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalRouteDecisionDocumentAlternativeId = CatchContractFieldConstraints(
+    path: 'eventRehearsalRouteDecisionDocument.alternativeId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^alternative:[a-f0-9]{64}\$',
+  );
+
+  static const eventRehearsalRouteDecisionDocumentClockId = CatchContractFieldConstraints(
+    path: 'eventRehearsalRouteDecisionDocument.clockId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^clock:[a-f0-9]{64}\$',
+  );
+
+  static const eventRehearsalRouteDecisionDocumentDecidedAt = CatchContractFieldConstraints(
+    path: 'eventRehearsalRouteDecisionDocument.decidedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalRouteDecisionDocumentDecidedBy = CatchContractFieldConstraints(
+    path: 'eventRehearsalRouteDecisionDocument.decidedBy',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalRouteDecisionDocumentDecisionId = CatchContractFieldConstraints(
+    path: 'eventRehearsalRouteDecisionDocument.decisionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalRouteDecisionDocumentDepartureRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalRouteDecisionDocument.departureRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 499,
+  );
+
+  static const eventRehearsalRouteDecisionDocumentDestinationCheckpointId = CatchContractFieldConstraints(
+    path: 'eventRehearsalRouteDecisionDocument.destination.checkpointId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalRouteDecisionDocumentDestinationGroupId = CatchContractFieldConstraints(
+    path: 'eventRehearsalRouteDecisionDocument.destination.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRehearsalRouteDecisionDocumentDestinationItineraryId = CatchContractFieldConstraints(
+    path: 'eventRehearsalRouteDecisionDocument.destination.itineraryId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalRouteDecisionDocumentDestinationKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalRouteDecisionDocument.destination.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalRouteDecisionDocumentDestinationLateEntry = CatchContractFieldConstraints(
+    path: 'eventRehearsalRouteDecisionDocument.destination.lateEntry',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['allowed', 'hostDecision', 'closed'],
+  );
+
+  static const eventRehearsalRouteDecisionDocumentDestinationPlaceId = CatchContractFieldConstraints(
+    path: 'eventRehearsalRouteDecisionDocument.destination.placeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRehearsalRouteDecisionDocumentDestinationRouteId = CatchContractFieldConstraints(
+    path: 'eventRehearsalRouteDecisionDocument.destination.routeId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalRouteDecisionDocumentDestinationStopId = CatchContractFieldConstraints(
+    path: 'eventRehearsalRouteDecisionDocument.destination.stopId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalRouteDecisionDocumentGroupId = CatchContractFieldConstraints(
+    path: 'eventRehearsalRouteDecisionDocument.groupId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalRouteDecisionDocumentOperationId = CatchContractFieldConstraints(
+    path: 'eventRehearsalRouteDecisionDocument.operationId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalRouteDecisionDocumentPreviousRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalRouteDecisionDocument.previousRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 499,
+  );
+
+  static const eventRehearsalRouteDecisionDocumentProgressRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalRouteDecisionDocument.progressRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 2,
+    maximum: 500,
+  );
+
+  static const eventRehearsalRouteDecisionDocumentSessionId = CatchContractFieldConstraints(
+    path: 'eventRehearsalRouteDecisionDocument.sessionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalRouteDecisionDocumentSourceHash = CatchContractFieldConstraints(
+    path: 'eventRehearsalRouteDecisionDocument.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
   );
 
   static const eventRosterHandoffDocumentClubId = CatchContractFieldConstraints(
@@ -98698,6 +99187,7 @@ abstract final class CatchContractConstraints {
     'eventRehearsalBootstrapCallableResponse.movementReview.progress.current.report.rosterHash': eventRehearsalBootstrapCallableResponseMovementReviewProgressCurrentReportRosterHash,
     'eventRehearsalBootstrapCallableResponse.movementReview.progress.current.sessionId': eventRehearsalBootstrapCallableResponseMovementReviewProgressCurrentSessionId,
     'eventRehearsalBootstrapCallableResponse.movementReview.progress.destinations': eventRehearsalBootstrapCallableResponseMovementReviewProgressDestinations,
+    'eventRehearsalBootstrapCallableResponse.movementReview.progress.destinations.items.alternativeId': eventRehearsalBootstrapCallableResponseMovementReviewProgressDestinationsItemsAlternativeId,
     'eventRehearsalBootstrapCallableResponse.movementReview.progress.destinations.items.label': eventRehearsalBootstrapCallableResponseMovementReviewProgressDestinationsItemsLabel,
     'eventRehearsalBootstrapCallableResponse.movementReview.progress.destinations.items.target.checkpointId': eventRehearsalBootstrapCallableResponseMovementReviewProgressDestinationsItemsTargetCheckpointId,
     'eventRehearsalBootstrapCallableResponse.movementReview.progress.destinations.items.target.groupId': eventRehearsalBootstrapCallableResponseMovementReviewProgressDestinationsItemsTargetGroupId,
@@ -98722,6 +99212,26 @@ abstract final class CatchContractConstraints {
     'eventRehearsalBootstrapCallableResponse.movementReview.progress.guidance.text': eventRehearsalBootstrapCallableResponseMovementReviewProgressGuidanceText,
     'eventRehearsalBootstrapCallableResponse.movementReview.progress.guidance.validUntil': eventRehearsalBootstrapCallableResponseMovementReviewProgressGuidanceValidUntil,
     'eventRehearsalBootstrapCallableResponse.movementReview.progress.revision': eventRehearsalBootstrapCallableResponseMovementReviewProgressRevision,
+    'eventRehearsalBootstrapCallableResponse.movementReview.progress.routeDecision.alternativeId': eventRehearsalBootstrapCallableResponseMovementReviewProgressRouteDecisionAlternativeId,
+    'eventRehearsalBootstrapCallableResponse.movementReview.progress.routeDecision.clockId': eventRehearsalBootstrapCallableResponseMovementReviewProgressRouteDecisionClockId,
+    'eventRehearsalBootstrapCallableResponse.movementReview.progress.routeDecision.decidedAt': eventRehearsalBootstrapCallableResponseMovementReviewProgressRouteDecisionDecidedAt,
+    'eventRehearsalBootstrapCallableResponse.movementReview.progress.routeDecision.decidedBy': eventRehearsalBootstrapCallableResponseMovementReviewProgressRouteDecisionDecidedBy,
+    'eventRehearsalBootstrapCallableResponse.movementReview.progress.routeDecision.decisionId': eventRehearsalBootstrapCallableResponseMovementReviewProgressRouteDecisionDecisionId,
+    'eventRehearsalBootstrapCallableResponse.movementReview.progress.routeDecision.departureRevision': eventRehearsalBootstrapCallableResponseMovementReviewProgressRouteDecisionDepartureRevision,
+    'eventRehearsalBootstrapCallableResponse.movementReview.progress.routeDecision.destination.checkpointId': eventRehearsalBootstrapCallableResponseMovementReviewProgressRouteDecisionDestinationCheckpointId,
+    'eventRehearsalBootstrapCallableResponse.movementReview.progress.routeDecision.destination.groupId': eventRehearsalBootstrapCallableResponseMovementReviewProgressRouteDecisionDestinationGroupId,
+    'eventRehearsalBootstrapCallableResponse.movementReview.progress.routeDecision.destination.itineraryId': eventRehearsalBootstrapCallableResponseMovementReviewProgressRouteDecisionDestinationItineraryId,
+    'eventRehearsalBootstrapCallableResponse.movementReview.progress.routeDecision.destination.kind': eventRehearsalBootstrapCallableResponseMovementReviewProgressRouteDecisionDestinationKind,
+    'eventRehearsalBootstrapCallableResponse.movementReview.progress.routeDecision.destination.lateEntry': eventRehearsalBootstrapCallableResponseMovementReviewProgressRouteDecisionDestinationLateEntry,
+    'eventRehearsalBootstrapCallableResponse.movementReview.progress.routeDecision.destination.placeId': eventRehearsalBootstrapCallableResponseMovementReviewProgressRouteDecisionDestinationPlaceId,
+    'eventRehearsalBootstrapCallableResponse.movementReview.progress.routeDecision.destination.routeId': eventRehearsalBootstrapCallableResponseMovementReviewProgressRouteDecisionDestinationRouteId,
+    'eventRehearsalBootstrapCallableResponse.movementReview.progress.routeDecision.destination.stopId': eventRehearsalBootstrapCallableResponseMovementReviewProgressRouteDecisionDestinationStopId,
+    'eventRehearsalBootstrapCallableResponse.movementReview.progress.routeDecision.groupId': eventRehearsalBootstrapCallableResponseMovementReviewProgressRouteDecisionGroupId,
+    'eventRehearsalBootstrapCallableResponse.movementReview.progress.routeDecision.operationId': eventRehearsalBootstrapCallableResponseMovementReviewProgressRouteDecisionOperationId,
+    'eventRehearsalBootstrapCallableResponse.movementReview.progress.routeDecision.previousRevision': eventRehearsalBootstrapCallableResponseMovementReviewProgressRouteDecisionPreviousRevision,
+    'eventRehearsalBootstrapCallableResponse.movementReview.progress.routeDecision.progressRevision': eventRehearsalBootstrapCallableResponseMovementReviewProgressRouteDecisionProgressRevision,
+    'eventRehearsalBootstrapCallableResponse.movementReview.progress.routeDecision.sessionId': eventRehearsalBootstrapCallableResponseMovementReviewProgressRouteDecisionSessionId,
+    'eventRehearsalBootstrapCallableResponse.movementReview.progress.routeDecision.sourceHash': eventRehearsalBootstrapCallableResponseMovementReviewProgressRouteDecisionSourceHash,
     'eventRehearsalBootstrapCallableResponse.movementReview.progress.runtimeLive': eventRehearsalBootstrapCallableResponseMovementReviewProgressRuntimeLive,
     'eventRehearsalBootstrapCallableResponse.movementReview.progress.sourceHash': eventRehearsalBootstrapCallableResponseMovementReviewProgressSourceHash,
     'eventRehearsalBootstrapCallableResponse.movementReview.roster.coverage': eventRehearsalBootstrapCallableResponseMovementReviewRosterCoverage,
@@ -98921,6 +99431,7 @@ abstract final class CatchContractConstraints {
     'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.preference.template.setting.reason': eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsPreferenceTemplateSettingReason,
     'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.preference.template.version': eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsPreferenceTemplateVersion,
     'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.setup.destinations': eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsSetupDestinations,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.setup.destinations.items.alternativeId': eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsSetupDestinationsItemsAlternativeId,
     'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.setup.destinations.items.label': eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsSetupDestinationsItemsLabel,
     'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.setup.destinations.items.target.checkpointId': eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsSetupDestinationsItemsTargetCheckpointId,
     'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.setup.destinations.items.target.groupId': eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsSetupDestinationsItemsTargetGroupId,
@@ -99580,6 +100091,7 @@ abstract final class CatchContractConstraints {
     'eventRehearsalMovementCallableResponse.progress.current.report.rosterHash': eventRehearsalMovementCallableResponseProgressCurrentReportRosterHash,
     'eventRehearsalMovementCallableResponse.progress.current.sessionId': eventRehearsalMovementCallableResponseProgressCurrentSessionId,
     'eventRehearsalMovementCallableResponse.progress.destinations': eventRehearsalMovementCallableResponseProgressDestinations,
+    'eventRehearsalMovementCallableResponse.progress.destinations.items.alternativeId': eventRehearsalMovementCallableResponseProgressDestinationsItemsAlternativeId,
     'eventRehearsalMovementCallableResponse.progress.destinations.items.label': eventRehearsalMovementCallableResponseProgressDestinationsItemsLabel,
     'eventRehearsalMovementCallableResponse.progress.destinations.items.target.checkpointId': eventRehearsalMovementCallableResponseProgressDestinationsItemsTargetCheckpointId,
     'eventRehearsalMovementCallableResponse.progress.destinations.items.target.groupId': eventRehearsalMovementCallableResponseProgressDestinationsItemsTargetGroupId,
@@ -99604,6 +100116,26 @@ abstract final class CatchContractConstraints {
     'eventRehearsalMovementCallableResponse.progress.guidance.text': eventRehearsalMovementCallableResponseProgressGuidanceText,
     'eventRehearsalMovementCallableResponse.progress.guidance.validUntil': eventRehearsalMovementCallableResponseProgressGuidanceValidUntil,
     'eventRehearsalMovementCallableResponse.progress.revision': eventRehearsalMovementCallableResponseProgressRevision,
+    'eventRehearsalMovementCallableResponse.progress.routeDecision.alternativeId': eventRehearsalMovementCallableResponseProgressRouteDecisionAlternativeId,
+    'eventRehearsalMovementCallableResponse.progress.routeDecision.clockId': eventRehearsalMovementCallableResponseProgressRouteDecisionClockId,
+    'eventRehearsalMovementCallableResponse.progress.routeDecision.decidedAt': eventRehearsalMovementCallableResponseProgressRouteDecisionDecidedAt,
+    'eventRehearsalMovementCallableResponse.progress.routeDecision.decidedBy': eventRehearsalMovementCallableResponseProgressRouteDecisionDecidedBy,
+    'eventRehearsalMovementCallableResponse.progress.routeDecision.decisionId': eventRehearsalMovementCallableResponseProgressRouteDecisionDecisionId,
+    'eventRehearsalMovementCallableResponse.progress.routeDecision.departureRevision': eventRehearsalMovementCallableResponseProgressRouteDecisionDepartureRevision,
+    'eventRehearsalMovementCallableResponse.progress.routeDecision.destination.checkpointId': eventRehearsalMovementCallableResponseProgressRouteDecisionDestinationCheckpointId,
+    'eventRehearsalMovementCallableResponse.progress.routeDecision.destination.groupId': eventRehearsalMovementCallableResponseProgressRouteDecisionDestinationGroupId,
+    'eventRehearsalMovementCallableResponse.progress.routeDecision.destination.itineraryId': eventRehearsalMovementCallableResponseProgressRouteDecisionDestinationItineraryId,
+    'eventRehearsalMovementCallableResponse.progress.routeDecision.destination.kind': eventRehearsalMovementCallableResponseProgressRouteDecisionDestinationKind,
+    'eventRehearsalMovementCallableResponse.progress.routeDecision.destination.lateEntry': eventRehearsalMovementCallableResponseProgressRouteDecisionDestinationLateEntry,
+    'eventRehearsalMovementCallableResponse.progress.routeDecision.destination.placeId': eventRehearsalMovementCallableResponseProgressRouteDecisionDestinationPlaceId,
+    'eventRehearsalMovementCallableResponse.progress.routeDecision.destination.routeId': eventRehearsalMovementCallableResponseProgressRouteDecisionDestinationRouteId,
+    'eventRehearsalMovementCallableResponse.progress.routeDecision.destination.stopId': eventRehearsalMovementCallableResponseProgressRouteDecisionDestinationStopId,
+    'eventRehearsalMovementCallableResponse.progress.routeDecision.groupId': eventRehearsalMovementCallableResponseProgressRouteDecisionGroupId,
+    'eventRehearsalMovementCallableResponse.progress.routeDecision.operationId': eventRehearsalMovementCallableResponseProgressRouteDecisionOperationId,
+    'eventRehearsalMovementCallableResponse.progress.routeDecision.previousRevision': eventRehearsalMovementCallableResponseProgressRouteDecisionPreviousRevision,
+    'eventRehearsalMovementCallableResponse.progress.routeDecision.progressRevision': eventRehearsalMovementCallableResponseProgressRouteDecisionProgressRevision,
+    'eventRehearsalMovementCallableResponse.progress.routeDecision.sessionId': eventRehearsalMovementCallableResponseProgressRouteDecisionSessionId,
+    'eventRehearsalMovementCallableResponse.progress.routeDecision.sourceHash': eventRehearsalMovementCallableResponseProgressRouteDecisionSourceHash,
     'eventRehearsalMovementCallableResponse.progress.runtimeLive': eventRehearsalMovementCallableResponseProgressRuntimeLive,
     'eventRehearsalMovementCallableResponse.progress.sourceHash': eventRehearsalMovementCallableResponseProgressSourceHash,
     'eventRehearsalMovementCallableResponse.roster.coverage': eventRehearsalMovementCallableResponseRosterCoverage,
@@ -99823,6 +100355,26 @@ abstract final class CatchContractConstraints {
     'eventRehearsalReproductionCallableResponse.setup.movementSimulation.routePlan.stopKinds.items': eventRehearsalReproductionCallableResponseSetupMovementSimulationRoutePlanStopKindsItems,
     'eventRehearsalReproductionCallableResponse.setup.movementSimulation.routePlan.version': eventRehearsalReproductionCallableResponseSetupMovementSimulationRoutePlanVersion,
     'eventRehearsalReproductionCallableResponse.setup.title': eventRehearsalReproductionCallableResponseSetupTitle,
+    'eventRehearsalRouteDecisionDocument.alternativeId': eventRehearsalRouteDecisionDocumentAlternativeId,
+    'eventRehearsalRouteDecisionDocument.clockId': eventRehearsalRouteDecisionDocumentClockId,
+    'eventRehearsalRouteDecisionDocument.decidedAt': eventRehearsalRouteDecisionDocumentDecidedAt,
+    'eventRehearsalRouteDecisionDocument.decidedBy': eventRehearsalRouteDecisionDocumentDecidedBy,
+    'eventRehearsalRouteDecisionDocument.decisionId': eventRehearsalRouteDecisionDocumentDecisionId,
+    'eventRehearsalRouteDecisionDocument.departureRevision': eventRehearsalRouteDecisionDocumentDepartureRevision,
+    'eventRehearsalRouteDecisionDocument.destination.checkpointId': eventRehearsalRouteDecisionDocumentDestinationCheckpointId,
+    'eventRehearsalRouteDecisionDocument.destination.groupId': eventRehearsalRouteDecisionDocumentDestinationGroupId,
+    'eventRehearsalRouteDecisionDocument.destination.itineraryId': eventRehearsalRouteDecisionDocumentDestinationItineraryId,
+    'eventRehearsalRouteDecisionDocument.destination.kind': eventRehearsalRouteDecisionDocumentDestinationKind,
+    'eventRehearsalRouteDecisionDocument.destination.lateEntry': eventRehearsalRouteDecisionDocumentDestinationLateEntry,
+    'eventRehearsalRouteDecisionDocument.destination.placeId': eventRehearsalRouteDecisionDocumentDestinationPlaceId,
+    'eventRehearsalRouteDecisionDocument.destination.routeId': eventRehearsalRouteDecisionDocumentDestinationRouteId,
+    'eventRehearsalRouteDecisionDocument.destination.stopId': eventRehearsalRouteDecisionDocumentDestinationStopId,
+    'eventRehearsalRouteDecisionDocument.groupId': eventRehearsalRouteDecisionDocumentGroupId,
+    'eventRehearsalRouteDecisionDocument.operationId': eventRehearsalRouteDecisionDocumentOperationId,
+    'eventRehearsalRouteDecisionDocument.previousRevision': eventRehearsalRouteDecisionDocumentPreviousRevision,
+    'eventRehearsalRouteDecisionDocument.progressRevision': eventRehearsalRouteDecisionDocumentProgressRevision,
+    'eventRehearsalRouteDecisionDocument.sessionId': eventRehearsalRouteDecisionDocumentSessionId,
+    'eventRehearsalRouteDecisionDocument.sourceHash': eventRehearsalRouteDecisionDocumentSourceHash,
     'eventRosterHandoffDocument.clubId': eventRosterHandoffDocumentClubId,
     'eventRosterHandoffDocument.createdAt._nanoseconds': eventRosterHandoffDocumentCreatedAtNanoseconds,
     'eventRosterHandoffDocument.createdAt._seconds': eventRosterHandoffDocumentCreatedAtSeconds,
