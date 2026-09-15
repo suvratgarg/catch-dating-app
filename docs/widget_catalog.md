@@ -576,18 +576,18 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>EventDetailCta</code> | <code>lib/events/presentation/widgets/event_detail_cta.dart:78</code> | — | — | No class documentation or registry summary. |
 | <code>PriceLeading</code> | <code>lib/events/presentation/widgets/event_detail_cta.dart:388</code> | — | — | No class documentation or registry summary. |
 | <code>WaitlistOfferLeading</code> | <code>lib/events/presentation/widgets/event_detail_cta.dart:425</code> | — | — | No class documentation or registry summary. |
-| <code>EventDetailFactList</code> | <code>lib/events/presentation/widgets/event_detail_design_primitives.dart:345</code> | — | — | Flat Event Detail fact rows with structural stacked and inline modes. |
-| <code>EventDetailGoodToKnowList</code> | <code>lib/events/presentation/widgets/event_detail_design_primitives.dart:312</code> | — | — | Good-to-know list for requirements, expectations, booking, cancellation, and settlement rows. |
-| <code>EventDetailHintList</code> | <code>lib/events/presentation/widgets/event_detail_design_primitives.dart:75</code> | — | — | Why-you-might-click hint list derived from event format and activity context. |
-| <code>EventDetailItinerary</code> | <code>lib/events/presentation/widgets/event_detail_design_primitives.dart:125</code> | — | — | Timed event itinerary rail for route plan, meet, run, and post-event moments. |
-| <code>EventDetailMapCard</code> | <code>lib/events/presentation/widgets/event_detail_design_primitives.dart:162</code> | — | — | Event detail map preview card with exact or morning-of pin states and optional route-owned tap action. |
-| <code>EventDetailMechanismList</code> | <code>lib/events/presentation/widgets/event_detail_design_primitives.dart:284</code> | — | — | How-sign-ups-work list for open signup, approval, waitlist, and demand-pricing mechanics. |
-| <code>EventDetailPhotoStrip</code> | <code>lib/events/presentation/widgets/event_detail_design_primitives.dart:483</code> | — | — | Canonical event-detail photo proof strip with uploaded photos and activity-soft placeholders. |
-| <code>EventDetailPhotoStripTile</code> | <code>lib/events/presentation/widgets/event_detail_design_primitives.dart:534</code> | — | — | No class documentation or registry summary. |
-| <code>EventDetailTicketStubBand</code> | <code>lib/events/presentation/widgets/event_detail_design_primitives.dart:16</code> | — | — | Flush ticket fact band for when, where, pace, and activity facts below the hero. |
-| <code>HairlineList</code> | <code>lib/events/presentation/widgets/event_detail_design_primitives.dart:664</code> | — | — | No class documentation or registry summary. |
-| <code>ItineraryRow</code> | <code>lib/events/presentation/widgets/event_detail_design_primitives.dart:697</code> | — | — | No class documentation or registry summary. |
-| <code>TicketStubCell</code> | <code>lib/events/presentation/widgets/event_detail_design_primitives.dart:591</code> | — | — | No class documentation or registry summary. |
+| <code>EventDetailFactList</code> | <code>lib/events/presentation/widgets/event_detail_design_primitives.dart:347</code> | — | — | Flat Event Detail fact rows with structural stacked and inline modes. |
+| <code>EventDetailGoodToKnowList</code> | <code>lib/events/presentation/widgets/event_detail_design_primitives.dart:314</code> | — | — | Good-to-know list for requirements, expectations, booking, cancellation, and settlement rows. |
+| <code>EventDetailHintList</code> | <code>lib/events/presentation/widgets/event_detail_design_primitives.dart:77</code> | — | — | Why-you-might-click hint list derived from event format and activity context. |
+| <code>EventDetailItinerary</code> | <code>lib/events/presentation/widgets/event_detail_design_primitives.dart:127</code> | — | — | Timed event itinerary rail for route plan, meet, run, and post-event moments. |
+| <code>EventDetailMapCard</code> | <code>lib/events/presentation/widgets/event_detail_design_primitives.dart:164</code> | — | — | Event detail map preview card with exact or morning-of pin states and optional route-owned tap action. |
+| <code>EventDetailMechanismList</code> | <code>lib/events/presentation/widgets/event_detail_design_primitives.dart:286</code> | — | — | How-sign-ups-work list for open signup, approval, waitlist, and demand-pricing mechanics. |
+| <code>EventDetailPhotoStrip</code> | <code>lib/events/presentation/widgets/event_detail_design_primitives.dart:485</code> | — | — | Canonical event-detail photo proof strip with uploaded photos and activity-soft placeholders. |
+| <code>EventDetailPhotoStripTile</code> | <code>lib/events/presentation/widgets/event_detail_design_primitives.dart:536</code> | — | — | No class documentation or registry summary. |
+| <code>EventDetailTicketStubBand</code> | <code>lib/events/presentation/widgets/event_detail_design_primitives.dart:18</code> | — | — | Flush ticket fact band for when, where, pace, and activity facts below the hero. |
+| <code>HairlineList</code> | <code>lib/events/presentation/widgets/event_detail_design_primitives.dart:652</code> | — | — | No class documentation or registry summary. |
+| <code>ItineraryRow</code> | <code>lib/events/presentation/widgets/event_detail_design_primitives.dart:685</code> | — | — | No class documentation or registry summary. |
+| <code>TicketStubCell</code> | <code>lib/events/presentation/widgets/event_detail_design_primitives.dart:579</code> | — | — | No class documentation or registry summary. |
 | <code>EventDetailHeroAppBar</code> | <code>lib/events/presentation/widgets/event_detail_hero_app_bar.dart:12</code> | — | — | Event detail hero section with standard, ticket, and spotlight-dark media treatments plus route-owned top actions. |
 | <code>EventDetailTicketHeroSurface</code> | <code>lib/events/presentation/widgets/event_detail_hero_app_bar.dart:225</code> | — | — | No class documentation or registry summary. |
 | <code>EventDetailTicketSurface</code> | <code>lib/events/presentation/widgets/event_detail_hero_app_bar.dart:249</code> | — | — | No class documentation or registry summary. |
