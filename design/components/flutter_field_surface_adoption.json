@@ -201,10 +201,10 @@
       "routeIds": ["hostAppEventSuccessScreen"],
       "semanticFieldCount": 1,
       "bindings": [
-        {"file": "lib/event_success/presentation/host_parts/event_success_host_setup.dart", "symbol": "TargetAttendeeControl"}
+        {"file": "lib/event_success/presentation/host_setup/event_success_target_attendees_field.dart", "symbol": "EventSuccessTargetAttendeesField"}
       ],
       "anchors": [
-        {"file": "lib/event_success/presentation/host_parts/event_success_host_setup.dart", "symbol": "CatchField.stepper", "expected": 1}
+        {"file": "lib/event_success/presentation/host_setup/event_success_target_attendees_field.dart", "symbol": "CatchField.stepper", "expected": 1}
       ],
       "targetModes": ["CatchField.stepper"],
       "preserve": ["Event Success plan constraints", "club defaults"],
