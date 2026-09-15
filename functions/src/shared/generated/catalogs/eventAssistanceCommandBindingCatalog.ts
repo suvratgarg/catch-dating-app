@@ -317,12 +317,19 @@ export const eventAssistanceCommandBindingCatalog = {
     {
       "commandKind": "reconcileAttendance",
       "live": {
-        "bindingType": "contractOnly",
-        "operations": []
+        "bindingType": "domainAdapter",
+        "operations": [
+          "getEventAttendanceDisposition",
+          "setEventAttendeeAttendance",
+          "recordEventNoShow"
+        ]
       },
       "rehearsal": {
-        "bindingType": "contractOnly",
-        "operations": []
+        "bindingType": "domainAdapter",
+        "operations": [
+          "completeEventRehearsal",
+          "injectEventRehearsalBehavior"
+        ]
       }
     },
     {
@@ -378,8 +385,12 @@ export const eventAssistanceCommandBindingCatalog = {
     {
       "commandKind": "resumeOperation",
       "live": {
-        "bindingType": "contractOnly",
-        "operations": []
+        "bindingType": "internalCoordinator",
+        "operations": [
+          "AssistanceSourceWorkStore.process",
+          "AssistanceDeliveryWorkStore.process",
+          "AssistanceCheckpointWorkStore.process"
+        ]
       },
       "rehearsal": {
         "bindingType": "domainAdapter",
@@ -446,8 +457,10 @@ export const eventAssistanceCommandBindingCatalog = {
     {
       "commandKind": "setLocationSharing",
       "live": {
-        "bindingType": "contractOnly",
-        "operations": []
+        "bindingType": "domainAdapter",
+        "operations": [
+          "publishEventLivePosition"
+        ]
       },
       "rehearsal": {
         "bindingType": "contractOnly",
@@ -487,8 +500,10 @@ export const eventAssistanceCommandBindingCatalog = {
     {
       "commandKind": "routeRestrictedCase",
       "live": {
-        "bindingType": "contractOnly",
-        "operations": []
+        "bindingType": "internalCoordinator",
+        "operations": [
+          "GuestAssistanceStore.submit"
+        ]
       },
       "rehearsal": {
         "bindingType": "contractOnly",

@@ -109,8 +109,8 @@
     },
     {
       "commandKind": "reconcileAttendance",
-      "live": {"bindingType": "contractOnly", "operations": []},
-      "rehearsal": {"bindingType": "contractOnly", "operations": []}
+      "live": {"bindingType": "domainAdapter", "operations": ["getEventAttendanceDisposition", "setEventAttendeeAttendance", "recordEventNoShow"]},
+      "rehearsal": {"bindingType": "domainAdapter", "operations": ["completeEventRehearsal", "injectEventRehearsalBehavior"]}
     },
     {
       "commandKind": "requestRequiredData",
@@ -134,7 +134,7 @@
     },
     {
       "commandKind": "resumeOperation",
-      "live": {"bindingType": "contractOnly", "operations": []},
+      "live": {"bindingType": "internalCoordinator", "operations": ["AssistanceSourceWorkStore.process", "AssistanceDeliveryWorkStore.process", "AssistanceCheckpointWorkStore.process"]},
       "rehearsal": {"bindingType": "domainAdapter", "operations": ["controlEventRehearsal"]}
     },
     {
@@ -159,7 +159,7 @@
     },
     {
       "commandKind": "setLocationSharing",
-      "live": {"bindingType": "contractOnly", "operations": []},
+      "live": {"bindingType": "domainAdapter", "operations": ["publishEventLivePosition"]},
       "rehearsal": {"bindingType": "contractOnly", "operations": []}
     },
     {
@@ -174,7 +174,7 @@
     },
     {
       "commandKind": "routeRestrictedCase",
-      "live": {"bindingType": "contractOnly", "operations": []},
+      "live": {"bindingType": "internalCoordinator", "operations": ["GuestAssistanceStore.submit"]},
       "rehearsal": {"bindingType": "contractOnly", "operations": []}
     },
     {

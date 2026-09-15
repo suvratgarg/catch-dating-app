@@ -1582,12 +1582,19 @@ const eventAssistanceCommandBindingCatalog =
   EventAssistanceCommandBindingDescriptor(
     commandKind: EventAssistanceCommandKind.reconcileAttendance,
     live: EventAssistanceModeBinding(
-      bindingType: EventAssistanceCommandBindingType.contractOnly,
-      operations: <String>[],
+      bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      operations: <String>[
+        'getEventAttendanceDisposition',
+        'setEventAttendeeAttendance',
+        'recordEventNoShow',
+      ],
     ),
     rehearsal: EventAssistanceModeBinding(
-      bindingType: EventAssistanceCommandBindingType.contractOnly,
-      operations: <String>[],
+      bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      operations: <String>[
+        'completeEventRehearsal',
+        'injectEventRehearsalBehavior',
+      ],
     ),
   ),
   EventAssistanceCommandBindingDescriptor(
@@ -1643,8 +1650,12 @@ const eventAssistanceCommandBindingCatalog =
   EventAssistanceCommandBindingDescriptor(
     commandKind: EventAssistanceCommandKind.resumeOperation,
     live: EventAssistanceModeBinding(
-      bindingType: EventAssistanceCommandBindingType.contractOnly,
-      operations: <String>[],
+      bindingType: EventAssistanceCommandBindingType.internalCoordinator,
+      operations: <String>[
+        'AssistanceSourceWorkStore.process',
+        'AssistanceDeliveryWorkStore.process',
+        'AssistanceCheckpointWorkStore.process',
+      ],
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.domainAdapter,
@@ -1711,8 +1722,10 @@ const eventAssistanceCommandBindingCatalog =
   EventAssistanceCommandBindingDescriptor(
     commandKind: EventAssistanceCommandKind.setLocationSharing,
     live: EventAssistanceModeBinding(
-      bindingType: EventAssistanceCommandBindingType.contractOnly,
-      operations: <String>[],
+      bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      operations: <String>[
+        'publishEventLivePosition',
+      ],
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.contractOnly,
@@ -1752,8 +1765,10 @@ const eventAssistanceCommandBindingCatalog =
   EventAssistanceCommandBindingDescriptor(
     commandKind: EventAssistanceCommandKind.routeRestrictedCase,
     live: EventAssistanceModeBinding(
-      bindingType: EventAssistanceCommandBindingType.contractOnly,
-      operations: <String>[],
+      bindingType: EventAssistanceCommandBindingType.internalCoordinator,
+      operations: <String>[
+        'GuestAssistanceStore.submit',
+      ],
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.contractOnly,
