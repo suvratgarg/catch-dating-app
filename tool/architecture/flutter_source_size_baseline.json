@@ -10,10 +10,6 @@
       "maxLines": 1089
     },
     {
-      "path": "lib/hosts/presentation/customers/host_saved_audience_editor.dart",
-      "maxLines": 933
-    },
-    {
       "path": "lib/hosts/presentation/host_operations/host_analytics.dart",
       "maxLines": 1138
     },
