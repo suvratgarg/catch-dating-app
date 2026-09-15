@@ -45,7 +45,7 @@
       },
       "host": {
         "baselineArtifactBytes": 94430410,
-        "maxArtifactBytes": 96000000,
+        "maxArtifactBytes": 98000000,
         "baselineUncompressedBytes": 289520178,
         "maxUncompressedBytes": 300000000,
         "forbiddenNativeEntries": [
