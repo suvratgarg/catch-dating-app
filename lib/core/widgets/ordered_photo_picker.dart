@@ -9,43 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_reorderable_grid_view/entities/reorderable_animation_config.dart';
 import 'package:flutter_reorderable_grid_view/widgets/widgets.dart';
 
-enum OrderedPhotoStatus { ready, queued, uploading, failed }
-
-class OrderedPhotoPreview {
-  const OrderedPhotoPreview({
-    required this.id,
-    this.bytes,
-    this.imageUrl,
-    this.status = OrderedPhotoStatus.ready,
-    this.progress,
-    this.error,
-  });
-
-  final String id;
-  final Uint8List? bytes;
-  final String? imageUrl;
-  final OrderedPhotoStatus status;
-  final double? progress;
-  final Object? error;
-
-  bool get hasImage => bytes != null || imageUrl != null;
-}
-
-abstract final class OrderedPhotoPickerKeys {
-  static ValueKey<String> addAction(String label) =>
-      ValueKey('ordered_photo_add_$label');
-
-  static ValueKey<String> removeAction(int index) =>
-      ValueKey('ordered_photo_remove_$index');
-
-  static const manageAction = ValueKey('ordered_photo_manage');
-  static const managerScreen = ValueKey('ordered_photo_manager_screen');
-  static const coverRetryAction = ValueKey('ordered_photo_cover_retry');
-  static ValueKey<String> setCoverAction(int index) =>
-      ValueKey('ordered_photo_set_cover_$index');
-  static ValueKey<String> managerRetryAction(int index) =>
-      ValueKey('ordered_photo_manager_retry_$index');
-}
+part 'ordered_photo_picker_actions.dart';
+part 'ordered_photo_picker_models.dart';
 
 class OrderedPhotoPicker extends StatefulWidget {
   const OrderedPhotoPicker({
@@ -191,26 +156,6 @@ class _OrderedPhotoPickerState extends State<OrderedPhotoPicker> {
       ],
     );
   }
-
-  Future<void> _openManager(
-    BuildContext context,
-    List<OrderedPhotoPreview> photos,
-  ) {
-    return Navigator.of(context, rootNavigator: true).push<void>(
-      MaterialPageRoute<void>(
-        fullscreenDialog: true,
-        builder: (_) => OrderedPhotoManagerScreen(
-          photos: photos,
-          onAddPhotos: widget.onAddPhotos,
-          onRemovePhoto: widget.onRemovePhoto,
-          onReorderPhoto: widget.onReorderPhoto,
-          onRetryPhoto: widget.onRetryPhoto,
-          onAddPhotosInManager: widget.onAddPhotosInManager,
-          canAdd: widget.maxPhotos == null || photos.length < widget.maxPhotos!,
-        ),
-      ),
-    );
-  }
 }
 
 enum _OrderedPhotoAction { retry, setCover, moveEarlier, moveLater, remove }
@@ -293,74 +238,6 @@ class _OrderedPhotoManagerScreenState extends State<OrderedPhotoManagerScreen> {
   void dispose() {
     widget.photosListenable?.removeListener(_syncCallerPhotos);
     super.dispose();
-  }
-
-  void _syncCallerPhotos() {
-    final photos = widget.photosListenable?.value;
-    if (!mounted || photos == null) return;
-    setState(() => _photos = [...photos]);
-  }
-
-  bool get _canReorder => widget.onReorderPhoto != null && _photos.length > 1;
-
-  void _move(int fromIndex, int toIndex) {
-    if (fromIndex == toIndex ||
-        fromIndex < 0 ||
-        toIndex < 0 ||
-        fromIndex >= _photos.length ||
-        toIndex >= _photos.length) {
-      return;
-    }
-    setState(() {
-      final moved = _photos.removeAt(fromIndex);
-      _photos.insert(toIndex, moved);
-    });
-    widget.onReorderPhoto?.call(fromIndex, toIndex);
-  }
-
-  void _remove(int index) {
-    if (index < 0 || index >= _photos.length) return;
-    setState(() => _photos.removeAt(index));
-    widget.onRemovePhoto?.call(index);
-  }
-
-  void _retry(int index) {
-    if (index < 0 || index >= _photos.length || widget.onRetryPhoto == null) {
-      return;
-    }
-    widget.onRetryPhoto!(index);
-    setState(() {
-      final photo = _photos[index];
-      _photos[index] = OrderedPhotoPreview(
-        id: photo.id,
-        bytes: photo.bytes,
-        imageUrl: photo.imageUrl,
-        status: OrderedPhotoStatus.uploading,
-        progress: photo.progress,
-        error: photo.error,
-      );
-    });
-  }
-
-  Future<void> _addPhotos() async {
-    if (_adding) return;
-    final addInManager = widget.onAddPhotosInManager;
-    if (addInManager == null) {
-      Navigator.of(context).pop();
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        widget.onAddPhotos?.call();
-      });
-      return;
-    }
-    setState(() => _adding = true);
-    try {
-      final added = await addInManager();
-      if (mounted && added.isNotEmpty && widget.photosListenable == null) {
-        setState(() => _photos.addAll(added));
-      }
-    } finally {
-      if (mounted) setState(() => _adding = false);
-    }
   }
 
   @override
