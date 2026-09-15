@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.20.2
+version: 1.20.3
 updated: 2026-09-15
 owner: recursive_audit_loop
 status: active
@@ -312,6 +312,7 @@ rather than embedded in event-type logic.
 | Host setup/live/report UI | `lib/event_success/presentation/event_success_host_screen.dart` and `host_parts/` |
 | Attendee companion UI | `lib/event_success/presentation/event_success_companion_screen.dart` and `companion_parts/` |
 | Shared Host/attendee room map | `lib/event_success/presentation/event_success_room_map.dart` |
+| Assignment generation and overrides | `lib/event_success/presentation/assignments/` (pod/rotation sections, override sheets, typed draft models) |
 | Live reveal UI | `lib/event_success/presentation/reveal/` (host/attendee surfaces, countdown, assignments, standings, and shared clock state) |
 | Backend generators/wingman callables | `functions/src/eventSuccess/` |
 | No-download guest runtime | `website/src/features/eventRuntime/` |

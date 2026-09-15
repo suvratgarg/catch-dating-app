@@ -380,35 +380,35 @@
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "GroupOverrideSheet",
+          "name": "EventSuccessGroupOverrideSheet",
           "action": "keep"
         },
         {
-          "name": "RotationOverrideSheet",
+          "name": "EventSuccessRotationOverrideSheet",
           "action": "keep"
         },
         {
-          "name": "GroupOverrideRoundEditor",
+          "name": "EventSuccessGroupOverrideRoundSection",
           "action": "keep"
         },
         {
-          "name": "RotationOverrideRoundEditor",
+          "name": "EventSuccessRotationOverrideRoundSection",
           "action": "keep"
         },
         {
-          "name": "GroupOverrideMemberEditor",
+          "name": "EventSuccessGroupMemberField",
           "action": "keep"
         },
         {
-          "name": "RotationOverridePairEditor",
+          "name": "EventSuccessRotationPairFieldLanes",
           "action": "keep"
         },
         {
-          "name": "MicroPodsHostCard",
+          "name": "EventSuccessHostPodSection",
           "action": "keep"
         },
         {
-          "name": "RotationsHostCard",
+          "name": "EventSuccessHostRotationSection",
           "action": "keep"
         },
         {
@@ -1064,11 +1064,11 @@
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "MicroPodsHostCard",
+          "name": "EventSuccessHostPodSection",
           "action": "keep"
         },
         {
-          "name": "RotationsHostCard",
+          "name": "EventSuccessHostRotationSection",
           "action": "keep"
         }
       ],
@@ -1100,11 +1100,11 @@
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "GroupOverrideSheet",
+          "name": "EventSuccessGroupOverrideSheet",
           "action": "keep"
         },
         {
-          "name": "RotationOverrideSheet",
+          "name": "EventSuccessRotationOverrideSheet",
           "action": "keep"
         }
       ],
@@ -1118,11 +1118,11 @@
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "GroupOverrideRoundEditor",
+          "name": "EventSuccessGroupOverrideRoundSection",
           "action": "keep"
         },
         {
-          "name": "RotationOverrideRoundEditor",
+          "name": "EventSuccessRotationOverrideRoundSection",
           "action": "keep"
         }
       ],
@@ -1341,11 +1341,11 @@
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "GroupOverrideMemberEditor",
+          "name": "EventSuccessGroupMemberField",
           "action": "keep"
         },
         {
-          "name": "RotationOverridePairEditor",
+          "name": "EventSuccessRotationPairFieldLanes",
           "action": "keep"
         }
       ],
@@ -3075,11 +3075,11 @@
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "GroupOverrideMemberEditor",
+          "name": "EventSuccessGroupMemberField",
           "action": "keep"
         },
         {
-          "name": "GroupOverrideUnitEditor",
+          "name": "EventSuccessGroupOverrideFieldLanes",
           "action": "keep"
         }
       ],
@@ -6188,7 +6188,7 @@
       "members": [
         {"name": "ClubTagWrap", "action": "keep"},
         {"name": "PeopleTokenRow", "action": "keep"},
-        {"name": "PodGroupSummary", "action": "keep"},
+        {"name": "EventSuccessPodSummaryRow", "action": "keep"},
         {"name": "EventSuccessPodAssignmentSection", "action": "keep"}
       ],
       "rationale": "K2 plus K3: all members already share CatchBadge rendering, while each maps a different domain invariant—club tags, profile loading, assignment counts, or visible pod membership. The shared Wrap skeleton is not another widget concept.",

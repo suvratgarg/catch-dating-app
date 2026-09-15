@@ -91,6 +91,8 @@ import 'package:widgetbook_workspace/event_success/companion/screen.dart'
     as _widgetbook_workspace_event_success_companion_screen;
 import 'package:widgetbook_workspace/event_success/event_success_module_consolidation_prototypes.dart'
     as _widgetbook_workspace_event_success_event_success_module_consolidation_prototypes;
+import 'package:widgetbook_workspace/event_success/host_assignment_components_use_cases.dart'
+    as _widgetbook_workspace_event_success_host_assignment_components_use_cases;
 import 'package:widgetbook_workspace/event_success/host_reveal_components_use_cases.dart'
     as _widgetbook_workspace_event_success_host_reveal_components_use_cases;
 import 'package:widgetbook_workspace/event_success/specimens/companion_paper.dart'
@@ -6304,6 +6306,132 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Event Success',
         children: [
           _widgetbook.WidgetbookFolder(
+            name: 'Assignment components',
+            children: [
+              _widgetbook.WidgetbookComponent(
+                name: 'EventSuccessAssignmentReasonNotice',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Ready',
+                    builder:
+                        _widgetbook_workspace_event_success_host_assignment_components_use_cases
+                            .eventSuccessStrictAssignmentReasonSummary,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventSuccessGroupMemberField',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Ready',
+                    builder:
+                        _widgetbook_workspace_event_success_host_assignment_components_use_cases
+                            .eventSuccessStrictGroupOverrideMemberEditor,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventSuccessGroupOverrideFieldLanes',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Ready',
+                    builder:
+                        _widgetbook_workspace_event_success_host_assignment_components_use_cases
+                            .eventSuccessStrictGroupOverrideUnitEditor,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventSuccessGroupOverrideRoundSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Ready',
+                    builder:
+                        _widgetbook_workspace_event_success_host_assignment_components_use_cases
+                            .eventSuccessStrictGroupOverrideRoundEditor,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventSuccessGroupOverrideSheet',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Ready',
+                    builder:
+                        _widgetbook_workspace_event_success_host_assignment_components_use_cases
+                            .eventSuccessStrictGroupOverrideSheet,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventSuccessHostPodSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Ready',
+                    builder:
+                        _widgetbook_workspace_event_success_host_assignment_components_use_cases
+                            .eventSuccessStrictMicroPodsHostCard,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventSuccessHostRotationSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Ready',
+                    builder:
+                        _widgetbook_workspace_event_success_host_assignment_components_use_cases
+                            .eventSuccessStrictRotationsHostCard,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventSuccessPodSummaryRow',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Ready',
+                    builder:
+                        _widgetbook_workspace_event_success_host_assignment_components_use_cases
+                            .eventSuccessStrictPodGroupSummary,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventSuccessRotationOverrideRoundSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Ready',
+                    builder:
+                        _widgetbook_workspace_event_success_host_assignment_components_use_cases
+                            .eventSuccessStrictRotationOverrideRoundEditor,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventSuccessRotationOverrideSheet',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Ready',
+                    builder:
+                        _widgetbook_workspace_event_success_host_assignment_components_use_cases
+                            .eventSuccessStrictRotationOverrideSheet,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventSuccessRotationPairFieldLanes',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Ready',
+                    builder:
+                        _widgetbook_workspace_event_success_host_assignment_components_use_cases
+                            .eventSuccessStrictRotationOverridePairEditor,
+                  ),
+                ],
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookFolder(
             name: 'Reveal components',
             children: [
               _widgetbook.WidgetbookComponent(
@@ -7219,16 +7347,6 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'Host folded states',
             children: [
               _widgetbook.WidgetbookComponent(
-                name: 'AssignmentReasonSummary',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'AssignmentReasonSummary',
-                    builder: _widgetbook_workspace_event_success_specimens_host
-                        .eventSuccessStrictAssignmentReasonSummary,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
                 name: 'CompatibilitySignalHostCard',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -7360,46 +7478,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'GroupOverrideMemberEditor',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'GroupOverrideMemberEditor',
-                    builder: _widgetbook_workspace_event_success_specimens_host
-                        .eventSuccessStrictGroupOverrideMemberEditor,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'GroupOverrideRoundEditor',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'GroupOverrideRoundEditor',
-                    builder: _widgetbook_workspace_event_success_specimens_host
-                        .eventSuccessStrictGroupOverrideRoundEditor,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'GroupOverrideSheet',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'GroupOverrideSheet',
-                    builder: _widgetbook_workspace_event_success_specimens_host
-                        .eventSuccessStrictGroupOverrideSheet,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'GroupOverrideUnitEditor',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'GroupOverrideUnitEditor',
-                    builder: _widgetbook_workspace_event_success_specimens_host
-                        .eventSuccessStrictGroupOverrideUnitEditor,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
                 name: 'HostActivitySummary',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -7460,16 +7538,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'MicroPodsHostCard',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'MicroPodsHostCard',
-                    builder: _widgetbook_workspace_event_success_specimens_host
-                        .eventSuccessStrictMicroPodsHostCard,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
                 name: 'NoticeCard',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -7490,16 +7558,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'PodGroupSummary',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'PodGroupSummary',
-                    builder: _widgetbook_workspace_event_success_specimens_host
-                        .eventSuccessStrictPodGroupSummary,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
                 name: 'ReadinessIssues',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -7516,46 +7574,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                     name: 'ReportTab',
                     builder: _widgetbook_workspace_event_success_specimens_host
                         .eventSuccessStrictReportTab,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'RotationOverridePairEditor',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'RotationOverridePairEditor',
-                    builder: _widgetbook_workspace_event_success_specimens_host
-                        .eventSuccessStrictRotationOverridePairEditor,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'RotationOverrideRoundEditor',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'RotationOverrideRoundEditor',
-                    builder: _widgetbook_workspace_event_success_specimens_host
-                        .eventSuccessStrictRotationOverrideRoundEditor,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'RotationOverrideSheet',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'RotationOverrideSheet',
-                    builder: _widgetbook_workspace_event_success_specimens_host
-                        .eventSuccessStrictRotationOverrideSheet,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'RotationsHostCard',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'RotationsHostCard',
-                    builder: _widgetbook_workspace_event_success_specimens_host
-                        .eventSuccessStrictRotationsHostCard,
                   ),
                 ],
               ),

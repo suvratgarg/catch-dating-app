@@ -24,11 +24,15 @@ import 'package:catch_dating_app/event_success/domain/event_success_runtime.dart
 import 'package:catch_dating_app/event_success/domain/event_success_standings.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_structure.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_wingman_request.dart';
+import 'package:catch_dating_app/event_success/presentation/assignments/event_success_assignment_profiles.dart';
+import 'package:catch_dating_app/event_success/presentation/assignments/event_success_host_pod_section.dart';
+import 'package:catch_dating_app/event_success/presentation/assignments/event_success_host_rotation_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_controller.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_conversation_cue_copy.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_feature_blocks.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_host_fixture_actions.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_host_screen_state.dart';
+import 'package:catch_dating_app/event_success/presentation/event_success_host_state_adapter.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_live_effects_controller.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_live_reveal_card_state.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_room_map.dart';
@@ -53,7 +57,6 @@ export 'package:catch_dating_app/event_success/presentation/event_success_host_s
 export 'package:catch_dating_app/event_success/presentation/event_success_host_fixture_actions.dart';
 
 part 'host_parts/event_success_host_live.dart';
-part 'host_parts/event_success_host_overrides.dart';
 part 'host_parts/event_success_host_report.dart';
 part 'host_parts/event_success_host_setup.dart';
 part 'host_parts/event_success_host_shared.dart';
@@ -62,36 +65,11 @@ abstract final class EventSuccessHostKeys {
   static const scrollView = ValueKey<String>('event_success.host.scroll_view');
 }
 
-const EdgeInsets _hostLaunchIssueGap = EdgeInsets.only(bottom: CatchSpacing.s1);
 final EdgeInsets _hostWingmanRequestNotePadding = CatchInsets.pageHorizontal
     .copyWith(bottom: CatchSpacing.s2);
 
 Object? _mutationError(MutationState<dynamic> state) {
   return state.hasError ? (state as MutationError).error : null;
-}
-
-EventSuccessSpatialLayoutState _eventSuccessSpatialLayoutState({
-  required EventSuccessPlan? plan,
-  required AsyncValue<EventSuccessLayout?> value,
-}) {
-  if (plan == null ||
-      plan.structureConfig.unitKind == EventSuccessUnitKind.wholeGroup) {
-    return const EventSuccessSpatialLayoutState.notApplicable();
-  }
-  if (plan.layoutId == null) {
-    return const EventSuccessSpatialLayoutState.unconfigured();
-  }
-  if (value.isLoading) {
-    return const EventSuccessSpatialLayoutState.loading();
-  }
-  if (value.hasError) {
-    return EventSuccessSpatialLayoutState.error(value.error!);
-  }
-  final layout = value.asData?.value;
-  if (layout == null) {
-    return const EventSuccessSpatialLayoutState.unconfigured();
-  }
-  return EventSuccessSpatialLayoutState.ready(layout);
 }
 
 class EventSuccessHostSection extends ConsumerStatefulWidget {
@@ -244,7 +222,7 @@ class _EventSuccessHostSectionState
                 EventSuccessUnitKind.wholeGroup
         ? ref.watch(eventSuccessSpatialLayoutProvider(event.id))
         : const AsyncData<EventSuccessLayout?>(null);
-    final spatialLayoutState = _eventSuccessSpatialLayoutState(
+    final spatialLayoutState = eventSuccessHostSpatialLayoutState(
       plan: persistedPlan,
       value: spatialLayoutAsync,
     );
@@ -284,7 +262,7 @@ class _EventSuccessHostSectionState
     final assignmentsPreview =
         assignmentsAsync.asData?.value ?? const <EventSuccessAssignment>[];
     final assignmentParticipantUidsKey = eventSuccessPeerUidsKey(
-      _rotationParticipantUids(assignmentsPreview),
+      eventSuccessAssignmentParticipantUids(assignmentsPreview),
     );
     final AsyncValue<List<PublicProfile>> assignmentParticipantProfilesAsync =
         shouldLoadAssignments && assignmentParticipantUidsKey.isNotEmpty
@@ -313,7 +291,7 @@ class _EventSuccessHostSectionState
         rotationAssignmentsAsync.asData?.value ??
         const <EventSuccessAssignment>[];
     final rotationParticipantUidsKey = eventSuccessPeerUidsKey(
-      _rotationParticipantUids(rotationAssignmentsPreview),
+      eventSuccessAssignmentParticipantUids(rotationAssignmentsPreview),
     );
     final AsyncValue<List<PublicProfile>> rotationParticipantProfilesAsync =
         shouldLoadAssignments && rotationParticipantUidsKey.isNotEmpty
@@ -332,7 +310,7 @@ class _EventSuccessHostSectionState
         ? ref.watch(watchEventSuccessWingmanRequestsProvider(event.id))
         : const AsyncData(<EventSuccessWingmanRequest>[]);
     final wingmanProfilesKey = eventSuccessPeerUidsKey(
-      _wingmanRequestProfileUids(
+      eventSuccessWingmanProfileUids(
         wingmanRequestsAsync.asData?.value ??
             const <EventSuccessWingmanRequest>[],
       ),

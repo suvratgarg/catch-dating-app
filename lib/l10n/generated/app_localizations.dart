@@ -8413,13 +8413,13 @@ abstract class AppLocalizations {
   String
   get eventSuccessEventSuccessHostLiveCatchbuttonEventsuccessnextstepbutton;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (Text).
+  /// Product copy used by lib/event_success/presentation/assignments/event_success_host_pod_section.dart (Text).
   ///
   /// In en, this message translates to:
   /// **'Small starter groups'**
   String get eventSuccessEventSuccessHostOverridesTextSmallStarterGroups;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (label).
+  /// Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).
   ///
   /// In en, this message translates to:
   /// **'{length} assigned'**
@@ -8427,7 +8427,7 @@ abstract class AppLocalizations {
     required Object length,
   });
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (label).
+  /// Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).
   ///
   /// In en, this message translates to:
   /// **'{optedOutCount} opted out'**
@@ -8435,75 +8435,75 @@ abstract class AppLocalizations {
     required Object optedOutCount,
   });
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (label).
+  /// Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Host edited'**
   String get eventSuccessEventSuccessHostOverridesLabelHostEdited;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (Text).
+  /// Product copy used by lib/event_success/presentation/assignments/event_success_host_pod_section.dart (Text).
   ///
   /// In en, this message translates to:
   /// **'Regenerate to remove opted-out attendee cards from the current pod set.'**
   String get eventSuccessEventSuccessHostOverridesTextRegenerateToRemoveOpted;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (Text).
+  /// Product copy used by lib/event_success/presentation/assignments/event_success_host_pod_section.dart (Text).
   ///
   /// In en, this message translates to:
   /// **'Generate attendee pod cards from the roster, excluding opted-out attendees.'**
   String get eventSuccessEventSuccessHostOverridesTextGenerateAttendeePodCards;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (Text).
+  /// Product copy used by lib/event_success/presentation/assignments/event_success_host_pod_section.dart (Text).
   ///
   /// In en, this message translates to:
   /// **'Generate attendee pod cards from the current booked and checked-in roster.'**
   String
   get eventSuccessEventSuccessHostOverridesTextGenerateAttendeePodCards4cbcdf;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (CatchButton).
+  /// Product copy used by lib/event_success/presentation/assignments/event_success_host_pod_section.dart (CatchButton).
   ///
   /// In en, this message translates to:
   /// **'eventSuccessGenerateMicroPodsButton'**
   String
   get eventSuccessEventSuccessHostOverridesCatchbuttonEventsuccessgeneratemicropodsbutton;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (label).
+  /// Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Generate micro-pods'**
   String get eventSuccessEventSuccessHostOverridesLabelGenerateMicroPods;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (label).
+  /// Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Regenerate'**
   String get eventSuccessEventSuccessHostOverridesLabelRegenerate;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (label).
+  /// Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Edit groups'**
   String get eventSuccessEventSuccessHostOverridesLabelEditGroups;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (title).
+  /// Product copy used by lib/event_success/presentation/assignments/event_success_group_override_sheet.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Edit groups'**
   String get eventSuccessEventSuccessHostOverridesTitleEditGroups;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (subtitle).
+  /// Product copy used by lib/event_success/presentation/assignments/event_success_group_override_sheet.dart, lib/event_success/presentation/assignments/event_success_rotation_override_sheet.dart (subtitle).
   ///
   /// In en, this message translates to:
   /// **'Host override'**
   String get eventSuccessEventSuccessHostOverridesSubtitleHostOverride;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (label).
+  /// Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Save overrides'**
   String get eventSuccessEventSuccessHostOverridesLabelSaveOverrides;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (label).
+  /// Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Group {value1}'**
@@ -8511,7 +8511,7 @@ abstract class AppLocalizations {
     required Object value1,
   });
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (Text).
+  /// Product copy used by lib/event_success/presentation/assignments/event_success_host_pod_section.dart (Text).
   ///
   /// In en, this message translates to:
   /// **'Round {value1}'**
@@ -8519,61 +8519,61 @@ abstract class AppLocalizations {
     required Object value1,
   });
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (label).
+  /// Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Add group'**
   String get eventSuccessEventSuccessHostOverridesLabelAddGroup;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (Text).
+  /// Product copy used by lib/event_success/presentation/assignments/event_success_host_pod_section.dart (Text).
   ///
   /// In en, this message translates to:
   /// **'No groups in this round.'**
   String get eventSuccessEventSuccessHostOverridesTextNoGroupsInThis;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (title).
+  /// Product copy used by lib/event_success/presentation/assignments/event_success_group_override_sheet.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Group label'**
   String get eventSuccessEventSuccessHostOverridesTitleGroupLabel;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (tooltip).
+  /// Product copy used by lib/event_success/presentation/assignments/event_success_group_override_round_section.dart (tooltip).
   ///
   /// In en, this message translates to:
   /// **'Remove group'**
   String get eventSuccessEventSuccessHostOverridesTooltipRemoveGroup;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (label).
+  /// Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Add attendee'**
   String get eventSuccessEventSuccessHostOverridesLabelAddAttendee;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (title).
+  /// Product copy used by lib/event_success/presentation/assignments/event_success_group_override_sheet.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Group attendee'**
   String get eventSuccessEventSuccessHostOverridesTitleGroupAttendee;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (hintText).
+  /// Product copy used by lib/event_success/presentation/assignments/event_success_rotation_override_round_section.dart, lib/event_success/presentation/assignments/event_success_group_override_round_section.dart (hintText).
   ///
   /// In en, this message translates to:
   /// **'Attendee'**
   String get eventSuccessEventSuccessHostOverridesHinttextAttendee;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (tooltip).
+  /// Product copy used by lib/event_success/presentation/assignments/event_success_group_override_round_section.dart (tooltip).
   ///
   /// In en, this message translates to:
   /// **'Remove attendee'**
   String get eventSuccessEventSuccessHostOverridesTooltipRemoveAttendee;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (Text).
+  /// Product copy used by lib/event_success/presentation/assignments/event_success_host_pod_section.dart (Text).
   ///
   /// In en, this message translates to:
   /// **'Timed partner rotations'**
   String get eventSuccessEventSuccessHostOverridesTextTimedPartnerRotations;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (label).
+  /// Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).
   ///
   /// In en, this message translates to:
   /// **'{roundCount} rounds'**
@@ -8581,20 +8581,20 @@ abstract class AppLocalizations {
     required Object roundCount,
   });
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (Text).
+  /// Product copy used by lib/event_success/presentation/assignments/event_success_host_pod_section.dart (Text).
   ///
   /// In en, this message translates to:
   /// **'Regenerate to remove opted-out attendees from timed rotations.'**
   String
   get eventSuccessEventSuccessHostOverridesTextRegenerateToRemoveOpted4eddde;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (Text).
+  /// Product copy used by lib/event_success/presentation/assignments/event_success_host_pod_section.dart (Text).
   ///
   /// In en, this message translates to:
   /// **'Generate pairings from event duration, saved cadence, checked-in participants, and mutual gender interest.'**
   String get eventSuccessEventSuccessHostOverridesTextGeneratePairingsFromEvent;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (label).
+  /// Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).
   ///
   /// In en, this message translates to:
   /// **'{eventRotationCapacity} possible'**
@@ -8603,7 +8603,7 @@ abstract class AppLocalizations {
     required Object eventRotationCapacity,
   });
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (label).
+  /// Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).
   ///
   /// In en, this message translates to:
   /// **'{sitOutRoundCount} planned breaks'**
@@ -8612,7 +8612,7 @@ abstract class AppLocalizations {
     required Object sitOutRoundCount,
   });
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (label).
+  /// Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).
   ///
   /// In en, this message translates to:
   /// **'{repeatPeerCount} repeated peers'**
@@ -8621,68 +8621,68 @@ abstract class AppLocalizations {
     required Object repeatPeerCount,
   });
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (CatchButton).
+  /// Product copy used by lib/event_success/presentation/assignments/event_success_host_pod_section.dart (CatchButton).
   ///
   /// In en, this message translates to:
   /// **'eventSuccessGenerateRotationsButton'**
   String
   get eventSuccessEventSuccessHostOverridesCatchbuttonEventsuccessgeneraterotationsbutton;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (label).
+  /// Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Generate rotations'**
   String get eventSuccessEventSuccessHostOverridesLabelGenerateRotations;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (label).
+  /// Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Edit rotations'**
   String get eventSuccessEventSuccessHostOverridesLabelEditRotations;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (title).
+  /// Product copy used by lib/event_success/presentation/assignments/event_success_group_override_sheet.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Edit rotations'**
   String get eventSuccessEventSuccessHostOverridesTitleEditRotations;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (label).
+  /// Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Add pair'**
   String get eventSuccessEventSuccessHostOverridesLabelAddPair;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (Text).
+  /// Product copy used by lib/event_success/presentation/assignments/event_success_host_pod_section.dart (Text).
   ///
   /// In en, this message translates to:
   /// **'No pairs in this round.'**
   String get eventSuccessEventSuccessHostOverridesTextNoPairsInThis;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (title).
+  /// Product copy used by lib/event_success/presentation/assignments/event_success_group_override_sheet.dart (title).
   ///
   /// In en, this message translates to:
   /// **'First rotation attendee'**
   String get eventSuccessEventSuccessHostOverridesTitleFirstRotationAttendee;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (title).
+  /// Product copy used by lib/event_success/presentation/assignments/event_success_group_override_sheet.dart (title).
   ///
   /// In en, this message translates to:
   /// **'Second rotation attendee'**
   String get eventSuccessEventSuccessHostOverridesTitleSecondRotationAttendee;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (hintText).
+  /// Product copy used by lib/event_success/presentation/assignments/event_success_rotation_override_round_section.dart, lib/event_success/presentation/assignments/event_success_group_override_round_section.dart (hintText).
   ///
   /// In en, this message translates to:
   /// **'Partner'**
   String get eventSuccessEventSuccessHostOverridesHinttextPartner;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (tooltip).
+  /// Product copy used by lib/event_success/presentation/assignments/event_success_group_override_round_section.dart (tooltip).
   ///
   /// In en, this message translates to:
   /// **'Remove pair'**
   String get eventSuccessEventSuccessHostOverridesTooltipRemovePair;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (label).
+  /// Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).
   ///
   /// In en, this message translates to:
   /// **'{key} · {value} assigned'**
@@ -8691,7 +8691,7 @@ abstract class AppLocalizations {
     required Object value,
   });
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (Text).
+  /// Product copy used by lib/event_success/presentation/assignments/event_success_host_pod_section.dart (Text).
   ///
   /// In en, this message translates to:
   /// **'Assignment notes'**
@@ -14136,60 +14136,60 @@ abstract class AppLocalizations {
     required Object title,
   });
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (visibleCopy).
+  /// Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'host_override_v1'**
   String get eventSuccessEventSuccessHostOverridesVisiblecopyHostOverrideV1;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (visibleCopy).
+  /// Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Add at least one group.'**
   String get eventSuccessEventSuccessHostOverridesVisiblecopyAddAtLeastOne;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (visibleCopy).
+  /// Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Name every group.'**
   String get eventSuccessEventSuccessHostOverridesVisiblecopyNameEveryGroup;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (visibleCopy).
+  /// Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Add at least one attendee to every group.'**
   String
   get eventSuccessEventSuccessHostOverridesVisiblecopyAddAtLeastOne64c0b6;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (visibleCopy).
+  /// Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Choose every attendee slot.'**
   String
   get eventSuccessEventSuccessHostOverridesVisiblecopyChooseEveryAttendeeSlot;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (visibleCopy).
+  /// Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Each attendee can appear once per round.'**
   String
   get eventSuccessEventSuccessHostOverridesVisiblecopyEachAttendeeCanAppear;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (visibleCopy).
+  /// Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Add at least one pair.'**
   String
   get eventSuccessEventSuccessHostOverridesVisiblecopyAddAtLeastOne76e783;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (visibleCopy).
+  /// Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Choose both attendees for every pair.'**
   String
   get eventSuccessEventSuccessHostOverridesVisiblecopyChooseBothAttendeesFor;
 
-  /// Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (visibleCopy).
+  /// Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Choose two different attendees.'**

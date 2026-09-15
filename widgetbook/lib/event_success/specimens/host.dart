@@ -6,20 +6,6 @@ import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 import 'preview.dart';
 
 @widgetbook.UseCase(
-  name: "AssignmentReasonSummary",
-  type: AssignmentReasonSummary,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Host folded states",
-)
-Widget eventSuccessStrictAssignmentReasonSummary(BuildContext context) {
-  return eventSuccessStrictPreview(
-    context,
-    surface: EventSuccessStrictSurface.host,
-    componentName: "AssignmentReasonSummary",
-  );
-}
-
-@widgetbook.UseCase(
   name: "CompatibilitySignalHostCard",
   type: CompatibilitySignalHostCard,
   path:
@@ -192,62 +178,6 @@ Widget eventSuccessStrictEventSuccessTabPicker(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: "GroupOverrideMemberEditor",
-  type: GroupOverrideMemberEditor,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Host folded states",
-)
-Widget eventSuccessStrictGroupOverrideMemberEditor(BuildContext context) {
-  return eventSuccessStrictPreview(
-    context,
-    surface: EventSuccessStrictSurface.host,
-    componentName: "GroupOverrideMemberEditor",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "GroupOverrideRoundEditor",
-  type: GroupOverrideRoundEditor,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Host folded states",
-)
-Widget eventSuccessStrictGroupOverrideRoundEditor(BuildContext context) {
-  return eventSuccessStrictPreview(
-    context,
-    surface: EventSuccessStrictSurface.host,
-    componentName: "GroupOverrideRoundEditor",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "GroupOverrideSheet",
-  type: GroupOverrideSheet,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Host folded states",
-)
-Widget eventSuccessStrictGroupOverrideSheet(BuildContext context) {
-  return eventSuccessStrictPreview(
-    context,
-    surface: EventSuccessStrictSurface.host,
-    componentName: "GroupOverrideSheet",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "GroupOverrideUnitEditor",
-  type: GroupOverrideUnitEditor,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Host folded states",
-)
-Widget eventSuccessStrictGroupOverrideUnitEditor(BuildContext context) {
-  return eventSuccessStrictPreview(
-    context,
-    surface: EventSuccessStrictSurface.host,
-    componentName: "GroupOverrideUnitEditor",
-  );
-}
-
-@widgetbook.UseCase(
   name: "HostActivitySummary",
   type: HostActivitySummary,
   path:
@@ -332,20 +262,6 @@ Widget eventSuccessStrictLiveTab(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: "MicroPodsHostCard",
-  type: MicroPodsHostCard,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Host folded states",
-)
-Widget eventSuccessStrictMicroPodsHostCard(BuildContext context) {
-  return eventSuccessStrictPreview(
-    context,
-    surface: EventSuccessStrictSurface.host,
-    componentName: "MicroPodsHostCard",
-  );
-}
-
-@widgetbook.UseCase(
   name: "NoticeCard",
   type: NoticeCard,
   path:
@@ -374,20 +290,6 @@ Widget eventSuccessStrictPlanSummary(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: "PodGroupSummary",
-  type: PodGroupSummary,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Host folded states",
-)
-Widget eventSuccessStrictPodGroupSummary(BuildContext context) {
-  return eventSuccessStrictPreview(
-    context,
-    surface: EventSuccessStrictSurface.host,
-    componentName: "PodGroupSummary",
-  );
-}
-
-@widgetbook.UseCase(
   name: "ReadinessIssues",
   type: ReadinessIssues,
   path:
@@ -412,62 +314,6 @@ Widget eventSuccessStrictReportTab(BuildContext context) {
     context,
     surface: EventSuccessStrictSurface.host,
     componentName: "ReportTab",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "RotationOverridePairEditor",
-  type: RotationOverridePairEditor,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Host folded states",
-)
-Widget eventSuccessStrictRotationOverridePairEditor(BuildContext context) {
-  return eventSuccessStrictPreview(
-    context,
-    surface: EventSuccessStrictSurface.host,
-    componentName: "RotationOverridePairEditor",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "RotationOverrideRoundEditor",
-  type: RotationOverrideRoundEditor,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Host folded states",
-)
-Widget eventSuccessStrictRotationOverrideRoundEditor(BuildContext context) {
-  return eventSuccessStrictPreview(
-    context,
-    surface: EventSuccessStrictSurface.host,
-    componentName: "RotationOverrideRoundEditor",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "RotationOverrideSheet",
-  type: RotationOverrideSheet,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Host folded states",
-)
-Widget eventSuccessStrictRotationOverrideSheet(BuildContext context) {
-  return eventSuccessStrictPreview(
-    context,
-    surface: EventSuccessStrictSurface.host,
-    componentName: "RotationOverrideSheet",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "RotationsHostCard",
-  type: RotationsHostCard,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Host folded states",
-)
-Widget eventSuccessStrictRotationsHostCard(BuildContext context) {
-  return eventSuccessStrictPreview(
-    context,
-    surface: EventSuccessStrictSurface.host,
-    componentName: "RotationsHostCard",
   );
 }
 
