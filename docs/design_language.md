@@ -1,7 +1,7 @@
 ---
 doc_id: design_language
-version: 1.26.0
-updated: 2026-09-14
+version: 1.27.0
+updated: 2026-09-16
 owner: ui_elevation_initiative
 status: active # identity locked; Phase 0–1 complete (bundled optical-sized fonts, B&W tokens, ActivityPalette routing, matte grade, anti-drift gates); Phase 2 flagship Profile built
 ---

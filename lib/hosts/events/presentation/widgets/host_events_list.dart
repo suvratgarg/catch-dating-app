@@ -286,7 +286,7 @@ class HostEventsTimelinePage extends StatelessWidget
               ),
               title: section.label(context.l10n),
               itemCount: section.rows.length,
-              findChildIndexCallback: (key) {
+              indexForKeyBuilder: (key) {
                 final index = section.rows.indexWhere(
                   (row) => key == ValueKey('host-event-row-${row.event.id}'),
                 );

@@ -42,7 +42,9 @@ void main() {
       expect(find.byType(InkWell), findsNothing);
       expect(
         tester
-            .widget<ColoredBox>(find.byKey(const ValueKey<String>('catch-row-press-overlay')))
+            .widget<ColoredBox>(
+              find.byKey(const ValueKey<String>('catch-row-press-overlay')),
+            )
             .color,
         isNot(Colors.transparent),
       );

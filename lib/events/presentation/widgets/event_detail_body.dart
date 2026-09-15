@@ -366,42 +366,42 @@ class EventDetailHostsSection extends StatelessWidget {
           mode: CatchErrorStateMode.compact,
         );
       case EventDetailHostStatus.content:
-        final style = surfaceStyle;
         final clubId = state.clubId!;
         final hostUid = state.hostUid;
         final canMessage = state.canMessage && hostUid != null;
 
-        return CatchSection.divided(
+        return CatchSection.containedRows(
           title: context.l10n.eventsEventDetailBodyTitleHostedBy,
-          dividerColor: style?.dividerColor,
-          titleColor: style?.headingColor,
-          child: CatchField.navigate(
-            onActivate: () => onViewClub(clubId),
-            content: CatchPersonLayout(
-              name: state.hostName!,
-              imageUrl: state.photoUrl,
-              supportingText: state.meta,
-              avatarColors: ActivityPalette.resolve(
-                context,
-                event.activityKind,
-              ).avatarColors,
-              badges: [
-                if (state.verified)
-                  CatchRowBadge(
-                    label: context.l10n.organizersAuthorityBadgeOwnerVerified,
-                    tone: CatchBadgeTone.success,
-                    icon: CatchIcons.sealCheck,
-                  ),
-              ],
+          children: [
+            CatchField.navigate(
+              onActivate: () => onViewClub(clubId),
+              content: CatchPersonLayout(
+                name: state.hostName!,
+                imageUrl: state.photoUrl,
+                supportingText: state.meta,
+                avatarColors: ActivityPalette.resolve(
+                  context,
+                  event.activityKind,
+                ).avatarColors,
+                badges: [
+                  if (state.verified)
+                    CatchRowBadge(
+                      label: context.l10n.organizersAuthorityBadgeOwnerVerified,
+                      tone: CatchBadgeTone.success,
+                      icon: CatchIcons.sealCheck,
+                    ),
+                ],
+              ),
+              secondaryAction: canMessage
+                  ? CatchFieldSecondaryAction.command(
+                      label:
+                          context.l10n.eventsEventDetailBodyTooltipMessageHost,
+                      icon: CatchIcons.chatBubbleOutlineRounded,
+                      onActivate: () => onMessageHost(clubId, hostUid),
+                    )
+                  : null,
             ),
-            secondaryAction: canMessage
-                ? CatchFieldSecondaryAction.command(
-                    label: context.l10n.eventsEventDetailBodyTooltipMessageHost,
-                    icon: CatchIcons.chatBubbleOutlineRounded,
-                    onActivate: () => onMessageHost(clubId, hostUid),
-                  )
-                : null,
-          ),
+          ],
         );
     }
   }

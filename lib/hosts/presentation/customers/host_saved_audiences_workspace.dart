@@ -139,13 +139,13 @@ class _HostSavedAudiencesDirectoryState
                   key: const ValueKey('host-saved-audiences-directory'),
                   title: context.l10n.hostSavedAudiencesManage,
                   count: visible.length,
-                  action: CatchButton.text(
+                  trailing: CatchButton.text(
                     key: const ValueKey('host-saved-audience-create'),
                     label: context.l10n.hostSavedAudienceNew,
                     onPressed: onCreate,
                   ),
                   itemCount: visible.length,
-                  findChildIndexCallback: (key) {
+                  indexForKeyBuilder: (key) {
                     final index = visible.indexWhere(
                       (audience) =>
                           key ==
@@ -204,7 +204,7 @@ class _HostSavedAudiencesDirectoryState
         ),
         SliverToBoxAdapter(
           child: CatchSection.rows(
-            entries: [
+            children: [
               CatchField.nav(
                 copy: catchFieldCopy(context.l10n),
                 title: context.l10n.hostFormAutomationsTitle,

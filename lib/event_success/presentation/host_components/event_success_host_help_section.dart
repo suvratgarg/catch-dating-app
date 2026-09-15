@@ -28,7 +28,7 @@ class EventSuccessHostHelpSection extends StatelessWidget {
       count: context.l10n.eventSuccessEventSuccessHostSharedLabelLengthActive(
         length: activeRequests.length,
       ),
-      entries: [
+      children: [
         if (activeRequests.isEmpty)
           CatchField.content(
             copy: catchFieldCopy(context.l10n),

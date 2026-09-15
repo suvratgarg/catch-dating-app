@@ -270,6 +270,7 @@ class HostInboxAudienceRail extends StatelessWidget {
       child: Padding(
         padding: CatchInsets.pageHorizontal,
         child: CatchChoiceInput<HostInboxAudienceSegment>.segmented(
+          variant: CatchChoiceInputVariant.summary,
           contract:
               CatchContractConstraints.mobileFormStateHostInboxAudienceSegment,
           contractValueBuilder: (segment) => segment.name,
@@ -353,7 +354,7 @@ class HostInboxWorkspaceSliver extends StatelessWidget {
     }
     return CatchSection.sliverRows(
       itemCount: people.people.length,
-      findChildIndexCallback: (key) {
+      indexForKeyBuilder: (key) {
         final index = people.people.indexWhere((p) => ValueKey(p.key) == key);
         return index < 0 ? null : index;
       },

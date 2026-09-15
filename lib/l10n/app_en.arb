@@ -7897,7 +7897,7 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.inbox.host_broadcast_composer_sheet"
   },
-  "hostsHostInboxScreenLabelBookedBookedthreadcount": "BOOKED · {bookedThreadCount}",
+  "hostsHostInboxScreenLabelBookedBookedthreadcount": "Booked · {bookedThreadCount}",
   "@hostsHostInboxScreenLabelBookedBookedthreadcount": {
     "description": "Product copy used by lib/hosts/presentation/inbox/host_inbox_screen.dart (label).",
     "placeholders": {
@@ -7907,7 +7907,7 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.inbox.host_inbox_screen"
   },
-  "hostsHostInboxScreenLabelProspectiveProspectivethreadcount": "PROSPECTIVE · {prospectiveThreadCount}",
+  "hostsHostInboxScreenLabelProspectiveProspectivethreadcount": "Prospective · {prospectiveThreadCount}",
   "@hostsHostInboxScreenLabelProspectiveProspectivethreadcount": {
     "description": "Product copy used by lib/hosts/presentation/inbox/host_inbox_screen.dart (label).",
     "placeholders": {

@@ -349,7 +349,7 @@ class _ResponseIdentityHeader extends StatelessWidget {
   final HostFormResponseDetail detail;
   @override
   Widget build(BuildContext context) => CatchSection.containedRows(
-    entries: [
+    children: [
       CatchField.read(
         key: const ValueKey('host-form-response-name'),
         content: CatchPersonLayout(

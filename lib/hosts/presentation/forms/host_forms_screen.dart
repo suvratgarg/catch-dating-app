@@ -566,7 +566,7 @@ class _HostFormsLibraryPage extends ConsumerWidget
               slivers: [
                 CatchSection.sliverRows(
                   itemCount: state.forms.length,
-                  findChildIndexCallback: (key) {
+                  indexForKeyBuilder: (key) {
                     final index = state.forms.indexWhere(
                       (form) => key == ValueKey('host-form-${form.formId}'),
                     );

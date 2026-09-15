@@ -1,6 +1,6 @@
 ---
 doc_id: catch_row_section_conformance_handoff
-version: 3.0.0
+version: 3.1.0
 updated: 2026-09-16
 owner: ui_elevation_initiative
 status: implementing
@@ -27,22 +27,53 @@ The implementation starts at fresh main
 follow-ups are merged. Reconcile the historical findings below with that source;
 this plan's presence is not evidence a requirement has been implemented.
 
-The pilot intake PR #377 retains its exact source-file claim. Preserve its form
-question, response-detail, controller and localization work. Coordinate any
-required overlap; do not import or alter its backend changes as UI refactoring.
+The implementation lives on `codex/host-screen-composition-20260916`.
+The pilot intake additions to form copy and submitted-response gating are
+preserved; its independent backend work is not part of this migration.
 
-Source baseline: `6030865f9c95a7513fc71d7d72e79782e506fd57`, refreshed from
-`origin/main` on 2026-09-08. **Phase 3 extraction has already merged at this
-baseline** (`Extract the shared UI package (Phase 3)`, PR #366). The earlier
-screen audit used `d0a07412fcb632b3a2aff971c60a545b197cbd36`. This revision uses
-the extracted paths and rechecks the relevant compositions; extraction is not
-proof of conformance to the new contracts below. Recheck later extraction
-follow-ups and active work before implementation.
+### Implemented architecture
 
-Handoff distribution branch: `codex/catch-ui-composition-handoff-20260908`.
-If this document is not yet on main, retrieve this file from that branch; the
-implementation branch must still start from freshly fetched main. The handoff
-does not depend on the original task's local worktree or temporary audit files.
+The executable API supersedes the illustrative spellings in the historical
+exploration below. `CatchSection.rows(children: List<CatchField>)`,
+`containedRows`, and `sliverRows(itemBuilder: ... -> CatchField)` own row-group
+geometry. `CatchSection.content(child:)` owns non-row content and its gutter.
+Headers use `title`, `count`, and `trailing`, matching existing Catch UI slots.
+`CatchField.navigate(content:, onActivate:)` and `CatchField.read(content:)`
+accept sealed, non-Widget `CatchRecordLayout`, `CatchPersonLayout`, and
+`CatchConversationLayout` values. Layouts have no callbacks or interactive
+children. `CatchFieldSecondaryAction` is the independent action boundary.
+The old public PersonRow, RecordRow, and RowPressSurface exports are removed.
+
+| Screen | Implemented composition | Domain ownership |
+|---|---|---|
+| Events | Shell -> browse header + stable Upcoming/Past tabs -> full-width root scroll -> lazy month Sections -> Field -> RecordLayout. A month has one content-width rule; row rules start at the text lane. | Event projection, filtering and date labels stay with Events. |
+| Audience | Shell -> browse header + People/Groups/Forms/Responses views -> view-owned search/filter/summary controls -> locally measured adaptive list/detail -> Sections -> Field -> PersonLayout or RecordLayout. | Audience owns contact identity, classification, saved groups and forms; the same measured pane width governs rendering and activation. |
+| Organizer | Shell -> Edit/Insights/Preview tabs -> full-width section sequence. Edit uses media content, schema-backed FormRowList and settings rows. Insights places current-period controls before its async region and keeps lifetime totals distinct. | Organizer owns publication, validation, saving and period state. |
+| Today | Shell -> root scroll -> SectionList.panes(body:, trailing:) -> event spotlight, attention rows, bounded upcoming preview and actions. Each pane publishes its own interaction width. | Today projects operational evidence; unknown task totals remain partial, and checked-in people are not relabelled as attendees. |
+| Messaging | Shell -> Inbox/Sends views -> scope and audience controls -> adaptive person collection/detail. Inbox rows use ConversationLayout; New message pushes a person directory, then explicit available routes. Sends has one sealed history/intent/compose/report state. | Controllers own paging, recipient authorization and send operations. Person projection joins only verified organizer-scoped identities; drafts include person, scope and route. |
+
+`CatchFormRowList` remains the package-owned adapter for schema-driven editing.
+Native text inputs, transcript bubbles, draggable spatial items, metric groups,
+media and true multi-column tables retain their specialized owners. This does
+not authorize a second ordinary interactive row shell. Menu, accordion and
+location-autocomplete redesign remain deferred; existing menu behavior is
+preserved through explicit secondary action slots.
+
+### Regression protection and delivery boundaries
+
+The protection is layered: closed Dart layout types and typed section children;
+resolved lint rules for internal geometry, passive content, external row input
+and outer row insets; page/pane extent assertions with rounded release fallback;
+package widget tests measuring paint, taps, divider offsets, containment, lazy
+construction, RTL and large text; production screen tests and rendered captures.
+No AST ancestry rule proves an opaque helper's runtime geometry by itself.
+
+The WhatsApp projection adds optional server-verified linked identity. Until the
+corresponding backend is deployed, missing identity keeps endpoints separate;
+matching display names never merge people. This branch does not deploy services,
+merge itself, distribute an app build, or send live messages. Captures exercise
+the production widget tree with deterministic fixtures, not a physical-device
+release. In-memory reply drafts do not claim process-restart persistence.
 
 This is a temporary implementation plan under the existing
 [UI-system program](ui_system_blueprint_and_conformance_audit.md) and
@@ -294,7 +325,7 @@ render/state helpers; passive layouts are immutable configuration values.
 | `.control` used for non-form reveal | `.disclosure(content:, expandedContent:, isExpanded:, onExpandedChanged:)` | Explicit reveal semantics without a validation-contract exemption. |
 | `input` vs `inputActions`, commit booleans | Typed editor/form commit policy | Preserve the behavior during migration; don't collapse immediate and confirmed commits into the same ambiguous signature. |
 | Set-based choice API for both cardinalities | Distinct single-/multiple-choice configurations | `T? value` versus `Set<T> values`; preserve explained/picker presentations without cardinality booleans. Final constructor names require an API fixture. |
-| `CatchSection.fieldRows`, generic `.divided(children:)` for rows | `CatchSection.rows(header:, entries:)` | Typed row role, canonical default separators, optional header. |
+| `CatchSection.fieldRows`, generic `.divided(children:)` for rows | `CatchSection.rows(header:, children:)` | Typed row role, canonical default separators, optional header. |
 | `.containedFieldRows` | `.containedRows(...)` | One bounded row group; no raw radius and no child-owned perimeter. |
 | `.dependentFieldRows` checkpoint | `.dependentRows(...)` or named dependent-group entry | One controlling Field and attached region. Choose one integration, not parallel families. |
 | Generic `.plain/.contained(child:)` | Explicit content-section recipe | Preserve real prose/media/metric uses; forbid ordinary row lists through this escape hatch. |
@@ -354,7 +385,7 @@ remain available only to exact package renderer/control owners.
 ```dart
 CatchSection.rows(
   header: CatchSectionHeaderData(title: monthLabel),
-  entries: [
+  children: [
     CatchField.navigate(
       key: ValueKey(event.id),
       onActivate: () => openEvent(event.id),
@@ -368,7 +399,7 @@ CatchSection.rows(
 );
 
 CatchSection.rows(
-  entries: [
+  children: [
     CatchField.navigate(
       key: ValueKey(person.id),
       isSelected: person.id == selectedPersonId,
@@ -448,7 +479,7 @@ typed; the trigger and option use the same value label. Only the feature's
 
 ```dart
 CatchSection.rows(
-  entries: [
+  children: [
     CatchField.singleChoice<InboxScopeId>(
       key: const ValueKey('inbox-scope'),
       copy: fieldCopy,

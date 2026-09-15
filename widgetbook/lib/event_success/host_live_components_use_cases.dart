@@ -449,7 +449,7 @@ Widget eventSuccessStrictWingmanRequestHostRow(BuildContext context) =>
       catalogId: 'Event Success Host live',
       children: [
         CatchSection.containedRows(
-          entries: [
+          children: [
             CatchField.read(
               content: eventSuccessHostHelpLayout(
                 context,

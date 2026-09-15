@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_catch_pages_controller.dart';
@@ -35,6 +36,7 @@ class HostInboxSelectedPerson extends ConsumerWidget {
     final events = catchAsyncStateFromAsyncValue(
       ref.watch(watchEventsForClubProvider(organizerId)),
     );
+    final waitingForScope = this.scope == null && !events.hasData;
     final scope = events.value == null
         ? this.scope ?? const HostInboxScope.general()
         : resolveHostInboxScope(
@@ -67,7 +69,7 @@ class HostInboxSelectedPerson extends ConsumerWidget {
     final person = people.people
         .where((p) => p.containsEndpoint(selection))
         .firstOrNull;
-    if (person != null) {
+    if (person != null && !waitingForScope) {
       return HostPersonConversationPane(
         key: ValueKey('${person.key}/${scope.eventId ?? 'general'}'),
         person: person,
@@ -90,7 +92,13 @@ class HostInboxSelectedPerson extends ConsumerWidget {
           ),
         ),
         Expanded(
-          child: inbox.isLoading || whatsapp.isLoading
+          child: waitingForScope && events.hasError
+              ? CatchLocalizedErrorState(
+                  events.error!,
+                  onRetry: () =>
+                      ref.invalidate(watchEventsForClubProvider(organizerId)),
+                )
+              : waitingForScope || inbox.isLoading || whatsapp.isLoading
               ? const CatchSkeleton.rows()
               : CatchEmptyState(
                   icon: CatchIcons.chatBubbleOutlineRounded,

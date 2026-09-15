@@ -100,7 +100,7 @@ class _HostNewMessageScreenState extends ConsumerState<HostNewMessageScreen> {
               ),
               SliverToBoxAdapter(
                 child: CatchSection.rows(
-                  entries: [
+                  children: [
                     CatchField.navigate(
                       content: CatchRecordLayout(
                         title: context.l10n.hostInboxAddPerson,
@@ -227,11 +227,18 @@ class _HostNewMessageScreenState extends ConsumerState<HostNewMessageScreen> {
   }
 
   Future<void> _addPerson() async {
+    final accountId = catchAsyncStateFromAsyncValue(
+      ref.read(uidProvider),
+    ).value;
     final created = await context.pushNamed<HostCreatedCustomer>(
       Routes.hostAddCustomerScreen.name,
       queryParameters: {'organizerId': widget.organizerId},
     );
-    if (mounted && created != null) {
+    if (mounted &&
+        created != null &&
+        accountId ==
+            catchAsyncStateFromAsyncValue(ref.read(uidProvider)).value) {
+      ref.invalidate(hostCustomersDirectoryControllerProvider);
       setState(() {
         _contactId = created.contactId;
         _name = created.displayName;
@@ -283,7 +290,7 @@ class _HostNewMessageRoutes extends ConsumerWidget {
       emptyStateOmitted: true,
       children: [
         CatchSection.rows(
-          entries: [
+          children: [
             CatchField.read(
               content: CatchPersonLayout(
                 name:
@@ -307,7 +314,7 @@ class _HostNewMessageRoutes extends ConsumerWidget {
         if (valid)
           CatchSection.rows(
             title: context.l10n.hostInboxAvailableRoutes,
-            entries: [
+            children: [
               if (catchAvailable)
                 CatchField.navigate(
                   content: CatchRecordLayout(

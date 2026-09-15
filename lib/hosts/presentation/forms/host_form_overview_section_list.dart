@@ -91,52 +91,53 @@ class HostFormOverviewSectionList extends ConsumerWidget {
         ),
         if (form.activeVersionId != null) ...[
           gapH32,
-          CatchSection.divided(
-            title: context.l10n.hostAudienceLatestResponse,
-            first: true,
-            child: CatchAsyncBoundary<HostFormResponsesState>(
-              value: ref.watch(hostFormResponsesControllerProvider(request)),
-              onRetry: () =>
-                  ref.invalidate(hostFormResponsesControllerProvider(request)),
-              loadingBuilder: (_) => const CatchSkeleton.rows(count: 1),
-              errorBuilder: (_, error, _, onBoundaryRetry) =>
-                  CatchLocalizedErrorState(
-                    error,
-                    context: AppErrorContext.formResponses,
-                    mode: CatchErrorStateMode.compact,
-                    onRetry: onBoundaryRetry,
-                  ),
-              builder: (context, value) {
-                final response = value.responses.firstOrNull;
-                if (response == null) {
-                  return Text(
-                    context.l10n.hostFormResponsesEmptyBody,
-                    style: CatchTextStyles.supporting(context),
-                  );
-                }
-                return CatchField.navigate(
-                  key: const ValueKey(
-                    'host-form-command-center-recent-response',
-                  ),
-                  onActivate: () => context.pushNamed(
-                    Routes.hostFormResponseDetailScreen.name,
-                    pathParameters: {'responseId': response.responseId},
-                    queryParameters: {'organizerId': organizerId},
-                  ),
-                  content: CatchPersonLayout(
-                    name:
-                        response.identity.primaryLabel ??
-                        context.l10n.hostFormResponsesAnonymous,
-                    supportingText:
-                        response.sourceLabel ??
-                        context.l10n.hostFormResponseDirectSource,
-                    context: AppTimeFormatters.compactRelativeTime(
-                      response.submittedAt,
+          CatchAsyncBoundary<HostFormResponsesState>(
+            value: ref.watch(hostFormResponsesControllerProvider(request)),
+            onRetry: () =>
+                ref.invalidate(hostFormResponsesControllerProvider(request)),
+            loadingBuilder: (_) => const CatchSkeleton.rows(count: 1),
+            errorBuilder: (_, error, _, onBoundaryRetry) =>
+                CatchLocalizedErrorState(
+                  error,
+                  context: AppErrorContext.formResponses,
+                  mode: CatchErrorStateMode.compact,
+                  onRetry: onBoundaryRetry,
+                ),
+            builder: (context, value) {
+              final response = value.responses.firstOrNull;
+              if (response == null) {
+                return Text(
+                  context.l10n.hostFormResponsesEmptyBody,
+                  style: CatchTextStyles.supporting(context),
+                );
+              }
+              return CatchSection.containedRows(
+                title: context.l10n.hostAudienceLatestResponse,
+                children: [
+                  CatchField.navigate(
+                    key: const ValueKey(
+                      'host-form-command-center-recent-response',
+                    ),
+                    onActivate: () => context.pushNamed(
+                      Routes.hostFormResponseDetailScreen.name,
+                      pathParameters: {'responseId': response.responseId},
+                      queryParameters: {'organizerId': organizerId},
+                    ),
+                    content: CatchPersonLayout(
+                      name:
+                          response.identity.primaryLabel ??
+                          context.l10n.hostFormResponsesAnonymous,
+                      supportingText:
+                          response.sourceLabel ??
+                          context.l10n.hostFormResponseDirectSource,
+                      context: AppTimeFormatters.compactRelativeTime(
+                        response.submittedAt,
+                      ),
                     ),
                   ),
-                );
-              },
-            ),
+                ],
+              );
+            },
           ),
           CatchButton.command(
             label: context.l10n.hostFormsViewResponsesAction,

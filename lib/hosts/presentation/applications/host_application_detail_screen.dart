@@ -105,7 +105,7 @@ class _HostApplicationDetailScreenState
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 CatchSection.containedRows(
-                  entries: [
+                  children: [
                     CatchField.read(
                       content: CatchPersonLayout(
                         name: application.applicantDisplayName,

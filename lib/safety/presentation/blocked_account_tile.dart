@@ -57,7 +57,7 @@ class BlockedAccountsSection extends StatelessWidget {
             ),
           ),
           SettingsBlockedAccountsStatus.content => CatchSection.containedRows(
-            entries: [
+            children: [
               for (var i = 0; i < state.rows.length; i++)
                 CatchField.read(
                   content: blockedAccountLayout(context, state.rows[i]),

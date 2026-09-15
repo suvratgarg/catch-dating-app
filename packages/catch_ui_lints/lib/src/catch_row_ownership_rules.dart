@@ -23,7 +23,7 @@ class CatchRowOwnershipRules extends MultiAnalysisRule {
   );
   static const sectionContent = LintCode(
     'catch_section_content_is_passive',
-    'Ordinary Fields belong in CatchSection.rows or containedRows, not the non-row content slot.',
+    'Structured Fields require rows, containedRows or sliverRows. Non-row content cannot contain ordinary Fields.',
     severity: DiagnosticSeverity.WARNING,
   );
   static const outerInset = LintCode(
@@ -122,7 +122,17 @@ class _RowVisitor extends SimpleAstVisitor<void> {
       ) {
         if (ancestor is InstanceCreationExpression &&
             isUi(ancestor.constructorName.element, 'CatchSection')) {
-          if (ancestor.constructorName.element?.name == 'content') {
+          final section = ancestor.constructorName.element?.name;
+          final structured = node.argumentList.arguments
+              .whereType<NamedExpression>()
+              .any((argument) => argument.name.label.name == 'content');
+          if (section == 'content' ||
+              structured &&
+                  !const {
+                    'rows',
+                    'containedRows',
+                    'sliverRows',
+                  }.contains(section)) {
             rule.reportAtNode(
               node,
               diagnosticCode: CatchRowOwnershipRules.sectionContent,

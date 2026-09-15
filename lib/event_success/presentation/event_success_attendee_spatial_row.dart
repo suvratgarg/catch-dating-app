@@ -18,7 +18,7 @@ class _EventSuccessAttendeeSpatialRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final row = CatchSection.containedRows(
-      entries: [
+      children: [
         CatchField.navigate(
           onActivate: () => unawaited(onSelect(assignment)),
           states: {

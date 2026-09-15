@@ -126,7 +126,7 @@ Widget catchPersonRowChatPreviewContractStates(BuildContext context) {
         context,
       ).copyWith(textScaler: TextScaler.linear(scale)),
       child: CatchSection.containedRows(
-        entries: [
+        children: [
           if (read)
             CatchField.read(content: layout, secondaryAction: action)
           else

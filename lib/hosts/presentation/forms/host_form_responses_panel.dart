@@ -58,7 +58,7 @@ class _HostFormResponsesPanelState
       slivers: [
         SliverToBoxAdapter(
           child: CatchSection.rows(
-            entries: [
+            children: [
               CatchField.navigate(
                 key: const ValueKey('host-form-responses-review-applications'),
                 content: CatchRecordLayout(
@@ -144,7 +144,7 @@ class _HostFormResponsesPanelState
               slivers: [
                 CatchSection.sliverRows(
                   itemCount: state.responses.length,
-                  findChildIndexCallback: (key) {
+                  indexForKeyBuilder: (key) {
                     final index = state.responses.indexWhere(
                       (response) =>
                           key ==

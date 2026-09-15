@@ -310,16 +310,16 @@ class CatchSection extends StatelessWidget {
     Key? key,
     String? title,
     Object? count,
-    Widget? action,
-    required List<CatchField> entries,
+    Widget? trailing,
+    required List<CatchField> children,
   }) => CatchSection._rows(
     key: key,
     title: title,
     rowSection: CatchSectionRows(
       title: title,
       count: count,
-      action: action,
-      entries: entries,
+      trailing: trailing,
+      children: children,
     ),
   );
 
@@ -328,16 +328,16 @@ class CatchSection extends StatelessWidget {
     Key? key,
     String? title,
     Object? count,
-    Widget? action,
-    required List<CatchField> entries,
+    Widget? trailing,
+    required List<CatchField> children,
   }) => CatchSection._rows(
     key: key,
     title: title,
     rowSection: CatchSectionRows(
       title: title,
       count: count,
-      action: action,
-      entries: entries,
+      trailing: trailing,
+      children: children,
       contained: true,
     ),
   );
@@ -347,15 +347,15 @@ class CatchSection extends StatelessWidget {
   factory CatchSection.formRows({
     String? title,
     Object? count,
-    Widget? action,
-    required List<Widget> entries,
+    Widget? trailing,
+    required List<Widget> children,
   }) => CatchSection._rows(
     title: title,
     rowSection: CatchSectionRows.form(
       title: title,
       count: count,
-      action: action,
-      entries: entries,
+      trailing: trailing,
+      children: children,
       leadingInset: CatchFieldTokens.textLaneInset,
     ),
   );
@@ -366,7 +366,7 @@ class CatchSection extends StatelessWidget {
     Key? key,
     String? title,
     Object? count,
-    Widget? action,
+    Widget? trailing,
     required Widget child,
   }) => CatchSection._rows(
     key: key,
@@ -374,7 +374,7 @@ class CatchSection extends StatelessWidget {
     rowSection: CatchSectionContent(
       title: title,
       count: count,
-      action: action,
+      trailing: trailing,
       child: child,
     ),
   );
@@ -384,20 +384,20 @@ class CatchSection extends StatelessWidget {
     Key? key,
     String? title,
     Object? count,
-    Widget? action,
+    Widget? trailing,
     required int itemCount,
     required CatchField Function(BuildContext, int) itemBuilder,
-    int? Function(Key)? findChildIndexCallback,
+    int? Function(Key)? indexForKeyBuilder,
   }) => CatchSection._rows(
     key: key,
     title: title,
     rowSection: CatchSectionRows.sliver(
       title: title,
       count: count,
-      action: action,
+      trailing: trailing,
       itemCount: itemCount,
       itemBuilder: itemBuilder,
-      findChildIndexCallback: findChildIndexCallback,
+      indexForKeyBuilder: indexForKeyBuilder,
     ),
   );
 

@@ -1,6 +1,7 @@
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+
 Widget _app(Widget child) => MaterialApp(
   theme: CatchTheme.light,
   home: Scaffold(body: child),

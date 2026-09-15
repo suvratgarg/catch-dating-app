@@ -90,7 +90,7 @@ class _HostEventStaffSectionState extends ConsumerState<HostEventStaffSection> {
                     );
                   }
                   return CatchSection.containedRows(
-                    entries: [
+                    children: [
                       for (final indexed in list.members.indexed)
                         CatchField.read(
                           key: ValueKey(indexed.$2.uid),

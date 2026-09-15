@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.65.8
-updated: 2026-09-15
+version: 1.65.9
+updated: 2026-09-16
 owner: app_architecture
 status: active
 ---
@@ -2805,7 +2805,7 @@ Host Inbox is the reference for sharing foundations without sharing product
 composition. Consumer `/chats` owns `ChatsListScreen`; the compatibility route
 `/host/inbox` owns `HostInboxScreen`; its shell label is Inbox while the local
 screen heading Messaging names the combined Inbox and Sends modes.
-They may reuse `ChatConversationsList`, `CatchPersonRow`, search state, inquiry
+They may reuse `ChatConversationsList`, Field-owned person layouts, search state, inquiry
 repositories, and routing contracts, but the consumer screen must not remain
 the Host route dispatcher.
 

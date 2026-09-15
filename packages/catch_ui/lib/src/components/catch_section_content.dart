@@ -12,10 +12,10 @@ double catchSectionContentGutter(double width) =>
 
 /// Internal header boundary shared by row and non-row section recipes.
 class CatchSectionHeading extends StatelessWidget {
-  const CatchSectionHeading({super.key, this.title, this.count, this.action});
+  const CatchSectionHeading({super.key, this.title, this.count, this.trailing});
   final String? title;
   final Object? count;
-  final Widget? action;
+  final Widget? trailing;
 
   @override
   Widget build(BuildContext context) => Column(
@@ -25,7 +25,7 @@ class CatchSectionHeading extends StatelessWidget {
       CatchSectionHeader.kicker(
         title: title,
         count: count,
-        trailing: action,
+        trailing: trailing,
         color: CatchTokens.of(context).ink2,
         textVariant: CatchKickerTextVariant.fieldSection,
       ),
@@ -42,12 +42,12 @@ class CatchSectionContent extends StatelessWidget {
     required this.child,
     this.title,
     this.count,
-    this.action,
+    this.trailing,
   });
   final Widget child;
   final String? title;
   final Object? count;
-  final Widget? action;
+  final Widget? trailing;
 
   @override
   Widget build(BuildContext context) => LayoutBuilder(
@@ -61,8 +61,12 @@ class CatchSectionContent extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            if (title != null || count != null || action != null) ...[
-              CatchSectionHeading(title: title, count: count, action: action),
+            if (title != null || count != null || trailing != null) ...[
+              CatchSectionHeading(
+                title: title,
+                count: count,
+                trailing: trailing,
+              ),
               const SizedBox(height: CatchSpacing.s3),
             ],
             child,

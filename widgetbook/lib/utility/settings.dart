@@ -107,7 +107,7 @@ Widget settingsScreenStates(BuildContext context) {
 )
 Widget blockedAccountTileState(BuildContext context) => WidgetbookContentFrame(
   child: CatchSection.containedRows(
-    entries: [
+    children: [
       CatchField.read(
         content: const CatchPersonLayout(
           name: 'Maya Shah',

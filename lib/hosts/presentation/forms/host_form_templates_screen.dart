@@ -68,8 +68,7 @@ class _HostFormTemplatesScreenState
                           context: AppErrorContext.forms,
                           onRetry: onBoundaryRetry,
                         ),
-                    builder: (context, values) => CatchSection.divided(
-                      first: true,
+                    builder: (context, values) => CatchSection.containedRows(
                       children: [
                         for (final template in values)
                           CatchField.navigate(

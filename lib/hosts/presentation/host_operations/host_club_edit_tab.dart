@@ -567,7 +567,7 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
           count: context.l10n.coreOrderedPhotoPickerSubtitlePhotoCount(
             count: mediaAssetCount,
           ),
-          action: CatchButton.text(
+          trailing: CatchButton.text(
             key: OrderedPhotoPickerKeys.manageAction,
             label: context.l10n.hostsHostClubEditTabActionManageImages,
             onPressed: mediaPending
@@ -611,7 +611,7 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
         ),
         CatchSection.rows(
           title: context.l10n.hostsHostClubEditTabTitleClubSettings,
-          entries: [
+          children: [
             CatchField.nav(
               copy: catchFieldCopy(context.l10n),
               key: const ValueKey('host-club-settings-event-defaults'),

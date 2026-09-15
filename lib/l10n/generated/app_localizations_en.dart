@@ -4073,14 +4073,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String hostsHostInboxScreenLabelBookedBookedthreadcount({
     required Object bookedThreadCount,
   }) {
-    return 'BOOKED · $bookedThreadCount';
+    return 'Booked · $bookedThreadCount';
   }
 
   @override
   String hostsHostInboxScreenLabelProspectiveProspectivethreadcount({
     required Object prospectiveThreadCount,
   }) {
-    return 'PROSPECTIVE · $prospectiveThreadCount';
+    return 'Prospective · $prospectiveThreadCount';
   }
 
   @override

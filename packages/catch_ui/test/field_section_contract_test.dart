@@ -39,7 +39,7 @@ void main() {
       host(
         CatchSection.rows(
           title: 'May 2026',
-          entries: [record('one', () => calls++), record('two', () {})],
+          children: [record('one', () => calls++), record('two', () {})],
         ),
       ),
     );
@@ -93,7 +93,7 @@ void main() {
         host(
           CatchSection.rows(
             title: 'May 2026',
-            entries: [record('one', () {}), record('two', () {})],
+            children: [record('one', () {}), record('two', () {})],
           ),
           direction: direction,
         ),
@@ -123,7 +123,7 @@ void main() {
         host(
           CatchSection.rows(
             title: 'May 2026',
-            entries: [record('one', () {}), record('two', () {})],
+            children: [record('one', () {}), record('two', () {})],
           ),
         ),
       );
@@ -151,7 +151,7 @@ void main() {
     await tester.pumpWidget(
       host(
         CatchSection.containedRows(
-          entries: [record('one', () {}), record('two', () {})],
+          children: [record('one', () {}), record('two', () {})],
         ),
       ),
     );
@@ -173,7 +173,7 @@ void main() {
     var details = 0;
     Widget screen({bool disabled = false}) => host(
       CatchSection.rows(
-        entries: [
+        children: [
           CatchField.navigate(
             content: CatchRecordLayout(
               title: 'One event',
@@ -243,7 +243,7 @@ void main() {
           data: const MediaQueryData(textScaler: TextScaler.linear(2)),
           child: SingleChildScrollView(
             child: CatchSection.rows(
-              entries: [
+              children: [
                 record(
                   'A complete event title that wraps across several lines',
                   () {},
@@ -279,7 +279,7 @@ void main() {
         home: CatchScaffold.standalone(
           body: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: CatchSection.rows(entries: [record('inset', () {})]),
+            child: CatchSection.rows(children: [record('inset', () {})]),
           ),
         ),
       ),
@@ -303,10 +303,10 @@ void main() {
               expanded: true,
               indexPaneWidth: 320,
               leading: CatchSection.rows(
-                entries: [record('left', () => leftTaps++)],
+                children: [record('left', () => leftTaps++)],
               ),
               body: CatchSection.rows(
-                entries: [record('right', () => rightTaps++)],
+                children: [record('right', () => rightTaps++)],
               ),
             ),
           ),

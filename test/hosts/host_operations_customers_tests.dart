@@ -132,7 +132,10 @@ void _registerHostOperationsCustomersTests() {
       findsOne,
     );
     expect(find.descendant(of: row, matching: find.text('Regular')), findsOne);
-    expect(find.byKey(const ValueKey<String>('catch-row-press-overlay')), findsNothing);
+    expect(
+      find.byKey(const ValueKey<String>('catch-row-press-overlay')),
+      findsNothing,
+    );
     expect(
       find.descendant(
         of: row,
@@ -328,7 +331,10 @@ void _registerHostOperationsCustomersTests() {
       findsNWidgets(2),
     );
     expect(
-      find.descendant(of: frame, matching: find.byKey(const ValueKey<String>('catch-row-press-overlay'))),
+      find.descendant(
+        of: frame,
+        matching: find.byKey(const ValueKey<String>('catch-row-press-overlay')),
+      ),
       findsNothing,
     );
     expect(
@@ -938,7 +944,7 @@ Widget _customerFieldFixture({
   required VoidCallback onTap,
 }) => Builder(
   builder: (context) => CatchSection.rows(
-    entries: [
+    children: [
       CatchField.navigate(
         content: hostCustomerPersonLayout(context, contact),
         onActivate: onTap,

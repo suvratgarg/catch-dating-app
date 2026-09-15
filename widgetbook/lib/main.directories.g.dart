@@ -93,6 +93,8 @@ import 'package:widgetbook_workspace/event_success/event_success_module_consolid
     as _widgetbook_workspace_event_success_event_success_module_consolidation_prototypes;
 import 'package:widgetbook_workspace/event_success/host_assignment_components_use_cases.dart'
     as _widgetbook_workspace_event_success_host_assignment_components_use_cases;
+import 'package:widgetbook_workspace/event_success/host_live_components_use_cases.dart'
+    as _widgetbook_workspace_event_success_host_live_components_use_cases;
 import 'package:widgetbook_workspace/event_success/host_reveal_components_use_cases.dart'
     as _widgetbook_workspace_event_success_host_reveal_components_use_cases;
 import 'package:widgetbook_workspace/event_success/host_workspace_components_use_cases.dart'
@@ -243,6 +245,8 @@ import 'package:widgetbook_workspace/hosts/operations/create_event_policy.dart'
     as _widgetbook_workspace_hosts_operations_create_event_policy;
 import 'package:widgetbook_workspace/hosts/operations/create_event_routes.dart'
     as _widgetbook_workspace_hosts_operations_create_event_routes;
+import 'package:widgetbook_workspace/hosts/operations/customer_components.dart'
+    as _widgetbook_workspace_hosts_operations_customer_components;
 import 'package:widgetbook_workspace/hosts/operations/customer_routes.dart'
     as _widgetbook_workspace_hosts_operations_customer_routes;
 import 'package:widgetbook_workspace/hosts/operations/edit_event.dart'
@@ -509,6 +513,8 @@ import 'package:widgetbook_workspace/utility/photos.dart'
     as _widgetbook_workspace_utility_photos;
 import 'package:widgetbook_workspace/utility/reviews.dart'
     as _widgetbook_workspace_utility_reviews;
+import 'package:widgetbook_workspace/utility/settings.dart'
+    as _widgetbook_workspace_utility_settings;
 
 final directories = <_widgetbook.WidgetbookNode>[
   _widgetbook.WidgetbookCategory(
@@ -6419,6 +6425,209 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookFolder(
+            name: 'Host live components',
+            children: [
+              _widgetbook.WidgetbookComponent(
+                name: 'CatchPersonLayout',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Ready',
+                    builder:
+                        _widgetbook_workspace_event_success_host_live_components_use_cases
+                            .eventSuccessStrictWingmanRequestHostRow,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventSuccessAccountabilitySection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Ready',
+                    builder:
+                        _widgetbook_workspace_event_success_host_live_components_use_cases
+                            .previewEventSuccessAccountabilitySection,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventSuccessActivityFieldLanes',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Ready',
+                    builder:
+                        _widgetbook_workspace_event_success_host_live_components_use_cases
+                            .eventSuccessStrictHostActivitySummary,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventSuccessCompatibilitySection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Ready',
+                    builder:
+                        _widgetbook_workspace_event_success_host_live_components_use_cases
+                            .eventSuccessStrictCompatibilitySignalHostCard,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventSuccessControlRoomPageBody',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Ready',
+                    builder:
+                        _widgetbook_workspace_event_success_host_live_components_use_cases
+                            .eventSuccessStrictLiveNowConsole,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventSuccessControlRoomStageSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Ready',
+                    builder:
+                        _widgetbook_workspace_event_success_host_live_components_use_cases
+                            .previewEventSuccessControlRoomStageSection,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventSuccessControlRoomSyncBadge',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Ready',
+                    builder:
+                        _widgetbook_workspace_event_success_host_live_components_use_cases
+                            .previewEventSuccessControlRoomSyncBadge,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventSuccessExclusionAlertBanner',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Ready',
+                    builder:
+                        _widgetbook_workspace_event_success_host_live_components_use_cases
+                            .previewEventSuccessExclusionAlertBanner,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventSuccessHostHelpSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Ready',
+                    builder:
+                        _widgetbook_workspace_event_success_host_live_components_use_cases
+                            .eventSuccessStrictWingmanRequestsHostCard,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventSuccessHostLivePageBody',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Ready',
+                    builder:
+                        _widgetbook_workspace_event_success_host_live_components_use_cases
+                            .eventSuccessStrictLiveTab,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventSuccessHostResourceErrorState',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Ready',
+                    builder:
+                        _widgetbook_workspace_event_success_host_live_components_use_cases
+                            .previewEventSuccessHostResourceErrorState,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventSuccessHostTabBar',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Ready',
+                    builder:
+                        _widgetbook_workspace_event_success_host_live_components_use_cases
+                            .eventSuccessStrictEventSuccessTabPicker,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventSuccessHostTabPageBody',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Ready',
+                    builder:
+                        _widgetbook_workspace_event_success_host_live_components_use_cases
+                            .eventSuccessStrictEventSuccessHostTabBody,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventSuccessLiveWorkspaceTabBar',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Ready',
+                    builder:
+                        _widgetbook_workspace_event_success_host_live_components_use_cases
+                            .previewEventSuccessLiveWorkspaceTabBar,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventSuccessPlanFieldLanes',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Ready',
+                    builder:
+                        _widgetbook_workspace_event_success_host_live_components_use_cases
+                            .eventSuccessStrictPlanSummary,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventSuccessPresenceSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Ready',
+                    builder:
+                        _widgetbook_workspace_event_success_host_live_components_use_cases
+                            .previewEventSuccessPresenceSection,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventSuccessRoomSummarySection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Ready',
+                    builder:
+                        _widgetbook_workspace_event_success_host_live_components_use_cases
+                            .previewEventSuccessRoomSummarySection,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventSuccessStepActionRow',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Ready',
+                    builder:
+                        _widgetbook_workspace_event_success_host_live_components_use_cases
+                            .eventSuccessStrictLiveStepNavigation,
+                  ),
+                ],
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookFolder(
             name: 'Host workspace components',
             children: [
               _widgetbook.WidgetbookComponent(
@@ -8643,6 +8852,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'HostCustomerHistoryPanel',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Loaded history',
+                    builder:
+                        _widgetbook_workspace_hosts_operations_customer_components
+                            .hostCustomerHistoryPanelStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostEventManageScreen',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -8813,6 +9033,28 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'Customers',
             children: [
               _widgetbook.WidgetbookComponent(
+                name: 'CatchField',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Populated component',
+                    builder:
+                        _widgetbook_workspace_hosts_operations_customer_components
+                            .hostCustomerTimelineRecordComponentStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostAddCustomerScreen',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Full-page add state',
+                    builder:
+                        _widgetbook_workspace_hosts_operations_customer_components
+                            .hostAddCustomerScreenStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostAudienceSourceRuleFields',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -8835,6 +9077,226 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'HostCustomerApplicationSnapshot',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Populated component',
+                    builder:
+                        _widgetbook_workspace_hosts_operations_customer_components
+                            .hostCustomerApplicationSnapshotComponentStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostCustomerApplicationsPanel',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Populated component',
+                    builder:
+                        _widgetbook_workspace_hosts_operations_customer_components
+                            .hostCustomerApplicationsPanelComponentStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostCustomerAttendanceCard',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Attendance stats',
+                    builder:
+                        _widgetbook_workspace_hosts_operations_customer_components
+                            .hostCustomerAttendanceStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostCustomerDetailBody',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Detail composition states',
+                    builder:
+                        _widgetbook_workspace_hosts_operations_customer_components
+                            .hostCustomerDetailBodyStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostCustomerDetailOverview',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Populated component',
+                    builder:
+                        _widgetbook_workspace_hosts_operations_customer_components
+                            .hostCustomerDetailOverviewComponentStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostCustomerDetailScreen',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Detail states',
+                    builder:
+                        _widgetbook_workspace_hosts_operations_customer_components
+                            .hostCustomerDetailStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostCustomerDetailTabs',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Populated component',
+                    builder:
+                        _widgetbook_workspace_hosts_operations_customer_components
+                            .hostCustomerDetailTabsComponentStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostCustomerDetailsSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Populated component',
+                    builder:
+                        _widgetbook_workspace_hosts_operations_customer_components
+                            .hostCustomerDetailsSectionComponentStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostCustomerDirectoryControls',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Directory control states',
+                    builder:
+                        _widgetbook_workspace_hosts_operations_customer_components
+                            .hostCustomerDirectoryControlsStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostCustomerHistoryFilters',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Populated component',
+                    builder:
+                        _widgetbook_workspace_hosts_operations_customer_components
+                            .hostCustomerHistoryFiltersComponentStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostCustomerIdentityCard',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Identity states',
+                    builder:
+                        _widgetbook_workspace_hosts_operations_customer_components
+                            .hostCustomerIdentityStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostCustomerIdentityInputSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Identity input states',
+                    builder:
+                        _widgetbook_workspace_hosts_operations_customer_components
+                            .hostCustomerIdentityInputStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostCustomerMemoryPreview',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Populated component',
+                    builder:
+                        _widgetbook_workspace_hosts_operations_customer_components
+                            .hostCustomerMemoryPreviewComponentStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostCustomerReachSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Reach and provenance states',
+                    builder:
+                        _widgetbook_workspace_hosts_operations_customer_components
+                            .hostCustomerConversationStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostCustomerRecentEvents',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Populated component',
+                    builder:
+                        _widgetbook_workspace_hosts_operations_customer_components
+                            .hostCustomerRecentEventsComponentStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostCustomerRevenueBreakdown',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Populated component',
+                    builder:
+                        _widgetbook_workspace_hosts_operations_customer_components
+                            .hostCustomerRevenueBreakdownComponentStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostCustomerRevenueCard',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Revenue coverage states',
+                    builder:
+                        _widgetbook_workspace_hosts_operations_customer_components
+                            .hostCustomerRevenueStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostCustomerTimelineSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Unified timeline states',
+                    builder:
+                        _widgetbook_workspace_hosts_operations_customer_components
+                            .hostCustomerTimelineStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostCustomersDirectory',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Directory states',
+                    builder:
+                        _widgetbook_workspace_hosts_operations_customer_components
+                            .hostCustomersDirectoryStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostCustomersNoOrganizer',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'No-organizer state',
+                    builder:
+                        _widgetbook_workspace_hosts_operations_customer_components
+                            .hostCustomersNoOrganizerStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostCustomersScreen',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -8842,6 +9304,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_operations_customer_routes
                             .hostCustomersStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostCustomersSummary',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Summary states',
+                    builder:
+                        _widgetbook_workspace_hosts_operations_customer_components
+                            .hostCustomersSummaryStates,
                   ),
                 ],
               ),
@@ -11646,6 +12119,36 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Sheet states',
                 builder: _widgetbook_workspace_utility_reviews
                     .writeReviewSheetStates,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
+        name: 'Settings',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchPersonLayout',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Blocked account row',
+                builder: _widgetbook_workspace_utility_settings
+                    .blockedAccountTileState,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'SettingsScreen',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Mutation states',
+                builder: _widgetbook_workspace_utility_settings
+                    .settingsMutationStates,
+              ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'Screen states',
+                builder:
+                    _widgetbook_workspace_utility_settings.settingsScreenStates,
               ),
             ],
           ),

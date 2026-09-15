@@ -112,8 +112,8 @@ void main() {
     expect(find.text('Inbox'), findsOneWidget);
     expect(find.text('Sends'), findsOneWidget);
     expect(find.byType(HostInboxScopeMenu), findsOneWidget);
-    expect(find.text('BOOKED · 1'), findsOneWidget);
-    expect(find.text('PROSPECTIVE · 1'), findsOneWidget);
+    expect(find.text('Booked · 1'), findsOneWidget);
+    expect(find.text('Prospective · 1'), findsOneWidget);
     expect(
       find.byType(CatchChoiceInput<HostInboxAudienceSegment>),
       findsOneWidget,
@@ -123,7 +123,7 @@ void main() {
     expect(find.text('Can you help?'), findsOneWidget);
     expect(find.text('Mira Guest'), findsNothing);
 
-    await tester.tap(find.text('PROSPECTIVE · 1'));
+    await tester.tap(find.text('Prospective · 1'));
     await pumpFeatureUi(tester);
 
     expect(find.text('Message 1 prospective attendee'), findsNothing);

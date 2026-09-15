@@ -1,7 +1,7 @@
 {
   "$schema": "./catch.components.schema.json",
   "version": 4,
-  "updated": "2026-09-07",
+  "updated": "2026-09-16",
   "sourceOfTruth": {
     "behavior": "Flutter implementations in packages/catch_ui/lib/src and the remaining app-coupled lib/core/widgets own runtime behavior, accessibility, layout, and state.",
     "tokens": "design/tokens/catch.tokens.json owns primitive token values; generated Dart/CSS and Figma variables mirror it.",
@@ -26,7 +26,8 @@
         "stepper",
         "inputActions",
         "add",
-        "select"
+        "select",
+        "navigate"
       ],
       "slots": [
         "title",
@@ -65,7 +66,11 @@
         "containedFieldGroups",
         "contained",
         "plain",
-        "horizontal"
+        "horizontal",
+        "rows",
+        "containedRows",
+        "content",
+        "sliverRows"
       ],
       "slots": [
         "title",
@@ -4367,6 +4372,38 @@
             "showInternalDividers",
             "children",
             "child"
+          ],
+          "CatchSection.rows": [
+            "title",
+            "count",
+            "trailing",
+            "children"
+          ],
+          "CatchSection.containedRows": [
+            "title",
+            "count",
+            "trailing",
+            "children"
+          ],
+          "CatchSection.formRows": [
+            "title",
+            "count",
+            "trailing",
+            "children"
+          ],
+          "CatchSection.content": [
+            "title",
+            "count",
+            "trailing",
+            "child"
+          ],
+          "CatchSection.sliverRows": [
+            "title",
+            "count",
+            "trailing",
+            "itemCount",
+            "itemBuilder",
+            "indexForKeyBuilder"
           ]
         },
         "props": [
@@ -4544,7 +4581,8 @@
             "name": "children",
             "type": "list",
             "required": false,
-            "dartType": "List<Widget>?"
+            "dartType": "List<Widget>?",
+            "notes": "rows and containedRows require List<CatchField>; legacy content recipes accept List<Widget>."
           },
           {
             "name": "groups",
@@ -4571,7 +4609,7 @@
             "type": "callback",
             "required": false,
             "dartType": "IndexedWidgetBuilder",
-            "notes": "Required by horizontal; bounded-height collections build lazily, intrinsic-height collections build their content row."
+            "notes": "sliverRows requires a CatchField return; horizontal accepts arbitrary bounded rail content."
           },
           {
             "name": "height",
@@ -4632,25 +4670,11 @@
             "notes": "Explicit focus/error states for contained recipes, passed to the one SectionSurface owner. Error wins over focus; omission preserves descendant focus tracking."
           },
           {
-            "name": "entries",
-            "type": "list",
-            "required": false,
-            "dartType": "List<CatchField>",
-            "notes": "Closed ordinary-row collection for rows and containedRows."
-          },
-          {
-            "name": "findChildIndexCallback",
+            "name": "indexForKeyBuilder",
             "type": "callback",
             "required": false,
             "dartType": "int? Function(Key)",
             "notes": "Stable identity lookup when a lazy collection changes order."
-          },
-          {
-            "name": "action",
-            "type": "widget",
-            "required": false,
-            "dartType": "Widget?",
-            "notes": "Independent section header action for row and content recipes."
           }
         ],
         "states": [
@@ -10228,7 +10252,7 @@
             "type": "object",
             "required": false,
             "dartType": "CatchResponsiveFieldInteractionPolicy",
-            "notes": "Single-column divided fields remain full bleed; split panes remain rounded tiles."
+            "notes": "Ordinary rows fill their local page or pane. Contained geometry is explicit."
           },
           {
             "name": "sectionGap",
@@ -10255,21 +10279,21 @@
             "notes": "Page only; the shared terminal-padding owner adds shell clearance."
           },
           {
-            "name": "primary",
+            "name": "body",
             "type": "widget",
             "required": false,
             "dartType": "Widget",
             "notes": "Primary co-scrolling pane for panes."
           },
           {
-            "name": "secondary",
+            "name": "trailing",
             "type": "widget",
             "required": false,
             "dartType": "Widget?",
             "notes": "Optional companion pane for panes."
           },
           {
-            "name": "secondaryWidth",
+            "name": "trailingWidth",
             "type": "number",
             "required": false,
             "dartType": "double",

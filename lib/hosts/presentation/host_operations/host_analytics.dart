@@ -364,7 +364,7 @@ class _HostAnalyticsReportViewState extends State<HostAnalyticsReportView> {
           ),
         ),
         CatchSection.rows(
-          entries: [
+          children: [
             // Composite exception: the disclosure reveals a complete
             // secondary analytics grid, not a scalar field choice.
             CatchField.control(
@@ -403,7 +403,7 @@ class _HostAnalyticsReportViewState extends State<HostAnalyticsReportView> {
         if (coachRecommendations.isNotEmpty)
           CatchSection.rows(
             title: context.l10n.hostsHostAnalyticsTitleCoach,
-            entries: [
+            children: [
               for (final recommendation in coachRecommendations)
                 switch (recommendation.kind) {
                   HostAnalyticsCoachRecommendationKind.attendance =>
@@ -705,7 +705,7 @@ class HostAnalyticsEventList extends StatelessWidget {
   @override
   Widget build(BuildContext context) => CatchSection.rows(
     title: context.l10n.hostsHostAnalyticsLabelRecentEvents,
-    entries: [
+    children: [
       if (events.isEmpty)
         CatchField.read(
           content: CatchRecordLayout(

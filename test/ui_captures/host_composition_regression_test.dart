@@ -38,7 +38,6 @@ void main() {
             textScale: configuration.scale,
             disableAnimations: true,
             themes: const [CaptureTheme.dark],
-            pixelRatio: 1,
             outputDirectory: Directory(
               'artifacts/ui-captures/host-composition',
             ),

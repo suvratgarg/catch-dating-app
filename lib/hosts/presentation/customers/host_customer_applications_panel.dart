@@ -45,7 +45,7 @@ class HostCustomerApplicationsPanel extends ConsumerWidget {
       builder: (context, state) => Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          CatchSection.fieldRows(
+          CatchSection.containedRows(
             key: const ValueKey('host-customer-applications'),
             title: context.l10n.hostApplicationsTitle,
             children: [

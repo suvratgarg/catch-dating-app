@@ -1,4 +1,3 @@
-
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/event_success/presentation/assignments/event_success_rotation_override_draft.dart';

@@ -76,8 +76,8 @@ class _CatchFormRowListState<P> extends State<CatchFormRowList<P>> {
     final section = CatchSection.formRows(
       title: widget.title,
       count: widget.count,
-      action: widget.trailing,
-      entries: widget.rows.map((row) {
+      trailing: widget.trailing,
+      children: widget.rows.map((row) {
         final scope = _scopeFor(row);
         return row.accept<Widget>((
           read: (descriptor) => CatchField.read(

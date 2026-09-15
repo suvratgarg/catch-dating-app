@@ -230,7 +230,7 @@ class _HostRosterImportSheetState extends State<HostRosterImportSheet> {
           if (mapped.rows.isNotEmpty) ...[
             gapH12,
             CatchSection.containedRows(
-              entries: [
+              children: [
                 for (final row in mapped.rows.take(3).indexed)
                   CatchField.read(
                     content: CatchPersonLayout(

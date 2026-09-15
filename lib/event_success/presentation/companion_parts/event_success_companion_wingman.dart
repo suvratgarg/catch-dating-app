@@ -144,7 +144,7 @@ class _WingmanRequestSectionState extends State<WingmanRequestSection> {
             )
           else
             CatchSection.containedRows(
-              entries: [
+              children: [
                 for (final candidate in widget.candidates)
                   CatchField.read(
                     secondaryAction: CatchFieldSecondaryAction.button(

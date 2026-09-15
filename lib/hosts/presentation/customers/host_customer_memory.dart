@@ -26,7 +26,7 @@ class HostCustomerMemoryPreview extends StatelessWidget {
   final VoidCallback onOpenMemory;
 
   @override
-  Widget build(BuildContext context) => CatchSection.fieldRows(
+  Widget build(BuildContext context) => CatchSection.containedRows(
     key: const ValueKey('host-customer-memory-preview'),
     title: context.l10n.hostCustomersMemory,
     children: [

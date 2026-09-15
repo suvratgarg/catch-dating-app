@@ -23,25 +23,25 @@ final class _CatchSectionRowKey extends ValueKey<Object> {
 class CatchSectionRows extends StatefulWidget {
   const CatchSectionRows({
     super.key,
-    required List<CatchField> this.entries,
+    required List<CatchField> this.children,
     this.title,
     this.count,
-    this.action,
+    this.trailing,
     this.contained = false,
   }) : _itemCount = null,
        formLeadingInset = null,
        itemBuilder = null,
-       findChildIndexCallback = null;
+       indexForKeyBuilder = null;
 
   const CatchSectionRows.sliver({
     super.key,
     required int this._itemCount,
     required this.itemBuilder,
-    this.findChildIndexCallback,
+    this.indexForKeyBuilder,
     this.title,
     this.count,
-    this.action,
-  }) : entries = null,
+    this.trailing,
+  }) : children = null,
        formLeadingInset = null,
        contained = false;
 
@@ -50,27 +50,27 @@ class CatchSectionRows extends StatefulWidget {
   /// supply a widget builder to the public row-section recipes.
   const CatchSectionRows.form({
     super.key,
-    required List<Widget> this.entries,
+    required List<Widget> this.children,
     required double leadingInset,
     this.title,
     this.count,
-    this.action,
+    this.trailing,
   }) : formLeadingInset = leadingInset,
        _itemCount = null,
        itemBuilder = null,
-       findChildIndexCallback = null,
+       indexForKeyBuilder = null,
        contained = false;
 
-  final List<Widget>? entries;
+  final List<Widget>? children;
   final double? formLeadingInset;
 
   final int? _itemCount;
-  int get itemCount => entries?.length ?? _itemCount!;
+  int get itemCount => children?.length ?? _itemCount!;
   final CatchField Function(BuildContext, int)? itemBuilder;
-  final int? Function(Key)? findChildIndexCallback;
+  final int? Function(Key)? indexForKeyBuilder;
   final String? title;
   final Object? count;
-  final Widget? action;
+  final Widget? trailing;
   final bool contained;
 
   @override
@@ -84,9 +84,9 @@ class _CatchSectionRowsState extends State<CatchSectionRows> {
   @override
   void didUpdateWidget(CatchSectionRows oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.entries case final entries?) {
+    if (widget.children case final children?) {
       final identities = {
-        for (var i = 0; i < entries.length; i++) entries[i].key ?? i,
+        for (var i = 0; i < children.length; i++) children[i].key ?? i,
       };
       _active.retainAll(identities);
     }
@@ -94,7 +94,9 @@ class _CatchSectionRowsState extends State<CatchSectionRows> {
   }
 
   Widget? _header(double gutter) {
-    if (widget.title == null && widget.count == null && widget.action == null) {
+    if (widget.title == null &&
+        widget.count == null &&
+        widget.trailing == null) {
       return null;
     }
     return Padding(
@@ -102,21 +104,21 @@ class _CatchSectionRowsState extends State<CatchSectionRows> {
       child: CatchSectionHeading(
         title: widget.title,
         count: widget.count,
-        action: widget.action,
+        trailing: widget.trailing,
       ),
     );
   }
 
   bool _isActive(int index) {
     if (index >= widget.itemCount) return false;
-    final entries = widget.entries;
-    if (entries != null &&
-        entries[index] is CatchField &&
-        (entries[index] as CatchField).states.contains(WidgetState.selected)) {
+    final children = widget.children;
+    if (children != null &&
+        children[index] is CatchField &&
+        (children[index] as CatchField).states.contains(WidgetState.selected)) {
       return true;
     }
-    final identity = entries != null
-        ? entries[index].key ?? index
+    final identity = children != null
+        ? children[index].key ?? index
         : _identities[index];
     return identity != null && _active.contains(identity);
   }
@@ -127,7 +129,8 @@ class _CatchSectionRowsState extends State<CatchSectionRows> {
     double gutter, {
     bool fullPlane = true,
   }) {
-    final entry = widget.entries?[index] ?? widget.itemBuilder!(context, index);
+    final entry =
+        widget.children?[index] ?? widget.itemBuilder!(context, index);
     final identity = entry.key ?? index;
     _identities[index] = identity;
     return KeyedSubtree(
@@ -185,7 +188,7 @@ class _CatchSectionRowsState extends State<CatchSectionRows> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.entries == null) {
+    if (widget.children == null) {
       return SliverLayoutBuilder(
         builder: (context, constraints) {
           assert(
@@ -199,10 +202,10 @@ class _CatchSectionRowsState extends State<CatchSectionRows> {
               if (header != null) SliverToBoxAdapter(child: header),
               SliverList.builder(
                 itemCount: widget.itemCount,
-                findChildIndexCallback: widget.findChildIndexCallback == null
+                findChildIndexCallback: widget.indexForKeyBuilder == null
                     ? null
                     : (key) => key is _CatchSectionRowKey && key.value is Key
-                          ? widget.findChildIndexCallback!(key.value as Key)
+                          ? widget.indexForKeyBuilder!(key.value as Key)
                           : null,
                 itemBuilder: (context, index) => _row(
                   context,

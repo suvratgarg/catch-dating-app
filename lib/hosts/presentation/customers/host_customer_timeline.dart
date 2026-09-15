@@ -47,9 +47,8 @@ class HostCustomerReachSection extends StatelessWidget {
       key: const ValueKey('host-customer-reach-and-provenance'),
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        CatchSection.plain(
+        CatchSection.containedRows(
           title: l10n.hostCustomersMessaging,
-          showInternalDividers: false,
           children: [
             if (communicationPlanLoading)
               CatchField.read(
@@ -62,6 +61,11 @@ class HostCustomerReachSection extends StatelessWidget {
             else if (communicationPlanFailed || recipient == null) ...[
               CatchField.read(
                 key: const ValueKey('host-customer-message-plan-error'),
+                secondaryAction: CatchFieldSecondaryAction.button(
+                  key: const ValueKey('host-customer-message-plan-retry'),
+                  label: l10n.hostCustomersCheckMessaging,
+                  onActivate: onRetryCommunicationPlan,
+                ),
                 content: CatchRecordLayout(
                   title: l10n.hostCustomersMessageOptionsUnavailable,
                   description: l10n.hostCustomersMessageOptionsRetry,
@@ -69,35 +73,24 @@ class HostCustomerReachSection extends StatelessWidget {
                   color: t.warning,
                 ),
               ),
-              Align(
-                alignment: AlignmentDirectional.centerStart,
-                child: CatchButton(
-                  key: const ValueKey('host-customer-message-plan-retry'),
-                  label: l10n.hostCustomersCheckMessaging,
-                  onPressed: onRetryCommunicationPlan,
-                  variant: CatchButtonVariant.ghost,
-                ),
-              ),
             ] else if (recommendedRoute != null) ...[
               CatchField.read(
                 key: const ValueKey('host-customer-message-availability'),
+                secondaryAction: messageActionInHeader
+                    ? null
+                    : CatchFieldSecondaryAction.button(
+                        key: const ValueKey('host-customer-message'),
+                        label: l10n.hostCustomersMessagePerson(
+                          name: customer.displayName,
+                        ),
+                        onActivate: messageLoading ? null : onMessage,
+                        loading: messageLoading,
+                      ),
                 content: CatchRecordLayout(
                   title: _recommendedMessageBody(context, recommendedRoute),
                   icon: CatchIcons.tabChats,
                 ),
               ),
-              if (!messageActionInHeader)
-                Align(
-                  alignment: AlignmentDirectional.centerStart,
-                  child: CatchButton(
-                    key: const ValueKey('host-customer-message'),
-                    label: l10n.hostCustomersMessagePerson(
-                      name: customer.displayName,
-                    ),
-                    onPressed: messageLoading ? null : onMessage,
-                    variant: CatchButtonVariant.ghost,
-                  ),
-                ),
             ] else
               CatchField.read(
                 key: const ValueKey('host-customer-message'),
@@ -148,10 +141,16 @@ class HostCustomerReachSection extends StatelessWidget {
           ],
         ),
         gapH24,
-        CatchSection.plain(
+        CatchSection.containedRows(
           key: const ValueKey('host-customer-provenance'),
           title: l10n.hostCustomersCustomerProvenance,
-          showInternalDividers: false,
+          trailing: onReviewDuplicates == null
+              ? null
+              : CatchButton.text(
+                  key: const ValueKey('host-customer-review-duplicates'),
+                  label: l10n.hostCustomersReviewDuplicates,
+                  onPressed: onReviewDuplicates,
+                ),
           children: [
             if (customer.origins.isEmpty)
               CatchField.read(
@@ -178,23 +177,13 @@ class HostCustomerReachSection extends StatelessWidget {
                         : CatchIcons.accountTreeOutlined,
                   ),
                 ),
-            if (customer.originsTruncated)
-              Text(
-                l10n.hostCustomersSourcesTruncated,
-                style: CatchTextStyles.recordContext(context),
-              ),
-            if (onReviewDuplicates != null)
-              Align(
-                alignment: AlignmentDirectional.centerStart,
-                child: CatchButton(
-                  key: const ValueKey('host-customer-review-duplicates'),
-                  label: l10n.hostCustomersReviewDuplicates,
-                  onPressed: onReviewDuplicates,
-                  variant: CatchButtonVariant.ghost,
-                ),
-              ),
           ],
         ),
+        if (customer.originsTruncated)
+          Text(
+            l10n.hostCustomersSourcesTruncated,
+            style: CatchTextStyles.recordContext(context),
+          ),
       ],
     );
   }
@@ -511,7 +500,7 @@ class _HostCustomerTimelineRows extends StatelessWidget {
           if (day.key != days.keys.first) gapH24,
           CatchSection.containedRows(
             title: MaterialLocalizations.of(context).formatFullDate(day.key),
-            entries: [
+            children: [
               for (final entry in day.value)
                 hostCustomerTimelineField(
                   context,

@@ -432,7 +432,7 @@ class CatchRosterTable extends StatelessWidget {
           );
         }
         return CatchSection.containedRows(
-          entries: [
+          children: [
             for (final indexedRow in rows.indexed)
               CatchField.read(
                 content: CatchPersonLayout(

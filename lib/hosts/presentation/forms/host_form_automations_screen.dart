@@ -129,8 +129,7 @@ class _HostFormAutomationsScreenState
                   message: context.l10n.hostFormAutomationsEmptyBody,
                 )
               else
-                CatchSection.divided(
-                  first: true,
+                CatchSection.containedRows(
                   title: context.l10n.hostFormAutomationsRules,
                   children: [
                     for (final rule in state.rules)

@@ -249,7 +249,7 @@ class _HostFormAnalyticsScreenState
               ),
               if (value.sources.isNotEmpty) ...[
                 gapH24,
-                CatchSection.divided(
+                CatchSection.containedRows(
                   title: context.l10n.hostFormAnalyticsSources,
                   children: [
                     for (final source in value.sources)

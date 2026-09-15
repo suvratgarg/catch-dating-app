@@ -942,11 +942,13 @@ import 'package:flutter/widgets.dart';
 
 typedef SectionAlias = ui.CatchSection;
 final forbiddenFactory = SectionAlias.formRows;
-Widget bypass() => internal.CatchSectionRows(entries: const []);
+Widget bypass() => internal.CatchSectionRows(children: const []);
 Widget inset() => Padding(padding: const EdgeInsets.symmetric(horizontal: 20),
-  child: ui.CatchSection.rows(entries: const []));
+  child: ui.CatchSection.rows(children: const []));
 Widget content() => ui.CatchSection.content(child: const ui.CatchField.read(
   content: ui.CatchPersonLayout(name:'Someone')));
+Widget legacy() => ui.CatchSection.divided(children: const [ui.CatchField.read(
+ content: ui.CatchPersonLayout(name:'Someone'))]);
 Widget recognizer() => GestureDetector(onTap: () {}, child: const ui.CatchField.read(
   content: ui.CatchPersonLayout(name:'Someone')));
 Widget paint() => ColoredBox(color: const Color(0xff222222), child: const ui.CatchField.read(
@@ -954,19 +956,19 @@ Widget paint() => ColoredBox(color: const Color(0xff222222), child: const ui.Cat
 DART
 expect_code_count "resolved row geometry boundaries" "catch_row_geometry_is_internal" 2
 expect_code_count "resolved row geometry boundaries" "catch_row_section_fills_viewport" 1
-expect_code_count "resolved row geometry boundaries" "catch_section_content_is_passive" 1
+expect_code_count "resolved row geometry boundaries" "catch_section_content_is_passive" 2
 expect_code_count "resolved row geometry boundaries" "catch_field_owns_row_interaction" 2
 
 probe_path="$probe_root/lib/events/presentation/widgets/row_valid_probe.dart"
 stage_probe "valid typed row recipes" <<'DART'
 import 'package:catch_ui/catch_ui.dart' as ui;
 import 'package:flutter/widgets.dart';
-Widget rows() => ui.CatchSection.rows(entries: const [ui.CatchField.read(
+Widget rows() => ui.CatchSection.rows(children: const [ui.CatchField.read(
   content: ui.CatchPersonLayout(name:'Someone'))]);
 Widget contained() => Padding(padding: const EdgeInsets.symmetric(horizontal:20),
-  child:ui.CatchSection.containedRows(entries:const []));
+  child:ui.CatchSection.containedRows(children:const []));
 Widget vertical() => Padding(padding: const EdgeInsets.only(top:20),
-  child:ui.CatchSection.rows(entries:const []));
+  child:ui.CatchSection.rows(children:const []));
 DART
 expect_probe exact catch_row_geometry_is_internal 0
 expect_probe exact catch_row_section_fills_viewport 0

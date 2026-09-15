@@ -6870,7 +6870,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/hosts/presentation/inbox/host_inbox_screen.dart (label).
   ///
   /// In en, this message translates to:
-  /// **'BOOKED · {bookedThreadCount}'**
+  /// **'Booked · {bookedThreadCount}'**
   String hostsHostInboxScreenLabelBookedBookedthreadcount({
     required Object bookedThreadCount,
   });
@@ -6878,7 +6878,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/hosts/presentation/inbox/host_inbox_screen.dart (label).
   ///
   /// In en, this message translates to:
-  /// **'PROSPECTIVE · {prospectiveThreadCount}'**
+  /// **'Prospective · {prospectiveThreadCount}'**
   String hostsHostInboxScreenLabelProspectiveProspectivethreadcount({
     required Object prospectiveThreadCount,
   });

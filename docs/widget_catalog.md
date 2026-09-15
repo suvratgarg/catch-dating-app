@@ -153,7 +153,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>CatchErrorBackButton</code> | <code>packages/catch_ui/lib/src/components/catch_error_back_button.dart:7</code> | <code>Button</code> | <code>catch.error_state</code> | Canonical exit affordance for terminal error states where retry is not a truthful action (for example a deleted event or an unauthorized route). |
 | <code>CatchErrorDetailsAccordion</code> | <code>packages/catch_ui/lib/src/components/catch_error_details_accordion.dart:8</code> | <code>Accordion</code> | <code>catch.error_state</code> | Tokenized debug-only framework error disclosure used by CatchFrameworkErrorState. |
 | <code>CatchErrorState</code> | <code>packages/catch_ui/lib/src/components/catch_error_state.dart:11</code> | <code>ErrorState</code> | <code>catch.error_state</code> | Canonical error content with full-region, inline and compact placement. |
-| <code>CatchField</code> | <code>packages/catch_ui/lib/src/components/catch_field.dart:32</code> | <code>Field</code> | <code>catch.field</code> | Design-system `Field`: the unified field primitive for row, text-entry, navigation, toggle, disclosure-control, add, validation, and helper states. Stack fields in a CatchSection when the surrounding section owns box or divider chrome. |
+| <code>CatchField</code> | <code>packages/catch_ui/lib/src/components/catch_field.dart:34</code> | <code>Field</code> | <code>catch.field</code> | Design-system `Field`: the unified field primitive for row, text-entry, navigation, toggle, disclosure-control, add, validation, and helper states. Stack fields in a CatchSection when the surrounding section owns box or divider chrome. |
 | <code>CatchFieldActionRow</code> | <code>packages/catch_ui/lib/src/components/catch_field_action_row.dart:6</code> | <code>Row</code> | <code>catch.field</code> | Trailing Cancel/Done group used by explicit-save field drawers. |
 | <code>CatchFieldCommitButton</code> | <code>packages/catch_ui/lib/src/components/catch_field_commit_button.dart:10</code> | <code>Button</code> | <code>catch.field</code> | Exact Cancel/Done action used by a disclosed `CatchField` editor. |
 | <code>CatchFieldContentRow</code> | <code>packages/catch_ui/lib/src/components/catch_field_content_row.dart:16</code> | <code>Row</code> | <code>catch.field</code> | Field content with two explicit hierarchies: title/description and caption/value. The enclosing field owns interaction; this member owns text lanes and support. |
@@ -187,7 +187,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>CatchRangeInput</code> | <code>packages/catch_ui/lib/src/components/catch_range_input.dart:12</code> | <code>Input</code> | <code>catch.range_slider</code> | Edits an ordered numeric interval through two independently movable ends. |
 | <code>CatchScreenHeader</code> | <code>packages/catch_ui/lib/src/components/catch_screen_header.dart:8</code> | <code>Header</code> | <code>catch.top_bar</code> | Root-screen title stack shared by the main tabs and root-like app bars. |
 | <code>CatchSearchField</code> | <code>packages/catch_ui/lib/src/components/catch_search_field.dart:17</code> | <code>Field</code> | <code>catch.search_field</code> | Handoff `SearchField`: raised pill input with search glyph and quiet clear target. |
-| <code>CatchSection</code> | <code>packages/catch_ui/lib/src/components/catch_section.dart:36</code> | <code>Section</code> | <code>catch.section</code> | Design-system `Section`: the canonical primitive for grouping information. |
+| <code>CatchSection</code> | <code>packages/catch_ui/lib/src/components/catch_section.dart:37</code> | <code>Section</code> | <code>catch.section</code> | Design-system `Section`: the canonical primitive for grouping information. |
 | <code>CatchSectionContent</code> | <code>packages/catch_ui/lib/src/components/catch_section_content.dart:39</code> | <code>Section</code> | <code>catch.section</code> | Non-row content has a readable inset and no shared row recognizer. |
 | <code>CatchSectionHeading</code> | <code>packages/catch_ui/lib/src/components/catch_section_content.dart:14</code> | <code>Header</code> | <code>catch.section</code> | Internal header boundary shared by row and non-row section recipes. |
 | <code>CatchSectionHeader</code> | <code>packages/catch_ui/lib/src/components/catch_section_header.dart:9</code> | <code>Header</code> | <code>catch.section</code> | Section heading, count and trailing-action layouts, selected by recipe. |
@@ -385,16 +385,16 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>EventRehearsalRecapSection</code> | <code>lib/event_rehearsal/presentation/widgets/event_rehearsal_simulator.dart:314</code> | — | — | No class documentation or registry summary. |
 | <code>EventRehearsalRosterSection</code> | <code>lib/event_rehearsal/presentation/widgets/event_rehearsal_simulator.dart:260</code> | — | — | No class documentation or registry summary. |
 | <code>EventRehearsalSimulator</code> | <code>lib/event_rehearsal/presentation/widgets/event_rehearsal_simulator.dart:8</code> | — | — | No class documentation or registry summary. |
-| <code>EventSuccessAssignmentReasonNotice</code> | <code>lib/event_success/presentation/assignments/event_success_assignment_reason_notice.dart:10</code> | — | — | No class documentation or registry summary. |
-| <code>EventSuccessGroupMemberField</code> | <code>lib/event_success/presentation/assignments/event_success_group_override_round_section.dart:186</code> | — | — | No class documentation or registry summary. |
-| <code>EventSuccessGroupOverrideFieldLanes</code> | <code>lib/event_success/presentation/assignments/event_success_group_override_round_section.dart:92</code> | — | — | No class documentation or registry summary. |
-| <code>EventSuccessGroupOverrideRoundSection</code> | <code>lib/event_success/presentation/assignments/event_success_group_override_round_section.dart:10</code> | — | — | No class documentation or registry summary. |
+| <code>EventSuccessAssignmentReasonNotice</code> | <code>lib/event_success/presentation/assignments/event_success_assignment_reason_notice.dart:9</code> | — | — | No class documentation or registry summary. |
+| <code>EventSuccessGroupMemberField</code> | <code>lib/event_success/presentation/assignments/event_success_group_override_round_section.dart:185</code> | — | — | No class documentation or registry summary. |
+| <code>EventSuccessGroupOverrideFieldLanes</code> | <code>lib/event_success/presentation/assignments/event_success_group_override_round_section.dart:91</code> | — | — | No class documentation or registry summary. |
+| <code>EventSuccessGroupOverrideRoundSection</code> | <code>lib/event_success/presentation/assignments/event_success_group_override_round_section.dart:9</code> | — | — | No class documentation or registry summary. |
 | <code>EventSuccessGroupOverrideSheet</code> | <code>lib/event_success/presentation/assignments/event_success_group_override_sheet.dart:16</code> | — | — | No class documentation or registry summary. |
 | <code>EventSuccessHostPodSection</code> | <code>lib/event_success/presentation/assignments/event_success_host_pod_section.dart:17</code> | — | — | No class documentation or registry summary. |
 | <code>EventSuccessHostRotationSection</code> | <code>lib/event_success/presentation/assignments/event_success_host_rotation_section.dart:18</code> | — | — | No class documentation or registry summary. |
 | <code>EventSuccessPodSummaryRow</code> | <code>lib/event_success/presentation/assignments/event_success_pod_summary_row.dart:6</code> | — | — | No class documentation or registry summary. |
-| <code>EventSuccessRotationOverrideRoundSection</code> | <code>lib/event_success/presentation/assignments/event_success_rotation_override_round_section.dart:10</code> | — | — | No class documentation or registry summary. |
-| <code>EventSuccessRotationPairFieldLanes</code> | <code>lib/event_success/presentation/assignments/event_success_rotation_override_round_section.dart:85</code> | — | — | No class documentation or registry summary. |
+| <code>EventSuccessRotationOverrideRoundSection</code> | <code>lib/event_success/presentation/assignments/event_success_rotation_override_round_section.dart:9</code> | — | — | No class documentation or registry summary. |
+| <code>EventSuccessRotationPairFieldLanes</code> | <code>lib/event_success/presentation/assignments/event_success_rotation_override_round_section.dart:84</code> | — | — | No class documentation or registry summary. |
 | <code>EventSuccessRotationOverrideSheet</code> | <code>lib/event_success/presentation/assignments/event_success_rotation_override_sheet.dart:16</code> | — | — | No class documentation or registry summary. |
 | <code>EventSuccessCompanionLoadingPageBody</code> | <code>lib/event_success/presentation/companion/event_success_companion_loading_page_body.dart:5</code> | — | — | No class documentation or registry summary. |
 | <code>EventSuccessCompanionPrimaryActionSkeleton</code> | <code>lib/event_success/presentation/companion/event_success_companion_loading_page_body.dart:80</code> | — | — | No class documentation or registry summary. |
@@ -482,7 +482,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>ProgressRow</code> | <code>lib/event_success/presentation/event_success_progress_row.dart:3</code> | — | — | No class documentation or registry summary. |
 | <code>CustomQuestionnaireFields</code> | <code>lib/event_success/presentation/event_success_questionnaire_config_editor.dart:157</code> | — | — | No class documentation or registry summary. |
 | <code>EventSuccessQuestionnaireConfigEditor</code> | <code>lib/event_success/presentation/event_success_questionnaire_config_editor.dart:11</code> | — | — | No class documentation or registry summary. |
-| <code>EventSuccessRoomMap</code> | <code>lib/event_success/presentation/event_success_room_map.dart:35</code> | — | — | Shared normalized room map used by Host and attendee runtimes. |
+| <code>EventSuccessRoomMap</code> | <code>lib/event_success/presentation/event_success_room_map.dart:37</code> | — | — | Shared normalized room map used by Host and attendee runtimes. |
 | <code>EventSuccessRoomSetupSection</code> | <code>lib/event_success/presentation/event_success_room_setup_section.dart:16</code> | — | — | Shared room-layout setup used by Create Event and post-creation Host Setup. |
 | <code>EventSuccessModuleRows</code> | <code>lib/event_success/presentation/event_success_setup_body.dart:326</code> | — | — | No class documentation or registry summary. |
 | <code>EventSuccessSetupBody</code> | <code>lib/event_success/presentation/event_success_setup_body.dart:23</code> | — | — | Compact Event Success setup shared by create-event defaults and Host Manage. |
@@ -704,9 +704,9 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>HostCustomerAttendanceCard</code> | <code>lib/hosts/presentation/customers/host_customer_detail_cards.dart:380</code> | — | — | No class documentation or registry summary. |
 | <code>HostCustomerDetailsSection</code> | <code>lib/hosts/presentation/customers/host_customer_detail_cards.dart:447</code> | — | — | No class documentation or registry summary. |
 | <code>HostCustomerIdentityCard</code> | <code>lib/hosts/presentation/customers/host_customer_detail_cards.dart:10</code> | — | — | No class documentation or registry summary. |
-| <code>HostCustomerRecentEvents</code> | <code>lib/hosts/presentation/customers/host_customer_detail_cards.dart:563</code> | — | — | No class documentation or registry summary. |
-| <code>HostCustomerRevenueBreakdown</code> | <code>lib/hosts/presentation/customers/host_customer_detail_cards.dart:697</code> | — | — | No class documentation or registry summary. |
-| <code>HostCustomerRevenueCard</code> | <code>lib/hosts/presentation/customers/host_customer_detail_cards.dart:609</code> | — | — | No class documentation or registry summary. |
+| <code>HostCustomerRecentEvents</code> | <code>lib/hosts/presentation/customers/host_customer_detail_cards.dart:573</code> | — | — | No class documentation or registry summary. |
+| <code>HostCustomerRevenueBreakdown</code> | <code>lib/hosts/presentation/customers/host_customer_detail_cards.dart:706</code> | — | — | No class documentation or registry summary. |
+| <code>HostCustomerRevenueCard</code> | <code>lib/hosts/presentation/customers/host_customer_detail_cards.dart:618</code> | — | — | No class documentation or registry summary. |
 | <code>HostCustomerActiveMergesSection</code> | <code>lib/hosts/presentation/customers/host_customer_detail_screen.dart:722</code> | — | — | No class documentation or registry summary. |
 | <code>HostCustomerDetailTabs</code> | <code>lib/hosts/presentation/customers/host_customer_detail_tabs.dart:7</code> | — | — | No class documentation or registry summary. |
 | <code>HostCustomerIdentityInputSection</code> | <code>lib/hosts/presentation/customers/host_customer_editor.dart:188</code> | — | — | No class documentation or registry summary. |
@@ -776,8 +776,8 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>HostFormSectionAccordion</code> | <code>lib/hosts/presentation/forms/host_form_questions_page_body.dart:204</code> | — | — | No class documentation or registry summary. |
 | <code>HostFormSettingsMenu</code> | <code>lib/hosts/presentation/forms/host_form_questions_page_body.dart:135</code> | — | — | No class documentation or registry summary. |
 | <code>HostFormRenderer</code> | <code>lib/hosts/presentation/forms/host_form_renderer.dart:11</code> | — | — | No class documentation or registry summary. |
-| <code>HostFormResponsePrimaryAction</code> | <code>lib/hosts/presentation/forms/host_form_response_detail_screen.dart:462</code> | — | — | No class documentation or registry summary. |
-| <code>HostFormResponseRelatedActions</code> | <code>lib/hosts/presentation/forms/host_form_response_detail_screen.dart:545</code> | — | — | No class documentation or registry summary. |
+| <code>HostFormResponsePrimaryAction</code> | <code>lib/hosts/presentation/forms/host_form_response_detail_screen.dart:466</code> | — | — | No class documentation or registry summary. |
+| <code>HostFormResponseRelatedActions</code> | <code>lib/hosts/presentation/forms/host_form_response_detail_screen.dart:549</code> | — | — | No class documentation or registry summary. |
 | <code>HostFormResponsesPanel</code> | <code>lib/hosts/presentation/forms/host_form_responses_panel.dart:19</code> | — | — | No class documentation or registry summary. |
 | <code>HostFormSettingsSectionList</code> | <code>lib/hosts/presentation/forms/host_form_settings_section_list.dart:14</code> | — | — | No class documentation or registry summary. |
 | <code>HostFormValidationFieldLanes</code> | <code>lib/hosts/presentation/forms/host_form_validation_field_lanes.dart:12</code> | — | — | No class documentation or registry summary. |
@@ -817,12 +817,12 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>HostCampaignReport</code> | <code>lib/hosts/presentation/inbox/host_campaign_composer.dart:589</code> | — | — | No class documentation or registry summary. |
 | <code>HostEventAnnouncementField</code> | <code>lib/hosts/presentation/inbox/host_event_announcement_field.dart:26</code> | — | — | No class documentation or registry summary. |
 | <code>HostFollowerUpdateComposerSheet</code> | <code>lib/hosts/presentation/inbox/host_follower_update_composer.dart:43</code> | — | — | No class documentation or registry summary. |
+| <code>HostInboxAudienceRail</code> | <code>lib/hosts/presentation/inbox/host_inbox_collections.dart:255</code> | — | — | No class documentation or registry summary. |
+| <code>HostInboxEmptyState</code> | <code>lib/hosts/presentation/inbox/host_inbox_collections.dart:399</code> | — | — | No class documentation or registry summary. |
+| <code>HostInboxWorkspaceSliver</code> | <code>lib/hosts/presentation/inbox/host_inbox_collections.dart:308</code> | — | — | No class documentation or registry summary. |
+| <code>HostMessagingWorkspaceRail</code> | <code>lib/hosts/presentation/inbox/host_inbox_collections.dart:223</code> | — | — | No class documentation or registry summary. |
 | <code>HostInboxScopeMenu</code> | <code>lib/hosts/presentation/inbox/host_inbox_scope_menu.dart:11</code> | — | — | No class documentation or registry summary. |
-| <code>HostInboxAudienceRail</code> | <code>lib/hosts/presentation/inbox/host_inbox_screen.dart:739</code> | — | — | No class documentation or registry summary. |
-| <code>HostInboxEmptyState</code> | <code>lib/hosts/presentation/inbox/host_inbox_screen.dart:885</code> | — | — | No class documentation or registry summary. |
-| <code>HostInboxWorkspaceSliver</code> | <code>lib/hosts/presentation/inbox/host_inbox_screen.dart:794</code> | — | — | No class documentation or registry summary. |
-| <code>HostMessagingWorkspaceRail</code> | <code>lib/hosts/presentation/inbox/host_inbox_screen.dart:703</code> | — | — | No class documentation or registry summary. |
-| <code>HostInboxSelectedPerson</code> | <code>lib/hosts/presentation/inbox/host_inbox_selected_person.dart:15</code> | — | — | No class documentation or registry summary. |
+| <code>HostInboxSelectedPerson</code> | <code>lib/hosts/presentation/inbox/host_inbox_selected_person.dart:16</code> | — | — | No class documentation or registry summary. |
 | <code>HostManualSendQueue</code> | <code>lib/hosts/presentation/inbox/host_manual_send_queue.dart:18</code> | — | — | No class documentation or registry summary. |
 | <code>HostPersonConversationPane</code> | <code>lib/hosts/presentation/inbox/host_person_conversation.dart:26</code> | — | — | Embedded presentation: the route/workspace owns Scaffold and keyboard insets. |
 | <code>HostPersonConversationActions</code> | <code>lib/hosts/presentation/inbox/host_person_conversation_actions.dart:17</code> | — | — | Keeps the existing Catch conversation actions available in the shared pane. The parent supplies only a currently authorized source and its messages. |
@@ -903,8 +903,8 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>HostTodayBody</code> | <code>lib/hosts/today/presentation/widgets/host_today_body.dart:13</code> | — | — | No class documentation or registry summary. |
 | <code>HostTodayHeader</code> | <code>lib/hosts/today/presentation/widgets/host_today_body.dart:75</code> | — | — | No class documentation or registry summary. |
 | <code>HostTodayQuietState</code> | <code>lib/hosts/today/presentation/widgets/host_today_body.dart:100</code> | — | — | No class documentation or registry summary. |
-| <code>HostTodayEventMetadata</code> | <code>lib/hosts/today/presentation/widgets/host_today_event_spotlight.dart:126</code> | — | — | No class documentation or registry summary. |
-| <code>HostTodayEventMetric</code> | <code>lib/hosts/today/presentation/widgets/host_today_event_spotlight.dart:173</code> | — | — | No class documentation or registry summary. |
+| <code>HostTodayEventMetadata</code> | <code>lib/hosts/today/presentation/widgets/host_today_event_spotlight.dart:112</code> | — | — | No class documentation or registry summary. |
+| <code>HostTodayEventMetric</code> | <code>lib/hosts/today/presentation/widgets/host_today_event_spotlight.dart:159</code> | — | — | No class documentation or registry summary. |
 | <code>HostTodayEventSpotlight</code> | <code>lib/hosts/today/presentation/widgets/host_today_event_spotlight.dart:10</code> | — | — | No class documentation or registry summary. |
 | <code>HostTodayAttentionSection</code> | <code>lib/hosts/today/presentation/widgets/host_today_overview.dart:255</code> | — | — | No class documentation or registry summary. |
 | <code>HostTodayOverview</code> | <code>lib/hosts/today/presentation/widgets/host_today_overview.dart:16</code> | — | — | No class documentation or registry summary. |
@@ -968,9 +968,9 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>StarRating</code> | <code>lib/reviews/shared/star_rating.dart:7</code> | — | — | Read-only star row. [rating] is 1-5 (integers for filled stars). |
 | <code>StarRatingPicker</code> | <code>lib/reviews/shared/star_rating.dart:37</code> | — | — | Tappable star row for picking a rating. |
 | <code>WriteReviewSheet</code> | <code>lib/reviews/shared/write_review_sheet.dart:36</code> | — | — | No class documentation or registry summary. |
+| <code>BlockedAccountsSection</code> | <code>lib/safety/presentation/blocked_account_tile.dart:12</code> | — | — | No class documentation or registry summary. |
 | <code>AccountProfileStatus</code> | <code>lib/safety/presentation/settings_screen.dart:646</code> | — | — | No class documentation or registry summary. |
-| <code>BlockedAccountsSection</code> | <code>lib/safety/presentation/settings_screen.dart:684</code> | — | — | No class documentation or registry summary. |
-| <code>BlockedAccountsSkeleton</code> | <code>lib/safety/presentation/settings_screen.dart:753</code> | — | — | No class documentation or registry summary. |
+| <code>BlockedAccountsSkeleton</code> | <code>lib/safety/presentation/settings_screen.dart:684</code> | — | — | No class documentation or registry summary. |
 | <code>EventRecapLoadingBody</code> | <code>lib/swipes/presentation/event_recap_screen.dart:277</code> | — | — | No class documentation or registry summary. |
 | <code>EventRecapReadyBody</code> | <code>lib/swipes/presentation/event_recap_screen.dart:135</code> | — | — | No class documentation or registry summary. |
 | <code>RecapHero</code> | <code>lib/swipes/presentation/event_recap_screen.dart:411</code> | — | — | No class documentation or registry summary. |
@@ -1138,7 +1138,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>HostClubTeamScreen</code> | <code>lib/hosts/presentation/host_operations/host_club_team_screen.dart:3</code> | — | — | No class documentation or registry summary. |
 | <code>HostClubsScreen</code> | <code>lib/hosts/presentation/host_operations/host_clubs_screen.dart:3</code> | — | — | No class documentation or registry summary. |
 | <code>HostLoadingScreen</code> | <code>lib/hosts/presentation/host_operations/host_loading_screen.dart:3</code> | — | — | No class documentation or registry summary. |
-| <code>HostInboxScreen</code> | <code>lib/hosts/presentation/inbox/host_inbox_screen.dart:38</code> | — | — | No class documentation or registry summary. |
+| <code>HostInboxScreen</code> | <code>lib/hosts/presentation/inbox/host_inbox_screen.dart:40</code> | — | — | No class documentation or registry summary. |
 | <code>HostMessagingSetupScreen</code> | <code>lib/hosts/presentation/inbox/host_messaging_setup_screen.dart:10</code> | — | — | No class documentation or registry summary. |
 | <code>HostNewMessageScreen</code> | <code>lib/hosts/presentation/inbox/host_new_message_screen.dart:33</code> | — | — | No class documentation or registry summary. |
 | <code>HostTodayLoadedRoute</code> | <code>lib/hosts/today/presentation/host_today_screen.dart:243</code> | — | — | No class documentation or registry summary. |

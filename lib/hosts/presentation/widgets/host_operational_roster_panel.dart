@@ -423,7 +423,7 @@ class _HostOperationalRosterPanelState
                     )
                   else
                     CatchSection.containedRows(
-                      entries: [
+                      children: [
                         for (final attendee in filteredAttendees)
                           CatchField.read(
                             key: ValueKey(attendee.id),
@@ -642,7 +642,7 @@ class _HostRuntimeClaimQueue extends StatelessWidget {
         ),
         gapH8,
         CatchSection.containedRows(
-          entries: [
+          children: [
             for (final indexed in claims.indexed)
               CatchField.read(
                 key: ValueKey('runtime-claim-${indexed.$2.uid}'),

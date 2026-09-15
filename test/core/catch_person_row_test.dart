@@ -6,7 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   Widget screen(CatchField field) => MaterialApp(
     theme: AppTheme.light,
-    home: CatchScaffold.standalone(body: CatchSection.rows(entries: [field])),
+    home: CatchScaffold.standalone(body: CatchSection.rows(children: [field])),
   );
 
   testWidgets(

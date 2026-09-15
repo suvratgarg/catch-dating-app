@@ -125,17 +125,17 @@ class _HostTodayWideLayout extends StatelessWidget {
         ),
         child: CatchSectionList.panes(
           key: const ValueKey<String>('host-today-wide-layout'),
-          primary: KeyedSubtree(
+          body: KeyedSubtree(
             key: const ValueKey<String>('host-today-primary-pane'),
             child: primary,
           ),
-          secondary: attentionVisible
+          trailing: attentionVisible
               ? KeyedSubtree(
                   key: const ValueKey<String>('host-today-attention-pane'),
                   child: attention,
                 )
               : null,
-          secondaryWidth: attentionPaneWidth,
+          trailingWidth: attentionPaneWidth,
         ),
       ),
     );
@@ -213,7 +213,7 @@ class _HostTodayHorizonAndActions extends StatelessWidget {
         if (state.laterEvents.isNotEmpty)
           CatchSection.rows(
             title: context.l10n.hostTodayLater,
-            entries: [
+            children: [
               for (final data in state.laterEvents)
                 CatchField.navigate(
                   key: ValueKey<String>('host-today-event-${data.event.id}'),
@@ -286,7 +286,7 @@ class HostTodayAttentionSection extends StatelessWidget {
             count: state.attentionCountIsComplete
                 ? state.attentionItems.length
                 : null,
-            entries: [
+            children: [
               for (final data in state.attentionItems)
                 CatchField.navigate(
                   key: ValueKey<String>('host-today-attention-${data.item.id}'),

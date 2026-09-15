@@ -405,8 +405,7 @@ class _HostApplicationListFrame extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchSection.divided(
-      first: true,
+    return CatchSection.containedRows(
       children: [
         for (final application in applications)
           CatchField.navigate(

@@ -30,7 +30,7 @@ class ChatConversationsList extends StatelessWidget {
   Widget build(BuildContext context) {
     return CatchSection.sliverRows(
       itemCount: matches.length,
-      findChildIndexCallback: (key) {
+      indexForKeyBuilder: (key) {
         final index = matches.indexWhere(
           (preview) => ValueKey(preview.matchId) == key,
         );

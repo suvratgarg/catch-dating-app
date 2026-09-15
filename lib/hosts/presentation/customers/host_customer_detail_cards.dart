@@ -311,7 +311,7 @@ class _HostCustomerIdentitySummary extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         CatchSection.containedRows(
-          entries: [
+          children: [
             CatchField.read(
               content: CatchPersonLayout(
                 name: displayName,
@@ -505,55 +505,62 @@ class HostCustomerDetailsSection extends StatelessWidget {
           ],
         ),
         gapH24,
-        CatchSection.fieldRows(
-          key: const ValueKey('host-customer-submitted-information'),
-          title: context.l10n.hostCustomersSubmittedInformation,
-          footer:
-              customer.timelineCoverage.forms !=
-                      HostCustomerTimelineCoverageValue.exact ||
-                  customer.timelineTruncated
-              ? Text(
-                  context.l10n.hostCustomersTimelinePartialBody,
-                  style: CatchTextStyles.recordContext(context),
-                )
-              : null,
-          children: formRows.isEmpty
-              ? [
-                  CatchField.read(
-                    copy: catchFieldCopy(context.l10n),
-                    body: context.l10n.hostCustomersNoSubmittedInformation,
-                    icon: CatchIcons.tabForms,
-                  ),
-                ]
-              : [
-                  for (final entry in formRows)
-                    CatchField.navigate(
-                      key: ValueKey(
-                        'host-customer-submission-${entry.responseId}',
-                      ),
-                      onActivate: () => onOpenFormResponse(entry.responseId),
-                      content: CatchRecordLayout(
-                        title:
-                            entry.formTitle ??
-                            context.l10n.hostCustomersTimelineFormFallback,
-                        metadata:
-                            entry.action ==
-                                HostCustomerFormTimelineAction.withdrawn
-                            ? context.l10n.hostCustomersTimelineFormWithdrawn(
-                                date: AppTimeFormatters.shortDate(
-                                  entry.occurredAt,
-                                ),
-                              )
-                            : [
-                                context.l10n.hostCustomersViewAnswers(
-                                  count: entry.answeredQuestionCount,
-                                ),
-                                AppTimeFormatters.shortDate(entry.occurredAt),
-                              ].join(' · '),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            CatchSection.containedRows(
+              key: const ValueKey('host-customer-submitted-information'),
+              title: context.l10n.hostCustomersSubmittedInformation,
+              children: formRows.isEmpty
+                  ? [
+                      CatchField.read(
+                        copy: catchFieldCopy(context.l10n),
+                        body: context.l10n.hostCustomersNoSubmittedInformation,
                         icon: CatchIcons.tabForms,
                       ),
-                    ),
-                ],
+                    ]
+                  : [
+                      for (final entry in formRows)
+                        CatchField.navigate(
+                          key: ValueKey(
+                            'host-customer-submission-${entry.responseId}',
+                          ),
+                          onActivate: () =>
+                              onOpenFormResponse(entry.responseId),
+                          content: CatchRecordLayout(
+                            title:
+                                entry.formTitle ??
+                                context.l10n.hostCustomersTimelineFormFallback,
+                            metadata:
+                                entry.action ==
+                                    HostCustomerFormTimelineAction.withdrawn
+                                ? context.l10n
+                                      .hostCustomersTimelineFormWithdrawn(
+                                        date: AppTimeFormatters.shortDate(
+                                          entry.occurredAt,
+                                        ),
+                                      )
+                                : [
+                                    context.l10n.hostCustomersViewAnswers(
+                                      count: entry.answeredQuestionCount,
+                                    ),
+                                    AppTimeFormatters.shortDate(
+                                      entry.occurredAt,
+                                    ),
+                                  ].join(' · '),
+                            icon: CatchIcons.tabForms,
+                          ),
+                        ),
+                    ],
+            ),
+            if (customer.timelineCoverage.forms !=
+                    HostCustomerTimelineCoverageValue.exact ||
+                customer.timelineTruncated)
+              Text(
+                context.l10n.hostCustomersTimelinePartialBody,
+                style: CatchTextStyles.recordContext(context),
+              ),
+          ],
         ),
       ],
     );
@@ -582,10 +589,9 @@ class HostCustomerRecentEvents extends StatelessWidget {
             ),
           );
     if (events.isEmpty) return const SizedBox.shrink();
-    return CatchSection.divided(
+    return CatchSection.containedRows(
       key: const ValueKey('host-customer-recent-events'),
       title: context.l10n.hostCustomersRecentEvents,
-      first: true,
       children: [
         for (final event in events.take(3))
           CatchField.navigate(

@@ -406,7 +406,7 @@ class HostCustomersDirectory extends StatelessWidget {
           CatchSection.sliverRows(
             key: const ValueKey('host-customers-directory-list'),
             itemCount: contacts.length,
-            findChildIndexCallback: (key) {
+            indexForKeyBuilder: (key) {
               final index = contacts.indexWhere(
                 (contact) =>
                     key == ValueKey('host-customer-${contact.contactId}'),

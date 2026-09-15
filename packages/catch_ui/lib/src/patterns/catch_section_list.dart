@@ -170,16 +170,16 @@ class CatchSectionList extends StatelessWidget {
   /// sections retain content gutters and the enclosing page retains scrolling.
   const CatchSectionList.panes({
     super.key,
-    required Widget primary,
-    Widget? secondary,
-    double secondaryWidth = CatchLayout.hostTodayAttentionPaneWidth,
+    required Widget body,
+    Widget? trailing,
+    double trailingWidth = CatchLayout.hostTodayAttentionPaneWidth,
   }) : _sequence = null,
        _responsive = null,
        _page = null,
        _panes = (
-         primary: primary,
-         secondary: secondary,
-         secondaryWidth: secondaryWidth,
+         primary: body,
+         secondary: trailing,
+         secondaryWidth: trailingWidth,
        );
 
   final ({Widget primary, Widget? secondary, double secondaryWidth})? _panes;

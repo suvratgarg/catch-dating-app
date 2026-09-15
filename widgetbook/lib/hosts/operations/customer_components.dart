@@ -124,7 +124,7 @@ Widget hostCustomerTimelineRecordComponentStates(BuildContext context) =>
     hostCustomersStates(
       context,
       detailBuilder: (customer) => CatchSection.containedRows(
-        entries: [
+        children: [
           for (final entry in customer.timeline)
             hostCustomerTimelineField(
               context,

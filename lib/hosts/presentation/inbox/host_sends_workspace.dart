@@ -191,18 +191,20 @@ class _HostSendsWorkspaceSliverState
       remainingQuota: remainingQuota,
       requestIdFactory: HostClubPostController.generateRequestId,
       onSubmitPost: ({required requestId, required text}) async {
-        if (!_sameScope(generation)) throw StateError('Organizer changed.');
+        if (!mounted || !_sameScope(generation)) {
+          throw StateError('Organizer changed.');
+        }
         _setBusy(true);
         try {
           await ref
               .read(hostClubPostControllerProvider)
               .createPost(clubId: club.id, requestId: requestId, text: text);
         } finally {
-          if (_sameScope(generation)) _setBusy(false);
+          if (mounted && _sameScope(generation)) _setBusy(false);
         }
       },
     );
-    if (!_sameScope(generation) || !sent) return;
+    if (!mounted || !_sameScope(generation) || !sent) return;
     ref.invalidate(watchClubPostRemainingWeeklyQuotaProvider(widget.club.id));
     ref.invalidate(hostSendsProvider(widget.club.id));
     setState(() => _flow = const _SendHistory());
@@ -231,7 +233,7 @@ class _HostSendsWorkspaceSliverState
             sendingEnabled: widget.broadcastEnabled,
           ),
         );
-    if (!_sameScope(generation) || result == null) return;
+    if (!mounted || !_sameScope(generation) || result == null) return;
     ref.invalidate(hostSendsProvider(widget.club.id));
     setState(() => _flow = const _SendHistory());
     final suffix = result.isPartial
@@ -257,10 +259,11 @@ class _HostSendsWorkspaceSliverState
             organizerId: widget.club.id,
             campaignId: campaignId,
           );
-      if (_sameScope(generation))
+      if (mounted && _sameScope(generation)) {
         setState(() => _flow = _SendCampaign(campaign));
+      }
     } on Object catch (error) {
-      if (_sameScope(generation)) {
+      if (mounted && _sameScope(generation)) {
         showCatchErrorSnackBar(
           context,
           error,
@@ -268,7 +271,7 @@ class _HostSendsWorkspaceSliverState
         );
       }
     } finally {
-      if (_sameScope(generation)) _setBusy(false);
+      if (mounted && _sameScope(generation)) _setBusy(false);
     }
   }
 
@@ -284,7 +287,7 @@ class _HostSendsWorkspaceSliverState
       final nextPage = await ref
           .read(hostAudienceControllerProvider)
           .listSends(organizerId: widget.club.id, cursor: cursor);
-      if (!_sameScope(generation)) return;
+      if (!mounted || !_sameScope(generation)) return;
       final existingKeys = <String>{
         for (final send in firstPage.sends) '${send.runtimeType}:${send.id}',
         if (_paginationBaseKey == baseKey)
@@ -304,7 +307,7 @@ class _HostSendsWorkspaceSliverState
         _nextCursor = nextPage.nextCursor;
       });
     } on Object catch (error) {
-      if (_sameScope(generation)) {
+      if (mounted && _sameScope(generation)) {
         showCatchErrorSnackBar(
           context,
           error,
@@ -312,7 +315,9 @@ class _HostSendsWorkspaceSliverState
         );
       }
     } finally {
-      if (_sameScope(generation)) setState(() => _loadingMore = false);
+      if (mounted && _sameScope(generation)) {
+        setState(() => _loadingMore = false);
+      }
     }
   }
 
@@ -324,12 +329,14 @@ class _HostSendsWorkspaceSliverState
     _setBusy(true);
     try {
       final campaign = await action(ref.read(hostAudienceControllerProvider));
-      if (_sameScope(generation))
+      if (mounted && _sameScope(generation)) {
         setState(() => _flow = _SendCampaign(campaign));
-      if (_sameScope(generation))
+      }
+      if (mounted && _sameScope(generation)) {
         ref.invalidate(hostSendsProvider(widget.club.id));
+      }
     } on Object catch (error) {
-      if (_sameScope(generation)) {
+      if (mounted && _sameScope(generation)) {
         showCatchErrorSnackBar(
           context,
           error,
@@ -337,7 +344,7 @@ class _HostSendsWorkspaceSliverState
         );
       }
     } finally {
-      if (_sameScope(generation)) _setBusy(false);
+      if (mounted && _sameScope(generation)) _setBusy(false);
     }
   }
 
@@ -470,7 +477,7 @@ class _HostSendsHistoryPage extends StatelessWidget {
       children: [
         CatchSection.rows(
           title: context.l10n.hostMessagingWorkspaceSends,
-          entries: [
+          children: [
             for (final send in sends)
               CatchField.navigate(
                 key: ValueKey(switch (send) {
