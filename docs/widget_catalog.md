@@ -382,8 +382,8 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>EventRehearsalCheckpointVisitSheet</code> | <code>lib/event_rehearsal/presentation/widgets/event_rehearsal_checkpoint_visit_sheet.dart:22</code> | — | — | Reuses the live atomic visit UI with original-departure practice evidence. |
 | <code>EventRehearsalDeliveryQueueSheet</code> | <code>lib/event_rehearsal/presentation/widgets/event_rehearsal_delivery_queue_sheet.dart:14</code> | — | — | No class documentation or registry summary. |
 | <code>EventRehearsalDeliverySection</code> | <code>lib/event_rehearsal/presentation/widgets/event_rehearsal_delivery_section.dart:10</code> | — | — | No class documentation or registry summary. |
-| <code>EventRehearsalDeliverySheet</code> | <code>lib/event_rehearsal/presentation/widgets/event_rehearsal_delivery_sheet.dart:17</code> | — | — | No class documentation or registry summary. |
-| <code>EventRehearsalDepartureHistorySheet</code> | <code>lib/event_rehearsal/presentation/widgets/event_rehearsal_departure_history_sheet.dart:15</code> | — | — | No class documentation or registry summary. |
+| <code>EventRehearsalDeliverySheet</code> | <code>lib/event_rehearsal/presentation/widgets/event_rehearsal_delivery_sheet.dart:18</code> | — | — | No class documentation or registry summary. |
+| <code>EventRehearsalDepartureHistorySheet</code> | <code>lib/event_rehearsal/presentation/widgets/event_rehearsal_departure_history_sheet.dart:16</code> | — | — | No class documentation or registry summary. |
 | <code>EventRehearsalDepartureSheet</code> | <code>lib/event_rehearsal/presentation/widgets/event_rehearsal_departure_sheet.dart:20</code> | — | — | No class documentation or registry summary. |
 | <code>EventRehearsalGroupsSection</code> | <code>lib/event_rehearsal/presentation/widgets/event_rehearsal_groups_section.dart:10</code> | — | — | No class documentation or registry summary. |
 | <code>EventRehearsalHelpQueueSheet</code> | <code>lib/event_rehearsal/presentation/widgets/event_rehearsal_help_queue_sheet.dart:25</code> | — | — | No class documentation or registry summary. |
@@ -397,7 +397,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>EventRehearsalRuntimeFields</code> | <code>lib/event_rehearsal/presentation/widgets/event_rehearsal_runtime_fields.dart:11</code> | — | — | Practice choices carry route kinds and synthetic receipts, never sender IDs. |
 | <code>EventRehearsalRuntimeSection</code> | <code>lib/event_rehearsal/presentation/widgets/event_rehearsal_runtime_section.dart:15</code> | — | — | A compact simulation form; advanced timing and receipt scripts open on demand. |
 | <code>EventRehearsalSettingsSection</code> | <code>lib/event_rehearsal/presentation/widgets/event_rehearsal_settings_section.dart:12</code> | — | — | Uses the actual runtime's settings slot and only discloses current groups. |
-| <code>EventRehearsalSettingsSheet</code> | <code>lib/event_rehearsal/presentation/widgets/event_rehearsal_settings_sheet.dart:19</code> | — | — | The retained owner decides which form is shown while a save is unresolved. |
+| <code>EventRehearsalSettingsSheet</code> | <code>lib/event_rehearsal/presentation/widgets/event_rehearsal_settings_sheet.dart:21</code> | — | — | The retained owner decides which form is shown while a save is unresolved. |
 | <code>EventRehearsalSetupSection</code> | <code>lib/event_rehearsal/presentation/widgets/event_rehearsal_setup_section.dart:10</code> | — | — | No class documentation or registry summary. |
 | <code>EventRehearsalRecapSection</code> | <code>lib/event_rehearsal/presentation/widgets/event_rehearsal_simulator.dart:314</code> | — | — | No class documentation or registry summary. |
 | <code>EventRehearsalRosterSection</code> | <code>lib/event_rehearsal/presentation/widgets/event_rehearsal_simulator.dart:260</code> | — | — | No class documentation or registry summary. |
@@ -489,22 +489,22 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>EventAssistanceDeliveryEntry</code> | <code>lib/event_success/presentation/event_assistance_delivery_entry.dart:5</code> | — | — | No class documentation or registry summary. |
 | <code>EventAssistanceDeliveryQueueSection</code> | <code>lib/event_success/presentation/event_assistance_delivery_queue_section.dart:8</code> | — | — | A bounded list of message evidence, shared by live and practice adapters. |
 | <code>EventAssistanceDeliveryQueueSheet</code> | <code>lib/event_success/presentation/event_assistance_delivery_queue_sheet.dart:13</code> | — | — | No class documentation or registry summary. |
-| <code>EventAssistanceDeliverySheet</code> | <code>lib/event_success/presentation/event_assistance_delivery_sheet.dart:17</code> | — | — | No class documentation or registry summary. |
+| <code>EventAssistanceDeliverySheet</code> | <code>lib/event_success/presentation/event_assistance_delivery_sheet.dart:18</code> | — | — | No class documentation or registry summary. |
 | <code>EventAssistanceDepartureHistorySection</code> | <code>lib/event_success/presentation/event_assistance_departure_history_section.dart:16</code> | — | — | Saved records use readable record rows, with disclosure only for report detail. |
-| <code>EventAssistanceDepartureHistorySheet</code> | <code>lib/event_success/presentation/event_assistance_departure_history_sheet.dart:15</code> | — | — | No class documentation or registry summary. |
+| <code>EventAssistanceDepartureHistorySheet</code> | <code>lib/event_success/presentation/event_assistance_departure_history_sheet.dart:16</code> | — | — | No class documentation or registry summary. |
 | <code>EventAssistanceDepartureRosterSection</code> | <code>lib/event_success/presentation/event_assistance_departure_roster_section.dart:10</code> | — | — | Searchable, bounded observation choices. Nothing is selected by attendance. |
 | <code>EventAssistanceDepartureSection</code> | <code>lib/event_success/presentation/event_assistance_departure_section.dart:26</code> | — | — | One departure form shared by real and synthetic transports. |
-| <code>EventAssistanceDepartureSheet</code> | <code>lib/event_success/presentation/event_assistance_departure_sheet.dart:19</code> | — | — | No class documentation or registry summary. |
+| <code>EventAssistanceDepartureSheet</code> | <code>lib/event_success/presentation/event_assistance_departure_sheet.dart:20</code> | — | — | No class documentation or registry summary. |
 | <code>EventAssistanceGroupRosterSection</code> | <code>lib/event_success/presentation/event_assistance_group_roster_section.dart:10</code> | — | — | A compact entry to one guest's group action, shared by both runtimes. |
 | <code>EventAssistanceHelpDecisionSection</code> | <code>lib/event_success/presentation/event_assistance_help_decision_section.dart:25</code> | — | — | One deliberate practical-help decision, with the same recovery in both modes. |
 | <code>EventAssistanceHelpEntry</code> | <code>lib/event_success/presentation/event_assistance_help_entry.dart:5</code> | — | — | No class documentation or registry summary. |
 | <code>EventAssistanceHelpQueueSection</code> | <code>lib/event_success/presentation/event_assistance_help_queue_section.dart:34</code> | — | — | Page controls and readable request records shared by live and practice. |
 | <code>EventAssistanceHelpQueueSheet</code> | <code>lib/event_success/presentation/event_assistance_help_queue_sheet.dart:13</code> | — | — | No class documentation or registry summary. |
-| <code>EventAssistanceHelpSheet</code> | <code>lib/event_success/presentation/event_assistance_help_sheet.dart:18</code> | — | — | No class documentation or registry summary. |
+| <code>EventAssistanceHelpSheet</code> | <code>lib/event_success/presentation/event_assistance_help_sheet.dart:19</code> | — | — | No class documentation or registry summary. |
 | <code>EventAssistanceLateJoinDestinationField</code> | <code>lib/event_success/presentation/event_assistance_late_join_destination_field.dart:12</code> | — | — | No class documentation or registry summary. |
 | <code>EventAssistanceLateJoinRulesFields</code> | <code>lib/event_success/presentation/event_assistance_late_join_rules_fields.dart:11</code> | — | — | No class documentation or registry summary. |
 | <code>EventAssistanceLateJoinSection</code> | <code>lib/event_success/presentation/event_assistance_late_join_section.dart:24</code> | — | — | The configuration form is shared; its caller supplies live or practice authority. |
-| <code>EventAssistanceLateJoinSheet</code> | <code>lib/event_success/presentation/event_assistance_late_join_sheet.dart:17</code> | — | — | No class documentation or registry summary. |
+| <code>EventAssistanceLateJoinSheet</code> | <code>lib/event_success/presentation/event_assistance_late_join_sheet.dart:18</code> | — | — | No class documentation or registry summary. |
 | <code>EventAssistanceLiveDeliverySection</code> | <code>lib/event_success/presentation/event_assistance_live_delivery_section.dart:10</code> | — | — | No class documentation or registry summary. |
 | <code>EventAssistanceLiveGroupsSection</code> | <code>lib/event_success/presentation/event_assistance_live_groups_section.dart:12</code> | — | — | No class documentation or registry summary. |
 | <code>EventAssistanceLiveHelpSection</code> | <code>lib/event_success/presentation/event_assistance_live_help_section.dart:10</code> | — | — | No class documentation or registry summary. |
@@ -517,7 +517,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>EventAssistanceRuntimeChannels</code> | <code>lib/event_success/presentation/event_assistance_runtime_channels.dart:11</code> | — | — | Explicit channel order with named, server-reviewed sender choices. |
 | <code>EventAssistanceRuntimeLimits</code> | <code>lib/event_success/presentation/event_assistance_runtime_limits.dart:11</code> | — | — | Optional timing and delivery limits preserve the rest of the configuration. |
 | <code>EventAssistanceRuntimeSection</code> | <code>lib/event_success/presentation/event_assistance_runtime_section.dart:23</code> | — | — | Event-scoped configuration with progressive limits and a frozen pending decision. |
-| <code>EventAssistanceRuntimeSheet</code> | <code>lib/event_success/presentation/event_assistance_runtime_sheet.dart:19</code> | — | — | The live settings boundary keeps an unresolved command across sheet closure. |
+| <code>EventAssistanceRuntimeSheet</code> | <code>lib/event_success/presentation/event_assistance_runtime_sheet.dart:20</code> | — | — | The live settings boundary keeps an unresolved command across sheet closure. |
 | <code>EventAssistanceSweepSection</code> | <code>lib/event_success/presentation/event_assistance_sweep_section.dart:20</code> | — | — | The same compact roster opens one guest's visit in live and practice modes. |
 | <code>EventAssistanceVisitSection</code> | <code>lib/event_success/presentation/event_assistance_visit_section.dart:55</code> | — | — | An atomic observation. The caller owns review, authority and exact retries. |
 | <code>EventAssistanceVisitSheet</code> | <code>lib/event_success/presentation/event_assistance_visit_sheet.dart:16</code> | — | — | Live transport adapter for the shared atomic visit controls. |
@@ -1162,13 +1162,13 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>DashboardHomeScreen</code> | <code>lib/dashboard/presentation/dashboard_home_screen.dart:3</code> | — | — | No class documentation or registry summary. |
 | <code>DashboardLoadingScreen</code> | <code>lib/dashboard/presentation/dashboard_loading_screen.dart:3</code> | — | — | No class documentation or registry summary. |
 | <code>DashboardScreen</code> | <code>lib/dashboard/presentation/dashboard_screen.dart:25</code> | — | — | No class documentation or registry summary. |
-| <code>HostEventRehearsalScreen</code> | <code>lib/event_rehearsal/presentation/host_event_rehearsal_screen.dart:35</code> | — | — | No class documentation or registry summary. |
+| <code>HostEventRehearsalScreen</code> | <code>lib/event_rehearsal/presentation/host_event_rehearsal_screen.dart:36</code> | — | — | No class documentation or registry summary. |
 | <code>HostEventRehearsalStartScreen</code> | <code>lib/event_rehearsal/presentation/host_event_rehearsal_start_screen.dart:14</code> | — | — | No class documentation or registry summary. |
 | <code>EventSuccessCompanionScreen</code> | <code>lib/event_success/presentation/event_success_companion_body_screen.dart:3</code> | — | — | No class documentation or registry summary. |
 | <code>EventSuccessCompanionRouteScreen</code> | <code>lib/event_success/presentation/event_success_companion_screen.dart:203</code> | — | — | No class documentation or registry summary. |
 | <code>CalendarLoadingScreen</code> | <code>lib/events/presentation/calendar/calendar_loading_screen.dart:3</code> | — | — | No class documentation or registry summary. |
 | <code>CalendarScreen</code> | <code>lib/events/presentation/calendar/calendar_screen.dart:25</code> | — | — | No class documentation or registry summary. |
-| <code>EventDetailScreen</code> | <code>lib/events/presentation/event_detail_screen.dart:52</code> | — | — | No class documentation or registry summary. |
+| <code>EventDetailScreen</code> | <code>lib/events/presentation/event_detail_screen.dart:53</code> | — | — | No class documentation or registry summary. |
 | <code>EventLocationMapScreen</code> | <code>lib/events/presentation/event_location_map_body_screen.dart:10</code> | — | — | No class documentation or registry summary. |
 | <code>EventLocationMapRouteScreen</code> | <code>lib/events/presentation/event_location_map_screen.dart:20</code> | — | — | No class documentation or registry summary. |
 | <code>LocationPickerScreen</code> | <code>lib/events/presentation/location_picker_screen.dart:18</code> | — | — | No class documentation or registry summary. |
