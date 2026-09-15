@@ -11,6 +11,7 @@ final class AuthenticatedSession {
   final String uid;
 }
 
+// keepalive: Long-lived feature providers share one authenticated account view.
 @Riverpod(keepAlive: true)
 AsyncValue<AuthenticatedSession> authenticatedSession(Ref ref) {
   final auth = ref.watch(uidProvider);
