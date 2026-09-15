@@ -115,13 +115,23 @@ modes. A `directCommand` binding names a callable that consumes the canonical
 command envelope; a `domainAdapter` names an existing typed domain operation;
 an `internalCoordinator` names worker-owned execution; and `contractOnly`
 means no executor is implemented. Complete bindings have no missing capability;
-empty and partial bindings name one. A partial binding partitions a command's
+none and partial bindings name one. A partial binding partitions a command's
 discriminator values into implemented and missing variants, and validation
 checks that the partition exactly covers the schema enum. Validation also
 requires all command kinds in schema order and executable bindings to name at
 least one operation. Generated TypeScript and Dart catalogs keep
 product code from treating type coverage as runnable coverage and expose the
 remaining dependency as a closed enum.
+
+`workflowActionPlanForSurface` is the shared product projection over that
+catalog. It accepts one surface, execution mode and an explicit set of event
+capabilities, then returns every applicable workflow with its presentation,
+resolution boundary, actor-owned commands, executor operations, coverage and
+missing capability. Workflow status is `external`, `complete`, `partial` or
+`unavailable`. The planner retains partial and unavailable work so Today,
+setup, live runtime, rehearsal and reporting can explain a gap rather than
+silently omit an action. Capability composition remains independent of
+`activityKind`; the saved event format and operating state own those facts.
 
 The live `sendOperationalMessage` binding is partial. Late-join `joining`
 messages run through `LiveMessageDispatcher`; `planChange` and `followUp` still

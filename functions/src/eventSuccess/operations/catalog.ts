@@ -50,6 +50,41 @@ export type CommandExecutionMode = "live" | "rehearsal";
 export type CommandBinding =
   (typeof commandBindingDefinitions)[number][CommandExecutionMode];
 export type CommandCoverage = "none" | "partial" | "complete";
+export type WorkflowCommandActor = "automatic" | "host" | "guest";
+export type WorkflowImplementationStatus =
+  | "external"
+  | "complete"
+  | "partial"
+  | "unavailable";
+
+export interface PlannedWorkflowCommand {
+  kind: CommandKind;
+  actor: WorkflowCommandActor;
+  coverage: CommandCoverage;
+  bindingType: CommandBinding["bindingType"];
+  operations: readonly string[];
+  missingCapability: string | null;
+  variantField: string | null;
+  implementedVariants: readonly string[];
+  missingVariants: readonly string[];
+}
+
+export interface WorkflowActionPlanItem {
+  kind: WorkflowKind;
+  family: (typeof workflowDefinitions)[number]["family"];
+  scope: (typeof workflowDefinitions)[number]["scope"];
+  trigger: string;
+  automatic: string;
+  hostDecision: string;
+  resolution: string;
+  overridePolicy: (typeof workflowDefinitions)[number]["overridePolicy"];
+  presentation:
+    (typeof workflowDefinitions)[number]["hostProjection"]["presentation"];
+  resolutionBoundary:
+    (typeof workflowDefinitions)[number]["resolutionBoundary"];
+  implementationStatus: WorkflowImplementationStatus;
+  commands: readonly PlannedWorkflowCommand[];
+}
 
 export function commandBinding(
   kind: CommandKind,
@@ -83,6 +118,27 @@ export function commandIsFullyImplemented(
   mode: CommandExecutionMode
 ): boolean {
   return commandCoverage(kind, mode) === "complete";
+}
+
+/** Stable executor projection for product surfaces and gap reporting. */
+export function plannedWorkflowCommand(
+  kind: CommandKind,
+  actor: WorkflowCommandActor,
+  mode: CommandExecutionMode
+): PlannedWorkflowCommand {
+  const binding = commandBinding(kind, mode);
+  const partial = "coverage" in binding ? binding.coverage : null;
+  return {
+    kind,
+    actor,
+    coverage: commandCoverage(kind, mode),
+    bindingType: binding.bindingType,
+    operations: binding.operations,
+    missingCapability: binding.missingCapability,
+    variantField: partial?.variantField ?? null,
+    implementedVariants: partial?.implementedVariants ?? [],
+    missingVariants: partial?.missingVariants ?? [],
+  };
 }
 
 type CommandsAvailableTo<A extends Authority> = {
@@ -121,6 +177,60 @@ export function workflowDefinitionsForSurface(
   return workflowDefinitions.filter((definition) =>
     (definition.hostProjection.surfaces as readonly HostSurface[])
       .includes(surface));
+}
+
+/**
+ * Resolves the complete action model for one Host surface and execution mode.
+ * Capability facts stay explicit so event formats compose behavior without
+ * branching this catalog on activity names.
+ */
+export function workflowActionPlanForSurface(input: {
+  surface: HostSurface;
+  mode: CommandExecutionMode;
+  capabilities: OperatingCapabilities;
+}): WorkflowActionPlanItem[] {
+  return workflowDefinitionsForSurface(input.surface)
+    .filter((definition) => isApplicable(
+      definition.applicability,
+      input.capabilities
+    ))
+    .map((definition) => {
+      const commands = (["automatic", "host", "guest"] as const)
+        .flatMap((actor) => definition.commands[actor].map((kind) =>
+          plannedWorkflowCommand(kind, actor, input.mode)
+        ));
+      return {
+        kind: definition.kind,
+        family: definition.family,
+        scope: definition.scope,
+        trigger: definition.trigger,
+        automatic: definition.automatic,
+        hostDecision: definition.hostDecision,
+        resolution: definition.resolution,
+        overridePolicy: definition.overridePolicy,
+        presentation: definition.hostProjection.presentation,
+        resolutionBoundary: definition.resolutionBoundary,
+        implementationStatus: workflowImplementationStatus(
+          definition.resolutionBoundary,
+          commands
+        ),
+        commands,
+      };
+    });
+}
+
+function workflowImplementationStatus(
+  boundary: WorkflowActionPlanItem["resolutionBoundary"],
+  commands: readonly PlannedWorkflowCommand[]
+): WorkflowImplementationStatus {
+  if (boundary !== "eventAssistanceCommand") return "external";
+  if (commands.every((command) => command.coverage === "complete")) {
+    return "complete";
+  }
+  if (commands.every((command) => command.coverage === "none")) {
+    return "unavailable";
+  }
+  return "partial";
 }
 
 export function workflowHasCommandContract(

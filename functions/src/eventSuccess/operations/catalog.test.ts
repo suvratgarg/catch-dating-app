@@ -6,10 +6,13 @@ import {
   commandCoverage,
   commandHasExecutor,
   commandIsFullyImplemented,
+  plannedWorkflowCommand,
   workflowDefinitions,
   workflowDefinitionsForSurface,
+  workflowActionPlanForSurface,
   workflowHasCommandContract,
   type HostSurface,
+  type OperatingCapabilities,
 } from "./catalog";
 import {COMMAND_AUTHORITY, type CommandKind} from "./commands";
 
@@ -185,4 +188,122 @@ test("every Host surface has an exhaustive filtered projection", () => {
       (definition.hostProjection.surfaces as readonly HostSurface[])
         .includes(surface)));
   }
+});
+
+const capabilities = (
+  values: Partial<OperatingCapabilities> = {}
+): OperatingCapabilities => ({
+  moving: false,
+  movingSubgroups: false,
+  groups: false,
+  resources: false,
+  rounds: false,
+  independentUnits: false,
+  outcomes: false,
+  accountability: false,
+  paid: false,
+  requiredData: false,
+  roles: false,
+  admission: false,
+  tracking: false,
+  ...values,
+});
+
+test("action plans compose capabilities without activity-name forks", () => {
+  const runClub = workflowActionPlanForSurface({
+    surface: "liveNow",
+    mode: "live",
+    capabilities: capabilities({
+      moving: true,
+      movingSubgroups: true,
+      groups: true,
+      independentUnits: true,
+      outcomes: true,
+      accountability: true,
+      roles: true,
+      tracking: true,
+    }),
+  });
+  const runKinds = new Set(runClub.map((workflow) => workflow.kind));
+  assert.equal(runKinds.has("departure"), true);
+  assert.equal(runKinds.has("checkpoint"), true);
+  assert.equal(runKinds.has("routeRecovery"), true);
+  assert.equal(runKinds.has("locationFreshness"), true);
+  assert.equal(runKinds.has("resourceRecovery"), false);
+
+  const courtSocial = workflowActionPlanForSurface({
+    surface: "liveRoom",
+    mode: "live",
+    capabilities: capabilities({
+      groups: true,
+      resources: true,
+      rounds: true,
+      independentUnits: true,
+      outcomes: true,
+      requiredData: true,
+    }),
+  });
+  const courtKinds = new Set(courtSocial.map((workflow) => workflow.kind));
+  assert.equal(courtKinds.has("allocationRepair"), true);
+  assert.equal(courtKinds.has("placementConfirmation"), true);
+  assert.equal(courtKinds.has("resourceRecovery"), true);
+  assert.equal(courtKinds.has("unitProgress"), true);
+  assert.equal(courtKinds.has("routeRecovery"), false);
+});
+
+test("action plans preserve every implementation status", () => {
+  const today = workflowActionPlanForSurface({
+    surface: "today",
+    mode: "live",
+    capabilities: capabilities({
+      moving: true,
+      paid: true,
+      requiredData: true,
+      admission: true,
+    }),
+  });
+  const byKind = Object.fromEntries(today.map((workflow) =>
+    [workflow.kind, workflow]
+  ));
+
+  assert.equal(byKind.venueReadiness.implementationStatus, "external");
+  assert.equal(byKind.rosterReadiness.implementationStatus, "complete");
+  assert.equal(byKind.requiredGuestData.implementationStatus, "partial");
+  assert.equal(
+    byKind.financialReconciliation.implementationStatus,
+    "unavailable"
+  );
+  assert.equal(byKind.postEventFollowUp.implementationStatus, "partial");
+
+  const requiredData = byKind.requiredGuestData.commands.find((command) =>
+    command.kind === "requestRequiredData"
+  );
+  assert.deepEqual(requiredData, {
+    kind: "requestRequiredData",
+    actor: "automatic",
+    coverage: "none",
+    bindingType: "contractOnly",
+    operations: [],
+    missingCapability: "liveRequiredDataRequest",
+    variantField: null,
+    implementedVariants: [],
+    missingVariants: [],
+  });
+});
+
+test("planned commands expose partial variant coverage", () => {
+  assert.deepEqual(
+    plannedWorkflowCommand("sendOperationalMessage", "automatic", "live"),
+    {
+      kind: "sendOperationalMessage",
+      actor: "automatic",
+      coverage: "partial",
+      bindingType: "internalCoordinator",
+      operations: ["LiveMessageDispatcher.dispatch"],
+      missingCapability: "liveNonJoiningMessagePublication",
+      variantField: "intent",
+      implementedVariants: ["joining"],
+      missingVariants: ["planChange", "followUp"],
+    }
+  );
 });
