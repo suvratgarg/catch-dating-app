@@ -54,6 +54,29 @@ void main() {
     }
   });
 
+  test('generated event assistance command bindings are exhaustive', () {
+    expect(
+      schema_contracts.eventAssistanceCommandBindingCatalog.length,
+      schema_contracts.EventAssistanceCommandKind.values.length,
+    );
+    for (final kind in schema_contracts.EventAssistanceCommandKind.values) {
+      final binding = kind.binding;
+      expect(binding.commandKind, kind);
+      for (final mode in [binding.live, binding.rehearsal]) {
+        expect(
+          mode.operations.isEmpty,
+          mode.bindingType ==
+              schema_contracts.EventAssistanceCommandBindingType.contractOnly,
+        );
+        expect(
+          mode.isImplemented,
+          mode.bindingType !=
+              schema_contracts.EventAssistanceCommandBindingType.contractOnly,
+        );
+      }
+    }
+  });
+
   test('generated profile prompt constants match contract limits', () {
     expect(schemaProfilePromptPerfectEventId, 'perfectRun');
     expect(schemaMaxProfilePromptAnswers, 3);

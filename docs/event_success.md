@@ -109,6 +109,16 @@ guest command lists agree with command authority; the generated Dart descriptor
 exposes the same closed relation to Today, setup, live Now, live Guests, live
 Room and report code.
 
+`contracts/catalogs/event_assistance_command_bindings.json` separately records
+the implementation boundary for every command in both live and rehearsal
+modes. A `directCommand` binding names a callable that consumes the canonical
+command envelope; a `domainAdapter` names an existing typed domain operation;
+an `internalCoordinator` names worker-owned execution; and `contractOnly`
+means no executor is implemented. Validation requires all command kinds in
+schema order and requires executable bindings to name at least one operation.
+Generated TypeScript and Dart catalogs keep product code from treating type
+coverage as runnable coverage.
+
 Seven workflows intentionally resolve through existing product domains instead
 of duplicating Event Assistance commands. Venue, route and format readiness use
 event configuration; messaging readiness uses messaging configuration;
@@ -2585,9 +2595,9 @@ delivery and attendance-closeout state without widening provider authority.
 With the shared execution and SMS/WhatsApp/RCS boundaries in source, the next
 implementation sequence is:
 
-1. Register concrete policy executors for mapped `eventAssistanceCommand`
-   workflows against authoritative source facts. Catalog membership alone is
-   not executable coverage.
+1. Implement the `contractOnly` live/rehearsal entries in the command-binding
+   catalog against authoritative source facts, upgrading a row only when its
+   direct command, domain adapter or internal coordinator exists.
 2. Bind externally owned resolution boundaries and unresolved workflow
    occurrences to the mapped Today, setup, live Now, live Guests, live Room and
    report projections. A surface mapping does not manufacture readiness or

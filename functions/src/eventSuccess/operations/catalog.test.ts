@@ -1,6 +1,9 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
+  commandBinding,
+  commandBindingDefinitions,
+  commandHasExecutor,
   workflowDefinitions,
   workflowDefinitionsForSurface,
   workflowHasCommandContract,
@@ -47,6 +50,51 @@ test("catalog accounts for every command kind", () => {
     [...referenced].sort(),
     (Object.keys(COMMAND_AUTHORITY) as CommandKind[]).sort()
   );
+});
+
+test("command bindings account for every command and mode", () => {
+  assert.deepEqual(
+    commandBindingDefinitions
+      .map((definition) => definition.commandKind).sort(),
+    Object.keys(COMMAND_AUTHORITY).sort()
+  );
+  for (const definition of commandBindingDefinitions) {
+    for (const mode of ["live", "rehearsal"] as const) {
+      const binding = commandBinding(definition.commandKind, mode);
+      assert.equal(
+        commandHasExecutor(definition.commandKind, mode),
+        binding.bindingType !== "contractOnly"
+      );
+      assert.equal(
+        binding.operations.length === 0,
+        binding.bindingType === "contractOnly"
+      );
+    }
+  }
+});
+
+test("direct live bindings only name command-consuming callables", () => {
+  const direct = Object.fromEntries(commandBindingDefinitions
+    .filter((definition) => definition.live.bindingType === "directCommand")
+    .map((definition) => [
+      definition.commandKind,
+      [...definition.live.operations],
+    ]));
+  assert.deepEqual(direct, {
+    confirmDeparture: ["confirmEventAssistanceDeparture"],
+    setJoinIntent: ["submitEventAssistanceGuestChoice"],
+    setParticipation: ["setEventAssistanceParticipation"],
+    transferGroup: ["transferEventAssistanceGroup"],
+    recordCheckpoint: ["recordEventAssistanceCheckpoint"],
+    resolveAccountability: ["resolveEventAssistanceAccountability"],
+    resolveAssistance: ["resolveEventAssistanceCase"],
+    repairDelivery: ["repairEventAssistanceDelivery"],
+    recordNoShow: ["recordEventNoShow"],
+    reassignCheckpointReporter: [
+      "reassignEventAssistanceCheckpointReporter",
+    ],
+    setCheckpointCloseout: ["setEventAssistanceCheckpointCloseout"],
+  });
 });
 
 test("every workflow names its command or external resolution boundary", () => {

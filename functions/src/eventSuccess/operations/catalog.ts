@@ -2,6 +2,9 @@ import type {
   EventAssistancePolicy,
 } from "../../shared/generated/eventAssistancePolicy";
 import {
+  eventAssistanceCommandBindingCatalog,
+} from "../../shared/generated/catalogs/eventAssistanceCommandBindingCatalog";
+import {
   eventAssistanceWorkflowCatalog,
 } from "../../shared/generated/catalogs/eventAssistanceWorkflowCatalog";
 import {
@@ -13,6 +16,8 @@ import {assertNever} from "./lateJoin";
 
 export type WorkflowKind = EventAssistancePolicy["kind"];
 export const workflowDefinitions = eventAssistanceWorkflowCatalog.definitions;
+export const commandBindingDefinitions =
+  eventAssistanceCommandBindingCatalog.definitions;
 type CatalogKind = (typeof workflowDefinitions)[number]["kind"];
 const completeCatalog: [
   Exclude<WorkflowKind, CatalogKind>,
@@ -31,6 +36,37 @@ const completeCommandCatalog: [
   ? true
   : false = true;
 void completeCommandCatalog;
+type BoundCommandKind =
+  (typeof commandBindingDefinitions)[number]["commandKind"];
+const completeCommandBindings: [
+  Exclude<CommandKind, BoundCommandKind>,
+  Exclude<BoundCommandKind, CommandKind>,
+] extends [never, never]
+  ? true
+  : false = true;
+void completeCommandBindings;
+
+export type CommandExecutionMode = "live" | "rehearsal";
+export type CommandBinding =
+  (typeof commandBindingDefinitions)[number][CommandExecutionMode];
+
+export function commandBinding(
+  kind: CommandKind,
+  mode: CommandExecutionMode
+): CommandBinding {
+  const definition = commandBindingDefinitions.find(
+    (candidate) => candidate.commandKind === kind
+  );
+  if (!definition) throw new Error(`Missing command binding: ${kind}`);
+  return definition[mode];
+}
+
+export function commandHasExecutor(
+  kind: CommandKind,
+  mode: CommandExecutionMode
+): boolean {
+  return commandBinding(kind, mode).bindingType !== "contractOnly";
+}
 
 type CommandsAvailableTo<A extends Authority> = {
   [K in CommandKind]: Extract<

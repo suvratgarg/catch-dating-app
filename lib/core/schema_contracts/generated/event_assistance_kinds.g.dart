@@ -149,6 +149,13 @@ enum EventAssistanceHostPresentation {
   reportInsight,
 }
 
+enum EventAssistanceCommandBindingType {
+  directCommand,
+  domainAdapter,
+  internalCoordinator,
+  contractOnly,
+}
+
 final class EventAssistanceHostProjection {
   const EventAssistanceHostProjection({
     required this.surfaces,
@@ -1235,4 +1242,569 @@ const eventAssistanceWorkflowCatalog = <EventAssistanceWorkflowDescriptor>[
 extension EventAssistanceWorkflowCatalogLookup on EventAssistanceWorkflowKind {
   EventAssistanceWorkflowDescriptor get descriptor =>
       eventAssistanceWorkflowCatalog[index];
+}
+
+final class EventAssistanceModeBinding {
+  const EventAssistanceModeBinding({
+    required this.bindingType,
+    required this.operations,
+  });
+
+  final EventAssistanceCommandBindingType bindingType;
+  final List<String> operations;
+
+  bool get isImplemented =>
+      bindingType != EventAssistanceCommandBindingType.contractOnly;
+}
+
+final class EventAssistanceCommandBindingDescriptor {
+  const EventAssistanceCommandBindingDescriptor({
+    required this.commandKind,
+    required this.live,
+    required this.rehearsal,
+  });
+
+  final EventAssistanceCommandKind commandKind;
+  final EventAssistanceModeBinding live;
+  final EventAssistanceModeBinding rehearsal;
+}
+
+const eventAssistanceCommandBindingCatalog =
+    <EventAssistanceCommandBindingDescriptor>[
+  EventAssistanceCommandBindingDescriptor(
+    commandKind: EventAssistanceCommandKind.confirmDeparture,
+    live: EventAssistanceModeBinding(
+      bindingType: EventAssistanceCommandBindingType.directCommand,
+      operations: <String>[
+        'confirmEventAssistanceDeparture',
+      ],
+    ),
+    rehearsal: EventAssistanceModeBinding(
+      bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      operations: <String>[
+        'controlEventRehearsal',
+      ],
+    ),
+  ),
+  EventAssistanceCommandBindingDescriptor(
+    commandKind: EventAssistanceCommandKind.setJoinIntent,
+    live: EventAssistanceModeBinding(
+      bindingType: EventAssistanceCommandBindingType.directCommand,
+      operations: <String>[
+        'submitEventAssistanceGuestChoice',
+      ],
+    ),
+    rehearsal: EventAssistanceModeBinding(
+      bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      operations: <String>[
+        'submitEventRehearsalGuestAction',
+      ],
+    ),
+  ),
+  EventAssistanceCommandBindingDescriptor(
+    commandKind: EventAssistanceCommandKind.checkInGuest,
+    live: EventAssistanceModeBinding(
+      bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      operations: <String>[
+        'setEventAttendeeAttendance',
+        'checkInEventRuntime',
+      ],
+    ),
+    rehearsal: EventAssistanceModeBinding(
+      bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      operations: <String>[
+        'submitEventRehearsalGuestAction',
+      ],
+    ),
+  ),
+  EventAssistanceCommandBindingDescriptor(
+    commandKind: EventAssistanceCommandKind.publishGuidance,
+    live: EventAssistanceModeBinding(
+      bindingType: EventAssistanceCommandBindingType.internalCoordinator,
+      operations: <String>[
+        'prepareLiveLateJoinPublication',
+      ],
+    ),
+    rehearsal: EventAssistanceModeBinding(
+      bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      operations: <String>[
+        'controlEventRehearsal',
+      ],
+    ),
+  ),
+  EventAssistanceCommandBindingDescriptor(
+    commandKind: EventAssistanceCommandKind.sendOperationalMessage,
+    live: EventAssistanceModeBinding(
+      bindingType: EventAssistanceCommandBindingType.internalCoordinator,
+      operations: <String>[
+        'LiveMessageDispatcher.dispatch',
+      ],
+    ),
+    rehearsal: EventAssistanceModeBinding(
+      bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      operations: <String>[
+        'controlEventRehearsal',
+      ],
+    ),
+  ),
+  EventAssistanceCommandBindingDescriptor(
+    commandKind: EventAssistanceCommandKind.openHostCase,
+    live: EventAssistanceModeBinding(
+      bindingType: EventAssistanceCommandBindingType.internalCoordinator,
+      operations: <String>[
+        'GuestAssistanceStore.submit',
+      ],
+    ),
+    rehearsal: EventAssistanceModeBinding(
+      bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      operations: <String>[
+        'submitEventRehearsalGuestAction',
+      ],
+    ),
+  ),
+  EventAssistanceCommandBindingDescriptor(
+    commandKind: EventAssistanceCommandKind.setParticipation,
+    live: EventAssistanceModeBinding(
+      bindingType: EventAssistanceCommandBindingType.directCommand,
+      operations: <String>[
+        'setEventAssistanceParticipation',
+      ],
+    ),
+    rehearsal: EventAssistanceModeBinding(
+      bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      operations: <String>[
+        'injectEventRehearsalBehavior',
+      ],
+    ),
+  ),
+  EventAssistanceCommandBindingDescriptor(
+    commandKind: EventAssistanceCommandKind.proposeAllocation,
+    live: EventAssistanceModeBinding(
+      bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      operations: <String>[
+        'generateEventSuccessPods',
+        'generateEventSuccessRotations',
+      ],
+    ),
+    rehearsal: EventAssistanceModeBinding(
+      bindingType: EventAssistanceCommandBindingType.contractOnly,
+      operations: <String>[],
+    ),
+  ),
+  EventAssistanceCommandBindingDescriptor(
+    commandKind: EventAssistanceCommandKind.publishAllocation,
+    live: EventAssistanceModeBinding(
+      bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      operations: <String>[
+        'publishEventSuccessRotationRound',
+      ],
+    ),
+    rehearsal: EventAssistanceModeBinding(
+      bindingType: EventAssistanceCommandBindingType.contractOnly,
+      operations: <String>[],
+    ),
+  ),
+  EventAssistanceCommandBindingDescriptor(
+    commandKind: EventAssistanceCommandKind.confirmPlacement,
+    live: EventAssistanceModeBinding(
+      bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      operations: <String>[
+        'controlEventSuccessSpatial',
+        'resolveEventSuccessLateArrival',
+      ],
+    ),
+    rehearsal: EventAssistanceModeBinding(
+      bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      operations: <String>[
+        'controlEventRehearsalSpatial',
+      ],
+    ),
+  ),
+  EventAssistanceCommandBindingDescriptor(
+    commandKind: EventAssistanceCommandKind.changeResource,
+    live: EventAssistanceModeBinding(
+      bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      operations: <String>[
+        'upsertEventSuccessLayout',
+        'controlEventSuccessSpatial',
+      ],
+    ),
+    rehearsal: EventAssistanceModeBinding(
+      bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      operations: <String>[
+        'updateEventRehearsalSetup',
+      ],
+    ),
+  ),
+  EventAssistanceCommandBindingDescriptor(
+    commandKind: EventAssistanceCommandKind.transferGroup,
+    live: EventAssistanceModeBinding(
+      bindingType: EventAssistanceCommandBindingType.directCommand,
+      operations: <String>[
+        'transferEventAssistanceGroup',
+      ],
+    ),
+    rehearsal: EventAssistanceModeBinding(
+      bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      operations: <String>[
+        'controlEventRehearsal',
+      ],
+    ),
+  ),
+  EventAssistanceCommandBindingDescriptor(
+    commandKind: EventAssistanceCommandKind.recordCheckpoint,
+    live: EventAssistanceModeBinding(
+      bindingType: EventAssistanceCommandBindingType.directCommand,
+      operations: <String>[
+        'recordEventAssistanceCheckpoint',
+      ],
+    ),
+    rehearsal: EventAssistanceModeBinding(
+      bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      operations: <String>[
+        'controlEventRehearsal',
+      ],
+    ),
+  ),
+  EventAssistanceCommandBindingDescriptor(
+    commandKind: EventAssistanceCommandKind.changeProgramme,
+    live: EventAssistanceModeBinding(
+      bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      operations: <String>[
+        'controlEventSuccessLive',
+      ],
+    ),
+    rehearsal: EventAssistanceModeBinding(
+      bindingType: EventAssistanceCommandBindingType.contractOnly,
+      operations: <String>[],
+    ),
+  ),
+  EventAssistanceCommandBindingDescriptor(
+    commandKind: EventAssistanceCommandKind.recordOutcome,
+    live: EventAssistanceModeBinding(
+      bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      operations: <String>[
+        'recordEventSuccessUnitOutcomes',
+      ],
+    ),
+    rehearsal: EventAssistanceModeBinding(
+      bindingType: EventAssistanceCommandBindingType.contractOnly,
+      operations: <String>[],
+    ),
+  ),
+  EventAssistanceCommandBindingDescriptor(
+    commandKind: EventAssistanceCommandKind.changeRoute,
+    live: EventAssistanceModeBinding(
+      bindingType: EventAssistanceCommandBindingType.contractOnly,
+      operations: <String>[],
+    ),
+    rehearsal: EventAssistanceModeBinding(
+      bindingType: EventAssistanceCommandBindingType.contractOnly,
+      operations: <String>[],
+    ),
+  ),
+  EventAssistanceCommandBindingDescriptor(
+    commandKind: EventAssistanceCommandKind.resolveAccountability,
+    live: EventAssistanceModeBinding(
+      bindingType: EventAssistanceCommandBindingType.directCommand,
+      operations: <String>[
+        'resolveEventAssistanceAccountability',
+      ],
+    ),
+    rehearsal: EventAssistanceModeBinding(
+      bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      operations: <String>[
+        'controlEventRehearsal',
+      ],
+    ),
+  ),
+  EventAssistanceCommandBindingDescriptor(
+    commandKind: EventAssistanceCommandKind.resolveClaim,
+    live: EventAssistanceModeBinding(
+      bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      operations: <String>[
+        'approveEventRuntimeClaim',
+      ],
+    ),
+    rehearsal: EventAssistanceModeBinding(
+      bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      operations: <String>[
+        'injectEventRehearsalBehavior',
+      ],
+    ),
+  ),
+  EventAssistanceCommandBindingDescriptor(
+    commandKind: EventAssistanceCommandKind.admitGuest,
+    live: EventAssistanceModeBinding(
+      bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      operations: <String>[
+        'decideEventJoinRequest',
+      ],
+    ),
+    rehearsal: EventAssistanceModeBinding(
+      bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      operations: <String>[
+        'injectEventRehearsalBehavior',
+      ],
+    ),
+  ),
+  EventAssistanceCommandBindingDescriptor(
+    commandKind: EventAssistanceCommandKind.assignResponsibility,
+    live: EventAssistanceModeBinding(
+      bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      operations: <String>[
+        'setEventAssistanceGroupStaff',
+        'grantEventStaff',
+      ],
+    ),
+    rehearsal: EventAssistanceModeBinding(
+      bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      operations: <String>[
+        'controlEventRehearsal',
+      ],
+    ),
+  ),
+  EventAssistanceCommandBindingDescriptor(
+    commandKind: EventAssistanceCommandKind.resolveAssistance,
+    live: EventAssistanceModeBinding(
+      bindingType: EventAssistanceCommandBindingType.directCommand,
+      operations: <String>[
+        'resolveEventAssistanceCase',
+      ],
+    ),
+    rehearsal: EventAssistanceModeBinding(
+      bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      operations: <String>[
+        'controlEventRehearsal',
+      ],
+    ),
+  ),
+  EventAssistanceCommandBindingDescriptor(
+    commandKind: EventAssistanceCommandKind.reconcileAttendance,
+    live: EventAssistanceModeBinding(
+      bindingType: EventAssistanceCommandBindingType.contractOnly,
+      operations: <String>[],
+    ),
+    rehearsal: EventAssistanceModeBinding(
+      bindingType: EventAssistanceCommandBindingType.contractOnly,
+      operations: <String>[],
+    ),
+  ),
+  EventAssistanceCommandBindingDescriptor(
+    commandKind: EventAssistanceCommandKind.requestRequiredData,
+    live: EventAssistanceModeBinding(
+      bindingType: EventAssistanceCommandBindingType.contractOnly,
+      operations: <String>[],
+    ),
+    rehearsal: EventAssistanceModeBinding(
+      bindingType: EventAssistanceCommandBindingType.contractOnly,
+      operations: <String>[],
+    ),
+  ),
+  EventAssistanceCommandBindingDescriptor(
+    commandKind: EventAssistanceCommandKind.reconcileRoster,
+    live: EventAssistanceModeBinding(
+      bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      operations: <String>[
+        'ingestEventRosterWebhook',
+      ],
+    ),
+    rehearsal: EventAssistanceModeBinding(
+      bindingType: EventAssistanceCommandBindingType.contractOnly,
+      operations: <String>[],
+    ),
+  ),
+  EventAssistanceCommandBindingDescriptor(
+    commandKind: EventAssistanceCommandKind.reconcileFinance,
+    live: EventAssistanceModeBinding(
+      bindingType: EventAssistanceCommandBindingType.contractOnly,
+      operations: <String>[],
+    ),
+    rehearsal: EventAssistanceModeBinding(
+      bindingType: EventAssistanceCommandBindingType.contractOnly,
+      operations: <String>[],
+    ),
+  ),
+  EventAssistanceCommandBindingDescriptor(
+    commandKind: EventAssistanceCommandKind.repairDelivery,
+    live: EventAssistanceModeBinding(
+      bindingType: EventAssistanceCommandBindingType.directCommand,
+      operations: <String>[
+        'repairEventAssistanceDelivery',
+      ],
+    ),
+    rehearsal: EventAssistanceModeBinding(
+      bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      operations: <String>[
+        'controlEventRehearsal',
+      ],
+    ),
+  ),
+  EventAssistanceCommandBindingDescriptor(
+    commandKind: EventAssistanceCommandKind.resumeOperation,
+    live: EventAssistanceModeBinding(
+      bindingType: EventAssistanceCommandBindingType.contractOnly,
+      operations: <String>[],
+    ),
+    rehearsal: EventAssistanceModeBinding(
+      bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      operations: <String>[
+        'controlEventRehearsal',
+      ],
+    ),
+  ),
+  EventAssistanceCommandBindingDescriptor(
+    commandKind: EventAssistanceCommandKind.completeEvent,
+    live: EventAssistanceModeBinding(
+      bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      operations: <String>[
+        'controlEventSuccessLive',
+      ],
+    ),
+    rehearsal: EventAssistanceModeBinding(
+      bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      operations: <String>[
+        'completeEventRehearsal',
+      ],
+    ),
+  ),
+  EventAssistanceCommandBindingDescriptor(
+    commandKind: EventAssistanceCommandKind.controlUnitProgress,
+    live: EventAssistanceModeBinding(
+      bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      operations: <String>[
+        'controlEventSuccessLive',
+      ],
+    ),
+    rehearsal: EventAssistanceModeBinding(
+      bindingType: EventAssistanceCommandBindingType.contractOnly,
+      operations: <String>[],
+    ),
+  ),
+  EventAssistanceCommandBindingDescriptor(
+    commandKind: EventAssistanceCommandKind.controlReveal,
+    live: EventAssistanceModeBinding(
+      bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      operations: <String>[
+        'controlEventSuccessLive',
+      ],
+    ),
+    rehearsal: EventAssistanceModeBinding(
+      bindingType: EventAssistanceCommandBindingType.contractOnly,
+      operations: <String>[],
+    ),
+  ),
+  EventAssistanceCommandBindingDescriptor(
+    commandKind: EventAssistanceCommandKind.applyOverride,
+    live: EventAssistanceModeBinding(
+      bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      operations: <String>[
+        'overrideEventSuccessGroups',
+        'overrideEventSuccessRotations',
+      ],
+    ),
+    rehearsal: EventAssistanceModeBinding(
+      bindingType: EventAssistanceCommandBindingType.contractOnly,
+      operations: <String>[],
+    ),
+  ),
+  EventAssistanceCommandBindingDescriptor(
+    commandKind: EventAssistanceCommandKind.setLocationSharing,
+    live: EventAssistanceModeBinding(
+      bindingType: EventAssistanceCommandBindingType.contractOnly,
+      operations: <String>[],
+    ),
+    rehearsal: EventAssistanceModeBinding(
+      bindingType: EventAssistanceCommandBindingType.contractOnly,
+      operations: <String>[],
+    ),
+  ),
+  EventAssistanceCommandBindingDescriptor(
+    commandKind: EventAssistanceCommandKind.requestCheckpointReport,
+    live: EventAssistanceModeBinding(
+      bindingType: EventAssistanceCommandBindingType.internalCoordinator,
+      operations: <String>[
+        'AssistanceCheckpointWorkStore.process',
+      ],
+    ),
+    rehearsal: EventAssistanceModeBinding(
+      bindingType: EventAssistanceCommandBindingType.internalCoordinator,
+      operations: <String>[
+        'controlEventRehearsal',
+      ],
+    ),
+  ),
+  EventAssistanceCommandBindingDescriptor(
+    commandKind: EventAssistanceCommandKind.recordNoShow,
+    live: EventAssistanceModeBinding(
+      bindingType: EventAssistanceCommandBindingType.directCommand,
+      operations: <String>[
+        'recordEventNoShow',
+      ],
+    ),
+    rehearsal: EventAssistanceModeBinding(
+      bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      operations: <String>[
+        'injectEventRehearsalBehavior',
+      ],
+    ),
+  ),
+  EventAssistanceCommandBindingDescriptor(
+    commandKind: EventAssistanceCommandKind.routeRestrictedCase,
+    live: EventAssistanceModeBinding(
+      bindingType: EventAssistanceCommandBindingType.contractOnly,
+      operations: <String>[],
+    ),
+    rehearsal: EventAssistanceModeBinding(
+      bindingType: EventAssistanceCommandBindingType.contractOnly,
+      operations: <String>[],
+    ),
+  ),
+  EventAssistanceCommandBindingDescriptor(
+    commandKind: EventAssistanceCommandKind.resolveRestrictedCase,
+    live: EventAssistanceModeBinding(
+      bindingType: EventAssistanceCommandBindingType.contractOnly,
+      operations: <String>[],
+    ),
+    rehearsal: EventAssistanceModeBinding(
+      bindingType: EventAssistanceCommandBindingType.contractOnly,
+      operations: <String>[],
+    ),
+  ),
+  EventAssistanceCommandBindingDescriptor(
+    commandKind: EventAssistanceCommandKind.reassignCheckpointReporter,
+    live: EventAssistanceModeBinding(
+      bindingType: EventAssistanceCommandBindingType.directCommand,
+      operations: <String>[
+        'reassignEventAssistanceCheckpointReporter',
+      ],
+    ),
+    rehearsal: EventAssistanceModeBinding(
+      bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      operations: <String>[
+        'controlEventRehearsal',
+      ],
+    ),
+  ),
+  EventAssistanceCommandBindingDescriptor(
+    commandKind: EventAssistanceCommandKind.setCheckpointCloseout,
+    live: EventAssistanceModeBinding(
+      bindingType: EventAssistanceCommandBindingType.directCommand,
+      operations: <String>[
+        'setEventAssistanceCheckpointCloseout',
+      ],
+    ),
+    rehearsal: EventAssistanceModeBinding(
+      bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      operations: <String>[
+        'controlEventRehearsal',
+      ],
+    ),
+  ),
+];
+
+extension EventAssistanceCommandBindingCatalogLookup
+    on EventAssistanceCommandKind {
+  EventAssistanceCommandBindingDescriptor get binding =>
+      eventAssistanceCommandBindingCatalog[index];
 }

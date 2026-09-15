@@ -676,6 +676,7 @@ export {adminSetCrossPathsShowcaseEligibilityCallableResponseSchema} from "./sch
 export {joinWaitlistHTTPRequestSchema} from "./schemas/joinWaitlistHttpRequest";
 export {joinWaitlistHTTPResponseSchema} from "./schemas/joinWaitlistHttpResponse";
 export {eventAssistanceWorkflowCatalog} from "./catalogs/eventAssistanceWorkflowCatalog";
+export {eventAssistanceCommandBindingCatalog} from "./catalogs/eventAssistanceCommandBindingCatalog";
 export {profilePromptCatalog} from "./catalogs/profilePromptCatalog";
 export {personFieldCatalog} from "./catalogs/personFieldCatalog";
 export {organizerFormTemplateCatalog} from "./catalogs/organizerFormTemplateCatalog";

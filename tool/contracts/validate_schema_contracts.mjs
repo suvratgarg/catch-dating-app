@@ -50,10 +50,14 @@ function checkEventAssistanceContracts(parsed) {
   const catalog = parsed.get(
     path.join(contractRoot, "catalogs/event_assistance_workflows.json")
   );
+  const commandBindingCatalog = parsed.get(
+    path.join(contractRoot,
+      "catalogs/event_assistance_command_bindings.json")
+  );
   const common = parsed.get(
     path.join(contractRoot, "shared/event_assistance_common.schema.json")
   );
-  if (!catalog || !common) {
+  if (!catalog || !commandBindingCatalog || !common) {
     fail("Missing event assistance contracts.");
     return;
   }
@@ -183,6 +187,50 @@ function checkEventAssistanceContracts(parsed) {
       fail("Assistance commands require closed context-bound envelopes.");
   }
   const knownCommandKinds = new Set(commandKinds);
+  const commandBindings = commandBindingCatalog.definitions ?? [];
+  if (commandBindingCatalog.schemaVersion !== 1 ||
+      commandBindingCatalog.kind !== "eventAssistanceCommandBindings") {
+    fail("Invalid event assistance command binding catalog identity.");
+  }
+  if (JSON.stringify(commandBindings.map((row) => row.commandKind)) !==
+      JSON.stringify(commandKinds)) {
+    fail("Command bindings must cover command kinds exactly and in order.");
+  }
+  const bindingTypes = new Set([
+    "directCommand",
+    "domainAdapter",
+    "internalCoordinator",
+    "contractOnly",
+  ]);
+  for (const row of commandBindings) {
+    if (!row || typeof row !== "object" ||
+        JSON.stringify(Object.keys(row)) !==
+          JSON.stringify(["commandKind", "live", "rehearsal"])) {
+      fail("Invalid command binding row: " + (row?.commandKind ?? "unknown"));
+      continue;
+    }
+    for (const mode of ["live", "rehearsal"]) {
+      const binding = row[mode];
+      if (!binding || typeof binding !== "object" ||
+          JSON.stringify(Object.keys(binding)) !==
+            JSON.stringify(["bindingType", "operations"]) ||
+          !bindingTypes.has(binding.bindingType) ||
+          !Array.isArray(binding.operations) ||
+          new Set(binding.operations).size !== binding.operations.length ||
+          binding.operations.some((operation) =>
+            typeof operation !== "string" ||
+            !/^[A-Za-z][A-Za-z0-9]*(?:\.[A-Za-z][A-Za-z0-9]*)?$/.test(
+              operation
+            ))) {
+        fail(`Invalid ${mode} command binding: ${row.commandKind}`);
+        continue;
+      }
+      if ((binding.bindingType === "contractOnly") !==
+          (binding.operations.length === 0)) {
+        fail(`Command binding operations mismatch: ${row.commandKind}/${mode}`);
+      }
+    }
+  }
   const referencedCommandKinds = new Set();
   const commandRoles = ["automatic", "host", "guest"];
   const overridePolicies = new Set(["none", "scopedReasonedExpiring"]);

@@ -326,6 +326,14 @@ Roster and report UI integration remain separate work.
 
 ### Event Assistance Transaction Boundary
 
+The exhaustive workflow catalog and the separate
+`event_assistance_command_bindings.json` catalog distinguish command type
+coverage from executable coverage. Every command has one live and one rehearsal
+binding classified as direct command, domain adapter, internal coordinator or
+contract-only. Contract validation keeps that list ordered with the command
+union and rejects named operations on contract-only entries, while generated
+TypeScript and Dart expose the same mode-specific relation.
+
 Event Assistance routes read/write SDK transactions through
 `runAssistanceTransaction`. Explicit read-only snapshots keep the SDK read-only
 path and cannot acquire write authority.

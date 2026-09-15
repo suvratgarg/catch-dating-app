@@ -4549,6 +4549,9 @@ async function main() {
   const eventAssistanceCatalog = readContractJson(
     "catalogs/event_assistance_workflows.json"
   );
+  const eventAssistanceCommandBindingCatalog = readContractJson(
+    "catalogs/event_assistance_command_bindings.json"
+  );
   const assistanceCommon = readContractJson(
     "shared/event_assistance_common.schema.json"
   );
@@ -4563,6 +4566,7 @@ async function main() {
     "lib/core/schema_contracts/generated/event_assistance_kinds.g.dart",
     renderDartEventAssistanceCatalog({
       catalog: eventAssistanceCatalog,
+      commandBindingCatalog: eventAssistanceCommandBindingCatalog,
       workflowKinds,
       commandKinds,
     })
@@ -4584,6 +4588,7 @@ async function main() {
     renderTsSchemaRegistry({
       schemaMap: bundledSchemas,
       eventAssistanceCatalog,
+      eventAssistanceCommandBindingCatalog,
       profileCatalog,
       personFieldCatalog,
       organizerFormTemplateCatalog,
@@ -4615,6 +4620,7 @@ async function main() {
     renderToolSchemaRegistry({
       schemaMap: bundledSchemas,
       eventAssistanceCatalog,
+      eventAssistanceCommandBindingCatalog,
       profileCatalog,
       personFieldCatalog,
       organizerFormTemplateCatalog,
@@ -5301,6 +5307,7 @@ export function deriveEventSuccessMomentSeed(input: {
 
 function renderDartEventAssistanceCatalog({
   catalog,
+  commandBindingCatalog,
   workflowKinds,
   commandKinds,
 }) {
@@ -5318,6 +5325,11 @@ function renderDartEventAssistanceCatalog({
     `<${name}>[\n` + values.map((value) =>
       `${" ".repeat(spaces)}${name}.${lowerCamelCase(value)},`
     ).join("\n") + `\n${" ".repeat(spaces - 2)}]`;
+  const stringList = (values, spaces = 6) => values.length === 0 ?
+    "<String>[]" :
+    "<String>[\n" + values.map((value) =>
+      `${" ".repeat(spaces)}${dartString(value)},`
+    ).join("\n") + `\n${" ".repeat(spaces - 2)}]`;
   const families = [...new Set(catalog.definitions.map((row) => row.family))];
   const applicability = [...new Set(
     catalog.definitions.map((row) => row.applicability)
@@ -5334,6 +5346,9 @@ function renderDartEventAssistanceCatalog({
   ))];
   const presentations = [...new Set(catalog.definitions.map(
     (row) => row.hostProjection.presentation
+  ))];
+  const bindingTypes = [...new Set(commandBindingCatalog.definitions.flatMap(
+    (row) => [row.live.bindingType, row.rehearsal.bindingType]
   ))];
   const rows = catalog.definitions.map((row) =>
     "  EventAssistanceWorkflowDescriptor(\n" +
@@ -5376,6 +5391,23 @@ function renderDartEventAssistanceCatalog({
     "    ),\n" +
     "  ),"
   ).join("\n");
+  const bindingRows = commandBindingCatalog.definitions.map((row) =>
+    "  EventAssistanceCommandBindingDescriptor(\n" +
+    `    commandKind: EventAssistanceCommandKind.${row.commandKind},\n` +
+    "    live: EventAssistanceModeBinding(\n" +
+    `      bindingType: EventAssistanceCommandBindingType.${
+      lowerCamelCase(row.live.bindingType)
+    },\n` +
+    `      operations: ${stringList(row.live.operations, 8)},\n` +
+    "    ),\n" +
+    "    rehearsal: EventAssistanceModeBinding(\n" +
+    `      bindingType: EventAssistanceCommandBindingType.${
+      lowerCamelCase(row.rehearsal.bindingType)
+    },\n` +
+    `      operations: ${stringList(row.rehearsal.operations, 8)},\n` +
+    "    ),\n" +
+    "  ),"
+  ).join("\n");
   return `${dartGeneratedHeader()}${enumText(
     "EventAssistanceWorkflowKind",
     workflowKinds
@@ -5396,6 +5428,8 @@ ${enumText("EventAssistanceResolutionBoundary", resolutionBoundaries)}
 ${enumText("EventAssistanceHostSurface", surfaces)}
 
 ${enumText("EventAssistanceHostPresentation", presentations)}
+
+${enumText("EventAssistanceCommandBindingType", bindingTypes)}
 
 final class EventAssistanceHostProjection {
   const EventAssistanceHostProjection({
@@ -5447,6 +5481,42 @@ ${rows}
 extension EventAssistanceWorkflowCatalogLookup on EventAssistanceWorkflowKind {
   EventAssistanceWorkflowDescriptor get descriptor =>
       eventAssistanceWorkflowCatalog[index];
+}
+
+final class EventAssistanceModeBinding {
+  const EventAssistanceModeBinding({
+    required this.bindingType,
+    required this.operations,
+  });
+
+  final EventAssistanceCommandBindingType bindingType;
+  final List<String> operations;
+
+  bool get isImplemented =>
+      bindingType != EventAssistanceCommandBindingType.contractOnly;
+}
+
+final class EventAssistanceCommandBindingDescriptor {
+  const EventAssistanceCommandBindingDescriptor({
+    required this.commandKind,
+    required this.live,
+    required this.rehearsal,
+  });
+
+  final EventAssistanceCommandKind commandKind;
+  final EventAssistanceModeBinding live;
+  final EventAssistanceModeBinding rehearsal;
+}
+
+const eventAssistanceCommandBindingCatalog =
+    <EventAssistanceCommandBindingDescriptor>[
+${bindingRows}
+];
+
+extension EventAssistanceCommandBindingCatalogLookup
+    on EventAssistanceCommandKind {
+  EventAssistanceCommandBindingDescriptor get binding =>
+      eventAssistanceCommandBindingCatalog[index];
 }
 `;
 }
@@ -5997,6 +6067,7 @@ function runtimeSchemaModuleName(spec) {
 function renderTsSchemaRegistry({
   schemaMap,
   eventAssistanceCatalog,
+  eventAssistanceCommandBindingCatalog,
   profileCatalog,
   personFieldCatalog,
   organizerFormTemplateCatalog,
@@ -6021,6 +6092,8 @@ function renderTsSchemaRegistry({
   }
   const catalogEntries = [
     ["eventAssistanceWorkflowCatalog", eventAssistanceCatalog],
+    ["eventAssistanceCommandBindingCatalog",
+      eventAssistanceCommandBindingCatalog],
     ["profilePromptCatalog", profileCatalog],
     ["personFieldCatalog", personFieldCatalog],
     ["organizerFormTemplateCatalog", organizerFormTemplateCatalog],
@@ -6132,6 +6205,7 @@ export const schemaProfileDecisionFutureOutgoingSubcollectionPath =
 function renderToolSchemaRegistry({
   schemaMap,
   eventAssistanceCatalog,
+  eventAssistanceCommandBindingCatalog,
   profileCatalog,
   personFieldCatalog,
   organizerFormTemplateCatalog,
@@ -6142,6 +6216,8 @@ function renderToolSchemaRegistry({
   const entries = schemaRegistryEntries(schemaMap);
   const catalogEntries = [
     ["eventAssistanceWorkflowCatalog", eventAssistanceCatalog],
+    ["eventAssistanceCommandBindingCatalog",
+      eventAssistanceCommandBindingCatalog],
     ["profilePromptCatalog", profileCatalog],
     ["personFieldCatalog", personFieldCatalog],
     ["organizerFormTemplateCatalog", organizerFormTemplateCatalog],
