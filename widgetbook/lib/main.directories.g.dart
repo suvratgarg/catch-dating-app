@@ -9236,6 +9236,28 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'HostFormNumberField',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Integer and decimal limits',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_editor_use_cases
+                            .hostFormNumberFieldPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostFormQuestionSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Inline and inspector question editing',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_editor_use_cases
+                            .hostFormQuestionSectionPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostFormResponsePrimaryAction',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -9271,6 +9293,52 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_host_form_editor_use_cases
                             .hostFormSettingsSectionListPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostFormValidationFieldLanes',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Choices answer validation',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_editor_use_cases
+                            .hostFormChoicesValidationPreview,
+                  ),
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Date answer validation',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_editor_use_cases
+                            .hostFormDateValidationPreview,
+                  ),
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'File answer validation',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_editor_use_cases
+                            .hostFormFileValidationPreview,
+                  ),
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Number answer validation',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_editor_use_cases
+                            .hostFormNumberValidationPreview,
+                  ),
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Text answer validation',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_editor_use_cases
+                            .hostFormTextValidationPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostFormValidationTextField',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Date rule and optional error copy',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_editor_use_cases
+                            .hostFormValidationTextFieldPreview,
                   ),
                 ],
               ),

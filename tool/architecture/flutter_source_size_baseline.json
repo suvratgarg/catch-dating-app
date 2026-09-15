@@ -103,7 +103,7 @@
     },
     {
       "path": "lib/hosts/presentation/forms/host_form_builder_screen.dart",
-      "maxLines": 2188
+      "maxLines": 1670
     },
     {
       "path": "lib/hosts/presentation/host_event_manage_screen_state.dart",
