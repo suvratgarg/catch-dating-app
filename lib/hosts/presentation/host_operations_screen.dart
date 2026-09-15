@@ -79,6 +79,7 @@ part 'host_operations/host_club_edit_tab.dart';
 part 'host_operations/host_club_spoke_screens.dart';
 part 'host_operations/host_club_live_guide_screen.dart';
 part 'host_operations/host_club_team_screen.dart';
+part 'host_operations/host_team_hosted_clubs_section.dart';
 part 'host_operations/host_club_payments_screen.dart';
 part 'host_operations/host_club_edit_helpers.dart';
 part 'host_operations/host_analytics.dart';

@@ -802,7 +802,6 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>HostClubReadOnlyEventDefaults</code> | <code>lib/hosts/presentation/host_operations/host_club_spoke_screens.dart:287</code> | — | — | No class documentation or registry summary. |
 | <code>HostClubSpokeResolver</code> | <code>lib/hosts/presentation/host_operations/host_club_spoke_screens.dart:48</code> | — | — | No class documentation or registry summary. |
 | <code>HostClubSpokeScaffold</code> | <code>lib/hosts/presentation/host_operations/host_club_spoke_screens.dart:170</code> | — | — | No class documentation or registry summary. |
-| <code>HostTeamHostedClubsSection</code> | <code>lib/hosts/presentation/host_operations/host_club_team_screen.dart:770</code> | — | — | No class documentation or registry summary. |
 | <code>HostTeamProfessionalProfilePreview</code> | <code>lib/hosts/presentation/host_operations/host_club_team_screen.dart:338</code> | — | — | Read-only projection of the professional identity edited in Host team. This intentionally consumes [HostTeamProfileState] rather than the dating profile collection: a host can have a valid organizer identity without a discoverable consumer profile. |
 | <code>HostTeamProfileRows</code> | <code>lib/hosts/presentation/host_operations/host_club_team_screen.dart:531</code> | — | — | No class documentation or registry summary. |
 | <code>HostTeamProfileSection</code> | <code>lib/hosts/presentation/host_operations/host_club_team_screen.dart:458</code> | — | — | No class documentation or registry summary. |
@@ -812,6 +811,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>HostClubOrganizerOverviewController</code> | <code>lib/hosts/presentation/host_operations/host_organizer.dart:3</code> | — | — | No class documentation or registry summary. |
 | <code>HostOrganizerMetricGrid</code> | <code>lib/hosts/presentation/host_operations/host_organizer.dart:191</code> | — | — | No class documentation or registry summary. |
 | <code>HostOrganizerMetricRow</code> | <code>lib/hosts/presentation/host_operations/host_organizer.dart:247</code> | — | — | No class documentation or registry summary. |
+| <code>HostTeamHostedClubsSection</code> | <code>lib/hosts/presentation/host_operations/host_team_hosted_clubs_section.dart:3</code> | — | — | No class documentation or registry summary. |
 | <code>HostedEventPolicySection</code> | <code>lib/hosts/presentation/hosted_event_policy_section.dart:20</code> | — | — | No class documentation or registry summary. |
 | <code>HostedEventScheduleSection</code> | <code>lib/hosts/presentation/hosted_event_schedule_section.dart:12</code> | — | — | No class documentation or registry summary. |
 | <code>HostBroadcastComposerSheet</code> | <code>lib/hosts/presentation/inbox/host_broadcast_composer_sheet.dart:57</code> | — | — | No class documentation or registry summary. |

@@ -66,10 +66,6 @@
       "maxLines": 1313
     },
     {
-      "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
-      "maxLines": 837
-    },
-    {
       "path": "lib/hosts/presentation/payments/host_payment_account_card.dart",
       "maxLines": 923
     },
