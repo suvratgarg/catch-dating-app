@@ -147,8 +147,7 @@ test("trusted plan-change source publishes through the notice boundary",
       new EventPlanChangeSourceReader(), () => h.clock.now);
     const result = await publisher.publish({context: h.context,
       attendeeId: h.scope.attendeeId, episodeId: h.intent.episodeId,
-      source: {kind: "planChange", sourceId, expectedRevision: 1}},
-    noticeOptions(h.rcsConfig.senderId));
+      source: {kind: "planChange", sourceId, expectedRevision: 1}});
     assert.equal(result.kind, "published");
     assert.equal(result.intent.noticeKind, "planChanged");
     assert.match(result.intent.body, /Second venue/);
@@ -166,11 +165,7 @@ async function configure(h: Awaited<ReturnType<typeof rcsHarness>>,
       version: 1, setting: {kind: "enabled",
         authority: "executeWithinPolicy"}, config: {templateIntent,
         audience: "affectedGuests", maximumPerGuest: 1,
-        expiryMinutes: 30}}}});
-}
-
-function noticeOptions(senderId: string) {
-  return {routes: [{routeId: "catchEventRcs" as const, senderId}],
-    deliveryPolicy: {maxAttempts: 2, maxAttemptsPerRoute: 1,
-      minimumRetrySeconds: 1}};
+        expiryMinutes: 30, delivery: {routes: [{routeId: "catchEventRcs",
+          senderId: h.rcsConfig.senderId}], policy: {maxAttempts: 2,
+          maxAttemptsPerRoute: 1, minimumRetrySeconds: 1}}}}}});
 }

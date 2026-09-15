@@ -4,6 +4,7 @@ import type {MessageRecord} from "./messageOutbox";
 import type {DispatchGate} from "./messagingPolicy";
 import {ASSISTANCE_POLICY_VERSION} from "./policySettings";
 import {readSettingState, resolveSetting} from "./policySettingsReader";
+import {operationContentHash} from "../../operations/durableActions";
 
 type Intent = Extract<MessageRecord["intent"],
   {kind: "operationalNotice"}>;
@@ -34,6 +35,13 @@ export async function readOperationalNoticeDispatchPolicy(db: Firestore,
         template.config.templateIntent !== expected.templateIntent ||
         template.setting.kind !== "enabled" ||
         template.setting.authority !== "executeWithinPolicy" ||
+        operationContentHash(binding.routes) !==
+          operationContentHash(template.config.delivery.routes) ||
+        operationContentHash(intent.deliveryPolicy) !==
+          operationContentHash(template.config.delivery.policy) ||
+        operationContentHash(intent.permittedRoutes) !==
+          operationContentHash(template.config.delivery.routes.map(
+            (route) => route.routeId)) ||
         intent.expiresAt > intent.createdAt +
           template.config.expiryMinutes * 60_000) return stop();
     return {kind: "allow", checkedAt: now,

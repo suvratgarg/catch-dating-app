@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.120.0
+version: 1.121.0
 updated: 2026-09-16
 owner: recursive_audit_loop
 status: active
@@ -1004,6 +1004,15 @@ the prior row's quota or publication receipts.
 Both collections deny all direct client access and have no TTL. They record
 publication authority and idempotency only; they do not prove provider
 submission or delivery.
+
+The plan-change and post-event follow-up policy configurations own an explicit
+ordered delivery selection: one sender per SMS, RCS or WhatsApp route and the
+bounded retry policy. An execution-authorized setting is accepted only while
+every selected sender is currently eligible for that message purpose. The
+publisher derives its message and automation bindings from the saved selection;
+it does not accept routes or retry limits from a worker. Final dispatch compares
+all three frozen views—the automation routes, permitted route identifiers and
+delivery policy—with the current setting before any provider call.
 
 `eventPlanChanges/{sourceId}` is an immutable server-only record created in the
 same transaction as an attendee-relevant `updateEvent` mutation. The event owns

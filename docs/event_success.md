@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.140.0
+version: 1.141.0
 updated: 2026-09-16
 owner: recursive_audit_loop
 status: active
@@ -1123,13 +1123,16 @@ A different ready sender cannot substitute for the frozen sender selection.
 Plan-change and post-event follow-up notices can now carry a separate strict
 `operationalNotice` automation binding. It ties the notice purpose, workflow
 occurrence, source revision, semantic content hash, selected setting revision
-and ordered sender routes together. Only those two command variants can use the
+and ordered sender routes together. Their saved policy owns those routes and
+the retry limits. Setting writes verify that each selected sender is currently
+eligible for the notice purpose; publication accepts no caller-owned delivery
+options. Only those two command variants can use the
 binding; a changed body, source revision, workflow or route list fails contract
 parsing. The shared delivery coordinator and SMS, RCS and WhatsApp workers can
 execute a correctly bound notice. They recheck the saved setting at reservation
 and claim time, including its current source, execution authority, policy
-version and expiry ceiling. Pausing, replacing or narrowing the setting stops a
-queued notice before a provider call.
+version, route order, retry limits and expiry ceiling. Pausing, replacing or
+narrowing the setting stops a queued notice before a provider call.
 
 `prepareOperationalNoticePublication` is the trusted publication boundary for
 these notices. It accepts message content only from a typed domain source-reader

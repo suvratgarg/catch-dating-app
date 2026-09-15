@@ -34,8 +34,6 @@ type NoticeChoice = OperationalNoticeIntent["choices"][number];
 type SourceChoice = Omit<NoticeChoice, "value"> & {value:
   {kind: "acknowledge"} |
   Extract<NoticeChoice["value"], {kind: "requestHelp"}>};
-type NoticeRoutes = NonNullable<OperationalNoticeIntent["automation"]>[
-  "routes"];
 
 export interface OperationalNoticeSource<K extends
   OperationalNoticeSourceKind> {
@@ -73,11 +71,6 @@ export interface OperationalNoticeSourceReader<K extends
     Promise<OperationalNoticeSource<K> | null>;
 }
 
-export interface OperationalNoticePublicationOptions {
-  routes: NoticeRoutes;
-  deliveryPolicy: OperationalNoticeIntent["deliveryPolicy"];
-}
-
 type HeldReason = "sourceUnavailable" | "sourceChanged" |
   "policyUnavailable" | "quotaReached" | "outsideWindow" |
   "sourceAlreadyPublished";
@@ -104,7 +97,6 @@ type ReplayedPublication = {
 export async function prepareOperationalNoticePublication<K extends
   OperationalNoticeSourceKind>(db: Firestore, tx: Transaction,
   request: OperationalNoticeSourceRequest<K>,
-  options: OperationalNoticePublicationOptions,
   reader: OperationalNoticeSourceReader<K>,
   clock: () => number = Date.now): Promise<PreparedPublication |
     ReplayedPublication | {kind: "held"; reason: HeldReason}> {
@@ -155,6 +147,7 @@ export async function prepareOperationalNoticePublication<K extends
       template.setting.authority !== "executeWithinPolicy") {
     return {kind: "held", reason: "policyUnavailable"};
   }
+  const delivery = template.config.delivery;
   if ((quota?.count ?? 0) >= template.config.maximumPerGuest) {
     return {kind: "held", reason: "quotaReached"};
   }
@@ -182,8 +175,8 @@ export async function prepareOperationalNoticePublication<K extends
     context: request.context, eventId: request.context.eventId,
     attendeeId: request.attendeeId, episodeId: request.episodeId, workflow,
     createdAt: source.occurredAt, expiresAt,
-    permittedRoutes: options.routes.map((route) => route.routeId),
-    deliveryPolicy: structuredClone(options.deliveryPolicy),
+    permittedRoutes: delivery.routes.map((route) => route.routeId),
+    deliveryPolicy: structuredClone(delivery.policy),
     kind: "operationalNotice", noticeKind: descriptor.noticeKind,
     title: source.title, body: source.body,
     instructionRevision: source.revision, choices,
@@ -195,7 +188,7 @@ export async function prepareOperationalNoticePublication<K extends
     settingRevision: resolved.selected.revision,
     sourceId: source.sourceId, sourceRevision: source.revision,
     contentHash: operationalNoticeContentHash(unbound),
-    routes: structuredClone(options.routes),
+    routes: structuredClone(delivery.routes),
   }}) as OperationalNoticeIntent;
   const threadId = threadIdentity(intent);
   const threadSnap = await tx.get(db.collection(guestCollections.threads)
@@ -248,11 +241,10 @@ export class OperationalNoticePublisher<K extends
     private readonly reader: OperationalNoticeSourceReader<K>,
     private readonly clock: () => number = Date.now) {}
 
-  async publish(request: OperationalNoticeSourceRequest<K>,
-    options: OperationalNoticePublicationOptions) {
+  async publish(request: OperationalNoticeSourceRequest<K>) {
     return transact(this.db, async (tx) => {
       const result = await prepareOperationalNoticePublication(this.db, tx,
-        request, options, this.reader, this.clock);
+        request, this.reader, this.clock);
       if (result.kind !== "prepared") return result;
       result.commit();
       const {commit, ...published} = result;

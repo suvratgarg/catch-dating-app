@@ -21,11 +21,12 @@ import type {EventAssistanceSettingCallableResponse as Response} from
   "../../shared/generated/eventAssistanceSettingCallableResponse";
 import {invalidSource} from "./groupProgressSource";
 import {
-  Setting, SettingScope, SETTINGS, SETTING_RECEIPTS,
+  Setting, SettingScope, SETTINGS, SETTING_RECEIPTS, Template,
   settingId, settingSource, suggestedTemplate, templateTargetsAreCurrent,
 } from "./policySettings";
 import {parseSetting, resolveSetting, readSettingState} from
   "./policySettingsReader";
+import {readMessageSenderChoice} from "./runtimeSenderSetup";
 
 /** Saves preferences; execution and provider authority remain separate. */
 export class EventAssistanceSettingsStore {
@@ -76,6 +77,10 @@ export class EventAssistanceSettingsStore {
         throw new HttpsError("failed-precondition",
           "Choose joining destinations from the current event setup.");
       }
+      if (input.preference.kind === "configured") {
+        await requireOperationalNoticeSenders(this.db, tx, input.context,
+          input.preference.template, now);
+      }
       const own: Setting = {schemaVersion: 1, settingId: settingId(input),
         context: input.context, groupId: input.groupId,
         workflowKind: input.workflowKind,
@@ -90,6 +95,14 @@ export class EventAssistanceSettingsStore {
         throw invalidSource();
       }
       const result = response("applied", {...state, own}, own.revision);
+      const committedAt = this.clock();
+      if (!Number.isSafeInteger(committedAt) || committedAt < now) {
+        throw conflict();
+      }
+      if (input.preference.kind === "configured" && committedAt !== now) {
+        await requireOperationalNoticeSenders(this.db, tx, input.context,
+          input.preference.template, committedAt);
+      }
       tx.set(this.db.collection(SETTINGS).doc(own.settingId), own);
       tx.create(receiptRef, savedReceipt);
       return result;
@@ -111,6 +124,29 @@ export class EventAssistanceSettingsStore {
         "Only organizer managers can configure assistance.");
     }
     return readSettingState(this.db, tx, scope, eventSnap, this.clock);
+  }
+}
+
+async function requireOperationalNoticeSenders(db: Firestore, tx: Transaction,
+  context: SettingScope["context"], template: Template, now: number) {
+  if (template.setting.kind !== "enabled" ||
+      template.setting.authority !== "executeWithinPolicy" ||
+      template.kind !== "planChangeCommunication" &&
+        template.kind !== "postEventFollowUp") return;
+  const routes = template.config.delivery.routes;
+  if (new Set(routes.map((route) => route.routeId)).size !== routes.length) {
+    throw new HttpsError("invalid-argument",
+      "Choose at most one sender for each message route.");
+  }
+  const purpose = template.kind === "planChangeCommunication" ?
+    "planChanged" : "followUp";
+  for (const route of routes) {
+    const choice = await readMessageSenderChoice(db, tx, context, route,
+      purpose, now);
+    if (!choice || choice.availability !== "eligible") {
+      throw new HttpsError("failed-precondition",
+        "A selected event message sender needs setup.");
+    }
   }
 }
 

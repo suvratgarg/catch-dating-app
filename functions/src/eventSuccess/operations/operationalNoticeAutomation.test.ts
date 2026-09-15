@@ -7,7 +7,7 @@ import {operationCollections} from "../../operations/collections";
 import {rcsHarness} from "./rcsDispatchTestHarness";
 import {keys, start} from "./whatsappTestHarness";
 import {EventAssistanceSettingsStore} from "./policySettingsStore";
-import {ASSISTANCE_POLICY_VERSION} from "./policySettings";
+import {ASSISTANCE_POLICY_VERSION, SETTINGS} from "./policySettings";
 import {deliveryWorkIds, hasAutomaticDelivery} from "./deliveryWorkRecords";
 import {assistanceMessageId} from "./messageOutbox";
 import {messageAllowsSender} from "./lateJoinDispatchPolicy";
@@ -30,7 +30,11 @@ async function setup() {
       template: {kind: "planChangeCommunication", version: 1,
         setting: {kind: "enabled", authority: "executeWithinPolicy"},
         config: {templateIntent: "planChange", audience: "affectedGuests",
-          maximumPerGuest: 2, expiryMinutes: 30}}}});
+          maximumPerGuest: 2, expiryMinutes: 30, delivery: {
+            routes: [{routeId: "catchEventRcs",
+              senderId: h.rcsConfig.senderId}],
+            policy: {maxAttempts: 2, maxAttemptsPerRoute: 1,
+              minimumRetrySeconds: 1}}}}}});
   assert.ok(saved.view.own);
   const sourceId = "plan-change-1";
   const sourceRevision = 2;
@@ -120,4 +124,28 @@ test("pausing the saved policy withholds a queued operational notice",
     assert.equal(f.h.requests.filter((request) =>
       request.method === "POST").length, 0);
     assert.equal((await f.h.outbox.get(f.messageId))!.attempts.length, 0);
+  });
+
+test("changing a policy sender without a new revision withholds its notice",
+  async () => {
+    const f = await setup();
+    const own = f.saved.view.own;
+    assert.ok(own?.preference.kind === "configured" &&
+      own.preference.template.kind === "planChangeCommunication");
+    if (!own || own.preference.kind !== "configured" ||
+        own.preference.template.kind !== "planChangeCommunication") {
+      throw new Error("Expected plan-change setting");
+    }
+    await f.h.write(`${SETTINGS}/${own.settingId}`, {...own,
+      preference: {kind: "configured", template: {
+        ...own.preference.template,
+        config: {...own.preference.template.config, delivery: {
+          ...own.preference.template.config.delivery,
+          routes: [{routeId: "catchEventRcs", senderId: "different"}],
+        }}}}});
+    const result = await f.dispatcher.dispatch(f.message,
+      f.h.clock.now + 60_000);
+    assert.equal(result.kind, "waiting");
+    assert.equal(f.h.requests.filter((request) =>
+      request.method === "POST").length, 0);
   });

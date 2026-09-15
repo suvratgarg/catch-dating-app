@@ -28,7 +28,11 @@ async function setup(maximumPerGuest = 1, realDb?: Firestore) {
       kind: "planChangeCommunication", version: 1,
       setting: {kind: "enabled", authority: "executeWithinPolicy"},
       config: {templateIntent: "planChange", audience: "affectedGuests",
-        maximumPerGuest, expiryMinutes: 30}}}});
+        maximumPerGuest, expiryMinutes: 30, delivery: {
+          routes: [{routeId: "catchEventRcs",
+            senderId: h.rcsConfig.senderId}],
+          policy: {maxAttempts: 2, maxAttemptsPerRoute: 1,
+            minimumRetrySeconds: 1}}}}}});
   let source: OperationalNoticeSource<"planChange"> = {
     kind: "planChange", context: h.context, eventId: h.context.eventId,
     attendeeId: h.scope.attendeeId, groupId: "event:whole",
@@ -47,10 +51,7 @@ async function setup(maximumPerGuest = 1, realDb?: Firestore) {
   const request = {context: h.context, attendeeId: h.scope.attendeeId,
     episodeId: h.intent.episodeId, source: {kind: "planChange" as const,
       sourceId: source.sourceId, expectedRevision: source.revision}};
-  const options = {routes: [{routeId: "catchEventRcs" as const,
-    senderId: h.rcsConfig.senderId}], deliveryPolicy: {maxAttempts: 2,
-    maxAttemptsPerRoute: 1, minimumRetrySeconds: 1}};
-  return {h, settings, settingScope, publisher, request, options,
+  return {h, settings, settingScope, publisher, request,
     source: () => source,
     replaceSource: (next: OperationalNoticeSource<"planChange">) => {
       source = structuredClone(next);
@@ -60,9 +61,13 @@ async function setup(maximumPerGuest = 1, realDb?: Firestore) {
 test("trusted source publication creates one capped message and replays",
   async () => {
     const f = await setup();
-    const first = await f.publisher.publish(f.request, f.options);
+    const first = await f.publisher.publish(f.request);
     assert.equal(first.kind, "published");
     assert.equal(first.ordinal, 1);
+    assert.deepEqual(first.intent.automation?.routes, [{
+      routeId: "catchEventRcs", senderId: f.h.rcsConfig.senderId}]);
+    assert.deepEqual(first.intent.deliveryPolicy, {maxAttempts: 2,
+      maxAttemptsPerRoute: 1, minimumRetrySeconds: 1});
     const work = deliveryWorkIds(first.messageId);
     assert.ok(f.h.fake.read(operationCollections.runs + "/" + work.runId));
     assert.ok(f.h.fake.read(operationCollections.workItems + "/" +
@@ -72,14 +77,14 @@ test("trusted source publication creates one capped message and replays",
     assert.equal(f.h.fake.entries().filter(([path]) =>
       path.startsWith(OPERATIONAL_NOTICE_PUBLICATIONS + "/")).length, 1);
 
-    const replay = await f.publisher.publish(f.request, f.options);
+    const replay = await f.publisher.publish(f.request);
     assert.equal(replay.kind, "replayed");
     assert.equal(replay.messageId, first.messageId);
     assert.equal(f.h.fake.entries().filter(([path]) =>
       path.startsWith(OPERATIONAL_NOTICE_PUBLICATIONS + "/")).length, 1);
 
     const otherEpisode = await f.publisher.publish({...f.request,
-      episodeId: "episode:replacement"}, f.options);
+      episodeId: "episode:replacement"});
     assert.deepEqual(otherEpisode,
       {kind: "held", reason: "sourceAlreadyPublished"});
 
@@ -88,7 +93,7 @@ test("trusted source publication creates one capped message and replays",
     f.replaceSource(secondSource);
     const capped = await f.publisher.publish({...f.request, source: {
       kind: "planChange", sourceId: secondSource.sourceId,
-      expectedRevision: secondSource.revision}}, f.options);
+      expectedRevision: secondSource.revision}});
     assert.deepEqual(capped, {kind: "held", reason: "quotaReached"});
   });
 
@@ -97,14 +102,14 @@ test("publication requires exact source revision and current execution policy",
     const f = await setup(2);
     const changed = await f.publisher.publish({...f.request, source: {
       ...f.request.source, expectedRevision: f.request.source.expectedRevision -
-        1}}, f.options);
+        1}});
     assert.deepEqual(changed, {kind: "held", reason: "sourceChanged"});
     const view = (await f.settings.get("host-1", f.settingScope)).view;
     await f.settings.set("host-1", {...f.settingScope,
       requestId: randomUUID(), expectedRevision: view.ownRevision,
       expectedSourceHash: view.sourceHash,
       preference: {kind: "disabled"}});
-    const held = await f.publisher.publish(f.request, f.options);
+    const held = await f.publisher.publish(f.request);
     assert.deepEqual(held, {kind: "held", reason: "policyUnavailable"});
     assert.equal(f.h.fake.entries().filter(([path]) =>
       path.startsWith(OPERATIONAL_NOTICE_PUBLICATIONS + "/")).length, 0);
@@ -113,20 +118,38 @@ test("publication requires exact source revision and current execution policy",
 test("message, delivery work, quota and receipt share one commit", async () => {
   const f = await setup(2);
   f.h.fake.failNextCommit = true;
-  await assert.rejects(f.publisher.publish(f.request, f.options),
+  await assert.rejects(f.publisher.publish(f.request),
     /injected transaction interruption/);
   assert.equal(f.h.fake.entries().filter(([path]) =>
     path.startsWith(OPERATIONAL_NOTICE_QUOTAS + "/") ||
     path.startsWith(OPERATIONAL_NOTICE_PUBLICATIONS + "/")).length, 0);
-  const published = await f.publisher.publish(f.request, f.options);
+  const published = await f.publisher.publish(f.request);
   assert.equal(published.kind, "published");
   assert.equal(published.ordinal, 1);
 });
 
+test("execution policy rejects a sender that is not currently eligible",
+  async () => {
+    const f = await setup(2);
+    const view = (await f.settings.get("host-1", f.settingScope)).view;
+    await assert.rejects(f.settings.set("host-1", {...f.settingScope,
+      requestId: randomUUID(), expectedRevision: view.ownRevision,
+      expectedSourceHash: view.sourceHash,
+      preference: {kind: "configured", template: {
+        kind: "planChangeCommunication", version: 1,
+        setting: {kind: "enabled", authority: "executeWithinPolicy"},
+        config: {templateIntent: "planChange", audience: "affectedGuests",
+          maximumPerGuest: 2, expiryMinutes: 30, delivery: {
+            routes: [{routeId: "catchEventRcs", senderId: "missing-sender"}],
+            policy: {maxAttempts: 2, maxAttemptsPerRoute: 1,
+              minimumRetrySeconds: 1}}}}}}),
+    {code: "failed-precondition"});
+  });
+
 test("a source adapter cannot redirect a notice to another guest", async () => {
   const f = await setup(2);
   f.replaceSource({...f.source(), attendeeId: "another-attendee"});
-  await assert.rejects(f.publisher.publish(f.request, f.options),
+  await assert.rejects(f.publisher.publish(f.request),
     /source is outside its request/);
   assert.equal(f.h.fake.entries().filter(([path]) =>
     path.startsWith(OPERATIONAL_NOTICE_PUBLICATIONS + "/")).length, 0);
@@ -142,7 +165,7 @@ test("Firestore serializes competing source publications", {
     const db = getFirestore(app);
     const f = await setup(1, db);
     const results = await Promise.all(Array.from({length: 8}, () =>
-      f.publisher.publish(f.request, f.options)));
+      f.publisher.publish(f.request)));
     assert.equal(results.filter((result) =>
       result.kind === "published").length, 1);
     assert.equal(results.filter((result) =>

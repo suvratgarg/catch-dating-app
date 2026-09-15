@@ -863,6 +863,31 @@ export interface EventAssistanceSettingCallableResponse {
                     audience: "affectedGuests";
                     maximumPerGuest: number;
                     expiryMinutes: number;
+                    delivery: {
+                      /**
+                       * @minItems 1
+                       * @maxItems 3
+                       */
+                      routes: (
+                        | {
+                            routeId: "catchEventSms";
+                            senderId: string;
+                          }
+                        | {
+                            routeId: "organizerEventWhatsapp";
+                            senderId: string;
+                          }
+                        | {
+                            routeId: "catchEventRcs";
+                            senderId: string;
+                          }
+                      )[];
+                      policy: {
+                        maxAttempts: number;
+                        maxAttemptsPerRoute: number;
+                        minimumRetrySeconds: number;
+                      };
+                    };
                   };
                 }
               | {
@@ -1148,6 +1173,31 @@ export interface EventAssistanceSettingCallableResponse {
                     audience: "affectedGuests";
                     maximumPerGuest: number;
                     expiryMinutes: number;
+                    delivery: {
+                      /**
+                       * @minItems 1
+                       * @maxItems 3
+                       */
+                      routes: (
+                        | {
+                            routeId: "catchEventSms";
+                            senderId: string;
+                          }
+                        | {
+                            routeId: "organizerEventWhatsapp";
+                            senderId: string;
+                          }
+                        | {
+                            routeId: "catchEventRcs";
+                            senderId: string;
+                          }
+                      )[];
+                      policy: {
+                        maxAttempts: number;
+                        maxAttemptsPerRoute: number;
+                        minimumRetrySeconds: number;
+                      };
+                    };
                   };
                 }
               | {
@@ -1817,6 +1867,31 @@ export interface EventAssistanceSettingCallableResponse {
                 audience: "affectedGuests";
                 maximumPerGuest: number;
                 expiryMinutes: number;
+                delivery: {
+                  /**
+                   * @minItems 1
+                   * @maxItems 3
+                   */
+                  routes: (
+                    | {
+                        routeId: "catchEventSms";
+                        senderId: string;
+                      }
+                    | {
+                        routeId: "organizerEventWhatsapp";
+                        senderId: string;
+                      }
+                    | {
+                        routeId: "catchEventRcs";
+                        senderId: string;
+                      }
+                  )[];
+                  policy: {
+                    maxAttempts: number;
+                    maxAttemptsPerRoute: number;
+                    minimumRetrySeconds: number;
+                  };
+                };
               };
             }
           | {
@@ -2063,6 +2138,31 @@ export interface EventAssistanceSettingCallableResponse {
                 audience: "affectedGuests";
                 maximumPerGuest: number;
                 expiryMinutes: number;
+                delivery: {
+                  /**
+                   * @minItems 1
+                   * @maxItems 3
+                   */
+                  routes: (
+                    | {
+                        routeId: "catchEventSms";
+                        senderId: string;
+                      }
+                    | {
+                        routeId: "organizerEventWhatsapp";
+                        senderId: string;
+                      }
+                    | {
+                        routeId: "catchEventRcs";
+                        senderId: string;
+                      }
+                  )[];
+                  policy: {
+                    maxAttempts: number;
+                    maxAttemptsPerRoute: number;
+                    minimumRetrySeconds: number;
+                  };
+                };
               };
             }
           | {
@@ -2723,6 +2823,31 @@ export interface EventAssistanceSettingCallableResponse {
                 audience: "affectedGuests";
                 maximumPerGuest: number;
                 expiryMinutes: number;
+                delivery: {
+                  /**
+                   * @minItems 1
+                   * @maxItems 3
+                   */
+                  routes: (
+                    | {
+                        routeId: "catchEventSms";
+                        senderId: string;
+                      }
+                    | {
+                        routeId: "organizerEventWhatsapp";
+                        senderId: string;
+                      }
+                    | {
+                        routeId: "catchEventRcs";
+                        senderId: string;
+                      }
+                  )[];
+                  policy: {
+                    maxAttempts: number;
+                    maxAttemptsPerRoute: number;
+                    minimumRetrySeconds: number;
+                  };
+                };
               };
             }
           | {
@@ -2969,6 +3094,31 @@ export interface EventAssistanceSettingCallableResponse {
                 audience: "affectedGuests";
                 maximumPerGuest: number;
                 expiryMinutes: number;
+                delivery: {
+                  /**
+                   * @minItems 1
+                   * @maxItems 3
+                   */
+                  routes: (
+                    | {
+                        routeId: "catchEventSms";
+                        senderId: string;
+                      }
+                    | {
+                        routeId: "organizerEventWhatsapp";
+                        senderId: string;
+                      }
+                    | {
+                        routeId: "catchEventRcs";
+                        senderId: string;
+                      }
+                  )[];
+                  policy: {
+                    maxAttempts: number;
+                    maxAttemptsPerRoute: number;
+                    minimumRetrySeconds: number;
+                  };
+                };
               };
             }
           | {

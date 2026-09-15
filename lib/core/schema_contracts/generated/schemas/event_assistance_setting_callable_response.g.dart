@@ -3352,6 +3352,7 @@ const schemaEventAssistanceSettingCallableResponseSchema = <String, Object?>{
                                     'audience',
                                     'maximumPerGuest',
                                     'expiryMinutes',
+                                    'delivery',
                                   ],
                                   'properties': <String, Object?>{
                                     'templateIntent': <String, Object?>{
@@ -3371,6 +3372,112 @@ const schemaEventAssistanceSettingCallableResponseSchema = <String, Object?>{
                                       'type': 'integer',
                                       'minimum': 0,
                                       'maximum': 10080,
+                                    },
+                                    'delivery': <String, Object?>{
+                                      'type': 'object',
+                                      'additionalProperties': false,
+                                      'required': <Object?>[
+                                        'routes',
+                                        'policy',
+                                      ],
+                                      'properties': <String, Object?>{
+                                        'routes': <String, Object?>{
+                                          'type': 'array',
+                                          'minItems': 1,
+                                          'maxItems': 3,
+                                          'uniqueItems': true,
+                                          'items': <String, Object?>{
+                                            'oneOf': <Object?>[
+                                              <String, Object?>{
+                                                'type': 'object',
+                                                'additionalProperties': false,
+                                                'required': <Object?>[
+                                                  'routeId',
+                                                  'senderId',
+                                                ],
+                                                'properties': <String, Object?>{
+                                                  'routeId': <String, Object?>{
+                                                    'type': 'string',
+                                                    'const': 'catchEventSms',
+                                                  },
+                                                  'senderId': <String, Object?>{
+                                                    'type': 'string',
+                                                    'minLength': 1,
+                                                    'maxLength': 160,
+                                                    'pattern': '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+                                                  },
+                                                },
+                                              },
+                                              <String, Object?>{
+                                                'type': 'object',
+                                                'additionalProperties': false,
+                                                'required': <Object?>[
+                                                  'routeId',
+                                                  'senderId',
+                                                ],
+                                                'properties': <String, Object?>{
+                                                  'routeId': <String, Object?>{
+                                                    'type': 'string',
+                                                    'const': 'organizerEventWhatsapp',
+                                                  },
+                                                  'senderId': <String, Object?>{
+                                                    'type': 'string',
+                                                    'minLength': 1,
+                                                    'maxLength': 160,
+                                                    'pattern': '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+                                                  },
+                                                },
+                                              },
+                                              <String, Object?>{
+                                                'type': 'object',
+                                                'additionalProperties': false,
+                                                'required': <Object?>[
+                                                  'routeId',
+                                                  'senderId',
+                                                ],
+                                                'properties': <String, Object?>{
+                                                  'routeId': <String, Object?>{
+                                                    'type': 'string',
+                                                    'const': 'catchEventRcs',
+                                                  },
+                                                  'senderId': <String, Object?>{
+                                                    'type': 'string',
+                                                    'minLength': 1,
+                                                    'maxLength': 160,
+                                                    'pattern': '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+                                                  },
+                                                },
+                                              },
+                                            ],
+                                          },
+                                        },
+                                        'policy': <String, Object?>{
+                                          'type': 'object',
+                                          'additionalProperties': false,
+                                          'required': <Object?>[
+                                            'maxAttempts',
+                                            'maxAttemptsPerRoute',
+                                            'minimumRetrySeconds',
+                                          ],
+                                          'properties': <String, Object?>{
+                                            'maxAttempts': <String, Object?>{
+                                              'type': 'integer',
+                                              'minimum': 1,
+                                              'maximum': 6,
+                                            },
+                                            'maxAttemptsPerRoute': <String, Object?>{
+                                              'type': 'integer',
+                                              'minimum': 1,
+                                              'maximum': 3,
+                                            },
+                                            'minimumRetrySeconds': <String, Object?>{
+                                              'type': 'integer',
+                                              'minimum': 1,
+                                              'maximum': 3600,
+                                            },
+                                          },
+                                        },
+                                      },
                                     },
                                   },
                                 },
@@ -4529,6 +4636,7 @@ const schemaEventAssistanceSettingCallableResponseSchema = <String, Object?>{
                                     'audience',
                                     'maximumPerGuest',
                                     'expiryMinutes',
+                                    'delivery',
                                   ],
                                   'properties': <String, Object?>{
                                     'templateIntent': <String, Object?>{
@@ -4548,6 +4656,112 @@ const schemaEventAssistanceSettingCallableResponseSchema = <String, Object?>{
                                       'type': 'integer',
                                       'minimum': 0,
                                       'maximum': 10080,
+                                    },
+                                    'delivery': <String, Object?>{
+                                      'type': 'object',
+                                      'additionalProperties': false,
+                                      'required': <Object?>[
+                                        'routes',
+                                        'policy',
+                                      ],
+                                      'properties': <String, Object?>{
+                                        'routes': <String, Object?>{
+                                          'type': 'array',
+                                          'minItems': 1,
+                                          'maxItems': 3,
+                                          'uniqueItems': true,
+                                          'items': <String, Object?>{
+                                            'oneOf': <Object?>[
+                                              <String, Object?>{
+                                                'type': 'object',
+                                                'additionalProperties': false,
+                                                'required': <Object?>[
+                                                  'routeId',
+                                                  'senderId',
+                                                ],
+                                                'properties': <String, Object?>{
+                                                  'routeId': <String, Object?>{
+                                                    'type': 'string',
+                                                    'const': 'catchEventSms',
+                                                  },
+                                                  'senderId': <String, Object?>{
+                                                    'type': 'string',
+                                                    'minLength': 1,
+                                                    'maxLength': 160,
+                                                    'pattern': '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+                                                  },
+                                                },
+                                              },
+                                              <String, Object?>{
+                                                'type': 'object',
+                                                'additionalProperties': false,
+                                                'required': <Object?>[
+                                                  'routeId',
+                                                  'senderId',
+                                                ],
+                                                'properties': <String, Object?>{
+                                                  'routeId': <String, Object?>{
+                                                    'type': 'string',
+                                                    'const': 'organizerEventWhatsapp',
+                                                  },
+                                                  'senderId': <String, Object?>{
+                                                    'type': 'string',
+                                                    'minLength': 1,
+                                                    'maxLength': 160,
+                                                    'pattern': '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+                                                  },
+                                                },
+                                              },
+                                              <String, Object?>{
+                                                'type': 'object',
+                                                'additionalProperties': false,
+                                                'required': <Object?>[
+                                                  'routeId',
+                                                  'senderId',
+                                                ],
+                                                'properties': <String, Object?>{
+                                                  'routeId': <String, Object?>{
+                                                    'type': 'string',
+                                                    'const': 'catchEventRcs',
+                                                  },
+                                                  'senderId': <String, Object?>{
+                                                    'type': 'string',
+                                                    'minLength': 1,
+                                                    'maxLength': 160,
+                                                    'pattern': '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+                                                  },
+                                                },
+                                              },
+                                            ],
+                                          },
+                                        },
+                                        'policy': <String, Object?>{
+                                          'type': 'object',
+                                          'additionalProperties': false,
+                                          'required': <Object?>[
+                                            'maxAttempts',
+                                            'maxAttemptsPerRoute',
+                                            'minimumRetrySeconds',
+                                          ],
+                                          'properties': <String, Object?>{
+                                            'maxAttempts': <String, Object?>{
+                                              'type': 'integer',
+                                              'minimum': 1,
+                                              'maximum': 6,
+                                            },
+                                            'maxAttemptsPerRoute': <String, Object?>{
+                                              'type': 'integer',
+                                              'minimum': 1,
+                                              'maximum': 3,
+                                            },
+                                            'minimumRetrySeconds': <String, Object?>{
+                                              'type': 'integer',
+                                              'minimum': 1,
+                                              'maximum': 3600,
+                                            },
+                                          },
+                                        },
+                                      },
                                     },
                                   },
                                 },
@@ -7744,6 +7958,7 @@ const schemaEventAssistanceSettingCallableResponseSchema = <String, Object?>{
                         'audience',
                         'maximumPerGuest',
                         'expiryMinutes',
+                        'delivery',
                       ],
                       'properties': <String, Object?>{
                         'templateIntent': <String, Object?>{
@@ -7763,6 +7978,112 @@ const schemaEventAssistanceSettingCallableResponseSchema = <String, Object?>{
                           'type': 'integer',
                           'minimum': 0,
                           'maximum': 10080,
+                        },
+                        'delivery': <String, Object?>{
+                          'type': 'object',
+                          'additionalProperties': false,
+                          'required': <Object?>[
+                            'routes',
+                            'policy',
+                          ],
+                          'properties': <String, Object?>{
+                            'routes': <String, Object?>{
+                              'type': 'array',
+                              'minItems': 1,
+                              'maxItems': 3,
+                              'uniqueItems': true,
+                              'items': <String, Object?>{
+                                'oneOf': <Object?>[
+                                  <String, Object?>{
+                                    'type': 'object',
+                                    'additionalProperties': false,
+                                    'required': <Object?>[
+                                      'routeId',
+                                      'senderId',
+                                    ],
+                                    'properties': <String, Object?>{
+                                      'routeId': <String, Object?>{
+                                        'type': 'string',
+                                        'const': 'catchEventSms',
+                                      },
+                                      'senderId': <String, Object?>{
+                                        'type': 'string',
+                                        'minLength': 1,
+                                        'maxLength': 160,
+                                        'pattern': '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+                                      },
+                                    },
+                                  },
+                                  <String, Object?>{
+                                    'type': 'object',
+                                    'additionalProperties': false,
+                                    'required': <Object?>[
+                                      'routeId',
+                                      'senderId',
+                                    ],
+                                    'properties': <String, Object?>{
+                                      'routeId': <String, Object?>{
+                                        'type': 'string',
+                                        'const': 'organizerEventWhatsapp',
+                                      },
+                                      'senderId': <String, Object?>{
+                                        'type': 'string',
+                                        'minLength': 1,
+                                        'maxLength': 160,
+                                        'pattern': '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+                                      },
+                                    },
+                                  },
+                                  <String, Object?>{
+                                    'type': 'object',
+                                    'additionalProperties': false,
+                                    'required': <Object?>[
+                                      'routeId',
+                                      'senderId',
+                                    ],
+                                    'properties': <String, Object?>{
+                                      'routeId': <String, Object?>{
+                                        'type': 'string',
+                                        'const': 'catchEventRcs',
+                                      },
+                                      'senderId': <String, Object?>{
+                                        'type': 'string',
+                                        'minLength': 1,
+                                        'maxLength': 160,
+                                        'pattern': '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+                                      },
+                                    },
+                                  },
+                                ],
+                              },
+                            },
+                            'policy': <String, Object?>{
+                              'type': 'object',
+                              'additionalProperties': false,
+                              'required': <Object?>[
+                                'maxAttempts',
+                                'maxAttemptsPerRoute',
+                                'minimumRetrySeconds',
+                              ],
+                              'properties': <String, Object?>{
+                                'maxAttempts': <String, Object?>{
+                                  'type': 'integer',
+                                  'minimum': 1,
+                                  'maximum': 6,
+                                },
+                                'maxAttemptsPerRoute': <String, Object?>{
+                                  'type': 'integer',
+                                  'minimum': 1,
+                                  'maximum': 3,
+                                },
+                                'minimumRetrySeconds': <String, Object?>{
+                                  'type': 'integer',
+                                  'minimum': 1,
+                                  'maximum': 3600,
+                                },
+                              },
+                            },
+                          },
                         },
                       },
                     },
@@ -8921,6 +9242,7 @@ const schemaEventAssistanceSettingCallableResponseSchema = <String, Object?>{
                         'audience',
                         'maximumPerGuest',
                         'expiryMinutes',
+                        'delivery',
                       ],
                       'properties': <String, Object?>{
                         'templateIntent': <String, Object?>{
@@ -8940,6 +9262,112 @@ const schemaEventAssistanceSettingCallableResponseSchema = <String, Object?>{
                           'type': 'integer',
                           'minimum': 0,
                           'maximum': 10080,
+                        },
+                        'delivery': <String, Object?>{
+                          'type': 'object',
+                          'additionalProperties': false,
+                          'required': <Object?>[
+                            'routes',
+                            'policy',
+                          ],
+                          'properties': <String, Object?>{
+                            'routes': <String, Object?>{
+                              'type': 'array',
+                              'minItems': 1,
+                              'maxItems': 3,
+                              'uniqueItems': true,
+                              'items': <String, Object?>{
+                                'oneOf': <Object?>[
+                                  <String, Object?>{
+                                    'type': 'object',
+                                    'additionalProperties': false,
+                                    'required': <Object?>[
+                                      'routeId',
+                                      'senderId',
+                                    ],
+                                    'properties': <String, Object?>{
+                                      'routeId': <String, Object?>{
+                                        'type': 'string',
+                                        'const': 'catchEventSms',
+                                      },
+                                      'senderId': <String, Object?>{
+                                        'type': 'string',
+                                        'minLength': 1,
+                                        'maxLength': 160,
+                                        'pattern': '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+                                      },
+                                    },
+                                  },
+                                  <String, Object?>{
+                                    'type': 'object',
+                                    'additionalProperties': false,
+                                    'required': <Object?>[
+                                      'routeId',
+                                      'senderId',
+                                    ],
+                                    'properties': <String, Object?>{
+                                      'routeId': <String, Object?>{
+                                        'type': 'string',
+                                        'const': 'organizerEventWhatsapp',
+                                      },
+                                      'senderId': <String, Object?>{
+                                        'type': 'string',
+                                        'minLength': 1,
+                                        'maxLength': 160,
+                                        'pattern': '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+                                      },
+                                    },
+                                  },
+                                  <String, Object?>{
+                                    'type': 'object',
+                                    'additionalProperties': false,
+                                    'required': <Object?>[
+                                      'routeId',
+                                      'senderId',
+                                    ],
+                                    'properties': <String, Object?>{
+                                      'routeId': <String, Object?>{
+                                        'type': 'string',
+                                        'const': 'catchEventRcs',
+                                      },
+                                      'senderId': <String, Object?>{
+                                        'type': 'string',
+                                        'minLength': 1,
+                                        'maxLength': 160,
+                                        'pattern': '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+                                      },
+                                    },
+                                  },
+                                ],
+                              },
+                            },
+                            'policy': <String, Object?>{
+                              'type': 'object',
+                              'additionalProperties': false,
+                              'required': <Object?>[
+                                'maxAttempts',
+                                'maxAttemptsPerRoute',
+                                'minimumRetrySeconds',
+                              ],
+                              'properties': <String, Object?>{
+                                'maxAttempts': <String, Object?>{
+                                  'type': 'integer',
+                                  'minimum': 1,
+                                  'maximum': 6,
+                                },
+                                'maxAttemptsPerRoute': <String, Object?>{
+                                  'type': 'integer',
+                                  'minimum': 1,
+                                  'maximum': 3,
+                                },
+                                'minimumRetrySeconds': <String, Object?>{
+                                  'type': 'integer',
+                                  'minimum': 1,
+                                  'maximum': 3600,
+                                },
+                              },
+                            },
+                          },
                         },
                       },
                     },
@@ -12096,6 +12524,7 @@ const schemaEventAssistanceSettingCallableResponseSchema = <String, Object?>{
                         'audience',
                         'maximumPerGuest',
                         'expiryMinutes',
+                        'delivery',
                       ],
                       'properties': <String, Object?>{
                         'templateIntent': <String, Object?>{
@@ -12115,6 +12544,112 @@ const schemaEventAssistanceSettingCallableResponseSchema = <String, Object?>{
                           'type': 'integer',
                           'minimum': 0,
                           'maximum': 10080,
+                        },
+                        'delivery': <String, Object?>{
+                          'type': 'object',
+                          'additionalProperties': false,
+                          'required': <Object?>[
+                            'routes',
+                            'policy',
+                          ],
+                          'properties': <String, Object?>{
+                            'routes': <String, Object?>{
+                              'type': 'array',
+                              'minItems': 1,
+                              'maxItems': 3,
+                              'uniqueItems': true,
+                              'items': <String, Object?>{
+                                'oneOf': <Object?>[
+                                  <String, Object?>{
+                                    'type': 'object',
+                                    'additionalProperties': false,
+                                    'required': <Object?>[
+                                      'routeId',
+                                      'senderId',
+                                    ],
+                                    'properties': <String, Object?>{
+                                      'routeId': <String, Object?>{
+                                        'type': 'string',
+                                        'const': 'catchEventSms',
+                                      },
+                                      'senderId': <String, Object?>{
+                                        'type': 'string',
+                                        'minLength': 1,
+                                        'maxLength': 160,
+                                        'pattern': '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+                                      },
+                                    },
+                                  },
+                                  <String, Object?>{
+                                    'type': 'object',
+                                    'additionalProperties': false,
+                                    'required': <Object?>[
+                                      'routeId',
+                                      'senderId',
+                                    ],
+                                    'properties': <String, Object?>{
+                                      'routeId': <String, Object?>{
+                                        'type': 'string',
+                                        'const': 'organizerEventWhatsapp',
+                                      },
+                                      'senderId': <String, Object?>{
+                                        'type': 'string',
+                                        'minLength': 1,
+                                        'maxLength': 160,
+                                        'pattern': '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+                                      },
+                                    },
+                                  },
+                                  <String, Object?>{
+                                    'type': 'object',
+                                    'additionalProperties': false,
+                                    'required': <Object?>[
+                                      'routeId',
+                                      'senderId',
+                                    ],
+                                    'properties': <String, Object?>{
+                                      'routeId': <String, Object?>{
+                                        'type': 'string',
+                                        'const': 'catchEventRcs',
+                                      },
+                                      'senderId': <String, Object?>{
+                                        'type': 'string',
+                                        'minLength': 1,
+                                        'maxLength': 160,
+                                        'pattern': '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+                                      },
+                                    },
+                                  },
+                                ],
+                              },
+                            },
+                            'policy': <String, Object?>{
+                              'type': 'object',
+                              'additionalProperties': false,
+                              'required': <Object?>[
+                                'maxAttempts',
+                                'maxAttemptsPerRoute',
+                                'minimumRetrySeconds',
+                              ],
+                              'properties': <String, Object?>{
+                                'maxAttempts': <String, Object?>{
+                                  'type': 'integer',
+                                  'minimum': 1,
+                                  'maximum': 6,
+                                },
+                                'maxAttemptsPerRoute': <String, Object?>{
+                                  'type': 'integer',
+                                  'minimum': 1,
+                                  'maximum': 3,
+                                },
+                                'minimumRetrySeconds': <String, Object?>{
+                                  'type': 'integer',
+                                  'minimum': 1,
+                                  'maximum': 3600,
+                                },
+                              },
+                            },
+                          },
                         },
                       },
                     },
@@ -13273,6 +13808,7 @@ const schemaEventAssistanceSettingCallableResponseSchema = <String, Object?>{
                         'audience',
                         'maximumPerGuest',
                         'expiryMinutes',
+                        'delivery',
                       ],
                       'properties': <String, Object?>{
                         'templateIntent': <String, Object?>{
@@ -13292,6 +13828,112 @@ const schemaEventAssistanceSettingCallableResponseSchema = <String, Object?>{
                           'type': 'integer',
                           'minimum': 0,
                           'maximum': 10080,
+                        },
+                        'delivery': <String, Object?>{
+                          'type': 'object',
+                          'additionalProperties': false,
+                          'required': <Object?>[
+                            'routes',
+                            'policy',
+                          ],
+                          'properties': <String, Object?>{
+                            'routes': <String, Object?>{
+                              'type': 'array',
+                              'minItems': 1,
+                              'maxItems': 3,
+                              'uniqueItems': true,
+                              'items': <String, Object?>{
+                                'oneOf': <Object?>[
+                                  <String, Object?>{
+                                    'type': 'object',
+                                    'additionalProperties': false,
+                                    'required': <Object?>[
+                                      'routeId',
+                                      'senderId',
+                                    ],
+                                    'properties': <String, Object?>{
+                                      'routeId': <String, Object?>{
+                                        'type': 'string',
+                                        'const': 'catchEventSms',
+                                      },
+                                      'senderId': <String, Object?>{
+                                        'type': 'string',
+                                        'minLength': 1,
+                                        'maxLength': 160,
+                                        'pattern': '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+                                      },
+                                    },
+                                  },
+                                  <String, Object?>{
+                                    'type': 'object',
+                                    'additionalProperties': false,
+                                    'required': <Object?>[
+                                      'routeId',
+                                      'senderId',
+                                    ],
+                                    'properties': <String, Object?>{
+                                      'routeId': <String, Object?>{
+                                        'type': 'string',
+                                        'const': 'organizerEventWhatsapp',
+                                      },
+                                      'senderId': <String, Object?>{
+                                        'type': 'string',
+                                        'minLength': 1,
+                                        'maxLength': 160,
+                                        'pattern': '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+                                      },
+                                    },
+                                  },
+                                  <String, Object?>{
+                                    'type': 'object',
+                                    'additionalProperties': false,
+                                    'required': <Object?>[
+                                      'routeId',
+                                      'senderId',
+                                    ],
+                                    'properties': <String, Object?>{
+                                      'routeId': <String, Object?>{
+                                        'type': 'string',
+                                        'const': 'catchEventRcs',
+                                      },
+                                      'senderId': <String, Object?>{
+                                        'type': 'string',
+                                        'minLength': 1,
+                                        'maxLength': 160,
+                                        'pattern': '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
+                                      },
+                                    },
+                                  },
+                                ],
+                              },
+                            },
+                            'policy': <String, Object?>{
+                              'type': 'object',
+                              'additionalProperties': false,
+                              'required': <Object?>[
+                                'maxAttempts',
+                                'maxAttemptsPerRoute',
+                                'minimumRetrySeconds',
+                              ],
+                              'properties': <String, Object?>{
+                                'maxAttempts': <String, Object?>{
+                                  'type': 'integer',
+                                  'minimum': 1,
+                                  'maximum': 6,
+                                },
+                                'maxAttemptsPerRoute': <String, Object?>{
+                                  'type': 'integer',
+                                  'minimum': 1,
+                                  'maximum': 3,
+                                },
+                                'minimumRetrySeconds': <String, Object?>{
+                                  'type': 'integer',
+                                  'minimum': 1,
+                                  'maximum': 3600,
+                                },
+                              },
+                            },
+                          },
                         },
                       },
                     },

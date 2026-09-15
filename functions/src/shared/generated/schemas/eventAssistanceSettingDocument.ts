@@ -3204,7 +3204,8 @@ export const eventAssistanceSettingDocumentSchema: Record<string, unknown> = {
                         "templateIntent",
                         "audience",
                         "maximumPerGuest",
-                        "expiryMinutes"
+                        "expiryMinutes",
+                        "delivery"
                       ],
                       "properties": {
                         "templateIntent": {
@@ -3224,6 +3225,112 @@ export const eventAssistanceSettingDocumentSchema: Record<string, unknown> = {
                           "type": "integer",
                           "minimum": 0,
                           "maximum": 10080
+                        },
+                        "delivery": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "routes",
+                            "policy"
+                          ],
+                          "properties": {
+                            "routes": {
+                              "type": "array",
+                              "minItems": 1,
+                              "maxItems": 3,
+                              "uniqueItems": true,
+                              "items": {
+                                "oneOf": [
+                                  {
+                                    "type": "object",
+                                    "additionalProperties": false,
+                                    "required": [
+                                      "routeId",
+                                      "senderId"
+                                    ],
+                                    "properties": {
+                                      "routeId": {
+                                        "type": "string",
+                                        "const": "catchEventSms"
+                                      },
+                                      "senderId": {
+                                        "type": "string",
+                                        "minLength": 1,
+                                        "maxLength": 160,
+                                        "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "object",
+                                    "additionalProperties": false,
+                                    "required": [
+                                      "routeId",
+                                      "senderId"
+                                    ],
+                                    "properties": {
+                                      "routeId": {
+                                        "type": "string",
+                                        "const": "organizerEventWhatsapp"
+                                      },
+                                      "senderId": {
+                                        "type": "string",
+                                        "minLength": 1,
+                                        "maxLength": 160,
+                                        "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "object",
+                                    "additionalProperties": false,
+                                    "required": [
+                                      "routeId",
+                                      "senderId"
+                                    ],
+                                    "properties": {
+                                      "routeId": {
+                                        "type": "string",
+                                        "const": "catchEventRcs"
+                                      },
+                                      "senderId": {
+                                        "type": "string",
+                                        "minLength": 1,
+                                        "maxLength": 160,
+                                        "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                                      }
+                                    }
+                                  }
+                                ]
+                              }
+                            },
+                            "policy": {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "required": [
+                                "maxAttempts",
+                                "maxAttemptsPerRoute",
+                                "minimumRetrySeconds"
+                              ],
+                              "properties": {
+                                "maxAttempts": {
+                                  "type": "integer",
+                                  "minimum": 1,
+                                  "maximum": 6
+                                },
+                                "maxAttemptsPerRoute": {
+                                  "type": "integer",
+                                  "minimum": 1,
+                                  "maximum": 3
+                                },
+                                "minimumRetrySeconds": {
+                                  "type": "integer",
+                                  "minimum": 1,
+                                  "maximum": 3600
+                                }
+                              }
+                            }
+                          }
                         }
                       }
                     }
@@ -4381,7 +4488,8 @@ export const eventAssistanceSettingDocumentSchema: Record<string, unknown> = {
                         "templateIntent",
                         "audience",
                         "maximumPerGuest",
-                        "expiryMinutes"
+                        "expiryMinutes",
+                        "delivery"
                       ],
                       "properties": {
                         "templateIntent": {
@@ -4401,6 +4509,112 @@ export const eventAssistanceSettingDocumentSchema: Record<string, unknown> = {
                           "type": "integer",
                           "minimum": 0,
                           "maximum": 10080
+                        },
+                        "delivery": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "routes",
+                            "policy"
+                          ],
+                          "properties": {
+                            "routes": {
+                              "type": "array",
+                              "minItems": 1,
+                              "maxItems": 3,
+                              "uniqueItems": true,
+                              "items": {
+                                "oneOf": [
+                                  {
+                                    "type": "object",
+                                    "additionalProperties": false,
+                                    "required": [
+                                      "routeId",
+                                      "senderId"
+                                    ],
+                                    "properties": {
+                                      "routeId": {
+                                        "type": "string",
+                                        "const": "catchEventSms"
+                                      },
+                                      "senderId": {
+                                        "type": "string",
+                                        "minLength": 1,
+                                        "maxLength": 160,
+                                        "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "object",
+                                    "additionalProperties": false,
+                                    "required": [
+                                      "routeId",
+                                      "senderId"
+                                    ],
+                                    "properties": {
+                                      "routeId": {
+                                        "type": "string",
+                                        "const": "organizerEventWhatsapp"
+                                      },
+                                      "senderId": {
+                                        "type": "string",
+                                        "minLength": 1,
+                                        "maxLength": 160,
+                                        "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "object",
+                                    "additionalProperties": false,
+                                    "required": [
+                                      "routeId",
+                                      "senderId"
+                                    ],
+                                    "properties": {
+                                      "routeId": {
+                                        "type": "string",
+                                        "const": "catchEventRcs"
+                                      },
+                                      "senderId": {
+                                        "type": "string",
+                                        "minLength": 1,
+                                        "maxLength": 160,
+                                        "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                                      }
+                                    }
+                                  }
+                                ]
+                              }
+                            },
+                            "policy": {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "required": [
+                                "maxAttempts",
+                                "maxAttemptsPerRoute",
+                                "minimumRetrySeconds"
+                              ],
+                              "properties": {
+                                "maxAttempts": {
+                                  "type": "integer",
+                                  "minimum": 1,
+                                  "maximum": 6
+                                },
+                                "maxAttemptsPerRoute": {
+                                  "type": "integer",
+                                  "minimum": 1,
+                                  "maximum": 3
+                                },
+                                "minimumRetrySeconds": {
+                                  "type": "integer",
+                                  "minimum": 1,
+                                  "maximum": 3600
+                                }
+                              }
+                            }
+                          }
                         }
                       }
                     }
