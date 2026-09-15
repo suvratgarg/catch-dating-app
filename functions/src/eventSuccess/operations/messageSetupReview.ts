@@ -11,14 +11,15 @@ import {WHATSAPP_POLICIES} from "./whatsappTemplate";
 import {whatsappConsentSender} from "./whatsappConsentSender";
 import {parseWhatsappBudget, whatsappBudgetId, whatsappBudgetScopes,
   WHATSAPP_BUDGETS} from "./whatsappSpend";
-import {readRuntimeSenderChoice, RuntimeSenderChoice} from
+import {readMessageSenderChoice, MessageSenderChoice} from
   "./runtimeSenderSetup";
+import type {MessagePurpose} from "./messageContactability";
 import {parseRuntimeConfig, runtimeConfigId, runtimeConfigSource,
   runtimeConfigStatus, RUNTIME_CONFIGS, RuntimeContext} from
   "./runtimeConfigRecords";
 import {requireDocumentId} from "./guestRecords";
 
-type Route = RuntimeSenderChoice["routeId"];
+type Route = MessageSenderChoice["routeId"];
 type Budget = ReturnType<typeof parseSmsBudget | typeof parseRcsBudget |
   typeof parseWhatsappBudget>;
 type BudgetScope = Budget["scope"];
@@ -46,6 +47,7 @@ export interface MessageSetupScope {
   context: RuntimeContext;
   routeId: Route;
   senderId: string;
+  purpose: MessagePurpose;
 }
 
 export interface MessageSetupReview extends MessageSetupScope {
@@ -55,12 +57,13 @@ export interface MessageSetupReview extends MessageSetupScope {
   /** Configured records are not provider approval or guest send authority. */
   grantsDispatchAuthority: false;
   runtime: {
+    appliesToPurpose: boolean;
     status: ReturnType<typeof runtimeConfigStatus>;
     revision: number | null;
     selected: boolean;
     sourceHash: string;
   };
-  sender: RuntimeSenderChoice | null;
+  sender: MessageSenderChoice | null;
   budgets: {kind: "senderUnavailable"} |
     {kind: "reviewed"; event: MessageBudgetReview;
       senderDay: MessageBudgetReview};
@@ -84,8 +87,8 @@ export async function reviewEventMessageSetup(db: Firestore,
     const source = runtimeConfigSource(input.context, event, plan, now);
     const record = runtime.exists ?
       parseRuntimeConfig(runtime.data(), input.context, now) : null;
-    const sender = await readRuntimeSenderChoice(db, tx, input.context,
-      input, now);
+    const sender = await readMessageSenderChoice(db, tx, input.context,
+      input, input.purpose, now);
     const budgetSource = sender ? await readBudgetSource(db, tx, input) : null;
     let budgets: MessageSetupReview["budgets"] = {kind: "senderUnavailable"};
     if (budgetSource) {
@@ -108,11 +111,13 @@ export async function reviewEventMessageSetup(db: Firestore,
       now))) throw new Error("Message setup review crossed a billing day");
     return {kind: "recordedSetupReview", ...input, observedAt: now, completedAt,
       grantsDispatchAuthority: false,
-      runtime: {status: runtimeConfigStatus(record, source, now),
+      runtime: {appliesToPurpose: input.purpose === "joiningUpdate",
+        status: runtimeConfigStatus(record, source, now),
         revision: record?.revision ?? null, sourceHash: source.hash,
-        selected: record?.configuration?.options.routes.some((r) =>
-          r.routeId === input.routeId &&
-          r.senderId === input.senderId) ?? false},
+        selected: input.purpose === "joiningUpdate" &&
+          (record?.configuration?.options.routes.some((r) =>
+            r.routeId === input.routeId &&
+            r.senderId === input.senderId) ?? false)},
       sender, budgets};
   }, {readOnly: true});
 }

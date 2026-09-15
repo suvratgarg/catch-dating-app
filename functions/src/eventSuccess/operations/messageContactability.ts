@@ -23,8 +23,21 @@ const completeRoutes: [
   Exclude<EventMessageRouteSelection["routeId"], WireRoute>,
 ] extends [never, never] ? true : false = true;
 void completeRoutes;
-export type MessagePurpose = "joiningUpdate" | Extract<
+type SchemaMessagePurpose = "joiningUpdate" | Extract<
   MessageRecord["intent"], {kind: "operationalNotice"}>["noticeKind"];
+export const MESSAGE_PURPOSES = ["joiningUpdate", "joiningInstructions",
+  "planChanged", "eventCancelled", "eventFinished", "guestRequirement",
+  "assignmentChanged", "participationCheck", "followUp"] as const;
+export type MessagePurpose = typeof MESSAGE_PURPOSES[number];
+const completeMessagePurposes: [
+  Exclude<SchemaMessagePurpose, MessagePurpose>,
+  Exclude<MessagePurpose, SchemaMessagePurpose>,
+] extends [never, never] ? true : false = true;
+void completeMessagePurposes;
+export function isMessagePurpose(value: unknown): value is MessagePurpose {
+  return typeof value === "string" &&
+    (MESSAGE_PURPOSES as readonly string[]).includes(value);
+}
 type Scope = Omit<MessagePermissionScope, "senderId">;
 export type Contactability = {route: EventMessageRouteSelection; state:
   | {kind: "canPrepare"; validUntil: number; evidenceHash: string}

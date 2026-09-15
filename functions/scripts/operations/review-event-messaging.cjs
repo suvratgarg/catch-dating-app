@@ -3,9 +3,12 @@
 
 const path = require("node:path");
 const {pathToFileURL} = require("node:url");
+const {MESSAGE_PURPOSES} = require(
+  "../../lib/eventSuccess/operations/messageContactability.js");
 
 function parseFlags(argv) {
-  const names = ["environment", "project", "event", "organizer", "route", "sender"];
+  const names = ["environment", "project", "event", "organizer", "route",
+    "sender", "purpose"];
   const flags = {};
   for (let i = 0; i < argv.length; i += 2) {
     const name = argv[i].slice(2);
@@ -18,9 +21,10 @@ function parseFlags(argv) {
       !["dev", "staging", "prod"].includes(flags.environment) ||
       !/^[a-z][a-z0-9-]{4,28}[a-z0-9]$/.test(flags.project) ||
       !["catchEventSms", "catchEventRcs", "organizerEventWhatsapp"].includes(flags.route) ||
+      !MESSAGE_PURPOSES.includes(flags.purpose) ||
       [flags.event, flags.organizer, flags.sender].some((id) =>
         !/^[A-Za-z0-9][A-Za-z0-9._:-]{0,159}$/.test(id))) {
-    throw new Error("An explicit environment, project, event, organizer, route and sender are required");
+    throw new Error("An explicit environment, project, event, organizer, route, sender and purpose are required");
   }
   return flags;
 }
@@ -38,7 +42,7 @@ async function main(argv) {
   try {
     const review = await reviewEventMessageSetup(getFirestore(app), {
       context: {mode: "live", eventId: flags.event, organizerId: flags.organizer},
-      routeId: flags.route, senderId: flags.sender,
+      routeId: flags.route, senderId: flags.sender, purpose: flags.purpose,
     });
     process.stdout.write(JSON.stringify({schemaVersion: 1, projectId: flags.project,
       environment: flags.environment,

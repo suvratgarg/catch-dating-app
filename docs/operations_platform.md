@@ -845,15 +845,17 @@ held message, but does not prove a pending submission failed.
 ### Read-only event messaging setup review
 
 Trusted operators can inspect one event, channel and sender with
-`npm --prefix functions run operations:review-event-messaging -- --environment <dev|staging|prod> --project <matching-project> --organizer <id> --event <id> --route <catchEventSms|organizerEventWhatsapp|catchEventRcs> --sender <id>`.
+`npm --prefix functions run operations:review-event-messaging -- --environment <dev|staging|prod> --project <matching-project> --organizer <id> --event <id> --route <catchEventSms|organizerEventWhatsapp|catchEventRcs> --sender <id> --purpose <joiningUpdate|joiningInstructions|planChanged|eventCancelled|eventFinished|guestRequirement|assignmentChanged|participationCheck|followUp>`.
 The command requires an explicit project matching the repository's environment
 alias and existing read access. It has no apply option, and it does not load
 provider credentials or invoke a messaging provider. Registration in the shared
 tool manifest is pending release of that file's active worktree claim.
 
 The bounded read uses the same event source, saved runtime, sender, template
-and budget readers as runtime configuration and dispatch. It reports saved
-selection separately from runtime status, then reviews the exact event and
+and budget readers as runtime configuration and dispatch. The explicit purpose
+selects the exact SMS template, RCS allowlist entry or WhatsApp template policy
+being reviewed. It reports a saved late-join selection only when the purpose is
+`joiningUpdate`, separately from runtime status, then reviews the exact event and
 sender-day budgets. Missing or invalid records remain distinct from paused,
 expired, exhausted, changed-currency or changed-agent limits. Valid budget
 records retain their ceiling, conservative charges, remaining amount, approval

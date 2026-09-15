@@ -10,6 +10,9 @@ import {parseRcsConfig} from "./rcsProtocol";
 import {rcsConsentCollections} from "./rcsConsent";
 import {whatsappConsentSender} from "./whatsappConsentSender";
 import {WHATSAPP_POLICIES, whatsappTemplateSnapshot} from "./whatsappTemplate";
+import {isMessagePurpose} from "./messageContactability";
+import type {EventMessageRouteSelection, MessagePurpose} from
+  "./messageContactability";
 import type {RuntimeConfiguration, RuntimeContext} from
   "./runtimeConfigRecords";
 
@@ -18,6 +21,12 @@ export type RuntimeSenderChoice = Setup["choices"][number];
 export type RuntimeSenderCursors = Setup["nextCursors"];
 type Route = RuntimeSenderChoice["routeId"];
 type Availability = RuntimeSenderChoice["availability"];
+export type MessageSenderAvailability =
+  Exclude<Availability, "joiningTemplateMissing"> | "templateUnavailable";
+export type MessageSenderChoice =
+  Omit<RuntimeSenderChoice, "availability"> & {
+    availability: MessageSenderAvailability;
+  };
 const routes: readonly Route[] = ["catchEventSms", "organizerEventWhatsapp",
   "catchEventRcs"];
 const collections: Record<Route, string> = {
@@ -43,8 +52,8 @@ export async function readRuntimeSenderSetup(db: Firestore, tx: Transaction,
     const page = await tx.get(query.limit(pageSize + 1));
     const scanned = page.docs.slice(0, pageSize);
     for (const doc of scanned) {
-      const choice = await projectSender(db, tx, context, route, doc.id,
-        doc.data(), now);
+      const choice = asRuntimeSenderChoice(await projectSender(db, tx,
+        context, route, doc.id, doc.data(), "joiningUpdate", now));
       if (choice) choices.push(choice);
     }
     if (page.docs.length > pageSize) {
@@ -66,19 +75,31 @@ export async function readRuntimeSenderSetup(db: Firestore, tx: Transaction,
 /** Configure-time review validates current selections from any page. */
 export async function readRuntimeSenderChoice(db: Firestore, tx: Transaction,
   context: RuntimeContext,
-  selection: RuntimeConfiguration["options"]["routes"][number], now: number) {
+  selection: RuntimeConfiguration["options"]["routes"][number], now: number):
+  Promise<RuntimeSenderChoice | null> {
+  return asRuntimeSenderChoice(await readMessageSenderChoice(db, tx, context,
+    selection, "joiningUpdate", now));
+}
+
+/** Purpose-aware sender review shared by every operational message workflow. */
+export async function readMessageSenderChoice(db: Firestore, tx: Transaction,
+  context: RuntimeContext, selection: EventMessageRouteSelection,
+  purpose: MessagePurpose, now: number): Promise<MessageSenderChoice | null> {
+  if (!isMessagePurpose(purpose)) throw new Error("Invalid message purpose");
   const snap = await tx.get(db.collection(collections[selection.routeId])
     .doc(selection.senderId));
   return projectSender(db, tx, context, selection.routeId, selection.senderId,
-    snap.data(), now);
+    snap.data(), purpose, now);
 }
 
 async function projectSender(db: Firestore, tx: Transaction,
   context: RuntimeContext, routeId: Route, senderId: string,
-  value: unknown, now: number): Promise<RuntimeSenderChoice | null> {
+  value: unknown, purpose: MessagePurpose, now: number):
+  Promise<MessageSenderChoice | null> {
   if (!/^[A-Za-z0-9][A-Za-z0-9._:-]{0,159}$/.test(senderId)) return null;
   const choice = (displayName: string, displayAddress: string | null,
-    availability: Availability, evidence: unknown): RuntimeSenderChoice => ({
+    availability: MessageSenderAvailability,
+    evidence: unknown): MessageSenderChoice => ({
     routeId, senderId, displayName, displayAddress, availability,
     reviewHash: operationContentHash([context, routeId, senderId, evidence]),
   });
@@ -93,7 +114,7 @@ async function projectSender(db: Firestore, tx: Transaction,
     if (sender.senderId !== senderId) return null;
     return choice("Catch", sender.mask,
       status(sender.status === "ready", sender.activation, sender.quote, now,
-        sender.templates.some((t) => t.purpose === "joiningUpdate" &&
+        sender.templates.some((t) => t.purpose === purpose &&
           t.status === "approved")), sender);
   }
   case "catchEventRcs": {
@@ -106,7 +127,7 @@ async function projectSender(db: Firestore, tx: Transaction,
     if (sender.senderId !== senderId) return null;
     return choice(sender.displayName, null,
       status(sender.status === "ready", sender.activation, sender.quote, now,
-        sender.allowedPurposes.includes("joiningUpdate")), sender);
+        sender.allowedPurposes.includes(purpose)), sender);
   }
   case "organizerEventWhatsapp": {
     // Validate ownership before reading its private policy/template bindings.
@@ -119,7 +140,7 @@ async function projectSender(db: Firestore, tx: Transaction,
       value, policySnap.data())!;
     const policy = sender.policy;
     const templatePolicy = policy?.templates.find((t) =>
-      t.purpose === "joiningUpdate");
+      t.purpose === purpose);
     const template = templatePolicy ? (await tx.get(db
       .collection("organizerMessageTemplates")
       .doc(templatePolicy.templateDocumentId))).data() : null;
@@ -148,11 +169,19 @@ async function projectSender(db: Firestore, tx: Transaction,
 function status(active: boolean,
   activation: {approvedAt: number; validUntil: number},
   quote: {validUntil: number}, now: number,
-  hasTemplate: boolean): Availability {
+  hasTemplate: boolean): MessageSenderAvailability {
   if (!active) return "setupRequired";
   if (activation.approvedAt > now ||
       now >= Math.min(activation.validUntil, quote.validUntil)) {
     return "approvalExpired";
   }
-  return hasTemplate ? "eligible" : "joiningTemplateMissing";
+  return hasTemplate ? "eligible" : "templateUnavailable";
+}
+
+function asRuntimeSenderChoice(choice: MessageSenderChoice | null):
+  RuntimeSenderChoice | null {
+  if (!choice) return null;
+  const availability = choice.availability === "templateUnavailable" ?
+    "joiningTemplateMissing" : choice.availability;
+  return {...choice, availability};
 }

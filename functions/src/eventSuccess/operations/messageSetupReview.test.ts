@@ -12,11 +12,12 @@ type Harness = Awaited<ReturnType<typeof rcsHarness>>;
 const routes = ["catchEventSms", "catchEventRcs", "organizerEventWhatsapp"] as
   const;
 
-function selection(h: Harness, routeId: MessageSetupScope["routeId"]) {
+function selection(h: Harness, routeId: MessageSetupScope["routeId"],
+  purpose: MessageSetupScope["purpose"] = "joiningUpdate") {
   return {context: h.context, routeId, senderId: {
     catchEventSms: "sms-review", catchEventRcs: h.rcsConfig.senderId,
     organizerEventWhatsapp: h.scope.senderId,
-  }[routeId]};
+  }[routeId], purpose};
 }
 function paths(h: Harness, route: MessageSetupScope["routeId"]) {
   return {catchEventSms: h.smsBudgets, catchEventRcs: h.rcsBudgetPaths,
@@ -36,6 +37,8 @@ for (const route of routes) {
     assert.deepEqual(h.fake.entries(), before);
     assert.equal(h.requests.length, 0);
     assert.equal(result.grantsDispatchAuthority, false);
+    assert.equal(result.purpose, "joiningUpdate");
+    assert.equal(result.runtime.appliesToPurpose, true);
     assert.equal(result.runtime.status, "unconfigured");
     assert.equal(result.runtime.selected, false);
     assert.equal(result.sender?.availability, "eligible");
@@ -112,6 +115,43 @@ for (const route of routes) {
     });
 }
 
+for (const route of routes) {
+  test(route + " review checks the exact operational purpose", async () => {
+    const h = await rcsHarness(undefined, "review");
+    const input = selection(h, route, "planChanged");
+    if (route === "catchEventRcs") {
+      const sender = (await h.read(h.rcsSenderPath))!;
+      await h.write(h.rcsSenderPath,
+        {...sender, allowedPurposes: ["joiningUpdate"]});
+    }
+    const missing = await reviewEventMessageSetup(h.db, input, () => start);
+    assert.equal(missing.sender?.availability, "templateUnavailable");
+    assert.equal(missing.runtime.appliesToPurpose, false);
+    assert.equal(missing.runtime.selected, false);
+    if (route === "catchEventSms") {
+      const path = "eventAssistanceSmsSenders/sms-review";
+      const sender = (await h.read(path))!;
+      await h.write(path, {...sender, templates:
+        sender.templates.map((template: Record<string, unknown>) =>
+          ({...template, purpose: "planChanged"}))});
+    } else if (route === "catchEventRcs") {
+      const sender = (await h.read(h.rcsSenderPath))!;
+      await h.write(h.rcsSenderPath,
+        {...sender, allowedPurposes: ["planChanged"]});
+    } else {
+      const policy = (await h.read(h.policyPath))!;
+      await h.write(h.policyPath, {...policy, templates:
+        policy.templates.map((template: Record<string, unknown>) =>
+          ({...template, purpose: "planChanged"}))});
+    }
+    const eligible = await reviewEventMessageSetup(h.db, input, () => start);
+    assert.equal(eligible.sender?.availability, "eligible");
+    assert.equal(eligible.purpose, "planChanged");
+    assert.equal(eligible.runtime.appliesToPurpose, false);
+    assert.equal(eligible.runtime.selected, false);
+  });
+}
+
 test("RCS setup distinguishes changed billing currency and agent", async () => {
   const h = await rcsHarness(undefined, "review");
   const path = h.rcsBudgetPaths[0];
@@ -143,6 +183,7 @@ test("review reports saved selection separately from source and pause status",
         maxEvaluations: 100}}});
     const current = await reviewEventMessageSetup(h.db, input, () => start);
     assert.equal(current.runtime.selected, true);
+    assert.equal(current.runtime.appliesToPurpose, true);
     assert.equal(current.runtime.status, "configured");
     await h.write("events/" + h.context.eventId, {...h.progress.event,
       startTime: {_seconds: start / 1000, _nanoseconds: 0}});
@@ -156,6 +197,10 @@ test("review reports saved selection separately from source and pause status",
     assert.equal(paused.runtime.status, "paused");
     assert.equal(paused.runtime.selected, true);
     assert.equal(paused.grantsDispatchAuthority, false);
+    const otherPurpose = await reviewEventMessageSetup(h.db,
+      {...input, purpose: "planChanged"}, () => start);
+    assert.equal(otherPurpose.runtime.appliesToPurpose, false);
+    assert.equal(otherPurpose.runtime.selected, false);
   });
 
 test("foreign or invalid WhatsApp provisioning cannot reveal its budgets",
