@@ -209,6 +209,8 @@ import 'package:widgetbook_workspace/hosts/host_form_workspace_use_cases.dart'
     as _widgetbook_workspace_hosts_host_form_workspace_use_cases;
 import 'package:widgetbook_workspace/hosts/host_inbox_use_cases.dart'
     as _widgetbook_workspace_hosts_host_inbox_use_cases;
+import 'package:widgetbook_workspace/hosts/host_roster_import_use_cases.dart'
+    as _widgetbook_workspace_hosts_host_roster_import_use_cases;
 import 'package:widgetbook_workspace/hosts/host_saved_audience_use_cases.dart'
     as _widgetbook_workspace_hosts_host_saved_audience_use_cases;
 import 'package:widgetbook_workspace/hosts/host_send_intent_use_cases.dart'
@@ -8002,6 +8004,33 @@ final directories = <_widgetbook.WidgetbookNode>[
                     name: 'Event-scoped states',
                     builder: _widgetbook_workspace_hosts_host_inbox_use_cases
                         .hostInboxEventScopedStates,
+                  ),
+                ],
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookFolder(
+            name: 'Roster',
+            children: [
+              _widgetbook.WidgetbookComponent(
+                name: 'HostRosterImportSheet',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Ready and missing name mapping',
+                    builder:
+                        _widgetbook_workspace_hosts_host_roster_import_use_cases
+                            .hostRosterImportSheetStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostRosterMappingField',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Mapped and excluded columns',
+                    builder:
+                        _widgetbook_workspace_hosts_host_roster_import_use_cases
+                            .hostRosterMappingFieldStates,
                   ),
                 ],
               ),
