@@ -22,10 +22,6 @@
       "maxLines": 1089
     },
     {
-      "path": "lib/events/data/event_repository.dart",
-      "maxLines": 948
-    },
-    {
       "path": "lib/events/presentation/event_detail_screen.dart",
       "maxLines": 902
     },
