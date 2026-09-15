@@ -205,6 +205,8 @@ import 'package:widgetbook_workspace/geometry/specimens/responsive.dart'
     as _widgetbook_workspace_geometry_specimens_responsive;
 import 'package:widgetbook_workspace/geometry/specimens/top_bars.dart'
     as _widgetbook_workspace_geometry_specimens_top_bars;
+import 'package:widgetbook_workspace/hosts/host_booking_provider_use_cases.dart'
+    as _widgetbook_workspace_hosts_host_booking_provider_use_cases;
 import 'package:widgetbook_workspace/hosts/host_form_workspace_use_cases.dart'
     as _widgetbook_workspace_hosts_host_form_workspace_use_cases;
 import 'package:widgetbook_workspace/hosts/host_inbox_use_cases.dart'
@@ -8012,6 +8014,39 @@ final directories = <_widgetbook.WidgetbookNode>[
           _widgetbook.WidgetbookFolder(
             name: 'Roster',
             children: [
+              _widgetbook.WidgetbookComponent(
+                name: 'HostBookingProviderSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Connection lifecycle states',
+                    builder:
+                        _widgetbook_workspace_hosts_host_booking_provider_use_cases
+                            .hostBookingProviderSectionStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostLumaConnectionSheet',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Credential entry and event choice',
+                    builder:
+                        _widgetbook_workspace_hosts_host_booking_provider_use_cases
+                            .hostLumaConnectionSheetStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostLumaEventChoiceSheet',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Available and empty event lists',
+                    builder:
+                        _widgetbook_workspace_hosts_host_booking_provider_use_cases
+                            .hostLumaEventChoiceSheetStates,
+                  ),
+                ],
+              ),
               _widgetbook.WidgetbookComponent(
                 name: 'HostRosterImportSheet',
                 useCases: [
