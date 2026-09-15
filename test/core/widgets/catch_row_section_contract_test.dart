@@ -3,6 +3,7 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -164,6 +165,50 @@ void main() {
       tester.widget<ClipRRect>(clip).borderRadius,
       isNot(BorderRadius.zero),
     );
+  });
+
+  testWidgets('Field keeps secondary targets separate and disables both', (
+    tester,
+  ) async {
+    var opened = 0;
+    var details = 0;
+    Widget screen({bool disabled = false}) => host(
+      CatchSection.rows(
+        entries: [
+          CatchField.navigate(
+            content: CatchRecordLayout(
+              title: 'One event',
+              icon: CatchIcons.eventOutlined,
+            ),
+            onActivate: () => opened++,
+            states: {if (disabled) WidgetState.disabled},
+            secondaryAction: CatchFieldSecondaryAction.command(
+              label: 'Event details',
+              icon: CatchIcons.infoOutlineRounded,
+              onActivate: () => details++,
+            ),
+          ),
+        ],
+      ),
+    );
+    await tester.pumpWidget(screen());
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip('Event details'));
+    await tester.pumpAndSettle();
+    expect(details, 1);
+    expect(opened, 0);
+    final bounds = tester.getRect(find.byType(CatchField));
+    await tester.tapAt(Offset(1, bounds.center.dy));
+    await tester.pumpAndSettle();
+    expect(opened, 1);
+    await tester.pumpWidget(screen(disabled: true));
+    await tester.pumpAndSettle();
+    await tester.tapAt(Offset(1, bounds.center.dy));
+    await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+    await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+    await tester.pumpAndSettle();
+    expect(opened, 1);
+    expect(details, 1);
   });
 
   testWidgets('sliver rows build only the visible collection window', (

@@ -208,7 +208,7 @@ class _HostClubsScaffoldState extends ConsumerState<HostClubsScaffold>
         controller: _tabController,
         pages: [
           CatchRootScreenPageSpec.scroll(
-            page: CatchRootScreenPageScrollView.standard(
+            page: CatchRootScreenPageScrollView.sections(
               scrollStateController: _pageScrollControllers[HostClubTab.edit],
               scrollKey: PageStorageKey(
                 'host-club-${selectedClub.id}-edit-scroll',

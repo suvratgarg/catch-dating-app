@@ -194,14 +194,6 @@ Widget hostCustomerDirectoryControlsStates(BuildContext context) =>
     hostCustomersStates(context);
 
 @widgetbook.UseCase(
-  name: 'Row states',
-  type: HostCustomerRow,
-  path: '[P1 product surfaces]/Host operations/Customers',
-)
-Widget hostCustomerDirectoryRowStates(BuildContext context) =>
-    hostCustomersStates(context);
-
-@widgetbook.UseCase(
   name: 'Full-page add state',
   type: HostAddCustomerScreen,
   path: '[P1 product surfaces]/Host operations/Customers',

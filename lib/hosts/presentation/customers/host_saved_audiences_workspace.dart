@@ -19,7 +19,7 @@ class HostSavedAudiencesWorkspace extends ConsumerWidget
 
   @override
   Widget build(BuildContext context, WidgetRef ref) =>
-      CatchRootScreenPageScrollView.standard(
+      CatchRootScreenPageScrollView.fullBleed(
         scrollKey: const PageStorageKey<String>('host-customers-audiences'),
         onRefresh: () async {
           ref.invalidate(hostSavedAudiencesProvider(organizerId));
@@ -68,45 +68,49 @@ class _HostSavedAudiencesDirectoryState
   @override
   Widget build(BuildContext context) {
     final audiences = ref.watch(hostAllSavedAudiencesProvider(organizerId));
-    return SliverList.list(
-      children: [
-        Wrap(
-          spacing: CatchSpacing.s4,
-          runSpacing: CatchSpacing.s2,
-          children: [
-            CatchButton.command(
-              label: _byName
-                  ? context.l10n.hostCustomersSortName
-                  : context.l10n.hostAudienceRecentlyChecked,
-              leading: Icon(CatchIcons.sort),
-              onPressed: () => setState(() => _byName = !_byName),
+    return SliverMainAxisGroup(
+      slivers: [
+        CatchPageBody.sliver(
+          child: SliverToBoxAdapter(
+            child: Wrap(
+              spacing: CatchSpacing.s4,
+              runSpacing: CatchSpacing.s2,
+              children: [
+                CatchButton.command(
+                  label: _byName
+                      ? context.l10n.hostCustomersSortName
+                      : context.l10n.hostAudienceRecentlyChecked,
+                  leading: Icon(CatchIcons.sort),
+                  onPressed: () => setState(() => _byName = !_byName),
+                ),
+                CatchButton.command(
+                  label: switch (_membership) {
+                    _HostSavedAudienceMembership.automatic =>
+                      context.l10n.hostAudienceAutomaticGroup,
+                    _HostSavedAudienceMembership.manual =>
+                      context.l10n.hostAudienceManualGroup,
+                    _HostSavedAudienceMembership.all =>
+                      context.l10n.hostAudienceAllGroups,
+                  },
+                  leading: Icon(CatchIcons.tune),
+                  onPressed: _chooseMembership,
+                ),
+              ],
             ),
-            CatchButton.command(
-              label: switch (_membership) {
-                _HostSavedAudienceMembership.automatic =>
-                  context.l10n.hostAudienceAutomaticGroup,
-                _HostSavedAudienceMembership.manual =>
-                  context.l10n.hostAudienceManualGroup,
-                _HostSavedAudienceMembership.all =>
-                  context.l10n.hostAudienceAllGroups,
-              },
-              leading: Icon(CatchIcons.tune),
-              onPressed: _chooseMembership,
-            ),
-          ],
+          ),
         ),
-        gapH16,
-        CatchAsyncBoundary<HostSavedAudiencePage>(
+        CatchAsyncBoundary<HostSavedAudiencePage>.sliver(
           value: audiences,
           onRetry: () =>
               ref.invalidate(hostAllSavedAudiencesProvider(organizerId)),
           initialLoadTimeout: null,
-          loadingBuilder: (_) => const CatchSkeleton.rows(count: 4),
+          loadingBuilder: (_) =>
+              const SliverToBoxAdapter(child: CatchSkeleton.rows(count: 4)),
           errorBuilder: (_, error, _, onBoundaryRetry) =>
-              CatchLocalizedErrorState(
+              CatchLocalizedSliverErrorState(
                 error,
                 context: AppErrorContext.customers,
-                mode: CatchErrorStateMode.compact,
+                fillRemaining: false,
                 onRetry: onBoundaryRetry,
               ),
           builder: (context, page) {
@@ -129,70 +133,88 @@ class _HostSavedAudiencesDirectoryState
                             a.lastPreviewAt ?? DateTime(0),
                           ),
                   );
-            return CatchSection.divided(
-              key: const ValueKey('host-saved-audiences-directory'),
-              first: true,
-              title: context.l10n.hostSavedAudiencesManage,
-              count: visible.length,
-              trailing: CatchButton.text(
-                key: const ValueKey('host-saved-audience-create'),
-                label: context.l10n.hostSavedAudienceNew,
-                onPressed: onCreate,
-              ),
-              children: visible.isEmpty
-                  ? [
-                      CatchEmptyState(
-                        icon: CatchIcons.groupsOutlined,
-                        title:
-                            query == null &&
-                                _membership == _HostSavedAudienceMembership.all
-                            ? context.l10n.hostSavedAudiencesEmptyTitle
-                            : context.l10n.hostSavedAudiencesSearchEmptyTitle,
-                        message:
-                            query == null &&
-                                _membership == _HostSavedAudienceMembership.all
-                            ? context.l10n.hostSavedAudiencesEmptyBody
-                            : context.l10n.hostSavedAudiencesSearchEmptyBody,
-                        variant: CatchEmptyStateVariant.inline,
-                      ),
-                    ]
-                  : [
-                      for (final audience in visible)
-                        CatchRecordRow(
-                          key: ValueKey(
+            return SliverMainAxisGroup(
+              slivers: [
+                CatchSection.sliverRows(
+                  key: const ValueKey('host-saved-audiences-directory'),
+                  title: context.l10n.hostSavedAudiencesManage,
+                  count: visible.length,
+                  action: CatchButton.text(
+                    key: const ValueKey('host-saved-audience-create'),
+                    label: context.l10n.hostSavedAudienceNew,
+                    onPressed: onCreate,
+                  ),
+                  itemCount: visible.length,
+                  findChildIndexCallback: (key) {
+                    final index = visible.indexWhere(
+                      (audience) =>
+                          key ==
+                          ValueKey(
                             'host-saved-audience-${audience.audienceId}',
                           ),
-                          title: audience.name,
-                          facts: [
-                            _savedAudienceDirectoryBody(context, audience),
-                          ],
-                          icon: CatchIcons.groupsOutlined,
-                          metadata: audience.definition.isStatic
-                              ? context.l10n.hostAudienceManualGroup
-                              : context.l10n.hostAudienceAutomaticGroup,
-                          onTap: () => onOpen(audience),
-                        ),
-                    ],
+                    );
+                    return index < 0 ? null : index;
+                  },
+                  itemBuilder: (context, index) {
+                    final audience = visible[index];
+                    return CatchField.navigate(
+                      key: ValueKey(
+                        'host-saved-audience-${audience.audienceId}',
+                      ),
+                      content: CatchRecordLayout(
+                        title: audience.name,
+                        facts: [_savedAudienceDirectoryBody(context, audience)],
+                        icon: CatchIcons.groupsOutlined,
+                        metadata: audience.definition.isStatic
+                            ? context.l10n.hostAudienceManualGroup
+                            : context.l10n.hostAudienceAutomaticGroup,
+                      ),
+                      onActivate: () => onOpen(audience),
+                    );
+                  },
+                ),
+                if (visible.isEmpty)
+                  SliverToBoxAdapter(
+                    child: CatchEmptyState(
+                      icon: CatchIcons.groupsOutlined,
+                      title:
+                          query == null &&
+                              _membership == _HostSavedAudienceMembership.all
+                          ? context.l10n.hostSavedAudiencesEmptyTitle
+                          : context.l10n.hostSavedAudiencesSearchEmptyTitle,
+                      message:
+                          query == null &&
+                              _membership == _HostSavedAudienceMembership.all
+                          ? context.l10n.hostSavedAudiencesEmptyBody
+                          : context.l10n.hostSavedAudiencesSearchEmptyBody,
+                      variant: CatchEmptyStateVariant.inline,
+                    ),
+                  ),
+              ],
             );
           },
         ),
-        gapH24,
-        Text(
-          context.l10n.hostAudienceGroupMembershipHelp,
-          style: CatchTextStyles.supporting(context),
-        ),
-        gapH24,
-        CatchSection.fieldRows(
-          children: [
-            CatchField.nav(
-              copy: catchFieldCopy(context.l10n),
-              title: context.l10n.hostFormAutomationsTitle,
-              onTap: () => context.pushNamed(
-                Routes.hostAudienceAutomationsScreen.name,
-                queryParameters: {'organizerId': organizerId},
-              ),
+        CatchPageBody.sliver(
+          child: SliverToBoxAdapter(
+            child: Text(
+              context.l10n.hostAudienceGroupMembershipHelp,
+              style: CatchTextStyles.supporting(context),
             ),
-          ],
+          ),
+        ),
+        SliverToBoxAdapter(
+          child: CatchSection.rows(
+            entries: [
+              CatchField.nav(
+                copy: catchFieldCopy(context.l10n),
+                title: context.l10n.hostFormAutomationsTitle,
+                onTap: () => context.pushNamed(
+                  Routes.hostAudienceAutomationsScreen.name,
+                  queryParameters: {'organizerId': organizerId},
+                ),
+              ),
+            ],
+          ),
         ),
       ],
     );

@@ -113,32 +113,56 @@ final class CatchPersonLayout extends CatchFieldLayout {
   );
 
   @override
-  Widget _body(BuildContext context) => Column(
-    mainAxisSize: MainAxisSize.min,
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Text(name, style: CatchTextStyles.name(context)),
-      if (supportingText case final text? when text.isNotEmpty) ...[
-        const SizedBox(height: CatchRecordTokens.titleGap),
-        Text(text, style: CatchTextStyles.supporting(context)),
+  Widget _body(BuildContext context) {
+    final stacked =
+        MediaQuery.textScalerOf(context).scale(1) >=
+        CatchRecordTokens.largeTextBreakpoint;
+    Widget status() => Wrap(
+      spacing: CatchSpacing.s2,
+      runSpacing: CatchSpacing.s2,
+      children: [
+        for (final badge in badges)
+          CatchBadge.status(label: badge.label, tone: badge.tone),
       ],
-      if (this.context case final text? when text.isNotEmpty) ...[
-        const SizedBox(height: CatchRecordTokens.titleGap),
-        Text(text, style: CatchTextStyles.recordContext(context)),
-      ],
-      if (badges.isNotEmpty) ...[
-        const SizedBox(height: CatchRecordTokens.bodyGap),
-        Wrap(
-          spacing: CatchSpacing.s2,
-          runSpacing: CatchSpacing.s2,
-          children: [
-            for (final badge in badges)
-              CatchBadge.status(label: badge.label, tone: badge.tone),
-          ],
+    );
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        LayoutBuilder(
+          builder: (context, constraints) => Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(child: Text(name, style: CatchTextStyles.name(context))),
+              if (badges.isNotEmpty && !stacked) ...[
+                const SizedBox(width: CatchSpacing.s2),
+                ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxWidth:
+                        constraints.maxWidth *
+                        CatchRecordTokens.statusMaxWidthFraction,
+                  ),
+                  child: status(),
+                ),
+              ],
+            ],
+          ),
         ),
+        if (supportingText case final text? when text.isNotEmpty) ...[
+          const SizedBox(height: CatchRecordTokens.titleGap),
+          Text(text, style: CatchTextStyles.supporting(context)),
+        ],
+        if (this.context case final text? when text.isNotEmpty) ...[
+          const SizedBox(height: CatchRecordTokens.titleGap),
+          Text(text, style: CatchTextStyles.recordContext(context)),
+        ],
+        if (badges.isNotEmpty && stacked) ...[
+          const SizedBox(height: CatchRecordTokens.bodyGap),
+          status(),
+        ],
       ],
-    ],
-  );
+    );
+  }
 }
 
 /// Conversation anatomy is explicit even before its first message.

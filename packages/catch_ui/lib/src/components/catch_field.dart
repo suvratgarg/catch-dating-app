@@ -1,3 +1,6 @@
+// Public constructor names deliberately differ from private storage.
+// ignore_for_file: prefer_initializing_formals
+
 import 'dart:async';
 
 import 'package:catch_tokens/catch_tokens.dart';
@@ -16,6 +19,7 @@ part 'catch_field_input.dart';
 part 'catch_field_layout.dart';
 part 'catch_field_properties.dart';
 part 'catch_field_row_modes.dart';
+part 'catch_field_secondary_action.dart';
 part 'catch_field_state.dart';
 
 /// Design-system `Field`: the unified field primitive for row, text-entry,
@@ -84,6 +88,7 @@ final class CatchField<T> extends StatefulWidget
          placeholder: placeholder,
          valid: valid,
          layout: content,
+         secondaryAction: null,
          contentRow: false,
          inlineMetadata: null,
          showChevron: null,
@@ -157,6 +162,7 @@ final class CatchField<T> extends StatefulWidget
          valid: valid,
          onTap: onTap,
          layout: null,
+         secondaryAction: null,
          contentRow: true,
          inlineMetadata: null,
          placeholder: null,
@@ -171,6 +177,7 @@ final class CatchField<T> extends StatefulWidget
     super.key,
     required CatchFieldLayout content,
     required VoidCallback onActivate,
+    CatchFieldSecondaryAction? secondaryAction,
     this.states = const {},
   }) : _copy = null,
        title = null,
@@ -190,6 +197,7 @@ final class CatchField<T> extends StatefulWidget
        status = CatchFieldStatus.idle,
        _config = (
          layout: content,
+         secondaryAction: secondaryAction,
          titleMaxLines: 1,
          bodyMaxLines: 2,
          valueText: null,
@@ -262,6 +270,7 @@ final class CatchField<T> extends StatefulWidget
          valid: valid,
          onTap: onTap,
          layout: null,
+         secondaryAction: null,
          contentRow: false,
          inlineMetadata: null,
          labelMode: CatchFieldLabelTextMode.visible,
@@ -303,6 +312,7 @@ final class CatchField<T> extends StatefulWidget
          titleMaxLines: 1,
          bodyMaxLines: 1,
          layout: null,
+         secondaryAction: null,
          contentRow: false,
          inlineMetadata: metadata,
          valueText: null,
@@ -371,6 +381,7 @@ final class CatchField<T> extends StatefulWidget
          valid: valid,
          onTap: onTap,
          layout: null,
+         secondaryAction: null,
          contentRow: false,
          inlineMetadata: null,
          showChevron: null,
@@ -951,6 +962,7 @@ final class CatchField<T> extends StatefulWidget
          titleMaxLines: 1,
          bodyMaxLines: 2,
          layout: null,
+         secondaryAction: null,
          contentRow: false,
          inlineMetadata: null,
          valueText: null,
@@ -962,7 +974,7 @@ final class CatchField<T> extends StatefulWidget
          errorText: null,
          valid: false,
          add: true,
-         navigation: true,
+         navigation: false,
        );
 
   const CatchField._select({
@@ -1144,7 +1156,7 @@ final class CatchField<T> extends StatefulWidget
   double get fieldDividerLeadingInset =>
       _rowLayout?._leadingInset ??
       (add
-          ? 0
+          ? CatchFieldRow.textLaneInset
           : _hasRowLeading
           ? (leadingExtent ?? CatchFieldTokens.leadingIconExtent) +
                 CatchFieldTokens.leadingGap

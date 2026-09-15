@@ -132,31 +132,17 @@ class _CatchFieldState extends State<CatchField>
       case _EditConfig _ || _RowConfig _ || _ToggleConfig _ || _ControlConfig _:
         final t = CatchTokens.of(context);
         final Widget configuredRow;
-        if (widget.add) {
-          configuredRow = CatchFieldRow.add(
-            onTap: widget.onTap,
-            leading: Icon(
-              widget.icon ?? CatchIcons.add,
-              size: CatchIcon.md,
-              color: t.primary,
-            ),
-            body: Text(
-              _title ?? '',
-              style: CatchTextStyles.fieldRowValue(
-                context,
-                color: _toneColor(t, primaryFallback: t.primary),
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          );
-        } else {
+        {
           final canFocusTextEntry =
               _isEdit &&
               !widget._explicitSaveInput &&
               widget.enabled &&
               (widget.inputMode.canRequestFocus || widget.onTap != null);
           final canToggleRow =
-              _isToggle && widget.onToggle != null && !_isSaving;
+              _isToggle &&
+              widget.enabled &&
+              widget.onToggle != null &&
+              !_isSaving;
           final canExpand =
               _hasControl &&
               widget.enabled &&
@@ -186,7 +172,7 @@ class _CatchFieldState extends State<CatchField>
             };
           } else if (canToggleRow) {
             rowAction = () => widget.onToggle!(!widget.toggled);
-          } else if (widget.onTap != null && !_isEdit) {
+          } else if (widget.enabled && widget.onTap != null && !_isEdit) {
             rowAction = widget.onTap;
           } else {
             rowAction = null;
@@ -200,17 +186,19 @@ class _CatchFieldState extends State<CatchField>
               (widget._contentRow &&
                   widget.emphasis == CatchFieldEmphasis.title);
           final leadingTopPadding =
-              widget._rowLayout != null || centerVertically
+              widget._rowLayout != null || widget.add || centerVertically
               ? 0.0
               : widget._contentRow
               ? CatchSpacing.micro2
               : _rowTrailingTopPadding;
           final Widget? rawTrailingSlot;
-          if (_isToggle) {
+          if (widget._rowConfig?.secondaryAction case final secondary?) {
+            rawTrailingSlot = secondary._build(context);
+          } else if (_isToggle) {
             rawTrailingSlot = CatchFieldTrailingRow.toggle(
               copy: widget.copy,
               value: widget.toggled,
-              onChanged: _isSaving ? null : widget.onToggle,
+              onChanged: _isSaving || !widget.enabled ? null : widget.onToggle,
               contract: widget.contract,
               contractExemption: widget.toggleContractExemption,
               semanticLabel: _title,
@@ -339,7 +327,13 @@ class _CatchFieldState extends State<CatchField>
                   ),
                 );
           final Widget? leadingSlot;
-          if (widget._rowLayout case final layout?) {
+          if (widget.add) {
+            leadingSlot = Icon(
+              widget.icon ?? CatchIcons.add,
+              size: CatchFieldRow.leadingSlotIconSize,
+              color: t.primary,
+            );
+          } else if (widget._rowLayout case final layout?) {
             leadingSlot = ExcludeSemantics(child: layout._leading(context));
           } else if (widget._hasRowLeading) {
             final extent = widget.leadingExtent;
@@ -379,6 +373,15 @@ class _CatchFieldState extends State<CatchField>
           final inlineMetadata = widget.inlineMetadata?.trim();
           if (widget._rowLayout case final layout?) {
             rowBody = layout._body(context);
+          } else if (widget.add) {
+            rowBody = Text(
+              _title ?? '',
+              style: CatchTextStyles.fieldRowValue(
+                context,
+                color: _toneColor(t, primaryFallback: t.primary),
+                fontWeight: FontWeight.w600,
+              ),
+            );
           } else if (_inlineControlAddAtRest) {
             final addText = _emptyEditableValueText ?? _title ?? '';
             rowBody = Semantics(
@@ -780,10 +783,12 @@ class _CatchFieldState extends State<CatchField>
           child: field,
         );
     if (widget.enabled) return listeningField;
-    return IgnorePointer(
-      child: Opacity(
-        opacity: CatchFieldTokens.disabledOpacity,
-        child: listeningField,
+    return ExcludeFocus(
+      child: IgnorePointer(
+        child: Opacity(
+          opacity: CatchFieldTokens.disabledOpacity,
+          child: listeningField,
+        ),
       ),
     );
   }

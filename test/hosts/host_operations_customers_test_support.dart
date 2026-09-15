@@ -2,8 +2,9 @@ part of 'host_operations_screen_test.dart';
 
 HostCustomerDirectoryContact _customerDirectoryContact({
   bool hasAmbiguousIdentity = false,
+  String contactId = 'contact-1',
 }) => HostCustomerDirectoryContact(
-  contactId: 'contact-1',
+  contactId: contactId,
   displayName: 'Ananya Rao',
   attendedEventCount: 8,
   lastAttendedAt: null,

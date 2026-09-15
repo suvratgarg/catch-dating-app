@@ -8,7 +8,6 @@ import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_sliver_error_state.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
@@ -255,23 +254,21 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
             ),
           ),
           CatchRootScreenPageSpec.scroll(
-            page: CatchRootScreenPageScrollView.standard(
+            page: CatchRootScreenPageScrollView.fullBleed(
               scrollKey: const PageStorageKey<String>('host-forms-responses'),
               children: [
-                SliverToBoxAdapter(
-                  child: HostFormResponsesPanel(
-                    organizerId: selectedClub.id,
-                    query: _responseQuery,
-                    formId: _responseFormId,
-                    onFormChanged: (formId) {
-                      setState(() => _responseFormId = formId);
-                      _syncRoute();
-                    },
-                    onClearFormFilter: () {
-                      setState(() => _responseFormId = null);
-                      _syncRoute();
-                    },
-                  ),
+                HostFormResponsesPanel(
+                  organizerId: selectedClub.id,
+                  query: _responseQuery,
+                  formId: _responseFormId,
+                  onFormChanged: (formId) {
+                    setState(() => _responseFormId = formId);
+                    _syncRoute();
+                  },
+                  onClearFormFilter: () {
+                    setState(() => _responseFormId = null);
+                    _syncRoute();
+                  },
                 ),
               ],
             ),
@@ -470,140 +467,144 @@ class _HostFormsLibraryPage extends ConsumerWidget
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return CatchRootScreenPageScrollView.standard(
+    return CatchRootScreenPageScrollView.fullBleed(
       scrollKey: const PageStorageKey<String>('host-forms-library'),
-      maxContentExtent: CatchLayout.hostFormsDirectoryPageMaxExtent,
       children: [
-        SliverList.list(
-          children: [
-            CatchChoiceInput<HostFormLifecycleStatus?>.segmented(
-              options: [
-                CatchOption(
-                  value: null,
-                  label: context.l10n.hostFormsFilterAll,
-                ),
-                for (final candidate in [
-                  HostFormLifecycleStatus.published,
-                  HostFormLifecycleStatus.draft,
-                  if (status == HostFormLifecycleStatus.paused ||
-                      status == HostFormLifecycleStatus.archived)
-                    status!,
-                ])
+        CatchPageBody.sliver(
+          child: SliverList.list(
+            children: [
+              CatchChoiceInput<HostFormLifecycleStatus?>.segmented(
+                options: [
                   CatchOption(
-                    value: candidate,
-                    label: hostFormStatusLabel(context, candidate),
+                    value: null,
+                    label: context.l10n.hostFormsFilterAll,
                   ),
-              ],
-              selected: status,
-              variant: CatchChoiceInputVariant.summary,
-              contractExemption:
-                  'The lifecycle rail maps All to no status and every other '
-                  'option to one item in the statuses array contract.',
-              onChanged: onStatusChanged,
-              scrollable: true,
-              showDivider: false,
-            ),
-            gapH16,
-            Wrap(
-              alignment: WrapAlignment.spaceBetween,
-              spacing: CatchSpacing.s4,
-              children: [
-                CatchButton.command(
-                  label: purpose == null
-                      ? context.l10n.hostAudienceAllPurposes
-                      : hostFormPurposeLabel(context, purpose!),
-                  leading: Icon(CatchIcons.descriptionOutlined),
-                  onPressed: () => _selectPurpose(context),
-                ),
-                CatchButton.command(
-                  label: context.l10n.hostCustomersFilters,
-                  leading: Icon(CatchIcons.tune),
-                  onPressed: () => _selectStatus(context),
-                ),
-              ],
-            ),
-            gapH8,
-            CatchAsyncBoundary<HostFormsDirectoryState>(
-              value: directory,
-              onRetry: () =>
-                  ref.invalidate(hostFormsDirectoryControllerProvider(request)),
-              initialLoadTimeout: null,
-              loadingBuilder: (_) => const CatchSkeleton.rows(count: 6),
-              errorBuilder: (_, error, _, onBoundaryRetry) =>
-                  CatchLocalizedErrorState(
-                    error,
-                    context: AppErrorContext.forms,
-                    mode: CatchErrorStateMode.compact,
-                    onRetry: onBoundaryRetry,
-                  ),
-              builder: (context, state) {
-                if (state.forms.isEmpty) {
-                  final unfiltered =
-                      query == null && status == null && purpose == null;
-                  return CatchEmptyState(
-                    icon: CatchIcons.descriptionOutlined,
-                    title: unfiltered
-                        ? context.l10n.hostFormsEmptyTitle
-                        : context.l10n.hostFormsNoMatchesTitle,
-                    message: unfiltered
-                        ? context.l10n.hostFormsEmptyBody
-                        : context.l10n.hostFormsNoMatchesBody,
-                    actions: [
-                      ?unfiltered
-                          ? CatchButton(
-                              label: context.l10n.hostFormsCreate,
-                              size: CatchButtonSize.sm,
-                              onPressed: onCreate,
-                            )
-                          : null,
-                    ],
-                  );
-                }
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    CatchSection.divided(
-                      first: true,
-                      children: [
-                        for (final form in state.forms)
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Expanded(
-                                child: CatchRecordRow(
-                                  key: ValueKey('host-form-${form.formId}'),
-                                  title: form.title,
-                                  icon: CatchIcons.descriptionOutlined,
-                                  metadata:
-                                      '${hostFormPurposeLabel(context, form.purpose)} · ${form.lastResponseAt == null ? context.l10n.hostAudienceFormEdited(time: AppTimeFormatters.compactRelativeTime(form.updatedAt)) : context.l10n.hostAudienceFormLastResponse(time: AppTimeFormatters.compactRelativeTime(form.lastResponseAt!))}',
-                                  facts: [
-                                    context.l10n.hostAudienceFormRecordStatus(
-                                      status: hostFormStatusLabel(
-                                        context,
-                                        form.status,
-                                      ),
-                                      count: form.submittedResponseCount,
-                                    ),
-                                  ],
-                                  onTap: () => onOpenForm(form),
-                                ),
-                              ),
-                              CatchActionMenu<_HostFormRowAction>(
-                                tooltip: context.l10n.hostFormsActions,
-                                items: _hostFormRowActions(context, form),
-                                onSelected: (action) =>
-                                    onRowAction(action, form),
-                              ),
-                            ],
-                          ),
-                      ],
+                  for (final candidate in [
+                    HostFormLifecycleStatus.published,
+                    HostFormLifecycleStatus.draft,
+                    if (status == HostFormLifecycleStatus.paused ||
+                        status == HostFormLifecycleStatus.archived)
+                      status!,
+                  ])
+                    CatchOption(
+                      value: candidate,
+                      label: hostFormStatusLabel(context, candidate),
                     ),
-                    if (state.canLoadMore) ...[
-                      gapH16,
-                      CatchButton(
+                ],
+                selected: status,
+                variant: CatchChoiceInputVariant.summary,
+                contractExemption:
+                    'The lifecycle rail maps All to no status and every other '
+                    'option to one item in the statuses array contract.',
+                onChanged: onStatusChanged,
+                scrollable: true,
+                showDivider: false,
+              ),
+              gapH16,
+              Wrap(
+                alignment: WrapAlignment.spaceBetween,
+                spacing: CatchSpacing.s4,
+                children: [
+                  CatchButton.command(
+                    label: purpose == null
+                        ? context.l10n.hostAudienceAllPurposes
+                        : hostFormPurposeLabel(context, purpose!),
+                    leading: Icon(CatchIcons.descriptionOutlined),
+                    onPressed: () => _selectPurpose(context),
+                  ),
+                  CatchButton.command(
+                    label: context.l10n.hostCustomersFilters,
+                    leading: Icon(CatchIcons.tune),
+                    onPressed: () => _selectStatus(context),
+                  ),
+                ],
+              ),
+              gapH8,
+            ],
+          ),
+        ),
+        CatchAsyncBoundary<HostFormsDirectoryState>.sliver(
+          value: directory,
+          onRetry: () =>
+              ref.invalidate(hostFormsDirectoryControllerProvider(request)),
+          initialLoadTimeout: null,
+          loadingBuilder: (_) =>
+              const SliverToBoxAdapter(child: CatchSkeleton.rows(count: 6)),
+          errorBuilder: (_, error, _, onBoundaryRetry) =>
+              CatchLocalizedSliverErrorState(
+                error,
+                context: AppErrorContext.forms,
+                fillRemaining: false,
+                onRetry: onBoundaryRetry,
+              ),
+          builder: (context, state) {
+            if (state.forms.isEmpty) {
+              final unfiltered =
+                  query == null && status == null && purpose == null;
+              return SliverToBoxAdapter(
+                child: CatchEmptyState(
+                  icon: CatchIcons.descriptionOutlined,
+                  title: unfiltered
+                      ? context.l10n.hostFormsEmptyTitle
+                      : context.l10n.hostFormsNoMatchesTitle,
+                  message: unfiltered
+                      ? context.l10n.hostFormsEmptyBody
+                      : context.l10n.hostFormsNoMatchesBody,
+                  actions: [
+                    ?unfiltered
+                        ? CatchButton(
+                            label: context.l10n.hostFormsCreate,
+                            size: CatchButtonSize.sm,
+                            onPressed: onCreate,
+                          )
+                        : null,
+                  ],
+                ),
+              );
+            }
+            return SliverMainAxisGroup(
+              slivers: [
+                CatchSection.sliverRows(
+                  itemCount: state.forms.length,
+                  findChildIndexCallback: (key) {
+                    final index = state.forms.indexWhere(
+                      (form) => key == ValueKey('host-form-${form.formId}'),
+                    );
+                    return index < 0 ? null : index;
+                  },
+                  itemBuilder: (context, index) {
+                    final form = state.forms[index];
+                    return CatchField.navigate(
+                      key: ValueKey('host-form-${form.formId}'),
+                      content: CatchRecordLayout(
+                        title: form.title,
+                        icon: CatchIcons.descriptionOutlined,
+                        metadata:
+                            '${hostFormPurposeLabel(context, form.purpose)} · ${form.lastResponseAt == null ? context.l10n.hostAudienceFormEdited(time: AppTimeFormatters.compactRelativeTime(form.updatedAt)) : context.l10n.hostAudienceFormLastResponse(time: AppTimeFormatters.compactRelativeTime(form.lastResponseAt!))}',
+                        facts: [
+                          context.l10n.hostAudienceFormRecordStatus(
+                            status: hostFormStatusLabel(context, form.status),
+                            count: form.submittedResponseCount,
+                          ),
+                        ],
+                      ),
+                      onActivate: () => onOpenForm(form),
+                      secondaryAction:
+                          CatchFieldSecondaryAction.menu<_HostFormRowAction>(
+                            label: context.l10n.hostFormsActions,
+                            items: _hostFormRowActions(context, form),
+                            onSelected: (action) => onRowAction(action, form),
+                          ),
+                    );
+                  },
+                ),
+                if (state.canLoadMore)
+                  CatchPageBody.sliver(
+                    child: SliverToBoxAdapter(
+                      child: CatchButton(
                         label: context.l10n.hostFormsLoadMore,
                         variant: CatchButtonVariant.secondary,
-                        status: (state.loadingMore)
+                        status: state.loadingMore
                             ? CatchButtonStatus.loading
                             : CatchButtonStatus.idle,
                         fullWidth: true,
@@ -617,27 +618,24 @@ class _HostFormsLibraryPage extends ConsumerWidget
                                   )
                                   .loadMore(),
                       ),
-                    ],
-                    if (state.loadMoreError case final error?) ...[
-                      gapH12,
-                      CatchLocalizedErrorState(
-                        error,
-                        context: AppErrorContext.forms,
-                        mode: CatchErrorStateMode.compact,
-                        onRetry: () => ref
-                            .read(
-                              hostFormsDirectoryControllerProvider(
-                                request,
-                              ).notifier,
-                            )
-                            .loadMore(),
-                      ),
-                    ],
-                  ],
-                );
-              },
-            ),
-          ],
+                    ),
+                  ),
+                if (state.loadMoreError case final error?)
+                  CatchLocalizedSliverErrorState(
+                    error,
+                    context: AppErrorContext.forms,
+                    fillRemaining: false,
+                    onRetry: () => ref
+                        .read(
+                          hostFormsDirectoryControllerProvider(
+                            request,
+                          ).notifier,
+                        )
+                        .loadMore(),
+                  ),
+              ],
+            );
+          },
         ),
       ],
     );

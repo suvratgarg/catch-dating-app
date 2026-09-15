@@ -115,14 +115,14 @@ void _registerHostOperationsCustomersTests() {
     await _pumpHostScreen(
       tester,
       Scaffold(
-        body: HostCustomerRow(
+        body: _customerFieldFixture(
           contact: _customerDirectoryContact(),
           onTap: () => tapped = true,
         ),
       ),
     );
 
-    final row = find.byType(HostCustomerRow);
+    final row = find.byType(CatchField);
     expect(
       find.descendant(of: row, matching: find.text('Ananya Rao')),
       findsOne,
@@ -132,10 +132,7 @@ void _registerHostOperationsCustomersTests() {
       findsOne,
     );
     expect(find.descendant(of: row, matching: find.text('Regular')), findsOne);
-    expect(
-      find.descendant(of: row, matching: find.byType(CatchPersonRow)),
-      findsOneWidget,
-    );
+    expect(find.byType(CatchRowPressSurface), findsNothing);
     expect(
       find.descendant(
         of: row,
@@ -151,12 +148,7 @@ void _registerHostOperationsCustomersTests() {
     );
     expect(avatar.size, CatchSpacing.s10);
     expect(tester.getSize(row).height, greaterThanOrEqualTo(72));
-    expect(
-      name.style!.fontSize!,
-      greaterThan(
-        (metadata.textSpan! as TextSpan).children!.first.style!.fontSize!,
-      ),
-    );
+    expect(name.style!.fontSize!, greaterThan(metadata.style!.fontSize!));
 
     await tester.tap(row);
     expect(tapped, isTrue);
@@ -278,14 +270,14 @@ void _registerHostOperationsCustomersTests() {
     await _pumpHostScreen(
       tester,
       Scaffold(
-        body: HostCustomerRow(
+        body: _customerFieldFixture(
           contact: _customerDirectoryContact(hasAmbiguousIdentity: true),
           onTap: () {},
         ),
       ),
     );
 
-    final row = find.byType(HostCustomerRow);
+    final row = find.byType(CatchField);
     final warning = tester.widget<CatchBadge>(
       find.descendant(of: row, matching: find.byType(CatchBadge)),
     );
@@ -306,61 +298,64 @@ void _registerHostOperationsCustomersTests() {
     await _pumpHostScreen(
       tester,
       Scaffold(
-        body: CatchPageBody(
-          child: HostCustomersDirectory(
-            state: HostCustomersDirectoryState(
-              contacts: [
-                _customerDirectoryContact(),
-                _customerDirectoryContact(),
-              ],
-              nextCursor: null,
-              matchCount: 2,
-              matchCountCoverage: HostCustomerMatchCountCoverage.exact,
-              sourceCoverage: HostCustomerDirectoryCoverage.exact,
-              projectionVersion: 1,
+        body: CustomScrollView(
+          slivers: [
+            HostCustomersDirectory(
+              state: HostCustomersDirectoryState(
+                contacts: [
+                  _customerDirectoryContact(),
+                  _customerDirectoryContact(contactId: 'contact-2'),
+                ],
+                nextCursor: null,
+                matchCount: 2,
+                matchCountCoverage: HostCustomerMatchCountCoverage.exact,
+                sourceCoverage: HostCustomerDirectoryCoverage.exact,
+                projectionVersion: 1,
+              ),
+              hasActiveQuery: false,
+              onCustomerSelected: (_) {},
+              onLoadMore: null,
+              onRefreshCoverage: () {},
             ),
-            hasActiveQuery: false,
-            onCustomerSelected: (_) {},
-            onLoadMore: null,
-            onRefreshCoverage: () {},
-          ),
+          ],
         ),
       ),
     );
 
     final frame = find.byKey(const ValueKey('host-customers-directory-list'));
     expect(
-      find.descendant(of: frame, matching: find.byType(CatchPersonRow)),
+      find.descendant(of: frame, matching: find.byType(CatchField)),
       findsNWidgets(2),
     );
     expect(
       find.descendant(of: frame, matching: find.byType(CatchRowPressSurface)),
-      findsNWidgets(2),
-    );
-    expect(
-      find.descendant(of: frame, matching: find.byType(CatchField)),
       findsNothing,
     );
     expect(
       find.descendant(of: frame, matching: find.byType(CatchDivider)),
       findsOneWidget,
     );
-    final row = find.byType(HostCustomerRow).first;
-    final overlayFinder = find.descendant(
-      of: row,
-      matching: find.byKey(CatchRowPressSurface.overlayKey),
+    final row = find.byType(CatchField).first;
+    final bounds = tester.getRect(row);
+    expect(bounds.left, 0);
+    expect(
+      bounds.width,
+      tester.view.physicalSize.width / tester.view.devicePixelRatio,
     );
-    expect(tester.widget<ColoredBox>(overlayFinder).color, Colors.transparent);
-    final gesture = await tester.startGesture(tester.getCenter(row));
+    final overlay = find.descendant(
+      of: row,
+      matching: find.byKey(CatchField.pressOverlayKey),
+    );
+    final gesture = await tester.startGesture(Offset(1, bounds.center.dy));
     await tester.pump();
     expect(
-      tester.widget<ColoredBox>(overlayFinder).color,
+      (tester.widget<AnimatedContainer>(overlay).decoration! as BoxDecoration)
+          .color,
       isNot(Colors.transparent),
     );
-    expect(tester.getRect(overlayFinder), tester.getRect(row));
+    expect(tester.getRect(overlay), bounds);
     await gesture.up();
-    await tester.pump();
-    expect(tester.widget<ColoredBox>(overlayFinder).color, Colors.transparent);
+    await tester.pumpAndSettle();
   });
 
   testWidgets('incomplete customer history is honest and can be rechecked', (
@@ -370,19 +365,23 @@ void _registerHostOperationsCustomersTests() {
     await _pumpHostScreen(
       tester,
       Scaffold(
-        body: HostCustomersDirectory(
-          state: HostCustomersDirectoryState(
-            contacts: [_customerDirectoryContact()],
-            nextCursor: null,
-            matchCount: 1,
-            matchCountCoverage: HostCustomerMatchCountCoverage.atLeast,
-            sourceCoverage: HostCustomerDirectoryCoverage.partial,
-            projectionVersion: 1,
-          ),
-          hasActiveQuery: false,
-          onCustomerSelected: (_) {},
-          onLoadMore: null,
-          onRefreshCoverage: () => refreshes += 1,
+        body: CustomScrollView(
+          slivers: [
+            HostCustomersDirectory(
+              state: HostCustomersDirectoryState(
+                contacts: [_customerDirectoryContact()],
+                nextCursor: null,
+                matchCount: 1,
+                matchCountCoverage: HostCustomerMatchCountCoverage.atLeast,
+                sourceCoverage: HostCustomerDirectoryCoverage.partial,
+                projectionVersion: 1,
+              ),
+              hasActiveQuery: false,
+              onCustomerSelected: (_) {},
+              onLoadMore: null,
+              onRefreshCoverage: () => refreshes += 1,
+            ),
+          ],
         ),
       ),
     );
@@ -422,11 +421,15 @@ void _registerHostOperationsCustomersTests() {
     expect(search.placeholder, 'Search by name');
     expect(find.text('SMS reachable'), findsNothing);
     expect(requests.last.search, isNull);
+    final directoryRow = find.byWidgetPredicate(
+      (widget) =>
+          widget is CatchField &&
+          widget.key == const ValueKey('host-customer-contact-1'),
+    );
+    expect(tester.getRect(directoryRow).left, 0);
     expect(
-      CatchFieldInteractionPlaneScope.outsetsOf(
-        tester.element(find.byType(HostCustomersDirectory)),
-      ),
-      EdgeInsets.symmetric(horizontal: CatchInsets.pageBody.left),
+      tester.getRect(directoryRow).right,
+      tester.view.physicalSize.width / tester.view.devicePixelRatio,
     );
 
     await tester.tap(searchFinder);
@@ -929,3 +932,17 @@ class _CreatePersonProbe extends Fake implements HostCustomersController {
     throw StateError('Simulated retryable save failure');
   }
 }
+
+Widget _customerFieldFixture({
+  required HostCustomerDirectoryContact contact,
+  required VoidCallback onTap,
+}) => Builder(
+  builder: (context) => CatchSection.rows(
+    entries: [
+      CatchField.navigate(
+        content: hostCustomerPersonLayout(context, contact),
+        onActivate: onTap,
+      ),
+    ],
+  ),
+);

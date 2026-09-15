@@ -1,22 +1,27 @@
+// Public constructor names deliberately differ from private storage.
+// ignore_for_file: prefer_initializing_formals
+
 import 'package:catch_tokens/catch_tokens.dart';
-import 'package:catch_ui/src/components/catch_field.dart';
-import 'package:catch_ui/src/components/catch_section_rows.dart';
 import 'package:catch_ui/src/components/catch_divided_field_interaction_scope.dart';
 import 'package:catch_ui/src/components/catch_divided_field_interaction_scope_mode.dart';
+import 'package:catch_ui/src/components/catch_field.dart';
 import 'package:catch_ui/src/components/catch_field_geometry_scope.dart';
 import 'package:catch_ui/src/components/catch_field_geometry_scope_mode.dart';
 import 'package:catch_ui/src/components/catch_field_geometry_scope_variant.dart';
 import 'package:catch_ui/src/components/catch_horizontal_scroll_view.dart';
+import 'package:catch_ui/src/components/catch_section_content.dart';
 import 'package:catch_ui/src/components/catch_section_field_group.dart';
 import 'package:catch_ui/src/components/catch_section_header.dart';
 import 'package:catch_ui/src/components/catch_section_header_placement.dart';
 import 'package:catch_ui/src/components/catch_section_row_list.dart';
 import 'package:catch_ui/src/components/catch_section_row_list_mode.dart';
+import 'package:catch_ui/src/components/catch_section_rows.dart';
 import 'package:catch_ui/src/components/catch_section_surface.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:catch_ui/src/primitives/catch_divider.dart';
 import 'package:catch_ui/src/primitives/catch_kicker_text.dart';
 import 'package:catch_ui/src/primitives/catch_surface.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 part 'catch_section_configs.dart';
@@ -333,6 +338,43 @@ class CatchSection extends StatelessWidget {
       action: action,
       entries: entries,
       contained: true,
+    ),
+  );
+
+  /// Package-owned form adapter; external features use CatchFormRowList.
+  @internal
+  factory CatchSection.formRows({
+    String? title,
+    Object? count,
+    Widget? action,
+    required List<Widget> entries,
+  }) => CatchSection._rows(
+    title: title,
+    rowSection: CatchSectionRows.form(
+      title: title,
+      count: count,
+      action: action,
+      entries: entries,
+      leadingInset: CatchFieldTokens.textLaneInset,
+    ),
+  );
+
+  /// Media, metrics or explanatory content with a canonical header boundary.
+  /// Ordinary Fields belong in [CatchSection.rows] instead.
+  factory CatchSection.content({
+    Key? key,
+    String? title,
+    Object? count,
+    Widget? action,
+    required Widget child,
+  }) => CatchSection._rows(
+    key: key,
+    title: title,
+    rowSection: CatchSectionContent(
+      title: title,
+      count: count,
+      action: action,
+      child: child,
     ),
   );
 

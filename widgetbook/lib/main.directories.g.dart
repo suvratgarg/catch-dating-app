@@ -9294,17 +9294,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'HostCustomerRow',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Row states',
-                    builder:
-                        _widgetbook_workspace_hosts_operations_customer_components
-                            .hostCustomerDirectoryRowStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
                 name: 'HostCustomerTimelineRecord',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -10084,17 +10073,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_operations_manage_components
                             .hostStrictHostEventCheckInQrSectionCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostEventLifecycleRow',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_operations_home_sections
-                            .hostStrictHostEventLifecycleRowCatalogStates,
                   ),
                 ],
               ),

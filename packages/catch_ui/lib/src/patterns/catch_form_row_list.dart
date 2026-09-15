@@ -73,12 +73,11 @@ class _CatchFormRowListState<P> extends State<CatchFormRowList<P>> {
 
   @override
   Widget build(BuildContext context) {
-    return CatchSection.fieldRows(
+    final section = CatchSection.formRows(
       title: widget.title,
       count: widget.count,
-      trailing: widget.trailing,
-      footer: widget.footer,
-      children: widget.rows.map((row) {
+      action: widget.trailing,
+      entries: widget.rows.map((row) {
         final scope = _scopeFor(row);
         return row.accept<Widget>((
           read: (descriptor) => CatchField.read(
@@ -149,6 +148,14 @@ class _CatchFormRowListState<P> extends State<CatchFormRowList<P>> {
           custom: (descriptor) => descriptor.build(context, scope),
         ));
       }).toList(),
+    );
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        section,
+        if (widget.footer case final footer?) CatchPageBody(child: footer),
+      ],
     );
   }
 

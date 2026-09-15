@@ -39,11 +39,10 @@ void main() {
         GoRoute(
           path: '/',
           builder: (_, _) => const Scaffold(
-            body: SingleChildScrollView(
-              child: HostFormResponsesPanel(
-                organizerId: 'org-1',
-                formId: 'form-1',
-              ),
+            body: CustomScrollView(
+              slivers: [
+                HostFormResponsesPanel(organizerId: 'org-1', formId: 'form-1'),
+              ],
             ),
           ),
         ),
@@ -408,7 +407,9 @@ void main() {
     expect(find.byKey(const ValueKey('host-form-published')), findsOneWidget);
     expect(
       tester.getSize(find.byKey(const ValueKey('host-form-published'))).width,
-      lessThanOrEqualTo(CatchLayout.hostFormsDirectoryMaxContentWidth),
+      1440,
+      reason:
+          'The interaction band spans the page; text stays in its readable lane',
     );
     expect(find.byKey(const ValueKey('host-form-paused')), findsOneWidget);
     expect(find.textContaining('Published · 12 responses'), findsNWidgets(2));

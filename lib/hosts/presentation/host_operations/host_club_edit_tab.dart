@@ -481,8 +481,8 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
     final mediaAssetCount =
         visibleMediaPreviews.length + (hasVisibleLogo ? 1 : 0);
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return CatchSectionList(
+      emptyStateOmitted: true,
       children: [
         if (updateClubMutation.hasError) ...[
           CatchLocalizedErrorBanner.mutation(
@@ -492,79 +492,80 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
           gapH12,
         ],
         if (widget.isOwner)
-          CatchSection.contained(
-            title: context.l10n.hostsHostClubPublicationTitle,
-            tone: CatchSurfaceTone.primarySoft,
-            emphasis: CatchSurfaceEmphasis.flat,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                _HostClubPublicationChannelRow(
-                  key: const ValueKey('host-publication-catch-app'),
-                  label: context.l10n.hostsHostClubPublicationChannelCatch,
-                  status: publicationState.catchAppVisible
-                      ? context.l10n.hostsHostClubPublicationStatusVisible
-                      : context.l10n.hostsHostClubPublicationStatusHidden,
-                  visible: publicationState.catchAppVisible,
-                ),
-                gapH8,
-                _HostClubPublicationChannelRow(
-                  key: const ValueKey('host-publication-website'),
-                  label: context.l10n.hostsHostClubPublicationChannelWebsite,
-                  status: publicationState.websiteEnabled
-                      ? context.l10n.hostsHostClubPublicationStatusEnabled
-                      : context.l10n.hostsHostClubPublicationStatusNotEnabled,
-                  visible: publicationState.websiteEnabled,
-                ),
-                gapH16,
-                Text(
-                  publicationBody,
-                  style: CatchTextStyles.supporting(
-                    context,
-                    color: CatchTokens.of(context).ink2,
+          CatchSection.content(
+            child: CatchSection.contained(
+              title: context.l10n.hostsHostClubPublicationTitle,
+              tone: CatchSurfaceTone.primarySoft,
+              emphasis: CatchSurfaceEmphasis.flat,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  _HostClubPublicationChannelRow(
+                    key: const ValueKey('host-publication-catch-app'),
+                    label: context.l10n.hostsHostClubPublicationChannelCatch,
+                    status: publicationState.catchAppVisible
+                        ? context.l10n.hostsHostClubPublicationStatusVisible
+                        : context.l10n.hostsHostClubPublicationStatusHidden,
+                    visible: publicationState.catchAppVisible,
                   ),
-                ),
-                gapH12,
-                CatchButton(
-                  label: publicationAction,
-                  onPressed: publicationMutation.isPending
-                      ? null
-                      : () => unawaited(
-                          _setPublicListingEnabled(
-                            publicationState.targetPublicListingEnabled,
-                          ),
-                        ),
-                  status: (publicationMutation.isPending)
-                      ? CatchButtonStatus.loading
-                      : CatchButtonStatus.idle,
-                  variant:
-                      publicationState.kind ==
-                          HostClubPublicationKind.everywhere
-                      ? CatchButtonVariant.secondary
-                      : CatchButtonVariant.primary,
-                  fullWidth: true,
-                ),
-                if (publicationMutation.hasError) ...[
                   gapH8,
-                  CatchFieldSupportRow(
-                    text: mutationErrorMessage(
-                      publicationMutation,
-                      l10n: context.l10n,
-                    ),
-                    color: CatchTokens.of(context).danger,
-                    showErrorIcon: true,
+                  _HostClubPublicationChannelRow(
+                    key: const ValueKey('host-publication-website'),
+                    label: context.l10n.hostsHostClubPublicationChannelWebsite,
+                    status: publicationState.websiteEnabled
+                        ? context.l10n.hostsHostClubPublicationStatusEnabled
+                        : context.l10n.hostsHostClubPublicationStatusNotEnabled,
+                    visible: publicationState.websiteEnabled,
                   ),
+                  gapH16,
+                  Text(
+                    publicationBody,
+                    style: CatchTextStyles.supporting(
+                      context,
+                      color: CatchTokens.of(context).ink2,
+                    ),
+                  ),
+                  gapH12,
+                  CatchButton(
+                    label: publicationAction,
+                    onPressed: publicationMutation.isPending
+                        ? null
+                        : () => unawaited(
+                            _setPublicListingEnabled(
+                              publicationState.targetPublicListingEnabled,
+                            ),
+                          ),
+                    status: (publicationMutation.isPending)
+                        ? CatchButtonStatus.loading
+                        : CatchButtonStatus.idle,
+                    variant:
+                        publicationState.kind ==
+                            HostClubPublicationKind.everywhere
+                        ? CatchButtonVariant.secondary
+                        : CatchButtonVariant.primary,
+                    fullWidth: true,
+                  ),
+                  if (publicationMutation.hasError) ...[
+                    gapH8,
+                    CatchFieldSupportRow(
+                      text: mutationErrorMessage(
+                        publicationMutation,
+                        l10n: context.l10n,
+                      ),
+                      color: CatchTokens.of(context).danger,
+                      showErrorIcon: true,
+                    ),
+                  ],
                 ],
-              ],
+              ),
             ),
           ),
-        CatchSection.fieldRows(
+        CatchSection.content(
           title: context.l10n.hostsHostClubProfileTitleMedia,
-          first: !widget.isOwner,
           count: context.l10n.coreOrderedPhotoPickerSubtitlePhotoCount(
             count: mediaAssetCount,
           ),
-          trailing: CatchButton.text(
+          action: CatchButton.text(
             key: OrderedPhotoPickerKeys.manageAction,
             label: context.l10n.hostsHostClubEditTabActionManageImages,
             onPressed: mediaPending
@@ -609,9 +610,9 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
           onSave: _savePatch,
           errorTextBuilder: _errorText,
         ),
-        CatchSection.fieldRows(
+        CatchSection.rows(
           title: context.l10n.hostsHostClubEditTabTitleClubSettings,
-          children: [
+          entries: [
             CatchField.nav(
               copy: catchFieldCopy(context.l10n),
               key: const ValueKey('host-club-settings-event-defaults'),

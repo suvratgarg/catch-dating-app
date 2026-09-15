@@ -1,5 +1,3 @@
-import 'dart:math' as math;
-
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/components/catch_field.dart';
 import 'package:catch_ui/src/components/catch_field_activity_notification.dart';
@@ -7,11 +5,15 @@ import 'package:catch_ui/src/components/catch_field_geometry_scope.dart';
 import 'package:catch_ui/src/components/catch_field_geometry_scope_mode.dart';
 import 'package:catch_ui/src/components/catch_field_geometry_scope_variant.dart';
 import 'package:catch_ui/src/components/catch_field_motion.dart';
-import 'package:catch_ui/src/components/catch_section_header.dart';
+import 'package:catch_ui/src/components/catch_section_content.dart';
 import 'package:catch_ui/src/components/catch_section_surface.dart';
 import 'package:catch_ui/src/primitives/catch_divider.dart';
-import 'package:catch_ui/src/primitives/catch_kicker_text.dart';
 import 'package:flutter/material.dart';
+
+// Keep collection reconciliation keys distinct from the public Field identity.
+final class _CatchSectionRowKey extends ValueKey<Object> {
+  const _CatchSectionRowKey(super.value);
+}
 
 /// Internal renderer for the typed Field collection recipes on CatchSection.
 ///
@@ -27,6 +29,7 @@ class CatchSectionRows extends StatefulWidget {
     this.contained = false,
   }) : entries = entries,
        _itemCount = null,
+       formLeadingInset = null,
        itemBuilder = null,
        findChildIndexCallback = null;
 
@@ -40,9 +43,29 @@ class CatchSectionRows extends StatefulWidget {
     this.action,
   }) : _itemCount = itemCount,
        entries = null,
+       formLeadingInset = null,
        contained = false;
 
-  final List<CatchField>? entries;
+  /// Package-owned form coordinators retain draft/save state around a Field.
+  /// Every descriptor carries the canonical icon lane; product code cannot
+  /// supply a widget builder to the public row-section recipes.
+  const CatchSectionRows.form({
+    super.key,
+    required List<Widget> entries,
+    required double leadingInset,
+    this.title,
+    this.count,
+    this.action,
+  }) : entries = entries,
+       formLeadingInset = leadingInset,
+       _itemCount = null,
+       itemBuilder = null,
+       findChildIndexCallback = null,
+       contained = false;
+
+  final List<Widget>? entries;
+  final double? formLeadingInset;
+
   final int? _itemCount;
   int get itemCount => entries?.length ?? _itemCount!;
   final CatchField Function(BuildContext, int)? itemBuilder;
@@ -72,31 +95,15 @@ class _CatchSectionRowsState extends State<CatchSectionRows> {
     _identities.clear();
   }
 
-  double _gutter(double width) => math.max(
-    CatchSpacing.screenPx,
-    (width - CatchLayout.maxContentWidth) / 2,
-  );
-
   Widget? _header(double gutter) {
-    if (widget.title == null && widget.count == null && widget.action == null) {
+    if (widget.title == null && widget.count == null && widget.action == null)
       return null;
-    }
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: gutter),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          CatchSectionHeader.kicker(
-            title: widget.title,
-            count: widget.count,
-            trailing: widget.action,
-            color: CatchTokens.of(context).ink2,
-            textVariant: CatchKickerTextVariant.fieldSection,
-          ),
-          const SizedBox(height: CatchFieldTokens.sectionRuleGap),
-          const CatchDivider.section(),
-        ],
+      child: CatchSectionHeading(
+        title: widget.title,
+        count: widget.count,
+        action: widget.action,
       ),
     );
   }
@@ -105,7 +112,8 @@ class _CatchSectionRowsState extends State<CatchSectionRows> {
     if (index >= widget.itemCount) return false;
     final entries = widget.entries;
     if (entries != null &&
-        entries[index].states.contains(WidgetState.selected)) {
+        entries[index] is CatchField &&
+        (entries[index] as CatchField).states.contains(WidgetState.selected)) {
       return true;
     }
     final identity = entries != null
@@ -119,7 +127,7 @@ class _CatchSectionRowsState extends State<CatchSectionRows> {
     final identity = entry.key ?? index;
     _identities[index] = identity;
     return KeyedSubtree(
-      key: entry.key ?? ValueKey(index),
+      key: _CatchSectionRowKey(identity),
       child: NotificationListener<CatchFieldActivityNotification>(
         onNotification: (notification) {
           if (notification.active == _active.contains(identity)) return true;
@@ -146,7 +154,10 @@ class _CatchSectionRowsState extends State<CatchSectionRows> {
             ),
             if (index < widget.itemCount - 1)
               PositionedDirectional(
-                start: gutter + entry.fieldDividerLeadingInset,
+                start:
+                    gutter +
+                    (widget.formLeadingInset ??
+                        (entry as CatchField).fieldDividerLeadingInset),
                 end: gutter,
                 bottom: 0,
                 child: IgnorePointer(
@@ -171,14 +182,18 @@ class _CatchSectionRowsState extends State<CatchSectionRows> {
     if (widget.entries == null) {
       return SliverLayoutBuilder(
         builder: (context, constraints) {
-          final gutter = _gutter(constraints.crossAxisExtent);
+          final gutter = catchSectionContentGutter(constraints.crossAxisExtent);
           final header = _header(gutter);
           return SliverMainAxisGroup(
             slivers: [
               if (header != null) SliverToBoxAdapter(child: header),
               SliverList.builder(
                 itemCount: widget.itemCount,
-                findChildIndexCallback: widget.findChildIndexCallback,
+                findChildIndexCallback: widget.findChildIndexCallback == null
+                    ? null
+                    : (key) => key is _CatchSectionRowKey && key.value is Key
+                          ? widget.findChildIndexCallback!(key.value as Key)
+                          : null,
                 itemBuilder: (context, index) => _row(context, index, gutter),
               ),
             ],
@@ -192,7 +207,7 @@ class _CatchSectionRowsState extends State<CatchSectionRows> {
           constraints.hasBoundedWidth,
           'Row sections need a page or pane.',
         );
-        final gutter = _gutter(constraints.maxWidth);
+        final gutter = catchSectionContentGutter(constraints.maxWidth);
         final header = _header(gutter);
         final rows = Column(
           mainAxisSize: MainAxisSize.min,

@@ -51,30 +51,36 @@ void main() {
             expect(find.text('Upcoming'), findsOneWidget);
             expect(find.text('Past'), findsOneWidget);
             expect(find.text('TODAY · FRI, 4 SEP'), findsOneWidget);
-            final firstRow = find.byKey(
-              const ValueKey('host-event-row-event-0'),
+            final firstRow = find.byWidgetPredicate(
+              (widget) =>
+                  widget is CatchField &&
+                  widget.key == const ValueKey('host-event-row-event-0'),
             );
-            final row = tester.widget<CatchRecordRow>(
+            expect(
               find.descendant(
                 of: firstRow,
-                matching: find.byType(CatchRecordRow),
+                matching: find.textContaining('18:00'),
               ),
+              findsOneWidget,
             );
-            expect(row.facts.first, startsWith('18:00'));
-            expect(row.facts.last, contains('registered'));
+            expect(
+              find.descendant(
+                of: firstRow,
+                matching: find.textContaining('registered'),
+              ),
+              findsOneWidget,
+            );
             for (final element
                 in find
-                    .descendant(
-                      of: find.byType(CatchRecordRow),
-                      matching: find.byType(RichText),
-                    )
+                    .descendant(of: firstRow, matching: find.byType(RichText))
                     .evaluate()) {
               expect(
                 (element.renderObject! as RenderParagraph).didExceedMaxLines,
                 isFalse,
               );
             }
-            expect(tester.getTopLeft(firstRow).dx, CatchInsets.pageBody.left);
+            expect(tester.getTopLeft(firstRow).dx, 0);
+            expect(tester.getSize(firstRow).width, 320);
             await tester.tap(firstRow);
             expect(opened, 'event-0');
             final page = find.byKey(
@@ -159,11 +165,27 @@ void main() {
     await tester.tap(find.text('Past'));
     await pumpFeatureUi(tester);
     expect(find.text('AUGUST 2026'), findsOneWidget);
-    final row = tester.widget<CatchRecordRow>(find.byType(CatchRecordRow));
-    expect(row.facts.first, contains('Aug 28'));
-    expect(row.facts.first, contains('18:00'));
-    expect(row.facts.last, '12 attended');
-    await tester.tap(find.byType(CatchRecordRow));
+    final row = find.byWidgetPredicate(
+      (widget) =>
+          widget is CatchField &&
+          widget.key == const ValueKey('host-event-row-past'),
+    );
+    expect(
+      find.descendant(of: row, matching: find.textContaining('Aug 28')),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(of: row, matching: find.textContaining('18:00')),
+      findsOneWidget,
+    );
+    expect(find.text('12 attended'), findsOneWidget);
+    final bounds = tester.getRect(row);
+    expect(bounds.left, 0);
+    expect(
+      bounds.width,
+      tester.view.physicalSize.width / tester.view.devicePixelRatio,
+    );
+    await tester.tapAt(Offset(1, bounds.center.dy));
     expect(opened, 'past');
     expect(tester.takeException(), isNull);
   });

@@ -49,7 +49,7 @@ void _registerHostOperationsAnalyticsTeamTests() {
     Finder tab(String label) =>
         find.descendant(of: tabRail, matching: find.text(label));
 
-    void expectSharedChrome({bool constrainToContentWidth = true}) {
+    void expectSharedChrome({bool? constrainToContentWidth}) {
       expect(find.byType(CatchRootScreenScaffold), findsOneWidget);
       expect(find.byType(NestedScrollView), findsOneWidget);
       expect(find.byType(SliverOverlapAbsorber), findsOneWidget);
@@ -76,7 +76,11 @@ void _registerHostOperationsAnalyticsTeamTests() {
         find.byType(CatchRootScreenPageScrollView),
       );
       expect(currentPage.includeTerminalPadding, isTrue);
-      expect(currentPage.constrainToContentWidth, constrainToContentWidth);
+      expect(
+        currentPage.constrainToContentWidth,
+        constrainToContentWidth ??
+            find.byType(HostClubInsightsPane).evaluate().isNotEmpty,
+      );
     }
 
     expectSharedChrome();
@@ -84,7 +88,7 @@ void _registerHostOperationsAnalyticsTeamTests() {
       CatchFieldInteractionPlaneScope.outsetsOf(
         tester.element(find.byType(HostClubEditTab)),
       ),
-      EdgeInsets.symmetric(horizontal: CatchInsets.pageBody.left),
+      EdgeInsets.zero,
     );
     final loadedHeader = tester.widget<CatchScreenHeader>(
       find.byWidgetPredicate(
@@ -264,11 +268,12 @@ void _registerHostOperationsAnalyticsTeamTests() {
 
       final editTab = find.byType(HostClubEditTab);
       expect(editTab, findsOneWidget);
+      expect(tester.getSize(editTab).width, closeTo(900, 0.1));
+      expect(tester.getCenter(editTab).dx, closeTo(450, 0.1));
       expect(
-        tester.getSize(editTab).width,
+        tester.getSize(find.byType(HostClubMediaSummary)).width,
         closeTo(CatchLayout.maxContentWidth, 0.1),
       );
-      expect(tester.getCenter(editTab).dx, closeTo(450, 0.1));
       expect(find.text('0 photos'), findsOneWidget);
 
       final descriptionEditor = find.byKey(
