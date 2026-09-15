@@ -205436,10 +205436,21 @@ export const eventAssistanceCommandBindingCatalog = {
       "commandKind": "sendOperationalMessage",
       "live": {
         "bindingType": "internalCoordinator",
+        "coverage": {
+          "kind": "partial",
+          "variantField": "intent",
+          "implementedVariants": [
+            "joining"
+          ],
+          "missingVariants": [
+            "planChange",
+            "followUp"
+          ]
+        },
         "operations": [
           "LiveMessageDispatcher.dispatch"
         ],
-        "missingCapability": null
+        "missingCapability": "liveNonJoiningMessagePublication"
       },
       "rehearsal": {
         "bindingType": "domainAdapter",

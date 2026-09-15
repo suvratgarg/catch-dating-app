@@ -3,7 +3,9 @@ import test from "node:test";
 import {
   commandBinding,
   commandBindingDefinitions,
+  commandCoverage,
   commandHasExecutor,
+  commandIsFullyImplemented,
   workflowDefinitions,
   workflowDefinitionsForSurface,
   workflowHasCommandContract,
@@ -66,15 +68,39 @@ test("command bindings account for every command and mode", () => {
         binding.bindingType !== "contractOnly"
       );
       assert.equal(
+        commandIsFullyImplemented(definition.commandKind, mode),
+        commandCoverage(definition.commandKind, mode) === "complete"
+      );
+      assert.equal(
         binding.operations.length === 0,
         binding.bindingType === "contractOnly"
       );
       assert.equal(
         binding.missingCapability !== null,
-        binding.bindingType === "contractOnly"
+        commandCoverage(definition.commandKind, mode) !== "complete"
       );
     }
   }
+});
+
+test("partial command bindings account for every payload variant", () => {
+  const partial = commandBinding("sendOperationalMessage", "live");
+  assert.ok("coverage" in partial);
+  assert.deepEqual(partial.coverage, {
+    kind: "partial",
+    variantField: "intent",
+    implementedVariants: ["joining"],
+    missingVariants: ["planChange", "followUp"],
+  });
+  assert.equal(
+    partial.missingCapability,
+    "liveNonJoiningMessagePublication"
+  );
+  assert.equal(commandHasExecutor("sendOperationalMessage", "live"), true);
+  assert.equal(
+    commandIsFullyImplemented("sendOperationalMessage", "live"),
+    false
+  );
 });
 
 test("unimplemented live commands name their missing capability", () => {

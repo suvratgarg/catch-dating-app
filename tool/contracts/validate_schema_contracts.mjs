@@ -211,13 +211,13 @@ function checkEventAssistanceContracts(parsed) {
     }
     for (const mode of ["live", "rehearsal"]) {
       const binding = row[mode];
+      const partialCoverage = binding?.coverage;
+      const expectedBindingKeys = partialCoverage === undefined ?
+        ["bindingType", "operations", "missingCapability"] :
+        ["bindingType", "coverage", "operations", "missingCapability"];
       if (!binding || typeof binding !== "object" ||
           JSON.stringify(Object.keys(binding)) !==
-            JSON.stringify([
-              "bindingType",
-              "operations",
-              "missingCapability",
-            ]) ||
+            JSON.stringify(expectedBindingKeys) ||
           !bindingTypes.has(binding.bindingType) ||
           !Array.isArray(binding.operations) ||
           new Set(binding.operations).size !== binding.operations.length ||
@@ -232,11 +232,17 @@ function checkEventAssistanceContracts(parsed) {
         fail(`Invalid ${mode} command binding: ${row.commandKind}`);
         continue;
       }
-      if ((binding.bindingType === "contractOnly") !==
-          (binding.operations.length === 0) ||
-          (binding.bindingType === "contractOnly") !==
-          (binding.missingCapability !== null)) {
+      const contractOnly = binding.bindingType === "contractOnly";
+      if (contractOnly !== (binding.operations.length === 0) ||
+          contractOnly && binding.missingCapability === null ||
+          !contractOnly && partialCoverage === undefined &&
+            binding.missingCapability !== null) {
         fail(`Command binding operations mismatch: ${row.commandKind}/${mode}`);
+      }
+      if (partialCoverage !== undefined &&
+          !validPartialCommandCoverage(partialCoverage, row.commandKind,
+            commands, binding)) {
+        fail(`Invalid partial command coverage: ${row.commandKind}/${mode}`);
       }
     }
   }
@@ -317,6 +323,50 @@ function checkEventAssistanceContracts(parsed) {
       JSON.stringify([...knownCommandKinds].sort())) {
     fail("Event assistance workflows must account for every command kind.");
   }
+}
+
+function validPartialCommandCoverage(
+  coverage,
+  commandKind,
+  commands,
+  binding
+) {
+  if (!coverage || typeof coverage !== "object" ||
+      JSON.stringify(Object.keys(coverage)) !== JSON.stringify([
+        "kind",
+        "variantField",
+        "implementedVariants",
+        "missingVariants",
+      ]) ||
+      coverage.kind !== "partial" ||
+      typeof coverage.variantField !== "string" ||
+      !/^[a-z][A-Za-z0-9]*$/.test(coverage.variantField) ||
+      !validCoverageVariants(coverage.implementedVariants) ||
+      !validCoverageVariants(coverage.missingVariants) ||
+      binding.bindingType === "contractOnly" ||
+      binding.missingCapability === null) {
+    return false;
+  }
+  const command = commands.find((candidate) =>
+    candidate.properties?.kind?.const === commandKind
+  );
+  const variants = command?.properties?.payload?.properties?.[
+    coverage.variantField
+  ]?.enum;
+  const partition = [
+    ...coverage.implementedVariants,
+    ...coverage.missingVariants,
+  ];
+  return Array.isArray(variants) &&
+    JSON.stringify(partition) === JSON.stringify(variants) &&
+    new Set(partition).size === partition.length;
+}
+
+function validCoverageVariants(value) {
+  return Array.isArray(value) && value.length > 0 &&
+    new Set(value).size === value.length &&
+    value.every((variant) =>
+      typeof variant === "string" && /^[a-z][A-Za-z0-9]*$/.test(variant));
 }
 
 function checkHostAttentionPolicyCatalog(parsed) {

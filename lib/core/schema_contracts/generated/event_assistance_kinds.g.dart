@@ -156,7 +156,12 @@ enum EventAssistanceCommandBindingType {
   contractOnly,
 }
 
+enum EventAssistanceCommandCoverage { none, partial, complete }
+
+enum EventAssistanceCommandCoverageVariant { joining, planChange, followUp }
+
 enum EventAssistanceMissingCapability {
+  liveNonJoiningMessagePublication,
   rehearsalAllocationProposal,
   rehearsalAllocationPublication,
   rehearsalProgrammeControl,
@@ -1267,16 +1272,27 @@ extension EventAssistanceWorkflowCatalogLookup on EventAssistanceWorkflowKind {
 final class EventAssistanceModeBinding {
   const EventAssistanceModeBinding({
     required this.bindingType,
+    required this.coverage,
+    required this.variantField,
+    required this.implementedVariants,
+    required this.missingVariants,
     required this.operations,
     required this.missingCapability,
   });
 
   final EventAssistanceCommandBindingType bindingType;
+  final EventAssistanceCommandCoverage coverage;
+  final String? variantField;
+  final List<EventAssistanceCommandCoverageVariant> implementedVariants;
+  final List<EventAssistanceCommandCoverageVariant> missingVariants;
   final List<String> operations;
   final EventAssistanceMissingCapability? missingCapability;
 
   bool get isImplemented =>
-      bindingType != EventAssistanceCommandBindingType.contractOnly;
+      coverage != EventAssistanceCommandCoverage.none;
+
+  bool get isFullyImplemented =>
+      coverage == EventAssistanceCommandCoverage.complete;
 }
 
 final class EventAssistanceCommandBindingDescriptor {
@@ -1297,6 +1313,10 @@ const eventAssistanceCommandBindingCatalog =
     commandKind: EventAssistanceCommandKind.confirmDeparture,
     live: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.directCommand,
+      coverage: EventAssistanceCommandCoverage.complete,
+      variantField: null,
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[],
       operations: <String>[
         'confirmEventAssistanceDeparture',
       ],
@@ -1304,6 +1324,10 @@ const eventAssistanceCommandBindingCatalog =
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      coverage: EventAssistanceCommandCoverage.complete,
+      variantField: null,
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[],
       operations: <String>[
         'controlEventRehearsal',
       ],
@@ -1314,6 +1338,10 @@ const eventAssistanceCommandBindingCatalog =
     commandKind: EventAssistanceCommandKind.setJoinIntent,
     live: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.directCommand,
+      coverage: EventAssistanceCommandCoverage.complete,
+      variantField: null,
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[],
       operations: <String>[
         'submitEventAssistanceGuestChoice',
       ],
@@ -1321,6 +1349,10 @@ const eventAssistanceCommandBindingCatalog =
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      coverage: EventAssistanceCommandCoverage.complete,
+      variantField: null,
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[],
       operations: <String>[
         'submitEventRehearsalGuestAction',
       ],
@@ -1331,6 +1363,10 @@ const eventAssistanceCommandBindingCatalog =
     commandKind: EventAssistanceCommandKind.checkInGuest,
     live: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      coverage: EventAssistanceCommandCoverage.complete,
+      variantField: null,
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[],
       operations: <String>[
         'setEventAttendeeAttendance',
         'checkInEventRuntime',
@@ -1339,6 +1375,10 @@ const eventAssistanceCommandBindingCatalog =
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      coverage: EventAssistanceCommandCoverage.complete,
+      variantField: null,
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[],
       operations: <String>[
         'submitEventRehearsalGuestAction',
       ],
@@ -1349,6 +1389,10 @@ const eventAssistanceCommandBindingCatalog =
     commandKind: EventAssistanceCommandKind.publishGuidance,
     live: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.internalCoordinator,
+      coverage: EventAssistanceCommandCoverage.complete,
+      variantField: null,
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[],
       operations: <String>[
         'prepareLiveLateJoinPublication',
       ],
@@ -1356,6 +1400,10 @@ const eventAssistanceCommandBindingCatalog =
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      coverage: EventAssistanceCommandCoverage.complete,
+      variantField: null,
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[],
       operations: <String>[
         'controlEventRehearsal',
       ],
@@ -1366,13 +1414,26 @@ const eventAssistanceCommandBindingCatalog =
     commandKind: EventAssistanceCommandKind.sendOperationalMessage,
     live: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.internalCoordinator,
+      coverage: EventAssistanceCommandCoverage.partial,
+      variantField: 'intent',
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[
+        EventAssistanceCommandCoverageVariant.joining,
+      ],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[
+        EventAssistanceCommandCoverageVariant.planChange,
+        EventAssistanceCommandCoverageVariant.followUp,
+      ],
       operations: <String>[
         'LiveMessageDispatcher.dispatch',
       ],
-      missingCapability: null,
+      missingCapability: EventAssistanceMissingCapability.liveNonJoiningMessagePublication,
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      coverage: EventAssistanceCommandCoverage.complete,
+      variantField: null,
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[],
       operations: <String>[
         'controlEventRehearsal',
       ],
@@ -1383,6 +1444,10 @@ const eventAssistanceCommandBindingCatalog =
     commandKind: EventAssistanceCommandKind.openHostCase,
     live: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.internalCoordinator,
+      coverage: EventAssistanceCommandCoverage.complete,
+      variantField: null,
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[],
       operations: <String>[
         'GuestAssistanceStore.submit',
       ],
@@ -1390,6 +1455,10 @@ const eventAssistanceCommandBindingCatalog =
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      coverage: EventAssistanceCommandCoverage.complete,
+      variantField: null,
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[],
       operations: <String>[
         'submitEventRehearsalGuestAction',
       ],
@@ -1400,6 +1469,10 @@ const eventAssistanceCommandBindingCatalog =
     commandKind: EventAssistanceCommandKind.setParticipation,
     live: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.directCommand,
+      coverage: EventAssistanceCommandCoverage.complete,
+      variantField: null,
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[],
       operations: <String>[
         'setEventAssistanceParticipation',
       ],
@@ -1407,6 +1480,10 @@ const eventAssistanceCommandBindingCatalog =
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      coverage: EventAssistanceCommandCoverage.complete,
+      variantField: null,
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[],
       operations: <String>[
         'injectEventRehearsalBehavior',
       ],
@@ -1417,6 +1494,10 @@ const eventAssistanceCommandBindingCatalog =
     commandKind: EventAssistanceCommandKind.proposeAllocation,
     live: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      coverage: EventAssistanceCommandCoverage.complete,
+      variantField: null,
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[],
       operations: <String>[
         'generateEventSuccessPods',
         'generateEventSuccessRotations',
@@ -1425,6 +1506,10 @@ const eventAssistanceCommandBindingCatalog =
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.contractOnly,
+      coverage: EventAssistanceCommandCoverage.none,
+      variantField: null,
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[],
       operations: <String>[],
       missingCapability: EventAssistanceMissingCapability.rehearsalAllocationProposal,
     ),
@@ -1433,6 +1518,10 @@ const eventAssistanceCommandBindingCatalog =
     commandKind: EventAssistanceCommandKind.publishAllocation,
     live: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      coverage: EventAssistanceCommandCoverage.complete,
+      variantField: null,
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[],
       operations: <String>[
         'publishEventSuccessRotationRound',
       ],
@@ -1440,6 +1529,10 @@ const eventAssistanceCommandBindingCatalog =
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.contractOnly,
+      coverage: EventAssistanceCommandCoverage.none,
+      variantField: null,
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[],
       operations: <String>[],
       missingCapability: EventAssistanceMissingCapability.rehearsalAllocationPublication,
     ),
@@ -1448,6 +1541,10 @@ const eventAssistanceCommandBindingCatalog =
     commandKind: EventAssistanceCommandKind.confirmPlacement,
     live: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      coverage: EventAssistanceCommandCoverage.complete,
+      variantField: null,
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[],
       operations: <String>[
         'controlEventSuccessSpatial',
         'resolveEventSuccessLateArrival',
@@ -1456,6 +1553,10 @@ const eventAssistanceCommandBindingCatalog =
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      coverage: EventAssistanceCommandCoverage.complete,
+      variantField: null,
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[],
       operations: <String>[
         'controlEventRehearsalSpatial',
       ],
@@ -1466,6 +1567,10 @@ const eventAssistanceCommandBindingCatalog =
     commandKind: EventAssistanceCommandKind.changeResource,
     live: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      coverage: EventAssistanceCommandCoverage.complete,
+      variantField: null,
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[],
       operations: <String>[
         'upsertEventSuccessLayout',
         'controlEventSuccessSpatial',
@@ -1474,6 +1579,10 @@ const eventAssistanceCommandBindingCatalog =
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      coverage: EventAssistanceCommandCoverage.complete,
+      variantField: null,
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[],
       operations: <String>[
         'updateEventRehearsalSetup',
       ],
@@ -1484,6 +1593,10 @@ const eventAssistanceCommandBindingCatalog =
     commandKind: EventAssistanceCommandKind.transferGroup,
     live: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.directCommand,
+      coverage: EventAssistanceCommandCoverage.complete,
+      variantField: null,
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[],
       operations: <String>[
         'transferEventAssistanceGroup',
       ],
@@ -1491,6 +1604,10 @@ const eventAssistanceCommandBindingCatalog =
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      coverage: EventAssistanceCommandCoverage.complete,
+      variantField: null,
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[],
       operations: <String>[
         'controlEventRehearsal',
       ],
@@ -1501,6 +1618,10 @@ const eventAssistanceCommandBindingCatalog =
     commandKind: EventAssistanceCommandKind.recordCheckpoint,
     live: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.directCommand,
+      coverage: EventAssistanceCommandCoverage.complete,
+      variantField: null,
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[],
       operations: <String>[
         'recordEventAssistanceCheckpoint',
       ],
@@ -1508,6 +1629,10 @@ const eventAssistanceCommandBindingCatalog =
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      coverage: EventAssistanceCommandCoverage.complete,
+      variantField: null,
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[],
       operations: <String>[
         'controlEventRehearsal',
       ],
@@ -1518,6 +1643,10 @@ const eventAssistanceCommandBindingCatalog =
     commandKind: EventAssistanceCommandKind.changeProgramme,
     live: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      coverage: EventAssistanceCommandCoverage.complete,
+      variantField: null,
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[],
       operations: <String>[
         'controlEventSuccessLive',
       ],
@@ -1525,6 +1654,10 @@ const eventAssistanceCommandBindingCatalog =
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.contractOnly,
+      coverage: EventAssistanceCommandCoverage.none,
+      variantField: null,
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[],
       operations: <String>[],
       missingCapability: EventAssistanceMissingCapability.rehearsalProgrammeControl,
     ),
@@ -1533,6 +1666,10 @@ const eventAssistanceCommandBindingCatalog =
     commandKind: EventAssistanceCommandKind.recordOutcome,
     live: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      coverage: EventAssistanceCommandCoverage.complete,
+      variantField: null,
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[],
       operations: <String>[
         'recordEventSuccessUnitOutcomes',
       ],
@@ -1540,6 +1677,10 @@ const eventAssistanceCommandBindingCatalog =
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.contractOnly,
+      coverage: EventAssistanceCommandCoverage.none,
+      variantField: null,
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[],
       operations: <String>[],
       missingCapability: EventAssistanceMissingCapability.rehearsalOutcomeRecording,
     ),
@@ -1548,11 +1689,19 @@ const eventAssistanceCommandBindingCatalog =
     commandKind: EventAssistanceCommandKind.changeRoute,
     live: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.contractOnly,
+      coverage: EventAssistanceCommandCoverage.none,
+      variantField: null,
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[],
       operations: <String>[],
       missingCapability: EventAssistanceMissingCapability.liveRouteDecision,
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.contractOnly,
+      coverage: EventAssistanceCommandCoverage.none,
+      variantField: null,
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[],
       operations: <String>[],
       missingCapability: EventAssistanceMissingCapability.rehearsalRouteDecision,
     ),
@@ -1561,6 +1710,10 @@ const eventAssistanceCommandBindingCatalog =
     commandKind: EventAssistanceCommandKind.resolveAccountability,
     live: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.directCommand,
+      coverage: EventAssistanceCommandCoverage.complete,
+      variantField: null,
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[],
       operations: <String>[
         'resolveEventAssistanceAccountability',
       ],
@@ -1568,6 +1721,10 @@ const eventAssistanceCommandBindingCatalog =
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      coverage: EventAssistanceCommandCoverage.complete,
+      variantField: null,
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[],
       operations: <String>[
         'controlEventRehearsal',
       ],
@@ -1578,6 +1735,10 @@ const eventAssistanceCommandBindingCatalog =
     commandKind: EventAssistanceCommandKind.resolveClaim,
     live: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      coverage: EventAssistanceCommandCoverage.complete,
+      variantField: null,
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[],
       operations: <String>[
         'approveEventRuntimeClaim',
       ],
@@ -1585,6 +1746,10 @@ const eventAssistanceCommandBindingCatalog =
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      coverage: EventAssistanceCommandCoverage.complete,
+      variantField: null,
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[],
       operations: <String>[
         'injectEventRehearsalBehavior',
       ],
@@ -1595,6 +1760,10 @@ const eventAssistanceCommandBindingCatalog =
     commandKind: EventAssistanceCommandKind.admitGuest,
     live: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      coverage: EventAssistanceCommandCoverage.complete,
+      variantField: null,
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[],
       operations: <String>[
         'decideEventJoinRequest',
       ],
@@ -1602,6 +1771,10 @@ const eventAssistanceCommandBindingCatalog =
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      coverage: EventAssistanceCommandCoverage.complete,
+      variantField: null,
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[],
       operations: <String>[
         'injectEventRehearsalBehavior',
       ],
@@ -1612,6 +1785,10 @@ const eventAssistanceCommandBindingCatalog =
     commandKind: EventAssistanceCommandKind.assignResponsibility,
     live: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      coverage: EventAssistanceCommandCoverage.complete,
+      variantField: null,
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[],
       operations: <String>[
         'setEventAssistanceGroupStaff',
         'grantEventStaff',
@@ -1620,6 +1797,10 @@ const eventAssistanceCommandBindingCatalog =
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      coverage: EventAssistanceCommandCoverage.complete,
+      variantField: null,
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[],
       operations: <String>[
         'controlEventRehearsal',
       ],
@@ -1630,6 +1811,10 @@ const eventAssistanceCommandBindingCatalog =
     commandKind: EventAssistanceCommandKind.resolveAssistance,
     live: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.directCommand,
+      coverage: EventAssistanceCommandCoverage.complete,
+      variantField: null,
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[],
       operations: <String>[
         'resolveEventAssistanceCase',
       ],
@@ -1637,6 +1822,10 @@ const eventAssistanceCommandBindingCatalog =
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      coverage: EventAssistanceCommandCoverage.complete,
+      variantField: null,
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[],
       operations: <String>[
         'controlEventRehearsal',
       ],
@@ -1647,6 +1836,10 @@ const eventAssistanceCommandBindingCatalog =
     commandKind: EventAssistanceCommandKind.reconcileAttendance,
     live: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      coverage: EventAssistanceCommandCoverage.complete,
+      variantField: null,
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[],
       operations: <String>[
         'getEventAttendanceDisposition',
         'setEventAttendeeAttendance',
@@ -1656,6 +1849,10 @@ const eventAssistanceCommandBindingCatalog =
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      coverage: EventAssistanceCommandCoverage.complete,
+      variantField: null,
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[],
       operations: <String>[
         'completeEventRehearsal',
         'injectEventRehearsalBehavior',
@@ -1667,11 +1864,19 @@ const eventAssistanceCommandBindingCatalog =
     commandKind: EventAssistanceCommandKind.requestRequiredData,
     live: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.contractOnly,
+      coverage: EventAssistanceCommandCoverage.none,
+      variantField: null,
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[],
       operations: <String>[],
       missingCapability: EventAssistanceMissingCapability.liveRequiredDataRequest,
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.contractOnly,
+      coverage: EventAssistanceCommandCoverage.none,
+      variantField: null,
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[],
       operations: <String>[],
       missingCapability: EventAssistanceMissingCapability.rehearsalRequiredDataRequest,
     ),
@@ -1680,6 +1885,10 @@ const eventAssistanceCommandBindingCatalog =
     commandKind: EventAssistanceCommandKind.reconcileRoster,
     live: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      coverage: EventAssistanceCommandCoverage.complete,
+      variantField: null,
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[],
       operations: <String>[
         'ingestEventRosterWebhook',
       ],
@@ -1687,6 +1896,10 @@ const eventAssistanceCommandBindingCatalog =
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.contractOnly,
+      coverage: EventAssistanceCommandCoverage.none,
+      variantField: null,
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[],
       operations: <String>[],
       missingCapability: EventAssistanceMissingCapability.rehearsalRosterReconciliation,
     ),
@@ -1695,11 +1908,19 @@ const eventAssistanceCommandBindingCatalog =
     commandKind: EventAssistanceCommandKind.reconcileFinance,
     live: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.contractOnly,
+      coverage: EventAssistanceCommandCoverage.none,
+      variantField: null,
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[],
       operations: <String>[],
       missingCapability: EventAssistanceMissingCapability.eventPaymentCaseResolution,
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.contractOnly,
+      coverage: EventAssistanceCommandCoverage.none,
+      variantField: null,
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[],
       operations: <String>[],
       missingCapability: EventAssistanceMissingCapability.rehearsalFinanceReconciliation,
     ),
@@ -1708,6 +1929,10 @@ const eventAssistanceCommandBindingCatalog =
     commandKind: EventAssistanceCommandKind.repairDelivery,
     live: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.directCommand,
+      coverage: EventAssistanceCommandCoverage.complete,
+      variantField: null,
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[],
       operations: <String>[
         'repairEventAssistanceDelivery',
       ],
@@ -1715,6 +1940,10 @@ const eventAssistanceCommandBindingCatalog =
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      coverage: EventAssistanceCommandCoverage.complete,
+      variantField: null,
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[],
       operations: <String>[
         'controlEventRehearsal',
       ],
@@ -1725,6 +1954,10 @@ const eventAssistanceCommandBindingCatalog =
     commandKind: EventAssistanceCommandKind.resumeOperation,
     live: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.internalCoordinator,
+      coverage: EventAssistanceCommandCoverage.complete,
+      variantField: null,
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[],
       operations: <String>[
         'AssistanceSourceWorkStore.process',
         'AssistanceDeliveryWorkStore.process',
@@ -1734,6 +1967,10 @@ const eventAssistanceCommandBindingCatalog =
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      coverage: EventAssistanceCommandCoverage.complete,
+      variantField: null,
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[],
       operations: <String>[
         'controlEventRehearsal',
       ],
@@ -1744,6 +1981,10 @@ const eventAssistanceCommandBindingCatalog =
     commandKind: EventAssistanceCommandKind.completeEvent,
     live: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      coverage: EventAssistanceCommandCoverage.complete,
+      variantField: null,
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[],
       operations: <String>[
         'controlEventSuccessLive',
       ],
@@ -1751,6 +1992,10 @@ const eventAssistanceCommandBindingCatalog =
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      coverage: EventAssistanceCommandCoverage.complete,
+      variantField: null,
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[],
       operations: <String>[
         'completeEventRehearsal',
       ],
@@ -1761,6 +2006,10 @@ const eventAssistanceCommandBindingCatalog =
     commandKind: EventAssistanceCommandKind.controlUnitProgress,
     live: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      coverage: EventAssistanceCommandCoverage.complete,
+      variantField: null,
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[],
       operations: <String>[
         'controlEventSuccessLive',
       ],
@@ -1768,6 +2017,10 @@ const eventAssistanceCommandBindingCatalog =
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.contractOnly,
+      coverage: EventAssistanceCommandCoverage.none,
+      variantField: null,
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[],
       operations: <String>[],
       missingCapability: EventAssistanceMissingCapability.rehearsalUnitProgressControl,
     ),
@@ -1776,6 +2029,10 @@ const eventAssistanceCommandBindingCatalog =
     commandKind: EventAssistanceCommandKind.controlReveal,
     live: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      coverage: EventAssistanceCommandCoverage.complete,
+      variantField: null,
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[],
       operations: <String>[
         'controlEventSuccessLive',
       ],
@@ -1783,6 +2040,10 @@ const eventAssistanceCommandBindingCatalog =
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.contractOnly,
+      coverage: EventAssistanceCommandCoverage.none,
+      variantField: null,
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[],
       operations: <String>[],
       missingCapability: EventAssistanceMissingCapability.rehearsalRevealControl,
     ),
@@ -1791,6 +2052,10 @@ const eventAssistanceCommandBindingCatalog =
     commandKind: EventAssistanceCommandKind.applyOverride,
     live: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      coverage: EventAssistanceCommandCoverage.complete,
+      variantField: null,
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[],
       operations: <String>[
         'overrideEventSuccessGroups',
         'overrideEventSuccessRotations',
@@ -1799,6 +2064,10 @@ const eventAssistanceCommandBindingCatalog =
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.contractOnly,
+      coverage: EventAssistanceCommandCoverage.none,
+      variantField: null,
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[],
       operations: <String>[],
       missingCapability: EventAssistanceMissingCapability.rehearsalOverrideControl,
     ),
@@ -1807,6 +2076,10 @@ const eventAssistanceCommandBindingCatalog =
     commandKind: EventAssistanceCommandKind.setLocationSharing,
     live: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      coverage: EventAssistanceCommandCoverage.complete,
+      variantField: null,
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[],
       operations: <String>[
         'publishEventLivePosition',
       ],
@@ -1814,6 +2087,10 @@ const eventAssistanceCommandBindingCatalog =
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.contractOnly,
+      coverage: EventAssistanceCommandCoverage.none,
+      variantField: null,
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[],
       operations: <String>[],
       missingCapability: EventAssistanceMissingCapability.rehearsalLocationSharing,
     ),
@@ -1822,6 +2099,10 @@ const eventAssistanceCommandBindingCatalog =
     commandKind: EventAssistanceCommandKind.requestCheckpointReport,
     live: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.internalCoordinator,
+      coverage: EventAssistanceCommandCoverage.complete,
+      variantField: null,
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[],
       operations: <String>[
         'AssistanceCheckpointWorkStore.process',
       ],
@@ -1829,6 +2110,10 @@ const eventAssistanceCommandBindingCatalog =
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.internalCoordinator,
+      coverage: EventAssistanceCommandCoverage.complete,
+      variantField: null,
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[],
       operations: <String>[
         'controlEventRehearsal',
       ],
@@ -1839,6 +2124,10 @@ const eventAssistanceCommandBindingCatalog =
     commandKind: EventAssistanceCommandKind.recordNoShow,
     live: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.directCommand,
+      coverage: EventAssistanceCommandCoverage.complete,
+      variantField: null,
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[],
       operations: <String>[
         'recordEventNoShow',
       ],
@@ -1846,6 +2135,10 @@ const eventAssistanceCommandBindingCatalog =
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      coverage: EventAssistanceCommandCoverage.complete,
+      variantField: null,
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[],
       operations: <String>[
         'injectEventRehearsalBehavior',
       ],
@@ -1856,6 +2149,10 @@ const eventAssistanceCommandBindingCatalog =
     commandKind: EventAssistanceCommandKind.routeRestrictedCase,
     live: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.internalCoordinator,
+      coverage: EventAssistanceCommandCoverage.complete,
+      variantField: null,
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[],
       operations: <String>[
         'GuestAssistanceStore.submit',
       ],
@@ -1863,6 +2160,10 @@ const eventAssistanceCommandBindingCatalog =
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.contractOnly,
+      coverage: EventAssistanceCommandCoverage.none,
+      variantField: null,
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[],
       operations: <String>[],
       missingCapability: EventAssistanceMissingCapability.rehearsalRestrictedCaseRouting,
     ),
@@ -1871,6 +2172,10 @@ const eventAssistanceCommandBindingCatalog =
     commandKind: EventAssistanceCommandKind.resolveRestrictedCase,
     live: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      coverage: EventAssistanceCommandCoverage.complete,
+      variantField: null,
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[],
       operations: <String>[
         'adminDecideSafetyTriageItem',
       ],
@@ -1878,6 +2183,10 @@ const eventAssistanceCommandBindingCatalog =
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.contractOnly,
+      coverage: EventAssistanceCommandCoverage.none,
+      variantField: null,
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[],
       operations: <String>[],
       missingCapability: EventAssistanceMissingCapability.rehearsalRestrictedCaseResolution,
     ),
@@ -1886,6 +2195,10 @@ const eventAssistanceCommandBindingCatalog =
     commandKind: EventAssistanceCommandKind.reassignCheckpointReporter,
     live: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.directCommand,
+      coverage: EventAssistanceCommandCoverage.complete,
+      variantField: null,
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[],
       operations: <String>[
         'reassignEventAssistanceCheckpointReporter',
       ],
@@ -1893,6 +2206,10 @@ const eventAssistanceCommandBindingCatalog =
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      coverage: EventAssistanceCommandCoverage.complete,
+      variantField: null,
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[],
       operations: <String>[
         'controlEventRehearsal',
       ],
@@ -1903,6 +2220,10 @@ const eventAssistanceCommandBindingCatalog =
     commandKind: EventAssistanceCommandKind.setCheckpointCloseout,
     live: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.directCommand,
+      coverage: EventAssistanceCommandCoverage.complete,
+      variantField: null,
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[],
       operations: <String>[
         'setEventAssistanceCheckpointCloseout',
       ],
@@ -1910,6 +2231,10 @@ const eventAssistanceCommandBindingCatalog =
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      coverage: EventAssistanceCommandCoverage.complete,
+      variantField: null,
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[],
       operations: <String>[
         'controlEventRehearsal',
       ],

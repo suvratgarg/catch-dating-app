@@ -5350,6 +5350,17 @@ function renderDartEventAssistanceCatalog({
   const bindingTypes = [...new Set(commandBindingCatalog.definitions.flatMap(
     (row) => [row.live.bindingType, row.rehearsal.bindingType]
   ))];
+  const bindingCoverages = ["none", "partial", "complete"];
+  const coverageVariants = [...new Set(
+    commandBindingCatalog.definitions.flatMap((row) =>
+      [row.live, row.rehearsal].flatMap((binding) => [
+        ...(binding.coverage?.implementedVariants ?? []),
+        ...(binding.coverage?.missingVariants ?? []),
+      ])
+    )
+  )];
+  const coverageKind = (binding) => binding.coverage?.kind ??
+    (binding.bindingType === "contractOnly" ? "none" : "complete");
   const missingCapabilities = [...new Set(
     commandBindingCatalog.definitions.flatMap((row) =>
       [row.live.missingCapability, row.rehearsal.missingCapability]
@@ -5404,6 +5415,22 @@ function renderDartEventAssistanceCatalog({
     `      bindingType: EventAssistanceCommandBindingType.${
       lowerCamelCase(row.live.bindingType)
     },\n` +
+    `      coverage: EventAssistanceCommandCoverage.${
+      coverageKind(row.live)
+    },\n` +
+    `      variantField: ${dartLiteral(
+      row.live.coverage?.variantField ?? null
+    )},\n` +
+    `      implementedVariants: ${enumList(
+      "EventAssistanceCommandCoverageVariant",
+      row.live.coverage?.implementedVariants ?? [],
+      8
+    )},\n` +
+    `      missingVariants: ${enumList(
+      "EventAssistanceCommandCoverageVariant",
+      row.live.coverage?.missingVariants ?? [],
+      8
+    )},\n` +
     `      operations: ${stringList(row.live.operations, 8)},\n` +
     `      missingCapability: ${row.live.missingCapability === null ?
       "null" :
@@ -5413,6 +5440,22 @@ function renderDartEventAssistanceCatalog({
     `      bindingType: EventAssistanceCommandBindingType.${
       lowerCamelCase(row.rehearsal.bindingType)
     },\n` +
+    `      coverage: EventAssistanceCommandCoverage.${
+      coverageKind(row.rehearsal)
+    },\n` +
+    `      variantField: ${dartLiteral(
+      row.rehearsal.coverage?.variantField ?? null
+    )},\n` +
+    `      implementedVariants: ${enumList(
+      "EventAssistanceCommandCoverageVariant",
+      row.rehearsal.coverage?.implementedVariants ?? [],
+      8
+    )},\n` +
+    `      missingVariants: ${enumList(
+      "EventAssistanceCommandCoverageVariant",
+      row.rehearsal.coverage?.missingVariants ?? [],
+      8
+    )},\n` +
     `      operations: ${stringList(row.rehearsal.operations, 8)},\n` +
     `      missingCapability: ${row.rehearsal.missingCapability === null ?
       "null" :
@@ -5442,6 +5485,10 @@ ${enumText("EventAssistanceHostSurface", surfaces)}
 ${enumText("EventAssistanceHostPresentation", presentations)}
 
 ${enumText("EventAssistanceCommandBindingType", bindingTypes)}
+
+${enumText("EventAssistanceCommandCoverage", bindingCoverages)}
+
+${enumText("EventAssistanceCommandCoverageVariant", coverageVariants)}
 
 ${enumText("EventAssistanceMissingCapability", missingCapabilities)}
 
@@ -5500,16 +5547,27 @@ extension EventAssistanceWorkflowCatalogLookup on EventAssistanceWorkflowKind {
 final class EventAssistanceModeBinding {
   const EventAssistanceModeBinding({
     required this.bindingType,
+    required this.coverage,
+    required this.variantField,
+    required this.implementedVariants,
+    required this.missingVariants,
     required this.operations,
     required this.missingCapability,
   });
 
   final EventAssistanceCommandBindingType bindingType;
+  final EventAssistanceCommandCoverage coverage;
+  final String? variantField;
+  final List<EventAssistanceCommandCoverageVariant> implementedVariants;
+  final List<EventAssistanceCommandCoverageVariant> missingVariants;
   final List<String> operations;
   final EventAssistanceMissingCapability? missingCapability;
 
   bool get isImplemented =>
-      bindingType != EventAssistanceCommandBindingType.contractOnly;
+      coverage != EventAssistanceCommandCoverage.none;
+
+  bool get isFullyImplemented =>
+      coverage == EventAssistanceCommandCoverage.complete;
 }
 
 final class EventAssistanceCommandBindingDescriptor {

@@ -114,12 +114,19 @@ the implementation boundary for every command in both live and rehearsal
 modes. A `directCommand` binding names a callable that consumes the canonical
 command envelope; a `domainAdapter` names an existing typed domain operation;
 an `internalCoordinator` names worker-owned execution; and `contractOnly`
-means no executor is implemented. Every contract-only mode names its missing
-capability, while executable modes must leave that field empty. Validation
-requires all command kinds in schema order and requires executable bindings to
-name at least one operation. Generated TypeScript and Dart catalogs keep
+means no executor is implemented. Complete bindings have no missing capability;
+empty and partial bindings name one. A partial binding partitions a command's
+discriminator values into implemented and missing variants, and validation
+checks that the partition exactly covers the schema enum. Validation also
+requires all command kinds in schema order and executable bindings to name at
+least one operation. Generated TypeScript and Dart catalogs keep
 product code from treating type coverage as runnable coverage and expose the
 remaining dependency as a closed enum.
+
+The live `sendOperationalMessage` binding is partial. Late-join `joining`
+messages run through `LiveMessageDispatcher`; `planChange` and `followUp` still
+need a source-authoritative publication coordinator before they can be treated
+as executable.
 
 Seven workflows intentionally resolve through existing product domains instead
 of duplicating Event Assistance commands. Venue, route and format readiness use

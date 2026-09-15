@@ -70,16 +70,37 @@ void main() {
         );
         expect(
           mode.isImplemented,
-          mode.bindingType !=
-              schema_contracts.EventAssistanceCommandBindingType.contractOnly,
+          mode.coverage != schema_contracts.EventAssistanceCommandCoverage.none,
+        );
+        expect(
+          mode.isFullyImplemented,
+          mode.coverage ==
+              schema_contracts.EventAssistanceCommandCoverage.complete,
         );
         expect(
           mode.missingCapability != null,
-          mode.bindingType ==
-              schema_contracts.EventAssistanceCommandBindingType.contractOnly,
+          mode.coverage !=
+              schema_contracts.EventAssistanceCommandCoverage.complete,
         );
       }
     }
+    final messageBinding = schema_contracts
+        .EventAssistanceCommandKind
+        .sendOperationalMessage
+        .binding
+        .live;
+    expect(
+      messageBinding.coverage,
+      schema_contracts.EventAssistanceCommandCoverage.partial,
+    );
+    expect(messageBinding.variantField, 'intent');
+    expect(messageBinding.implementedVariants, [
+      schema_contracts.EventAssistanceCommandCoverageVariant.joining,
+    ]);
+    expect(messageBinding.missingVariants, [
+      schema_contracts.EventAssistanceCommandCoverageVariant.planChange,
+      schema_contracts.EventAssistanceCommandCoverageVariant.followUp,
+    ]);
   });
 
   test('generated profile prompt constants match contract limits', () {

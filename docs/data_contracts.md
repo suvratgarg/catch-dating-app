@@ -330,10 +330,11 @@ The exhaustive workflow catalog and the separate
 `event_assistance_command_bindings.json` catalog distinguish command type
 coverage from executable coverage. Every command has one live and one rehearsal
 binding classified as direct command, domain adapter, internal coordinator or
-contract-only. A contract-only binding names the missing capability; an
-executable binding names operations and has no missing capability. Contract
-validation keeps that list ordered with the command union, while generated
-TypeScript and Dart expose the same mode-specific relation.
+contract-only. Coverage is derived as complete or none unless a binding records
+an explicit partial partition of one command payload discriminator. Partial
+coverage names every implemented and missing variant plus the missing
+capability. Contract validation checks that partition against the command
+schema. Generated TypeScript and Dart expose the same mode-specific relation.
 
 Event Assistance routes read/write SDK transactions through
 `runAssistanceTransaction`. Explicit read-only snapshots keep the SDK read-only

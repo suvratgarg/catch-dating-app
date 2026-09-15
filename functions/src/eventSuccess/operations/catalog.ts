@@ -49,6 +49,7 @@ void completeCommandBindings;
 export type CommandExecutionMode = "live" | "rehearsal";
 export type CommandBinding =
   (typeof commandBindingDefinitions)[number][CommandExecutionMode];
+export type CommandCoverage = "none" | "partial" | "complete";
 
 export function commandBinding(
   kind: CommandKind,
@@ -65,7 +66,23 @@ export function commandHasExecutor(
   kind: CommandKind,
   mode: CommandExecutionMode
 ): boolean {
-  return commandBinding(kind, mode).bindingType !== "contractOnly";
+  return commandCoverage(kind, mode) !== "none";
+}
+
+export function commandCoverage(
+  kind: CommandKind,
+  mode: CommandExecutionMode
+): CommandCoverage {
+  const binding = commandBinding(kind, mode);
+  if ("coverage" in binding) return binding.coverage.kind;
+  return binding.bindingType === "contractOnly" ? "none" : "complete";
+}
+
+export function commandIsFullyImplemented(
+  kind: CommandKind,
+  mode: CommandExecutionMode
+): boolean {
+  return commandCoverage(kind, mode) === "complete";
 }
 
 type CommandsAvailableTo<A extends Authority> = {
