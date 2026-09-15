@@ -929,6 +929,7 @@
             "lib/explore/presentation/explore_screen_state.dart",
             "lib/explore/presentation/explore_view_model.dart",
             "lib/explore/presentation/explore_feed_view_model.dart",
+            "lib/explore/presentation/explore_feed_providers.dart",
             "lib/explore/presentation/explore_cross_paths_provider.dart",
             "lib/explore/presentation/widgets/explore_header.dart",
             "lib/explore/presentation/widgets/explore_filter_rail.dart",
@@ -1729,6 +1730,7 @@
           "implementationPaths": [
             "lib/explore/presentation/explore_map_screen.dart",
             "lib/explore/presentation/explore_feed_view_model.dart",
+            "lib/explore/presentation/explore_feed_providers.dart",
             "lib/events/presentation/event_map_screen.dart",
             "lib/events/presentation/event_map_view_model.dart"
           ],

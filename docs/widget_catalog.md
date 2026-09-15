@@ -1095,8 +1095,8 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>EventDetailLoadingScreen</code> | <code>lib/events/presentation/widgets/event_detail_loading_skeleton.dart:8</code> | — | — | No class documentation or registry summary. |
 | <code>EventCheckInCelebrationScreen</code> | <code>lib/events/shared/event_check_in_celebration_screen.dart:9</code> | — | — | No class documentation or registry summary. |
 | <code>EventJoinedCelebrationScreen</code> | <code>lib/events/shared/event_joined_celebration_screen.dart:10</code> | — | — | No class documentation or registry summary. |
-| <code>ExploreMapScreen</code> | <code>lib/explore/presentation/explore_map_screen.dart:38</code> | — | — | Full-screen event map opened from the Explore feed's map pill. |
-| <code>ExploreScreen</code> | <code>lib/explore/presentation/explore_screen.dart:52</code> | — | — | Explore — the supply-side feed (design-system Explore). |
+| <code>ExploreMapScreen</code> | <code>lib/explore/presentation/explore_map_screen.dart:39</code> | — | — | Full-screen event map opened from the Explore feed's map pill. |
+| <code>ExploreScreen</code> | <code>lib/explore/presentation/explore_screen.dart:53</code> | — | — | Explore — the supply-side feed (design-system Explore). |
 | <code>UpdateRequiredScreen</code> | <code>lib/force_update/presentation/update_required_screen.dart:15</code> | — | — | Blocking screen shown when the running app version is below [minVersion]. |
 | <code>HostApp</code> | <code>lib/host_app.dart:5</code> | — | — | No class documentation or registry summary. |
 | <code>HostEventsScreen</code> | <code>lib/hosts/events/presentation/host_events_screen.dart:30</code> | — | — | No class documentation or registry summary. |

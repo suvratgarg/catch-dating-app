@@ -1748,7 +1748,7 @@
           "status": "aligned"
         },
         {
-          "path": "lib/explore/presentation/explore_feed_view_model.dart",
+          "path": "lib/explore/presentation/explore_feed_providers.dart",
           "role": "consumer composition that preserves cursor exhaustiveness, load-more state, one shared date-strip query window and clock snapshot, per-date supply density, honest result count, and coordinate-complete map count",
           "status": "aligned"
         },

@@ -66,10 +66,6 @@
       "maxLines": 1140
     },
     {
-      "path": "lib/explore/presentation/explore_feed_view_model.dart",
-      "maxLines": 960
-    },
-    {
       "path": "lib/hosts/presentation/club_management/create/create_club_screen.dart",
       "maxLines": 870
     },
