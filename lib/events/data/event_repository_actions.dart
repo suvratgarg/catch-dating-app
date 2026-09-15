@@ -1,6 +1,8 @@
 part of 'event_repository.dart';
 
-extension EventRepositoryActions on EventRepository {
+mixin EventRepositoryActions {
+  FirebaseFunctions get _functions;
+
   // ── Write ─────────────────────────────────────────────────────────────────
 
   Future<void> createEvent({
