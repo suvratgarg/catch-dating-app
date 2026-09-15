@@ -5,6 +5,7 @@ const hostTodayOperationsHorizon = Duration(days: 7);
 
 enum HostAttentionKind {
   eventLiveOperations,
+  eventAssistanceCaseReview,
   eventWaitlistReview,
   eventJoinRequestReview,
   applicationReview,
@@ -31,6 +32,7 @@ enum HostAttentionSourceOwner {
   organizerFormAutomationRuns,
   hostPaymentAccounts,
   hostAttendanceOutbox,
+  eventAssistanceCases,
   eventSuccessPlans,
   eventRehearsals,
   eventStaffGrants,

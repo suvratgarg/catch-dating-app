@@ -4984,6 +4984,7 @@ export interface OrganizerAttentionItemDocument {
   organizerId: string;
   kind:
     | "eventLiveOperations"
+    | "eventAssistanceCaseReview"
     | "eventWaitlistReview"
     | "eventJoinRequestReview"
     | "applicationReview"
@@ -5007,6 +5008,7 @@ export interface OrganizerAttentionItemDocument {
     | "organizerFormAutomationRuns"
     | "hostPaymentAccounts"
     | "hostAttendanceOutbox"
+    | "eventAssistanceCases"
     | "eventSuccessPlans"
     | "eventRehearsals"
     | "eventStaffGrants"

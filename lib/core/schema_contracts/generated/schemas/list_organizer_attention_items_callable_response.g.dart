@@ -78,6 +78,7 @@ const schemaListOrganizerAttentionItemsCallableResponseSchema = <String, Object?
             'type': 'string',
             'enum': <Object?>[
               'eventLiveOperations',
+              'eventAssistanceCaseReview',
               'eventWaitlistReview',
               'eventJoinRequestReview',
               'applicationReview',
@@ -116,6 +117,7 @@ const schemaListOrganizerAttentionItemsCallableResponseSchema = <String, Object?
               'organizerFormAutomationRuns',
               'hostPaymentAccounts',
               'hostAttendanceOutbox',
+              'eventAssistanceCases',
               'eventSuccessPlans',
               'eventRehearsals',
               'eventStaffGrants',
@@ -323,8 +325,8 @@ const schemaListOrganizerAttentionItemsCallableResponseSchema = <String, Object?
     },
     'coverage': <String, Object?>{
       'type': 'array',
-      'minItems': 15,
-      'maxItems': 15,
+      'minItems': 16,
+      'maxItems': 16,
       'items': <String, Object?>{
         'type': 'object',
         'additionalProperties': false,
@@ -338,6 +340,7 @@ const schemaListOrganizerAttentionItemsCallableResponseSchema = <String, Object?
             'type': 'string',
             'enum': <Object?>[
               'eventLiveOperations',
+              'eventAssistanceCaseReview',
               'eventWaitlistReview',
               'eventJoinRequestReview',
               'applicationReview',

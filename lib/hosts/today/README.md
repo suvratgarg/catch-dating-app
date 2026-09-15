@@ -69,6 +69,7 @@ Typed handoffs:
 - `contracts/callable_responses/list_organizer_attention_items_response.schema.json`
 - `contracts/callables/list_organizer_attention_items_payload.schema.json`
 - `contracts/catalogs/host_attention_policies.json`
+- `contracts/firestore/event_assistance_cases.schema.json`
 - `contracts/firestore/events.schema.json`
 - `contracts/firestore/organizer_attention_items.schema.json`
 - `contracts/shared/host_attention_common.schema.json`

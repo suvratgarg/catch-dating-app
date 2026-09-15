@@ -6548,6 +6548,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostTodayAttentionOpenLive => 'Open live controls';
 
   @override
+  String hostTodayAttentionHelpBody({
+    required int count,
+    required Object eventName,
+  }) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count guests need help at $eventName.',
+      one: 'One guest needs help at $eventName.',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String hostTodayAttentionWaitlistBody({
     required Object count,
     required Object eventName,

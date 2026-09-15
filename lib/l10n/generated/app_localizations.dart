@@ -10432,6 +10432,15 @@ abstract class AppLocalizations {
   /// **'Open live controls'**
   String get hostTodayAttentionOpenLive;
 
+  /// Body for the event-level aggregate of open practical guest-help cases on Host Today.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{One guest needs help at {eventName}.} other{{count} guests need help at {eventName}.}}'**
+  String hostTodayAttentionHelpBody({
+    required int count,
+    required Object eventName,
+  });
+
   /// Body for an ordinary event waitlist task on Host Today.
   ///
   /// In en, this message translates to:

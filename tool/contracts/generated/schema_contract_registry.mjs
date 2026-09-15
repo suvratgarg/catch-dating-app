@@ -91719,6 +91719,7 @@ export const organizerAttentionItemDocumentSchema = {
       "type": "string",
       "enum": [
         "eventLiveOperations",
+        "eventAssistanceCaseReview",
         "eventWaitlistReview",
         "eventJoinRequestReview",
         "applicationReview",
@@ -91759,6 +91760,7 @@ export const organizerAttentionItemDocumentSchema = {
         "organizerFormAutomationRuns",
         "hostPaymentAccounts",
         "hostAttendanceOutbox",
+        "eventAssistanceCases",
         "eventSuccessPlans",
         "eventRehearsals",
         "eventStaffGrants",
@@ -187779,6 +187781,7 @@ export const listOrganizerAttentionItemsCallableResponseSchema = {
             "type": "string",
             "enum": [
               "eventLiveOperations",
+              "eventAssistanceCaseReview",
               "eventWaitlistReview",
               "eventJoinRequestReview",
               "applicationReview",
@@ -187817,6 +187820,7 @@ export const listOrganizerAttentionItemsCallableResponseSchema = {
               "organizerFormAutomationRuns",
               "hostPaymentAccounts",
               "hostAttendanceOutbox",
+              "eventAssistanceCases",
               "eventSuccessPlans",
               "eventRehearsals",
               "eventStaffGrants",
@@ -188024,8 +188028,8 @@ export const listOrganizerAttentionItemsCallableResponseSchema = {
     },
     "coverage": {
       "type": "array",
-      "minItems": 15,
-      "maxItems": 15,
+      "minItems": 16,
+      "maxItems": 16,
       "items": {
         "type": "object",
         "additionalProperties": false,
@@ -188039,6 +188043,7 @@ export const listOrganizerAttentionItemsCallableResponseSchema = {
             "type": "string",
             "enum": [
               "eventLiveOperations",
+              "eventAssistanceCaseReview",
               "eventWaitlistReview",
               "eventJoinRequestReview",
               "applicationReview",
@@ -206263,7 +206268,7 @@ export const organizerFormTemplateCatalog = {
 export const hostAttentionPolicyCatalog = {
   "schemaVersion": 1,
   "kind": "hostAttentionPolicies",
-  "policyVersion": 1,
+  "policyVersion": 2,
   "horizonHours": 168,
   "immediateHours": 24,
   "soonHours": 72,
@@ -206288,6 +206293,27 @@ export const hostAttentionPolicyCatalog = {
       "deliveryMode": "serverProjected",
       "readiness": "sourceReady",
       "readinessReason": "Event lifecycle and schedule are canonical server-owned facts."
+    },
+    {
+      "kind": "eventAssistanceCaseReview",
+      "scope": "event",
+      "sourceOwner": "eventAssistanceCases",
+      "sourceIdPolicy": "Canonical event id grouping open practical event-lead cases.",
+      "sourceRevisionPolicy": "SHA-256 fingerprint of the event schedule and sorted open case ids, receipt times, handling revisions, assignments, and source update times.",
+      "triggerPredicate": "An active live event has one or more open practical help cases owned by the event lead.",
+      "resolutionPredicate": "Every practical case for the event is resolved, the event ends or is cancelled, or the case source leaves the bounded live scope.",
+      "permissionPredicate": "Caller is a canonical manager of the event organizer; safety-owned cases remain outside this projection.",
+      "consequence": "risksGuestExperience",
+      "dueAtPolicy": "Earliest open practical case receivedAt.",
+      "expiresAtPolicy": "Event endTime.",
+      "destination": {
+        "route": "hostEventManage",
+        "section": "live"
+      },
+      "dedupePolicy": "kind + eventId",
+      "deliveryMode": "serverProjected",
+      "readiness": "sourceReady",
+      "readinessReason": "Practical help ownership, open status, organizer, event, and receipt time are canonical server-owned case facts."
     },
     {
       "kind": "eventWaitlistReview",

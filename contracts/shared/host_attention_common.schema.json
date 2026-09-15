@@ -9,6 +9,7 @@
       "type": "string",
       "enum": [
         "eventLiveOperations",
+        "eventAssistanceCaseReview",
         "eventWaitlistReview",
         "eventJoinRequestReview",
         "applicationReview",
@@ -40,6 +41,7 @@
         "organizerFormAutomationRuns",
         "hostPaymentAccounts",
         "hostAttendanceOutbox",
+        "eventAssistanceCases",
         "eventSuccessPlans",
         "eventRehearsals",
         "eventStaffGrants",

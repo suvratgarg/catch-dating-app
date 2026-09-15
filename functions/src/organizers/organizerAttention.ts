@@ -2,6 +2,8 @@ import * as admin from "firebase-admin";
 import {CallableRequest, HttpsError, onCall} from
   "firebase-functions/v2/https";
 import {findHostPaymentAccount} from "../payments/hostPaymentAccounts";
+import type {EventAssistanceCaseDocument} from
+  "../shared/generated/eventAssistanceCaseDocument";
 import {requireAuth} from "../shared/auth";
 import {normalizePayloadStrings} from
   "../shared/callablePayloadNormalization";
@@ -133,6 +135,7 @@ export async function loadOrganizerAttentionSources(
     compatibilityEvents,
     canonicalJoinRequests,
     compatibilityJoinRequests,
+    openPracticalCases,
     applications,
     providerRuns,
     automationRules,
@@ -158,6 +161,14 @@ export async function loadOrganizerAttentionSources(
     db.collection("eventParticipations")
       .where("clubId", "==", organizerId)
       .where("hostApprovalStatus", "==", "pending")
+      .limit(maxAttentionSourceRows + 1).get(),
+    db.collection("eventAssistanceCases")
+      .where("context.mode", "==", "live")
+      .where("context.organizerId", "==", organizerId)
+      .where("owner", "==", "eventLead")
+      .where("status", "==", "open")
+      .orderBy("receivedAt")
+      .orderBy(admin.firestore.FieldPath.documentId())
       .limit(maxAttentionSourceRows + 1).get(),
     db.collection("organizerApplications")
       .where("organizerId", "==", organizerId)
@@ -187,6 +198,7 @@ export async function loadOrganizerAttentionSources(
     compatibilityJoinRequests,
     "compatible event join requests"
   );
+  assertBoundedSnapshot(openPracticalCases, "open practical help cases");
   assertBoundedSnapshot(applications, "open organizer applications");
   assertBoundedSnapshot(providerRuns, "unexpired provider sync runs");
   assertBoundedSnapshot(automationRules, "form automation rules");
@@ -245,6 +257,8 @@ export async function loadOrganizerAttentionSources(
   return {
     organizer,
     events: [...eventRows.values()],
+    eventAssistanceCases: openPracticalCases.docs.map((doc) =>
+      sourceRow<EventAssistanceCaseDocument>(doc)),
     eventParticipations: [...participationRows.values()],
     applications: applications.docs.map((doc) =>
       sourceRow<OrganizerApplicationDocument>(doc)),

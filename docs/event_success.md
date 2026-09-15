@@ -2181,8 +2181,10 @@ consent, suppression and sender authority must still be read in the same outbox
 transaction. The guest webpage at `/event-update/:linkId` uses the public
 read/reply boundary and the existing web runtime primitives. Practical Host case
 reads and resolution now have typed backend and Dart client boundaries described
-above. Key provisioning, Host UI integration and the rehearsal response adapter
-remain separate steps; recording a help case does not yet notify a Host.
+above. Open practical cases also project as one event-level Host Today task that
+routes into the live workspace; restricted comfort/safety cases stay outside
+that projection. Key provisioning and the rehearsal response adapter remain
+separate steps.
 
 ### Durable message delivery coordination
 

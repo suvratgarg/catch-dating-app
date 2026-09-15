@@ -2,6 +2,8 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import * as admin from "firebase-admin";
 import {CallableRequest, HttpsError} from "firebase-functions/v2/https";
+import type {EventAssistanceCaseDocument} from
+  "../shared/generated/eventAssistanceCaseDocument";
 import type {
   EventDocument,
   EventParticipationDocument,
@@ -126,6 +128,44 @@ test("latest terminal outcomes resolve failures without weak proxies", () => {
     item.kind === "formAutomationFailure"), false);
 });
 
+test("aggregates open practical help by active event", () => {
+  const sources = emptySources();
+  sources.events = [row("event-1", event(), nowMillis - hourMillis)];
+  sources.eventAssistanceCases = [
+    row("case-2", practicalCase({
+      caseId: "case-2",
+      receivedAt: nowMillis - 10 * 60 * 1000,
+      assigneeUid: "manager-1",
+    }), nowMillis - 5 * 60 * 1000),
+    row("case-1", practicalCase({
+      caseId: "case-1",
+      receivedAt: nowMillis - 20 * 60 * 1000,
+    }), nowMillis - 20 * 60 * 1000),
+    row("case-resolved", practicalCase({
+      caseId: "case-resolved",
+      status: "resolved",
+      receivedAt: nowMillis - 30 * 60 * 1000,
+    }), nowMillis - 2 * 60 * 1000),
+    row("case-safety", safetyCase(), nowMillis - 2 * 60 * 1000),
+  ];
+
+  const items = deriveOrganizerAttentionItems({
+    organizerId: "organizer-1",
+    nowMillis,
+    sources,
+  });
+  const help = items.find((item) =>
+    item.kind === "eventAssistanceCaseReview");
+  assert.ok(help);
+  assert.equal(help.context.count, 2);
+  assert.equal(help.dueAtMillis, nowMillis - 20 * 60 * 1000);
+  assert.equal(help.destination.section, "live");
+  assert.equal(help.destination.eventId, "event-1");
+  assert.equal(help.sourceOwner, "eventAssistanceCases");
+  assert.equal(help.assignedHostUid, null,
+    "an event-level aggregate must not claim one case assignee");
+});
+
 test("applies the seven-day horizon and exposes all policy gaps", () => {
   const sources = emptySources();
   sources.events = [row("later-event", event({
@@ -142,8 +182,8 @@ test("applies the seven-day horizon and exposes all policy gaps", () => {
   assert.deepEqual(items, []);
 
   const coverage = hostAttentionCoverage();
-  assert.equal(coverage.length, 15);
-  assert.equal(new Set(coverage.map((entry) => entry.kind)).size, 15);
+  assert.equal(coverage.length, 16);
+  assert.equal(new Set(coverage.map((entry) => entry.kind)).size, 16);
   assert.equal(coverage.find((entry) =>
     entry.kind === "attendanceSync")?.state, "clientMergeRequired");
   assert.equal(coverage.find((entry) =>
@@ -278,7 +318,7 @@ test(
     });
     assert.deepEqual(actions, ["listOrganizerAttentionItems"]);
     assert.equal(result.generatedAtMillis, nowMillis);
-    assert.equal(result.coverage.length, 15);
+    assert.equal(result.coverage.length, 16);
     assert.equal(result.items.length, 6);
   }
 );
@@ -339,12 +379,75 @@ function emptySources(): OrganizerAttentionSources {
   return {
     organizer: row("organizer-1", organizer(), nowMillis - 10 * hourMillis),
     events: [],
+    eventAssistanceCases: [],
     eventParticipations: [],
     applications: [],
     providerSyncRuns: [],
     automationRules: [],
     automationRuns: [],
     paymentAccounts: {},
+  };
+}
+
+function practicalCase(overrides: {
+  caseId?: string;
+  status?: "open" | "resolved";
+  receivedAt?: number;
+  assigneeUid?: string | null;
+} = {}): EventAssistanceCaseDocument {
+  const status = overrides.status ?? "open";
+  const receivedAt = overrides.receivedAt ?? nowMillis - hourMillis;
+  const resolution = status === "resolved" ? {
+    outcome: "resolved" as const,
+    actorUid: "manager-1",
+    at: nowMillis - 5 * 60 * 1000,
+  } : null;
+  return {
+    schemaVersion: 1,
+    caseId: overrides.caseId ?? "case-1",
+    guestId: "guest-1",
+    context: {
+      mode: "live",
+      eventId: "event-1",
+      organizerId: "organizer-1",
+    },
+    attendeeId: "attendee-1",
+    episodeId: "episode-1",
+    responseId: "response-1",
+    messageId: `outbox:${"a".repeat(64)}`,
+    status,
+    receivedAt,
+    category: "eventLogistics",
+    owner: "eventLead",
+    sourceGeneration: "b".repeat(64),
+    handling: {
+      revision: 1,
+      assigneeUid: overrides.assigneeUid ?? null,
+      updatedAt: resolution?.at ?? receivedAt,
+      resolution,
+    },
+    attendeeGeneration: "c".repeat(64),
+  } as EventAssistanceCaseDocument;
+}
+
+function safetyCase(): EventAssistanceCaseDocument {
+  return {
+    schemaVersion: 1,
+    caseId: "case-safety",
+    guestId: "guest-safety",
+    context: {
+      mode: "live",
+      eventId: "event-1",
+      organizerId: "organizer-1",
+    },
+    attendeeId: "attendee-safety",
+    episodeId: "episode-safety",
+    responseId: "response-safety",
+    messageId: `outbox:${"d".repeat(64)}`,
+    status: "open",
+    receivedAt: nowMillis - 40 * 60 * 1000,
+    category: "comfortSafety",
+    owner: "authorizedSafetyOperator",
   };
 }
 

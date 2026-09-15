@@ -12100,6 +12100,14 @@
     "x-owner": "product",
     "x-surface": "hosts.today"
   },
+  "hostTodayAttentionHelpBody": "{count, plural, =1{One guest needs help at {eventName}.} other{{count} guests need help at {eventName}.}}",
+  "@hostTodayAttentionHelpBody": {
+    "description": "Body for the event-level aggregate of open practical guest-help cases on Host Today.",
+    "placeholders": {"count": {"type": "int"}, "eventName": {}},
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today"
+  },
   "hostTodayAttentionWaitlistBody": "{count} people are waiting for {eventName}.",
   "@hostTodayAttentionWaitlistBody": {
     "description": "Body for an ordinary event waitlist task on Host Today.",
