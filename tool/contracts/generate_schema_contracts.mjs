@@ -5350,6 +5350,12 @@ function renderDartEventAssistanceCatalog({
   const bindingTypes = [...new Set(commandBindingCatalog.definitions.flatMap(
     (row) => [row.live.bindingType, row.rehearsal.bindingType]
   ))];
+  const missingCapabilities = [...new Set(
+    commandBindingCatalog.definitions.flatMap((row) =>
+      [row.live.missingCapability, row.rehearsal.missingCapability]
+        .filter((value) => value !== null)
+    )
+  )];
   const rows = catalog.definitions.map((row) =>
     "  EventAssistanceWorkflowDescriptor(\n" +
     `    kind: EventAssistanceWorkflowKind.${row.kind},\n` +
@@ -5399,12 +5405,18 @@ function renderDartEventAssistanceCatalog({
       lowerCamelCase(row.live.bindingType)
     },\n` +
     `      operations: ${stringList(row.live.operations, 8)},\n` +
+    `      missingCapability: ${row.live.missingCapability === null ?
+      "null" :
+      `EventAssistanceMissingCapability.${row.live.missingCapability}`},\n` +
     "    ),\n" +
     "    rehearsal: EventAssistanceModeBinding(\n" +
     `      bindingType: EventAssistanceCommandBindingType.${
       lowerCamelCase(row.rehearsal.bindingType)
     },\n` +
     `      operations: ${stringList(row.rehearsal.operations, 8)},\n` +
+    `      missingCapability: ${row.rehearsal.missingCapability === null ?
+      "null" :
+      `EventAssistanceMissingCapability.${row.rehearsal.missingCapability}`},\n` +
     "    ),\n" +
     "  ),"
   ).join("\n");
@@ -5430,6 +5442,8 @@ ${enumText("EventAssistanceHostSurface", surfaces)}
 ${enumText("EventAssistanceHostPresentation", presentations)}
 
 ${enumText("EventAssistanceCommandBindingType", bindingTypes)}
+
+${enumText("EventAssistanceMissingCapability", missingCapabilities)}
 
 final class EventAssistanceHostProjection {
   const EventAssistanceHostProjection({
@@ -5487,10 +5501,12 @@ final class EventAssistanceModeBinding {
   const EventAssistanceModeBinding({
     required this.bindingType,
     required this.operations,
+    required this.missingCapability,
   });
 
   final EventAssistanceCommandBindingType bindingType;
   final List<String> operations;
+  final EventAssistanceMissingCapability? missingCapability;
 
   bool get isImplemented =>
       bindingType != EventAssistanceCommandBindingType.contractOnly;

@@ -213,7 +213,11 @@ function checkEventAssistanceContracts(parsed) {
       const binding = row[mode];
       if (!binding || typeof binding !== "object" ||
           JSON.stringify(Object.keys(binding)) !==
-            JSON.stringify(["bindingType", "operations"]) ||
+            JSON.stringify([
+              "bindingType",
+              "operations",
+              "missingCapability",
+            ]) ||
           !bindingTypes.has(binding.bindingType) ||
           !Array.isArray(binding.operations) ||
           new Set(binding.operations).size !== binding.operations.length ||
@@ -221,12 +225,17 @@ function checkEventAssistanceContracts(parsed) {
             typeof operation !== "string" ||
             !/^[A-Za-z][A-Za-z0-9]*(?:\.[A-Za-z][A-Za-z0-9]*)?$/.test(
               operation
-            ))) {
+            )) ||
+          (binding.missingCapability !== null &&
+            (typeof binding.missingCapability !== "string" ||
+              !/^[a-z][A-Za-z0-9]*$/.test(binding.missingCapability)))) {
         fail(`Invalid ${mode} command binding: ${row.commandKind}`);
         continue;
       }
       if ((binding.bindingType === "contractOnly") !==
-          (binding.operations.length === 0)) {
+          (binding.operations.length === 0) ||
+          (binding.bindingType === "contractOnly") !==
+          (binding.missingCapability !== null)) {
         fail(`Command binding operations mismatch: ${row.commandKind}/${mode}`);
       }
     }

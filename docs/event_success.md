@@ -114,10 +114,12 @@ the implementation boundary for every command in both live and rehearsal
 modes. A `directCommand` binding names a callable that consumes the canonical
 command envelope; a `domainAdapter` names an existing typed domain operation;
 an `internalCoordinator` names worker-owned execution; and `contractOnly`
-means no executor is implemented. Validation requires all command kinds in
-schema order and requires executable bindings to name at least one operation.
-Generated TypeScript and Dart catalogs keep product code from treating type
-coverage as runnable coverage.
+means no executor is implemented. Every contract-only mode names its missing
+capability, while executable modes must leave that field empty. Validation
+requires all command kinds in schema order and requires executable bindings to
+name at least one operation. Generated TypeScript and Dart catalogs keep
+product code from treating type coverage as runnable coverage and expose the
+remaining dependency as a closed enum.
 
 Seven workflows intentionally resolve through existing product domains instead
 of duplicating Event Assistance commands. Venue, route and format readiness use

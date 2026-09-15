@@ -69,8 +69,27 @@ test("command bindings account for every command and mode", () => {
         binding.operations.length === 0,
         binding.bindingType === "contractOnly"
       );
+      assert.equal(
+        binding.missingCapability !== null,
+        binding.bindingType === "contractOnly"
+      );
     }
   }
+});
+
+test("unimplemented live commands name their missing capability", () => {
+  const gaps = Object.fromEntries(commandBindingDefinitions
+    .filter((definition) => definition.live.bindingType === "contractOnly")
+    .map((definition) => [
+      definition.commandKind,
+      definition.live.missingCapability,
+    ]));
+  assert.deepEqual(gaps, {
+    changeRoute: "liveRouteDecision",
+    requestRequiredData: "liveRequiredDataRequest",
+    reconcileFinance: "eventPaymentCaseResolution",
+    resolveRestrictedCase: "restrictedCaseResolution",
+  });
 });
 
 test("direct live bindings only name command-consuming callables", () => {

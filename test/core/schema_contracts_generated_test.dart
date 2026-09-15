@@ -73,6 +73,11 @@ void main() {
           mode.bindingType !=
               schema_contracts.EventAssistanceCommandBindingType.contractOnly,
         );
+        expect(
+          mode.missingCapability != null,
+          mode.bindingType ==
+              schema_contracts.EventAssistanceCommandBindingType.contractOnly,
+        );
       }
     }
   });

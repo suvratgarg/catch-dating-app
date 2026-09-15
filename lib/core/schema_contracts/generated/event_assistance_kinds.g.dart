@@ -156,6 +156,27 @@ enum EventAssistanceCommandBindingType {
   contractOnly,
 }
 
+enum EventAssistanceMissingCapability {
+  rehearsalAllocationProposal,
+  rehearsalAllocationPublication,
+  rehearsalProgrammeControl,
+  rehearsalOutcomeRecording,
+  liveRouteDecision,
+  rehearsalRouteDecision,
+  liveRequiredDataRequest,
+  rehearsalRequiredDataRequest,
+  rehearsalRosterReconciliation,
+  eventPaymentCaseResolution,
+  rehearsalFinanceReconciliation,
+  rehearsalUnitProgressControl,
+  rehearsalRevealControl,
+  rehearsalOverrideControl,
+  rehearsalLocationSharing,
+  rehearsalRestrictedCaseRouting,
+  restrictedCaseResolution,
+  rehearsalRestrictedCaseResolution,
+}
+
 final class EventAssistanceHostProjection {
   const EventAssistanceHostProjection({
     required this.surfaces,
@@ -1248,10 +1269,12 @@ final class EventAssistanceModeBinding {
   const EventAssistanceModeBinding({
     required this.bindingType,
     required this.operations,
+    required this.missingCapability,
   });
 
   final EventAssistanceCommandBindingType bindingType;
   final List<String> operations;
+  final EventAssistanceMissingCapability? missingCapability;
 
   bool get isImplemented =>
       bindingType != EventAssistanceCommandBindingType.contractOnly;
@@ -1278,12 +1301,14 @@ const eventAssistanceCommandBindingCatalog =
       operations: <String>[
         'confirmEventAssistanceDeparture',
       ],
+      missingCapability: null,
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.domainAdapter,
       operations: <String>[
         'controlEventRehearsal',
       ],
+      missingCapability: null,
     ),
   ),
   EventAssistanceCommandBindingDescriptor(
@@ -1293,12 +1318,14 @@ const eventAssistanceCommandBindingCatalog =
       operations: <String>[
         'submitEventAssistanceGuestChoice',
       ],
+      missingCapability: null,
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.domainAdapter,
       operations: <String>[
         'submitEventRehearsalGuestAction',
       ],
+      missingCapability: null,
     ),
   ),
   EventAssistanceCommandBindingDescriptor(
@@ -1309,12 +1336,14 @@ const eventAssistanceCommandBindingCatalog =
         'setEventAttendeeAttendance',
         'checkInEventRuntime',
       ],
+      missingCapability: null,
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.domainAdapter,
       operations: <String>[
         'submitEventRehearsalGuestAction',
       ],
+      missingCapability: null,
     ),
   ),
   EventAssistanceCommandBindingDescriptor(
@@ -1324,12 +1353,14 @@ const eventAssistanceCommandBindingCatalog =
       operations: <String>[
         'prepareLiveLateJoinPublication',
       ],
+      missingCapability: null,
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.domainAdapter,
       operations: <String>[
         'controlEventRehearsal',
       ],
+      missingCapability: null,
     ),
   ),
   EventAssistanceCommandBindingDescriptor(
@@ -1339,12 +1370,14 @@ const eventAssistanceCommandBindingCatalog =
       operations: <String>[
         'LiveMessageDispatcher.dispatch',
       ],
+      missingCapability: null,
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.domainAdapter,
       operations: <String>[
         'controlEventRehearsal',
       ],
+      missingCapability: null,
     ),
   ),
   EventAssistanceCommandBindingDescriptor(
@@ -1354,12 +1387,14 @@ const eventAssistanceCommandBindingCatalog =
       operations: <String>[
         'GuestAssistanceStore.submit',
       ],
+      missingCapability: null,
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.domainAdapter,
       operations: <String>[
         'submitEventRehearsalGuestAction',
       ],
+      missingCapability: null,
     ),
   ),
   EventAssistanceCommandBindingDescriptor(
@@ -1369,12 +1404,14 @@ const eventAssistanceCommandBindingCatalog =
       operations: <String>[
         'setEventAssistanceParticipation',
       ],
+      missingCapability: null,
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.domainAdapter,
       operations: <String>[
         'injectEventRehearsalBehavior',
       ],
+      missingCapability: null,
     ),
   ),
   EventAssistanceCommandBindingDescriptor(
@@ -1385,10 +1422,12 @@ const eventAssistanceCommandBindingCatalog =
         'generateEventSuccessPods',
         'generateEventSuccessRotations',
       ],
+      missingCapability: null,
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.contractOnly,
       operations: <String>[],
+      missingCapability: EventAssistanceMissingCapability.rehearsalAllocationProposal,
     ),
   ),
   EventAssistanceCommandBindingDescriptor(
@@ -1398,10 +1437,12 @@ const eventAssistanceCommandBindingCatalog =
       operations: <String>[
         'publishEventSuccessRotationRound',
       ],
+      missingCapability: null,
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.contractOnly,
       operations: <String>[],
+      missingCapability: EventAssistanceMissingCapability.rehearsalAllocationPublication,
     ),
   ),
   EventAssistanceCommandBindingDescriptor(
@@ -1412,12 +1453,14 @@ const eventAssistanceCommandBindingCatalog =
         'controlEventSuccessSpatial',
         'resolveEventSuccessLateArrival',
       ],
+      missingCapability: null,
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.domainAdapter,
       operations: <String>[
         'controlEventRehearsalSpatial',
       ],
+      missingCapability: null,
     ),
   ),
   EventAssistanceCommandBindingDescriptor(
@@ -1428,12 +1471,14 @@ const eventAssistanceCommandBindingCatalog =
         'upsertEventSuccessLayout',
         'controlEventSuccessSpatial',
       ],
+      missingCapability: null,
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.domainAdapter,
       operations: <String>[
         'updateEventRehearsalSetup',
       ],
+      missingCapability: null,
     ),
   ),
   EventAssistanceCommandBindingDescriptor(
@@ -1443,12 +1488,14 @@ const eventAssistanceCommandBindingCatalog =
       operations: <String>[
         'transferEventAssistanceGroup',
       ],
+      missingCapability: null,
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.domainAdapter,
       operations: <String>[
         'controlEventRehearsal',
       ],
+      missingCapability: null,
     ),
   ),
   EventAssistanceCommandBindingDescriptor(
@@ -1458,12 +1505,14 @@ const eventAssistanceCommandBindingCatalog =
       operations: <String>[
         'recordEventAssistanceCheckpoint',
       ],
+      missingCapability: null,
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.domainAdapter,
       operations: <String>[
         'controlEventRehearsal',
       ],
+      missingCapability: null,
     ),
   ),
   EventAssistanceCommandBindingDescriptor(
@@ -1473,10 +1522,12 @@ const eventAssistanceCommandBindingCatalog =
       operations: <String>[
         'controlEventSuccessLive',
       ],
+      missingCapability: null,
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.contractOnly,
       operations: <String>[],
+      missingCapability: EventAssistanceMissingCapability.rehearsalProgrammeControl,
     ),
   ),
   EventAssistanceCommandBindingDescriptor(
@@ -1486,10 +1537,12 @@ const eventAssistanceCommandBindingCatalog =
       operations: <String>[
         'recordEventSuccessUnitOutcomes',
       ],
+      missingCapability: null,
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.contractOnly,
       operations: <String>[],
+      missingCapability: EventAssistanceMissingCapability.rehearsalOutcomeRecording,
     ),
   ),
   EventAssistanceCommandBindingDescriptor(
@@ -1497,10 +1550,12 @@ const eventAssistanceCommandBindingCatalog =
     live: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.contractOnly,
       operations: <String>[],
+      missingCapability: EventAssistanceMissingCapability.liveRouteDecision,
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.contractOnly,
       operations: <String>[],
+      missingCapability: EventAssistanceMissingCapability.rehearsalRouteDecision,
     ),
   ),
   EventAssistanceCommandBindingDescriptor(
@@ -1510,12 +1565,14 @@ const eventAssistanceCommandBindingCatalog =
       operations: <String>[
         'resolveEventAssistanceAccountability',
       ],
+      missingCapability: null,
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.domainAdapter,
       operations: <String>[
         'controlEventRehearsal',
       ],
+      missingCapability: null,
     ),
   ),
   EventAssistanceCommandBindingDescriptor(
@@ -1525,12 +1582,14 @@ const eventAssistanceCommandBindingCatalog =
       operations: <String>[
         'approveEventRuntimeClaim',
       ],
+      missingCapability: null,
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.domainAdapter,
       operations: <String>[
         'injectEventRehearsalBehavior',
       ],
+      missingCapability: null,
     ),
   ),
   EventAssistanceCommandBindingDescriptor(
@@ -1540,12 +1599,14 @@ const eventAssistanceCommandBindingCatalog =
       operations: <String>[
         'decideEventJoinRequest',
       ],
+      missingCapability: null,
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.domainAdapter,
       operations: <String>[
         'injectEventRehearsalBehavior',
       ],
+      missingCapability: null,
     ),
   ),
   EventAssistanceCommandBindingDescriptor(
@@ -1556,12 +1617,14 @@ const eventAssistanceCommandBindingCatalog =
         'setEventAssistanceGroupStaff',
         'grantEventStaff',
       ],
+      missingCapability: null,
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.domainAdapter,
       operations: <String>[
         'controlEventRehearsal',
       ],
+      missingCapability: null,
     ),
   ),
   EventAssistanceCommandBindingDescriptor(
@@ -1571,12 +1634,14 @@ const eventAssistanceCommandBindingCatalog =
       operations: <String>[
         'resolveEventAssistanceCase',
       ],
+      missingCapability: null,
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.domainAdapter,
       operations: <String>[
         'controlEventRehearsal',
       ],
+      missingCapability: null,
     ),
   ),
   EventAssistanceCommandBindingDescriptor(
@@ -1588,6 +1653,7 @@ const eventAssistanceCommandBindingCatalog =
         'setEventAttendeeAttendance',
         'recordEventNoShow',
       ],
+      missingCapability: null,
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.domainAdapter,
@@ -1595,6 +1661,7 @@ const eventAssistanceCommandBindingCatalog =
         'completeEventRehearsal',
         'injectEventRehearsalBehavior',
       ],
+      missingCapability: null,
     ),
   ),
   EventAssistanceCommandBindingDescriptor(
@@ -1602,10 +1669,12 @@ const eventAssistanceCommandBindingCatalog =
     live: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.contractOnly,
       operations: <String>[],
+      missingCapability: EventAssistanceMissingCapability.liveRequiredDataRequest,
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.contractOnly,
       operations: <String>[],
+      missingCapability: EventAssistanceMissingCapability.rehearsalRequiredDataRequest,
     ),
   ),
   EventAssistanceCommandBindingDescriptor(
@@ -1615,10 +1684,12 @@ const eventAssistanceCommandBindingCatalog =
       operations: <String>[
         'ingestEventRosterWebhook',
       ],
+      missingCapability: null,
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.contractOnly,
       operations: <String>[],
+      missingCapability: EventAssistanceMissingCapability.rehearsalRosterReconciliation,
     ),
   ),
   EventAssistanceCommandBindingDescriptor(
@@ -1626,10 +1697,12 @@ const eventAssistanceCommandBindingCatalog =
     live: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.contractOnly,
       operations: <String>[],
+      missingCapability: EventAssistanceMissingCapability.eventPaymentCaseResolution,
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.contractOnly,
       operations: <String>[],
+      missingCapability: EventAssistanceMissingCapability.rehearsalFinanceReconciliation,
     ),
   ),
   EventAssistanceCommandBindingDescriptor(
@@ -1639,12 +1712,14 @@ const eventAssistanceCommandBindingCatalog =
       operations: <String>[
         'repairEventAssistanceDelivery',
       ],
+      missingCapability: null,
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.domainAdapter,
       operations: <String>[
         'controlEventRehearsal',
       ],
+      missingCapability: null,
     ),
   ),
   EventAssistanceCommandBindingDescriptor(
@@ -1656,12 +1731,14 @@ const eventAssistanceCommandBindingCatalog =
         'AssistanceDeliveryWorkStore.process',
         'AssistanceCheckpointWorkStore.process',
       ],
+      missingCapability: null,
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.domainAdapter,
       operations: <String>[
         'controlEventRehearsal',
       ],
+      missingCapability: null,
     ),
   ),
   EventAssistanceCommandBindingDescriptor(
@@ -1671,12 +1748,14 @@ const eventAssistanceCommandBindingCatalog =
       operations: <String>[
         'controlEventSuccessLive',
       ],
+      missingCapability: null,
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.domainAdapter,
       operations: <String>[
         'completeEventRehearsal',
       ],
+      missingCapability: null,
     ),
   ),
   EventAssistanceCommandBindingDescriptor(
@@ -1686,10 +1765,12 @@ const eventAssistanceCommandBindingCatalog =
       operations: <String>[
         'controlEventSuccessLive',
       ],
+      missingCapability: null,
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.contractOnly,
       operations: <String>[],
+      missingCapability: EventAssistanceMissingCapability.rehearsalUnitProgressControl,
     ),
   ),
   EventAssistanceCommandBindingDescriptor(
@@ -1699,10 +1780,12 @@ const eventAssistanceCommandBindingCatalog =
       operations: <String>[
         'controlEventSuccessLive',
       ],
+      missingCapability: null,
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.contractOnly,
       operations: <String>[],
+      missingCapability: EventAssistanceMissingCapability.rehearsalRevealControl,
     ),
   ),
   EventAssistanceCommandBindingDescriptor(
@@ -1713,10 +1796,12 @@ const eventAssistanceCommandBindingCatalog =
         'overrideEventSuccessGroups',
         'overrideEventSuccessRotations',
       ],
+      missingCapability: null,
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.contractOnly,
       operations: <String>[],
+      missingCapability: EventAssistanceMissingCapability.rehearsalOverrideControl,
     ),
   ),
   EventAssistanceCommandBindingDescriptor(
@@ -1726,10 +1811,12 @@ const eventAssistanceCommandBindingCatalog =
       operations: <String>[
         'publishEventLivePosition',
       ],
+      missingCapability: null,
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.contractOnly,
       operations: <String>[],
+      missingCapability: EventAssistanceMissingCapability.rehearsalLocationSharing,
     ),
   ),
   EventAssistanceCommandBindingDescriptor(
@@ -1739,12 +1826,14 @@ const eventAssistanceCommandBindingCatalog =
       operations: <String>[
         'AssistanceCheckpointWorkStore.process',
       ],
+      missingCapability: null,
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.internalCoordinator,
       operations: <String>[
         'controlEventRehearsal',
       ],
+      missingCapability: null,
     ),
   ),
   EventAssistanceCommandBindingDescriptor(
@@ -1754,12 +1843,14 @@ const eventAssistanceCommandBindingCatalog =
       operations: <String>[
         'recordEventNoShow',
       ],
+      missingCapability: null,
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.domainAdapter,
       operations: <String>[
         'injectEventRehearsalBehavior',
       ],
+      missingCapability: null,
     ),
   ),
   EventAssistanceCommandBindingDescriptor(
@@ -1769,10 +1860,12 @@ const eventAssistanceCommandBindingCatalog =
       operations: <String>[
         'GuestAssistanceStore.submit',
       ],
+      missingCapability: null,
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.contractOnly,
       operations: <String>[],
+      missingCapability: EventAssistanceMissingCapability.rehearsalRestrictedCaseRouting,
     ),
   ),
   EventAssistanceCommandBindingDescriptor(
@@ -1780,10 +1873,12 @@ const eventAssistanceCommandBindingCatalog =
     live: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.contractOnly,
       operations: <String>[],
+      missingCapability: EventAssistanceMissingCapability.restrictedCaseResolution,
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.contractOnly,
       operations: <String>[],
+      missingCapability: EventAssistanceMissingCapability.rehearsalRestrictedCaseResolution,
     ),
   ),
   EventAssistanceCommandBindingDescriptor(
@@ -1793,12 +1888,14 @@ const eventAssistanceCommandBindingCatalog =
       operations: <String>[
         'reassignEventAssistanceCheckpointReporter',
       ],
+      missingCapability: null,
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.domainAdapter,
       operations: <String>[
         'controlEventRehearsal',
       ],
+      missingCapability: null,
     ),
   ),
   EventAssistanceCommandBindingDescriptor(
@@ -1808,12 +1905,14 @@ const eventAssistanceCommandBindingCatalog =
       operations: <String>[
         'setEventAssistanceCheckpointCloseout',
       ],
+      missingCapability: null,
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.domainAdapter,
       operations: <String>[
         'controlEventRehearsal',
       ],
+      missingCapability: null,
     ),
   ),
 ];

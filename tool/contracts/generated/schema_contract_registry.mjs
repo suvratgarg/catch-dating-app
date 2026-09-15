@@ -205368,13 +205368,15 @@ export const eventAssistanceCommandBindingCatalog = {
         "bindingType": "directCommand",
         "operations": [
           "confirmEventAssistanceDeparture"
-        ]
+        ],
+        "missingCapability": null
       },
       "rehearsal": {
         "bindingType": "domainAdapter",
         "operations": [
           "controlEventRehearsal"
-        ]
+        ],
+        "missingCapability": null
       }
     },
     {
@@ -205383,13 +205385,15 @@ export const eventAssistanceCommandBindingCatalog = {
         "bindingType": "directCommand",
         "operations": [
           "submitEventAssistanceGuestChoice"
-        ]
+        ],
+        "missingCapability": null
       },
       "rehearsal": {
         "bindingType": "domainAdapter",
         "operations": [
           "submitEventRehearsalGuestAction"
-        ]
+        ],
+        "missingCapability": null
       }
     },
     {
@@ -205399,13 +205403,15 @@ export const eventAssistanceCommandBindingCatalog = {
         "operations": [
           "setEventAttendeeAttendance",
           "checkInEventRuntime"
-        ]
+        ],
+        "missingCapability": null
       },
       "rehearsal": {
         "bindingType": "domainAdapter",
         "operations": [
           "submitEventRehearsalGuestAction"
-        ]
+        ],
+        "missingCapability": null
       }
     },
     {
@@ -205414,13 +205420,15 @@ export const eventAssistanceCommandBindingCatalog = {
         "bindingType": "internalCoordinator",
         "operations": [
           "prepareLiveLateJoinPublication"
-        ]
+        ],
+        "missingCapability": null
       },
       "rehearsal": {
         "bindingType": "domainAdapter",
         "operations": [
           "controlEventRehearsal"
-        ]
+        ],
+        "missingCapability": null
       }
     },
     {
@@ -205429,13 +205437,15 @@ export const eventAssistanceCommandBindingCatalog = {
         "bindingType": "internalCoordinator",
         "operations": [
           "LiveMessageDispatcher.dispatch"
-        ]
+        ],
+        "missingCapability": null
       },
       "rehearsal": {
         "bindingType": "domainAdapter",
         "operations": [
           "controlEventRehearsal"
-        ]
+        ],
+        "missingCapability": null
       }
     },
     {
@@ -205444,13 +205454,15 @@ export const eventAssistanceCommandBindingCatalog = {
         "bindingType": "internalCoordinator",
         "operations": [
           "GuestAssistanceStore.submit"
-        ]
+        ],
+        "missingCapability": null
       },
       "rehearsal": {
         "bindingType": "domainAdapter",
         "operations": [
           "submitEventRehearsalGuestAction"
-        ]
+        ],
+        "missingCapability": null
       }
     },
     {
@@ -205459,13 +205471,15 @@ export const eventAssistanceCommandBindingCatalog = {
         "bindingType": "directCommand",
         "operations": [
           "setEventAssistanceParticipation"
-        ]
+        ],
+        "missingCapability": null
       },
       "rehearsal": {
         "bindingType": "domainAdapter",
         "operations": [
           "injectEventRehearsalBehavior"
-        ]
+        ],
+        "missingCapability": null
       }
     },
     {
@@ -205475,11 +205489,13 @@ export const eventAssistanceCommandBindingCatalog = {
         "operations": [
           "generateEventSuccessPods",
           "generateEventSuccessRotations"
-        ]
+        ],
+        "missingCapability": null
       },
       "rehearsal": {
         "bindingType": "contractOnly",
-        "operations": []
+        "operations": [],
+        "missingCapability": "rehearsalAllocationProposal"
       }
     },
     {
@@ -205488,11 +205504,13 @@ export const eventAssistanceCommandBindingCatalog = {
         "bindingType": "domainAdapter",
         "operations": [
           "publishEventSuccessRotationRound"
-        ]
+        ],
+        "missingCapability": null
       },
       "rehearsal": {
         "bindingType": "contractOnly",
-        "operations": []
+        "operations": [],
+        "missingCapability": "rehearsalAllocationPublication"
       }
     },
     {
@@ -205502,13 +205520,15 @@ export const eventAssistanceCommandBindingCatalog = {
         "operations": [
           "controlEventSuccessSpatial",
           "resolveEventSuccessLateArrival"
-        ]
+        ],
+        "missingCapability": null
       },
       "rehearsal": {
         "bindingType": "domainAdapter",
         "operations": [
           "controlEventRehearsalSpatial"
-        ]
+        ],
+        "missingCapability": null
       }
     },
     {
@@ -205518,13 +205538,15 @@ export const eventAssistanceCommandBindingCatalog = {
         "operations": [
           "upsertEventSuccessLayout",
           "controlEventSuccessSpatial"
-        ]
+        ],
+        "missingCapability": null
       },
       "rehearsal": {
         "bindingType": "domainAdapter",
         "operations": [
           "updateEventRehearsalSetup"
-        ]
+        ],
+        "missingCapability": null
       }
     },
     {
@@ -205533,13 +205555,15 @@ export const eventAssistanceCommandBindingCatalog = {
         "bindingType": "directCommand",
         "operations": [
           "transferEventAssistanceGroup"
-        ]
+        ],
+        "missingCapability": null
       },
       "rehearsal": {
         "bindingType": "domainAdapter",
         "operations": [
           "controlEventRehearsal"
-        ]
+        ],
+        "missingCapability": null
       }
     },
     {
@@ -205548,13 +205572,15 @@ export const eventAssistanceCommandBindingCatalog = {
         "bindingType": "directCommand",
         "operations": [
           "recordEventAssistanceCheckpoint"
-        ]
+        ],
+        "missingCapability": null
       },
       "rehearsal": {
         "bindingType": "domainAdapter",
         "operations": [
           "controlEventRehearsal"
-        ]
+        ],
+        "missingCapability": null
       }
     },
     {
@@ -205563,11 +205589,13 @@ export const eventAssistanceCommandBindingCatalog = {
         "bindingType": "domainAdapter",
         "operations": [
           "controlEventSuccessLive"
-        ]
+        ],
+        "missingCapability": null
       },
       "rehearsal": {
         "bindingType": "contractOnly",
-        "operations": []
+        "operations": [],
+        "missingCapability": "rehearsalProgrammeControl"
       }
     },
     {
@@ -205576,22 +205604,26 @@ export const eventAssistanceCommandBindingCatalog = {
         "bindingType": "domainAdapter",
         "operations": [
           "recordEventSuccessUnitOutcomes"
-        ]
+        ],
+        "missingCapability": null
       },
       "rehearsal": {
         "bindingType": "contractOnly",
-        "operations": []
+        "operations": [],
+        "missingCapability": "rehearsalOutcomeRecording"
       }
     },
     {
       "commandKind": "changeRoute",
       "live": {
         "bindingType": "contractOnly",
-        "operations": []
+        "operations": [],
+        "missingCapability": "liveRouteDecision"
       },
       "rehearsal": {
         "bindingType": "contractOnly",
-        "operations": []
+        "operations": [],
+        "missingCapability": "rehearsalRouteDecision"
       }
     },
     {
@@ -205600,13 +205632,15 @@ export const eventAssistanceCommandBindingCatalog = {
         "bindingType": "directCommand",
         "operations": [
           "resolveEventAssistanceAccountability"
-        ]
+        ],
+        "missingCapability": null
       },
       "rehearsal": {
         "bindingType": "domainAdapter",
         "operations": [
           "controlEventRehearsal"
-        ]
+        ],
+        "missingCapability": null
       }
     },
     {
@@ -205615,13 +205649,15 @@ export const eventAssistanceCommandBindingCatalog = {
         "bindingType": "domainAdapter",
         "operations": [
           "approveEventRuntimeClaim"
-        ]
+        ],
+        "missingCapability": null
       },
       "rehearsal": {
         "bindingType": "domainAdapter",
         "operations": [
           "injectEventRehearsalBehavior"
-        ]
+        ],
+        "missingCapability": null
       }
     },
     {
@@ -205630,13 +205666,15 @@ export const eventAssistanceCommandBindingCatalog = {
         "bindingType": "domainAdapter",
         "operations": [
           "decideEventJoinRequest"
-        ]
+        ],
+        "missingCapability": null
       },
       "rehearsal": {
         "bindingType": "domainAdapter",
         "operations": [
           "injectEventRehearsalBehavior"
-        ]
+        ],
+        "missingCapability": null
       }
     },
     {
@@ -205646,13 +205684,15 @@ export const eventAssistanceCommandBindingCatalog = {
         "operations": [
           "setEventAssistanceGroupStaff",
           "grantEventStaff"
-        ]
+        ],
+        "missingCapability": null
       },
       "rehearsal": {
         "bindingType": "domainAdapter",
         "operations": [
           "controlEventRehearsal"
-        ]
+        ],
+        "missingCapability": null
       }
     },
     {
@@ -205661,13 +205701,15 @@ export const eventAssistanceCommandBindingCatalog = {
         "bindingType": "directCommand",
         "operations": [
           "resolveEventAssistanceCase"
-        ]
+        ],
+        "missingCapability": null
       },
       "rehearsal": {
         "bindingType": "domainAdapter",
         "operations": [
           "controlEventRehearsal"
-        ]
+        ],
+        "missingCapability": null
       }
     },
     {
@@ -205678,25 +205720,29 @@ export const eventAssistanceCommandBindingCatalog = {
           "getEventAttendanceDisposition",
           "setEventAttendeeAttendance",
           "recordEventNoShow"
-        ]
+        ],
+        "missingCapability": null
       },
       "rehearsal": {
         "bindingType": "domainAdapter",
         "operations": [
           "completeEventRehearsal",
           "injectEventRehearsalBehavior"
-        ]
+        ],
+        "missingCapability": null
       }
     },
     {
       "commandKind": "requestRequiredData",
       "live": {
         "bindingType": "contractOnly",
-        "operations": []
+        "operations": [],
+        "missingCapability": "liveRequiredDataRequest"
       },
       "rehearsal": {
         "bindingType": "contractOnly",
-        "operations": []
+        "operations": [],
+        "missingCapability": "rehearsalRequiredDataRequest"
       }
     },
     {
@@ -205705,22 +205751,26 @@ export const eventAssistanceCommandBindingCatalog = {
         "bindingType": "domainAdapter",
         "operations": [
           "ingestEventRosterWebhook"
-        ]
+        ],
+        "missingCapability": null
       },
       "rehearsal": {
         "bindingType": "contractOnly",
-        "operations": []
+        "operations": [],
+        "missingCapability": "rehearsalRosterReconciliation"
       }
     },
     {
       "commandKind": "reconcileFinance",
       "live": {
         "bindingType": "contractOnly",
-        "operations": []
+        "operations": [],
+        "missingCapability": "eventPaymentCaseResolution"
       },
       "rehearsal": {
         "bindingType": "contractOnly",
-        "operations": []
+        "operations": [],
+        "missingCapability": "rehearsalFinanceReconciliation"
       }
     },
     {
@@ -205729,13 +205779,15 @@ export const eventAssistanceCommandBindingCatalog = {
         "bindingType": "directCommand",
         "operations": [
           "repairEventAssistanceDelivery"
-        ]
+        ],
+        "missingCapability": null
       },
       "rehearsal": {
         "bindingType": "domainAdapter",
         "operations": [
           "controlEventRehearsal"
-        ]
+        ],
+        "missingCapability": null
       }
     },
     {
@@ -205746,13 +205798,15 @@ export const eventAssistanceCommandBindingCatalog = {
           "AssistanceSourceWorkStore.process",
           "AssistanceDeliveryWorkStore.process",
           "AssistanceCheckpointWorkStore.process"
-        ]
+        ],
+        "missingCapability": null
       },
       "rehearsal": {
         "bindingType": "domainAdapter",
         "operations": [
           "controlEventRehearsal"
-        ]
+        ],
+        "missingCapability": null
       }
     },
     {
@@ -205761,13 +205815,15 @@ export const eventAssistanceCommandBindingCatalog = {
         "bindingType": "domainAdapter",
         "operations": [
           "controlEventSuccessLive"
-        ]
+        ],
+        "missingCapability": null
       },
       "rehearsal": {
         "bindingType": "domainAdapter",
         "operations": [
           "completeEventRehearsal"
-        ]
+        ],
+        "missingCapability": null
       }
     },
     {
@@ -205776,11 +205832,13 @@ export const eventAssistanceCommandBindingCatalog = {
         "bindingType": "domainAdapter",
         "operations": [
           "controlEventSuccessLive"
-        ]
+        ],
+        "missingCapability": null
       },
       "rehearsal": {
         "bindingType": "contractOnly",
-        "operations": []
+        "operations": [],
+        "missingCapability": "rehearsalUnitProgressControl"
       }
     },
     {
@@ -205789,11 +205847,13 @@ export const eventAssistanceCommandBindingCatalog = {
         "bindingType": "domainAdapter",
         "operations": [
           "controlEventSuccessLive"
-        ]
+        ],
+        "missingCapability": null
       },
       "rehearsal": {
         "bindingType": "contractOnly",
-        "operations": []
+        "operations": [],
+        "missingCapability": "rehearsalRevealControl"
       }
     },
     {
@@ -205803,11 +205863,13 @@ export const eventAssistanceCommandBindingCatalog = {
         "operations": [
           "overrideEventSuccessGroups",
           "overrideEventSuccessRotations"
-        ]
+        ],
+        "missingCapability": null
       },
       "rehearsal": {
         "bindingType": "contractOnly",
-        "operations": []
+        "operations": [],
+        "missingCapability": "rehearsalOverrideControl"
       }
     },
     {
@@ -205816,11 +205878,13 @@ export const eventAssistanceCommandBindingCatalog = {
         "bindingType": "domainAdapter",
         "operations": [
           "publishEventLivePosition"
-        ]
+        ],
+        "missingCapability": null
       },
       "rehearsal": {
         "bindingType": "contractOnly",
-        "operations": []
+        "operations": [],
+        "missingCapability": "rehearsalLocationSharing"
       }
     },
     {
@@ -205829,13 +205893,15 @@ export const eventAssistanceCommandBindingCatalog = {
         "bindingType": "internalCoordinator",
         "operations": [
           "AssistanceCheckpointWorkStore.process"
-        ]
+        ],
+        "missingCapability": null
       },
       "rehearsal": {
         "bindingType": "internalCoordinator",
         "operations": [
           "controlEventRehearsal"
-        ]
+        ],
+        "missingCapability": null
       }
     },
     {
@@ -205844,13 +205910,15 @@ export const eventAssistanceCommandBindingCatalog = {
         "bindingType": "directCommand",
         "operations": [
           "recordEventNoShow"
-        ]
+        ],
+        "missingCapability": null
       },
       "rehearsal": {
         "bindingType": "domainAdapter",
         "operations": [
           "injectEventRehearsalBehavior"
-        ]
+        ],
+        "missingCapability": null
       }
     },
     {
@@ -205859,22 +205927,26 @@ export const eventAssistanceCommandBindingCatalog = {
         "bindingType": "internalCoordinator",
         "operations": [
           "GuestAssistanceStore.submit"
-        ]
+        ],
+        "missingCapability": null
       },
       "rehearsal": {
         "bindingType": "contractOnly",
-        "operations": []
+        "operations": [],
+        "missingCapability": "rehearsalRestrictedCaseRouting"
       }
     },
     {
       "commandKind": "resolveRestrictedCase",
       "live": {
         "bindingType": "contractOnly",
-        "operations": []
+        "operations": [],
+        "missingCapability": "restrictedCaseResolution"
       },
       "rehearsal": {
         "bindingType": "contractOnly",
-        "operations": []
+        "operations": [],
+        "missingCapability": "rehearsalRestrictedCaseResolution"
       }
     },
     {
@@ -205883,13 +205955,15 @@ export const eventAssistanceCommandBindingCatalog = {
         "bindingType": "directCommand",
         "operations": [
           "reassignEventAssistanceCheckpointReporter"
-        ]
+        ],
+        "missingCapability": null
       },
       "rehearsal": {
         "bindingType": "domainAdapter",
         "operations": [
           "controlEventRehearsal"
-        ]
+        ],
+        "missingCapability": null
       }
     },
     {
@@ -205898,13 +205972,15 @@ export const eventAssistanceCommandBindingCatalog = {
         "bindingType": "directCommand",
         "operations": [
           "setEventAssistanceCheckpointCloseout"
-        ]
+        ],
+        "missingCapability": null
       },
       "rehearsal": {
         "bindingType": "domainAdapter",
         "operations": [
           "controlEventRehearsal"
-        ]
+        ],
+        "missingCapability": null
       }
     }
   ]
