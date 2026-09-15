@@ -748,7 +748,7 @@
         },
         {
           "path": "lib/event_success/presentation/event_success_companion_screen_state.dart",
-          "role": "provider-free Event Success companion display-state adapter for attendee moment selection, paper-shell policy, reveal kind, wingman candidate filtering, effect keys, and moment presentation copy/icon/effect metadata",
+          "role": "provider-free Event Success companion route and display state for async branch precedence, retry intent, attendee moment selection, paper-shell policy, reveal kind, wingman candidates, and effect keys",
           "providerFree": true,
           "status": "aligned"
         },
@@ -974,6 +974,12 @@
         {
           "path": "lib/hosts/presentation/forms/host_form_workspace_state.dart",
           "role": "provider-free workspace pane identity and exact query-string selection shared by the form builder and route adapter",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "lib/event_success/presentation/event_success_moment_presentation_state.dart",
+          "role": "provider-free Event Success moment copy, icons, reveal effects, and ambient-bed projection from the generated choreography contract",
           "providerFree": true,
           "status": "aligned"
         }

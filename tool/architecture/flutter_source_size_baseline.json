@@ -22,14 +22,6 @@
       "maxLines": 2080
     },
     {
-      "path": "lib/event_success/presentation/event_success_companion_screen_state.dart",
-      "maxLines": 1054
-    },
-    {
-      "path": "lib/event_success/presentation/event_success_companion_screen.dart",
-      "maxLines": 830
-    },
-    {
       "path": "lib/event_success/presentation/event_success_feature_blocks.dart",
       "maxLines": 1011
     },

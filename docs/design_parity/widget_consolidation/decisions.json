@@ -895,11 +895,11 @@
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "CompanionPrimaryActionSkeleton",
+          "name": "EventSuccessCompanionPrimaryActionSkeleton",
           "action": "keep"
         },
         {
-          "name": "CompanionStageSkeleton",
+          "name": "EventSuccessCompanionStageSkeleton",
           "action": "keep"
         },
         {
@@ -2481,7 +2481,7 @@
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "CompanionStageSkeleton",
+          "name": "EventSuccessCompanionStageSkeleton",
           "action": "keep"
         },
         {
@@ -2697,7 +2697,7 @@
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "CompanionPrimaryActionSkeleton",
+          "name": "EventSuccessCompanionPrimaryActionSkeleton",
           "action": "keep"
         },
         {
@@ -3043,7 +3043,7 @@
           "action": "keep"
         },
         {
-          "name": "EventSuccessCompanionLoadingBody",
+          "name": "EventSuccessCompanionLoadingPageBody",
           "action": "keep"
         }
       ],
