@@ -2,6 +2,7 @@ import {onCall, CallableRequest} from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {requireAdmin} from "./adminAuth";
+import type {AdminRoleClaim} from "./adminAuth";
 import {writeAdminAuditLog} from "./adminAudit";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import type {AdminGetOverviewCallableResponse} from
@@ -12,6 +13,13 @@ import {
 import {validateCallableWithAjv} from "../shared/validation";
 
 const authScanPageSize = 1000;
+const restrictedEventAssistanceReadRoles: ReadonlySet<AdminRoleClaim> =
+  new Set([
+    "admin",
+    "adminOwner",
+    "safetyReviewer",
+    "support",
+  ]);
 
 export interface AdminOverviewMetric {
   id: string;
@@ -148,7 +156,7 @@ export async function adminGetOverviewHandler(
     openReports,
     pendingModerationFlags,
     openEventSafetyReports,
-    openEventAssistanceCases,
+    restrictedEventAssistance,
     pendingAccessApplications,
     pendingClubClaimRequests,
     indexReviewPages,
@@ -161,7 +169,6 @@ export async function adminGetOverviewHandler(
     safetyReports,
     moderationFlags,
     eventSafetyReports,
-    eventAssistanceCases,
     accessApplications,
     clubClaimRequests,
     clubIndexReviews,
@@ -179,12 +186,7 @@ export async function adminGetOverviewHandler(
     countCollection(
       db.collection("eventSafetyReports").where("status", "==", "open")
     ),
-    countCollection(
-      db.collection("eventAssistanceCases")
-        .where("context.mode", "==", "live")
-        .where("owner", "==", "authorizedSafetyOperator")
-        .where("status", "==", "open")
-    ),
+    loadRestrictedEventAssistanceOverview(db, adminContext.roles),
     countCollection(
       db.collection("accessApplications").where("status", "==", "pending")
     ),
@@ -226,7 +228,6 @@ export async function adminGetOverviewHandler(
       "open",
       "eventSafetyReport"
     ),
-    listRestrictedEventAssistanceCases(db),
     listQueueItems(
       db,
       "accessApplications",
@@ -268,7 +269,7 @@ export async function adminGetOverviewHandler(
       metric(
         "eventSafetyReports",
         "Event safety cases",
-        openEventSafetyReports + openEventAssistanceCases
+        openEventSafetyReports + restrictedEventAssistance.count
       ),
       metric(
         "pendingApplications",
@@ -296,7 +297,7 @@ export async function adminGetOverviewHandler(
       safetyReports,
       moderationFlags,
       eventSafetyReports: [
-        ...eventAssistanceCases,
+        ...restrictedEventAssistance.items,
         ...eventSafetyReports,
       ].slice(0, 5),
       accessApplications,
@@ -342,6 +343,33 @@ export async function adminGetOverviewHandler(
       },
     ],
   };
+}
+
+/**
+ * Loads restricted event requests only for roles authorized to read safety
+ * details. Other overview roles do not query the restricted collection.
+ * @param {FirebaseFirestore.Firestore} db Firestore instance.
+ * @param {readonly AdminRoleClaim[]} roles Caller role claims.
+ * @return {Promise<object>} Authorized restricted count and queue rows.
+ */
+export async function loadRestrictedEventAssistanceOverview(
+  db: FirebaseFirestore.Firestore,
+  roles: readonly AdminRoleClaim[]
+): Promise<{count: number; items: AdminQueueItem[]}> {
+  if (!roles.some((role) => restrictedEventAssistanceReadRoles.has(role))) {
+    return {count: 0, items: []};
+  }
+
+  const [count, items] = await Promise.all([
+    countCollection(
+      db.collection("eventAssistanceCases")
+        .where("context.mode", "==", "live")
+        .where("owner", "==", "authorizedSafetyOperator")
+        .where("status", "==", "open")
+    ),
+    listRestrictedEventAssistanceCases(db),
+  ]);
+  return {count, items};
 }
 
 export const adminGetOverview = onCall(appCheckCallableOptions, (request) =>

@@ -2,10 +2,67 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   countAuthUsersCreatedSince,
+  loadRestrictedEventAssistanceOverview,
   normalizeQueueItem,
   startOfSevenDayWindow,
   startOfUtcDay,
 } from "./overview";
+
+test("restricted event requests stay hidden from non-safety overview roles",
+  async () => {
+    const firestore = {
+      collection() {
+        assert.fail("restricted collection must not be queried");
+      },
+    } as unknown as FirebaseFirestore.Firestore;
+
+    assert.deepEqual(
+      await loadRestrictedEventAssistanceOverview(
+        firestore,
+        ["finance", "analyticsViewer"]
+      ),
+      {count: 0, items: []}
+    );
+  });
+
+test("restricted event requests load for safety-readable overview roles",
+  async () => {
+    let collectionReads = 0;
+    const query = {
+      where() {
+        return query;
+      },
+      orderBy() {
+        return query;
+      },
+      limit() {
+        return query;
+      },
+      count() {
+        return {
+          async get() {
+            return {data: () => ({count: 2})};
+          },
+        };
+      },
+      async get() {
+        return {docs: []};
+      },
+    };
+    const firestore = {
+      collection(name: string) {
+        assert.equal(name, "eventAssistanceCases");
+        collectionReads += 1;
+        return query;
+      },
+    } as unknown as FirebaseFirestore.Firestore;
+
+    assert.deepEqual(
+      await loadRestrictedEventAssistanceOverview(firestore, ["support"]),
+      {count: 2, items: []}
+    );
+    assert.equal(collectionReads, 2);
+  });
 
 test("startOfUtcDay returns midnight UTC", () => {
   assert.equal(
