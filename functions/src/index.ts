@@ -92,7 +92,8 @@ export {getEventRcsPreference, setEventRcsPreference} from
   "./eventSuccess/operations/rcsPreferenceHandlers";
 export {getEventAssistanceSetting, setEventAssistanceSetting} from
   "./eventSuccess/operations/policySettingsHandlers";
-export {getEventAssistanceGroupProgress, confirmEventAssistanceDeparture} from
+export {getEventAssistanceGroupProgress, confirmEventAssistanceDeparture,
+  changeEventAssistanceRoute} from
   "./eventSuccess/operations/groupProgressHandlers";
 export {listEventAssistanceDepartureRosters} from
   "./eventSuccess/operations/departureHistoryHandlers";

@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.121.0
+version: 1.122.0
 updated: 2026-09-16
 owner: recursive_audit_loop
 status: active
@@ -853,21 +853,31 @@ The source hash binds the event and plan creation generations, schedule,
 meeting place, itinerary and route configuration. It excludes routine live
 step changes and attendance counters. A setup change marks the projection
 `sourceChanged` and withholds derived current guidance without rewriting history.
+Each projected destination includes an opaque `alternativeId` derived from the
+typed target. A route-recovery write may add `routeDecisionId` to the current
+progress document; older departure records remain valid without it.
 
 `eventAssistanceProgressReceipts/{receiptId}` records the request hash, original
-committed revision and time. Its ID binds context, group and operation ID;
+committed revision and time. Departure receipt IDs bind context, group and
+operation ID; route-recovery receipt IDs additionally bind the command kind.
 actor identity is included in the request hash. Progress and receipt commit
-together. Exact replay returns the original operation revision plus the latest
+together. Route receipts retain their command kind and decision ID; those
+fields remain optional for existing departure receipts. Exact replay returns
+the original operation revision plus the latest
 view, including after a later departure; changed reuse fails. These records
 have no TTL: command deduplication must survive the executable event lifetime,
 and terminal retention/cleanup must be defined before activation.
 
-`getEventAssistanceGroupProgress` and `confirmEventAssistanceDeparture` are
-Auth/App-Check-protected and rate-limited. Canonical organizer management is
+`getEventAssistanceGroupProgress`, `confirmEventAssistanceDeparture` and
+`changeEventAssistanceRoute` are Auth/App-Check-protected and rate-limited.
+Canonical organizer management is
 checked inside the transaction that reads event/plan/source state and writes
 the result. The read response exposes only saved destination choices and
 progress, without roster data. Confirmation requires matching source and
 progress revisions, a current destination, an open event and a live runtime.
+Route recovery requires a current manager, an existing confirmed departure, a
+different opaque alternative and an explicit decision ID. It updates operating
+progress without modifying the event setup.
 The collections deny all direct client reads and writes. This boundary records
 a physical fact and does not authorize provider I/O or guest attendance changes.
 

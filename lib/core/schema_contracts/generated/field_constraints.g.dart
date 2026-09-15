@@ -4100,6 +4100,118 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const changeEventAssistanceRouteCallablePayloadCommandContextClockId = CatchContractFieldConstraints(
+    path: 'changeEventAssistanceRouteCallablePayload.command.context.clockId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const changeEventAssistanceRouteCallablePayloadCommandContextEventId = CatchContractFieldConstraints(
+    path: 'changeEventAssistanceRouteCallablePayload.command.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const changeEventAssistanceRouteCallablePayloadCommandContextMode = CatchContractFieldConstraints(
+    path: 'changeEventAssistanceRouteCallablePayload.command.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const changeEventAssistanceRouteCallablePayloadCommandContextOrganizerId = CatchContractFieldConstraints(
+    path: 'changeEventAssistanceRouteCallablePayload.command.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const changeEventAssistanceRouteCallablePayloadCommandContextRehearsalId = CatchContractFieldConstraints(
+    path: 'changeEventAssistanceRouteCallablePayload.command.context.rehearsalId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const changeEventAssistanceRouteCallablePayloadCommandContextVirtualEventId = CatchContractFieldConstraints(
+    path: 'changeEventAssistanceRouteCallablePayload.command.context.virtualEventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const changeEventAssistanceRouteCallablePayloadCommandEventId = CatchContractFieldConstraints(
+    path: 'changeEventAssistanceRouteCallablePayload.command.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const changeEventAssistanceRouteCallablePayloadCommandKind = CatchContractFieldConstraints(
+    path: 'changeEventAssistanceRouteCallablePayload.command.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const changeEventAssistanceRouteCallablePayloadCommandOperationId = CatchContractFieldConstraints(
+    path: 'changeEventAssistanceRouteCallablePayload.command.operationId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const changeEventAssistanceRouteCallablePayloadCommandPayloadAlternativeId = CatchContractFieldConstraints(
+    path: 'changeEventAssistanceRouteCallablePayload.command.payload.alternativeId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^alternative:[a-f0-9]{64}\$',
+  );
+
+  static const changeEventAssistanceRouteCallablePayloadCommandPayloadDecisionId = CatchContractFieldConstraints(
+    path: 'changeEventAssistanceRouteCallablePayload.command.payload.decisionId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const changeEventAssistanceRouteCallablePayloadCommandPayloadExpectedSourceHash = CatchContractFieldConstraints(
+    path: 'changeEventAssistanceRouteCallablePayload.command.payload.expectedSourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const changeEventAssistanceRouteCallablePayloadCommandPayloadGroupId = CatchContractFieldConstraints(
+    path: 'changeEventAssistanceRouteCallablePayload.command.payload.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const changeEventAssistanceRouteCallablePayloadCommandPayloadRouteRevision = CatchContractFieldConstraints(
+    path: 'changeEventAssistanceRouteCallablePayload.command.payload.routeRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
   static const chatMessageDocumentDemoOps = CatchContractFieldConstraints(
     path: 'chatMessageDocument.demoOps',
     valueTypes: <String>['boolean'],
@@ -16085,6 +16197,13 @@ abstract final class CatchContractConstraints {
     maxItems: 41,
   );
 
+  static const eventAssistanceGroupProgressCallableResponseViewDestinationsItemsAlternativeId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressCallableResponse.view.destinations.items.alternativeId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^alternative:[a-f0-9]{64}\$',
+  );
+
   static const eventAssistanceGroupProgressCallableResponseViewDestinationsItemsLabel = CatchContractFieldConstraints(
     path: 'eventAssistanceGroupProgressCallableResponse.view.destinations.items.label',
     maxLength: 240,
@@ -16471,6 +16590,15 @@ abstract final class CatchContractConstraints {
     maximum: 9007199254740991,
   );
 
+  static const eventAssistanceGroupProgressCallableResponseViewProgressRouteDecisionId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressCallableResponse.view.progress.routeDecisionId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
   static const eventAssistanceGroupProgressCallableResponseViewProgressSchemaVersion = CatchContractFieldConstraints(
     path: 'eventAssistanceGroupProgressCallableResponse.view.progress.schemaVersion',
     required: true,
@@ -16674,6 +16802,15 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
     minimum: 1,
     maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceGroupProgressDocumentRouteDecisionId = CatchContractFieldConstraints(
+    path: 'eventAssistanceGroupProgressDocument.routeDecisionId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
   );
 
   static const eventAssistanceGroupProgressDocumentSchemaVersion = CatchContractFieldConstraints(
@@ -21610,12 +21747,27 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
+  static const eventAssistanceProgressReceiptDocumentCommandKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceProgressReceiptDocument.commandKind',
+    valueTypes: <String>['string'],
+    enumValues: <String>['confirmDeparture', 'changeRoute'],
+  );
+
   static const eventAssistanceProgressReceiptDocumentCreatedAt = CatchContractFieldConstraints(
     path: 'eventAssistanceProgressReceiptDocument.createdAt',
     required: true,
     valueTypes: <String>['integer'],
     minimum: 0,
     maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceProgressReceiptDocumentDecisionId = CatchContractFieldConstraints(
+    path: 'eventAssistanceProgressReceiptDocument.decisionId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
   );
 
   static const eventAssistanceProgressReceiptDocumentProgressId = CatchContractFieldConstraints(
@@ -22857,6 +23009,13 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['array'],
     itemValueTypes: <String>['object'],
     maxItems: 41,
+  );
+
+  static const eventAssistanceSettingCallableResponseViewSetupDestinationsItemsAlternativeId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSettingCallableResponse.view.setup.destinations.items.alternativeId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^alternative:[a-f0-9]{64}\$',
   );
 
   static const eventAssistanceSettingCallableResponseViewSetupDestinationsItemsLabel = CatchContractFieldConstraints(
@@ -94005,6 +94164,20 @@ abstract final class CatchContractConstraints {
     'cancelCrossPathsInvitationOrPlanCallableResponse.status': cancelCrossPathsInvitationOrPlanCallableResponseStatus,
     'cancelEventCallablePayload.eventId': cancelEventCallablePayloadEventId,
     'cancelEventCallablePayload.reason': cancelEventCallablePayloadReason,
+    'changeEventAssistanceRouteCallablePayload.command.context.clockId': changeEventAssistanceRouteCallablePayloadCommandContextClockId,
+    'changeEventAssistanceRouteCallablePayload.command.context.eventId': changeEventAssistanceRouteCallablePayloadCommandContextEventId,
+    'changeEventAssistanceRouteCallablePayload.command.context.mode': changeEventAssistanceRouteCallablePayloadCommandContextMode,
+    'changeEventAssistanceRouteCallablePayload.command.context.organizerId': changeEventAssistanceRouteCallablePayloadCommandContextOrganizerId,
+    'changeEventAssistanceRouteCallablePayload.command.context.rehearsalId': changeEventAssistanceRouteCallablePayloadCommandContextRehearsalId,
+    'changeEventAssistanceRouteCallablePayload.command.context.virtualEventId': changeEventAssistanceRouteCallablePayloadCommandContextVirtualEventId,
+    'changeEventAssistanceRouteCallablePayload.command.eventId': changeEventAssistanceRouteCallablePayloadCommandEventId,
+    'changeEventAssistanceRouteCallablePayload.command.kind': changeEventAssistanceRouteCallablePayloadCommandKind,
+    'changeEventAssistanceRouteCallablePayload.command.operationId': changeEventAssistanceRouteCallablePayloadCommandOperationId,
+    'changeEventAssistanceRouteCallablePayload.command.payload.alternativeId': changeEventAssistanceRouteCallablePayloadCommandPayloadAlternativeId,
+    'changeEventAssistanceRouteCallablePayload.command.payload.decisionId': changeEventAssistanceRouteCallablePayloadCommandPayloadDecisionId,
+    'changeEventAssistanceRouteCallablePayload.command.payload.expectedSourceHash': changeEventAssistanceRouteCallablePayloadCommandPayloadExpectedSourceHash,
+    'changeEventAssistanceRouteCallablePayload.command.payload.groupId': changeEventAssistanceRouteCallablePayloadCommandPayloadGroupId,
+    'changeEventAssistanceRouteCallablePayload.command.payload.routeRevision': changeEventAssistanceRouteCallablePayloadCommandPayloadRouteRevision,
     'chatMessageDocument.demoOps': chatMessageDocumentDemoOps,
     'chatMessageDocument.demoOpsCommand': chatMessageDocumentDemoOpsCommand,
     'chatMessageDocument.demoOpsId': chatMessageDocumentDemoOpsId,
@@ -95643,6 +95816,7 @@ abstract final class CatchContractConstraints {
     'eventAssistanceGroupProgressCallableResponse.view.context.mode': eventAssistanceGroupProgressCallableResponseViewContextMode,
     'eventAssistanceGroupProgressCallableResponse.view.context.organizerId': eventAssistanceGroupProgressCallableResponseViewContextOrganizerId,
     'eventAssistanceGroupProgressCallableResponse.view.destinations': eventAssistanceGroupProgressCallableResponseViewDestinations,
+    'eventAssistanceGroupProgressCallableResponse.view.destinations.items.alternativeId': eventAssistanceGroupProgressCallableResponseViewDestinationsItemsAlternativeId,
     'eventAssistanceGroupProgressCallableResponse.view.destinations.items.label': eventAssistanceGroupProgressCallableResponseViewDestinationsItemsLabel,
     'eventAssistanceGroupProgressCallableResponse.view.destinations.items.location.address': eventAssistanceGroupProgressCallableResponseViewDestinationsItemsLocationAddress,
     'eventAssistanceGroupProgressCallableResponse.view.destinations.items.location.latitude': eventAssistanceGroupProgressCallableResponseViewDestinationsItemsLocationLatitude,
@@ -95693,6 +95867,7 @@ abstract final class CatchContractConstraints {
     'eventAssistanceGroupProgressCallableResponse.view.progress.progressId': eventAssistanceGroupProgressCallableResponseViewProgressProgressId,
     'eventAssistanceGroupProgressCallableResponse.view.progress.requestHash': eventAssistanceGroupProgressCallableResponseViewProgressRequestHash,
     'eventAssistanceGroupProgressCallableResponse.view.progress.revision': eventAssistanceGroupProgressCallableResponseViewProgressRevision,
+    'eventAssistanceGroupProgressCallableResponse.view.progress.routeDecisionId': eventAssistanceGroupProgressCallableResponseViewProgressRouteDecisionId,
     'eventAssistanceGroupProgressCallableResponse.view.progress.schemaVersion': eventAssistanceGroupProgressCallableResponseViewProgressSchemaVersion,
     'eventAssistanceGroupProgressCallableResponse.view.progress.sourceHash': eventAssistanceGroupProgressCallableResponseViewProgressSourceHash,
     'eventAssistanceGroupProgressCallableResponse.view.progress.updatedAt': eventAssistanceGroupProgressCallableResponseViewProgressUpdatedAt,
@@ -95720,6 +95895,7 @@ abstract final class CatchContractConstraints {
     'eventAssistanceGroupProgressDocument.progressId': eventAssistanceGroupProgressDocumentProgressId,
     'eventAssistanceGroupProgressDocument.requestHash': eventAssistanceGroupProgressDocumentRequestHash,
     'eventAssistanceGroupProgressDocument.revision': eventAssistanceGroupProgressDocumentRevision,
+    'eventAssistanceGroupProgressDocument.routeDecisionId': eventAssistanceGroupProgressDocumentRouteDecisionId,
     'eventAssistanceGroupProgressDocument.schemaVersion': eventAssistanceGroupProgressDocumentSchemaVersion,
     'eventAssistanceGroupProgressDocument.sourceHash': eventAssistanceGroupProgressDocumentSourceHash,
     'eventAssistanceGroupProgressDocument.updatedAt': eventAssistanceGroupProgressDocumentUpdatedAt,
@@ -96359,7 +96535,9 @@ abstract final class CatchContractConstraints {
     'eventAssistancePolicy.setting.policyVersion': eventAssistancePolicySettingPolicyVersion,
     'eventAssistancePolicy.setting.reason': eventAssistancePolicySettingReason,
     'eventAssistancePolicy.version': eventAssistancePolicyVersion,
+    'eventAssistanceProgressReceiptDocument.commandKind': eventAssistanceProgressReceiptDocumentCommandKind,
     'eventAssistanceProgressReceiptDocument.createdAt': eventAssistanceProgressReceiptDocumentCreatedAt,
+    'eventAssistanceProgressReceiptDocument.decisionId': eventAssistanceProgressReceiptDocumentDecisionId,
     'eventAssistanceProgressReceiptDocument.progressId': eventAssistanceProgressReceiptDocumentProgressId,
     'eventAssistanceProgressReceiptDocument.receiptId': eventAssistanceProgressReceiptDocumentReceiptId,
     'eventAssistanceProgressReceiptDocument.requestHash': eventAssistanceProgressReceiptDocumentRequestHash,
@@ -96526,6 +96704,7 @@ abstract final class CatchContractConstraints {
     'eventAssistanceSettingCallableResponse.view.ownRevision': eventAssistanceSettingCallableResponseViewOwnRevisionAtViewPropertyOwnRevision,
     'eventAssistanceSettingCallableResponse.view.serverTime': eventAssistanceSettingCallableResponseViewServerTime,
     'eventAssistanceSettingCallableResponse.view.setup.destinations': eventAssistanceSettingCallableResponseViewSetupDestinations,
+    'eventAssistanceSettingCallableResponse.view.setup.destinations.items.alternativeId': eventAssistanceSettingCallableResponseViewSetupDestinationsItemsAlternativeId,
     'eventAssistanceSettingCallableResponse.view.setup.destinations.items.label': eventAssistanceSettingCallableResponseViewSetupDestinationsItemsLabel,
     'eventAssistanceSettingCallableResponse.view.setup.destinations.items.location.address': eventAssistanceSettingCallableResponseViewSetupDestinationsItemsLocationAddress,
     'eventAssistanceSettingCallableResponse.view.setup.destinations.items.location.latitude': eventAssistanceSettingCallableResponseViewSetupDestinationsItemsLocationLatitude,

@@ -381,6 +381,11 @@ const schemaSpecs = [
     "typeOutput": "functions/src/shared/generated/confirmEventAssistanceDepartureCallablePayload.ts"
   },
   {
+    "name": "ChangeEventAssistanceRouteCallablePayload",
+    "source": "callables/change_event_assistance_route_payload.schema.json",
+    "typeOutput": "functions/src/shared/generated/changeEventAssistanceRouteCallablePayload.ts"
+  },
+  {
     "name": "EventAssistanceGroupProgressCallableResponse",
     "source": "callable_responses/event_assistance_group_progress_response.schema.json",
     "typeOutput": "functions/src/shared/generated/eventAssistanceGroupProgressCallableResponse.ts"

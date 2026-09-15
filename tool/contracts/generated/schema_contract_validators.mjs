@@ -90,6 +90,7 @@ import {
   eventAssistanceGroupProgressDocumentSchema,
   getEventAssistanceGroupProgressCallablePayloadSchema,
   confirmEventAssistanceDepartureCallablePayloadSchema,
+  changeEventAssistanceRouteCallablePayloadSchema,
   eventAssistanceGroupProgressCallableResponseSchema,
   eventWhatsappWithdrawalGrantDocumentSchema,
   getEventWhatsappWithdrawalCallablePayloadSchema,
@@ -788,6 +789,7 @@ export const validateEventAssistanceProgressReceiptDocument = ajv.compile(eventA
 export const validateEventAssistanceGroupProgressDocument = ajv.compile(eventAssistanceGroupProgressDocumentSchema);
 export const validateGetEventAssistanceGroupProgressCallablePayload = ajv.compile(getEventAssistanceGroupProgressCallablePayloadSchema);
 export const validateConfirmEventAssistanceDepartureCallablePayload = ajv.compile(confirmEventAssistanceDepartureCallablePayloadSchema);
+export const validateChangeEventAssistanceRouteCallablePayload = ajv.compile(changeEventAssistanceRouteCallablePayloadSchema);
 export const validateEventAssistanceGroupProgressCallableResponse = ajv.compile(eventAssistanceGroupProgressCallableResponseSchema);
 export const validateEventWhatsappWithdrawalGrantDocument = ajv.compile(eventWhatsappWithdrawalGrantDocumentSchema);
 export const validateGetEventWhatsappWithdrawalCallablePayload = ajv.compile(getEventWhatsappWithdrawalCallablePayloadSchema);

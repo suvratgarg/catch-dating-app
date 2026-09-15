@@ -195,10 +195,16 @@ const schemaEventAssistanceGroupProgressDocumentSchema = <String, Object?>{
       'type': 'string',
       'pattern': '^departure-roster:[a-f0-9]{64}\$',
     },
+    'routeDecisionId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 160,
+      'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+    },
   },
   'title': 'EventAssistanceGroupProgressDocument',
   'x-firestore-collection': 'eventAssistanceGroupProgress',
   'x-firestore-path': 'eventAssistanceGroupProgress/{progressId}',
   'x-document-id-field': 'progressId',
-  'x-owner': 'event-assistance departure command',
+  'x-owner': 'event-assistance group progress commands',
 };

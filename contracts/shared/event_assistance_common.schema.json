@@ -4304,6 +4304,77 @@
         }
       ]
     },
+    "ChangeRouteCommand": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "context",
+        "eventId",
+        "operationId",
+        "payload"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "changeRoute"
+        },
+        "context": {
+          "$ref": "#/definitions/ExecutionContext"
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "operationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "routeRevision",
+            "groupId",
+            "expectedSourceHash",
+            "alternativeId",
+            "decisionId"
+          ],
+          "properties": {
+            "routeRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991,
+              "description": "Nonnegative safe integer revision."
+            },
+            "groupId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "expectedSourceHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "alternativeId": {
+              "type": "string",
+              "pattern": "^alternative:[a-f0-9]{64}$"
+            },
+            "decisionId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          }
+        }
+      }
+    },
     "Command": {
       "oneOf": [
         {
@@ -5062,64 +5133,7 @@
           }
         },
         {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "kind",
-            "context",
-            "eventId",
-            "operationId",
-            "payload"
-          ],
-          "properties": {
-            "kind": {
-              "type": "string",
-              "const": "changeRoute"
-            },
-            "context": {
-              "$ref": "#/definitions/ExecutionContext"
-            },
-            "eventId": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 160,
-              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-            },
-            "operationId": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 160,
-              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-            },
-            "payload": {
-              "type": "object",
-              "additionalProperties": false,
-              "required": [
-                "routeRevision",
-                "alternativeId",
-                "decisionId"
-              ],
-              "properties": {
-                "routeRevision": {
-                  "type": "integer",
-                  "minimum": 0,
-                  "maximum": 9007199254740991,
-                  "description": "Nonnegative safe integer revision."
-                },
-                "alternativeId": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 2000
-                },
-                "decisionId": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 160,
-                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-                }
-              }
-            }
-          }
+          "$ref": "#/definitions/ChangeRouteCommand"
         },
         {
           "$ref": "#/definitions/ResolveAccountabilityCommand"

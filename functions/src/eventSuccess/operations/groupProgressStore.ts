@@ -8,6 +8,8 @@ import {validateEventAssistanceProgressReceiptDocument} from
   "../../shared/generated/validators/eventAssistanceProgressReceiptDocument";
 import {validateConfirmEventAssistanceDepartureCallablePayload} from
   "../../shared/generated/validators/confirmEventAssistanceDepartureInput";
+import {validateChangeEventAssistanceRouteCallablePayload} from
+  "../../shared/generated/validators/changeEventAssistanceRouteInput";
 import {validateGetEventAssistanceGroupProgressCallablePayload} from
   "../../shared/generated/validators/getEventAssistanceGroupProgressInput";
 import {validateEventAssistanceGroupProgressCallableResponse} from
@@ -32,7 +34,8 @@ import {GROUP_PROGRESS, readGroupProgressState} from "./groupProgressReader";
 import {authorizeCheckpointRequest, assertCheckpointRequestDeadline} from
   "./checkpointRequest";
 import {prepareCheckpointWorkEnqueue} from "./checkpointWorkEnqueue";
-import {prepareDepartureDecision, departureConflict as conflict} from
+import {prepareDepartureDecision, prepareRouteDecision,
+  departureConflict as conflict, routeDecisionConflict} from
   "./movementDecisions";
 export {GROUP_PROGRESS} from "./groupProgressReader";
 export const PROGRESS_RECEIPTS = "eventAssistanceProgressReceipts";
@@ -167,6 +170,86 @@ export class EventGroupProgressStore {
         tx.create(this.db.collection(DEPARTURE_ROSTERS).doc(rosterId!),
           manifest);
       }
+      return result;
+    });
+  }
+
+  async changeRoute(actorUid: string, input: unknown): Promise<Response> {
+    if (!validateChangeEventAssistanceRouteCallablePayload(input) ||
+        input.command.kind !== "changeRoute" ||
+        input.command.context.mode !== "live") {
+      throw new HttpsError("invalid-argument", "Invalid route command.");
+    }
+    const command = input.command;
+    const context = command.context;
+    if (context.mode !== "live") throw invalidSource();
+    assertCommandContext(command, context);
+    const hash = operationContentHash([actorUid, input]);
+    const receiptId = "progress-action:" + operationContentHash([
+      context, command.payload.groupId, "changeRoute", command.operationId]);
+    return transact(this.db, async (tx) => {
+      const state = await this.read(tx, actorUid, context,
+        command.payload.groupId, "confirmDeparture");
+      const receiptRef = this.db.collection(PROGRESS_RECEIPTS).doc(receiptId);
+      const receipt = (await tx.get(receiptRef)).data();
+      const now = this.clock();
+      if (!Number.isSafeInteger(now) || now < state.now) throw invalidSource();
+      state.now = now;
+      state.source.eventOpen = state.source.eventOpen &&
+        now < state.source.endAt;
+      if (now >= state.access.validUntil) throw denied();
+      if (state.access.role !== "eventLead") throw denied();
+      assertCommandRole(command, [state.access.role]);
+      if (receipt !== undefined) {
+        if (!validateEventAssistanceProgressReceiptDocument(receipt) ||
+            receipt.receiptId !== receiptId ||
+            receipt.progressId !== state.progress?.progressId ||
+            receipt.requestHash !== hash ||
+            receipt.revision > state.progress.revision ||
+            receipt.createdAt > state.now ||
+            receipt.commandKind !== "changeRoute" ||
+            receipt.decisionId !== command.payload.decisionId) {
+          throw routeDecisionConflict();
+        }
+        return response("replayed", state, receipt.revision);
+      }
+      const target = prepareRouteDecision({
+        ...state.source, revision: state.progress?.revision ?? 0,
+        progress: state.progress,
+      }, command.payload);
+      const nextRevision = (state.progress?.revision ?? 0) + 1;
+      const progress: Progress = {
+        schemaVersion: 1, progressId: progressIdentity(context,
+          command.payload.groupId), context,
+        groupId: command.payload.groupId, revision: nextRevision,
+        destination: target.target, sourceHash: state.source.sourceHash,
+        confirmedBy: actorUid, confirmedAt: state.now,
+        operationId: command.operationId, requestHash: hash,
+        routeDecisionId: command.payload.decisionId,
+        createdAt: state.progress?.createdAt ?? state.now,
+        updatedAt: state.now,
+      };
+      const savedReceipt = {receiptId, progressId: progress.progressId,
+        requestHash: hash, revision: progress.revision, createdAt: state.now,
+        commandKind: "changeRoute" as const,
+        decisionId: command.payload.decisionId};
+      if (!validateEventAssistanceGroupProgressDocument(progress) ||
+          !validateEventAssistanceProgressReceiptDocument(savedReceipt)) {
+        throw invalidSource();
+      }
+      const committedAt = this.clock();
+      if (!Number.isSafeInteger(committedAt) || committedAt < state.now) {
+        throw invalidSource();
+      }
+      if (committedAt >= state.access.validUntil) throw denied();
+      if (committedAt >= state.source.endAt) {
+        throw new HttpsError("failed-precondition", "This event has ended.");
+      }
+      const result = response("applied", {...state, progress},
+        progress.revision);
+      tx.set(this.db.collection(GROUP_PROGRESS).doc(progress.progressId),
+        progress);
+      tx.create(receiptRef, savedReceipt);
       return result;
     });
   }

@@ -53,6 +53,7 @@ export 'callables/begin_organizer_form_response_callable_request.g.dart';
 export 'callables/block_user_callable_request.g.dart';
 export 'callables/cancel_cross_paths_invitation_or_plan_callable_request.g.dart';
 export 'callables/cancel_event_callable_request.g.dart';
+export 'callables/change_event_assistance_route_callable_request.g.dart';
 export 'callables/check_in_event_runtime_callable_request.g.dart';
 export 'callables/claim_event_runtime_access_callable_request.g.dart';
 export 'callables/club_membership_callable_request.g.dart';

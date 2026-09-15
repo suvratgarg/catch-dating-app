@@ -25,6 +25,11 @@ export function progressIdentity(context: ProgressContext, groupId: string) {
   return "progress:" + operationContentHash([context, groupId]);
 }
 
+/** Opaque route-choice identity from the current authoritative target. */
+export function routeAlternativeId(target: Destination["target"]): string {
+  return "alternative:" + operationContentHash(target);
+}
+
 /** Preserve SDK timestamp precision while hashing only the relevant source. */
 export function timestampEvidence(value: unknown) {
   if (!value || typeof value !== "object") throw invalidSource();
@@ -57,21 +62,24 @@ export function groupProgressSource(params: {
   }
   const destinations: Destination[] = [];
   if (wholeEvent && event.meetingLocation) {
-    destinations.push({target: {kind: "fixedPlace", placeId: "meeting",
-      lateEntry: "allowed"}, label: event.meetingLocation.name,
-    location: event.meetingLocation});
+    const target = {kind: "fixedPlace" as const, placeId: "meeting",
+      lateEntry: "allowed" as const};
+    destinations.push({alternativeId: routeAlternativeId(target), target,
+      label: event.meetingLocation.name, location: event.meetingLocation});
   }
   for (const stop of itinerary) {
     if (!stop.location) continue;
     if (wholeEvent && route?.groupStrategy !== "paceGroups") {
-      destinations.push({target: {kind: "itineraryStop",
-        itineraryId: context.eventId + ":itinerary", stopId: stop.id},
-      label: stop.title, location: stop.location});
+      const target = {kind: "itineraryStop" as const,
+        itineraryId: context.eventId + ":itinerary", stopId: stop.id};
+      destinations.push({alternativeId: routeAlternativeId(target), target,
+        label: stop.title, location: stop.location});
     } else if (route?.groupStrategy === "paceGroups" && !wholeEvent &&
         route.path && route.path.length >= 2) {
-      destinations.push({target: {kind: "groupCheckpoint",
-        routeId: context.eventId + ":route", groupId, checkpointId: stop.id},
-      label: stop.title, location: stop.location});
+      const target = {kind: "groupCheckpoint" as const,
+        routeId: context.eventId + ":route", groupId, checkpointId: stop.id};
+      destinations.push({alternativeId: routeAlternativeId(target), target,
+        label: stop.title, location: stop.location});
     }
   }
   const end = timestampEvidence(event.endTime);

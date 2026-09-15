@@ -11,6 +11,8 @@ export type DeparturePayload = Extract<EventAssistanceCommand,
   {kind: "confirmDeparture"}>["payload"];
 export type CheckpointPayload = Extract<EventAssistanceCommand,
   {kind: "recordCheckpoint"}>["payload"];
+export type RoutePayload = Extract<EventAssistanceCommand,
+  {kind: "changeRoute"}>["payload"];
 export type DepartureReview = Pick<Progress["view"],
   "revision" | "sourceHash" | "eventOpen" | "runtimeLive"> & {
     readonly destinations: readonly Pick<
@@ -19,7 +21,13 @@ export type DepartureReview = Pick<Progress["view"],
   };
 export type CheckpointObservationReview = Pick<Checkpoint["view"],
   "revision" | "sourceHash" | "availability"> & {
-    readonly previouslyAccountedFor: readonly string[];
+  readonly previouslyAccountedFor: readonly string[];
+};
+export type RouteReview = Pick<Progress["view"],
+  "revision" | "sourceHash" | "eventOpen" | "runtimeLive" | "progress"> & {
+    readonly destinations: readonly Pick<
+      Progress["view"]["destinations"][number],
+      "alternativeId" | "target">[];
   };
 
 /** Pure decision rules shared by live and synthetic execution adapters.
@@ -86,6 +94,35 @@ export function prepareCheckpointObservation(
   return {accountedFor, correctionReason};
 }
 
+/** Selects a configured alternative without mutating event setup. */
+export function prepareRouteDecision(review: RouteReview,
+  payload: RoutePayload) {
+  if (payload.routeRevision !== review.revision ||
+      payload.expectedSourceHash !== review.sourceHash) {
+    throw routeDecisionConflict();
+  }
+  if (!review.eventOpen || !review.runtimeLive) {
+    throw new HttpsError("failed-precondition",
+      "Start the event before changing the active route.");
+  }
+  if (!review.progress) {
+    throw new HttpsError("failed-precondition",
+      "Confirm group departure before changing the active route.");
+  }
+  const target = review.destinations.find((candidate) =>
+    candidate.alternativeId === payload.alternativeId);
+  if (!target) {
+    throw new HttpsError("failed-precondition",
+      "Choose an alternative from the current event route.");
+  }
+  if (operationContentHash(review.progress.destination) ===
+      operationContentHash(target.target)) {
+    throw new HttpsError("failed-precondition",
+      "Choose a different route alternative.");
+  }
+  return target;
+}
+
 export function departureConflict() {
   return new HttpsError("aborted",
     "Group progress changed. Refresh and retry.");
@@ -94,4 +131,9 @@ export function departureConflict() {
 export function checkpointObservationConflict() {
   return new HttpsError("aborted",
     "Checkpoint report changed. Refresh and retry.");
+}
+
+export function routeDecisionConflict() {
+  return new HttpsError("aborted",
+    "Route choices changed. Refresh and retry.");
 }

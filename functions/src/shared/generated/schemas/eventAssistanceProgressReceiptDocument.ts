@@ -34,11 +34,24 @@ export const eventAssistanceProgressReceiptDocumentSchema: Record<string, unknow
       "type": "integer",
       "minimum": 0,
       "maximum": 9007199254740991
+    },
+    "commandKind": {
+      "type": "string",
+      "enum": [
+        "confirmDeparture",
+        "changeRoute"
+      ]
+    },
+    "decisionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
     }
   },
   "title": "EventAssistanceProgressReceiptDocument",
   "x-firestore-collection": "eventAssistanceProgressReceipts",
   "x-firestore-path": "eventAssistanceProgressReceipts/{receiptId}",
   "x-document-id-field": "receiptId",
-  "x-owner": "event-assistance departure command"
+  "x-owner": "event-assistance group progress commands"
 } as const;

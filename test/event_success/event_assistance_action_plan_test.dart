@@ -102,7 +102,7 @@ void main() {
     );
   });
 
-  test('projects different coverage for live and rehearsal', () {
+  test('projects complete plan-change coverage in both modes', () {
     EventAssistanceWorkflowAction planChange(
       EventAssistanceExecutionMode mode,
     ) =>
@@ -118,7 +118,7 @@ void main() {
 
     expect(
       planChange(EventAssistanceExecutionMode.live).implementationStatus,
-      EventAssistanceWorkflowImplementationStatus.partial,
+      EventAssistanceWorkflowImplementationStatus.complete,
     );
     expect(
       planChange(EventAssistanceExecutionMode.rehearsal).implementationStatus,

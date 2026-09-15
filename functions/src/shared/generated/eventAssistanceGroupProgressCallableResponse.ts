@@ -52,6 +52,7 @@ export interface EventAssistanceGroupProgressCallableResponse {
       createdAt: number;
       updatedAt: number;
       departureRosterId?: string;
+      routeDecisionId?: string;
     } | null;
     guidance: {
       /**
@@ -86,6 +87,7 @@ export interface EventAssistanceGroupProgressCallableResponse {
      * @maxItems 41
      */
     destinations: {
+      alternativeId: string;
       target:
         | {
             kind: "fixedPlace";

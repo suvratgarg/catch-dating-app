@@ -291,6 +291,12 @@ const schemaEventAssistanceGroupProgressCallableResponseSchema = <String, Object
                   'type': 'string',
                   'pattern': '^departure-roster:[a-f0-9]{64}\$',
                 },
+                'routeDecisionId': <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 160,
+                  'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                },
               },
             },
             <String, Object?>{
@@ -437,11 +443,16 @@ const schemaEventAssistanceGroupProgressCallableResponseSchema = <String, Object
             'type': 'object',
             'additionalProperties': false,
             'required': <Object?>[
+              'alternativeId',
               'target',
               'label',
               'location',
             ],
             'properties': <String, Object?>{
+              'alternativeId': <String, Object?>{
+                'type': 'string',
+                'pattern': '^alternative:[a-f0-9]{64}\$',
+              },
               'target': <String, Object?>{
                 'anyOf': <Object?>[
                   <String, Object?>{

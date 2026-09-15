@@ -288,6 +288,12 @@ export const eventAssistanceGroupProgressCallableResponseSchema: Record<string, 
                 "departureRosterId": {
                   "type": "string",
                   "pattern": "^departure-roster:[a-f0-9]{64}$"
+                },
+                "routeDecisionId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
                 }
               }
             },
@@ -435,11 +441,16 @@ export const eventAssistanceGroupProgressCallableResponseSchema: Record<string, 
             "type": "object",
             "additionalProperties": false,
             "required": [
+              "alternativeId",
               "target",
               "label",
               "location"
             ],
             "properties": {
+              "alternativeId": {
+                "type": "string",
+                "pattern": "^alternative:[a-f0-9]{64}$"
+              },
               "target": {
                 "anyOf": [
                   {

@@ -83,6 +83,12 @@
         "departureRosterId": {
           "type": "string",
           "pattern": "^departure-roster:[a-f0-9]{64}$"
+        },
+        "routeDecisionId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
         }
       }
     },
@@ -166,11 +172,16 @@
             "type": "object",
             "additionalProperties": false,
             "required": [
+              "alternativeId",
               "target",
               "label",
               "location"
             ],
             "properties": {
+              "alternativeId": {
+                "type": "string",
+                "pattern": "^alternative:[a-f0-9]{64}$"
+              },
               "target": {
                 "$ref": "event_assistance_common.schema.json#/definitions/JoiningTarget"
               },
@@ -227,6 +238,38 @@
           "properties": {
             "command": {
               "properties": {
+                "context": {
+                  "properties": {
+                    "mode": {
+                      "const": "live"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "ChangeRouteInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "command"
+      ],
+      "properties": {
+        "command": {
+          "$ref": "event_assistance_common.schema.json#/definitions/ChangeRouteCommand"
+        }
+      },
+      "allOf": [
+        {
+          "properties": {
+            "command": {
+              "properties": {
+                "kind": {
+                  "const": "changeRoute"
+                },
                 "context": {
                   "properties": {
                     "mode": {
@@ -311,6 +354,19 @@
           "type": "integer",
           "minimum": 0,
           "maximum": 9007199254740991
+        },
+        "commandKind": {
+          "type": "string",
+          "enum": [
+            "confirmDeparture",
+            "changeRoute"
+          ]
+        },
+        "decisionId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
         }
       }
     },

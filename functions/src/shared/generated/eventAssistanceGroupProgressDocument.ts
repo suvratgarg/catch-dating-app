@@ -37,4 +37,5 @@ export interface EventAssistanceGroupProgressDocument {
   createdAt: number;
   updatedAt: number;
   departureRosterId?: string;
+  routeDecisionId?: string;
 }

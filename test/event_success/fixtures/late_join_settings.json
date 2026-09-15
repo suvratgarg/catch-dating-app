@@ -41,6 +41,7 @@
         "eventEnd": 1789486200000,
         "destinations": [
           {
+            "alternativeId": "alternative:c268b4766d189d31d01cedbb2236bda8bf6e40027f12260f73ac32b668d7bb4f",
             "target": {
               "kind": "fixedPlace",
               "placeId": "meeting",
@@ -57,6 +58,7 @@
             }
           },
           {
+            "alternativeId": "alternative:0fa209758ead29b062d8662d5a904e2d40da0d0732cd5ee0a24873fb9695febe",
             "target": {
               "kind": "itineraryStop",
               "itineraryId": "e-00000000-0000-0000-0000-000000000457:itinerary",
@@ -70,6 +72,7 @@
             }
           },
           {
+            "alternativeId": "alternative:e8f2c1fea3fa2c83d2741293284b00c7b71a2abc59009ca4bf10d496e6d7ed48",
             "target": {
               "kind": "itineraryStop",
               "itineraryId": "e-00000000-0000-0000-0000-000000000457:itinerary",
@@ -235,6 +238,7 @@
         "eventEnd": 1789486200000,
         "destinations": [
           {
+            "alternativeId": "alternative:c268b4766d189d31d01cedbb2236bda8bf6e40027f12260f73ac32b668d7bb4f",
             "target": {
               "kind": "fixedPlace",
               "placeId": "meeting",
@@ -251,6 +255,7 @@
             }
           },
           {
+            "alternativeId": "alternative:0fa209758ead29b062d8662d5a904e2d40da0d0732cd5ee0a24873fb9695febe",
             "target": {
               "kind": "itineraryStop",
               "itineraryId": "e-00000000-0000-0000-0000-000000000457:itinerary",
@@ -264,6 +269,7 @@
             }
           },
           {
+            "alternativeId": "alternative:e8f2c1fea3fa2c83d2741293284b00c7b71a2abc59009ca4bf10d496e6d7ed48",
             "target": {
               "kind": "itineraryStop",
               "itineraryId": "e-00000000-0000-0000-0000-000000000457:itinerary",
@@ -389,6 +395,7 @@
         "eventEnd": 1789486200000,
         "destinations": [
           {
+            "alternativeId": "alternative:c268b4766d189d31d01cedbb2236bda8bf6e40027f12260f73ac32b668d7bb4f",
             "target": {
               "kind": "fixedPlace",
               "placeId": "meeting",
@@ -405,6 +412,7 @@
             }
           },
           {
+            "alternativeId": "alternative:0fa209758ead29b062d8662d5a904e2d40da0d0732cd5ee0a24873fb9695febe",
             "target": {
               "kind": "itineraryStop",
               "itineraryId": "e-00000000-0000-0000-0000-000000000457:itinerary",
@@ -418,6 +426,7 @@
             }
           },
           {
+            "alternativeId": "alternative:e8f2c1fea3fa2c83d2741293284b00c7b71a2abc59009ca4bf10d496e6d7ed48",
             "target": {
               "kind": "itineraryStop",
               "itineraryId": "e-00000000-0000-0000-0000-000000000457:itinerary",
@@ -543,6 +552,7 @@
         "eventEnd": 1789486200000,
         "destinations": [
           {
+            "alternativeId": "alternative:c268b4766d189d31d01cedbb2236bda8bf6e40027f12260f73ac32b668d7bb4f",
             "target": {
               "kind": "fixedPlace",
               "placeId": "meeting",
@@ -559,6 +569,7 @@
             }
           },
           {
+            "alternativeId": "alternative:0fa209758ead29b062d8662d5a904e2d40da0d0732cd5ee0a24873fb9695febe",
             "target": {
               "kind": "itineraryStop",
               "itineraryId": "e-00000000-0000-0000-0000-000000000457:itinerary",
@@ -572,6 +583,7 @@
             }
           },
           {
+            "alternativeId": "alternative:e8f2c1fea3fa2c83d2741293284b00c7b71a2abc59009ca4bf10d496e6d7ed48",
             "target": {
               "kind": "itineraryStop",
               "itineraryId": "e-00000000-0000-0000-0000-000000000457:itinerary",

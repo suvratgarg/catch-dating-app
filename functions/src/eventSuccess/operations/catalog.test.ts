@@ -105,7 +105,6 @@ test("unimplemented live commands name their missing capability", () => {
       definition.live.missingCapability,
     ]));
   assert.deepEqual(gaps, {
-    changeRoute: "liveRouteDecision",
     requestRequiredData: "liveRequiredDataRequest",
     reconcileFinance: "eventPaymentCaseResolution",
   });
@@ -120,6 +119,7 @@ test("direct live bindings only name command-consuming callables", () => {
     ]));
   assert.deepEqual(direct, {
     confirmDeparture: ["confirmEventAssistanceDeparture"],
+    changeRoute: ["changeEventAssistanceRoute"],
     setJoinIntent: ["submitEventAssistanceGuestChoice"],
     setParticipation: ["setEventAssistanceParticipation"],
     transferGroup: ["transferEventAssistanceGroup"],

@@ -14053,11 +14053,16 @@ export const eventAssistanceSettingCallableResponseSchema: Record<string, unknow
                 "type": "object",
                 "additionalProperties": false,
                 "required": [
+                  "alternativeId",
                   "target",
                   "label",
                   "location"
                 ],
                 "properties": {
+                  "alternativeId": {
+                    "type": "string",
+                    "pattern": "^alternative:[a-f0-9]{64}$"
+                  },
                   "target": {
                     "anyOf": [
                       {

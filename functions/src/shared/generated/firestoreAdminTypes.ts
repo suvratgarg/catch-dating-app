@@ -2242,6 +2242,8 @@ export interface EventAssistanceProgressReceiptDocument {
   requestHash: string;
   revision: number;
   createdAt: number;
+  commandKind?: "confirmDeparture" | "changeRoute";
+  decisionId?: string;
 }
 
 export interface EventAssistanceGroupProgressDocument {
@@ -2279,6 +2281,7 @@ export interface EventAssistanceGroupProgressDocument {
   createdAt: number;
   updatedAt: number;
   departureRosterId?: string;
+  routeDecisionId?: string;
 }
 
 export interface EventWhatsappWithdrawalGrantDocument {

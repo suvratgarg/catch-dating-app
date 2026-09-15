@@ -40189,11 +40189,16 @@ export const eventAssistanceSettingCallableResponseSchema = {
                 "type": "object",
                 "additionalProperties": false,
                 "required": [
+                  "alternativeId",
                   "target",
                   "label",
                   "location"
                 ],
                 "properties": {
+                  "alternativeId": {
+                    "type": "string",
+                    "pattern": "^alternative:[a-f0-9]{64}$"
+                  },
                   "target": {
                     "anyOf": [
                       {
@@ -40777,13 +40782,26 @@ export const eventAssistanceProgressReceiptDocumentSchema = {
       "type": "integer",
       "minimum": 0,
       "maximum": 9007199254740991
+    },
+    "commandKind": {
+      "type": "string",
+      "enum": [
+        "confirmDeparture",
+        "changeRoute"
+      ]
+    },
+    "decisionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
     }
   },
   "title": "EventAssistanceProgressReceiptDocument",
   "x-firestore-collection": "eventAssistanceProgressReceipts",
   "x-firestore-path": "eventAssistanceProgressReceipts/{receiptId}",
   "x-document-id-field": "receiptId",
-  "x-owner": "event-assistance departure command"
+  "x-owner": "event-assistance group progress commands"
 };
 
 export const eventAssistanceGroupProgressDocumentSchema = {
@@ -40976,13 +40994,19 @@ export const eventAssistanceGroupProgressDocumentSchema = {
     "departureRosterId": {
       "type": "string",
       "pattern": "^departure-roster:[a-f0-9]{64}$"
+    },
+    "routeDecisionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
     }
   },
   "title": "EventAssistanceGroupProgressDocument",
   "x-firestore-collection": "eventAssistanceGroupProgress",
   "x-firestore-path": "eventAssistanceGroupProgress/{progressId}",
   "x-document-id-field": "progressId",
-  "x-owner": "event-assistance departure command"
+  "x-owner": "event-assistance group progress commands"
 };
 
 export const getEventAssistanceGroupProgressCallablePayloadSchema = {
@@ -41312,6 +41336,167 @@ export const confirmEventAssistanceDepartureCallablePayloadSchema = {
   "title": "ConfirmEventAssistanceDepartureCallablePayload"
 };
 
+export const changeEventAssistanceRouteCallablePayloadSchema = {
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "command"
+  ],
+  "properties": {
+    "command": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "context",
+        "eventId",
+        "operationId",
+        "payload"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "changeRoute"
+        },
+        "context": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "eventId",
+                "organizerId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "live"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "organizerId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "rehearsalId",
+                "virtualEventId",
+                "clockId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "rehearsal"
+                },
+                "rehearsalId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "virtualEventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "clockId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            }
+          ]
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "operationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "routeRevision",
+            "groupId",
+            "expectedSourceHash",
+            "alternativeId",
+            "decisionId"
+          ],
+          "properties": {
+            "routeRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991,
+              "description": "Nonnegative safe integer revision."
+            },
+            "groupId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "expectedSourceHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "alternativeId": {
+              "type": "string",
+              "pattern": "^alternative:[a-f0-9]{64}$"
+            },
+            "decisionId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          }
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "properties": {
+        "command": {
+          "properties": {
+            "kind": {
+              "const": "changeRoute"
+            },
+            "context": {
+              "properties": {
+                "mode": {
+                  "const": "live"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "title": "ChangeEventAssistanceRouteCallablePayload"
+};
+
 export const eventAssistanceGroupProgressCallableResponseSchema = {
   "type": "object",
   "additionalProperties": false,
@@ -41598,6 +41783,12 @@ export const eventAssistanceGroupProgressCallableResponseSchema = {
                 "departureRosterId": {
                   "type": "string",
                   "pattern": "^departure-roster:[a-f0-9]{64}$"
+                },
+                "routeDecisionId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
                 }
               }
             },
@@ -41745,11 +41936,16 @@ export const eventAssistanceGroupProgressCallableResponseSchema = {
             "type": "object",
             "additionalProperties": false,
             "required": [
+              "alternativeId",
               "target",
               "label",
               "location"
             ],
             "properties": {
+              "alternativeId": {
+                "type": "string",
+                "pattern": "^alternative:[a-f0-9]{64}$"
+              },
               "target": {
                 "anyOf": [
                   {
@@ -67796,6 +67992,8 @@ export const eventAssistanceCommandSchema = {
           "additionalProperties": false,
           "required": [
             "routeRevision",
+            "groupId",
+            "expectedSourceHash",
             "alternativeId",
             "decisionId"
           ],
@@ -67806,10 +68004,19 @@ export const eventAssistanceCommandSchema = {
               "maximum": 9007199254740991,
               "description": "Nonnegative safe integer revision."
             },
-            "alternativeId": {
+            "groupId": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 2000
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "expectedSourceHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "alternativeId": {
+              "type": "string",
+              "pattern": "^alternative:[a-f0-9]{64}$"
             },
             "decisionId": {
               "type": "string",
@@ -208354,9 +208561,11 @@ export const eventAssistanceCommandBindingCatalog = {
     {
       "commandKind": "changeRoute",
       "live": {
-        "bindingType": "contractOnly",
-        "operations": [],
-        "missingCapability": "liveRouteDecision"
+        "bindingType": "directCommand",
+        "operations": [
+          "changeEventAssistanceRoute"
+        ],
+        "missingCapability": null
       },
       "rehearsal": {
         "bindingType": "contractOnly",

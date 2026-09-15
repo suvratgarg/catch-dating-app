@@ -65,6 +65,7 @@ export 'block_user_callable_payload.g.dart';
 export 'cancel_cross_paths_invitation_or_plan_callable_payload.g.dart';
 export 'cancel_cross_paths_invitation_or_plan_callable_response.g.dart';
 export 'cancel_event_callable_payload.g.dart';
+export 'change_event_assistance_route_callable_payload.g.dart';
 export 'chat_message_document.g.dart';
 export 'check_in_event_runtime_callable_payload.g.dart';
 export 'check_in_event_runtime_callable_response.g.dart';

@@ -14055,11 +14055,16 @@ const schemaEventAssistanceSettingCallableResponseSchema = <String, Object?>{
                 'type': 'object',
                 'additionalProperties': false,
                 'required': <Object?>[
+                  'alternativeId',
                   'target',
                   'label',
                   'location',
                 ],
                 'properties': <String, Object?>{
+                  'alternativeId': <String, Object?>{
+                    'type': 'string',
+                    'pattern': '^alternative:[a-f0-9]{64}\$',
+                  },
                   'target': <String, Object?>{
                     'anyOf': <Object?>[
                       <String, Object?>{

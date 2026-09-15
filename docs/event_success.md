@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.142.0
+version: 1.143.0
 updated: 2026-09-16
 owner: recursive_audit_loop
 status: active
@@ -1376,13 +1376,15 @@ independent. Removing prior observations requires an explanation. Rehearsal
 departure/checkpoint persistence and callable adapters remain the next integration
 step; sharing these rules does not activate them.
 
-`getEventAssistanceGroupProgress` and `confirmEventAssistanceDeparture` provide
-the first live command boundary for the typed workflow. The read projects
+`getEventAssistanceGroupProgress`, `confirmEventAssistanceDeparture` and
+`changeEventAssistanceRoute` provide the live movement command boundary for
+the typed workflow. The read projects
 destinations from canonical meeting location, itinerary stops with locations,
 and configured pace groups with a saved route path. `event:whole` is the
 whole-event scope; saved pace-group IDs cannot collide with that namespace.
 Itinerary and route references use the event-local `:itinerary` and `:route`
-identities. Scheduled offsets never prove that a group has moved.
+identities. Each choice also carries an opaque `alternativeId` derived from its
+current typed target. Scheduled offsets never prove that a group has moved.
 
 Confirmation consumes the existing typed `confirmDeparture` command and the
 source hash the Host reviewed. In one transaction it re-reads the event,
@@ -1395,6 +1397,17 @@ replacement document cannot inherit an old confirmation. Clock time does not
 confirm movement. The selected destination and actual confirmation time are
 persisted separately from assistance policy, message state and attendance.
 
+Route recovery consumes the typed `changeRoute` command. Its group, source
+hash and route revision bind the Host's current review; its opaque alternative
+must still resolve to a different current destination after a confirmed
+departure. Only a current organizer manager may apply it. The transaction
+stores the decision ID on group progress and in the immutable receipt, then
+advances the same progress revision used by joining guidance. It does not edit
+the event itinerary, route plan or schedule.
+That keeps emergency operating direction separate from canonical event setup,
+while the existing plan-change notice path can continue to own actual setup
+edits.
+
 `eventAssistanceGroupProgress` holds the current result per event/group;
 `eventAssistanceProgressReceipts` keeps immutable command deduplication evidence.
 An exact older retry returns its original operation revision and the latest
@@ -1403,10 +1416,11 @@ Source changes preserve the old fact but withhold current joining guidance
 until the Host confirms the current setup. Each pace group has independent
 progress. No new command sends messages, checks guests in or changes assignments.
 
-Both callables require Auth and App Check and apply rate limits. Organizer
+All three callables require Auth and App Check and apply rate limits. Organizer
 managers retain full authority. A current scoped lead/pacer duty authorizes
 progress reads and departure confirmation for its own group; a sweep can read
-progress. The legacy check-in permissions do not imply group authority. Staff
+progress. Route recovery remains manager-only. The legacy check-in permissions
+do not imply group authority. Staff
 expiry is checked again after transaction reads, including command receipt
 lookup. Workflow scheduling, Host controls and the rehearsal adapter remain
 separate integration work. The shared late-join evaluator accepts guidance derived from

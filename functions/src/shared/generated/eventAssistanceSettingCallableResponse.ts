@@ -3150,6 +3150,7 @@ export interface EventAssistanceSettingCallableResponse {
        * @maxItems 41
        */
       destinations: {
+        alternativeId: string;
         target:
           | {
               kind: "fixedPlace";

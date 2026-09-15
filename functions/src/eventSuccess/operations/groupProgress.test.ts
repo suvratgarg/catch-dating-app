@@ -18,6 +18,7 @@ import {EventGroupProgressStore, GROUP_PROGRESS} from "./groupProgressStore";
 import {progressIdentity} from "./groupProgressSource";
 import {evaluateLateJoin} from "./lateJoin";
 import {
+  changeEventAssistanceRouteHandler,
   confirmEventAssistanceDepartureHandler,
   getEventAssistanceGroupProgressHandler,
 } from "./groupProgressHandlers";
@@ -77,6 +78,19 @@ function command(view: Response["view"], operationId = "depart-one",
       expectedProgressRevision: view.revision,
     },
   }};
+}
+function routeCommand(view: Response["view"],
+  target = view.destinations.find((d) =>
+    !view.progress || JSON.stringify(d.target) !==
+      JSON.stringify(view.progress.destination))!,
+  operationId = "route-change-one") {
+  return {command: {kind: "changeRoute" as const, context: view.context,
+    eventId: view.context.eventId, operationId, payload: {
+      routeRevision: view.revision, groupId: view.groupId,
+      expectedSourceHash: view.sourceHash,
+      alternativeId: target.alternativeId,
+      decisionId: "decision:" + operationId,
+    }}};
 }
 
 const manager = "host-1";
@@ -171,6 +185,56 @@ test("changed setup invalidates guidance and fences stale confirmation",
       assert.equal(confirmed.view.freshness, "current");
       assert.ok(confirmed.view.guidance);
     }
+  });
+
+test("manager route recovery selects a current alternative", async () => {
+  const h = await harness();
+  const initial = (await h.store.get(manager, h.scope)).view;
+  await assert.rejects(h.store.changeRoute(manager, routeCommand(initial)),
+    {code: "failed-precondition"});
+  const departed = (await h.store.confirmDeparture(manager,
+    command(initial))).view;
+  const alternative = departed.destinations.find((destination) =>
+    JSON.stringify(destination.target) !==
+      JSON.stringify(departed.progress!.destination))!;
+  const input = routeCommand(departed, alternative);
+  const applied = await h.store.changeRoute(manager, input);
+  assert.equal(applied.outcome, "applied");
+  assert.equal(applied.view.revision, 2);
+  assert.deepEqual(applied.view.progress?.destination, alternative.target);
+  assert.equal(applied.view.progress?.routeDecisionId,
+    input.command.payload.decisionId);
+  assert.equal(applied.view.progress?.departureRosterId, undefined);
+  assert.deepEqual(h.fake.read("events/" + h.context.eventId), h.event);
+  const replayed = await h.store.changeRoute(manager, input);
+  assert.equal(replayed.outcome, "replayed");
+  assert.equal(replayed.operationRevision, 2);
+  await assert.rejects(h.store.changeRoute(manager,
+    routeCommand(applied.view, alternative, "same-alternative")),
+  {code: "failed-precondition"});
+  await assert.rejects(h.store.changeRoute("guest", input),
+    {code: "permission-denied"});
+});
+
+test("route recovery fences changed source, revision and opaque choices",
+  async () => {
+    const h = await harness();
+    const departed = (await h.store.confirmDeparture(manager,
+      command((await h.store.get(manager, h.scope)).view))).view;
+    const input = routeCommand(departed);
+    for (const changed of [
+      {...input, command: {...input.command, payload: {
+        ...input.command.payload, routeRevision: departed.revision + 1}}},
+      {...input, command: {...input.command, payload: {
+        ...input.command.payload, expectedSourceHash: "0".repeat(64)}}},
+      {...input, command: {...input.command, payload: {
+        ...input.command.payload,
+        alternativeId: "alternative:" + "0".repeat(64)}}},
+    ]) await assert.rejects(h.store.changeRoute(manager, changed));
+    h.event.itinerary![1].title = "Replacement stop";
+    await h.write("events/" + h.context.eventId, h.event);
+    await assert.rejects(h.store.changeRoute(manager, input),
+      {code: "aborted"});
   });
 
 test("operation replay and revision fences prevent changed or older effects",
@@ -298,7 +362,8 @@ test("receipt reads cannot extend the event window or reverse the clock",
 test("callable handlers authenticate and rate-limit before store access",
   async () => {
     for (const handler of [getEventAssistanceGroupProgressHandler,
-      confirmEventAssistanceDepartureHandler]) {
+      confirmEventAssistanceDepartureHandler,
+      changeEventAssistanceRouteHandler]) {
       const calls: string[] = [];
       const deps = {db: () => ({}) as Firestore,
         rateLimit: async () => {
@@ -308,6 +373,8 @@ test("callable handlers authenticate and rate-limit before store access",
           calls.push("read"); return {} as Response;
         }, confirmDeparture: async () => {
           calls.push("confirm"); return {} as Response;
+        }, changeRoute: async () => {
+          calls.push("route"); return {} as Response;
         }})};
       await assert.rejects(handler({data: {}} as CallableRequest, deps),
         {code: "unauthenticated"});
@@ -334,6 +401,15 @@ test("Firestore contenders record one departure; replacement source is stale", {
     assert.equal(results.filter((r) => r.outcome === "applied").length, 1);
     assert.equal(results.filter((r) => r.outcome === "replayed").length, 7);
     assert.ok(results.every((r) => r.view.revision === 1));
+    const routeInput = routeCommand(results[0].view,
+      results[0].view.destinations[2]);
+    const routeResults = await Promise.all(Array.from({length: 8}, () =>
+      h.store.changeRoute(manager, routeInput)));
+    assert.equal(routeResults.filter((r) => r.outcome === "applied").length,
+      1);
+    assert.equal(routeResults.filter((r) => r.outcome === "replayed").length,
+      7);
+    assert.ok(routeResults.every((r) => r.view.revision === 2));
     await db.doc("events/" + h.context.eventId).delete();
     await h.write("events/" + h.context.eventId, h.event);
     const replaced = (await h.store.get(manager, h.scope)).view;

@@ -536,6 +536,8 @@ export type EventAssistanceCommand =
          * Nonnegative safe integer revision.
          */
         routeRevision: number;
+        groupId: string;
+        expectedSourceHash: string;
         alternativeId: string;
         decisionId: string;
       };

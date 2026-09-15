@@ -92,6 +92,7 @@ export {eventAssistanceProgressReceiptDocumentSchema} from "./schemas/eventAssis
 export {eventAssistanceGroupProgressDocumentSchema} from "./schemas/eventAssistanceGroupProgressDocument";
 export {getEventAssistanceGroupProgressCallablePayloadSchema} from "./schemas/getEventAssistanceGroupProgressInput";
 export {confirmEventAssistanceDepartureCallablePayloadSchema} from "./schemas/confirmEventAssistanceDepartureInput";
+export {changeEventAssistanceRouteCallablePayloadSchema} from "./schemas/changeEventAssistanceRouteInput";
 export {eventAssistanceGroupProgressCallableResponseSchema} from "./schemas/eventAssistanceGroupProgressOutput";
 export {eventWhatsappWithdrawalGrantDocumentSchema} from "./schemas/eventWhatsappWithdrawalGrantDocument";
 export {getEventWhatsappWithdrawalCallablePayloadSchema} from "./schemas/getEventWhatsappWithdrawalInput";

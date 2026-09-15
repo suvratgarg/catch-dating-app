@@ -8,4 +8,6 @@ export interface EventAssistanceProgressReceiptDocument {
   requestHash: string;
   revision: number;
   createdAt: number;
+  commandKind?: "confirmDeparture" | "changeRoute";
+  decisionId?: string;
 }

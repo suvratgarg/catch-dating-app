@@ -266,9 +266,11 @@ export const eventAssistanceCommandBindingCatalog = {
     {
       "commandKind": "changeRoute",
       "live": {
-        "bindingType": "contractOnly",
-        "operations": [],
-        "missingCapability": "liveRouteDecision"
+        "bindingType": "directCommand",
+        "operations": [
+          "changeEventAssistanceRoute"
+        ],
+        "missingCapability": null
       },
       "rehearsal": {
         "bindingType": "contractOnly",

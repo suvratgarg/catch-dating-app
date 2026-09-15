@@ -6,5 +6,5 @@
   "x-firestore-collection": "eventAssistanceProgressReceipts",
   "x-firestore-path": "eventAssistanceProgressReceipts/{receiptId}",
   "x-document-id-field": "receiptId",
-  "x-owner": "event-assistance departure command"
+  "x-owner": "event-assistance group progress commands"
 }

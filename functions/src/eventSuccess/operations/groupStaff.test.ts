@@ -120,6 +120,17 @@ test("group-only pacers can control their group without event-wide access",
     const moved = await h.progress.confirmDeparture(h.target.uid,
       await departure(h));
     assert.equal(moved.view.progress?.confirmedBy, h.target.uid);
+    const alternative = moved.view.destinations.find((destination) =>
+      JSON.stringify(destination.target) !==
+        JSON.stringify(moved.view.progress!.destination))!;
+    await assert.rejects(h.progress.changeRoute(h.target.uid, {command: {
+      kind: "changeRoute", context: h.scope.context,
+      eventId: h.scope.context.eventId, operationId: "pacer-route-change",
+      payload: {routeRevision: moved.view.revision,
+        groupId: h.scope.groupId, expectedSourceHash: moved.view.sourceHash,
+        alternativeId: alternative.alternativeId,
+        decisionId: "decision:pacer-route-change"},
+    }}), {code: "permission-denied"});
     for (const groupId of ["fast", "event:whole"]) {
       await assert.rejects(h.progress.get(h.target.uid, {...h.scope, groupId}),
         {code: "permission-denied"});

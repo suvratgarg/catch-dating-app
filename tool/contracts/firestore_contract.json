@@ -1883,11 +1883,12 @@
       "path": "eventAssistanceProgressReceipts/{receiptId}",
       "rulesMatch": "/eventAssistanceProgressReceipts/{receiptId}",
       "rulesTestFile": "functions/test/firestore.rules.test.cjs",
-      "owner": "event-assistance departure command",
+      "owner": "event-assistance group progress commands",
       "read": "server only",
       "write": "server only",
       "exportedFunctions": [
-        "confirmEventAssistanceDeparture"
+        "confirmEventAssistanceDeparture",
+        "changeEventAssistanceRoute"
       ]
     },
     {
@@ -2015,12 +2016,13 @@
       "path": "eventAssistanceGroupProgress/{progressId}",
       "rulesMatch": "/eventAssistanceGroupProgress/{progressId}",
       "rulesTestFile": "functions/test/firestore.rules.test.cjs",
-      "owner": "event-assistance departure command",
+      "owner": "event-assistance group progress commands",
       "read": "server only",
       "write": "server only",
       "exportedFunctions": [
         "getEventAssistanceGroupProgress",
         "confirmEventAssistanceDeparture",
+        "changeEventAssistanceRoute",
         "listEventAssistanceDepartureRosters"
       ]
     },

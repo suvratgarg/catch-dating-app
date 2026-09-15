@@ -92,6 +92,7 @@ export {validateEventAssistanceProgressReceiptDocument} from "./validators/event
 export {validateEventAssistanceGroupProgressDocument} from "./validators/eventAssistanceGroupProgressDocument";
 export {validateGetEventAssistanceGroupProgressCallablePayload} from "./validators/getEventAssistanceGroupProgressInput";
 export {validateConfirmEventAssistanceDepartureCallablePayload} from "./validators/confirmEventAssistanceDepartureInput";
+export {validateChangeEventAssistanceRouteCallablePayload} from "./validators/changeEventAssistanceRouteInput";
 export {validateEventAssistanceGroupProgressCallableResponse} from "./validators/eventAssistanceGroupProgressOutput";
 export {validateEventWhatsappWithdrawalGrantDocument} from "./validators/eventWhatsappWithdrawalGrantDocument";
 export {validateGetEventWhatsappWithdrawalCallablePayload} from "./validators/getEventWhatsappWithdrawalInput";

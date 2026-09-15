@@ -452,6 +452,11 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
     schema: schemaConfirmEventAssistanceDepartureCallablePayloadSchema,
   ),
   SchemaContractDefinition(
+    name: 'ChangeEventAssistanceRouteCallablePayload',
+    source: 'callables/change_event_assistance_route_payload.schema.json',
+    schema: schemaChangeEventAssistanceRouteCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
     name: 'EventAssistanceGroupProgressCallableResponse',
     source: 'callable_responses/event_assistance_group_progress_response.schema.json',
     schema: schemaEventAssistanceGroupProgressCallableResponseSchema,
@@ -3476,6 +3481,7 @@ const schemaContractsByName = <String, Map<String, Object?>>{
   'EventAssistanceGroupProgressDocument': schemaEventAssistanceGroupProgressDocumentSchema,
   'GetEventAssistanceGroupProgressCallablePayload': schemaGetEventAssistanceGroupProgressCallablePayloadSchema,
   'ConfirmEventAssistanceDepartureCallablePayload': schemaConfirmEventAssistanceDepartureCallablePayloadSchema,
+  'ChangeEventAssistanceRouteCallablePayload': schemaChangeEventAssistanceRouteCallablePayloadSchema,
   'EventAssistanceGroupProgressCallableResponse': schemaEventAssistanceGroupProgressCallableResponseSchema,
   'EventWhatsappWithdrawalGrantDocument': schemaEventWhatsappWithdrawalGrantDocumentSchema,
   'GetEventWhatsappWithdrawalCallablePayload': schemaGetEventWhatsappWithdrawalCallablePayloadSchema,
@@ -4153,6 +4159,7 @@ const schemaContractsBySource = <String, Map<String, Object?>>{
   'firestore/event_assistance_group_progress.schema.json': schemaEventAssistanceGroupProgressDocumentSchema,
   'callables/get_event_assistance_group_progress_payload.schema.json': schemaGetEventAssistanceGroupProgressCallablePayloadSchema,
   'callables/confirm_event_assistance_departure_payload.schema.json': schemaConfirmEventAssistanceDepartureCallablePayloadSchema,
+  'callables/change_event_assistance_route_payload.schema.json': schemaChangeEventAssistanceRouteCallablePayloadSchema,
   'callable_responses/event_assistance_group_progress_response.schema.json': schemaEventAssistanceGroupProgressCallableResponseSchema,
   'firestore/event_assistance_whatsapp_withdrawal_grants.schema.json': schemaEventWhatsappWithdrawalGrantDocumentSchema,
   'callables/get_event_whatsapp_withdrawal_payload.schema.json': schemaGetEventWhatsappWithdrawalCallablePayloadSchema,
