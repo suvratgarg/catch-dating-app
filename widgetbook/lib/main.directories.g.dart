@@ -10307,6 +10307,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'HostPaymentAccountSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Exact catalog',
+                    builder:
+                        _widgetbook_workspace_hosts_operations_organizer_components
+                            .hostStrictHostPaymentAccountSectionCatalogStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostPrivateAccessAsyncBoundary',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(

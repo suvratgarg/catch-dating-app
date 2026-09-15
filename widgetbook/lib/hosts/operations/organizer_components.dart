@@ -72,7 +72,7 @@ Widget _hostClubPreviewFor(String focus) {
     'HostPaymentAccountControllerCard' => HostPaymentAccountControllerCard(
       club: club,
     ),
-    'HostPaymentAccountContentCard' => HostPaymentAccountContentCard(
+    'HostPaymentAccountSection' => HostPaymentAccountSection(
       accounts: [payment],
       recommendedProvider: HostPaymentProvider.razorpay,
       actionErrorMessage: null,
@@ -133,6 +133,14 @@ Widget hostStrictHostClubOrganizerOverviewControllerCatalogStates(
 )
 Widget hostStrictHostClubEditTabCatalogStates(BuildContext context) =>
     _hostClubExactCatalog(context, 'HostClubEditTab');
+
+@widgetbook.UseCase(
+  name: 'Exact catalog',
+  type: HostPaymentAccountSection,
+  path: '[P1 product surfaces]/Host operations/Strict coverage',
+)
+Widget hostStrictHostPaymentAccountSectionCatalogStates(BuildContext context) =>
+    _hostClubExactCatalog(context, 'HostPaymentAccountSection');
 
 @widgetbook.UseCase(
   name: 'Owner loaded',
