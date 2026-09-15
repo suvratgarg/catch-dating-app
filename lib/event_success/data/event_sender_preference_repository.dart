@@ -1,5 +1,7 @@
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/callables/get_event_assistance_sms_preference_callable_request.g.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/callables/list_event_sms_preferences_callable_request.g.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callables/get_event_rcs_preference_callable_request.g.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callables/get_event_whatsapp_preference_callable_request.g.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callables/list_event_rcs_preferences_callable_request.g.dart';
@@ -25,6 +27,11 @@ class EventSenderPreferenceRepository {
   }) {
     EventSenderPreferencePage.requireCursor(scope.channel, cursor);
     final input = switch (scope.channel) {
+      EventSenderChannel.sms => ListEventSmsPreferencesCallableRequest(
+        eventId: scope.eventId,
+        attendeeId: scope.attendeeId,
+        cursor: cursor,
+      ).toJson(),
       EventSenderChannel.whatsapp =>
         ListEventWhatsappPreferencesCallableRequest(
           eventId: scope.eventId,
@@ -55,6 +62,11 @@ class EventSenderPreferenceRepository {
   ) {
     assistanceId(senderId);
     final input = switch (scope.channel) {
+      EventSenderChannel.sms => GetEventAssistanceSmsPreferenceCallableRequest(
+        eventId: scope.eventId,
+        attendeeId: scope.attendeeId,
+        senderId: senderId,
+      ).toJson(),
       EventSenderChannel.whatsapp => GetEventWhatsappPreferenceCallableRequest(
         eventId: scope.eventId,
         attendeeId: scope.attendeeId,
@@ -100,6 +112,12 @@ class EventSenderPreferenceRepository {
     T Function(Object?) decode,
   ) {
     final name = switch ((scope.channel, action)) {
+      (EventSenderChannel.sms, _PreferenceAction.list) =>
+        'listEventSmsPreferences',
+      (EventSenderChannel.sms, _PreferenceAction.read) =>
+        'getEventAssistanceSmsPreference',
+      (EventSenderChannel.sms, _PreferenceAction.write) =>
+        'setEventAssistanceSmsPreference',
       (EventSenderChannel.whatsapp, _PreferenceAction.list) =>
         'listEventWhatsappPreferences',
       (EventSenderChannel.whatsapp, _PreferenceAction.read) =>

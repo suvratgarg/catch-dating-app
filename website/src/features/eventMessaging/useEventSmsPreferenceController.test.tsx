@@ -2,10 +2,11 @@ import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import {act, cleanup, fireEvent, render, renderHook, screen, waitFor} from "@testing-library/react";
 import type {PropsWithChildren} from "react";
 import {afterEach, beforeEach, describe, expect, it, vi} from "vitest";
-const api = vi.hoisted(() => ({get: vi.fn(), set: vi.fn(),
+const api = vi.hoisted(() => ({get: vi.fn(), set: vi.fn(), list: vi.fn(),
   listeners: new Set<(user: {uid: string} | null) => void>()}));
 vi.mock("../../firebase", () => ({
   getEventAssistanceSmsPreference: api.get,
+  listEventSmsPreferences: api.list,
   setEventAssistanceSmsPreference: api.set,
   watchEventRuntimeAuthState: (listener: (user: {uid: string} | null) => void) => {
     api.listeners.add(listener); listener({uid: "guest-a"});
@@ -18,7 +19,7 @@ import {newerSmsPreference, type SmsPreferenceView} from "./eventMessagingModel"
 import type {EventAssistanceSmsPreferenceCallableResponse as Response} from "../../shared/contracts/generated/eventAssistanceSmsPreferenceCallableResponse";
 import {eventMessagingCopy as copy} from "../../content/eventMessaging";
 
-const view: SmsPreferenceView = {eventId: "event", attendeeId: "attendee", serverTime: 1000,
+const view: SmsPreferenceView = {eventId: "event", attendeeId: "attendee", senderId: "sms-current", serverTime: 1000,
   reviewHash: "a".repeat(64),
   revision: null, preference: "notSet", canEnable: true, availability: "ready",
   phoneLastFour: "9999", expiresAt: null,
@@ -48,6 +49,8 @@ function signIn(uid: string | null) {
 describe("verified event SMS controller", () => {
   beforeEach(() => {
     vi.clearAllMocks(); api.listeners.clear();
+    api.list.mockImplementation(async ({eventId, attendeeId}) => ({eventId, attendeeId,
+      serverTime: 1000, configuredSenderId: "sms-current", previousSenderIds: [], nextCursor: null}));
     api.get.mockResolvedValue(initial); api.set.mockResolvedValue(enabled);
   });
   afterEach(() => { cleanup(); vi.restoreAllMocks(); });
@@ -61,7 +64,7 @@ describe("verified event SMS controller", () => {
     await waitFor(() => expect(api.get.mock.calls.length).toBeGreaterThan(1));
     expect(h.result.current.state).toMatchObject({view: {preference: "enabled", revision: 1}});
     expect(api.set).toHaveBeenCalledOnce();
-    expect(api.set).toHaveBeenCalledWith({eventId: "event", attendeeId: "attendee",
+    expect(api.set).toHaveBeenCalledWith({eventId: "event", attendeeId: "attendee", senderId: "sms-current",
       expectedRevision: null, requestId: expect.any(String),
       expectedReviewHash: view.reviewHash,
       decision: {kind: "grant", copyVersion: "catch-event-service-sms-v1"}});
@@ -78,7 +81,8 @@ describe("verified event SMS controller", () => {
       reviewHash: "b".repeat(64)}};
     api.get.mockResolvedValue(latest);
     act(() => h.result.current.refresh());
-    await waitFor(() => expect(h.result.current.state).toMatchObject({view: latest.view}));
+    expect(api.get).toHaveBeenCalledOnce();
+    expect(h.result.current.state).toMatchObject({view: initial.view});
     act(() => h.result.current.disable());
     expect(api.set).toHaveBeenCalledOnce();
     act(() => h.result.current.retry());
@@ -164,21 +168,78 @@ describe("verified event SMS controller", () => {
     page.unmount(); await act(async () => result.resolve(enabled));
   });
 
-  it("hides optional enrollment until sender activation, but preserves withdrawal", async () => {
+  it("explains configured sender unavailability and preserves withdrawal", async () => {
     api.get.mockResolvedValue({...initial, view: {...view, canEnable: false,
       availability: "senderUnavailable"}});
     const h = harness();
     await waitFor(() => expect(api.get).toHaveBeenCalled());
-    await waitFor(() => expect(h.result.current.state.kind).toBe("hidden"));
+    await waitFor(() => expect(h.result.current.state).toMatchObject({kind: "ready", view: {canEnable: false}}));
+    act(() => h.result.current.enable());
+    expect(api.set).not.toHaveBeenCalled();
     h.unmount();
     const disable = vi.fn();
     render(<EventSmsPreferenceCard state={{kind: "ready", view: {...enabled.view,
       canEnable: false, availability: "senderUnavailable"}, pending: false,
-      uncertain: false, notice: ""}} disable={disable} enable={vi.fn()}
+      uncertain: false, notice: "", earlier: false}} navigation={{earlier: false, showEarlier: false,
+        showCurrent: false, showPrevious: false, showNext: false, busy: false}}
+      next={async () => undefined} previous={vi.fn()} current={vi.fn()} manageEarlier={vi.fn()} disable={disable} enable={vi.fn()}
       retry={vi.fn()} refresh={vi.fn()} />);
     fireEvent.click(screen.getByRole("button", {name: copy.turnOff}));
     expect(disable).toHaveBeenCalledOnce();
   });
+
+  it("discovers the saved sender without inventing permission and withdraws earlier grants", async () => {
+    api.list.mockResolvedValue({eventId: "event", attendeeId: "attendee", serverTime: 1000,
+      configuredSenderId: "sms-current", previousSenderIds: ["sms-earlier"], nextCursor: null});
+    api.get.mockImplementation(async (scope) => ({outcome: "read", view: {...view, ...scope,
+      ...(scope.senderId === "sms-earlier" ? {revision: 1, preference: "enabled", expiresAt: 2000} : {})}}));
+    const h = harness();
+    await waitFor(() => expect(h.result.current.state).toMatchObject({view: {senderId: "sms-current"}}));
+    expect(api.set).not.toHaveBeenCalled();
+    expect(api.get).toHaveBeenCalledWith({eventId: "event", attendeeId: "attendee", senderId: "sms-current"});
+    act(() => h.result.current.manageEarlier());
+    await waitFor(() => expect(h.result.current.state).toMatchObject({earlier: true, view: {senderId: "sms-earlier"}}));
+    act(() => h.result.current.enable());
+    expect(api.set).not.toHaveBeenCalled();
+    api.set.mockResolvedValue({outcome: "applied", view: {...enabled.view,
+      senderId: "sms-earlier", revision: 2, preference: "disabled"}});
+    act(() => h.result.current.disable());
+    await waitFor(() => expect(h.result.current.state).toMatchObject({view: {preference: "disabled"}}));
+    expect(api.set.mock.calls[0][0]).toMatchObject({senderId: "sms-earlier", decision: {kind: "revoke"}});
+    h.unmount();
+  });
+
+  it("does not fall back to an invented sender when discovery is empty or fails", async () => {
+    api.list.mockResolvedValue({eventId: "event", attendeeId: "attendee", serverTime: 1000,
+      configuredSenderId: null, previousSenderIds: [], nextCursor: null});
+    const h = harness();
+    await waitFor(() => expect(h.result.current.state.kind).toBe("hidden"));
+    expect(api.get).not.toHaveBeenCalled();
+    api.list.mockRejectedValue(new Error("unavailable"));
+    act(() => h.result.current.refresh());
+    await waitFor(() => expect(h.result.current.state.kind).toBe("error"));
+    expect(api.get).not.toHaveBeenCalled();
+    expect(api.set).not.toHaveBeenCalled();
+    h.unmount();
+  });
+
+  it("does not treat a different sender or an unconfirmed decision as a successful save", async () => {
+    api.set.mockResolvedValue({...enabled, view: {...enabled.view, senderId: "foreign"}});
+    const h = harness();
+    await waitFor(() => expect(h.result.current.state.kind).toBe("ready"));
+    act(() => h.result.current.enable());
+    await waitFor(() => expect(h.result.current.state).toMatchObject({uncertain: true, view: {preference: "notSet"}}));
+    api.set.mockResolvedValue({...enabled, view: {...enabled.view, preference: "disabled"}});
+    act(() => h.result.current.retry());
+    await waitFor(() => expect(api.set).toHaveBeenCalledTimes(2));
+    await waitFor(() => expect(h.result.current.state).toMatchObject({uncertain: true, view: {preference: "notSet"}}));
+    api.set.mockResolvedValue({...enabled, outcome: "replayed", view: {...enabled.view, revision: 3, preference: "disabled"}});
+    act(() => h.result.current.retry());
+    await waitFor(() => expect(h.result.current.state).toMatchObject({uncertain: false, view: {preference: "disabled"}}));
+    expect(api.set.mock.calls[2][0]).toEqual(api.set.mock.calls[0][0]);
+    h.unmount();
+  });
+
 });
 
 it("prefers current revisions and then server time when reads arrive out of order", () => {

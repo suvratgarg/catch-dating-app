@@ -12,14 +12,14 @@ const meta = {title: "Marketing Website/Event text preferences",
 } satisfies Meta;
 export default meta;
 type Story = StoryObj<typeof meta>;
-const view: SmsPreferenceView = {eventId: "fixture", attendeeId: "fixture-guest",
+const view: SmsPreferenceView = {senderId: "fixture-sms", eventId: "fixture", attendeeId: "fixture-guest",
   reviewHash: "a".repeat(64),
   serverTime: 1000, revision: null, preference: "notSet", canEnable: true,
   availability: "ready", phoneLastFour: "9999", expiresAt: null,
   consent: {version: "catch-event-service-sms-v1",
     text: "Receive text messages from Catch about joining, changes and follow-up for this event, until 24 hours after it ends. I can turn them off here."}};
 const ready: Extract<EventMessagingState, {kind: "ready"}> = {kind: "ready", view,
-  pending: false, uncertain: false, notice: ""};
+  pending: false, uncertain: false, notice: "", earlier: false};
 
 export const Preference: Story = {
   parameters: {catchComponent: {id: "event_sms_preference_card",
@@ -28,22 +28,25 @@ export const Preference: Story = {
   render: () => <Preview initial={ready} />,
 };
 export const Enabled: Story = {render: () => <Preview initial={{...ready,
-  view: {...view, preference: "enabled", revision: 1}}} />};
+  view: {...view, preference: "enabled", revision: 1, expiresAt: 2000}}} />};
 export const Uncertain: Story = {render: () => <Preview initial={{...ready,
   uncertain: true, notice: "We could not confirm the change. Retry to check whether it was saved."}} />};
 export const Unavailable: Story = {render: () => <Preview initial={{...ready,
-  view: {...view, canEnable: false, availability: "senderUnavailable", preference: "disabled", revision: 2}}} />};
+  view: {...view, canEnable: false, availability: "senderUnavailable", preference: "disabled", revision: 2, expiresAt: 2000}}} />};
 export const Loading: Story = {render: () => <Preview initial={{kind: "loading"}} />};
 export const Error: Story = {render: () => <Preview initial={{kind: "error"}} />};
 
 function Preview({initial}: {initial: EventMessagingState}) {
   const [state, setState] = useState(initial);
   const save = (preference: "enabled" | "disabled") => setState({...ready,
-    view: {...view, preference, revision: 1}, notice: preference === "enabled" ?
+    view: {...view, preference, revision: 1, expiresAt: 2000}, notice: preference === "enabled" ?
       "Event texts are now on." : "Event texts are now off."});
   return <EventRuntimeFrame brandLabel="Catch events" brandWord="Catch"><EventRuntimePanel kicker="Courtyard Social"
     title="You’re registered" body="Your place on the guest list is confirmed.">
-    <EventSmsPreferenceCard state={state} enable={() => save("enabled")}
+    <EventSmsPreferenceCard state={state} navigation={{earlier: false, showEarlier: false,
+      showCurrent: false, showPrevious: false, showNext: false, busy: state.kind === "ready" && (state.pending || state.uncertain)}}
+      next={async () => undefined} previous={() => undefined} current={() => undefined}
+      manageEarlier={() => undefined} enable={() => save("enabled")}
       disable={() => save("disabled")} retry={() => save("enabled")}
       refresh={() => setState(ready)} />
   </EventRuntimePanel></EventRuntimeFrame>;

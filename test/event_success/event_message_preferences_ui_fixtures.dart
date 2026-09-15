@@ -1,10 +1,8 @@
 import 'package:catch_dating_app/event_success/data/event_participant_context_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_participant_context.dart';
 import 'package:catch_dating_app/event_success/domain/event_sender_preference.dart';
-import 'package:catch_dating_app/event_success/domain/event_sms_preference.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'event_sender_preference_fixtures.dart';
-import 'event_sms_preference_fixtures.dart';
 
 class MessageIdentityRepository extends Fake
     implements EventParticipantContextRepository {
@@ -36,19 +34,10 @@ class MessageIdentityRepository extends Fake
   }
 }
 
-class MessageSmsRepository extends SmsTestRepository {
-  int fetchCount = 0;
-  Map<String, Object?> patch = {};
-  @override
-  Future<EventSmsPreferenceView> fetch(EventSmsPreferenceScope scope) async {
-    fetchCount++;
-    return smsView(patch: patch);
-  }
-}
-
 class MessageSenderRepository extends SenderTestRepository {
   int pageCount = 0;
   final List<String> viewedSenders = [];
+  int smsReadCount = 0;
   bool history = false;
   bool hidden = false;
   @override
@@ -70,6 +59,7 @@ class MessageSenderRepository extends SenderTestRepository {
     String senderId,
   ) async {
     viewedSenders.add(senderId);
+    if (scope.channel == EventSenderChannel.sms) smsReadCount++;
     final earlier = senderId == 'sender-prior';
     return senderView(
       scope,

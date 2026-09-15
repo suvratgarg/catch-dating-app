@@ -147,7 +147,7 @@ test("expired private grants do not pin a changed verified phone",
     const sms = new SmsPreferenceStore(h.db, () => h.clock.now,
       "sms-private-expiry");
     for (const {view} of [
-      await sms.get(changed, h.scope),
+      await sms.get(changed, {...h.scope, senderId: "sms-private-expiry"}),
       await h.preferences.get(changed, h.scope),
       await h.rcsPreferences.get(changed, h.rcsScope),
     ]) {
@@ -190,7 +190,8 @@ for (const channel of ["SMS", "WhatsApp", "RCS"] as const) {
           undefined, true);
         const sms = new SmsPreferenceStore(h.db, () => h.clock.now,
           "sms-slow-consent");
-        const smsView = (await sms.get(h.actor, h.scope)).view;
+        const smsScope = {...h.scope, senderId: "sms-slow-consent"};
+        const smsView = (await sms.get(h.actor, smsScope)).view;
         const waView = (await h.preferences.get(h.actor, h.scope)).view;
         const rcsView = (await h.rcsPreferences.get(h.actor, h.rcsScope)).view;
         const expiresAt = (await h.permission()).expiresAt;
@@ -200,7 +201,7 @@ for (const channel of ["SMS", "WhatsApp", "RCS"] as const) {
         };
         if (operation === "read") {
           const {view} = await (channel === "SMS" ?
-            sms.get(h.actor, h.scope) : channel === "WhatsApp" ?
+            sms.get(h.actor, smsScope) : channel === "WhatsApp" ?
               h.preferences.get(h.actor, h.scope) :
               h.rcsPreferences.get(h.actor, h.rcsScope));
           assert.equal(view.canEnable, false);
@@ -208,7 +209,7 @@ for (const channel of ["SMS", "WhatsApp", "RCS"] as const) {
           assert.equal(view.serverTime, expiresAt);
         } else {
           const pending = channel === "SMS" ?
-            sms.set(h.actor, {...h.scope, requestId: "slow-grant",
+            sms.set(h.actor, {...smsScope, requestId: "slow-grant",
               expectedRevision: smsView.revision,
               expectedReviewHash: smsView.reviewHash, decision: {kind: "grant",
                 copyVersion: smsView.consent.version}}) :

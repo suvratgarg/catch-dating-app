@@ -80,7 +80,10 @@ void main() {
                   patch: switch (wrong) {
                     'participant' => {'attendeeId': 'foreign'},
                     'decision' => {'preference': 'disabled'},
-                    _ => {'reviewHash': 'f' * 64},
+                    _ =>
+                      channel == EventSenderChannel.sms
+                          ? {'phoneLastFour': '7777'}
+                          : {'reviewHash': 'f' * 64},
                   },
                 ),
                 expectedScope: expected,

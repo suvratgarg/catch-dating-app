@@ -2,20 +2,27 @@ import 'package:catch_dating_app/event_success/domain/event_assistance_parsing.d
 
 /// A participant's live event preference. Rehearsals have no SMS enrollment.
 final class EventSmsPreferenceScope {
-  EventSmsPreferenceScope({required this.eventId, required this.attendeeId}) {
+  EventSmsPreferenceScope({
+    required this.eventId,
+    required this.attendeeId,
+    this.senderId = 'catch-event-sms',
+  }) {
     assistanceId(eventId);
     assistanceId(attendeeId);
+    assistanceId(senderId);
   }
   final String eventId;
   final String attendeeId;
+  final String senderId;
 
   @override
   bool operator ==(Object other) =>
       other is EventSmsPreferenceScope &&
       other.eventId == eventId &&
-      other.attendeeId == attendeeId;
+      other.attendeeId == attendeeId &&
+      other.senderId == senderId;
   @override
-  int get hashCode => Object.hash(eventId, attendeeId);
+  int get hashCode => Object.hash(eventId, attendeeId, senderId);
 }
 
 enum EventSmsPreference { notSet, enabled, disabled, expired }
@@ -99,6 +106,8 @@ final class EventSmsPreferenceChange {
   Map<String, Object?> toJson() => {
     'eventId': snapshot.scope.eventId,
     'attendeeId': snapshot.scope.attendeeId,
+    if (snapshot.scope.senderId != 'catch-event-sms')
+      'senderId': snapshot.scope.senderId,
     'requestId': requestId,
     'expectedRevision': snapshot.revision,
     'expectedReviewHash': snapshot.reviewHash,
@@ -125,6 +134,7 @@ final class EventSmsPreferenceResult {
     final raw = assistanceObject(result['view'], {
       'eventId',
       'attendeeId',
+      'senderId',
       'serverTime',
       'revision',
       'reviewHash',
@@ -138,6 +148,7 @@ final class EventSmsPreferenceResult {
     final scope = EventSmsPreferenceScope(
       eventId: assistanceId(raw['eventId']),
       attendeeId: assistanceId(raw['attendeeId']),
+      senderId: assistanceId(raw['senderId']),
     );
     if (scope != expectedScope) {
       throw const FormatException('Event text preference scope mismatch.');

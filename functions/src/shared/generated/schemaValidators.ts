@@ -9,6 +9,8 @@ export {validateGetEventAssistanceParticipantContextCallablePayload} from "./val
 export {validateEventAssistanceParticipantContextCallableResponse} from "./validators/eventAssistanceParticipantContextOutput";
 export {validateListEventAssistanceDepartureRostersCallablePayload} from "./validators/listEventAssistanceDepartureRostersInput";
 export {validateEventAssistanceDepartureRostersCallableResponse} from "./validators/eventAssistanceDepartureRostersOutput";
+export {validateListEventSmsPreferencesCallablePayload} from "./validators/listEventSmsPreferencesInput";
+export {validateListEventSmsPreferencesCallableResponse} from "./validators/listEventSmsPreferencesOutput";
 export {validateListEventWhatsappPreferencesCallablePayload} from "./validators/listEventWhatsappPreferencesInput";
 export {validateListEventWhatsappPreferencesCallableResponse} from "./validators/listEventWhatsappPreferencesOutput";
 export {validateListEventRcsPreferencesCallablePayload} from "./validators/listEventRcsPreferencesInput";

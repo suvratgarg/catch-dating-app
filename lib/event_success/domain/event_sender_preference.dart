@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/event_success/domain/event_assistance_parsing.dart';
 
-enum EventSenderChannel { whatsapp, rcs }
+enum EventSenderChannel { sms, whatsapp, rcs }
 
 /// Channel is part of the cache identity; consent never transfers between them.
 final class EventSenderPreferenceScope {
@@ -57,7 +57,11 @@ final class EventSenderPreferencePage {
   final String? nextCursor;
 
   static void requireCursor(EventSenderChannel channel, String? cursor) {
-    final prefix = channel == EventSenderChannel.whatsapp ? 'wa' : 'rcs';
+    final prefix = switch (channel) {
+      EventSenderChannel.sms => 'sms',
+      EventSenderChannel.whatsapp => 'wa',
+      EventSenderChannel.rcs => 'rcs',
+    };
     if (cursor != null &&
         !RegExp('^$prefix-permission:[a-f0-9]{64}\$').hasMatch(cursor)) {
       throw const FormatException('Invalid sender history cursor.');
@@ -161,6 +165,14 @@ sealed class EventSenderPreferenceView {
   }
 }
 
+/// SMS always represents the Catch platform brand; selection identifies the
+/// configured delivery channel, not a new marketing or organizer permission.
+final class EventSmsSenderPreferenceView extends EventSenderPreferenceView {
+  const EventSmsSenderPreferenceView._(super.facts) : super._();
+  @override
+  String get senderDisplayName => 'Catch';
+}
+
 final class EventWhatsappPreferenceSender {
   const EventWhatsappPreferenceSender._(
     this.displayName,
@@ -214,12 +226,15 @@ final class EventSenderPreferenceChange {
     'senderId': snapshot.senderId,
     'requestId': requestId,
     'expectedRevision': snapshot.revision,
+    if (snapshot is EventSmsSenderPreferenceView)
+      'expectedReviewHash': snapshot.reviewHash,
     'decision': switch (decision) {
       EventSenderPreferenceDecision.revoke => {'kind': 'revoke'},
       EventSenderPreferenceDecision.grant => {
         'kind': 'grant',
         'copyVersion': snapshot.consentVersion,
-        'reviewHash': snapshot.reviewHash,
+        if (snapshot is! EventSmsSenderPreferenceView)
+          'reviewHash': snapshot.reviewHash,
         if (snapshot case final EventWhatsappPreferenceView whatsapp) ...{
           'senderHash': whatsapp.sender!.bindingHash,
           'stopRecordHash': whatsapp.stopRecordHash,
@@ -242,6 +257,7 @@ final class EventSenderPreferenceResult {
     assistanceId(expectedSenderId);
     final result = assistanceObject(data, {'outcome', 'view'});
     final whatsapp = expectedScope.channel == EventSenderChannel.whatsapp;
+    final sms = expectedScope.channel == EventSenderChannel.sms;
     final raw = assistanceObject(result['view'], {
       'eventId',
       'attendeeId',
@@ -255,8 +271,9 @@ final class EventSenderPreferenceResult {
       'phoneLastFour',
       'expiresAt',
       'consent',
-      'sender',
-      if (whatsapp) 'stopRecordHash' else 'eventTitle',
+      if (!sms) 'sender',
+      if (whatsapp) 'stopRecordHash',
+      if (expectedScope.channel == EventSenderChannel.rcs) 'eventTitle',
     });
     if (raw['eventId'] != expectedScope.eventId ||
         raw['attendeeId'] != expectedScope.attendeeId ||
@@ -280,8 +297,8 @@ final class EventSenderPreferenceResult {
         suffix != null &&
             (suffix is! String || !RegExp(r'^[0-9]{4}$').hasMatch(suffix)) ||
         availability == EventSenderAvailability.ready &&
-            (suffix == null || raw['sender'] == null) ||
-        whatsapp &&
+            (suffix == null || !sms && raw['sender'] == null) ||
+        (whatsapp || sms) &&
             availability == EventSenderAvailability.subscriptionUnavailable ||
         assistanceBoolean(raw['canEnable']) !=
             (availability == EventSenderAvailability.ready) ||
@@ -292,7 +309,7 @@ final class EventSenderPreferenceResult {
         preference != EventSenderPreference.notSet &&
             (revision == null || expiresAt == null || suffix == null) ||
         preference == EventSenderPreference.enabled && expiresAt! <= now ||
-        whatsapp &&
+        (whatsapp || sms) &&
             preference == EventSenderPreference.expired &&
             expiresAt! > now) {
       throw const FormatException('Inconsistent event message preference.');
@@ -311,7 +328,9 @@ final class EventSenderPreferenceResult {
       consentText: assistanceText(consent['text'], 500),
     );
     final EventSenderPreferenceView view;
-    if (whatsapp) {
+    if (sms) {
+      view = EventSmsSenderPreferenceView._(facts);
+    } else if (whatsapp) {
       EventWhatsappPreferenceSender? sender;
       if (raw['sender'] case final Object value) {
         final fields = assistanceObject(value, {
@@ -363,7 +382,9 @@ final class EventSenderPreferenceResult {
       final validDecision = switch (change.decision) {
         EventSenderPreferenceDecision.grant =>
           view.preference == EventSenderPreference.enabled &&
-              view.reviewHash == reviewed.reviewHash,
+              view.phoneLastFour == reviewed.phoneLastFour &&
+              (reviewed is EventSmsSenderPreferenceView ||
+                  view.reviewHash == reviewed.reviewHash),
         // Withdrawal keeps the old binding. A replaced recipient can see
         // notSet while the original grant was successfully revoked.
         EventSenderPreferenceDecision.revoke =>

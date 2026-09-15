@@ -5,4 +5,5 @@
 export interface GetEventAssistanceSmsPreferenceCallablePayload {
   eventId: string;
   attendeeId: string;
+  senderId?: string;
 }

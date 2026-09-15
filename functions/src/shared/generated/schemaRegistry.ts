@@ -9,6 +9,8 @@ export {getEventAssistanceParticipantContextCallablePayloadSchema} from "./schem
 export {eventAssistanceParticipantContextCallableResponseSchema} from "./schemas/eventAssistanceParticipantContextOutput";
 export {listEventAssistanceDepartureRostersCallablePayloadSchema} from "./schemas/listEventAssistanceDepartureRostersInput";
 export {eventAssistanceDepartureRostersCallableResponseSchema} from "./schemas/eventAssistanceDepartureRostersOutput";
+export {listEventSmsPreferencesCallablePayloadSchema} from "./schemas/listEventSmsPreferencesInput";
+export {listEventSmsPreferencesCallableResponseSchema} from "./schemas/listEventSmsPreferencesOutput";
 export {listEventWhatsappPreferencesCallablePayloadSchema} from "./schemas/listEventWhatsappPreferencesInput";
 export {listEventWhatsappPreferencesCallableResponseSchema} from "./schemas/listEventWhatsappPreferencesOutput";
 export {listEventRcsPreferencesCallablePayloadSchema} from "./schemas/listEventRcsPreferencesInput";

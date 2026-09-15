@@ -36,7 +36,8 @@ export const eventAssistanceSmsPreferenceCallableResponseSchema: Record<string, 
         "phoneLastFour",
         "expiresAt",
         "consent",
-        "reviewHash"
+        "reviewHash",
+        "senderId"
       ],
       "properties": {
         "eventId": {
@@ -135,6 +136,12 @@ export const eventAssistanceSmsPreferenceCallableResponseSchema: Record<string, 
         "reviewHash": {
           "type": "string",
           "pattern": "^[a-f0-9]{64}$"
+        },
+        "senderId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
         }
       }
     }

@@ -12,8 +12,9 @@ export const string = (v: unknown, max: number): v is string =>
 export const id = (v: unknown): v is string =>
   typeof v === "string" && /^[A-Za-z0-9][A-Za-z0-9._:-]{0,159}$/.test(v);
 const cursor = (v: unknown, channel: PreferenceChannel): v is string =>
-  typeof v === "string" && (channel === "rcs" ? /^rcs-permission:[a-f0-9]{64}$/ :
-    /^wa-permission:[a-f0-9]{64}$/).test(v);
+  typeof v === "string" && ({sms: /^sms-permission:[a-f0-9]{64}$/,
+    rcs: /^rcs-permission:[a-f0-9]{64}$/, whatsapp: /^wa-permission:[a-f0-9]{64}$/} satisfies
+    Record<PreferenceChannel, RegExp>)[channel].test(v);
 const invalid = () => new Error("Invalid sender preference discovery response");
 
 export function senderPreferenceOptions(value: unknown,

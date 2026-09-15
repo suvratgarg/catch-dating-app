@@ -5,7 +5,6 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/event_success/data/event_participant_context_repository.dart';
 import 'package:catch_dating_app/event_success/data/event_sender_preference_repository.dart';
-import 'package:catch_dating_app/event_success/data/event_sms_preference_repository.dart';
 import 'package:catch_dating_app/event_success/presentation/event_message_preferences_entry.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -17,7 +16,6 @@ import '../support/catch_test_fonts.dart';
 import '../test_pump_helpers.dart';
 import 'event_message_preferences_ui_fixtures.dart';
 import 'event_sender_preference_fixtures.dart';
-import 'event_sms_preference_fixtures.dart';
 
 void main() {
   setUpAll(loadCatchTestFonts);
@@ -29,22 +27,19 @@ void main() {
         final capture = GlobalKey();
         await _pump(tester, fixtures, scale: scale, boundary: capture);
         expect(fixtures.identity.reads, 0);
-        expect(fixtures.sms.fetchCount, 0);
+        expect(fixtures.senders.smsReadCount, 0);
         await _tap(tester, find.byKey(const ValueKey('event.messages.open')));
         expect(fixtures.identity.reads, 1);
-        expect(fixtures.sms.fetchCount, 1);
-        expect(fixtures.sms.writes, isEmpty);
+        expect(fixtures.senders.smsReadCount, 1);
+        expect(fixtures.senders.writes, isEmpty);
         expect(fixtures.senders.writes, isEmpty);
         await _capture(tester, capture, 'initial-$scale');
         await _tap(tester, find.text('SMS'));
-        expect(
-          find.text('Fixture text consent for this event.'),
-          findsOneWidget,
-        );
+        expect(find.text('Fixture consent for this event.'), findsOneWidget);
         await _tap(tester, find.byKey(const ValueKey('messages.sms.enable')));
-        expect(fixtures.sms.writes, hasLength(1));
-        final original = fixtures.sms.writes.single.change;
-        fixtures.sms.writes.single.result.completeError(
+        expect(fixtures.senders.writes, hasLength(1));
+        final original = fixtures.senders.writes.single.change;
+        fixtures.senders.writes.single.result.completeError(
           const NetworkException('unavailable', 'Lost confirmation'),
         );
         await pumpFeatureUi(tester);
@@ -55,22 +50,22 @@ void main() {
           AppLifecycleState.resumed,
         );
         await pumpFeatureUi(tester);
-        expect(fixtures.sms.fetchCount, 1);
+        expect(fixtures.senders.smsReadCount, 1);
         Navigator.of(
-          tester.element(find.text('Fixture text consent for this event.')),
+          tester.element(find.text('Fixture consent for this event.')),
         ).pop();
         await pumpFeatureUi(tester);
         await _tap(tester, find.byKey(const ValueKey('event.messages.open')));
         // The unresolved owner's private lease survives the sheet and fresh
         // identity read; no new grant or review replaces the frozen request.
-        expect(fixtures.sms.fetchCount, 1);
+        expect(fixtures.senders.smsReadCount, 1);
         final retry = find.byKey(const ValueKey('messages.sms.retry'));
         if (retry.evaluate().isEmpty) await _tap(tester, find.text('SMS'));
         await _tap(tester, retry);
-        expect(fixtures.sms.writes, hasLength(2));
-        expect(fixtures.sms.writes.last.change, same(original));
-        fixtures.sms.writes.last.result.complete(
-          smsApplied(
+        expect(fixtures.senders.writes, hasLength(2));
+        expect(fixtures.senders.writes.last.change, same(original));
+        fixtures.senders.writes.last.result.complete(
+          senderApplied(
             original,
             outcome: 'replayed',
             patch: {'revision': 3, 'preference': 'disabled'},
@@ -78,7 +73,7 @@ void main() {
         );
         await pumpFeatureUi(tester);
         expect(find.text('Messages are off'), findsWidgets);
-        expect(fixtures.senders.writes, isEmpty);
+        expect(fixtures.senders.writes, hasLength(2));
         expect(tester.takeException(), isNull);
       },
     );
@@ -108,7 +103,7 @@ void main() {
     write.result.complete(senderApplied(write.change));
     await pumpFeatureUi(tester);
     expect(find.text('Messages are off'), findsWidgets);
-    expect(fixtures.sms.writes, isEmpty);
+    expect(fixtures.senders.writes, hasLength(1));
   });
   for (final resolution in ['unlinked', 'ambiguous']) {
     testWidgets('$resolution identity offers recovery without channel reads', (
@@ -117,14 +112,14 @@ void main() {
       final fixtures = _Ui()..identity.resolution = resolution;
       await _pump(tester, fixtures);
       await _tap(tester, find.byKey(const ValueKey('event.messages.open')));
-      expect(fixtures.sms.fetchCount, 0);
+      expect(fixtures.senders.smsReadCount, 0);
       expect(fixtures.senders.pageCount, 0);
       expect(find.text('SMS'), findsNothing);
       expect(find.text('Reload'), findsOneWidget);
       fixtures.identity.resolution = 'linked';
       await _tap(tester, find.text('Reload'));
-      expect(fixtures.sms.fetchCount, 1);
-      expect(fixtures.senders.pageCount, 2);
+      expect(fixtures.senders.smsReadCount, 1);
+      expect(fixtures.senders.pageCount, 3);
     });
   }
   testWidgets('sign-out removes the old terms and grant actions', (
@@ -142,15 +137,14 @@ void main() {
     expect(find.byKey(const ValueKey('messages.sms.enable')), findsOneWidget);
     auth.add(null);
     await pumpFeatureUi(tester);
-    expect(find.text('Fixture text consent for this event.'), findsNothing);
+    expect(find.text('Fixture consent for this event.'), findsNothing);
     expect(find.byKey(const ValueKey('messages.sms.enable')), findsNothing);
-    expect(fixtures.sms.writes, isEmpty);
+    expect(fixtures.senders.writes, isEmpty);
   });
 }
 
 class _Ui {
   final identity = MessageIdentityRepository();
-  final sms = MessageSmsRepository();
   final senders = MessageSenderRepository();
 }
 
@@ -171,9 +165,6 @@ Future<void> _pump(
         uidProvider.overrideWith((ref) => auth ?? Stream.value('guest-1')),
         eventParticipantContextRepositoryProvider.overrideWith(
           (ref) => fixtures.identity,
-        ),
-        eventSmsPreferenceRepositoryProvider.overrideWith(
-          (ref) => fixtures.sms,
         ),
         eventSenderPreferenceRepositoryProvider.overrideWith(
           (ref) => fixtures.senders,

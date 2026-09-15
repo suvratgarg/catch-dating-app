@@ -375,6 +375,8 @@ export 'list_event_assistance_deliveries_callable_payload.g.dart';
 export 'list_event_assistance_departure_rosters_callable_payload.g.dart';
 export 'list_event_rcs_preferences_callable_payload.g.dart';
 export 'list_event_rcs_preferences_callable_response.g.dart';
+export 'list_event_sms_preferences_callable_payload.g.dart';
+export 'list_event_sms_preferences_callable_response.g.dart';
 export 'list_event_whatsapp_preferences_callable_payload.g.dart';
 export 'list_event_whatsapp_preferences_callable_response.g.dart';
 export 'list_organizer_applications_callable_payload.g.dart';

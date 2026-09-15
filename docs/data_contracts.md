@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.117.0
+version: 1.118.0
 updated: 2026-09-15
 owner: recursive_audit_loop
 status: active
@@ -3326,9 +3326,10 @@ state are required. Organizer marketing preference records are not permission
 for this route. The App-Check-protected preference callables require the roster's
 linked Firebase UID. A grant additionally requires the signed phone claim to
 match the roster phone and an admitted guest in an eligible event. Client input
-contains only event/attendee scope, decision, copy version, expected revision,
-expected review hash and request ID. Sender identity, number and evidence
-timestamps come from the server. The required `reviewHash` in each view binds
+contains event/attendee scope, optional sender ID, decision, copy version,
+expected revision, expected review hash and request ID. Sender approval, number
+and evidence timestamps come from the server. An omitted sender ID retains
+`catch-event-sms`; every response explicitly names the resolved sender ID. The required `reviewHash` in each view binds
 the verified recipient, exact SDK source generations, event title/window,
 current permission and receipt, consent copy and effective availability. New
 decisions must echo it as `expectedReviewHash`; changes return current state
@@ -3398,7 +3399,22 @@ consent versions and contradictory preference/expiry state. The repository
 preserves unavailable, permission and malformed-response failures. The
 controller binds actions to the displayed review and uninterrupted account,
 keeps uncertain writes frozen and displays current replay/conflict state.
-Consumer screen mounting and deployed enrollment remain pending.
+The native Event messages sheet mounts the shared per-channel sender controller
+through verified attendee identity. Deployed enrollment remains unverified.
+
+`listEventSmsPreferences` selects the saved `catchEventSms` runtime route and
+returns participant-owned historical sender IDs from the private permission
+collection. The composite index binds live mode, organizer, event, attendee,
+consent subject UID and document-ID order. Each page scans at most 51 rows and
+returns at most 50; its opaque permission cursor remains valid after that row
+is deleted. Generation, linked UID and recipient provenance must still match.
+Revoked prior grants remain visible, while never-granted tombstones do not.
+Discovery neither grants consent nor proves sender activation. Native and web
+use the configured sender for new consent and expose earlier senders only for
+withdrawal. Non-default sender receipts include sender ID in their key; legacy
+default-sender receipt keys and exact omitted-sender payload hashes are preserved.
+The new response field, generated outputs and strict client readers require a
+coordinated rollout with this callable and index.
 
 `eventAssistanceSmsBudgets` bounds both event spend and sender-day spend in
 Asia/Kolkata. A trusted worker atomically charges both ceilings with the

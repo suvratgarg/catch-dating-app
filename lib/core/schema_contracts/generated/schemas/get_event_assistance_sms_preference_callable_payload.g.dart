@@ -27,5 +27,11 @@ const schemaGetEventAssistanceSmsPreferenceCallablePayloadSchema = <String, Obje
       'maxLength': 160,
       'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
     },
+    'senderId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 160,
+      'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+    },
   },
 };

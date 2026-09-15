@@ -85,6 +85,12 @@ export const setEventAssistanceSmsPreferenceCallablePayloadSchema: Record<string
     "expectedReviewHash": {
       "type": "string",
       "pattern": "^[a-f0-9]{64}$"
+    },
+    "senderId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
     }
   }
 } as const;

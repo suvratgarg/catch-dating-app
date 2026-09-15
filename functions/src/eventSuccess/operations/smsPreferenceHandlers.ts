@@ -37,7 +37,8 @@ export async function getEventAssistanceSmsPreferenceHandler(
     validateGetEventAssistanceSmsPreferenceCallablePayload);
   const db = deps.firestore();
   await deps.checkRateLimit(db, actor.uid, "getEventAssistanceSmsPreference");
-  const result = await new SmsPreferenceStore(db, deps.now).get(actor, input);
+  const result = await new SmsPreferenceStore(db, deps.now, input.senderId)
+    .get(actor, input);
   if (!validateEventAssistanceSmsPreferenceCallableResponse(result)) {
     throw new HttpsError("internal", "Event text preference unavailable.");
   }
@@ -52,7 +53,8 @@ export async function setEventAssistanceSmsPreferenceHandler(
     validateSetEventAssistanceSmsPreferenceCallablePayload);
   const db = deps.firestore();
   await deps.checkRateLimit(db, actor.uid, "setEventAssistanceSmsPreference");
-  const result = await new SmsPreferenceStore(db, deps.now).set(actor, input);
+  const result = await new SmsPreferenceStore(db, deps.now, input.senderId)
+    .set(actor, input);
   if (!validateEventAssistanceSmsPreferenceCallableResponse(result)) {
     throw new HttpsError("internal",
       "Event text preference could not be saved.");

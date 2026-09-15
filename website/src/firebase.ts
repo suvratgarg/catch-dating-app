@@ -1,3 +1,5 @@
+import type {ListEventSmsPreferencesCallablePayload} from "../../functions/src/shared/generated/listEventSmsPreferencesInput";
+import type {ListEventSmsPreferencesCallableResponse} from "../../functions/src/shared/generated/listEventSmsPreferencesOutput";
 import type {GetEventWhatsappPreferenceCallablePayload} from "../../functions/src/shared/generated/getEventWhatsappPreferenceCallablePayload";
 import type {SetEventWhatsappPreferenceCallablePayload} from "../../functions/src/shared/generated/setEventWhatsappPreferenceCallablePayload";
 import type {EventWhatsappPreferenceCallableResponse} from "../../functions/src/shared/generated/eventWhatsappPreferenceCallableResponse";
@@ -996,6 +998,11 @@ export async function submitEventAssistanceGuestChoice(
 ): Promise<SubmitEventAssistanceGuestChoiceCallableResponse> {
   return invokeWebsiteCallable("submitEventAssistanceGuestChoice", payload,
     eventRuntimeFirebaseConfigured, "Event updates");
+}
+
+export async function listEventSmsPreferences(payload: ListEventSmsPreferencesCallablePayload): Promise<ListEventSmsPreferencesCallableResponse> {
+  return invokeWebsiteCallable("listEventSmsPreferences", payload,
+    eventRuntimeFirebaseConfigured, "Event text preferences");
 }
 
 export async function getEventAssistanceSmsPreference(

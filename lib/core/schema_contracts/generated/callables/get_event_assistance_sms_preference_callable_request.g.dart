@@ -9,13 +9,16 @@ final class GetEventAssistanceSmsPreferenceCallableRequest {
   const GetEventAssistanceSmsPreferenceCallableRequest({
     required this.eventId,
     required this.attendeeId,
+    this.senderId,
   });
 
   final String eventId;
   final String attendeeId;
+  final String? senderId;
 
   Map<String, Object?> toJson() => {
     'eventId': eventId,
     'attendeeId': attendeeId,
+    'senderId': ?senderId,
   };
 }

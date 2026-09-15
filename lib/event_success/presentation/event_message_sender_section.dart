@@ -18,6 +18,7 @@ class EventMessageSenderSection extends ConsumerWidget {
     final owner = ref.read(provider.notifier);
     final l = context.l10n;
     final channel = switch (scope.channel) {
+      EventSenderChannel.sms => EventMessageChannel.sms,
       EventSenderChannel.whatsapp => EventMessageChannel.whatsapp,
       EventSenderChannel.rcs => EventMessageChannel.rcs,
     };
@@ -99,7 +100,7 @@ class EventMessageSenderSection extends ConsumerWidget {
           senderPhone: switch (view) {
             EventWhatsappPreferenceView(:final sender) =>
               sender?.displayPhoneNumber,
-            EventRcsPreferenceView() => null,
+            EventRcsPreferenceView() || EventSmsSenderPreferenceView() => null,
           },
           phoneLastFour: view.phoneLastFour,
           expiresAt: view.expiresAt,

@@ -443,6 +443,90 @@ export const eventAssistanceDepartureRostersCallableResponseSchema = {
   "title": "EventAssistanceDepartureRostersCallableResponse"
 };
 
+export const listEventSmsPreferencesCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "$id": "https://catch.app/contracts/callables/list_event_sms_preferences_payload.schema.json",
+  "title": "ListEventSmsPreferencesCallablePayload",
+  "required": [
+    "eventId",
+    "attendeeId",
+    "cursor"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,159}$"
+    },
+    "attendeeId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,159}$"
+    },
+    "cursor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^sms-permission:[a-f0-9]{64}$"
+    }
+  }
+};
+
+export const listEventSmsPreferencesCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "$id": "https://catch.app/contracts/callable_responses/list_event_sms_preferences_response.schema.json",
+  "title": "ListEventSmsPreferencesCallableResponse",
+  "required": [
+    "eventId",
+    "attendeeId",
+    "serverTime",
+    "configuredSenderId",
+    "previousSenderIds",
+    "nextCursor"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,159}$"
+    },
+    "attendeeId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,159}$"
+    },
+    "serverTime": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "configuredSenderId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,159}$"
+    },
+    "previousSenderIds": {
+      "type": "array",
+      "maxItems": 50,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,159}$"
+      }
+    },
+    "nextCursor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^sms-permission:[a-f0-9]{64}$"
+    }
+  }
+};
+
 export const listEventWhatsappPreferencesCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
@@ -43711,6 +43795,12 @@ export const getEventAssistanceSmsPreferenceCallablePayloadSchema = {
       "minLength": 1,
       "maxLength": 160,
       "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "senderId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
     }
   }
 };
@@ -43798,6 +43888,12 @@ export const setEventAssistanceSmsPreferenceCallablePayloadSchema = {
     "expectedReviewHash": {
       "type": "string",
       "pattern": "^[a-f0-9]{64}$"
+    },
+    "senderId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
     }
   }
 };
@@ -43836,7 +43932,8 @@ export const eventAssistanceSmsPreferenceCallableResponseSchema = {
         "phoneLastFour",
         "expiresAt",
         "consent",
-        "reviewHash"
+        "reviewHash",
+        "senderId"
       ],
       "properties": {
         "eventId": {
@@ -43935,6 +44032,12 @@ export const eventAssistanceSmsPreferenceCallableResponseSchema = {
         "reviewHash": {
           "type": "string",
           "pattern": "^[a-f0-9]{64}$"
+        },
+        "senderId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
         }
       }
     }

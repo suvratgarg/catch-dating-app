@@ -1,3 +1,6 @@
+import 'package:catch_dating_app/core/schema_contracts/generated/schemas/event_assistance_sms_preference_callable_response.g.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/schemas/list_event_sms_preferences_callable_response.g.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/schemas/set_event_assistance_sms_preference_callable_payload.g.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/schemas/event_rcs_preference_callable_response.g.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/schemas/event_whatsapp_preference_callable_response.g.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/schemas/list_event_rcs_preferences_callable_response.g.dart';
@@ -20,6 +23,8 @@ void main() {
           final schema = JsonSchema.create(
             channel == EventSenderChannel.whatsapp
                 ? schemaSetEventWhatsappPreferenceCallablePayloadSchema
+                : channel == EventSenderChannel.sms
+                ? schemaSetEventAssistanceSmsPreferenceCallablePayloadSchema
                 : schemaSetEventRcsPreferenceCallablePayloadSchema,
           );
           final grant = senderView(scope).prepareChange(
@@ -42,7 +47,7 @@ void main() {
           expect(grant.toJson()['decision'], {
             'kind': 'grant',
             'copyVersion': 'catch-event-service-${channel.name}-v1',
-            'reviewHash': 'a' * 64,
+            if (channel != EventSenderChannel.sms) 'reviewHash': 'a' * 64,
             if (channel == EventSenderChannel.whatsapp) ...{
               'senderHash': 'b' * 64,
               'stopRecordHash': null,
@@ -57,10 +62,12 @@ void main() {
           final schema = JsonSchema.create(
             channel == EventSenderChannel.whatsapp
                 ? schemaEventWhatsappPreferenceCallableResponseSchema
+                : channel == EventSenderChannel.sms
+                ? schemaEventAssistanceSmsPreferenceCallableResponseSchema
                 : schemaEventRcsPreferenceCallableResponseSchema,
           );
           for (final availability in EventSenderAvailability.values) {
-            if (channel == EventSenderChannel.whatsapp &&
+            if (channel != EventSenderChannel.rcs &&
                 availability ==
                     EventSenderAvailability.subscriptionUnavailable) {
               continue;
@@ -89,6 +96,8 @@ void main() {
             senderView(scope),
             channel == EventSenderChannel.whatsapp
                 ? isA<EventWhatsappPreferenceView>()
+                : channel == EventSenderChannel.sms
+                ? isA<EventSmsSenderPreferenceView>()
                 : isA<EventRcsPreferenceView>(),
           );
         },
@@ -121,7 +130,8 @@ void main() {
             {'preference': 'disabled', 'revision': null, 'expiresAt': 3000},
             {
               'consent': {
-                'version': 'catch-event-service-sms-v1',
+                'version':
+                    'catch-event-service-${channel == EventSenderChannel.sms ? 'rcs' : 'sms'}-v1',
                 'text': 'Wrong channel',
               },
             },
@@ -165,6 +175,8 @@ void main() {
           final schema = JsonSchema.create(
             channel == EventSenderChannel.whatsapp
                 ? schemaListEventWhatsappPreferencesCallableResponseSchema
+                : channel == EventSenderChannel.sms
+                ? schemaListEventSmsPreferencesCallableResponseSchema
                 : schemaListEventRcsPreferencesCallableResponseSchema,
           );
           final cursor = senderCursor(channel, 'a');
@@ -233,7 +245,7 @@ void main() {
           for (final patch in <Map<String, Object?>>[
             {'revision': 2},
             {'preference': 'disabled'},
-            {'reviewHash': 'c' * 64},
+            if (channel != EventSenderChannel.sms) {'reviewHash': 'c' * 64},
           ]) {
             expect(
               () => senderApplied(grant, patch: patch).requireChange(grant),

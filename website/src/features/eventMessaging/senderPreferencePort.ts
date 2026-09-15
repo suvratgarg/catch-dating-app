@@ -1,6 +1,6 @@
 import type {ListEventRcsPreferencesCallableResponse as Options} from "../../shared/contracts/generated/listEventRcsPreferencesOutput";
 
-export type PreferenceChannel = "rcs" | "whatsapp";
+export type PreferenceChannel = "sms" | "rcs" | "whatsapp";
 export type SenderPreferenceScope = {eventId: string; attendeeId: string; senderId: string};
 export interface SenderPreferenceView extends SenderPreferenceScope {
   serverTime: number; revision: number | null;

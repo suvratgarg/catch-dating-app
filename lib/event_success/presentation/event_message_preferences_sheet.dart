@@ -4,12 +4,9 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_dating_app/event_success/domain/event_participant_context.dart';
 import 'package:catch_dating_app/event_success/domain/event_sender_preference.dart';
-import 'package:catch_dating_app/event_success/domain/event_sms_preference.dart';
 import 'package:catch_dating_app/event_success/presentation/event_message_sender_section.dart';
-import 'package:catch_dating_app/event_success/presentation/event_message_sms_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_participant_context_provider.dart';
 import 'package:catch_dating_app/event_success/presentation/event_sender_preference_controller.dart';
-import 'package:catch_dating_app/event_success/presentation/event_sms_preference_controller.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -47,13 +44,6 @@ class _EventMessagePreferencesSheetState
     final review = ref.read(query).asData?.value;
     final identity = review?.isCurrent == true ? review!.view.identity : null;
     if (identity case EventParticipantLinked(:final scope)) {
-      final sms = eventSmsPreferenceControllerProvider(
-        EventSmsPreferenceScope(
-          eventId: scope.eventId,
-          attendeeId: scope.attendeeId,
-        ),
-      );
-      if (ref.exists(sms)) unawaited(ref.read(sms.notifier).refresh());
       for (final channel in EventSenderChannel.values) {
         final sender = eventSenderPreferenceControllerProvider(
           EventSenderPreferenceScope(
@@ -104,12 +94,6 @@ class _EventMessagePreferencesSheetState
                 gapH16,
                 CatchSection.fieldRows(
                   children: [
-                    EventMessageSmsSection(
-                      scope: EventSmsPreferenceScope(
-                        eventId: scope.eventId,
-                        attendeeId: scope.attendeeId,
-                      ),
-                    ),
                     for (final channel in EventSenderChannel.values)
                       EventMessageSenderSection(
                         key: ValueKey('messages.${channel.name}'),

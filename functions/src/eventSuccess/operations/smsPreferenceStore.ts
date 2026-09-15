@@ -61,9 +61,13 @@ export class SmsPreferenceStore {
 
   async set(actor: SmsPreferenceActor, input: Submission): Promise<Response> {
     requireDocumentId(input.requestId);
-    const receiptId = "sms-consent:" + operationContentHash([
-      actor.uid, input.eventId, input.attendeeId, input.requestId,
-    ]);
+    // Preserve default-sender receipt identities for exact legacy retries.
+    const receiptKey = [actor.uid, input.eventId, input.attendeeId,
+      input.requestId];
+    if (this.senderId !== CATCH_EVENT_SMS_SENDER_ID) {
+      receiptKey.push(this.senderId);
+    }
+    const receiptId = "sms-consent:" + operationContentHash(receiptKey);
     const requestHash = operationContentHash([actor.uid, input]);
     return runAssistanceTransaction(this.db, async (tx) => {
       const readAt = this.now();
@@ -151,6 +155,10 @@ export class SmsPreferenceStore {
 
   private async read(tx: Transaction, actor: SmsPreferenceActor,
     scope: Scope, now: number): Promise<PreferenceFacts> {
+    if (scope.senderId !== undefined && scope.senderId !== this.senderId) {
+      throw new HttpsError("invalid-argument",
+        "SMS preference sender mismatch.");
+    }
     requireDocumentId(scope.eventId);
     requireDocumentId(scope.attendeeId);
     requireDocumentId(actor.uid);
@@ -243,6 +251,7 @@ export class SmsPreferenceStore {
       source.eventStatus, facts.eventEndEvidence, availability, preference,
       expiresAt, permission, receipt, SMS_CONSENT_HASH]);
     return {eventId: scope.eventId, attendeeId: scope.attendeeId, reviewHash,
+      senderId: this.senderId,
       serverTime: now, revision: permission?.revision ?? null, preference,
       canEnable: availability === "ready", availability,
       phoneLastFour: phone?.slice(-4) ?? null,

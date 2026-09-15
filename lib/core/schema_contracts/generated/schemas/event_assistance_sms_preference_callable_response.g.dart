@@ -39,6 +39,7 @@ const schemaEventAssistanceSmsPreferenceCallableResponseSchema = <String, Object
         'expiresAt',
         'consent',
         'reviewHash',
+        'senderId',
       ],
       'properties': <String, Object?>{
         'eventId': <String, Object?>{
@@ -137,6 +138,12 @@ const schemaEventAssistanceSmsPreferenceCallableResponseSchema = <String, Object
         'reviewHash': <String, Object?>{
           'type': 'string',
           'pattern': '^[a-f0-9]{64}\$',
+        },
+        'senderId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 160,
+          'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
         },
       },
     },

@@ -37,6 +37,22 @@ const schemaSpecs = [
 },
 
 {
+  "name": "ListEventSmsPreferencesCallablePayload",
+  "source": "callables/list_event_sms_preferences_payload.schema.json",
+  "typeOutput": "functions/src/shared/generated/listEventSmsPreferencesInput.ts",
+  "additionalTypeOutputs": [
+    "website/src/shared/contracts/generated/listEventSmsPreferencesInput.ts"
+  ]
+},
+{
+  "name": "ListEventSmsPreferencesCallableResponse",
+  "source": "callable_responses/list_event_sms_preferences_response.schema.json",
+  "typeOutput": "functions/src/shared/generated/listEventSmsPreferencesOutput.ts",
+  "additionalTypeOutputs": [
+    "website/src/shared/contracts/generated/listEventSmsPreferencesOutput.ts"
+  ]
+},
+{
   "name": "ListEventWhatsappPreferencesCallablePayload",
   "source": "callables/list_event_whatsapp_preferences_payload.schema.json",
   "typeOutput": "functions/src/shared/generated/listEventWhatsappPreferencesInput.ts",

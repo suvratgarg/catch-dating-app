@@ -15,6 +15,7 @@ Map<String, Object?> smsResponse({
   'view': {
     'eventId': 'event-1',
     'attendeeId': 'attendee-1',
+    'senderId': 'catch-event-sms',
     'serverTime': 1000,
     'revision': null,
     'reviewHash': 'a' * 64,
@@ -46,6 +47,7 @@ Map<String, Object?> smsAppliedRaw(
   viewPatch: {
     'eventId': change.snapshot.scope.eventId,
     'attendeeId': change.snapshot.scope.attendeeId,
+    'senderId': change.snapshot.scope.senderId,
     'serverTime': 2000,
     'reviewHash': 'b' * 64,
     'revision': (change.snapshot.revision ?? 0) + 1,

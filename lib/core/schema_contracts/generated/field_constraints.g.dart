@@ -23568,6 +23568,15 @@ abstract final class CatchContractConstraints {
     maximum: 9007199254740991,
   );
 
+  static const eventAssistanceSmsPreferenceCallableResponseViewSenderId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsPreferenceCallableResponse.view.senderId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
   static const eventAssistanceSmsPreferenceCallableResponseViewServerTime = CatchContractFieldConstraints(
     path: 'eventAssistanceSmsPreferenceCallableResponse.view.serverTime',
     required: true,
@@ -50721,6 +50730,15 @@ abstract final class CatchContractConstraints {
     pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
   );
 
+  static const getEventAssistanceSmsPreferenceCallablePayloadSenderId = CatchContractFieldConstraints(
+    path: 'getEventAssistanceSmsPreferenceCallablePayload.senderId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
   static const getEventAssistanceSmsWithdrawalCallablePayloadLinkId = CatchContractFieldConstraints(
     path: 'getEventAssistanceSmsWithdrawalCallablePayload.linkId',
     required: true,
@@ -57421,6 +57439,76 @@ abstract final class CatchContractConstraints {
 
   static const listEventRcsPreferencesCallableResponseServerTime = CatchContractFieldConstraints(
     path: 'listEventRcsPreferencesCallableResponse.serverTime',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const listEventSmsPreferencesCallablePayloadAttendeeId = CatchContractFieldConstraints(
+    path: 'listEventSmsPreferencesCallablePayload.attendeeId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]{0,159}\$',
+  );
+
+  static const listEventSmsPreferencesCallablePayloadCursor = CatchContractFieldConstraints(
+    path: 'listEventSmsPreferencesCallablePayload.cursor',
+    valueTypes: <String>['string'],
+    pattern: '^sms-permission:[a-f0-9]{64}\$',
+  );
+
+  static const listEventSmsPreferencesCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'listEventSmsPreferencesCallablePayload.eventId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]{0,159}\$',
+  );
+
+  static const listEventSmsPreferencesCallableResponseAttendeeId = CatchContractFieldConstraints(
+    path: 'listEventSmsPreferencesCallableResponse.attendeeId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]{0,159}\$',
+  );
+
+  static const listEventSmsPreferencesCallableResponseConfiguredSenderId = CatchContractFieldConstraints(
+    path: 'listEventSmsPreferencesCallableResponse.configuredSenderId',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]{0,159}\$',
+  );
+
+  static const listEventSmsPreferencesCallableResponseEventId = CatchContractFieldConstraints(
+    path: 'listEventSmsPreferencesCallableResponse.eventId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]{0,159}\$',
+  );
+
+  static const listEventSmsPreferencesCallableResponseNextCursor = CatchContractFieldConstraints(
+    path: 'listEventSmsPreferencesCallableResponse.nextCursor',
+    valueTypes: <String>['string'],
+    pattern: '^sms-permission:[a-f0-9]{64}\$',
+  );
+
+  static const listEventSmsPreferencesCallableResponsePreviousSenderIds = CatchContractFieldConstraints(
+    path: 'listEventSmsPreferencesCallableResponse.previousSenderIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 50,
+    uniqueItems: true,
+  );
+
+  static const listEventSmsPreferencesCallableResponsePreviousSenderIdsItems = CatchContractFieldConstraints(
+    path: 'listEventSmsPreferencesCallableResponse.previousSenderIds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]{0,159}\$',
+  );
+
+  static const listEventSmsPreferencesCallableResponseServerTime = CatchContractFieldConstraints(
+    path: 'listEventSmsPreferencesCallableResponse.serverTime',
     required: true,
     valueTypes: <String>['integer'],
     minimum: 0,
@@ -83924,6 +84012,15 @@ abstract final class CatchContractConstraints {
     pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
   );
 
+  static const setEventAssistanceSmsPreferenceCallablePayloadSenderId = CatchContractFieldConstraints(
+    path: 'setEventAssistanceSmsPreferenceCallablePayload.senderId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
   static const setEventAttendeeAttendanceCallablePayloadAttendeeId = CatchContractFieldConstraints(
     path: 'setEventAttendeeAttendanceCallablePayload.attendeeId',
     maxLength: 180,
@@ -95821,6 +95918,7 @@ abstract final class CatchContractConstraints {
     'eventAssistanceSmsPreferenceCallableResponse.view.preference': eventAssistanceSmsPreferenceCallableResponseViewPreference,
     'eventAssistanceSmsPreferenceCallableResponse.view.reviewHash': eventAssistanceSmsPreferenceCallableResponseViewReviewHash,
     'eventAssistanceSmsPreferenceCallableResponse.view.revision': eventAssistanceSmsPreferenceCallableResponseViewRevision,
+    'eventAssistanceSmsPreferenceCallableResponse.view.senderId': eventAssistanceSmsPreferenceCallableResponseViewSenderId,
     'eventAssistanceSmsPreferenceCallableResponse.view.serverTime': eventAssistanceSmsPreferenceCallableResponseViewServerTime,
     'eventAssistanceSmsSenderDocument.activation.approvedAt': eventAssistanceSmsSenderDocumentActivationApprovedAt,
     'eventAssistanceSmsSenderDocument.activation.senderApprovalId': eventAssistanceSmsSenderDocumentActivationSenderApprovalId,
@@ -99464,6 +99562,7 @@ abstract final class CatchContractConstraints {
     'getEventAssistanceSettingCallablePayload.workflowKind': getEventAssistanceSettingCallablePayloadWorkflowKind,
     'getEventAssistanceSmsPreferenceCallablePayload.attendeeId': getEventAssistanceSmsPreferenceCallablePayloadAttendeeId,
     'getEventAssistanceSmsPreferenceCallablePayload.eventId': getEventAssistanceSmsPreferenceCallablePayloadEventId,
+    'getEventAssistanceSmsPreferenceCallablePayload.senderId': getEventAssistanceSmsPreferenceCallablePayloadSenderId,
     'getEventAssistanceSmsWithdrawalCallablePayload.linkId': getEventAssistanceSmsWithdrawalCallablePayloadLinkId,
     'getEventAssistanceSmsWithdrawalCallablePayload.secret': getEventAssistanceSmsWithdrawalCallablePayloadSecret,
     'getEventAttendanceDispositionCallablePayload.attendeeId': getEventAttendanceDispositionCallablePayloadAttendeeId,
@@ -100387,6 +100486,16 @@ abstract final class CatchContractConstraints {
     'listEventRcsPreferencesCallableResponse.previousSenderIds': listEventRcsPreferencesCallableResponsePreviousSenderIds,
     'listEventRcsPreferencesCallableResponse.previousSenderIds.items': listEventRcsPreferencesCallableResponsePreviousSenderIdsItems,
     'listEventRcsPreferencesCallableResponse.serverTime': listEventRcsPreferencesCallableResponseServerTime,
+    'listEventSmsPreferencesCallablePayload.attendeeId': listEventSmsPreferencesCallablePayloadAttendeeId,
+    'listEventSmsPreferencesCallablePayload.cursor': listEventSmsPreferencesCallablePayloadCursor,
+    'listEventSmsPreferencesCallablePayload.eventId': listEventSmsPreferencesCallablePayloadEventId,
+    'listEventSmsPreferencesCallableResponse.attendeeId': listEventSmsPreferencesCallableResponseAttendeeId,
+    'listEventSmsPreferencesCallableResponse.configuredSenderId': listEventSmsPreferencesCallableResponseConfiguredSenderId,
+    'listEventSmsPreferencesCallableResponse.eventId': listEventSmsPreferencesCallableResponseEventId,
+    'listEventSmsPreferencesCallableResponse.nextCursor': listEventSmsPreferencesCallableResponseNextCursor,
+    'listEventSmsPreferencesCallableResponse.previousSenderIds': listEventSmsPreferencesCallableResponsePreviousSenderIds,
+    'listEventSmsPreferencesCallableResponse.previousSenderIds.items': listEventSmsPreferencesCallableResponsePreviousSenderIdsItems,
+    'listEventSmsPreferencesCallableResponse.serverTime': listEventSmsPreferencesCallableResponseServerTime,
     'listEventWhatsappPreferencesCallablePayload.attendeeId': listEventWhatsappPreferencesCallablePayloadAttendeeId,
     'listEventWhatsappPreferencesCallablePayload.cursor': listEventWhatsappPreferencesCallablePayloadCursor,
     'listEventWhatsappPreferencesCallablePayload.eventId': listEventWhatsappPreferencesCallablePayloadEventId,
@@ -104026,6 +104135,7 @@ abstract final class CatchContractConstraints {
     'setEventAssistanceSmsPreferenceCallablePayload.expectedReviewHash': setEventAssistanceSmsPreferenceCallablePayloadExpectedReviewHash,
     'setEventAssistanceSmsPreferenceCallablePayload.expectedRevision': setEventAssistanceSmsPreferenceCallablePayloadExpectedRevision,
     'setEventAssistanceSmsPreferenceCallablePayload.requestId': setEventAssistanceSmsPreferenceCallablePayloadRequestId,
+    'setEventAssistanceSmsPreferenceCallablePayload.senderId': setEventAssistanceSmsPreferenceCallablePayloadSenderId,
     'setEventAttendeeAttendanceCallablePayload.attendeeId': setEventAttendeeAttendanceCallablePayloadAttendeeId,
     'setEventAttendeeAttendanceCallablePayload.clientOperationId': setEventAttendeeAttendanceCallablePayloadClientOperationId,
     'setEventAttendeeAttendanceCallablePayload.desiredCheckedIn': setEventAttendeeAttendanceCallablePayloadDesiredCheckedIn,

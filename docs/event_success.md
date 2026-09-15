@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.134.0
+version: 1.135.0
 updated: 2026-09-15
 owner: recursive_audit_loop
 status: active
@@ -2344,8 +2344,10 @@ The website submits the review it displayed, retains the complete original
 request on an uncertain retry, rejects stale read results and scopes pending
 state to the current account and event. Exact receipt replays return current
 state without reapplying consent, even when the original review is now stale.
-The control is hidden when there is no preference and enabling is unavailable;
-an existing grant retains a withdrawal control when the sender is paused.
+No configured sender or prior permission leaves web enrollment hidden and the
+native channel marked unavailable. A configured but unavailable sender explains
+its current limitation; an existing
+grant retains withdrawal when the sender is paused.
 
 The native entry can now resolve its own operational attendee through
 `getEventAssistanceParticipantContext`. A signed-in booking ID is never treated
@@ -2365,7 +2367,7 @@ permission, exact server consent, masked recipient, expiry and available actions
 No initial read grants consent. Unlinked and ambiguous identities offer reload
 and Host help without reading channel permissions. Authentication loss removes
 all prior terms and actions. Each channel uses its retained owner, so dismissing
-and reopening an uncertain save offers the same request for retry. WhatsApp/RCS
+and reopening an uncertain save offers the same request for retry. SMS/WhatsApp/RCS
 history loads explicitly; earlier senders permit withdrawal only, and opaque IDs
 are never presented as sender names. The normal and enlarged-text interaction
 checks exercise independent consent, historical withdrawal and recovery.
@@ -2392,6 +2394,32 @@ permission. Native SMS recognizes that confirmed outcome at the exact next
 revision. Dispatch, sender-history discovery and native WhatsApp/RCS replies use
 the same source binding. Native reply records retain the binding and an endpoint
 hash, without copying the raw phone into callback records or the roster.
+
+`listEventSmsPreferences` now resolves the saved `catchEventSms` runtime sender
+and earlier permissions for the verified attendee. It shares the bounded,
+read-only discovery rules used by WhatsApp and RCS: paused execution retains its
+selection, changed source facts withhold it, and historical rows require the
+same linked UID, attendee generation and recipient binding. The new indexed
+query scans at most 51 rows per page and returns at most 50 earlier sender IDs.
+Withdrawn grants remain discoverable; opt-out tombstones without prior consent
+do not create history. No contact, credential or provider data is returned.
+
+Both native and web enrollment use this discovered sender. Earlier permissions
+are withdrawal-only, with explicit paging. SMS requests now accept `senderId`,
+and every response names it. Omitted sender IDs retain the original
+`catch-event-sms` sender behavior; custom senders have separate immutable receipt
+keys, so reusing a request ID cannot collide across senders. The original
+omitted-sender payload still replays its existing default-sender receipt.
+Consent never transfers when the Host chooses another sender. The native sheet
+uses one retained sender-preference owner per channel, and the website composes
+the existing sender controller with an SMS-specific validated wire adapter.
+SMS review hashes include current permission evidence and therefore change after
+a write; applied results confirm the sender, decision and exact next revision.
+
+Deploy the discovery callable, its Firestore history index, updated response
+contract and matching web/native readers together. Existing clients that enforce
+closed responses need the updated reader before receiving `senderId`. The
+new source does not provision or activate a sender.
 
 The native SMS preference controller now retains the exact unresolved request
 through sheet dismissal, including after a response is lost. Its temporary
@@ -2420,26 +2448,18 @@ Waitlist marketing preferences do not authorize event-service texts. Provider in
 and retention cleanup remain integration work; no sender has been activated by
 these controls.
 
-The native `EventSmsPreferenceController` now provides the participant-scoped
-review and explicit enable/disable/retry actions for Consumer route composition.
-Its SDK-free model validates the closed response, scope, consent-copy version,
-masked number and consistent preference/expiry state. Applied results must match
-the submitted decision and next revision; replays display the server's current
-state, including a subsequent withdrawal. The repository uses only the verified
-preference callables. No local preference, roster write or provider send is
-involved.
-
-Native reloads and read failures replace old reviews instead of exposing them.
-Account changes and auth errors invalidate old actions and delayed responses,
-including an A-to-B-to-A sign-in sequence. An uncertain save holds its complete
-original request and permits only an identical retry; refresh/resume cannot
-replace it. Repeated taps share one in-flight request. Unavailable enrollment
-is hidden when no preference exists, while existing grants retain withdrawal.
-The controller is exported for route composition and tested against the wire
-schemas, mocked callable transport and account/race cases. Guest runtime,
-event-detail and payment-confirmation mounting, visible controls, lifecycle
-refresh wiring and device evidence remain pending while those UI entry points
-are claimed. These bindings are not a released Consumer enrollment flow.
+The standalone `EventSmsPreferenceController` remains a compatibility adapter
+with explicit sender scope and the original default-sender wire behavior.
+The Consumer Event messages sheet uses `EventSenderPreferenceController` for all
+three channels. Its SDK-free model validates the closed response, selected
+sender, consent version, masked number and consistent preference/expiry state.
+Applied results must match the submitted decision and next revision; replays
+show the server's current state, including a subsequent withdrawal. Native
+reloads retire old reviews; account changes fence old callbacks and delayed
+responses, including an A-to-B-to-A sign-in sequence. An unresolved write keeps
+its original request through dismissal and only permits an identical retry.
+These source controls and local checks do not establish distributed-build or
+production enrollment availability.
 
 `EventSmsWorker` loads an exact numbered Secret Manager credential before the
 short reservation window. The resource claim atomically debits both spending

@@ -22,6 +22,9 @@ class EventSmsPreferenceRepository {
                 GetEventAssistanceSmsPreferenceCallableRequest(
                   eventId: scope.eventId,
                   attendeeId: scope.attendeeId,
+                  senderId: scope.senderId == 'catch-event-sms'
+                      ? null
+                      : scope.senderId,
                 ).toJson(),
               );
           final result = EventSmsPreferenceResult.fromCallableData(

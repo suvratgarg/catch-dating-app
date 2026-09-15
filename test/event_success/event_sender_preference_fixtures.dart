@@ -15,7 +15,7 @@ EventSenderPreferenceScope senderScope(
 );
 
 String senderCursor(EventSenderChannel channel, String hash) =>
-    '${channel == EventSenderChannel.whatsapp ? 'wa' : 'rcs'}-permission:${hash * 64}';
+    '${channel == EventSenderChannel.whatsapp ? 'wa' : channel.name}-permission:${hash * 64}';
 
 Map<String, Object?> senderPageRaw(
   EventSenderPreferenceScope scope, {
@@ -80,7 +80,7 @@ Map<String, Object?> senderResponse(
         'displayPhoneNumber': '+919000000001',
         'bindingHash': 'b' * 64,
       },
-    } else ...{
+    } else if (scope.channel == EventSenderChannel.rcs) ...{
       'eventTitle': 'Evening run',
       'sender': {'displayName': 'Catch Events'},
     },

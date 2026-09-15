@@ -24,5 +24,6 @@ export interface EventAssistanceSmsPreferenceCallableResponse {
       text: string;
     };
     reviewHash: string;
+    senderId: string;
   };
 }
