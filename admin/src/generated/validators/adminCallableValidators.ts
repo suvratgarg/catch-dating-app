@@ -7598,6 +7598,14 @@ const model = {
             },
             "disposition": {
               "$ref": "#/definitions/Disposition"
+            },
+            "displayName": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 1,
+              "maxLength": 120
             }
           }
         },
@@ -7850,6 +7858,17 @@ const model = {
               "anyOf": [
                 {
                   "$ref": "#/definitions/CloseoutView"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "reporterOptions": {
+              "description": "Current manager-only choices for this original checkpoint. Missing legacy values do not establish a choice list.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/ReporterOptions"
                 },
                 {
                   "type": "null"
@@ -8563,6 +8582,67 @@ const model = {
               "$ref": "#/definitions/CloseoutChange"
             }
           }
+        },
+        "ReporterOptions": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "actorUid",
+            "sourceHash",
+            "validUntil",
+            "reporters"
+          ],
+          "properties": {
+            "actorUid": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[^/]+$"
+            },
+            "sourceHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "validUntil": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "reporters": {
+              "type": "array",
+              "maxItems": 92,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "operatorId",
+                  "displayName",
+                  "validUntil"
+                ],
+                "properties": {
+                  "operatorId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128,
+                    "pattern": "^[^/]+$"
+                  },
+                  "displayName": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "minLength": 1,
+                    "maxLength": 120
+                  },
+                  "validUntil": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  }
+                }
+              }
+            }
+          }
         }
       }
     },
@@ -8962,6 +9042,190 @@ const model = {
                 "status",
                 "receivedAt",
                 "category",
+                "owner",
+                "sourceGeneration",
+                "handling",
+                "attendeeGeneration"
+              ],
+              "properties": {
+                "schemaVersion": {
+                  "const": 1
+                },
+                "caseId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "guestId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "context": {
+                  "$ref": "#/definitions/liveContext"
+                },
+                "attendeeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "episodeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "responseId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "messageId": {
+                  "type": "string",
+                  "pattern": "^outbox:[a-f0-9]{64}$"
+                },
+                "status": {
+                  "const": "open"
+                },
+                "receivedAt": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "category": {
+                  "enum": [
+                    "eventLogistics",
+                    "accessibility",
+                    "other"
+                  ]
+                },
+                "owner": {
+                  "const": "eventLead"
+                },
+                "sourceGeneration": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "handling": {
+                  "$ref": "event_assistance_cases.schema.json#/definitions/OpenHandling"
+                },
+                "attendeeGeneration": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "schemaVersion",
+                "caseId",
+                "guestId",
+                "context",
+                "attendeeId",
+                "episodeId",
+                "responseId",
+                "messageId",
+                "status",
+                "receivedAt",
+                "category",
+                "owner",
+                "sourceGeneration",
+                "handling",
+                "attendeeGeneration"
+              ],
+              "properties": {
+                "schemaVersion": {
+                  "const": 1
+                },
+                "caseId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "guestId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "context": {
+                  "$ref": "#/definitions/liveContext"
+                },
+                "attendeeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "episodeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "responseId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "messageId": {
+                  "type": "string",
+                  "pattern": "^outbox:[a-f0-9]{64}$"
+                },
+                "status": {
+                  "const": "resolved"
+                },
+                "receivedAt": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "category": {
+                  "enum": [
+                    "eventLogistics",
+                    "accessibility",
+                    "other"
+                  ]
+                },
+                "owner": {
+                  "const": "eventLead"
+                },
+                "sourceGeneration": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "handling": {
+                  "$ref": "event_assistance_cases.schema.json#/definitions/ResolvedHandling"
+                },
+                "attendeeGeneration": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "schemaVersion",
+                "caseId",
+                "guestId",
+                "context",
+                "attendeeId",
+                "episodeId",
+                "responseId",
+                "messageId",
+                "status",
+                "receivedAt",
+                "category",
                 "owner"
               ],
               "properties": {
@@ -9023,6 +9287,186 @@ const model = {
                 },
                 "owner": {
                   "const": "authorizedSafetyOperator"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "schemaVersion",
+                "caseId",
+                "guestId",
+                "context",
+                "attendeeId",
+                "episodeId",
+                "responseId",
+                "messageId",
+                "status",
+                "receivedAt",
+                "category",
+                "owner",
+                "sourceGeneration",
+                "handling",
+                "attendeeGeneration"
+              ],
+              "properties": {
+                "schemaVersion": {
+                  "const": 1
+                },
+                "caseId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "guestId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "context": {
+                  "$ref": "#/definitions/liveContext"
+                },
+                "attendeeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "episodeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "responseId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "messageId": {
+                  "type": "string",
+                  "pattern": "^outbox:[a-f0-9]{64}$"
+                },
+                "status": {
+                  "const": "open"
+                },
+                "receivedAt": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "category": {
+                  "enum": [
+                    "comfortSafety"
+                  ]
+                },
+                "owner": {
+                  "const": "authorizedSafetyOperator"
+                },
+                "sourceGeneration": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "handling": {
+                  "$ref": "event_assistance_cases.schema.json#/definitions/OpenHandling"
+                },
+                "attendeeGeneration": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "schemaVersion",
+                "caseId",
+                "guestId",
+                "context",
+                "attendeeId",
+                "episodeId",
+                "responseId",
+                "messageId",
+                "status",
+                "receivedAt",
+                "category",
+                "owner",
+                "sourceGeneration",
+                "handling",
+                "attendeeGeneration"
+              ],
+              "properties": {
+                "schemaVersion": {
+                  "const": 1
+                },
+                "caseId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "guestId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "context": {
+                  "$ref": "#/definitions/liveContext"
+                },
+                "attendeeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "episodeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "responseId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "messageId": {
+                  "type": "string",
+                  "pattern": "^outbox:[a-f0-9]{64}$"
+                },
+                "status": {
+                  "const": "resolved"
+                },
+                "receivedAt": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "category": {
+                  "enum": [
+                    "comfortSafety"
+                  ]
+                },
+                "owner": {
+                  "const": "authorizedSafetyOperator"
+                },
+                "sourceGeneration": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "handling": {
+                  "$ref": "event_assistance_cases.schema.json#/definitions/ResolvedHandling"
+                },
+                "attendeeGeneration": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
                 }
               }
             }
@@ -14416,66 +14860,7 @@ const model = {
               }
             },
             {
-              "type": "object",
-              "additionalProperties": false,
-              "required": [
-                "kind",
-                "context",
-                "eventId",
-                "operationId",
-                "payload"
-              ],
-              "properties": {
-                "kind": {
-                  "type": "string",
-                  "const": "resolveAssistance"
-                },
-                "context": {
-                  "$ref": "#/definitions/ExecutionContext"
-                },
-                "eventId": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 160,
-                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-                },
-                "operationId": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 160,
-                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-                },
-                "payload": {
-                  "type": "object",
-                  "additionalProperties": false,
-                  "required": [
-                    "caseId",
-                    "outcome",
-                    "owner"
-                  ],
-                  "properties": {
-                    "caseId": {
-                      "type": "string",
-                      "minLength": 1,
-                      "maxLength": 2000
-                    },
-                    "outcome": {
-                      "type": "string",
-                      "enum": [
-                        "resolved",
-                        "declined",
-                        "transferred"
-                      ]
-                    },
-                    "owner": {
-                      "type": "string",
-                      "minLength": 1,
-                      "maxLength": 160,
-                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-                    }
-                  }
-                }
-              }
+              "$ref": "#/definitions/ResolveAssistanceCommand"
             },
             {
               "type": "object",
@@ -14697,59 +15082,7 @@ const model = {
               }
             },
             {
-              "type": "object",
-              "additionalProperties": false,
-              "required": [
-                "kind",
-                "context",
-                "eventId",
-                "operationId",
-                "payload"
-              ],
-              "properties": {
-                "kind": {
-                  "type": "string",
-                  "const": "repairDelivery"
-                },
-                "context": {
-                  "$ref": "#/definitions/ExecutionContext"
-                },
-                "eventId": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 160,
-                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-                },
-                "operationId": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 160,
-                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-                },
-                "payload": {
-                  "type": "object",
-                  "additionalProperties": false,
-                  "required": [
-                    "deliveryId",
-                    "action"
-                  ],
-                  "properties": {
-                    "deliveryId": {
-                      "type": "string",
-                      "minLength": 1,
-                      "maxLength": 2000
-                    },
-                    "action": {
-                      "type": "string",
-                      "enum": [
-                        "reconcile",
-                        "retryDefiniteFailure",
-                        "manualHandoff"
-                      ]
-                    }
-                  }
-                }
-              }
+              "$ref": "#/definitions/RepairDeliveryCommand"
             },
             {
               "type": "object",
@@ -15190,66 +15523,7 @@ const model = {
               }
             },
             {
-              "type": "object",
-              "additionalProperties": false,
-              "required": [
-                "kind",
-                "context",
-                "eventId",
-                "operationId",
-                "payload"
-              ],
-              "properties": {
-                "kind": {
-                  "type": "string",
-                  "const": "recordNoShow"
-                },
-                "context": {
-                  "$ref": "#/definitions/ExecutionContext"
-                },
-                "eventId": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 160,
-                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-                },
-                "operationId": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 160,
-                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-                },
-                "payload": {
-                  "type": "object",
-                  "additionalProperties": false,
-                  "required": [
-                    "attendeeId",
-                    "evidence",
-                    "decisionId"
-                  ],
-                  "properties": {
-                    "attendeeId": {
-                      "type": "string",
-                      "minLength": 1,
-                      "maxLength": 160,
-                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-                    },
-                    "evidence": {
-                      "type": "string",
-                      "enum": [
-                        "guestDeclined",
-                        "hostConfirmed"
-                      ]
-                    },
-                    "decisionId": {
-                      "type": "string",
-                      "minLength": 1,
-                      "maxLength": 160,
-                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-                    }
-                  }
-                }
-              }
+              "$ref": "#/definitions/RecordNoShowCommand"
             },
             {
               "type": "object",
@@ -16576,6 +16850,194 @@ const model = {
               }
             }
           }
+        },
+        "ResolveAssistanceCommand": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "context",
+            "eventId",
+            "operationId",
+            "payload"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "resolveAssistance"
+            },
+            "context": {
+              "$ref": "#/definitions/ExecutionContext"
+            },
+            "eventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "operationId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "payload": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "caseId",
+                "outcome",
+                "owner",
+                "expectedRevision"
+              ],
+              "properties": {
+                "caseId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "outcome": {
+                  "type": "string",
+                  "enum": [
+                    "resolved",
+                    "declined",
+                    "transferred"
+                  ]
+                },
+                "owner": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+                  "description": "Current organizer manager UID receiving a transferred request; otherwise the authenticated resolving manager UID."
+                },
+                "expectedRevision": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                }
+              }
+            }
+          }
+        },
+        "RecordNoShowCommand": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "context",
+            "eventId",
+            "operationId",
+            "payload"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "recordNoShow"
+            },
+            "context": {
+              "$ref": "#/definitions/ExecutionContext"
+            },
+            "eventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "operationId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "payload": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "attendeeId",
+                "expectedAttendanceRevision",
+                "expectedDispositionRevision",
+                "decision"
+              ],
+              "properties": {
+                "attendeeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "expectedAttendanceRevision": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "expectedDispositionRevision": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "decision": {
+                  "$ref": "event_attendance_disposition.schema.json#/definitions/Decision"
+                }
+              }
+            }
+          }
+        },
+        "RepairDeliveryCommand": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "context",
+            "eventId",
+            "operationId",
+            "payload"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "repairDelivery"
+            },
+            "context": {
+              "$ref": "#/definitions/ExecutionContext"
+            },
+            "eventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "operationId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "payload": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "deliveryId",
+                "action"
+              ],
+              "properties": {
+                "deliveryId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "action": {
+                  "type": "string",
+                  "enum": [
+                    "reconcile",
+                    "retryDefiniteFailure",
+                    "manualHandoff"
+                  ]
+                }
+              }
+            }
+          }
         }
       }
     },
@@ -16819,6 +17281,1934 @@ const model = {
               "type": "integer",
               "minimum": 0,
               "maximum": 9007199254740991
+            }
+          }
+        },
+        "HistoryInput": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "context",
+            "groupId"
+          ],
+          "properties": {
+            "context": {
+              "$ref": "event_assistance_guest.schema.json#/definitions/liveContext"
+            },
+            "groupId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "beforeRevision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            }
+          }
+        },
+        "HistoryCheckpoint": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "checkpointId",
+            "reportStatus",
+            "reportRevision",
+            "accountedForCount",
+            "originalRequestedDueAt"
+          ],
+          "properties": {
+            "checkpointId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "reportStatus": {
+              "enum": [
+                "unreported",
+                "partial",
+                "complete"
+              ]
+            },
+            "reportRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "accountedForCount": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000
+            },
+            "originalRequestedDueAt": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        "HistoryRow": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "progressRevision",
+            "confirmedAt",
+            "destination",
+            "label",
+            "sourceState",
+            "rosterSize",
+            "checkpoint"
+          ],
+          "properties": {
+            "progressRevision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "confirmedAt": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "destination": {
+              "anyOf": [
+                {
+                  "$ref": "event_assistance_common.schema.json#/definitions/JoiningTarget"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "label": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 240
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "sourceState": {
+              "enum": [
+                "current",
+                "setupChanged",
+                "destinationNotRecorded"
+              ]
+            },
+            "rosterSize": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000
+            },
+            "checkpoint": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/HistoryCheckpoint"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        "HistoryResponse": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "context",
+            "groupId",
+            "actorUid",
+            "validUntil",
+            "serverTime",
+            "progressRevision",
+            "coverage",
+            "rosters",
+            "nextBeforeRevision"
+          ],
+          "properties": {
+            "context": {
+              "$ref": "event_assistance_guest.schema.json#/definitions/liveContext"
+            },
+            "groupId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "actorUid": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "validUntil": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "serverTime": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "progressRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "coverage": {
+              "const": "page"
+            },
+            "rosters": {
+              "type": "array",
+              "maxItems": 10,
+              "items": {
+                "$ref": "#/definitions/HistoryRow"
+              }
+            },
+            "nextBeforeRevision": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/shared/event_attendance_disposition.schema.json",
+      "title": "EventAttendanceDispositionContracts",
+      "definitions": {
+        "Decision": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "evidence"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "record"
+                },
+                "evidence": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "const": "hostConfirmed"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "guestRevision",
+                        "episodeId"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "const": "guestDeclined"
+                        },
+                        "guestRevision": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 9007199254740991
+                        },
+                        "episodeId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 160,
+                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "reason"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "clear"
+                },
+                "reason": {
+                  "enum": [
+                    "recordingMistake",
+                    "attendanceCorrected",
+                    "noLongerApplicable"
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "GuestDeclineEvidence": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "guestRevision",
+            "episodeId"
+          ],
+          "properties": {
+            "kind": {
+              "const": "guestDeclined"
+            },
+            "guestRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "episodeId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          }
+        },
+        "Closure": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind"
+              ],
+              "properties": {
+                "kind": {
+                  "enum": [
+                    "open",
+                    "cancelled"
+                  ]
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "completedAt"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "runtimeComplete"
+                },
+                "completedAt": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "endedAt"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "scheduledEnd"
+                },
+                "endedAt": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                }
+              }
+            }
+          ]
+        },
+        "Binding": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "sourceGeneration",
+            "attendeeGeneration",
+            "identityHash",
+            "attendanceHash",
+            "closureHash"
+          ],
+          "properties": {
+            "sourceGeneration": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "attendeeGeneration": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "identityHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "attendanceHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "closureHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          }
+        },
+        "Disposition": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "revision"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "unreviewed"
+                },
+                "revision": {
+                  "const": 0
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "revision",
+                "evidence",
+                "actorUid",
+                "recordedAt"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "recorded"
+                },
+                "revision": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                },
+                "evidence": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "const": "hostConfirmed"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "guestRevision",
+                        "episodeId"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "const": "guestDeclined"
+                        },
+                        "guestRevision": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 9007199254740991
+                        },
+                        "episodeId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 160,
+                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                        }
+                      }
+                    }
+                  ]
+                },
+                "actorUid": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "recordedAt": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "revision",
+                "reason",
+                "actorUid",
+                "recordedAt"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "cleared"
+                },
+                "revision": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                },
+                "reason": {
+                  "enum": [
+                    "recordingMistake",
+                    "attendanceCorrected",
+                    "noLongerApplicable"
+                  ]
+                },
+                "actorUid": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "recordedAt": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "revision"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "sourceChanged"
+                },
+                "revision": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "revision",
+                "reason"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "superseded"
+                },
+                "revision": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                },
+                "reason": {
+                  "enum": [
+                    "attendanceChanged",
+                    "eventChanged",
+                    "guestIntentionChanged"
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "Recordability": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "allowed"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "reason"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "unavailable"
+                },
+                "reason": {
+                  "enum": [
+                    "eventNotFinished",
+                    "eventCancelled",
+                    "notAdmitted",
+                    "alreadyAttended"
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "ReadInput": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "context",
+            "attendeeId"
+          ],
+          "properties": {
+            "context": {
+              "$ref": "event_assistance_guest.schema.json#/definitions/liveContext"
+            },
+            "attendeeId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          }
+        },
+        "WriteInput": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "command",
+            "expectedSourceHash"
+          ],
+          "properties": {
+            "command": {
+              "$ref": "event_assistance_common.schema.json#/definitions/RecordNoShowCommand"
+            },
+            "expectedSourceHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          },
+          "allOf": [
+            {
+              "properties": {
+                "command": {
+                  "properties": {
+                    "context": {
+                      "properties": {
+                        "mode": {
+                          "const": "live"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "View": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "context",
+            "attendeeId",
+            "displayName",
+            "serverTime",
+            "sourceHash",
+            "attendance",
+            "closure",
+            "declineEvidence",
+            "disposition",
+            "recordability",
+            "canClear"
+          ],
+          "properties": {
+            "context": {
+              "$ref": "event_assistance_guest.schema.json#/definitions/liveContext"
+            },
+            "attendeeId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "displayName": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "serverTime": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "sourceHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "attendance": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "status",
+                "checkedIn",
+                "revision"
+              ],
+              "properties": {
+                "status": {
+                  "enum": [
+                    "invited",
+                    "registered",
+                    "waitlisted",
+                    "checkedIn",
+                    "cancelled"
+                  ]
+                },
+                "checkedIn": {
+                  "type": "boolean"
+                },
+                "revision": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                }
+              }
+            },
+            "closure": {
+              "$ref": "#/definitions/Closure"
+            },
+            "declineEvidence": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/GuestDeclineEvidence"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "disposition": {
+              "$ref": "#/definitions/Disposition"
+            },
+            "recordability": {
+              "$ref": "#/definitions/Recordability"
+            },
+            "canClear": {
+              "type": "boolean"
+            }
+          }
+        },
+        "Response": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "outcome",
+            "operationRevision",
+            "view"
+          ],
+          "properties": {
+            "outcome": {
+              "enum": [
+                "read",
+                "applied",
+                "replayed"
+              ]
+            },
+            "operationRevision": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "view": {
+              "$ref": "#/definitions/View"
+            }
+          }
+        },
+        "Record": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "dispositionId",
+            "context",
+            "attendeeId",
+            "revision",
+            "binding",
+            "decision",
+            "actorUid",
+            "recordedAt"
+          ],
+          "properties": {
+            "dispositionId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "context": {
+              "$ref": "event_assistance_guest.schema.json#/definitions/liveContext"
+            },
+            "attendeeId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "binding": {
+              "$ref": "#/definitions/Binding"
+            },
+            "decision": {
+              "$ref": "#/definitions/Decision"
+            },
+            "actorUid": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "recordedAt": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          }
+        },
+        "Receipt": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "receiptId",
+            "dispositionId",
+            "context",
+            "attendeeId",
+            "operationId",
+            "actorUid",
+            "requestHash",
+            "sourceIdentityHash",
+            "revision",
+            "decision",
+            "createdAt"
+          ],
+          "properties": {
+            "receiptId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "dispositionId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "context": {
+              "$ref": "event_assistance_guest.schema.json#/definitions/liveContext"
+            },
+            "attendeeId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "operationId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "actorUid": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "requestHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "sourceIdentityHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "decision": {
+              "$ref": "#/definitions/Decision"
+            },
+            "createdAt": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          }
+        },
+        "ReportInput": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "context"
+          ],
+          "properties": {
+            "context": {
+              "$ref": "event_assistance_guest.schema.json#/definitions/liveContext"
+            }
+          }
+        },
+        "ReportClassification": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "attended"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "evidence"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "recordedNoShow"
+                },
+                "evidence": {
+                  "enum": [
+                    "hostConfirmed",
+                    "guestDeclined"
+                  ]
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "reason"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "unresolved"
+                },
+                "reason": {
+                  "enum": [
+                    "unreviewed",
+                    "cleared",
+                    "sourceChanged",
+                    "superseded"
+                  ]
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "reason"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "notExpected"
+                },
+                "reason": {
+                  "enum": [
+                    "invited",
+                    "waitlisted",
+                    "cancelled",
+                    "eventCancelled"
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "ReportCounts": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "attended",
+            "recordedNoShow",
+            "unresolved",
+            "notExpected"
+          ],
+          "properties": {
+            "attended": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000
+            },
+            "recordedNoShow": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "hostConfirmed",
+                "guestDeclined"
+              ],
+              "properties": {
+                "hostConfirmed": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 1000
+                },
+                "guestDeclined": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 1000
+                }
+              }
+            },
+            "unresolved": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "unreviewed",
+                "cleared",
+                "sourceChanged",
+                "superseded"
+              ],
+              "properties": {
+                "unreviewed": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 1000
+                },
+                "cleared": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 1000
+                },
+                "sourceChanged": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 1000
+                },
+                "superseded": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 1000
+                }
+              }
+            },
+            "notExpected": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "invited",
+                "waitlisted",
+                "cancelled",
+                "eventCancelled"
+              ],
+              "properties": {
+                "invited": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 1000
+                },
+                "waitlisted": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 1000
+                },
+                "cancelled": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 1000
+                },
+                "eventCancelled": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 1000
+                }
+              }
+            }
+          }
+        },
+        "ReportView": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "context",
+            "serverTime",
+            "sourceHash",
+            "closure",
+            "source",
+            "coverage",
+            "rosterCount",
+            "counts",
+            "members"
+          ],
+          "properties": {
+            "context": {
+              "$ref": "event_assistance_guest.schema.json#/definitions/liveContext"
+            },
+            "serverTime": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "sourceHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "closure": {
+              "$ref": "#/definitions/Closure"
+            },
+            "source": {
+              "const": "eventAttendees"
+            },
+            "coverage": {
+              "enum": [
+                "emptyRoster",
+                "completeRoster"
+              ]
+            },
+            "rosterCount": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000
+            },
+            "counts": {
+              "$ref": "#/definitions/ReportCounts"
+            },
+            "members": {
+              "type": "array",
+              "maxItems": 1000,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "attendeeId",
+                  "classification"
+                ],
+                "properties": {
+                  "attendeeId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 160,
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                  },
+                  "classification": {
+                    "$ref": "#/definitions/ReportClassification"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "ReportResponse": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "view"
+          ],
+          "properties": {
+            "view": {
+              "$ref": "#/definitions/ReportView"
+            }
+          }
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/shared/event_assistance_cases.schema.json",
+      "title": "EventAssistanceCasesContracts",
+      "definitions": {
+        "Resolution": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "outcome",
+            "actorUid",
+            "at"
+          ],
+          "properties": {
+            "outcome": {
+              "enum": [
+                "resolved",
+                "declined"
+              ]
+            },
+            "actorUid": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "at": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          }
+        },
+        "ReadInput": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "context",
+            "status",
+            "cursor"
+          ],
+          "properties": {
+            "context": {
+              "$ref": "event_assistance_guest.schema.json#/definitions/liveContext"
+            },
+            "status": {
+              "enum": [
+                "open",
+                "resolved"
+              ],
+              "type": "string"
+            },
+            "cursor": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          }
+        },
+        "WriteInput": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "command",
+            "expectedSourceHash"
+          ],
+          "properties": {
+            "command": {
+              "$ref": "event_assistance_common.schema.json#/definitions/ResolveAssistanceCommand"
+            },
+            "expectedSourceHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          },
+          "allOf": [
+            {
+              "properties": {
+                "command": {
+                  "properties": {
+                    "context": {
+                      "properties": {
+                        "mode": {
+                          "const": "live"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "View": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "caseId",
+                "revision",
+                "sourceHash",
+                "availability",
+                "attendeeId",
+                "category",
+                "receivedAt",
+                "status",
+                "resolution",
+                "canChange",
+                "assignment"
+              ],
+              "properties": {
+                "caseId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "revision": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "sourceHash": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "availability": {
+                  "const": "current"
+                },
+                "attendeeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "category": {
+                  "enum": [
+                    "eventLogistics",
+                    "accessibility",
+                    "other"
+                  ]
+                },
+                "receivedAt": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "status": {
+                  "const": "open"
+                },
+                "resolution": {
+                  "type": "null"
+                },
+                "canChange": {
+                  "const": true
+                },
+                "assignment": {
+                  "$ref": "#/definitions/Assignment"
+                },
+                "displayName": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "minLength": 1,
+                  "maxLength": 120
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "caseId",
+                "revision",
+                "sourceHash",
+                "availability",
+                "attendeeId",
+                "category",
+                "receivedAt",
+                "status",
+                "resolution",
+                "canChange",
+                "assignment"
+              ],
+              "properties": {
+                "caseId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "revision": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                },
+                "sourceHash": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "availability": {
+                  "const": "current"
+                },
+                "attendeeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "category": {
+                  "enum": [
+                    "eventLogistics",
+                    "accessibility",
+                    "other"
+                  ]
+                },
+                "receivedAt": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "status": {
+                  "const": "resolved"
+                },
+                "resolution": {
+                  "$ref": "#/definitions/Resolution"
+                },
+                "canChange": {
+                  "const": false
+                },
+                "assignment": {
+                  "$ref": "#/definitions/Assignment"
+                },
+                "displayName": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "minLength": 1,
+                  "maxLength": 120
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "caseId",
+                "revision",
+                "sourceHash",
+                "availability",
+                "attendeeId",
+                "category",
+                "receivedAt",
+                "status",
+                "resolution",
+                "canChange",
+                "assignment"
+              ],
+              "properties": {
+                "caseId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "revision": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "sourceHash": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "availability": {
+                  "const": "sourceChanged"
+                },
+                "attendeeId": {
+                  "type": "null"
+                },
+                "category": {
+                  "enum": [
+                    "eventLogistics",
+                    "accessibility",
+                    "other"
+                  ]
+                },
+                "receivedAt": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "status": {
+                  "enum": [
+                    "open",
+                    "resolved"
+                  ]
+                },
+                "resolution": {
+                  "type": "null"
+                },
+                "canChange": {
+                  "const": false
+                },
+                "assignment": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "const": "unavailable"
+                    }
+                  }
+                },
+                "displayName": {
+                  "type": "null"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "caseId",
+                "revision",
+                "sourceHash",
+                "availability",
+                "attendeeId",
+                "category",
+                "receivedAt",
+                "status",
+                "resolution",
+                "canChange",
+                "assignment"
+              ],
+              "properties": {
+                "caseId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "revision": {
+                  "type": "null"
+                },
+                "sourceHash": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "availability": {
+                  "const": "legacy"
+                },
+                "attendeeId": {
+                  "type": "null"
+                },
+                "category": {
+                  "enum": [
+                    "eventLogistics",
+                    "accessibility",
+                    "other"
+                  ]
+                },
+                "receivedAt": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "status": {
+                  "enum": [
+                    "open",
+                    "resolved"
+                  ]
+                },
+                "resolution": {
+                  "type": "null"
+                },
+                "canChange": {
+                  "const": false
+                },
+                "assignment": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "const": "unavailable"
+                    }
+                  }
+                },
+                "displayName": {
+                  "type": "null"
+                }
+              }
+            }
+          ]
+        },
+        "ListResponse": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "context",
+            "serverTime",
+            "coverage",
+            "status",
+            "cases",
+            "nextCursor"
+          ],
+          "properties": {
+            "context": {
+              "$ref": "event_assistance_guest.schema.json#/definitions/liveContext"
+            },
+            "serverTime": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "coverage": {
+              "const": "page"
+            },
+            "status": {
+              "enum": [
+                "open",
+                "resolved"
+              ]
+            },
+            "cases": {
+              "type": "array",
+              "maxItems": 50,
+              "items": {
+                "$ref": "#/definitions/View"
+              }
+            },
+            "nextCursor": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "managerOptions": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/ManagerOptions"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        "Response": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "context",
+            "serverTime",
+            "outcome",
+            "operationRevision",
+            "view"
+          ],
+          "properties": {
+            "context": {
+              "$ref": "event_assistance_guest.schema.json#/definitions/liveContext"
+            },
+            "serverTime": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "outcome": {
+              "enum": [
+                "applied",
+                "replayed"
+              ]
+            },
+            "operationRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "view": {
+              "$ref": "#/definitions/View"
+            }
+          }
+        },
+        "Receipt": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "receiptId",
+            "context",
+            "caseId",
+            "caseBindingHash",
+            "requestHash",
+            "revision",
+            "actorUid",
+            "outcome",
+            "createdAt"
+          ],
+          "properties": {
+            "receiptId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "context": {
+              "$ref": "event_assistance_guest.schema.json#/definitions/liveContext"
+            },
+            "caseId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "caseBindingHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "requestHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "actorUid": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "outcome": {
+              "enum": [
+                "resolved",
+                "declined",
+                "transferred"
+              ]
+            },
+            "createdAt": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          }
+        },
+        "Assignment": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "unassigned"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "uid",
+                "authority"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "assigned"
+                },
+                "uid": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "authority": {
+                  "enum": [
+                    "current",
+                    "revoked"
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "OpenHandling": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "revision",
+            "assigneeUid",
+            "updatedAt",
+            "resolution"
+          ],
+          "properties": {
+            "revision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "assigneeUid": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "updatedAt": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "resolution": {
+              "type": "null"
+            }
+          }
+        },
+        "ResolvedHandling": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "revision",
+            "assigneeUid",
+            "updatedAt",
+            "resolution"
+          ],
+          "properties": {
+            "revision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "assigneeUid": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "updatedAt": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "resolution": {
+              "$ref": "event_assistance_cases.schema.json#/definitions/Resolution"
+            }
+          }
+        },
+        "ManagerOptions": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "actorUid",
+            "managers"
+          ],
+          "properties": {
+            "actorUid": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "managers": {
+              "type": "array",
+              "maxItems": 42,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "uid",
+                  "displayName"
+                ],
+                "properties": {
+                  "uid": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 160,
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                  },
+                  "displayName": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "minLength": 1,
+                    "maxLength": 120
+                  }
+                }
+              }
             }
           }
         }
@@ -18078,7 +20468,8 @@ const model = {
                   "type": "string",
                   "enum": [
                     "sinch",
-                    "gupshup"
+                    "gupshup",
+                    "googleRbm"
                   ]
                 },
                 "senderId": {
@@ -19122,12 +21513,19 @@ const model = {
                     "type": "object",
                     "additionalProperties": false,
                     "required": [
-                      "routeId"
+                      "routeId",
+                      "senderId"
                     ],
                     "properties": {
                       "routeId": {
                         "type": "string",
                         "const": "catchEventRcs"
+                      },
+                      "senderId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 160,
+                        "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
                       }
                     }
                   }
@@ -19236,7 +21634,11 @@ const model = {
                 "eventAssistanceWhatsappBudgets",
                 "organizerWhatsappEndpointStops",
                 "organizerContactChannelStates",
-                "eventStaffGrants"
+                "eventStaffGrants",
+                "eventAssistanceRcsPermissions",
+                "eventAssistanceRcsSenders",
+                "eventAssistanceRcsBudgets",
+                "eventAssistanceRcsSubscriptions"
               ]
             },
             "documentId": {
@@ -19313,7 +21715,8 @@ const model = {
                   "type": "string",
                   "enum": [
                     "catchEventSms",
-                    "organizerEventWhatsapp"
+                    "organizerEventWhatsapp",
+                    "catchEventRcs"
                   ]
                 },
                 "senderId": {
@@ -19340,6 +21743,24 @@ const model = {
                 "recipientEndpointId": {
                   "type": "string",
                   "pattern": "^whatsapp:[a-f0-9]{64}$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "subscriptionId"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "rcsSubscription"
+                },
+                "subscriptionId": {
+                  "type": "string",
+                  "pattern": "^rcs-subscription:[a-f0-9]{64}$"
                 }
               }
             }
