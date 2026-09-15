@@ -58,10 +58,6 @@
       "maxLines": 923
     },
     {
-      "path": "lib/onboarding/presentation/pages/welcome_page.dart",
-      "maxLines": 891
-    },
-    {
       "path": "lib/routing/go_router.dart",
       "maxLines": 1423
     },
