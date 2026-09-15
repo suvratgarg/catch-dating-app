@@ -288,6 +288,14 @@ complete zero-diagnostic invariant. In this workspace,
 `flutter analyze` and `dart analyze lib` do not load the Catch plugin; never
 use either command as proof that a Catch UI rule is clean.
 
+Phase 5 also retired the broad `tool/scan_architecture.py` report in favor of
+the focused dependency, adopted-boundary, mutation-error, error-catalog,
+source-size, and widget-classification gates. The three unreferenced Dart
+personality/visual-review entrypoints are removed; Widgetbook goldens, UI
+captures, and registered reference-screen comparisons own visual review.
+Validators already executed by a canonical aggregate check are `internal` in
+the manifest, so the same probes run without advertising duplicate check IDs.
+
 Use `--summary` for review-friendly output, `--count` for cheap automated
 checks that only need a numeric debt signal, and
 `tool/check_catch_ui_lint_drift.sh --all --json <path>` when a cleanup pass

@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.65.7
+version: 1.65.8
 updated: 2026-09-15
 owner: app_architecture
 status: active
@@ -4412,7 +4412,7 @@ Use this order for architecture cleanup:
      completion state.
 
 2. Inventory the current surface.
-   - `python3 tool/scan_architecture.py`
+   - `node tool/run.mjs check audit:dependency-direction audit:adopted-architecture-boundaries audit:mutation-error-surfaces`
    - `bash tool/widget_cleanup_scan.sh --summary`
    - `dart tool/audit/backend_error_candidates.dart`
    - `dart tool/audit/frontend_error_candidates.dart`

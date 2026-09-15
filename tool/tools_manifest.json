@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-09-14",
+  "updated": "2026-09-15",
   "ciImpact": {
     "mandatoryCheckIds": [
       "docs:metadata",
@@ -1184,19 +1184,6 @@
       }
     },
     {
-      "id": "audit:architecture-scan",
-      "category": "audit",
-      "path": "tool/scan_architecture.py",
-      "command": "python3 tool/scan_architecture.py",
-      "safety": "local-writes-build-artifacts",
-      "status": "active",
-      "description": "Scans async-state handling, repository error wrapping, controller mutations, and structural widget overlap.",
-      "checks": [
-        "python3 -B -c \"import ast,pathlib; ast.parse(pathlib.Path('tool/scan_architecture.py').read_text())\""
-      ],
-      "role": "generator"
-    },
-    {
       "id": "audit:adopted-architecture-boundaries",
       "category": "audit",
       "path": "tool/architecture/check_adopted_architecture_boundaries.mjs",
@@ -1380,7 +1367,6 @@
       "checks": [
         "bash -n tool/widget_cleanup_scan.sh",
         "node --test tool/lib/widget_cleanup_ratchet.test.mjs",
-        "node tool/design/check_ui_lint_promotion_parity.mjs",
         "bash tool/widget_cleanup_scan.sh --check"
       ],
       "role": "ratchet",
@@ -1588,7 +1574,7 @@
       "path": "tool/copy/check_mobile_copy_catalog_test.mjs",
       "command": "node tool/copy/check_mobile_copy_catalog_test.mjs",
       "safety": "local",
-      "status": "active",
+      "status": "internal",
       "description": "Runs seeded metadata validation probes for the Flutter ARB copy catalog.",
       "checks": [
         "node tool/copy/check_mobile_copy_catalog_test.mjs"
@@ -2001,7 +1987,6 @@
       "checks": [
         "bash -n tool/check_catch_ui_lints.sh",
         "node tool/design/build_lint_enforcement_tables.mjs --check",
-        "node tool/design/check_ui_lint_promotion_parity.mjs",
         "bash tool/check_catch_ui_lints.sh"
       ],
       "role": "gate",
@@ -2108,30 +2093,6 @@
         "path": "tool/design/check_component_enforcement_coverage.test.mjs",
         "contains": [
           "requires decisions, executable verification, live waivers, ownership, and probes"
-        ]
-      }
-    },
-    {
-      "id": "design:ui-lint-promotion-parity",
-      "category": "design",
-      "path": "tool/design/check_ui_lint_promotion_parity.mjs",
-      "command": "node tool/design/check_ui_lint_promotion_parity.mjs",
-      "safety": "local",
-      "status": "active",
-      "description": "Proves promoted regex scanner categories have seeded analyzer-plugin fixtures before retirement.",
-      "checks": [
-        "node --test tool/design/check_ui_lint_promotion_parity.test.mjs",
-        "node tool/design/check_ui_lint_promotion_parity.mjs"
-      ],
-      "role": "gate",
-      "rules": [
-        "UI-LINT-001"
-      ],
-      "vacuityProof": {
-        "type": "test",
-        "path": "tool/design/check_ui_lint_promotion_parity.test.mjs",
-        "contains": [
-          "rejects retired categories and missing seeded fixtures"
         ]
       }
     },
@@ -3224,7 +3185,7 @@
       "path": "tool/flutter_with_env.sh",
       "command": "./tool/flutter_with_env.sh",
       "safety": "local-build-run",
-      "status": "active",
+      "status": "internal",
       "description": "Runs Flutter with active Firebase environment and dart defines, with a bounded CI-only retry for the exact CocoaPods GitHub self-signed-certificate failure.",
       "checks": [
         "bash -n tool/flutter_with_env.sh",
@@ -3305,7 +3266,7 @@
       "command": "node tool/platform/check_app_package_graph.mjs",
       "safety": "local-readonly",
       "status": "active",
-      "description": "Verifies Consumer-only native SDK declarations in clean checkouts, enriches reports with generated plugin metadata when available, keeps both apps on one repository workspace lock, and enforces the Flutter-only catch_tokens dependency boundary.",
+      "description": "Verifies app-role native SDK declarations, one workspace lock, the Flutter-only catch_tokens boundary, and the provider/backend/app-free catch_ui dependency boundary with Skeletonizer pinned to 2.1.3.",
       "checks": [
         "node --check tool/platform/check_app_package_graph.mjs",
         "node --test tool/platform/check_app_package_graph.test.mjs",
@@ -3320,7 +3281,9 @@
         "type": "test",
         "path": "tool/platform/check_app_package_graph.test.mjs",
         "contains": [
-          "rejects consumer SDKs in the Host graph"
+          "rejects consumer SDKs in the Host graph",
+          "token package rejects every dependency outside Flutter",
+          "UI package rejects app, state, backend and unrelated dependencies"
         ]
       }
     },
@@ -4679,7 +4642,7 @@
       "path": "website/scripts/verifyHosting404.mjs",
       "command": "node website/scripts/verifyHosting404.mjs",
       "safety": "remote-read",
-      "status": "active",
+      "status": "internal",
       "description": "Asserts that a unique unknown URL on a supplied marketing Hosting origin returns HTTP 404 without following redirects.",
       "checks": [
         "node --check website/scripts/verifyHosting404.mjs"
@@ -4692,7 +4655,7 @@
       "path": "tool/marketing/website_meta_contract.mjs",
       "command": "node --test tool/marketing/website_meta_contract.test.mjs",
       "safety": "local",
-      "status": "active",
+      "status": "internal",
       "description": "Validates the shared static website metadata content used by client and postbuild readers.",
       "checks": [
         "node --check tool/marketing/website_meta_contract.mjs",
@@ -4700,9 +4663,6 @@
         "node --test tool/marketing/website_meta_contract.test.mjs"
       ],
       "role": "gate",
-      "rules": [
-        "WEB-ROUTE-001"
-      ],
       "vacuityProof": {
         "type": "test",
         "path": "tool/marketing/website_meta_contract.test.mjs",
@@ -4765,7 +4725,7 @@
       "path": "tool/marketing/frame_device_capture.dart",
       "command": "dart run tool/marketing/frame_device_capture.dart",
       "safety": "local-writes-artifacts",
-      "status": "active",
+      "status": "internal",
       "description": "Wraps a raw app capture in the configured marketing device frame.",
       "checks": [
         "dart analyze tool/marketing/frame_device_capture.dart"
@@ -4971,7 +4931,7 @@
       "path": "tool/ui_capture/check_route_inventory_test.mjs",
       "command": "node --test tool/ui_capture/check_route_inventory_test.mjs",
       "safety": "local",
-      "status": "active",
+      "status": "internal",
       "description": "Pins redirect-only route exceptions plus deterministic normalized presentation expressions and presentation targets.",
       "checks": [
         "node --test tool/ui_capture/check_route_inventory_test.mjs"
@@ -5321,7 +5281,7 @@
       "path": "tool/design/component_concepts.mjs",
       "command": "node --test tool/design/component_concepts.test.mjs",
       "safety": "local",
-      "status": "active",
+      "status": "internal",
       "description": "Provides deterministic component-concept identity, collision-key, topology, and metric helpers.",
       "checks": [
         "node --check tool/design/component_concepts.mjs",
@@ -5410,7 +5370,7 @@
       "path": "tool/design/claude_design_handoff.mjs",
       "command": "node --check tool/design/claude_design_handoff.mjs",
       "safety": "local-readonly",
-      "status": "active",
+      "status": "internal",
       "role": "generator",
       "description": "Generates the deterministic Badge + Field Claude Design request and validates a referenced receipt against source, concept, and supported-state digests.",
       "checks": [
@@ -6143,42 +6103,6 @@
       ]
     },
     {
-      "id": "design:preview-app",
-      "category": "design",
-      "path": "tool/design/design_personality_preview_app.dart",
-      "command": "flutter run -t tool/design/design_personality_preview_app.dart",
-      "safety": "local-ui",
-      "status": "active",
-      "description": "Legacy preview app for locked light, dark event, and activity editorial identity checks.",
-      "checks": [
-        "flutter analyze --no-fatal-infos tool/design/design_personality_preview_app.dart"
-      ]
-    },
-    {
-      "id": "design:render-personality",
-      "category": "design",
-      "path": "tool/design/render_design_personality_previews.dart",
-      "command": "dart tool/design/render_design_personality_previews.dart",
-      "safety": "local-writes-assets",
-      "status": "active",
-      "description": "Renders legacy locked identity preview strips.",
-      "checks": [
-        "flutter analyze --no-fatal-infos tool/design/render_design_personality_previews.dart"
-      ]
-    },
-    {
-      "id": "design:visual-review",
-      "category": "design",
-      "path": "tool/design/visual_review_app.dart",
-      "command": "flutter run -t tool/design/visual_review_app.dart",
-      "safety": "local-ui",
-      "status": "active",
-      "description": "Visual review app entrypoint.",
-      "checks": [
-        "flutter analyze --no-fatal-infos tool/design/visual_review_app.dart"
-      ]
-    },
-    {
       "id": "audit:fn-rate-limits",
       "category": "audit",
       "path": "tool/audit/check_fn_rate_limits.mjs",
@@ -6730,7 +6654,7 @@
       ],
       "command": "dart run --packages=tool/widget_dedupe/.dart_tool/package_config.json test:test tool/widget_dedupe/test/fingerprint_extractor_test.dart",
       "safety": "local",
-      "status": "active",
+      "status": "internal",
       "ciRequirements": {
         "repositoryView": "full",
         "setup": [
