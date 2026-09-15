@@ -216,6 +216,8 @@ class _OrderedPhotoManagerScreenState extends State<OrderedPhotoManagerScreen> {
   int? _draggedIndex;
   bool _adding = false;
 
+  void _setLocalState(VoidCallback callback) => setState(callback);
+
   @override
   void initState() {
     super.initState();

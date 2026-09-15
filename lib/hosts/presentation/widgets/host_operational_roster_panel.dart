@@ -230,6 +230,8 @@ class HostOperationalRosterPanel extends ConsumerStatefulWidget {
 
 class _HostOperationalRosterPanelState
     extends ConsumerState<HostOperationalRosterPanel> {
+  void _setLocalState(VoidCallback callback) => setState(callback);
+
   var _importing = false;
   var _creatingHandoff = false;
   String? _pendingAttendanceId;

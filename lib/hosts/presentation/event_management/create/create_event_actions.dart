@@ -13,7 +13,7 @@ extension _CreateEventActions on _CreateEventScreenState {
     );
     if (picked != null) {
       final result = _scheduleState.selectDate(picked, now: widget.now());
-      setState(() {
+      _setLocalState(() {
         _selectedDate = result.selectedDate;
         _selectedStartTime = result.selectedStartTime;
         _dateController.text = result.dateText;
@@ -34,7 +34,7 @@ extension _CreateEventActions on _CreateEventScreenState {
     );
     if (picked != null) {
       final result = _scheduleState.selectStartTime(picked, now: widget.now());
-      setState(() {
+      _setLocalState(() {
         _selectedDate = result.selectedDate;
         _selectedStartTime = result.selectedStartTime;
         _startTimeController.text = result.startTimeText;
@@ -66,7 +66,7 @@ extension _CreateEventActions on _CreateEventScreenState {
         address: result.address,
         placeId: result.placeId,
       );
-      setState(() {
+      _setLocalState(() {
         _locationState = selection.state;
         final meetingPointText = selection.meetingPointText;
         if (meetingPointText != null) {
@@ -81,7 +81,7 @@ extension _CreateEventActions on _CreateEventScreenState {
       venue,
       currentCapacityText: _capacityController.text,
     );
-    setState(() {
+    _setLocalState(() {
       _locationState = selection.state;
       _meetingPointController.text = selection.meetingPointText;
       _locationDetailsController.text = selection.locationDetailsText;
@@ -132,15 +132,17 @@ extension _CreateEventActions on _CreateEventScreenState {
         .read(createEventControllerProvider.notifier)
         .pickEventPhotos();
     if (!mounted || picked.isEmpty) return;
-    setState(() => _eventPhotos = _eventPhotos.addPicked(picked));
+    _setLocalState(() => _eventPhotos = _eventPhotos.addPicked(picked));
   }
 
   void _removeEventPhoto(int index) {
-    setState(() => _eventPhotos = _eventPhotos.removeAt(index));
+    _setLocalState(() => _eventPhotos = _eventPhotos.removeAt(index));
   }
 
   void _reorderEventPhoto(int fromIndex, int toIndex) {
-    setState(() => _eventPhotos = _eventPhotos.reorder(fromIndex, toIndex));
+    _setLocalState(
+      () => _eventPhotos = _eventPhotos.reorder(fromIndex, toIndex),
+    );
   }
 
   void _setRosterPlan(HostRosterImportPlan plan) {
@@ -171,7 +173,7 @@ extension _CreateEventActions on _CreateEventScreenState {
         defaultRevenueCurrency: _eventCurrencyCode,
       );
       if (plan == null || !mounted) return;
-      setState(() => _setRosterPlan(plan));
+      _setLocalState(() => _setRosterPlan(plan));
     } on HostRosterImportException catch (error) {
       if (mounted) {
         showCatchSnackBar(
@@ -222,7 +224,7 @@ extension _CreateEventActions on _CreateEventScreenState {
       case CreateEventWizardPrimaryIntent.nextStep:
         _goToStep(_currentStep + 1);
       case CreateEventWizardPrimaryIntent.review:
-        setState(() => _isReviewing = true);
+        _setLocalState(() => _isReviewing = true);
       case CreateEventWizardPrimaryIntent.submit:
         if (_validateAllInput()) _submit();
     }
@@ -250,7 +252,7 @@ extension _CreateEventActions on _CreateEventScreenState {
 
   void _goToStep(int step) {
     if (step < 0 || step >= _stepSpecs.length || _requestPending) return;
-    setState(() {
+    _setLocalState(() {
       _isReviewing = false;
       _currentStep = step;
     });
@@ -266,7 +268,7 @@ extension _CreateEventActions on _CreateEventScreenState {
 
   void _showStep(int step) {
     if (step < 0 || step >= _stepSpecs.length || _requestPending) return;
-    setState(() {
+    _setLocalState(() {
       _isReviewing = false;
       _currentStep = step;
     });
@@ -290,7 +292,7 @@ extension _CreateEventActions on _CreateEventScreenState {
     final firstInvalid = review.firstIncompleteStep ?? firstInvalidForm;
     if (!formsAreValid || !review.canSubmit) {
       final scheduleError = _scheduleState.errorText(now: widget.now());
-      setState(() {
+      _setLocalState(() {
         _showValidationErrors = true;
         _scheduleErrorText = scheduleError;
       });
@@ -373,7 +375,7 @@ extension _CreateEventActions on _CreateEventScreenState {
         }
       }
       if (mounted) {
-        setState(() {
+        _setLocalState(() {
           _createdEvent = createdEvent;
           _rosterImportResult = rosterResult;
           _rosterImportFailed = rosterFailed;

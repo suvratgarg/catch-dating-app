@@ -19,7 +19,7 @@ extension _EditHostedEventActions on _EditHostedEventScreenState {
       picked,
       _selectedStartTime,
     ).errorText;
-    setState(() {
+    _setLocalState(() {
       _selectedDate = DateUtils.dateOnly(picked);
       _scheduleErrorText = scheduleError;
     });
@@ -38,7 +38,7 @@ extension _EditHostedEventActions on _EditHostedEventScreenState {
       _selectedDate,
       picked,
     ).errorText;
-    setState(() {
+    _setLocalState(() {
       _selectedStartTime = picked;
       _scheduleErrorText = scheduleError;
     });
@@ -65,7 +65,7 @@ extension _EditHostedEventActions on _EditHostedEventScreenState {
       ),
     );
     if (result != null && !_savePending) {
-      setState(() {
+      _setLocalState(() {
         _startingPoint = result.coordinate;
         _meetingLocationAddress = result.address;
         _meetingLocationPlaceId = result.placeId;
@@ -106,15 +106,15 @@ extension _EditHostedEventActions on _EditHostedEventScreenState {
       case HostEventEditPickStartTimeIntent():
         unawaited(_pickStartTime());
       case HostEventEditDurationChangedIntent(:final durationMinutes):
-        setState(() => _durationMinutes = durationMinutes);
+        _setLocalState(() => _durationMinutes = durationMinutes);
       case HostEventEditMeetingPointChangedIntent():
-        setState(() {});
+        _setLocalState(() {});
       case HostEventEditPickLocationIntent():
         unawaited(_pickLocation());
       case HostEventEditPaceChangedIntent(:final pace):
-        setState(() => _selectedPace = pace);
+        _setLocalState(() => _selectedPace = pace);
       case HostEventEditAdmissionPresetChangedIntent(:final preset):
-        setState(() {
+        _setLocalState(() {
           _selectedAdmissionPreset = preset;
           if (preset != EventAdmissionPreset.inviteOnly) {
             _loadedPrivateAccess = false;
@@ -127,9 +127,9 @@ extension _EditHostedEventActions on _EditHostedEventScreenState {
           }
         });
       case HostEventEditCohortCapsChangedIntent(:final enabled):
-        setState(() => _cohortCapsEnabled = enabled);
+        _setLocalState(() => _cohortCapsEnabled = enabled);
       case HostEventEditDynamicPricingChangedIntent(:final enabled):
-        setState(() {
+        _setLocalState(() {
           _dynamicPricingEnabled = enabled;
           if (enabled && _dynamicPricingStepController.text.isEmpty) {
             _dynamicPricingStepController.text = '250';
@@ -139,7 +139,7 @@ extension _EditHostedEventActions on _EditHostedEventScreenState {
           }
         });
       case HostEventEditCancellationPolicyChangedIntent(:final policyId):
-        setState(() => _selectedCancellationPolicyId = policyId);
+        _setLocalState(() => _selectedCancellationPolicyId = policyId);
       case HostEventEditSaveIntent():
         _saveChanges();
     }
@@ -167,7 +167,7 @@ extension _EditHostedEventActions on _EditHostedEventScreenState {
       scheduleLocked: screenState.scheduleLocked,
     );
     if (!scheduleValidation.isValid) {
-      setState(() => _scheduleErrorText = scheduleValidation.errorText);
+      _setLocalState(() => _scheduleErrorText = scheduleValidation.errorText);
       return;
     }
 

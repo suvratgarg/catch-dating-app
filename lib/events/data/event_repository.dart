@@ -43,6 +43,7 @@ class EventRepository with EventRepositoryActions {
   const EventRepository(this._db, this._functions);
 
   final FirebaseFirestore _db;
+  @override
   final FirebaseFunctions _functions;
 
   CollectionReference<Event> get _eventsRef => _db

@@ -1,7 +1,9 @@
+// ignore_for_file: prefer_initializing_formals
+
+import 'package:catch_dating_app/core/country_markets.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
-import 'package:catch_dating_app/core/country_markets.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';

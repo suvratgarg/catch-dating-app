@@ -102,8 +102,9 @@ Map<String, Object?> formDefinitionDeepStringMap(Object? value) {
 
 Object? formDefinitionDeepJsonValue(Object? value) {
   if (value is Map) return formDefinitionDeepStringMap(value);
-  if (value is List)
+  if (value is List) {
     return value.map(formDefinitionDeepJsonValue).toList(growable: true);
+  }
   return value;
 }
 

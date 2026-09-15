@@ -173,10 +173,12 @@ class HostFormDefinition {
         closedMessage != null ||
         clearClosedMessage) {
       final availability = formDefinitionDeepStringMap(next['availability']);
-      if (setOpensAt)
+      if (setOpensAt) {
         availability['opensAt'] = formDefinitionWireDateTime(opensAt);
-      if (setClosesAt)
+      }
+      if (setClosesAt) {
         availability['closesAt'] = formDefinitionWireDateTime(closesAt);
+      }
       if (setResponseLimit) availability['responseLimit'] = responseLimit;
       if (closedMessage != null || clearClosedMessage) {
         availability['closedMessage'] = clearClosedMessage

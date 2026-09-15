@@ -12,7 +12,7 @@ extension _CreateClubActions on _CreateClubScreenState {
       }
       final restoredDraft = draft;
 
-      setState(() {
+      _setLocalState(() {
         _restoreFromDraft(restoredDraft);
         _restoredDraft = true;
         _lastSavedDraftSignature = _currentDraftContentSignature;
@@ -70,7 +70,7 @@ extension _CreateClubActions on _CreateClubScreenState {
     if (!mounted || photos.isEmpty) {
       return;
     }
-    setState(() {
+    _setLocalState(() {
       _clubPhotos.addAll(
         photos.map(
           (photo) => _PickedClubPhotoDraft(_nextPickedClubPhotoId++, photo),
@@ -82,7 +82,7 @@ extension _CreateClubActions on _CreateClubScreenState {
 
   void _removeClubPhoto(int index) {
     if (index < 0 || index >= _clubPhotos.length) return;
-    setState(() {
+    _setLocalState(() {
       _clubPhotos.removeAt(index);
       _clubPhotosTouched = true;
     });
@@ -96,7 +96,7 @@ extension _CreateClubActions on _CreateClubScreenState {
         toIndex >= _clubPhotos.length) {
       return;
     }
-    setState(() {
+    _setLocalState(() {
       final moved = _clubPhotos.removeAt(fromIndex);
       _clubPhotos.insert(toIndex, moved);
       _clubPhotosTouched = true;
@@ -110,13 +110,13 @@ extension _CreateClubActions on _CreateClubScreenState {
     if (!mounted || image == null) {
       return;
     }
-    setState(() {
+    _setLocalState(() {
       _profileImage = image;
     });
   }
 
   void _removeProfileImage() {
-    setState(() => _profileImage = null);
+    _setLocalState(() => _profileImage = null);
   }
 
   Future<void> _handleCloseIntent(HostClubCreateCloseIntent intent) async {
@@ -159,7 +159,7 @@ extension _CreateClubActions on _CreateClubScreenState {
           _goToStep(_currentStep + 1);
         }
       case HostClubCreatePrimaryIntent.review:
-        setState(() => _isReviewing = true);
+        _setLocalState(() => _isReviewing = true);
       case HostClubCreatePrimaryIntent.submit:
         if (_validateAllInput()) _submit();
     }
@@ -178,7 +178,7 @@ extension _CreateClubActions on _CreateClubScreenState {
 
   void _goToStep(int step) {
     if (_requestPending || step < 0 || step >= _activeSteps.length) return;
-    setState(() {
+    _setLocalState(() {
       _isReviewing = false;
       _currentStep = step;
     });
@@ -194,7 +194,7 @@ extension _CreateClubActions on _CreateClubScreenState {
 
   void _showStep(int step) {
     if (_requestPending || step < 0 || step >= _activeSteps.length) return;
-    setState(() {
+    _setLocalState(() {
       _isReviewing = false;
       _currentStep = step;
     });
@@ -218,7 +218,7 @@ extension _CreateClubActions on _CreateClubScreenState {
     final review = _reviewState;
     final firstInvalid = review.firstIncompleteStep ?? firstInvalidForm;
     if (!formsAreValid || !review.canSubmit) {
-      setState(() => _showValidationErrors = true);
+      _setLocalState(() => _showValidationErrors = true);
       if (firstInvalid != null) _showStep(firstInvalid);
       return false;
     }
@@ -242,11 +242,11 @@ extension _CreateClubActions on _CreateClubScreenState {
       ):
         _reorderClubPhoto(fromIndex, toIndex);
       case HostClubCreateCityChangedIntent(:final city):
-        setState(() => _selectedCity = city?.effectiveMarketId);
+        _setLocalState(() => _selectedCity = city?.effectiveMarketId);
       case HostClubCreateOrganizerTypeChangedIntent(:final organizerType):
-        setState(() => _organizerType = organizerType);
+        _setLocalState(() => _organizerType = organizerType);
       case HostClubCreateDefaultsChangedIntent(:final defaults):
-        setState(() => _hostDefaults = defaults);
+        _setLocalState(() => _hostDefaults = defaults);
     }
   }
 
@@ -378,7 +378,7 @@ extension _CreateClubActions on _CreateClubScreenState {
 
   void _completeClose() {
     if (!mounted || _allowRoutePop) return;
-    setState(() => _allowRoutePop = true);
+    _setLocalState(() => _allowRoutePop = true);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) Navigator.of(context).pop();
     });

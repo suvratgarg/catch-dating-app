@@ -7,7 +7,6 @@ import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/business_rules.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
-import 'package:catch_dating_app/core/country_markets.dart';
 import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
@@ -26,21 +25,20 @@ import 'package:catch_dating_app/events/domain/event_private_access.dart';
 import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/events/events.dart'
     show LocationPickerResult, LocationPickerScreen;
+import 'package:catch_dating_app/hosts/presentation/edit_hosted_event_scope_notice.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_policy_state.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/event_itinerary_editor.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/route_event_plan_editor.dart';
-import 'package:catch_dating_app/hosts/presentation/edit_hosted_event_scope_notice.dart';
-import 'package:catch_dating_app/hosts/presentation/host_event_edit_save_request.dart';
-import 'package:catch_dating_app/hosts/presentation/hosted_event_policy_section.dart';
-import 'package:catch_dating_app/hosts/presentation/hosted_event_schedule_section.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_booking_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/host_event_edit_save_request.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_edit_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_edit_view_model.dart';
+import 'package:catch_dating_app/hosts/presentation/hosted_event_policy_section.dart';
+import 'package:catch_dating_app/hosts/presentation/hosted_event_schedule_section.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeletons.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
-import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -51,7 +49,6 @@ export 'package:catch_dating_app/hosts/presentation/edit_hosted_event_scope_noti
 export 'package:catch_dating_app/hosts/presentation/host_event_edit_save_request.dart';
 export 'package:catch_dating_app/hosts/presentation/hosted_event_policy_section.dart';
 export 'package:catch_dating_app/hosts/presentation/hosted_event_schedule_section.dart';
-
 part 'edit_hosted_event_actions.dart';
 part 'edit_hosted_event_route_screen.dart';
 
@@ -82,6 +79,8 @@ class EditHostedEventScreen extends ConsumerStatefulWidget {
 }
 
 class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
+  void _setLocalState(VoidCallback callback) => setState(callback);
+
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _meetingPointController = TextEditingController();

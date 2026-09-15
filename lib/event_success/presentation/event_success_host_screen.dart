@@ -36,9 +36,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-export 'package:catch_dating_app/event_success/presentation/event_success_host_screen_state.dart';
 export 'package:catch_dating_app/event_success/presentation/event_success_host_fixture_actions.dart';
-
+export 'package:catch_dating_app/event_success/presentation/event_success_host_screen_state.dart';
 part 'event_success_host_actions.dart';
 
 Object? _mutationError(MutationState<dynamic> state) {

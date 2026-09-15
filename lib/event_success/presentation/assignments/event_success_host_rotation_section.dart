@@ -12,7 +12,6 @@ import 'package:catch_dating_app/event_success/presentation/event_success_host_s
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
-import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 

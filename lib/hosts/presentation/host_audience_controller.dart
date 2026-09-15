@@ -20,25 +20,21 @@ part 'host_audience_controller.g.dart';
 @riverpod
 HostAudienceController hostAudienceController(Ref ref) =>
     HostAudienceController(
-      contacts: ref.watch(hostContactsRepositoryProvider),
-      communication: ref.watch(hostCommunicationRepositoryProvider),
-      savedAudiences: ref.watch(hostSavedAudienceRepositoryProvider),
-      whatsapp: ref.watch(hostWhatsappRepositoryProvider),
-      campaign: ref.watch(hostCampaignRepositoryProvider),
+      ref.watch(hostContactsRepositoryProvider),
+      ref.watch(hostCommunicationRepositoryProvider),
+      ref.watch(hostSavedAudienceRepositoryProvider),
+      ref.watch(hostWhatsappRepositoryProvider),
+      ref.watch(hostCampaignRepositoryProvider),
     );
 
 class HostAudienceController {
-  const HostAudienceController({
-    required HostContactsRepository contacts,
-    required HostCommunicationRepository communication,
-    required HostSavedAudienceRepository savedAudiences,
-    required HostWhatsappRepository whatsapp,
-    required HostCampaignRepository campaign,
-  }) : _contacts = contacts,
-       _communication = communication,
-       _savedAudiences = savedAudiences,
-       _whatsapp = whatsapp,
-       _campaign = campaign;
+  const HostAudienceController(
+    this._contacts,
+    this._communication,
+    this._savedAudiences,
+    this._whatsapp,
+    this._campaign,
+  );
 
   final HostContactsRepository _contacts;
   final HostCommunicationRepository _communication;

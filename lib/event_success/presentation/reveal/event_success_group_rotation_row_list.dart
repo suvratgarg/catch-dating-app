@@ -1,8 +1,6 @@
 import 'package:catch_dating_app/event_success/domain/event_success_assignment.dart';
-import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
 import 'package:catch_dating_app/event_success/presentation/reveal/event_success_assignment_surface.dart';
 import 'package:catch_dating_app/event_success/presentation/reveal/event_success_reveal_copy.dart';
-import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_tokens/catch_tokens.dart';

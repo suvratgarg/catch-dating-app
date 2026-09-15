@@ -17,7 +17,7 @@ import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
-import 'event_success_reveal_clock_mixin.dart';
+import 'package:catch_dating_app/event_success/presentation/reveal/event_success_reveal_clock_mixin.dart';
 
 class EventSuccessAttendeeRevealSurface extends StatefulWidget {
   const EventSuccessAttendeeRevealSurface({

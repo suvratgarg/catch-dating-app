@@ -102,7 +102,7 @@ extension _CreateEventDraftActions on _CreateEventScreenState {
   void _restoreFromDraft(EventDraft draft) {
     _activeDraftId = draft.id;
 
-    setState(() => _applyDraftValues(draft));
+    _setLocalState(() => _applyDraftValues(draft));
     _lastSavedDraftSignature = _currentDraftContentSignature;
   }
 
@@ -241,7 +241,7 @@ extension _CreateEventDraftActions on _CreateEventScreenState {
 
   void _completeClose() {
     if (!mounted || _allowRoutePop) return;
-    setState(() => _allowRoutePop = true);
+    _setLocalState(() => _allowRoutePop = true);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) Navigator.of(context).pop();
     });

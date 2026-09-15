@@ -26,7 +26,7 @@ extension _OrderedPhotoManagerActions on _OrderedPhotoManagerScreenState {
   void _syncCallerPhotos() {
     final photos = widget.photosListenable?.value;
     if (!mounted || photos == null) return;
-    setState(() => _photos = [...photos]);
+    _setLocalState(() => _photos = [...photos]);
   }
 
   bool get _canReorder => widget.onReorderPhoto != null && _photos.length > 1;
@@ -39,7 +39,7 @@ extension _OrderedPhotoManagerActions on _OrderedPhotoManagerScreenState {
         toIndex >= _photos.length) {
       return;
     }
-    setState(() {
+    _setLocalState(() {
       final moved = _photos.removeAt(fromIndex);
       _photos.insert(toIndex, moved);
     });
@@ -48,7 +48,7 @@ extension _OrderedPhotoManagerActions on _OrderedPhotoManagerScreenState {
 
   void _remove(int index) {
     if (index < 0 || index >= _photos.length) return;
-    setState(() => _photos.removeAt(index));
+    _setLocalState(() => _photos.removeAt(index));
     widget.onRemovePhoto?.call(index);
   }
 
@@ -57,7 +57,7 @@ extension _OrderedPhotoManagerActions on _OrderedPhotoManagerScreenState {
       return;
     }
     widget.onRetryPhoto!(index);
-    setState(() {
+    _setLocalState(() {
       final photo = _photos[index];
       _photos[index] = OrderedPhotoPreview(
         id: photo.id,
@@ -80,14 +80,14 @@ extension _OrderedPhotoManagerActions on _OrderedPhotoManagerScreenState {
       });
       return;
     }
-    setState(() => _adding = true);
+    _setLocalState(() => _adding = true);
     try {
       final added = await addInManager();
       if (mounted && added.isNotEmpty && widget.photosListenable == null) {
-        setState(() => _photos.addAll(added));
+        _setLocalState(() => _photos.addAll(added));
       }
     } finally {
-      if (mounted) setState(() => _adding = false);
+      if (mounted) _setLocalState(() => _adding = false);
     }
   }
 }

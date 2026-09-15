@@ -23,7 +23,6 @@ import 'package:catch_dating_app/events/presentation/saved_events_screen.dart';
 import 'package:catch_dating_app/events/shared/event_detail_route_transition.dart';
 import 'package:catch_dating_app/explore/presentation/explore_map_screen.dart';
 import 'package:catch_dating_app/explore/presentation/explore_screen.dart';
-import 'package:catch_dating_app/hosts/data/crm/host_contacts_repository.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_saved_audience.dart';
 import 'package:catch_dating_app/hosts/presentation/applications/host_applications_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/host_create_club_screen.dart';

@@ -1,5 +1,4 @@
 import 'package:catch_tokens/catch_tokens.dart';
-import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
 class EventSuccessRevealProgressIndicator extends StatelessWidget {

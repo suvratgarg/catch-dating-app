@@ -1,5 +1,4 @@
 import 'package:catch_dating_app/event_success/domain/event_success_assignment.dart';
-import 'package:catch_dating_app/event_success/domain/event_success_models.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_room_map.dart'
     show EventSuccessSpatialPreview, EventSuccessSpatialReassign;
 import 'package:flutter/foundation.dart';

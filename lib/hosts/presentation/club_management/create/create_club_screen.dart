@@ -114,6 +114,8 @@ typedef HostClubCreateRouteIntentCallback =
     void Function(HostClubCreateRouteIntent intent);
 
 class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
+  void _setLocalState(VoidCallback callback) => setState(callback);
+
   late final PageController _pageController;
   final _basicsFormKey = GlobalKey<FormState>();
   final _detailsFormKey = GlobalKey<FormState>();

@@ -24,13 +24,13 @@ import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_booking_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_roster_summary.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_event_manage_section.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_event_private_access_section.dart';
+import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_invite_link_state.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_attendance_panel.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_live_location_control.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_event_manage_section.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_event_private_access_section.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_reviews_panel.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_roster_drawer.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_staff_section.dart';
@@ -47,7 +47,6 @@ import 'package:go_router/go_router.dart';
 
 export 'package:catch_dating_app/hosts/presentation/host_event_manage_screen_state.dart'
     show HostEventManageSection;
-
 part 'host_event_manage_route_screen.dart';
 
 CatchAsyncState<T>? _nullableCatchAsyncState<T>(AsyncValue<T>? value) =>

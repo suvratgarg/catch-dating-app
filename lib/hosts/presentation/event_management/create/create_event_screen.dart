@@ -115,6 +115,8 @@ class CreateEventScreen extends ConsumerStatefulWidget {
 }
 
 class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
+  void _setLocalState(VoidCallback callback) => setState(callback);
+
   late final PageController _pageController;
   int _currentStep = 0;
   bool _isReviewing = false;

@@ -10,7 +10,7 @@ extension _HostOperationalRosterActions on _HostOperationalRosterPanelState {
 
   Future<void> _loadProviderSetup({bool force = false}) async {
     if (!force && _providerSetup != null) return;
-    setState(() => _providerSetup = const AsyncLoading());
+    _setLocalState(() => _providerSetup = const AsyncLoading());
     try {
       final setup = await ref
           .read(hostOperationalRosterControllerProvider)
@@ -18,7 +18,7 @@ extension _HostOperationalRosterActions on _HostOperationalRosterPanelState {
             organizerId: widget.organizerId,
             eventId: widget.eventId,
           );
-      if (mounted) setState(() => _providerSetup = AsyncData(setup));
+      if (mounted) _setLocalState(() => _providerSetup = AsyncData(setup));
     } catch (error, stackTrace) {
       app_ops.logAppError(
         error,
@@ -31,7 +31,7 @@ extension _HostOperationalRosterActions on _HostOperationalRosterPanelState {
         logError: ref.read(errorLoggerProvider),
       );
       if (mounted) {
-        setState(() => _providerSetup = AsyncError(error, stackTrace));
+        _setLocalState(() => _providerSetup = AsyncError(error, stackTrace));
       }
     }
   }
@@ -46,7 +46,7 @@ extension _HostOperationalRosterActions on _HostOperationalRosterPanelState {
       ),
     );
     if (input == null || !mounted) return;
-    setState(() {
+    _setLocalState(() {
       _providerMutationPending = true;
       _mutationError = null;
     });
@@ -60,15 +60,15 @@ extension _HostOperationalRosterActions on _HostOperationalRosterPanelState {
             apiKey: input.apiKey,
           );
       if (!mounted) return;
-      setState(() => _providerSetup = AsyncData(setup));
+      _setLocalState(() => _providerSetup = AsyncData(setup));
       showCatchSnackBar(
         context,
         context.l10n.hostsOperationalRosterProviderConnected,
       );
     } catch (error) {
-      if (mounted) setState(() => _mutationError = error);
+      if (mounted) _setLocalState(() => _mutationError = error);
     } finally {
-      if (mounted) setState(() => _providerMutationPending = false);
+      if (mounted) _setLocalState(() => _providerMutationPending = false);
     }
   }
 
@@ -76,7 +76,7 @@ extension _HostOperationalRosterActions on _HostOperationalRosterPanelState {
     if (_providerMutationPending) return;
     final operationId = _providerSyncOperationId ??=
         _newProviderSyncOperationId();
-    setState(() {
+    _setLocalState(() {
       _providerMutationPending = true;
       _mutationError = null;
     });
@@ -102,9 +102,9 @@ extension _HostOperationalRosterActions on _HostOperationalRosterPanelState {
         ),
       );
     } catch (error) {
-      if (mounted) setState(() => _mutationError = error);
+      if (mounted) _setLocalState(() => _mutationError = error);
     } finally {
-      if (mounted) setState(() => _providerMutationPending = false);
+      if (mounted) _setLocalState(() => _providerMutationPending = false);
     }
   }
 
@@ -120,7 +120,7 @@ extension _HostOperationalRosterActions on _HostOperationalRosterPanelState {
       danger: true,
     );
     if (confirmed != true || !mounted) return;
-    setState(() {
+    _setLocalState(() {
       _providerMutationPending = true;
       _mutationError = null;
     });
@@ -132,16 +132,16 @@ extension _HostOperationalRosterActions on _HostOperationalRosterPanelState {
             eventId: widget.eventId,
             connectionId: connection.connectionId,
           );
-      if (mounted) setState(() => _providerSetup = AsyncData(next));
+      if (mounted) _setLocalState(() => _providerSetup = AsyncData(next));
     } catch (error) {
-      if (mounted) setState(() => _mutationError = error);
+      if (mounted) _setLocalState(() => _mutationError = error);
     } finally {
-      if (mounted) setState(() => _providerMutationPending = false);
+      if (mounted) _setLocalState(() => _providerMutationPending = false);
     }
   }
 
   Future<void> _pickRoster() async {
-    setState(() {
+    _setLocalState(() {
       _importing = true;
       _mutationError = null;
     });
@@ -172,7 +172,7 @@ extension _HostOperationalRosterActions on _HostOperationalRosterPanelState {
     } catch (error) {
       if (mounted) showCatchErrorSnackBar(context, error);
     } finally {
-      if (mounted) setState(() => _importing = false);
+      if (mounted) _setLocalState(() => _importing = false);
     }
   }
 
@@ -182,7 +182,7 @@ extension _HostOperationalRosterActions on _HostOperationalRosterPanelState {
       builder: (context) => const HostManualAttendeeSheet(),
     );
     if (row == null || !mounted) return;
-    setState(() {
+    _setLocalState(() {
       _importing = true;
       _mutationError = null;
     });
@@ -195,12 +195,12 @@ extension _HostOperationalRosterActions on _HostOperationalRosterPanelState {
     } catch (error) {
       if (mounted) showCatchErrorSnackBar(context, error);
     } finally {
-      if (mounted) setState(() => _importing = false);
+      if (mounted) _setLocalState(() => _importing = false);
     }
   }
 
   Future<void> _showRosterHandoff() async {
-    setState(() {
+    _setLocalState(() {
       _creatingHandoff = true;
       _mutationError = null;
     });
@@ -220,7 +220,7 @@ extension _HostOperationalRosterActions on _HostOperationalRosterPanelState {
     } catch (error) {
       if (mounted) showCatchErrorSnackBar(context, error);
     } finally {
-      if (mounted) setState(() => _creatingHandoff = false);
+      if (mounted) _setLocalState(() => _creatingHandoff = false);
     }
   }
 
@@ -230,7 +230,7 @@ extension _HostOperationalRosterActions on _HostOperationalRosterPanelState {
     String? attendeeId,
   }) async {
     if (_pendingClaimUid != null) return;
-    setState(() {
+    _setLocalState(() {
       _pendingClaimUid = claim.uid;
       _mutationError = null;
     });
@@ -253,9 +253,9 @@ extension _HostOperationalRosterActions on _HostOperationalRosterPanelState {
             : context.l10n.hostsOperationalRosterClaimRejected,
       );
     } catch (error) {
-      if (mounted) setState(() => _mutationError = error);
+      if (mounted) _setLocalState(() => _mutationError = error);
     } finally {
-      if (mounted) setState(() => _pendingClaimUid = null);
+      if (mounted) _setLocalState(() => _pendingClaimUid = null);
     }
   }
 
@@ -323,14 +323,14 @@ extension _HostOperationalRosterActions on _HostOperationalRosterPanelState {
         );
       }
     } catch (error) {
-      if (mounted) setState(() => _mutationError = error);
+      if (mounted) _setLocalState(() => _mutationError = error);
       rethrow;
     }
   }
 
   Future<void> _toggleAttendance(EventAttendee attendee) async {
     if (_pendingAttendanceId != null) return;
-    setState(() {
+    _setLocalState(() {
       _pendingAttendanceId = attendee.id;
       _mutationError = null;
     });
@@ -342,13 +342,13 @@ extension _HostOperationalRosterActions on _HostOperationalRosterPanelState {
             attendee: attendee,
             clientOperationId: _newAttendanceOperationId(attendee.id),
           );
-      if (mounted) setState(() => _attendanceOutbox = outbox);
+      if (mounted) _setLocalState(() => _attendanceOutbox = outbox);
       ref.invalidate(watchEventAttendeesProvider(widget.eventId));
       ref.invalidate(hostEventRosterInsightsProvider(widget.eventId));
     } catch (error) {
-      if (mounted) setState(() => _mutationError = error);
+      if (mounted) _setLocalState(() => _mutationError = error);
     } finally {
-      if (mounted) setState(() => _pendingAttendanceId = null);
+      if (mounted) _setLocalState(() => _pendingAttendanceId = null);
     }
   }
 
@@ -357,9 +357,9 @@ extension _HostOperationalRosterActions on _HostOperationalRosterPanelState {
       final outbox = await ref
           .read(hostOperationalRosterControllerProvider)
           .loadAttendanceOutbox(widget.eventId);
-      if (mounted) setState(() => _attendanceOutbox = outbox);
+      if (mounted) _setLocalState(() => _attendanceOutbox = outbox);
     } catch (error) {
-      if (mounted) setState(() => _mutationError = error);
+      if (mounted) _setLocalState(() => _mutationError = error);
     }
   }
 
@@ -369,11 +369,11 @@ extension _HostOperationalRosterActions on _HostOperationalRosterPanelState {
           .read(hostOperationalRosterControllerProvider)
           .flushAttendanceOutbox(widget.eventId);
       if (!mounted) return;
-      setState(() => _attendanceOutbox = outbox);
+      _setLocalState(() => _attendanceOutbox = outbox);
       ref.invalidate(watchEventAttendeesProvider(widget.eventId));
       ref.invalidate(hostEventRosterInsightsProvider(widget.eventId));
     } catch (error) {
-      if (mounted) setState(() => _mutationError = error);
+      if (mounted) _setLocalState(() => _mutationError = error);
     }
   }
 
@@ -382,9 +382,9 @@ extension _HostOperationalRosterActions on _HostOperationalRosterPanelState {
       final outbox = await ref
           .read(hostOperationalRosterControllerProvider)
           .clearAttendanceConflicts(widget.eventId);
-      if (mounted) setState(() => _attendanceOutbox = outbox);
+      if (mounted) _setLocalState(() => _attendanceOutbox = outbox);
     } catch (error) {
-      if (mounted) setState(() => _mutationError = error);
+      if (mounted) _setLocalState(() => _mutationError = error);
     }
   }
 }
