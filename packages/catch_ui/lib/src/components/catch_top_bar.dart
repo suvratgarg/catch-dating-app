@@ -330,6 +330,22 @@ class CatchTopBar extends StatefulWidget implements CatchScaledPreferredSize {
 
   double contentHeightFor(BuildContext context) {
     final original = isLarge ? largeHeight : height;
+    if (identityName?.isNotEmpty ?? false) {
+      return _heightFor(
+        context: context,
+        hasEyebrow: false,
+        hasSubtitle: false,
+        titleMaxLines: 1,
+        hasActions: false,
+        titleStyle: CatchTextStyles.titleL(context),
+        contentPadding:
+            CatchInsets.controlVerticalTight +
+            (contentPadding ?? EdgeInsets.zero).resolve(
+              Directionality.of(context),
+            ),
+        minimumHeight: original,
+      );
+    }
     if (search == null) return original;
     final searchHeight = CatchSearchField.heightFor(
       context,

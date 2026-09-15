@@ -173,7 +173,7 @@ void _registerHostOperationsClubWorkspaceTests() {
     expect(find.text('Check host setup'), findsNothing);
     expect(
       tester
-          .widget<HostTodayEventSpotlight>(find.byType(HostTodayEventSpotlight))
+          .widget<HostTodayEventSection>(find.byType(HostTodayEventSection))
           .event,
       hero,
     );
@@ -537,7 +537,7 @@ void _registerHostOperationsClubWorkspaceTests() {
     expect(find.text('Live'), findsNothing);
     expect(find.text('Past'), findsOneWidget);
     expect(find.text('SCHEDULE'), findsNothing);
-    expect(find.byType(HostTodayEventSpotlight), findsNothing);
+    expect(find.byType(HostTodayEventSection), findsNothing);
     expect(
       find.byKey(const ValueKey<String>('host-event-row-live-event')),
       findsOneWidget,
@@ -732,7 +732,7 @@ void _registerHostOperationsClubWorkspaceTests() {
     );
     expect(
       tester
-          .widget<HostTodayEventSpotlight>(find.byType(HostTodayEventSpotlight))
+          .widget<HostTodayEventSection>(find.byType(HostTodayEventSection))
           .event,
       ownedEvent,
     );
@@ -752,7 +752,7 @@ void _registerHostOperationsClubWorkspaceTests() {
     );
     expect(
       tester
-          .widget<HostTodayEventSpotlight>(find.byType(HostTodayEventSpotlight))
+          .widget<HostTodayEventSection>(find.byType(HostTodayEventSection))
           .event,
       hostedEvent,
     );

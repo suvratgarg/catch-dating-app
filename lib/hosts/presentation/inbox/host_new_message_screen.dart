@@ -165,7 +165,7 @@ class _HostNewMessageScreenState extends ConsumerState<HostNewMessageScreen> {
               ],
             ] else
               SliverToBoxAdapter(
-                child: _HostNewMessageRoutes(
+                child: HostNewMessageRouteSection(
                   organizerId: widget.organizerId,
                   contactId: _contactId!,
                   name: _name,
@@ -247,8 +247,9 @@ class _HostNewMessageScreenState extends ConsumerState<HostNewMessageScreen> {
   }
 }
 
-class _HostNewMessageRoutes extends ConsumerWidget {
-  const _HostNewMessageRoutes({
+class HostNewMessageRouteSection extends ConsumerWidget {
+  const HostNewMessageRouteSection({
+    super.key,
     required this.organizerId,
     required this.contactId,
     required this.name,

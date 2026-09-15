@@ -37,6 +37,22 @@ const _workspaceHeight = 560.0;
 const _emptyStateHeight = 320.0;
 
 @widgetbook.UseCase(
+  name: 'People and sends navigation',
+  type: HostMessagingWorkspaceTabBar,
+  path: '[P1 product surfaces]/Host/Inbox/Components',
+)
+Widget hostMessagingTabs(BuildContext context) =>
+    const _HostRoleBoundary(child: _HostInboxFrame());
+
+@widgetbook.UseCase(
+  name: 'Resolved scope and people',
+  type: HostInboxWorkspaceSection,
+  path: '[P1 product surfaces]/Host/Inbox/Components',
+)
+Widget hostInboxWorkspaceSection(BuildContext context) =>
+    const _HostRoleBoundary(child: _HostInboxFrame());
+
+@widgetbook.UseCase(
   name: 'Event-scoped states',
   type: HostInboxScreen,
   path: '[P1 product surfaces]/Host/Inbox',
@@ -172,14 +188,14 @@ Widget hostInboxScopeSelectorStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Audience control states',
-  type: HostInboxAudienceRail,
+  type: HostInboxAudienceInput,
   path: '[P1 product surfaces]/Host/Inbox/Components',
 )
 Widget hostInboxAudienceRailStates(BuildContext context) {
   final workspace = _workspace();
   return _HostRoleBoundary(
     child: _HostInboxCatalog(
-      title: 'HostInboxAudienceRail',
+      title: 'HostInboxAudienceInput',
       contractId: 'component.host.inbox_audience_rail',
       children: [
         _StateCard(
@@ -189,7 +205,7 @@ Widget hostInboxAudienceRailStates(BuildContext context) {
             child: Scaffold(
               body: CustomScrollView(
                 slivers: [
-                  HostInboxAudienceRail(
+                  HostInboxAudienceInput(
                     workspace: workspace,
                     onChanged: (_) {},
                   ),
@@ -205,14 +221,14 @@ Widget hostInboxAudienceRailStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Workspace states',
-  type: HostInboxWorkspaceSliver,
+  type: HostInboxPeopleSection,
   path: '[P1 product surfaces]/Host/Inbox/Components',
 )
 Widget hostInboxWorkspaceStates(BuildContext context) {
   final workspace = _workspace();
   return _HostRoleBoundary(
     child: _HostInboxCatalog(
-      title: 'HostInboxWorkspaceSliver',
+      title: 'HostInboxPeopleSection',
       contractId: 'component.host.inbox_workspace',
       children: [
         _StateCard(
@@ -222,7 +238,7 @@ Widget hostInboxWorkspaceStates(BuildContext context) {
             child: Scaffold(
               body: CustomScrollView(
                 slivers: [
-                  HostInboxWorkspaceSliver(
+                  HostInboxPeopleSection(
                     workspace: workspace,
                     now: HostInboxSurfaceFixtures.now,
                     onPersonSelected: (_) {},

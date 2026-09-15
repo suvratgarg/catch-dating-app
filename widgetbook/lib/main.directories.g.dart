@@ -221,6 +221,8 @@ import 'package:widgetbook_workspace/hosts/host_form_workspace_use_cases.dart'
     as _widgetbook_workspace_hosts_host_form_workspace_use_cases;
 import 'package:widgetbook_workspace/hosts/host_inbox_use_cases.dart'
     as _widgetbook_workspace_hosts_host_inbox_use_cases;
+import 'package:widgetbook_workspace/hosts/host_person_messaging_use_cases.dart'
+    as _widgetbook_workspace_hosts_host_person_messaging_use_cases;
 import 'package:widgetbook_workspace/hosts/host_roster_import_use_cases.dart'
     as _widgetbook_workspace_hosts_host_roster_import_use_cases;
 import 'package:widgetbook_workspace/hosts/host_saved_audience_use_cases.dart'
@@ -389,6 +391,8 @@ import 'package:widgetbook_workspace/primitives/contracts/root_screen.dart'
     as _widgetbook_workspace_primitives_contracts_root_screen;
 import 'package:widgetbook_workspace/primitives/contracts/roster.dart'
     as _widgetbook_workspace_primitives_contracts_roster;
+import 'package:widgetbook_workspace/primitives/contracts/row_composition.dart'
+    as _widgetbook_workspace_primitives_contracts_row_composition;
 import 'package:widgetbook_workspace/primitives/contracts/section.dart'
     as _widgetbook_workspace_primitives_contracts_section;
 import 'package:widgetbook_workspace/primitives/contracts/section_lists.dart'
@@ -3119,6 +3123,17 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'CatchFieldActivityNotification',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Field active handoff',
+                builder:
+                    _widgetbook_workspace_primitives_contracts_row_composition
+                        .catchFieldActivityContract,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'CatchFieldCommitButton',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -3189,6 +3204,17 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'CatchRowPressSurface',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Field-owned press states',
+                builder:
+                    _widgetbook_workspace_primitives_contracts_row_composition
+                        .catchInternalRowPressContract,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'CatchSearchField',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -3244,6 +3270,28 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Layout',
         children: [
           _widgetbook.WidgetbookComponent(
+            name: 'CatchContentSection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Non-row section header',
+                builder:
+                    _widgetbook_workspace_primitives_contracts_row_composition
+                        .catchContentSectionContract,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchContentSectionHeader',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Content-width rule',
+                builder:
+                    _widgetbook_workspace_primitives_contracts_row_composition
+                        .catchSectionHeaderContract,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'CatchFractionalViewport',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -3262,6 +3310,39 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_primitives_layout_motion_use_cases
                         .pagerFocusStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchRowSection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Typed row boundaries',
+                builder:
+                    _widgetbook_workspace_primitives_contracts_row_composition
+                        .catchRowSectionContract,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchRowViewport',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Pane interaction width',
+                builder:
+                    _widgetbook_workspace_primitives_contracts_row_composition
+                        .catchRowViewportContract,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchRowViewportScope',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Published pane width',
+                builder:
+                    _widgetbook_workspace_primitives_contracts_row_composition
+                        .catchRowViewportScopeContract,
               ),
             ],
           ),
@@ -3763,6 +3844,16 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Contract states',
                 builder: _widgetbook_workspace_primitives_contracts_messages
                     .catchPersonRowChatPreviewContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchPersonRowCopy',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Localized conversation copy',
+                builder: _widgetbook_workspace_primitives_contracts_messages
+                    .catchPersonRowCopyContract,
               ),
             ],
           ),
@@ -6461,6 +6552,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'EventSuccessAttendeeSpatialRow',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Contained spatial selection',
+                    builder:
+                        _widgetbook_workspace_event_success_host_live_components_use_cases
+                            .previewSpatialAttendeeRow,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'EventSuccessCompatibilitySection',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -8122,7 +8224,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                     ],
                   ),
                   _widgetbook.WidgetbookComponent(
-                    name: 'HostInboxAudienceRail',
+                    name: 'HostInboxAudienceInput',
                     useCases: [
                       _widgetbook.WidgetbookUseCase(
                         name: 'Audience control states',
@@ -8144,6 +8246,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                     ],
                   ),
                   _widgetbook.WidgetbookComponent(
+                    name: 'HostInboxPeopleSection',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Workspace states',
+                        builder:
+                            _widgetbook_workspace_hosts_host_inbox_use_cases
+                                .hostInboxWorkspaceStates,
+                      ),
+                    ],
+                  ),
+                  _widgetbook.WidgetbookComponent(
                     name: 'HostInboxScopeMenu',
                     useCases: [
                       _widgetbook.WidgetbookUseCase(
@@ -8155,13 +8268,24 @@ final directories = <_widgetbook.WidgetbookNode>[
                     ],
                   ),
                   _widgetbook.WidgetbookComponent(
-                    name: 'HostInboxWorkspaceSliver',
+                    name: 'HostInboxWorkspaceSection',
                     useCases: [
                       _widgetbook.WidgetbookUseCase(
-                        name: 'Workspace states',
+                        name: 'Resolved scope and people',
                         builder:
                             _widgetbook_workspace_hosts_host_inbox_use_cases
-                                .hostInboxWorkspaceStates,
+                                .hostInboxWorkspaceSection,
+                      ),
+                    ],
+                  ),
+                  _widgetbook.WidgetbookComponent(
+                    name: 'HostMessagingWorkspaceTabBar',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'People and sends navigation',
+                        builder:
+                            _widgetbook_workspace_hosts_host_inbox_use_cases
+                                .hostMessagingTabs,
                       ),
                     ],
                   ),
@@ -8206,6 +8330,66 @@ final directories = <_widgetbook.WidgetbookNode>[
                     name: 'Event-scoped states',
                     builder: _widgetbook_workspace_hosts_host_inbox_use_cases
                         .hostInboxEventScopedStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookFolder(
+                name: 'Person',
+                children: [
+                  _widgetbook.WidgetbookComponent(
+                    name: 'HostInboxPersonPageBody',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Selected person in workspace',
+                        builder:
+                            _widgetbook_workspace_hosts_host_person_messaging_use_cases
+                                .selectedPersonPreview,
+                      ),
+                    ],
+                  ),
+                  _widgetbook.WidgetbookComponent(
+                    name: 'HostNewMessageRouteSection',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Explicit available route',
+                        builder:
+                            _widgetbook_workspace_hosts_host_person_messaging_use_cases
+                                .newMessageRoutePreview,
+                      ),
+                    ],
+                  ),
+                  _widgetbook.WidgetbookComponent(
+                    name: 'HostNewMessageScreen',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Choose a person',
+                        builder:
+                            _widgetbook_workspace_hosts_host_person_messaging_use_cases
+                                .newMessagePersonPreview,
+                      ),
+                    ],
+                  ),
+                  _widgetbook.WidgetbookComponent(
+                    name: 'HostPersonConversationMenu',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Authorized conversation actions',
+                        builder:
+                            _widgetbook_workspace_hosts_host_person_messaging_use_cases
+                                .personConversationMenuPreview,
+                      ),
+                    ],
+                  ),
+                  _widgetbook.WidgetbookComponent(
+                    name: 'HostPersonConversationPageBody',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Catch and WhatsApp in one history',
+                        builder:
+                            _widgetbook_workspace_hosts_host_person_messaging_use_cases
+                                .personConversationPreview,
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -8958,7 +9142,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'HostTodayEventMetadata',
+                name: 'HostTodayEventMetadataRow',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Covered by Today route states',
@@ -8968,7 +9152,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'HostTodayEventMetric',
+                name: 'HostTodayEventMetricTile',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Operational metric states',
@@ -8978,7 +9162,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'HostTodayEventSpotlight',
+                name: 'HostTodayEventSection',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Operational spotlight states',
@@ -9669,6 +9853,16 @@ final directories = <_widgetbook.WidgetbookNode>[
                             .hostFormWorkspaceHeaderPreview,
                   ),
                 ],
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'HostAnalyticsPeriodInput',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Period remains available during loading',
+                builder: _widgetbook_workspace_hosts_operations_analytics
+                    .hostAnalyticsPeriodStates,
               ),
             ],
           ),
@@ -12127,6 +12321,16 @@ final directories = <_widgetbook.WidgetbookNode>[
       _widgetbook.WidgetbookFolder(
         name: 'Settings',
         children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'BlockedAccountsSection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contained people with unblock actions',
+                builder: _widgetbook_workspace_utility_settings
+                    .blockedAccountsSectionStates,
+              ),
+            ],
+          ),
           _widgetbook.WidgetbookComponent(
             name: 'CatchPersonLayout',
             useCases: [

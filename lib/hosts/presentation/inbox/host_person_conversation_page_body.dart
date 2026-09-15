@@ -13,8 +13,8 @@ import 'package:catch_dating_app/hosts/domain/crm/host_whatsapp_thread.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_conversation_history_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_people.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
-import 'package:catch_dating_app/hosts/presentation/inbox/host_person_conversation_actions.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_person_conversation_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/inbox/host_person_conversation_menu.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_reply_drafts.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
@@ -23,8 +23,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Embedded presentation: the route/workspace owns Scaffold and keyboard insets.
-class HostPersonConversationPane extends ConsumerStatefulWidget {
-  const HostPersonConversationPane({
+class HostPersonConversationPageBody extends ConsumerStatefulWidget {
+  const HostPersonConversationPageBody({
     super.key,
     required this.person,
     required this.scope,
@@ -38,12 +38,12 @@ class HostPersonConversationPane extends ConsumerStatefulWidget {
   final HostReplyDrafts drafts;
   final VoidCallback? onBack;
   @override
-  ConsumerState<HostPersonConversationPane> createState() =>
-      _HostPersonConversationPaneState();
+  ConsumerState<HostPersonConversationPageBody> createState() =>
+      _HostPersonConversationPageBodyState();
 }
 
-class _HostPersonConversationPaneState
-    extends ConsumerState<HostPersonConversationPane> {
+class _HostPersonConversationPageBodyState
+    extends ConsumerState<HostPersonConversationPageBody> {
   final _text = TextEditingController();
   String? _route;
   bool _sendingImage = false;
@@ -282,7 +282,7 @@ class _HostPersonConversationPaneState
             if (uid != null &&
                 person.linkedUid != null &&
                 catchMessages.isNotEmpty)
-              HostPersonConversationActions(
+              HostPersonConversationMenu(
                 key: ValueKey('${person.key}/actions'),
                 matchId: actionSource!,
                 currentUid: uid,
@@ -428,9 +428,6 @@ class _HostPersonConversationPaneState
           onSend: canSend
               ? () => _send(selected, uid, whatsappDetails[selected])
               : null,
-          disabledReason: canSend
-              ? null
-              : context.l10n.hostInboxRouteUnavailable,
         ),
       ],
     );

@@ -6,15 +6,15 @@ import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_catch_pages
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_people.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_whatsapp_pages_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/inbox/host_person_conversation.dart';
+import 'package:catch_dating_app/hosts/presentation/inbox/host_person_conversation_page_body.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_reply_drafts.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class HostInboxSelectedPerson extends ConsumerWidget {
-  const HostInboxSelectedPerson({
+class HostInboxPersonPageBody extends ConsumerWidget {
+  const HostInboxPersonPageBody({
     super.key,
     required this.organizerId,
     required this.selection,
@@ -70,7 +70,7 @@ class HostInboxSelectedPerson extends ConsumerWidget {
         .where((p) => p.containsEndpoint(selection))
         .firstOrNull;
     if (person != null && !waitingForScope) {
-      return HostPersonConversationPane(
+      return HostPersonConversationPageBody(
         key: ValueKey('${person.key}/${scope.eventId ?? 'general'}'),
         person: person,
         scope: scope,

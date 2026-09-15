@@ -11,8 +11,13 @@ double catchSectionContentGutter(double width) =>
     math.max(CatchSpacing.screenPx, (width - CatchLayout.maxContentWidth) / 2);
 
 /// Internal header boundary shared by row and non-row section recipes.
-class CatchSectionHeading extends StatelessWidget {
-  const CatchSectionHeading({super.key, this.title, this.count, this.trailing});
+class CatchContentSectionHeader extends StatelessWidget {
+  const CatchContentSectionHeader({
+    super.key,
+    this.title,
+    this.count,
+    this.trailing,
+  });
   final String? title;
   final Object? count;
   final Widget? trailing;
@@ -36,8 +41,8 @@ class CatchSectionHeading extends StatelessWidget {
 }
 
 /// Non-row content has a readable inset and no shared row recognizer.
-class CatchSectionContent extends StatelessWidget {
-  const CatchSectionContent({
+class CatchContentSection extends StatelessWidget {
+  const CatchContentSection({
     super.key,
     required this.child,
     this.title,
@@ -62,7 +67,7 @@ class CatchSectionContent extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             if (title != null || count != null || trailing != null) ...[
-              CatchSectionHeading(
+              CatchContentSectionHeader(
                 title: title,
                 count: count,
                 trailing: trailing,

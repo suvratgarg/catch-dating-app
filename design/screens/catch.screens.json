@@ -306,8 +306,8 @@
           "file": "lib/hosts/today/presentation/widgets/host_today_body.dart",
           "symbol": "HostTodayBody",
           "family": "root",
-          "expression": "CatchRootScreenScaffold.standard",
-          "bodyGeometry": "standard",
+          "expression": "CatchRootScreenScaffold.fullBleed",
+          "bodyGeometry": "full-bleed",
           "topEdge": "safe-area"
         },
         {
@@ -340,7 +340,7 @@
           "symbol": "_HostEventsClubSectionState",
           "family": "root",
           "expression": "CatchRootScreenScaffold.withPrimaryRail",
-          "bodyGeometry": "standard",
+          "bodyGeometry": "full-bleed",
           "topEdge": "safe-area"
         }
       ],
@@ -367,7 +367,7 @@
           "symbol": "_HostClubsScaffoldState",
           "family": "root",
           "expression": "CatchRootScreenScaffold.withPrimaryRail",
-          "bodyGeometry": "mixed",
+          "bodyGeometry": "full-bleed",
           "topEdge": "safe-area"
         },
         {
@@ -528,7 +528,7 @@
           "symbol": "_HostCustomersScreenState",
           "family": "root",
           "expression": "CatchRootScreenScaffold.withPrimaryRail",
-          "bodyGeometry": "standard",
+          "bodyGeometry": "full-bleed",
           "topEdge": "safe-area"
         },
         {
@@ -539,7 +539,7 @@
           "symbol": "_HostFormsScreenState",
           "family": "root",
           "expression": "CatchRootScreenScaffold.withPrimaryRail",
-          "bodyGeometry": "standard",
+          "bodyGeometry": "full-bleed",
           "topEdge": "safe-area"
         },
         {
@@ -18175,7 +18175,7 @@
             "layer": "section",
             "claudeComponents": [
               "HostInboxScopeMenu",
-              "HostInboxAudienceRail"
+              "HostInboxAudienceInput"
             ],
             "flutter": {
               "file": "lib/hosts/presentation/inbox/host_inbox_screen.dart",

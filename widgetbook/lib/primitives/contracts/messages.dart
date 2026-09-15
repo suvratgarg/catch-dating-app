@@ -1,7 +1,5 @@
-import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/chat_input_bar.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
-import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/activity_section.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/notifications/domain/activity_notification.dart';
@@ -12,6 +10,14 @@ import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 import 'package:widgetbook_workspace/support/contract_preview.dart';
 
 import '../../preview_layout_contracts.dart';
+
+@widgetbook.UseCase(
+  name: 'Localized conversation copy',
+  type: CatchPersonRowCopy,
+  path: '[Core primitives]/Product composites',
+)
+Widget catchPersonRowCopyContract(BuildContext context) =>
+    catchPersonRowChatPreviewContractStates(context);
 
 @widgetbook.UseCase(
   name: 'Contract states',

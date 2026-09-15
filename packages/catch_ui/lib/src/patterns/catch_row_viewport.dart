@@ -8,20 +8,24 @@ class CatchRowViewport extends StatelessWidget {
   @override
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, constraints) =>
-        _RowViewportExtent(width: constraints.maxWidth, child: child),
+        CatchRowViewportScope(width: constraints.maxWidth, child: child),
   );
 
   static bool matches(BuildContext context, double width) {
     final viewport = context
-        .dependOnInheritedWidgetOfExactType<_RowViewportExtent>();
+        .dependOnInheritedWidgetOfExactType<CatchRowViewportScope>();
     return viewport == null || (viewport.width - width).abs() < 0.5;
   }
 }
 
-class _RowViewportExtent extends InheritedWidget {
-  const _RowViewportExtent({required this.width, required super.child});
+class CatchRowViewportScope extends InheritedWidget {
+  const CatchRowViewportScope({
+    super.key,
+    required this.width,
+    required super.child,
+  });
   final double width;
   @override
-  bool updateShouldNotify(_RowViewportExtent oldWidget) =>
+  bool updateShouldNotify(CatchRowViewportScope oldWidget) =>
       width != oldWidget.width;
 }

@@ -14,8 +14,8 @@ enum _PersonAction { share, report, block }
 
 /// Keeps the existing Catch conversation actions available in the shared pane.
 /// The parent supplies only a currently authorized source and its messages.
-class HostPersonConversationActions extends ConsumerStatefulWidget {
-  const HostPersonConversationActions({
+class HostPersonConversationMenu extends ConsumerStatefulWidget {
+  const HostPersonConversationMenu({
     super.key,
     required this.matchId,
     required this.currentUid,
@@ -31,12 +31,12 @@ class HostPersonConversationActions extends ConsumerStatefulWidget {
   final List<ChatMessage> messages;
   final VoidCallback? onBlocked;
   @override
-  ConsumerState<HostPersonConversationActions> createState() =>
-      _HostPersonConversationActionsState();
+  ConsumerState<HostPersonConversationMenu> createState() =>
+      _HostPersonConversationMenuState();
 }
 
-class _HostPersonConversationActionsState
-    extends ConsumerState<HostPersonConversationActions> {
+class _HostPersonConversationMenuState
+    extends ConsumerState<HostPersonConversationMenu> {
   bool _busy = false;
   @override
   Widget build(BuildContext context) => CatchActionMenu<_PersonAction>(

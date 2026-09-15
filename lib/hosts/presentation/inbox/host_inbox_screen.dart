@@ -18,8 +18,8 @@ import 'package:catch_dating_app/hosts/data/crm/host_whatsapp_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_catch_pages_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_people.dart';
+import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_person_page_body.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_scope_menu.dart';
-import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_selected_person.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_whatsapp_pages_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_new_message_screen.dart';
@@ -33,7 +33,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-part 'host_inbox_collections.dart';
+part 'host_inbox_workspace_section.dart';
 
 enum HostMessagingWorkspace { inbox, campaigns }
 
@@ -143,7 +143,7 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
 
     Widget buildMaster(BuildContext context, bool splitView) {
       final workspaceSliver = isInbox
-          ? _HostInboxWorkspaceGroup(
+          ? HostInboxWorkspaceSection(
               uidState: uidState,
               uid: uid,
               clubsState: clubsState,
@@ -201,7 +201,7 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
             ],
           ),
         ),
-        actions: HostMessagingWorkspaceRail(
+        actions: HostMessagingWorkspaceTabBar(
           selected: _workspace,
           onChanged: _campaignBusy ? null : _selectWorkspace,
         ),
@@ -224,7 +224,7 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
             title: context.l10n.hostInboxSelectConversationTitle,
             message: context.l10n.hostInboxSelectConversationBody,
           )
-        : HostInboxSelectedPerson(
+        : HostInboxPersonPageBody(
             organizerId: selectedClub.id,
             selection: selectedThreadId,
             scope: _requestedScope,

@@ -1031,10 +1031,7 @@ final class CatchField<T> extends StatefulWidget
     emptyValueText: emptyValueText,
   );
 
-  /// Resolved copy supplied by the caller for the current locale.
   @override
-  CatchFieldCopy get copy =>
-      _copy ?? (throw StateError('This passive field has no editing copy.'));
   final CatchFieldCopy? _copy;
 
   /// Primary row text or input label.
@@ -1061,6 +1058,7 @@ final class CatchField<T> extends StatefulWidget
   final CatchFieldTone tone;
   @override
   final CatchFieldVariant variant;
+  @override
   final IconData? icon;
   final Color? iconColor;
 
@@ -1070,6 +1068,7 @@ final class CatchField<T> extends StatefulWidget
 
   /// Horizontal extent of caller-owned [leading] content. Sections use this
   /// to align dividers to the actual text lane instead of assuming icon size.
+  @override
   final double? leadingExtent;
 
   /// Caller-owned disabled and focus presentation; native focus stays local.

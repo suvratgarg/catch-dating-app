@@ -1,7 +1,8 @@
 part of 'host_inbox_screen.dart';
 
-class _HostInboxWorkspaceGroup extends ConsumerWidget {
-  const _HostInboxWorkspaceGroup({
+class HostInboxWorkspaceSection extends ConsumerWidget {
+  const HostInboxWorkspaceSection({
+    super.key,
     required this.uidState,
     required this.uid,
     required this.clubsState,
@@ -135,7 +136,7 @@ class _HostInboxWorkspaceGroup extends ConsumerWidget {
             onChanged: onScopeChanged,
           ),
         if (!workspace.isGeneral)
-          HostInboxAudienceRail(
+          HostInboxAudienceInput(
             workspace: workspace,
             people: people,
             complete: !partial && participations != null,
@@ -174,7 +175,7 @@ class _HostInboxWorkspaceGroup extends ConsumerWidget {
               ),
             ),
           ),
-        HostInboxWorkspaceSliver(
+        HostInboxPeopleSection(
           workspace: workspace,
           people: people,
           now: now,
@@ -220,9 +221,9 @@ class _HostInboxWorkspaceGroup extends ConsumerWidget {
   }
 }
 
-class HostMessagingWorkspaceRail extends StatelessWidget
+class HostMessagingWorkspaceTabBar extends StatelessWidget
     implements CatchPrimaryRail, CatchScaledPreferredSize {
-  const HostMessagingWorkspaceRail({
+  const HostMessagingWorkspaceTabBar({
     super.key,
     required this.selected,
     required this.onChanged,
@@ -252,8 +253,8 @@ class HostMessagingWorkspaceRail extends StatelessWidget
   );
 }
 
-class HostInboxAudienceRail extends StatelessWidget {
-  const HostInboxAudienceRail({
+class HostInboxAudienceInput extends StatelessWidget {
+  const HostInboxAudienceInput({
     super.key,
     required this.workspace,
     required this.onChanged,
@@ -306,8 +307,8 @@ class HostInboxAudienceRail extends StatelessWidget {
   }
 }
 
-class HostInboxWorkspaceSliver extends StatelessWidget {
-  const HostInboxWorkspaceSliver({
+class HostInboxPeopleSection extends StatelessWidget {
+  const HostInboxPeopleSection({
     super.key,
     required this.workspace,
     required this.people,

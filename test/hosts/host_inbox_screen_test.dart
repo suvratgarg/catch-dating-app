@@ -156,7 +156,7 @@ void main() {
       expect(find.byType(NestedScrollView), findsOneWidget);
       final topBar = tester.widget<CatchTopBar>(find.byType(CatchTopBar));
       expect(topBar.contentPadding, CatchInsets.primaryRailTitleBlock);
-      final rail = find.byType(HostMessagingWorkspaceRail);
+      final rail = find.byType(HostMessagingWorkspaceTabBar);
       final railBefore = tester.getRect(rail);
 
       await tester.drag(find.byType(CustomScrollView), const Offset(0, -600));
@@ -449,7 +449,7 @@ void main() {
     expect(find.byType(HostCampaignComposer), findsOneWidget);
     expect(find.text('MESSAGE PAST ATTENDEES'), findsOneWidget);
     expect(find.byType(HostInboxScopeMenu), findsNothing);
-    expect(find.byType(HostInboxAudienceRail), findsNothing);
+    expect(find.byType(HostInboxAudienceInput), findsNothing);
   });
 
   testWidgets('Follower update intent opens its composer', (tester) async {
@@ -668,7 +668,7 @@ void main() {
     await pumpFeatureUi(tester);
 
     expect(find.text('GENERAL INQUIRIES'), findsOneWidget);
-    expect(find.byType(HostInboxAudienceRail), findsNothing);
+    expect(find.byType(HostInboxAudienceInput), findsNothing);
   });
 
   testWidgets(
@@ -820,7 +820,7 @@ void main() {
     );
     await pumpFeatureUi(tester);
 
-    expect(find.byType(HostMessagingWorkspaceRail), findsOneWidget);
+    expect(find.byType(HostMessagingWorkspaceTabBar), findsOneWidget);
     expect(find.byType(HostCampaignComposer), findsOneWidget);
     expect(find.text('Lapsed customers · 12 people at last preview'), findsOne);
   });

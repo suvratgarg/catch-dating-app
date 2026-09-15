@@ -5,13 +5,13 @@ import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/hosts/today/domain/host_attention_item.dart';
 import 'package:catch_dating_app/hosts/today/presentation/host_today_state.dart';
-import 'package:catch_dating_app/hosts/today/presentation/widgets/host_today_event_spotlight.dart';
+import 'package:catch_dating_app/hosts/today/presentation/widgets/host_today_event_section.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
-export 'host_today_event_spotlight.dart';
+export 'host_today_event_section.dart';
 
 class HostTodayOverview extends StatelessWidget {
   const HostTodayOverview({
@@ -65,7 +65,7 @@ class HostTodayOverview extends StatelessWidget {
         children: [
           if (event != null)
             CatchSection.content(
-              child: HostTodayEventSpotlight(
+              child: HostTodayEventSection(
                 event: event,
                 now: now,
                 taskCount: taskCount,
@@ -170,7 +170,7 @@ class _HostTodayPrimaryPane extends StatelessWidget {
       children: [
         if (event != null) ...[
           CatchSection.content(
-            child: HostTodayEventSpotlight(
+            child: HostTodayEventSection(
               event: event!,
               now: now,
               taskCount: taskCount,

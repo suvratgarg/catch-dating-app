@@ -1345,6 +1345,14 @@ covers all handwritten app code, including shared widgets and 1 px literals;
 zero remains the explicit no-border value, while decorative `CustomPainter`
 artwork is outside this UI-boundary diagnostic.
 
+Closed Field layouts and secondary actions render only inside their owning
+Field library. The inventory's exact source/library/owner/method/return-type
+declarations in `tool/design/lib/owned_composition_renderers.mjs` recognize
+those renderer fragments and the two typed domain/route factories. They do
+not exempt sibling helpers, moved implementations, or generic Widget-returning
+factories. Mutation tests cover each identity dimension; resolved Catch UI
+lints separately enforce the primitive's construction and interaction boundary.
+
 Widget identity is checked globally rather than one folder at a time. The
 source-derived classification and new-widget gates scan `lib/**`,
 `apps/consumer/lib/**`, and `apps/host/lib/**` together, resolve widget ancestry

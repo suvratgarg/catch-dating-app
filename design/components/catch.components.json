@@ -4011,14 +4011,7 @@
               "decisionRef": "contract-family:catch.field"
             },
             "level": "L3",
-            "roleNoun": "Layout",
-            "naming": {
-              "useCase": "Field",
-              "comparedWith": [
-                "catch.field"
-              ],
-              "reason": "Sealed non-widget passive row content; implementations cannot own events, focus or perimeter geometry."
-            }
+            "roleNoun": "Layout"
           },
           {
             "id": "catch.field.record_layout",
@@ -4036,14 +4029,7 @@
               "decisionRef": "contract-family:catch.field"
             },
             "level": "L3",
-            "roleNoun": "Layout",
-            "naming": {
-              "useCase": "Record",
-              "comparedWith": [
-                "catch.field"
-              ],
-              "reason": "Record title, icon, metadata, facts and description rendered only by Field."
-            }
+            "roleNoun": "Layout"
           },
           {
             "id": "catch.field.person_layout",
@@ -4061,14 +4047,7 @@
               "decisionRef": "contract-family:catch.field"
             },
             "level": "L3",
-            "roleNoun": "Layout",
-            "naming": {
-              "useCase": "Person",
-              "comparedWith": [
-                "catch.field"
-              ],
-              "reason": "Person identity, avatar, supporting facts and passive status badges rendered only by Field."
-            }
+            "roleNoun": "Layout"
           },
           {
             "id": "catch.field.conversation_layout",
@@ -4086,14 +4065,7 @@
               "decisionRef": "contract-family:catch.field"
             },
             "level": "L3",
-            "roleNoun": "Layout",
-            "naming": {
-              "useCase": "Conversation",
-              "comparedWith": [
-                "catch.field"
-              ],
-              "reason": "Explicit conversation identity, preview, timestamp and caller-resolved exact or partial activity semantics."
-            }
+            "roleNoun": "Layout"
           },
           {
             "id": "catch.field.row_badge",
@@ -4111,14 +4083,7 @@
               "decisionRef": "contract-family:catch.field"
             },
             "level": "L3",
-            "roleNoun": "Badge",
-            "naming": {
-              "useCase": "Row",
-              "comparedWith": [
-                "catch.field"
-              ],
-              "reason": "Passive labelled status data; action targets belong to Field secondary actions."
-            }
+            "roleNoun": "Badge"
           },
           {
             "id": "catch.field.secondary_action",
@@ -4136,14 +4101,7 @@
               "decisionRef": "contract-family:catch.field"
             },
             "level": "L3",
-            "roleNoun": "Action",
-            "naming": {
-              "useCase": "FieldSecondary",
-              "comparedWith": [
-                "catch.field"
-              ],
-              "reason": "Closed action descriptions rendered as independent Field-owned targets."
-            }
+            "roleNoun": "Action"
           },
           {
             "id": "catch.field.rowpress",
@@ -4977,8 +4935,8 @@
           },
           {
             "id": "catch.section.rows",
-            "symbol": "CatchSectionRows",
-            "file": "packages/catch_ui/lib/src/components/catch_section_rows.dart",
+            "symbol": "CatchRowSection",
+            "file": "packages/catch_ui/lib/src/components/catch_row_section.dart",
             "summary": "Internal eager/lazy Field collection renderer. Resolves numeric leading lanes, suppresses active adjacent dividers and enforces page or pane width.",
             "states": [
               "default"
@@ -4991,9 +4949,9 @@
               "decisionRef": "contract-family:catch.section"
             },
             "level": "L3",
-            "roleNoun": "RowList",
+            "roleNoun": "Section",
             "naming": {
-              "useCase": "Section",
+              "useCase": "Row",
               "comparedWith": [
                 "catch.section"
               ],
@@ -5002,8 +4960,8 @@
           },
           {
             "id": "catch.section.content",
-            "symbol": "CatchSectionContent",
-            "file": "packages/catch_ui/lib/src/components/catch_section_content.dart",
+            "symbol": "CatchContentSection",
+            "file": "packages/catch_ui/lib/src/components/catch_content_section.dart",
             "summary": "Internal non-row content inset and section header renderer.",
             "states": [
               "default"
@@ -5018,7 +4976,7 @@
             "level": "L3",
             "roleNoun": "Section",
             "naming": {
-              "useCase": "Section",
+              "useCase": "Content",
               "comparedWith": [
                 "catch.section"
               ],
@@ -5027,8 +4985,8 @@
           },
           {
             "id": "catch.section.heading",
-            "symbol": "CatchSectionHeading",
-            "file": "packages/catch_ui/lib/src/components/catch_section_content.dart",
+            "symbol": "CatchContentSectionHeader",
+            "file": "packages/catch_ui/lib/src/components/catch_content_section.dart",
             "summary": "Shared section title and content-width rule for both row and non-row recipes.",
             "states": [
               "default"
@@ -5043,7 +5001,7 @@
             "level": "L3",
             "roleNoun": "Header",
             "naming": {
-              "useCase": "Section",
+              "useCase": "ContentSection",
               "comparedWith": [
                 "catch.section"
               ],
@@ -7761,7 +7719,7 @@
         "useCase": "Control",
         "comparedWith": [
           "catch.surface",
-          "catch.field"
+          "catch.field.rowpress"
         ],
         "reason": "Owns minimum interactive extents, stable focus/error borders, a disabled fill and optional button semantics. General surfaces own unconstrained containment; row press surfaces own hover, keyboard and press interaction."
       }
@@ -10092,6 +10050,31 @@
                 "catch.screen_body"
               ],
               "reason": "Internal width boundary published only by scaffold and pane owners; row sections verify their interaction extent against it."
+            }
+          },
+          {
+            "id": "catch.screen_body.row_scope",
+            "symbol": "CatchRowViewportScope",
+            "file": "packages/catch_ui/lib/src/patterns/catch_row_viewport.dart",
+            "summary": "Internal inherited width value owned by CatchRowViewport; consumers cannot publish a fabricated row perimeter.",
+            "states": [
+              "default"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.screen_body",
+              "parentConceptId": "catch.screen_body",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.screen_body"
+            },
+            "level": "L4",
+            "roleNoun": "Scope",
+            "naming": {
+              "useCase": "RowViewport",
+              "comparedWith": [
+                "catch.screen_body"
+              ],
+              "reason": "Internal inherited width value owned by CatchRowViewport; consumers cannot publish a fabricated row perimeter."
             }
           }
         ],
@@ -15876,9 +15859,9 @@
       "naming": {
         "useCase": "Meta",
         "comparedWith": [
-          "catch.field"
+          "catch.field.row"
         ],
-        "reason": "Compact passive facts use a single icon/label, compact entry, dot-separated flow or strong trailing value. RecordRow owns a heading, readable context and prose, with navigation and disclosure when a destination exists; those are a different row responsibility."
+        "reason": "Passive compact facts may appear inside larger content. Field row anatomy owns ordinary interaction and perimeter geometry; RecordLayout supplies descriptive title, facts and prose within that Field."
       }
     },
     {
@@ -16027,9 +16010,9 @@
       "naming": {
         "useCase": "Index",
         "comparedWith": [
-          "catch.field"
+          "catch.field.row"
         ],
-        "reason": "A compact directory/category entry owns one selectable command, optional passive adornments and a hairline separator. PersonRow owns identity and contact/message states; RecordRow presents descriptive facts and prose."
+        "reason": "Compact command and category entries remain the menu/navigation exception. Ordinary person and record collections use Field layouts in typed row sections."
       }
     },
     {

@@ -7,6 +7,7 @@ import 'package:catch_dating_app/event_success/domain/event_success_presence.dar
 import 'package:catch_dating_app/event_success/presentation/event_success_control_room_state.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_host_screen_state.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_live_reveal_card_state.dart';
+import 'package:catch_dating_app/event_success/presentation/event_success_room_map.dart';
 import 'package:catch_dating_app/event_success/presentation/host_components/event_success_activity_field_lanes.dart';
 import 'package:catch_dating_app/event_success/presentation/host_components/event_success_compatibility_section.dart';
 import 'package:catch_dating_app/event_success/presentation/host_components/event_success_host_help_section.dart';
@@ -29,6 +30,27 @@ import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
 import '../support/widgetbook_harness.dart';
+
+@widgetbook.UseCase(
+  name: 'Contained spatial selection',
+  type: EventSuccessAttendeeSpatialRow,
+  path: '[P1 product surfaces]/Event Success/Host live components',
+)
+Widget previewSpatialAttendeeRow(BuildContext context) =>
+    WidgetbookCatalogFrame(
+      title: 'Spatial attendee',
+      catalogId: 'Event Success Host live',
+      children: [
+        EventSuccessAttendeeSpatialRow(
+          assignment: EventSuccessCompanionFixtures.microPodAssignment,
+          profile: null,
+          selected: true,
+          pending: false,
+          canDrag: false,
+          onSelect: (_) async {},
+        ),
+      ],
+    );
 
 final _draft = EventSuccessHostDraft.fromFormat(
   EventSuccessCompanionFixtures.socialEvent.eventFormat,

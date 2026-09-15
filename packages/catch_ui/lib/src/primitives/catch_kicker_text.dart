@@ -19,7 +19,7 @@ class CatchKickerText extends StatelessWidget {
   final Color? color;
   final CatchKickerTextVariant variant;
   final TextAlign? textAlign;
-  final int maxLines;
+  final int? maxLines;
 
   static TextStyle styleOf(
     BuildContext context, {
@@ -47,7 +47,7 @@ class CatchKickerText extends StatelessWidget {
     return Text(
       label.toUpperCase(),
       maxLines: maxLines,
-      overflow: TextOverflow.ellipsis,
+      overflow: maxLines == null ? TextOverflow.clip : TextOverflow.ellipsis,
       textAlign: textAlign,
       style: styleOf(context, color: color, variant: variant),
     );

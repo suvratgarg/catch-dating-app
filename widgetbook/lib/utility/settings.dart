@@ -7,7 +7,6 @@ import 'package:catch_dating_app/design_fixtures/utility_surface_fixtures.dart';
 import 'package:catch_dating_app/public_profile/data/public_profiles_lookup.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/safety/data/safety_repository.dart';
-import 'package:catch_dating_app/safety/presentation/settings_account_state.dart';
 import 'package:catch_dating_app/safety/presentation/settings_controller.dart';
 import 'package:catch_dating_app/safety/presentation/settings_screen.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
@@ -23,6 +22,14 @@ import '../support/page_preview.dart';
 import '../support/widgetbook_harness.dart';
 import 'fixtures.dart';
 import 'preview.dart';
+
+@widgetbook.UseCase(
+  name: 'Contained people with unblock actions',
+  type: BlockedAccountsSection,
+  path: '[P3 utility surfaces]/Settings',
+)
+Widget blockedAccountsSectionStates(BuildContext context) =>
+    settingsScreenStates(context);
 
 @widgetbook.UseCase(
   name: 'Screen states',

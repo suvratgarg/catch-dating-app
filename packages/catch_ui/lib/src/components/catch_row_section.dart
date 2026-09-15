@@ -1,11 +1,11 @@
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/src/components/catch_content_section.dart';
 import 'package:catch_ui/src/components/catch_field.dart';
 import 'package:catch_ui/src/components/catch_field_activity_notification.dart';
 import 'package:catch_ui/src/components/catch_field_geometry_scope.dart';
 import 'package:catch_ui/src/components/catch_field_geometry_scope_mode.dart';
 import 'package:catch_ui/src/components/catch_field_geometry_scope_variant.dart';
 import 'package:catch_ui/src/components/catch_field_motion.dart';
-import 'package:catch_ui/src/components/catch_section_content.dart';
 import 'package:catch_ui/src/components/catch_section_surface.dart';
 import 'package:catch_ui/src/patterns/catch_row_viewport.dart';
 import 'package:catch_ui/src/primitives/catch_divider.dart';
@@ -20,8 +20,8 @@ final class _CatchSectionRowKey extends ValueKey<Object> {
 ///
 /// The box occupies the interaction plane. Gutters constrain its content, never
 /// its hit target. Lazy mode preserves the same geometry without eager widgets.
-class CatchSectionRows extends StatefulWidget {
-  const CatchSectionRows({
+class CatchRowSection extends StatefulWidget {
+  const CatchRowSection({
     super.key,
     required List<CatchField> this.children,
     this.title,
@@ -33,7 +33,7 @@ class CatchSectionRows extends StatefulWidget {
        itemBuilder = null,
        indexForKeyBuilder = null;
 
-  const CatchSectionRows.sliver({
+  const CatchRowSection.sliver({
     super.key,
     required int this._itemCount,
     required this.itemBuilder,
@@ -48,7 +48,7 @@ class CatchSectionRows extends StatefulWidget {
   /// Package-owned form coordinators retain draft/save state around a Field.
   /// Every descriptor carries the canonical icon lane; product code cannot
   /// supply a widget builder to the public row-section recipes.
-  const CatchSectionRows.form({
+  const CatchRowSection.form({
     super.key,
     required List<Widget> this.children,
     required double leadingInset,
@@ -74,15 +74,15 @@ class CatchSectionRows extends StatefulWidget {
   final bool contained;
 
   @override
-  State<CatchSectionRows> createState() => _CatchSectionRowsState();
+  State<CatchRowSection> createState() => _CatchRowSectionState();
 }
 
-class _CatchSectionRowsState extends State<CatchSectionRows> {
+class _CatchRowSectionState extends State<CatchRowSection> {
   final Set<Object> _active = {};
   final Map<int, Object> _identities = {};
 
   @override
-  void didUpdateWidget(CatchSectionRows oldWidget) {
+  void didUpdateWidget(CatchRowSection oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.children case final children?) {
       final identities = {
@@ -101,7 +101,7 @@ class _CatchSectionRowsState extends State<CatchSectionRows> {
     }
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: gutter),
-      child: CatchSectionHeading(
+      child: CatchContentSectionHeader(
         title: widget.title,
         count: widget.count,
         trailing: widget.trailing,

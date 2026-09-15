@@ -4,6 +4,7 @@ import 'package:analyzer/analysis_rule/rule_visitor_registry.dart';
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/ast/visitor.dart';
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/error/error.dart';
 
 /// Resolved ownership checks: aliases, prefixed imports and constructor tear-offs
@@ -90,7 +91,10 @@ class _RowVisitor extends SimpleAstVisitor<void> {
         '/lib/src/patterns/catch_master_detail_viewport.dart',
         '/lib/src/patterns/catch_section_list.dart',
       },
-      'CatchSectionRows' => const {'/lib/src/components/catch_section.dart'},
+      'CatchRowSection' => const {'/lib/src/components/catch_section.dart'},
+      'CatchRowViewportScope' => const {
+        '/lib/src/patterns/catch_row_viewport.dart',
+      },
       'CatchSection' when element?.name == 'formRows' => const {
         '/lib/src/patterns/catch_form_row_list.dart',
       },
@@ -115,6 +119,10 @@ class _RowVisitor extends SimpleAstVisitor<void> {
     final element = node.constructorName.element;
     checkInternal(node, element);
     if (isUi(element, 'CatchField')) {
+      final structured = node.argumentList.arguments
+          .whereType<NamedExpression>()
+          .any((argument) => argument.name.label.name == 'content');
+      var hasBoundary = owns(const {'/lib/src/components/catch_field.dart'});
       for (
         var ancestor = node.parent;
         ancestor != null;
@@ -122,10 +130,8 @@ class _RowVisitor extends SimpleAstVisitor<void> {
       ) {
         if (ancestor is InstanceCreationExpression &&
             isUi(ancestor.constructorName.element, 'CatchSection')) {
+          hasBoundary = true;
           final section = ancestor.constructorName.element?.name;
-          final structured = node.argumentList.arguments
-              .whereType<NamedExpression>()
-              .any((argument) => argument.name.label.name == 'content');
           if (section == 'content' ||
               structured &&
                   !const {
@@ -177,8 +183,29 @@ class _RowVisitor extends SimpleAstVisitor<void> {
           }
         }
         if (ancestor is FunctionDeclaration || ancestor is MethodDeclaration) {
+          final returnType = switch (ancestor) {
+            FunctionDeclaration() =>
+              ancestor.declaredFragment?.element.returnType,
+            MethodDeclaration() =>
+              ancestor.declaredFragment?.element.returnType,
+            _ => null,
+          };
+          // Typed factories retain the closed row contract at their call site.
+          hasBoundary =
+              hasBoundary ||
+              returnType is InterfaceType &&
+                  returnType.element.name == 'CatchField' &&
+                  returnType.element.library.uri.toString().startsWith(
+                    'package:catch_ui/',
+                  );
           break;
         }
+      }
+      if (structured && !hasBoundary) {
+        rule.reportAtNode(
+          node,
+          diagnosticCode: CatchRowOwnershipRules.sectionContent,
+        );
       }
     }
     if (isUi(element, 'CatchSection') &&

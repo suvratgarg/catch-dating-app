@@ -2,6 +2,7 @@
 // ignore_for_file: prefer_initializing_formals
 
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/src/components/catch_content_section.dart';
 import 'package:catch_ui/src/components/catch_divided_field_interaction_scope.dart';
 import 'package:catch_ui/src/components/catch_divided_field_interaction_scope_mode.dart';
 import 'package:catch_ui/src/components/catch_field.dart';
@@ -9,13 +10,12 @@ import 'package:catch_ui/src/components/catch_field_geometry_scope.dart';
 import 'package:catch_ui/src/components/catch_field_geometry_scope_mode.dart';
 import 'package:catch_ui/src/components/catch_field_geometry_scope_variant.dart';
 import 'package:catch_ui/src/components/catch_horizontal_scroll_view.dart';
-import 'package:catch_ui/src/components/catch_section_content.dart';
+import 'package:catch_ui/src/components/catch_row_section.dart';
 import 'package:catch_ui/src/components/catch_section_field_group.dart';
 import 'package:catch_ui/src/components/catch_section_header.dart';
 import 'package:catch_ui/src/components/catch_section_header_placement.dart';
 import 'package:catch_ui/src/components/catch_section_row_list.dart';
 import 'package:catch_ui/src/components/catch_section_row_list_mode.dart';
-import 'package:catch_ui/src/components/catch_section_rows.dart';
 import 'package:catch_ui/src/components/catch_section_surface.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:catch_ui/src/primitives/catch_divider.dart';
@@ -315,7 +315,7 @@ class CatchSection extends StatelessWidget {
   }) => CatchSection._rows(
     key: key,
     title: title,
-    rowSection: CatchSectionRows(
+    rowSection: CatchRowSection(
       title: title,
       count: count,
       trailing: trailing,
@@ -333,12 +333,12 @@ class CatchSection extends StatelessWidget {
   }) => CatchSection._rows(
     key: key,
     title: title,
-    rowSection: CatchSectionRows(
+    rowSection: CatchRowSection(
       title: title,
       count: count,
       trailing: trailing,
-      children: children,
       contained: true,
+      children: children,
     ),
   );
 
@@ -351,12 +351,12 @@ class CatchSection extends StatelessWidget {
     required List<Widget> children,
   }) => CatchSection._rows(
     title: title,
-    rowSection: CatchSectionRows.form(
+    rowSection: CatchRowSection.form(
       title: title,
       count: count,
       trailing: trailing,
-      children: children,
       leadingInset: CatchFieldTokens.textLaneInset,
+      children: children,
     ),
   );
 
@@ -371,7 +371,7 @@ class CatchSection extends StatelessWidget {
   }) => CatchSection._rows(
     key: key,
     title: title,
-    rowSection: CatchSectionContent(
+    rowSection: CatchContentSection(
       title: title,
       count: count,
       trailing: trailing,
@@ -391,7 +391,7 @@ class CatchSection extends StatelessWidget {
   }) => CatchSection._rows(
     key: key,
     title: title,
-    rowSection: CatchSectionRows.sliver(
+    rowSection: CatchRowSection.sliver(
       title: title,
       count: count,
       trailing: trailing,

@@ -1,6 +1,12 @@
 part of 'catch_field.dart';
 
 mixin _CatchFieldProperties implements CatchFieldDividerGeometry {
+  CatchFieldCopy? get _copy;
+
+  /// Resolved copy supplied by the caller for the current locale.
+  CatchFieldCopy get copy =>
+      _copy ?? (throw StateError('This passive field has no editing copy.'));
+
   Widget? get leading;
   Widget? get actions;
   IconData? get icon;

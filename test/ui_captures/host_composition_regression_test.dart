@@ -45,10 +45,25 @@ void main() {
             drive: (tester) async {
               await entry.drive?.call(tester);
               if (id == 'host_home_events_past' ||
-                  id == 'host_customers_populated') {
-                final fields = find.byType(CatchField);
+                  id == 'host_customers_populated' ||
+                  id == 'host_clubs_management') {
+                final fields = id == 'host_clubs_management'
+                    ? find.byWidgetPredicate(
+                        (widget) =>
+                            widget is CatchField &&
+                            widget.title == 'Organizer name',
+                      )
+                    : find.byType(CatchField);
                 expect(fields, findsWidgets);
                 final field = fields.first;
+                if (id == 'host_clubs_management') {
+                  await Scrollable.ensureVisible(
+                    tester.element(field),
+                    alignment: 0.35,
+                  );
+                  await tester.pump();
+                }
+                expect(field.hitTestable(), findsOneWidget);
                 final mouse = await tester.createGesture(
                   kind: PointerDeviceKind.mouse,
                 );

@@ -225,7 +225,7 @@ class _EventSuccessRoomMapState extends State<EventSuccessRoomMap> {
             title: context.l10n.eventSuccessRoomMapSelectAttendee,
             children: [
               for (final assignment in widget.assignments)
-                _EventSuccessAttendeeSpatialRow(
+                EventSuccessAttendeeSpatialRow(
                   assignment: assignment,
                   profile: profileByUid[assignment.uid],
                   selected: _selected?.uid == assignment.uid,

@@ -123,7 +123,7 @@ final class CatchPersonLayout extends CatchFieldLayout {
     final stacked =
         MediaQuery.textScalerOf(context).scale(1) >=
         CatchRecordTokens.largeTextBreakpoint;
-    Widget status() => Wrap(
+    final status = Wrap(
       spacing: CatchSpacing.s2,
       runSpacing: CatchSpacing.s2,
       children: [
@@ -152,7 +152,7 @@ final class CatchPersonLayout extends CatchFieldLayout {
                         constraints.maxWidth *
                         CatchRecordTokens.statusMaxWidthFraction,
                   ),
-                  child: status(),
+                  child: status,
                 ),
               ],
             ],
@@ -172,7 +172,7 @@ final class CatchPersonLayout extends CatchFieldLayout {
         ],
         if (badges.isNotEmpty && stacked) ...[
           const SizedBox(height: CatchRecordTokens.bodyGap),
-          status(),
+          status,
         ],
       ],
     );

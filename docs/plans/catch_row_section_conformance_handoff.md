@@ -47,7 +47,7 @@ The old public PersonRow, RecordRow, and RowPressSurface exports are removed.
 | Screen | Implemented composition | Domain ownership |
 |---|---|---|
 | Events | Shell -> browse header + stable Upcoming/Past tabs -> full-width root scroll -> lazy month Sections -> Field -> RecordLayout. A month has one content-width rule; row rules start at the text lane. | Event projection, filtering and date labels stay with Events. |
-| Audience | Shell -> browse header + People/Groups/Forms/Responses views -> view-owned search/filter/summary controls -> locally measured adaptive list/detail -> Sections -> Field -> PersonLayout or RecordLayout. | Audience owns contact identity, classification, saved groups and forms; the same measured pane width governs rendering and activation. |
+| Audience | Shell -> browse header + People/Audiences/Forms/Responses views -> view-owned search/filter/summary controls -> locally measured adaptive list/detail -> Sections -> Field -> PersonLayout or RecordLayout. | Audience owns contact identity, classification, saved audiences and forms; the same measured pane width governs rendering and activation. |
 | Organizer | Shell -> Edit/Insights/Preview tabs -> full-width section sequence. Edit uses media content, schema-backed FormRowList and settings rows. Insights places current-period controls before its async region and keeps lifetime totals distinct. | Organizer owns publication, validation, saving and period state. |
 | Today | Shell -> root scroll -> SectionList.panes(body:, trailing:) -> event spotlight, attention rows, bounded upcoming preview and actions. Each pane publishes its own interaction width. | Today projects operational evidence; unknown task totals remain partial, and checked-in people are not relabelled as attendees. |
 | Messaging | Shell -> Inbox/Sends views -> scope and audience controls -> adaptive person collection/detail. Inbox rows use ConversationLayout; New message pushes a person directory, then explicit available routes. Sends has one sealed history/intent/compose/report state. | Controllers own paging, recipient authorization and send operations. Person projection joins only verified organizer-scoped identities; drafts include person, scope and route. |
@@ -67,6 +67,13 @@ and outer row insets; page/pane extent assertions with rounded release fallback;
 package widget tests measuring paint, taps, divider offsets, containment, lazy
 construction, RTL and large text; production screen tests and rendered captures.
 No AST ancestry rule proves an opaque helper's runtime geometry by itself.
+
+Identity top bars publish a text-scaled preferred height. Section headers wrap
+within the content lane and keep the rule below the complete title. Messaging
+render tests exercise the directory, explicit routes, combined history and
+selected-person wrapper at normal and doubled text size. These checks caught
+and now guard the fixed-height identity-title overflow and long-heading
+truncation. Disabled composer guidance remains outside the input placeholder.
 
 The WhatsApp projection adds optional server-verified linked identity. Until the
 corresponding backend is deployed, missing identity keeps endpoints separate;
@@ -835,7 +842,7 @@ live-event priority and stable session boundary distinct from the clock.
 | `host_today_overview.dart`, `HostTodayAttentionSection`/`HostTodayEventRow` | Generic divided section → adapter → single field lane → Field | Direct typed row entries, canonical header/rules and one geometry owner. |
 | `_HostTodayWideLayout` | Hand-built two-lane Row with fixed-height decorative divider; no explicit pane interaction-plane reset | Reuse `CatchResponsiveSectionLayout` or extend its semantic primary/supporting layout; whole sections move together and each lane owns bounds. Keep one overview scroll owner. |
 | Spotlight `taskCount`, state mapping | Count is a plain integer even when attention is unavailable; can imply zero work beside an attention error | Carry an app-derived count/availability/freshness summary and render unknown/partial honestly. |
-| `HostTodayEventSpotlight` | Local contained flag, surface/dividers and fixed metric arrangement | Parent owns content-module presentation; shared passive metrics own content/reflow. Do not nest an already bordered metric strip blindly. |
+| `HostTodayEventSection` | Local contained flag, surface/dividers and fixed metric arrangement | Parent owns content-module presentation; shared passive metrics own content/reflow. Do not nest an already bordered metric strip blindly. |
 | Header/time/venue rendering | Uses event-title or monoLabel/uppercase roles for screen title and ordinary context | Canonical screen title and readable record/time roles; review actual captures before claiming a font asset defect. |
 | `_eventDayLabel` | Any evening event can be labelled Tonight without checking today's date | Localized feature formatter using injected clock, date and timezone. |
 | `_todayEventHeroTitle` / relative labels | Strips English weekday/period prefixes from stored title and hardcodes temporal words | Preserve the event title unless a deliberate display-title rule is approved; localize temporal facts outside the renderer. |
@@ -887,7 +894,7 @@ merely because a capability is intentionally outside the feed's coverage.
 `HostTodayAttentionCard` is a navigation Field, not a card: replace it with an
 entry mapper. `HostTodayEventDateBlock` renders an activity icon, not a date:
 replace with activity leading data or a correctly named feature visual.
-`HostTodayEventMetric` should use shared metric content. Replace `taskCount:int`
+`HostTodayEventMetricTile` should use shared metric content. Replace `taskCount:int`
 with a feature presentation summary containing count, availability and freshness;
 do not expose backend coverage enums directly through generic UI components.
 Remove unused display/fill props once consumer census proves they have no role.
@@ -921,7 +928,7 @@ Sources: `lib/hosts/presentation/inbox/host_inbox_screen.dart`,
 `lib/chats/presentation/chat_screen.dart`, its message/context/composer widgets,
 and `lib/routing/go_router.dart` (`hostInboxScreenForUri`).
 
-Keep the shared root scaffold, `HostMessagingWorkspaceRail`/`CatchTabRail`, the
+Keep the shared root scaffold, `HostMessagingWorkspaceTabBar`/`CatchTabRail`, the
 constraint-driven `CatchAdaptiveMasterDetailLayout`, per-thread draft behavior
 and existing channel/controller seams. The root product destination is currently
 Messaging, containing Inbox and Sends. Changing its label to Chat is a separate
@@ -946,7 +953,7 @@ Small sets may use anchored choices; larger/ambiguous sets need search and
 date disambiguation. Phone width alone does not require a bottom sheet.
 
 Booked/Prospective is a collection filter, not another navigation rail. Rename
-the wrapper `HostInboxAudienceRail` to `HostInboxSegmentFilters` and use the
+the wrapper `HostInboxAudienceInput` to `HostInboxSegmentFilters` and use the
 same semantic filter/count recipe as Audience. Current counts describe Catch
 inquiry threads; roster-backed announcement recipients are a separate count,
 and appended WhatsApp entries are not in those inquiry totals. **The new target

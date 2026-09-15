@@ -225,13 +225,13 @@ Widget _hostHomePreviewFor(BuildContext context, String focus) {
       onViewEvents: () {},
       onStartRehearsal: () {},
     ),
-    'HostTodayEventSpotlight' => HostTodayEventSpotlight(
+    'HostTodayEventSection' => HostTodayEventSection(
       event: event,
       now: HostOperationsFixtures.now,
       taskCount: tasks.length,
       onPressed: () {},
     ),
-    'HostTodayEventMetric' => const HostTodayEventMetric(
+    'HostTodayEventMetricTile' => const HostTodayEventMetricTile(
       value: '10',
       label: 'Going',
     ),

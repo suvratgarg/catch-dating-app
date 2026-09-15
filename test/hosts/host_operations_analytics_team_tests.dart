@@ -135,9 +135,9 @@ void _registerHostOperationsAnalyticsTeamTests() {
     expect(editScroll.pixels, greaterThan(0));
 
     await tester.tap(tab('Insights'));
-    await pumpUntilFound(tester, find.byType(HostAnalyticsPeriodControl));
+    await pumpUntilFound(tester, find.byType(HostAnalyticsPeriodInput));
     await pumpFeatureUi(tester);
-    expect(find.byType(HostAnalyticsPeriodControl), findsOneWidget);
+    expect(find.byType(HostAnalyticsPeriodInput), findsOneWidget);
 
     expectSharedChrome();
     expect(find.byType(HostClubInsightsPane), findsOneWidget);

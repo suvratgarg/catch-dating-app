@@ -13,6 +13,19 @@ import 'preview.dart';
 import 'shell_fixture.dart';
 
 @widgetbook.UseCase(
+  name: 'Period remains available during loading',
+  type: HostAnalyticsPeriodInput,
+  path: '[P1 product surfaces]/Host operations',
+)
+Widget hostAnalyticsPeriodStates(BuildContext context) =>
+    WidgetbookHostComponentFrame(
+      child: HostAnalyticsPeriodInput(
+        selected: HostClubInsightsRangePreset.thirtyDays,
+        onChanged: (_) {},
+      ),
+    );
+
+@widgetbook.UseCase(
   name: 'Insights scorecard states',
   type: HostClubInsightsPane,
   path: '[P1 product surfaces]/Host operations',

@@ -6,6 +6,39 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('section names wrap above the content-width rule at large text', (
+    tester,
+  ) async {
+    const title = 'Available ways to message this person';
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CatchTheme.dark,
+        home: Scaffold(
+          body: MediaQuery(
+            data: const MediaQueryData(textScaler: TextScaler.linear(2)),
+            child: SizedBox(
+              width: 390,
+              child: CatchSection.rows(
+                title: title,
+                children: const [
+                  CatchField.read(content: CatchPersonLayout(name: 'Riya')),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    final header = find.text(title.toUpperCase());
+    final paragraph = tester.renderObject<RenderParagraph>(header);
+    expect(paragraph.didExceedMaxLines, isFalse);
+    expect(
+      tester.getRect(header).bottom,
+      lessThan(tester.getRect(find.byType(CatchField)).top),
+    );
+    expect(tester.takeException(), isNull);
+  });
+
   Widget host(Widget child, {TextDirection direction = TextDirection.ltr}) =>
       MaterialApp(
         theme: CatchTheme.dark,

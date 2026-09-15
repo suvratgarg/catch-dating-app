@@ -9,8 +9,8 @@ import 'package:catch_dating_app/hosts/data/crm/host_whatsapp_repository.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_whatsapp_thread.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_people.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
-import 'package:catch_dating_app/hosts/presentation/inbox/host_person_conversation.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_person_conversation_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/inbox/host_person_conversation_page_body.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_reply_drafts.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -125,7 +125,7 @@ void main() {
       child: MaterialApp(
         theme: AppTheme.light,
         home: Scaffold(
-          body: HostPersonConversationPane(
+          body: HostPersonConversationPageBody(
             person: person,
             scope: const HostInboxScope.general(),
             drafts: drafts,

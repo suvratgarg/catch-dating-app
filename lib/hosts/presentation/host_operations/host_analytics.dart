@@ -72,7 +72,7 @@ class _HostClubInsightsPaneState extends ConsumerState<HostClubInsightsPane> {
     return CatchSectionList(
       emptyStateOmitted: true,
       children: [
-        HostAnalyticsPeriodControl(
+        HostAnalyticsPeriodInput(
           selected: _state.rangePreset,
           onChanged: (preset) =>
               setState(() => _state = _state.selectRange(preset)),
@@ -1085,43 +1085,4 @@ String _trendDetailPeriod(DateTime date, HostAnalyticsGranularity granularity) {
   return granularity == HostAnalyticsGranularity.month
       ? AppTimeFormatters.longMonth(date)
       : AppTimeFormatters.shortDate(date);
-}
-
-class HostAnalyticsPeriodControl extends StatelessWidget {
-  const HostAnalyticsPeriodControl({
-    super.key,
-    required this.selected,
-    required this.onChanged,
-  });
-  final HostClubInsightsRangePreset selected;
-  final ValueChanged<HostClubInsightsRangePreset> onChanged;
-  @override
-  Widget build(BuildContext context) => CatchSection.content(
-    title: context.l10n.hostsHostAnalyticsLabelPerformancePeriod,
-    child: CatchChoiceInput<HostClubInsightsRangePreset>.segmented(
-      contract:
-          CatchContractConstraints.hostAnalyticsQueryCallablePayloadRangePreset,
-      contractValueBuilder: (preset) => switch (preset) {
-        HostClubInsightsRangePreset.thirtyDays => '30d',
-        HostClubInsightsRangePreset.ninetyDays => '90d',
-        HostClubInsightsRangePreset.twelveMonths => '12m',
-      },
-      selected: selected,
-      onChanged: onChanged,
-      options: [
-        CatchOption(
-          value: HostClubInsightsRangePreset.thirtyDays,
-          label: context.l10n.hostsHostAnalyticsLabel30Days,
-        ),
-        CatchOption(
-          value: HostClubInsightsRangePreset.ninetyDays,
-          label: context.l10n.hostsHostAnalyticsLabel90Days,
-        ),
-        CatchOption(
-          value: HostClubInsightsRangePreset.twelveMonths,
-          label: context.l10n.hostsHostAnalyticsLabel12Months,
-        ),
-      ],
-    ),
-  );
 }

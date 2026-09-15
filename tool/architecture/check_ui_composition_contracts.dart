@@ -1007,6 +1007,7 @@ const _widgetBuilderOwnerSignatures = <String>{
   'AnimatedBuilder',
   'Builder',
   'CatchAsyncBoundary',
+  'CatchViewport.box',
   'FutureBuilder',
   'LayoutBuilder',
   'ListenableBuilder',

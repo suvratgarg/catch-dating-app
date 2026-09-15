@@ -7,8 +7,8 @@ import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
-class HostTodayEventSpotlight extends StatelessWidget {
-  const HostTodayEventSpotlight({
+class HostTodayEventSection extends StatelessWidget {
+  const HostTodayEventSection({
     super.key,
     required this.event,
     required this.now,
@@ -45,14 +45,14 @@ class HostTodayEventSpotlight extends StatelessWidget {
           style: CatchTextStyles.eventTitle(context, color: t.ink),
         ),
         gapH14,
-        HostTodayEventMetadata(event: event, now: now),
+        HostTodayEventMetadataRow(event: event, now: now),
         gapH20,
         const CatchDivider.section(),
         gapH20,
         Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            HostTodayEventMetric(
+            HostTodayEventMetricTile(
               value: taskCountIsComplete
                   ? context.l10n.hostsHostTodayVisiblecopyTaskcount(
                       taskCount: taskCount,
@@ -68,7 +68,7 @@ class HostTodayEventSpotlight extends StatelessWidget {
               accent: activity,
             ),
             gapH20,
-            HostTodayEventMetric(
+            HostTodayEventMetricTile(
               value: context.l10n.hostsHostTodayVisiblecopySignedupcount(
                 signedUpCount: event.signedUpCount,
               ),
@@ -109,8 +109,8 @@ class HostTodayEventSpotlight extends StatelessWidget {
   }
 }
 
-class HostTodayEventMetadata extends StatelessWidget {
-  const HostTodayEventMetadata({
+class HostTodayEventMetadataRow extends StatelessWidget {
+  const HostTodayEventMetadataRow({
     super.key,
     required this.event,
     required this.now,
@@ -156,8 +156,8 @@ class HostTodayEventMetadata extends StatelessWidget {
   }
 }
 
-class HostTodayEventMetric extends StatelessWidget {
-  const HostTodayEventMetric({
+class HostTodayEventMetricTile extends StatelessWidget {
+  const HostTodayEventMetricTile({
     super.key,
     required this.value,
     required this.label,

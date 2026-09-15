@@ -1,7 +1,8 @@
 part of 'event_success_room_map.dart';
 
-class _EventSuccessAttendeeSpatialRow extends StatelessWidget {
-  const _EventSuccessAttendeeSpatialRow({
+class EventSuccessAttendeeSpatialRow extends StatelessWidget {
+  const EventSuccessAttendeeSpatialRow({
+    super.key,
     required this.assignment,
     required this.profile,
     required this.selected,
