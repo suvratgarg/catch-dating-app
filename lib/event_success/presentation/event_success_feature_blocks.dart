@@ -12,6 +12,12 @@ import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
+part 'event_success_block_header.dart';
+part 'event_success_conversation_cue_row.dart';
+part 'event_success_live_step_row.dart';
+part 'event_success_module_toggle_row.dart';
+part 'event_success_progress_row.dart';
+
 const EdgeInsets _moduleToggleRowGap = EdgeInsets.only(bottom: CatchSpacing.s2);
 const EdgeInsets _moduleToggleContentPadding = EdgeInsets.fromLTRB(
   CatchSpacing.s3,
@@ -452,46 +458,6 @@ class EventSuccessPostEventReport extends StatelessWidget {
 
 String _eventSuccessFeaturePercent(double value) => '${(value * 100).round()}%';
 
-class BlockHeader extends StatelessWidget {
-  const BlockHeader({
-    super.key,
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-    required this.badge,
-  });
-
-  final IconData icon;
-  final String title;
-  final String subtitle;
-  final Widget badge;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Icon(icon, color: t.primary),
-            const SizedBox(width: CatchSpacing.s2),
-            Expanded(
-              child: Text(title, style: CatchTextStyles.titleL(context)),
-            ),
-            const SizedBox(width: CatchSpacing.s2),
-            badge,
-          ],
-        ),
-        const SizedBox(height: CatchSpacing.s2),
-        Text(subtitle, style: CatchTextStyles.supporting(context)),
-      ],
-    );
-  }
-}
-
 class PlaybookSummaryCard extends StatelessWidget {
   const PlaybookSummaryCard({super.key, required this.draft});
 
@@ -551,66 +517,6 @@ class PlaybookSummaryCard extends StatelessWidget {
   }
 }
 
-class ModuleToggleRow extends StatelessWidget {
-  const ModuleToggleRow({
-    super.key,
-    required this.module,
-    required this.selected,
-    required this.onChanged,
-  });
-
-  final EventSuccessModule module;
-  final bool selected;
-  final ValueChanged<bool> onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return Padding(
-      padding: _moduleToggleRowGap,
-      child: CatchSurface(
-        tone: selected ? CatchSurfaceTone.primarySoft : CatchSurfaceTone.raised,
-        radius: CatchRadius.sm,
-        borderColor: selected
-            ? t.surface.withValues(alpha: CatchOpacity.none)
-            : t.line,
-        padding: _moduleToggleContentPadding,
-        child: Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    module.title,
-                    style: CatchTextStyles.sectionTitle(context),
-                  ),
-                  const SizedBox(height: CatchSpacing.s1),
-                  Text(
-                    module.hostPromise,
-                    style: CatchTextStyles.supporting(context),
-                  ),
-                ],
-              ),
-            ),
-            CatchToggleInput(
-              contract: CatchContractConstraints
-                  .mobileFormStateEventSuccessModuleSelected,
-              value: selected,
-              onChanged: onChanged,
-              semanticLabel: context.l10n
-                  .eventSuccessEventSuccessFeatureBlocksLabelTitleTool(
-                    title: module.title,
-                  ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
 class IssueList extends StatelessWidget {
   const IssueList({super.key, required this.issues});
 
@@ -642,104 +548,6 @@ class IssueList extends StatelessWidget {
               padding: _issueListItemGap,
               child: Text(issue, style: CatchTextStyles.supporting(context)),
             ),
-        ],
-      ),
-    );
-  }
-}
-
-class ProgressRow extends StatelessWidget {
-  const ProgressRow({
-    super.key,
-    required this.label,
-    required this.value,
-    required this.detail,
-  });
-
-  final String label;
-  final double value;
-  final String detail;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Expanded(
-              child: Text(label, style: CatchTextStyles.sectionTitle(context)),
-            ),
-            Text(detail, style: CatchTextStyles.labelL(context)),
-          ],
-        ),
-        const SizedBox(height: CatchSpacing.s2),
-        ClipRRect(
-          borderRadius: BorderRadius.circular(CatchRadius.pill),
-          child: LinearProgressIndicator(
-            value: value,
-            minHeight: 8,
-            backgroundColor: t.raised,
-            valueColor: AlwaysStoppedAnimation<Color>(t.primary),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class LiveStepRow extends StatelessWidget {
-  const LiveStepRow({super.key, required this.step, required this.state});
-
-  final EventRunOfShowStep step;
-  final EventSuccessProgressStatus state;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final color = switch (state) {
-      EventSuccessProgressStatus.current => t.gold,
-      EventSuccessProgressStatus.complete => t.success,
-      EventSuccessProgressStatus.future => t.ink3,
-    };
-
-    return Padding(
-      padding: _liveStepRowGap,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(
-            switch (state) {
-              EventSuccessProgressStatus.complete =>
-                CatchIcons.checkCircleRounded,
-              EventSuccessProgressStatus.current =>
-                CatchIcons.radioButtonCheckedRounded,
-              EventSuccessProgressStatus.future =>
-                CatchIcons.radioButtonUncheckedRounded,
-            },
-            color: color,
-            size: CatchIcon.md,
-          ),
-          const SizedBox(width: CatchSpacing.s3),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(step.title, style: CatchTextStyles.sectionTitle(context)),
-                const SizedBox(height: CatchSpacing.s1),
-                Text(
-                  context.l10n
-                      .eventSuccessEventSuccessFeatureBlocksTextDurationminutesMinLabel(
-                        durationMinutes: step.durationMinutes,
-                        label: step.stage.label,
-                      ),
-                  style: CatchTextStyles.supporting(context),
-                ),
-              ],
-            ),
-          ),
         ],
       ),
     );
@@ -858,55 +666,6 @@ class EventSuccessConversationCueCard extends StatelessWidget {
           ),
           const SizedBox(height: CatchSpacing.s3),
           for (final cue in cues.take(3)) ConversationCueRow(cue: cue),
-        ],
-      ),
-    );
-  }
-}
-
-class ConversationCueRow extends StatelessWidget {
-  const ConversationCueRow({super.key, required this.cue});
-
-  final EventSuccessConversationCue cue;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Padding(
-      padding: _conversationCueRowGap,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: _conversationCueIconInset,
-            child: Icon(
-              CatchIcons.arrowForwardRounded,
-              size: CatchIcon.xs,
-              color: t.ink3,
-            ),
-          ),
-          const SizedBox(width: CatchSpacing.s2),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Wrap(
-                  spacing: CatchSpacing.s2,
-                  runSpacing: CatchSpacing.s1,
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  children: [
-                    Text(
-                      cue.title,
-                      style: CatchTextStyles.sectionTitle(context),
-                    ),
-                    CatchBadge(label: cue.contextLabel),
-                  ],
-                ),
-                const SizedBox(height: CatchSpacing.s1),
-                Text(cue.body, style: CatchTextStyles.supporting(context)),
-              ],
-            ),
-          ),
         ],
       ),
     );
