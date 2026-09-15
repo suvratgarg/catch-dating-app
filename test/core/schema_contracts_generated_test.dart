@@ -37,6 +37,21 @@ void main() {
           .toSet(),
       schema_contracts.EventAssistanceHostSurface.values.toSet(),
     );
+    expect(
+      schema_contracts.eventAssistanceWorkflowCatalog
+          .map((definition) => definition.resolutionBoundary)
+          .toSet(),
+      schema_contracts.EventAssistanceResolutionBoundary.values.toSet(),
+    );
+    for (final definition in schema_contracts.eventAssistanceWorkflowCatalog) {
+      expect(
+        definition.hasCommandContract,
+        definition.resolutionBoundary ==
+            schema_contracts
+                .EventAssistanceResolutionBoundary
+                .eventAssistanceCommand,
+      );
+    }
   });
 
   test('generated profile prompt constants match contract limits', () {

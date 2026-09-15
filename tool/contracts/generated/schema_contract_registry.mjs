@@ -204055,7 +204055,8 @@ export const eventAssistanceWorkflowCatalog = {
           "eventSetup"
         ],
         "presentation": "readinessTask"
-      }
+      },
+      "resolutionBoundary": "eventConfiguration"
     },
     {
       "kind": "routeReadiness",
@@ -204080,7 +204081,8 @@ export const eventAssistanceWorkflowCatalog = {
           "eventSetup"
         ],
         "presentation": "readinessTask"
-      }
+      },
+      "resolutionBoundary": "eventConfiguration"
     },
     {
       "kind": "formatReadiness",
@@ -204105,7 +204107,8 @@ export const eventAssistanceWorkflowCatalog = {
           "eventSetup"
         ],
         "presentation": "readinessTask"
-      }
+      },
+      "resolutionBoundary": "eventConfiguration"
     },
     {
       "kind": "rosterReadiness",
@@ -204134,7 +204137,8 @@ export const eventAssistanceWorkflowCatalog = {
           "eventSetup"
         ],
         "presentation": "readinessTask"
-      }
+      },
+      "resolutionBoundary": "eventAssistanceCommand"
     },
     {
       "kind": "requiredGuestData",
@@ -204164,7 +204168,8 @@ export const eventAssistanceWorkflowCatalog = {
           "eventSetup"
         ],
         "presentation": "readinessTask"
-      }
+      },
+      "resolutionBoundary": "eventAssistanceCommand"
     },
     {
       "kind": "resourceReadiness",
@@ -204191,7 +204196,8 @@ export const eventAssistanceWorkflowCatalog = {
           "eventSetup"
         ],
         "presentation": "readinessTask"
-      }
+      },
+      "resolutionBoundary": "eventAssistanceCommand"
     },
     {
       "kind": "staffingReadiness",
@@ -204218,7 +204224,8 @@ export const eventAssistanceWorkflowCatalog = {
           "eventSetup"
         ],
         "presentation": "readinessTask"
-      }
+      },
+      "resolutionBoundary": "eventAssistanceCommand"
     },
     {
       "kind": "messagingReadiness",
@@ -204243,7 +204250,8 @@ export const eventAssistanceWorkflowCatalog = {
           "eventSetup"
         ],
         "presentation": "readinessTask"
-      }
+      },
+      "resolutionBoundary": "messagingConfiguration"
     },
     {
       "kind": "admissionReview",
@@ -204270,7 +204278,8 @@ export const eventAssistanceWorkflowCatalog = {
           "eventSetup"
         ],
         "presentation": "readinessTask"
-      }
+      },
+      "resolutionBoundary": "eventAssistanceCommand"
     },
     {
       "kind": "financialReadiness",
@@ -204295,7 +204304,8 @@ export const eventAssistanceWorkflowCatalog = {
           "eventSetup"
         ],
         "presentation": "readinessTask"
-      }
+      },
+      "resolutionBoundary": "paymentConfiguration"
     },
     {
       "kind": "joiningInstructions",
@@ -204323,7 +204333,8 @@ export const eventAssistanceWorkflowCatalog = {
           "eventSetup"
         ],
         "presentation": "readinessTask"
-      }
+      },
+      "resolutionBoundary": "eventAssistanceCommand"
     },
     {
       "kind": "identityResolution",
@@ -204349,7 +204360,8 @@ export const eventAssistanceWorkflowCatalog = {
           "liveGuests"
         ],
         "presentation": "atomicAction"
-      }
+      },
+      "resolutionBoundary": "eventAssistanceCommand"
     },
     {
       "kind": "guestAdmission",
@@ -204375,7 +204387,8 @@ export const eventAssistanceWorkflowCatalog = {
           "liveGuests"
         ],
         "presentation": "atomicAction"
-      }
+      },
+      "resolutionBoundary": "eventAssistanceCommand"
     },
     {
       "kind": "guestCheckIn",
@@ -204401,7 +204414,8 @@ export const eventAssistanceWorkflowCatalog = {
           "liveGuests"
         ],
         "presentation": "atomicAction"
-      }
+      },
+      "resolutionBoundary": "eventAssistanceCommand"
     },
     {
       "kind": "lateJoin",
@@ -204436,7 +204450,8 @@ export const eventAssistanceWorkflowCatalog = {
           "liveGuests"
         ],
         "presentation": "exceptionQueue"
-      }
+      },
+      "resolutionBoundary": "eventAssistanceCommand"
     },
     {
       "kind": "participationChange",
@@ -204464,7 +204479,8 @@ export const eventAssistanceWorkflowCatalog = {
           "liveGuests"
         ],
         "presentation": "atomicAction"
-      }
+      },
+      "resolutionBoundary": "eventAssistanceCommand"
     },
     {
       "kind": "guestPrerequisite",
@@ -204493,7 +204509,8 @@ export const eventAssistanceWorkflowCatalog = {
           "liveGuests"
         ],
         "presentation": "exceptionQueue"
-      }
+      },
+      "resolutionBoundary": "eventAssistanceCommand"
     },
     {
       "kind": "allocationRepair",
@@ -204523,7 +204540,8 @@ export const eventAssistanceWorkflowCatalog = {
           "liveRoom"
         ],
         "presentation": "exceptionQueue"
-      }
+      },
+      "resolutionBoundary": "eventAssistanceCommand"
     },
     {
       "kind": "placementConfirmation",
@@ -204549,7 +204567,8 @@ export const eventAssistanceWorkflowCatalog = {
           "liveRoom"
         ],
         "presentation": "atomicAction"
-      }
+      },
+      "resolutionBoundary": "eventAssistanceCommand"
     },
     {
       "kind": "resourceRecovery",
@@ -204580,7 +204599,8 @@ export const eventAssistanceWorkflowCatalog = {
           "liveNow"
         ],
         "presentation": "exceptionQueue"
-      }
+      },
+      "resolutionBoundary": "eventAssistanceCommand"
     },
     {
       "kind": "fairParticipation",
@@ -204609,7 +204629,8 @@ export const eventAssistanceWorkflowCatalog = {
           "liveRoom"
         ],
         "presentation": "exceptionQueue"
-      }
+      },
+      "resolutionBoundary": "eventAssistanceCommand"
     },
     {
       "kind": "roundPublication",
@@ -204635,7 +204656,8 @@ export const eventAssistanceWorkflowCatalog = {
           "liveNow"
         ],
         "presentation": "statusControl"
-      }
+      },
+      "resolutionBoundary": "eventAssistanceCommand"
     },
     {
       "kind": "unitProgress",
@@ -204662,7 +204684,8 @@ export const eventAssistanceWorkflowCatalog = {
           "liveRoom"
         ],
         "presentation": "statusControl"
-      }
+      },
+      "resolutionBoundary": "eventAssistanceCommand"
     },
     {
       "kind": "outcomeRecording",
@@ -204688,7 +204711,8 @@ export const eventAssistanceWorkflowCatalog = {
           "liveNow"
         ],
         "presentation": "atomicAction"
-      }
+      },
+      "resolutionBoundary": "eventAssistanceCommand"
     },
     {
       "kind": "programmeRecovery",
@@ -204714,7 +204738,8 @@ export const eventAssistanceWorkflowCatalog = {
           "liveNow"
         ],
         "presentation": "statusControl"
-      }
+      },
+      "resolutionBoundary": "eventAssistanceCommand"
     },
     {
       "kind": "departure",
@@ -204741,7 +204766,8 @@ export const eventAssistanceWorkflowCatalog = {
           "liveGuests"
         ],
         "presentation": "atomicAction"
-      }
+      },
+      "resolutionBoundary": "eventAssistanceCommand"
     },
     {
       "kind": "checkpoint",
@@ -204773,7 +204799,8 @@ export const eventAssistanceWorkflowCatalog = {
           "liveGuests"
         ],
         "presentation": "exceptionQueue"
-      }
+      },
+      "resolutionBoundary": "eventAssistanceCommand"
     },
     {
       "kind": "groupTransfer",
@@ -204800,7 +204827,8 @@ export const eventAssistanceWorkflowCatalog = {
           "liveRoom"
         ],
         "presentation": "atomicAction"
-      }
+      },
+      "resolutionBoundary": "eventAssistanceCommand"
     },
     {
       "kind": "routeRecovery",
@@ -204827,7 +204855,8 @@ export const eventAssistanceWorkflowCatalog = {
           "liveRoom"
         ],
         "presentation": "exceptionQueue"
-      }
+      },
+      "resolutionBoundary": "eventAssistanceCommand"
     },
     {
       "kind": "locationFreshness",
@@ -204856,7 +204885,8 @@ export const eventAssistanceWorkflowCatalog = {
           "liveRoom"
         ],
         "presentation": "exceptionQueue"
-      }
+      },
+      "resolutionBoundary": "eventAssistanceCommand"
     },
     {
       "kind": "accountability",
@@ -204885,7 +204915,8 @@ export const eventAssistanceWorkflowCatalog = {
           "liveGuests"
         ],
         "presentation": "exceptionQueue"
-      }
+      },
+      "resolutionBoundary": "eventAssistanceCommand"
     },
     {
       "kind": "planChangeCommunication",
@@ -204911,7 +204942,8 @@ export const eventAssistanceWorkflowCatalog = {
           "liveNow"
         ],
         "presentation": "exceptionQueue"
-      }
+      },
+      "resolutionBoundary": "eventAssistanceCommand"
     },
     {
       "kind": "deliveryRecovery",
@@ -204939,7 +204971,8 @@ export const eventAssistanceWorkflowCatalog = {
           "liveNow"
         ],
         "presentation": "exceptionQueue"
-      }
+      },
+      "resolutionBoundary": "eventAssistanceCommand"
     },
     {
       "kind": "replyOwnership",
@@ -204968,7 +205001,8 @@ export const eventAssistanceWorkflowCatalog = {
           "liveGuests"
         ],
         "presentation": "exceptionQueue"
-      }
+      },
+      "resolutionBoundary": "eventAssistanceCommand"
     },
     {
       "kind": "guestAssistance",
@@ -204997,7 +205031,8 @@ export const eventAssistanceWorkflowCatalog = {
           "liveGuests"
         ],
         "presentation": "exceptionQueue"
-      }
+      },
+      "resolutionBoundary": "eventAssistanceCommand"
     },
     {
       "kind": "comfortSafety",
@@ -205026,7 +205061,8 @@ export const eventAssistanceWorkflowCatalog = {
           "liveGuests"
         ],
         "presentation": "exceptionQueue"
-      }
+      },
+      "resolutionBoundary": "eventAssistanceCommand"
     },
     {
       "kind": "attendanceSync",
@@ -205053,7 +205089,8 @@ export const eventAssistanceWorkflowCatalog = {
           "liveNow"
         ],
         "presentation": "exceptionQueue"
-      }
+      },
+      "resolutionBoundary": "eventAssistanceCommand"
     },
     {
       "kind": "concurrencyRecovery",
@@ -205081,7 +205118,8 @@ export const eventAssistanceWorkflowCatalog = {
           "liveNow"
         ],
         "presentation": "exceptionQueue"
-      }
+      },
+      "resolutionBoundary": "eventAssistanceCommand"
     },
     {
       "kind": "operationRecovery",
@@ -205109,7 +205147,8 @@ export const eventAssistanceWorkflowCatalog = {
           "liveNow"
         ],
         "presentation": "exceptionQueue"
-      }
+      },
+      "resolutionBoundary": "eventAssistanceCommand"
     },
     {
       "kind": "contextBoundary",
@@ -205133,7 +205172,8 @@ export const eventAssistanceWorkflowCatalog = {
           "liveNow"
         ],
         "presentation": "exceptionQueue"
-      }
+      },
+      "resolutionBoundary": "navigation"
     },
     {
       "kind": "overrideReview",
@@ -205159,7 +205199,8 @@ export const eventAssistanceWorkflowCatalog = {
           "liveNow"
         ],
         "presentation": "atomicAction"
-      }
+      },
+      "resolutionBoundary": "eventAssistanceCommand"
     },
     {
       "kind": "eventClosure",
@@ -205187,7 +205228,8 @@ export const eventAssistanceWorkflowCatalog = {
           "eventReport"
         ],
         "presentation": "statusControl"
-      }
+      },
+      "resolutionBoundary": "eventAssistanceCommand"
     },
     {
       "kind": "attendanceReconciliation",
@@ -205214,7 +205256,8 @@ export const eventAssistanceWorkflowCatalog = {
           "eventReport"
         ],
         "presentation": "exceptionQueue"
-      }
+      },
+      "resolutionBoundary": "eventAssistanceCommand"
     },
     {
       "kind": "financialReconciliation",
@@ -205243,7 +205286,8 @@ export const eventAssistanceWorkflowCatalog = {
           "eventReport"
         ],
         "presentation": "exceptionQueue"
-      }
+      },
+      "resolutionBoundary": "eventAssistanceCommand"
     },
     {
       "kind": "postEventFollowUp",
@@ -205273,7 +205317,8 @@ export const eventAssistanceWorkflowCatalog = {
           "eventReport"
         ],
         "presentation": "exceptionQueue"
-      }
+      },
+      "resolutionBoundary": "eventAssistanceCommand"
     },
     {
       "kind": "eventLearning",
@@ -205297,7 +205342,8 @@ export const eventAssistanceWorkflowCatalog = {
           "eventReport"
         ],
         "presentation": "reportInsight"
-      }
+      },
+      "resolutionBoundary": "reportReview"
     }
   ]
 };

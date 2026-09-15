@@ -99,21 +99,23 @@ contracts and Dart vocabularies must be regenerated together; the schema check
 requires complete catalog/configuration coverage.
 
 Each catalog definition also names its actor-specific automatic, Host and guest
-commands, its override policy, and the Host surfaces and presentation that own
-the workflow. The catalog therefore answers both "what can happen?" and "where
-does the Host handle it?" without making a runtime executor implicit. Contract
-validation requires every command kind to appear in at least one workflow and
-every workflow to have a valid Host projection. TypeScript compilation proves
-that automatic, Host and guest command lists agree with command authority; the
-generated Dart descriptor exposes the same closed relation to Today, setup,
-live Now, live Guests, live Room and report code.
+commands, its override policy, its resolution boundary, and the Host surfaces
+and presentation that own the workflow. The catalog therefore answers "what can
+happen?", "where does the Host handle it?", and "which domain resolves it?"
+without making a runtime executor implicit. Contract validation requires every
+command kind to appear in at least one workflow and every workflow to have a
+valid Host projection. TypeScript compilation proves that automatic, Host and
+guest command lists agree with command authority; the generated Dart descriptor
+exposes the same closed relation to Today, setup, live Now, live Guests, live
+Room and report code.
 
-Seven workflows intentionally have no command contract yet:
-`venueReadiness`, `routeReadiness`, `formatReadiness`,
-`messagingReadiness`, `financialReadiness`, `contextBoundary` and
-`eventLearning`. Their empty lists are checked source evidence of an
-implementation gap, rather than an inferred no-op or a claim that descriptive
-catalog coverage is executable.
+Seven workflows intentionally resolve through existing product domains instead
+of duplicating Event Assistance commands. Venue, route and format readiness use
+event configuration; messaging readiness uses messaging configuration;
+financial readiness uses payment configuration; context boundary uses
+navigation; and event learning uses report review. Their empty command lists
+and explicit external resolution boundaries are checked together. All other
+workflows use `eventAssistanceCommand` and must name at least one command.
 
 `functions/src/eventSuccess/operations/` owns the pure policy evaluators and
 command-boundary validation. The late-join evaluator accepts explicit time,
@@ -2579,13 +2581,13 @@ delivery and attendance-closeout state without widening provider authority.
 With the shared execution and SMS/WhatsApp/RCS boundaries in source, the next
 implementation sequence is:
 
-1. Add the seven missing domain commands and register policy evaluators against
-   authoritative source facts. The remaining mapped workflows still require
-   their concrete executor registration; catalog membership alone is not
-   executable coverage.
-2. Bind unresolved workflow occurrences to the mapped Today, setup, live Now,
-   live Guests, live Room and report projections. A surface mapping does not
-   manufacture readiness or occurrence state.
+1. Register concrete policy executors for mapped `eventAssistanceCommand`
+   workflows against authoritative source facts. Catalog membership alone is
+   not executable coverage.
+2. Bind externally owned resolution boundaries and unresolved workflow
+   occurrences to the mapped Today, setup, live Now, live Guests, live Room and
+   report projections. A surface mapping does not manufacture readiness or
+   occurrence state.
 3. Complete audited consent and sender/budget onboarding, verify SMS, WhatsApp
    and RCS activation, integrate and deploy, and verify the journey on device.
 

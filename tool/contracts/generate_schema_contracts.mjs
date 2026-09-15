@@ -5326,6 +5326,9 @@ function renderDartEventAssistanceCatalog({
   const overridePolicies = [...new Set(
     catalog.definitions.map((row) => row.overridePolicy)
   )];
+  const resolutionBoundaries = [...new Set(
+    catalog.definitions.map((row) => row.resolutionBoundary)
+  )];
   const surfaces = [...new Set(catalog.definitions.flatMap(
     (row) => row.hostProjection.surfaces
   ))];
@@ -5358,6 +5361,9 @@ function renderDartEventAssistanceCatalog({
     `    overridePolicy: EventAssistanceOverridePolicy.${
       lowerCamelCase(row.overridePolicy)
     },\n` +
+    `    resolutionBoundary:\n        EventAssistanceResolutionBoundary.${
+      lowerCamelCase(row.resolutionBoundary)
+    },\n` +
     "    hostProjection: EventAssistanceHostProjection(\n" +
     `      surfaces: ${enumList(
       "EventAssistanceHostSurface",
@@ -5385,6 +5391,8 @@ ${enumText("EventAssistanceWorkflowScope", scopes)}
 
 ${enumText("EventAssistanceOverridePolicy", overridePolicies)}
 
+${enumText("EventAssistanceResolutionBoundary", resolutionBoundaries)}
+
 ${enumText("EventAssistanceHostSurface", surfaces)}
 
 ${enumText("EventAssistanceHostPresentation", presentations)}
@@ -5410,6 +5418,7 @@ final class EventAssistanceWorkflowDescriptor {
     required this.hostCommands,
     required this.guestCommands,
     required this.overridePolicy,
+    required this.resolutionBoundary,
     required this.hostProjection,
   });
 
@@ -5422,6 +5431,7 @@ final class EventAssistanceWorkflowDescriptor {
   final List<EventAssistanceCommandKind> hostCommands;
   final List<EventAssistanceCommandKind> guestCommands;
   final EventAssistanceOverridePolicy overridePolicy;
+  final EventAssistanceResolutionBoundary resolutionBoundary;
   final EventAssistanceHostProjection hostProjection;
 
   bool get hasCommandContract =>

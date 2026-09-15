@@ -59,6 +59,8 @@ export type ApplicabilityRule =
   (typeof workflowDefinitions)[number]["applicability"];
 export type HostSurface =
   (typeof workflowDefinitions)[number]["hostProjection"]["surfaces"][number];
+export type ResolutionBoundary =
+  (typeof workflowDefinitions)[number]["resolutionBoundary"];
 
 export function workflowDefinitionsForSurface(
   surface: HostSurface
@@ -71,9 +73,7 @@ export function workflowDefinitionsForSurface(
 export function workflowHasCommandContract(
   definition: (typeof workflowDefinitions)[number]
 ): boolean {
-  return definition.commands.automatic.length > 0 ||
-    definition.commands.host.length > 0 ||
-    definition.commands.guest.length > 0;
+  return definition.resolutionBoundary === "eventAssistanceCommand";
 }
 
 /** Derived per phase/unit from the saved format and explicit requirements. */

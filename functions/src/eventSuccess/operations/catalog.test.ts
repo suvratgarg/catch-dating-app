@@ -49,21 +49,29 @@ test("catalog accounts for every command kind", () => {
   );
 });
 
-test("workflows without a command contract stay explicit", () => {
-  assert.deepEqual(
+test("every workflow names its command or external resolution boundary", () => {
+  const externallyResolved = Object.fromEntries(
     workflowDefinitions
       .filter((definition) => !workflowHasCommandContract(definition))
-      .map((definition) => definition.kind),
-    [
-      "venueReadiness",
-      "routeReadiness",
-      "formatReadiness",
-      "messagingReadiness",
-      "financialReadiness",
-      "contextBoundary",
-      "eventLearning",
-    ]
+      .map((definition) => [definition.kind, definition.resolutionBoundary])
   );
+  assert.deepEqual(
+    externallyResolved,
+    {
+      venueReadiness: "eventConfiguration",
+      routeReadiness: "eventConfiguration",
+      formatReadiness: "eventConfiguration",
+      messagingReadiness: "messagingConfiguration",
+      financialReadiness: "paymentConfiguration",
+      contextBoundary: "navigation",
+      eventLearning: "reportReview",
+    }
+  );
+  for (const definition of workflowDefinitions) {
+    const commandCount = Object.values(definition.commands)
+      .reduce((total, commands) => total + commands.length, 0);
+    assert.equal(workflowHasCommandContract(definition), commandCount > 0);
+  }
 });
 
 test("every Host surface has an exhaustive filtered projection", () => {

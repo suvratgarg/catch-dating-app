@@ -186,6 +186,14 @@ function checkEventAssistanceContracts(parsed) {
   const referencedCommandKinds = new Set();
   const commandRoles = ["automatic", "host", "guest"];
   const overridePolicies = new Set(["none", "scopedReasonedExpiring"]);
+  const resolutionBoundaries = new Set([
+    "eventAssistanceCommand",
+    "eventConfiguration",
+    "messagingConfiguration",
+    "paymentConfiguration",
+    "navigation",
+    "reportReview",
+  ]);
   const hostSurfaces = new Set([
     "today",
     "eventSetup",
@@ -219,6 +227,14 @@ function checkEventAssistanceContracts(parsed) {
         continue;
       }
       for (const kind of values) referencedCommandKinds.add(kind);
+    }
+    const hasCommandContract = commandRoles.some(
+      (role) => commandMap[role].length > 0
+    );
+    if (!resolutionBoundaries.has(row.resolutionBoundary) ||
+        (row.resolutionBoundary === "eventAssistanceCommand") !==
+          hasCommandContract) {
+      fail("Invalid workflow resolution boundary: " + workflow);
     }
     if (!overridePolicies.has(row.overridePolicy)) {
       fail("Invalid workflow override policy: " + workflow);

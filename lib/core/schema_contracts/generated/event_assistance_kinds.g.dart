@@ -123,6 +123,15 @@ enum EventAssistanceWorkflowScope { any, guest, resource, unit, group }
 
 enum EventAssistanceOverridePolicy { none, scopedReasonedExpiring }
 
+enum EventAssistanceResolutionBoundary {
+  eventConfiguration,
+  eventAssistanceCommand,
+  messagingConfiguration,
+  paymentConfiguration,
+  navigation,
+  reportReview,
+}
+
 enum EventAssistanceHostSurface {
   today,
   eventSetup,
@@ -161,6 +170,7 @@ final class EventAssistanceWorkflowDescriptor {
     required this.hostCommands,
     required this.guestCommands,
     required this.overridePolicy,
+    required this.resolutionBoundary,
     required this.hostProjection,
   });
 
@@ -173,6 +183,7 @@ final class EventAssistanceWorkflowDescriptor {
   final List<EventAssistanceCommandKind> hostCommands;
   final List<EventAssistanceCommandKind> guestCommands;
   final EventAssistanceOverridePolicy overridePolicy;
+  final EventAssistanceResolutionBoundary resolutionBoundary;
   final EventAssistanceHostProjection hostProjection;
 
   bool get hasCommandContract =>
@@ -192,6 +203,8 @@ const eventAssistanceWorkflowCatalog = <EventAssistanceWorkflowDescriptor>[
     hostCommands: <EventAssistanceCommandKind>[],
     guestCommands: <EventAssistanceCommandKind>[],
     overridePolicy: EventAssistanceOverridePolicy.none,
+    resolutionBoundary:
+        EventAssistanceResolutionBoundary.eventConfiguration,
     hostProjection: EventAssistanceHostProjection(
       surfaces: <EventAssistanceHostSurface>[
         EventAssistanceHostSurface.today,
@@ -210,6 +223,8 @@ const eventAssistanceWorkflowCatalog = <EventAssistanceWorkflowDescriptor>[
     hostCommands: <EventAssistanceCommandKind>[],
     guestCommands: <EventAssistanceCommandKind>[],
     overridePolicy: EventAssistanceOverridePolicy.none,
+    resolutionBoundary:
+        EventAssistanceResolutionBoundary.eventConfiguration,
     hostProjection: EventAssistanceHostProjection(
       surfaces: <EventAssistanceHostSurface>[
         EventAssistanceHostSurface.today,
@@ -228,6 +243,8 @@ const eventAssistanceWorkflowCatalog = <EventAssistanceWorkflowDescriptor>[
     hostCommands: <EventAssistanceCommandKind>[],
     guestCommands: <EventAssistanceCommandKind>[],
     overridePolicy: EventAssistanceOverridePolicy.none,
+    resolutionBoundary:
+        EventAssistanceResolutionBoundary.eventConfiguration,
     hostProjection: EventAssistanceHostProjection(
       surfaces: <EventAssistanceHostSurface>[
         EventAssistanceHostSurface.today,
@@ -250,6 +267,8 @@ const eventAssistanceWorkflowCatalog = <EventAssistanceWorkflowDescriptor>[
     ],
     guestCommands: <EventAssistanceCommandKind>[],
     overridePolicy: EventAssistanceOverridePolicy.none,
+    resolutionBoundary:
+        EventAssistanceResolutionBoundary.eventAssistanceCommand,
     hostProjection: EventAssistanceHostProjection(
       surfaces: <EventAssistanceHostSurface>[
         EventAssistanceHostSurface.today,
@@ -273,6 +292,8 @@ const eventAssistanceWorkflowCatalog = <EventAssistanceWorkflowDescriptor>[
     ],
     guestCommands: <EventAssistanceCommandKind>[],
     overridePolicy: EventAssistanceOverridePolicy.scopedReasonedExpiring,
+    resolutionBoundary:
+        EventAssistanceResolutionBoundary.eventAssistanceCommand,
     hostProjection: EventAssistanceHostProjection(
       surfaces: <EventAssistanceHostSurface>[
         EventAssistanceHostSurface.today,
@@ -293,6 +314,8 @@ const eventAssistanceWorkflowCatalog = <EventAssistanceWorkflowDescriptor>[
     ],
     guestCommands: <EventAssistanceCommandKind>[],
     overridePolicy: EventAssistanceOverridePolicy.none,
+    resolutionBoundary:
+        EventAssistanceResolutionBoundary.eventAssistanceCommand,
     hostProjection: EventAssistanceHostProjection(
       surfaces: <EventAssistanceHostSurface>[
         EventAssistanceHostSurface.today,
@@ -313,6 +336,8 @@ const eventAssistanceWorkflowCatalog = <EventAssistanceWorkflowDescriptor>[
     ],
     guestCommands: <EventAssistanceCommandKind>[],
     overridePolicy: EventAssistanceOverridePolicy.none,
+    resolutionBoundary:
+        EventAssistanceResolutionBoundary.eventAssistanceCommand,
     hostProjection: EventAssistanceHostProjection(
       surfaces: <EventAssistanceHostSurface>[
         EventAssistanceHostSurface.today,
@@ -331,6 +356,8 @@ const eventAssistanceWorkflowCatalog = <EventAssistanceWorkflowDescriptor>[
     hostCommands: <EventAssistanceCommandKind>[],
     guestCommands: <EventAssistanceCommandKind>[],
     overridePolicy: EventAssistanceOverridePolicy.none,
+    resolutionBoundary:
+        EventAssistanceResolutionBoundary.messagingConfiguration,
     hostProjection: EventAssistanceHostProjection(
       surfaces: <EventAssistanceHostSurface>[
         EventAssistanceHostSurface.today,
@@ -351,6 +378,8 @@ const eventAssistanceWorkflowCatalog = <EventAssistanceWorkflowDescriptor>[
     ],
     guestCommands: <EventAssistanceCommandKind>[],
     overridePolicy: EventAssistanceOverridePolicy.none,
+    resolutionBoundary:
+        EventAssistanceResolutionBoundary.eventAssistanceCommand,
     hostProjection: EventAssistanceHostProjection(
       surfaces: <EventAssistanceHostSurface>[
         EventAssistanceHostSurface.today,
@@ -369,6 +398,8 @@ const eventAssistanceWorkflowCatalog = <EventAssistanceWorkflowDescriptor>[
     hostCommands: <EventAssistanceCommandKind>[],
     guestCommands: <EventAssistanceCommandKind>[],
     overridePolicy: EventAssistanceOverridePolicy.none,
+    resolutionBoundary:
+        EventAssistanceResolutionBoundary.paymentConfiguration,
     hostProjection: EventAssistanceHostProjection(
       surfaces: <EventAssistanceHostSurface>[
         EventAssistanceHostSurface.today,
@@ -390,6 +421,8 @@ const eventAssistanceWorkflowCatalog = <EventAssistanceWorkflowDescriptor>[
     hostCommands: <EventAssistanceCommandKind>[],
     guestCommands: <EventAssistanceCommandKind>[],
     overridePolicy: EventAssistanceOverridePolicy.none,
+    resolutionBoundary:
+        EventAssistanceResolutionBoundary.eventAssistanceCommand,
     hostProjection: EventAssistanceHostProjection(
       surfaces: <EventAssistanceHostSurface>[
         EventAssistanceHostSurface.today,
@@ -410,6 +443,8 @@ const eventAssistanceWorkflowCatalog = <EventAssistanceWorkflowDescriptor>[
     ],
     guestCommands: <EventAssistanceCommandKind>[],
     overridePolicy: EventAssistanceOverridePolicy.none,
+    resolutionBoundary:
+        EventAssistanceResolutionBoundary.eventAssistanceCommand,
     hostProjection: EventAssistanceHostProjection(
       surfaces: <EventAssistanceHostSurface>[
         EventAssistanceHostSurface.liveGuests,
@@ -429,6 +464,8 @@ const eventAssistanceWorkflowCatalog = <EventAssistanceWorkflowDescriptor>[
     ],
     guestCommands: <EventAssistanceCommandKind>[],
     overridePolicy: EventAssistanceOverridePolicy.none,
+    resolutionBoundary:
+        EventAssistanceResolutionBoundary.eventAssistanceCommand,
     hostProjection: EventAssistanceHostProjection(
       surfaces: <EventAssistanceHostSurface>[
         EventAssistanceHostSurface.liveGuests,
@@ -448,6 +485,8 @@ const eventAssistanceWorkflowCatalog = <EventAssistanceWorkflowDescriptor>[
     ],
     guestCommands: <EventAssistanceCommandKind>[],
     overridePolicy: EventAssistanceOverridePolicy.none,
+    resolutionBoundary:
+        EventAssistanceResolutionBoundary.eventAssistanceCommand,
     hostProjection: EventAssistanceHostProjection(
       surfaces: <EventAssistanceHostSurface>[
         EventAssistanceHostSurface.liveGuests,
@@ -475,6 +514,8 @@ const eventAssistanceWorkflowCatalog = <EventAssistanceWorkflowDescriptor>[
       EventAssistanceCommandKind.setJoinIntent,
     ],
     overridePolicy: EventAssistanceOverridePolicy.none,
+    resolutionBoundary:
+        EventAssistanceResolutionBoundary.eventAssistanceCommand,
     hostProjection: EventAssistanceHostProjection(
       surfaces: <EventAssistanceHostSurface>[
         EventAssistanceHostSurface.liveNow,
@@ -497,6 +538,8 @@ const eventAssistanceWorkflowCatalog = <EventAssistanceWorkflowDescriptor>[
       EventAssistanceCommandKind.setParticipation,
     ],
     overridePolicy: EventAssistanceOverridePolicy.none,
+    resolutionBoundary:
+        EventAssistanceResolutionBoundary.eventAssistanceCommand,
     hostProjection: EventAssistanceHostProjection(
       surfaces: <EventAssistanceHostSurface>[
         EventAssistanceHostSurface.liveGuests,
@@ -519,6 +562,8 @@ const eventAssistanceWorkflowCatalog = <EventAssistanceWorkflowDescriptor>[
     ],
     guestCommands: <EventAssistanceCommandKind>[],
     overridePolicy: EventAssistanceOverridePolicy.scopedReasonedExpiring,
+    resolutionBoundary:
+        EventAssistanceResolutionBoundary.eventAssistanceCommand,
     hostProjection: EventAssistanceHostProjection(
       surfaces: <EventAssistanceHostSurface>[
         EventAssistanceHostSurface.liveGuests,
@@ -542,6 +587,8 @@ const eventAssistanceWorkflowCatalog = <EventAssistanceWorkflowDescriptor>[
     ],
     guestCommands: <EventAssistanceCommandKind>[],
     overridePolicy: EventAssistanceOverridePolicy.scopedReasonedExpiring,
+    resolutionBoundary:
+        EventAssistanceResolutionBoundary.eventAssistanceCommand,
     hostProjection: EventAssistanceHostProjection(
       surfaces: <EventAssistanceHostSurface>[
         EventAssistanceHostSurface.liveRoom,
@@ -561,6 +608,8 @@ const eventAssistanceWorkflowCatalog = <EventAssistanceWorkflowDescriptor>[
     ],
     guestCommands: <EventAssistanceCommandKind>[],
     overridePolicy: EventAssistanceOverridePolicy.none,
+    resolutionBoundary:
+        EventAssistanceResolutionBoundary.eventAssistanceCommand,
     hostProjection: EventAssistanceHostProjection(
       surfaces: <EventAssistanceHostSurface>[
         EventAssistanceHostSurface.liveRoom,
@@ -584,6 +633,8 @@ const eventAssistanceWorkflowCatalog = <EventAssistanceWorkflowDescriptor>[
     ],
     guestCommands: <EventAssistanceCommandKind>[],
     overridePolicy: EventAssistanceOverridePolicy.none,
+    resolutionBoundary:
+        EventAssistanceResolutionBoundary.eventAssistanceCommand,
     hostProjection: EventAssistanceHostProjection(
       surfaces: <EventAssistanceHostSurface>[
         EventAssistanceHostSurface.liveRoom,
@@ -607,6 +658,8 @@ const eventAssistanceWorkflowCatalog = <EventAssistanceWorkflowDescriptor>[
     ],
     guestCommands: <EventAssistanceCommandKind>[],
     overridePolicy: EventAssistanceOverridePolicy.scopedReasonedExpiring,
+    resolutionBoundary:
+        EventAssistanceResolutionBoundary.eventAssistanceCommand,
     hostProjection: EventAssistanceHostProjection(
       surfaces: <EventAssistanceHostSurface>[
         EventAssistanceHostSurface.liveRoom,
@@ -626,6 +679,8 @@ const eventAssistanceWorkflowCatalog = <EventAssistanceWorkflowDescriptor>[
     ],
     guestCommands: <EventAssistanceCommandKind>[],
     overridePolicy: EventAssistanceOverridePolicy.none,
+    resolutionBoundary:
+        EventAssistanceResolutionBoundary.eventAssistanceCommand,
     hostProjection: EventAssistanceHostProjection(
       surfaces: <EventAssistanceHostSurface>[
         EventAssistanceHostSurface.liveNow,
@@ -645,6 +700,8 @@ const eventAssistanceWorkflowCatalog = <EventAssistanceWorkflowDescriptor>[
     ],
     guestCommands: <EventAssistanceCommandKind>[],
     overridePolicy: EventAssistanceOverridePolicy.none,
+    resolutionBoundary:
+        EventAssistanceResolutionBoundary.eventAssistanceCommand,
     hostProjection: EventAssistanceHostProjection(
       surfaces: <EventAssistanceHostSurface>[
         EventAssistanceHostSurface.liveNow,
@@ -665,6 +722,8 @@ const eventAssistanceWorkflowCatalog = <EventAssistanceWorkflowDescriptor>[
     ],
     guestCommands: <EventAssistanceCommandKind>[],
     overridePolicy: EventAssistanceOverridePolicy.none,
+    resolutionBoundary:
+        EventAssistanceResolutionBoundary.eventAssistanceCommand,
     hostProjection: EventAssistanceHostProjection(
       surfaces: <EventAssistanceHostSurface>[
         EventAssistanceHostSurface.liveNow,
@@ -684,6 +743,8 @@ const eventAssistanceWorkflowCatalog = <EventAssistanceWorkflowDescriptor>[
     ],
     guestCommands: <EventAssistanceCommandKind>[],
     overridePolicy: EventAssistanceOverridePolicy.none,
+    resolutionBoundary:
+        EventAssistanceResolutionBoundary.eventAssistanceCommand,
     hostProjection: EventAssistanceHostProjection(
       surfaces: <EventAssistanceHostSurface>[
         EventAssistanceHostSurface.liveNow,
@@ -703,6 +764,8 @@ const eventAssistanceWorkflowCatalog = <EventAssistanceWorkflowDescriptor>[
     ],
     guestCommands: <EventAssistanceCommandKind>[],
     overridePolicy: EventAssistanceOverridePolicy.none,
+    resolutionBoundary:
+        EventAssistanceResolutionBoundary.eventAssistanceCommand,
     hostProjection: EventAssistanceHostProjection(
       surfaces: <EventAssistanceHostSurface>[
         EventAssistanceHostSurface.liveNow,
@@ -728,6 +791,8 @@ const eventAssistanceWorkflowCatalog = <EventAssistanceWorkflowDescriptor>[
     ],
     guestCommands: <EventAssistanceCommandKind>[],
     overridePolicy: EventAssistanceOverridePolicy.none,
+    resolutionBoundary:
+        EventAssistanceResolutionBoundary.eventAssistanceCommand,
     hostProjection: EventAssistanceHostProjection(
       surfaces: <EventAssistanceHostSurface>[
         EventAssistanceHostSurface.liveNow,
@@ -748,6 +813,8 @@ const eventAssistanceWorkflowCatalog = <EventAssistanceWorkflowDescriptor>[
     ],
     guestCommands: <EventAssistanceCommandKind>[],
     overridePolicy: EventAssistanceOverridePolicy.none,
+    resolutionBoundary:
+        EventAssistanceResolutionBoundary.eventAssistanceCommand,
     hostProjection: EventAssistanceHostProjection(
       surfaces: <EventAssistanceHostSurface>[
         EventAssistanceHostSurface.liveGuests,
@@ -768,6 +835,8 @@ const eventAssistanceWorkflowCatalog = <EventAssistanceWorkflowDescriptor>[
     ],
     guestCommands: <EventAssistanceCommandKind>[],
     overridePolicy: EventAssistanceOverridePolicy.none,
+    resolutionBoundary:
+        EventAssistanceResolutionBoundary.eventAssistanceCommand,
     hostProjection: EventAssistanceHostProjection(
       surfaces: <EventAssistanceHostSurface>[
         EventAssistanceHostSurface.liveNow,
@@ -790,6 +859,8 @@ const eventAssistanceWorkflowCatalog = <EventAssistanceWorkflowDescriptor>[
     ],
     guestCommands: <EventAssistanceCommandKind>[],
     overridePolicy: EventAssistanceOverridePolicy.none,
+    resolutionBoundary:
+        EventAssistanceResolutionBoundary.eventAssistanceCommand,
     hostProjection: EventAssistanceHostProjection(
       surfaces: <EventAssistanceHostSurface>[
         EventAssistanceHostSurface.liveNow,
@@ -812,6 +883,8 @@ const eventAssistanceWorkflowCatalog = <EventAssistanceWorkflowDescriptor>[
     ],
     guestCommands: <EventAssistanceCommandKind>[],
     overridePolicy: EventAssistanceOverridePolicy.none,
+    resolutionBoundary:
+        EventAssistanceResolutionBoundary.eventAssistanceCommand,
     hostProjection: EventAssistanceHostProjection(
       surfaces: <EventAssistanceHostSurface>[
         EventAssistanceHostSurface.liveNow,
@@ -832,6 +905,8 @@ const eventAssistanceWorkflowCatalog = <EventAssistanceWorkflowDescriptor>[
     hostCommands: <EventAssistanceCommandKind>[],
     guestCommands: <EventAssistanceCommandKind>[],
     overridePolicy: EventAssistanceOverridePolicy.none,
+    resolutionBoundary:
+        EventAssistanceResolutionBoundary.eventAssistanceCommand,
     hostProjection: EventAssistanceHostProjection(
       surfaces: <EventAssistanceHostSurface>[
         EventAssistanceHostSurface.liveNow,
@@ -853,6 +928,8 @@ const eventAssistanceWorkflowCatalog = <EventAssistanceWorkflowDescriptor>[
     ],
     guestCommands: <EventAssistanceCommandKind>[],
     overridePolicy: EventAssistanceOverridePolicy.none,
+    resolutionBoundary:
+        EventAssistanceResolutionBoundary.eventAssistanceCommand,
     hostProjection: EventAssistanceHostProjection(
       surfaces: <EventAssistanceHostSurface>[
         EventAssistanceHostSurface.liveNow,
@@ -874,6 +951,8 @@ const eventAssistanceWorkflowCatalog = <EventAssistanceWorkflowDescriptor>[
     ],
     guestCommands: <EventAssistanceCommandKind>[],
     overridePolicy: EventAssistanceOverridePolicy.none,
+    resolutionBoundary:
+        EventAssistanceResolutionBoundary.eventAssistanceCommand,
     hostProjection: EventAssistanceHostProjection(
       surfaces: <EventAssistanceHostSurface>[
         EventAssistanceHostSurface.liveNow,
@@ -896,6 +975,8 @@ const eventAssistanceWorkflowCatalog = <EventAssistanceWorkflowDescriptor>[
     ],
     guestCommands: <EventAssistanceCommandKind>[],
     overridePolicy: EventAssistanceOverridePolicy.none,
+    resolutionBoundary:
+        EventAssistanceResolutionBoundary.eventAssistanceCommand,
     hostProjection: EventAssistanceHostProjection(
       surfaces: <EventAssistanceHostSurface>[
         EventAssistanceHostSurface.liveNow,
@@ -918,6 +999,8 @@ const eventAssistanceWorkflowCatalog = <EventAssistanceWorkflowDescriptor>[
     ],
     guestCommands: <EventAssistanceCommandKind>[],
     overridePolicy: EventAssistanceOverridePolicy.none,
+    resolutionBoundary:
+        EventAssistanceResolutionBoundary.eventAssistanceCommand,
     hostProjection: EventAssistanceHostProjection(
       surfaces: <EventAssistanceHostSurface>[
         EventAssistanceHostSurface.liveNow,
@@ -938,6 +1021,8 @@ const eventAssistanceWorkflowCatalog = <EventAssistanceWorkflowDescriptor>[
     ],
     guestCommands: <EventAssistanceCommandKind>[],
     overridePolicy: EventAssistanceOverridePolicy.none,
+    resolutionBoundary:
+        EventAssistanceResolutionBoundary.eventAssistanceCommand,
     hostProjection: EventAssistanceHostProjection(
       surfaces: <EventAssistanceHostSurface>[
         EventAssistanceHostSurface.liveGuests,
@@ -960,6 +1045,8 @@ const eventAssistanceWorkflowCatalog = <EventAssistanceWorkflowDescriptor>[
     ],
     guestCommands: <EventAssistanceCommandKind>[],
     overridePolicy: EventAssistanceOverridePolicy.none,
+    resolutionBoundary:
+        EventAssistanceResolutionBoundary.eventAssistanceCommand,
     hostProjection: EventAssistanceHostProjection(
       surfaces: <EventAssistanceHostSurface>[
         EventAssistanceHostSurface.liveNow,
@@ -981,6 +1068,8 @@ const eventAssistanceWorkflowCatalog = <EventAssistanceWorkflowDescriptor>[
     ],
     guestCommands: <EventAssistanceCommandKind>[],
     overridePolicy: EventAssistanceOverridePolicy.none,
+    resolutionBoundary:
+        EventAssistanceResolutionBoundary.eventAssistanceCommand,
     hostProjection: EventAssistanceHostProjection(
       surfaces: <EventAssistanceHostSurface>[
         EventAssistanceHostSurface.liveNow,
@@ -998,6 +1087,8 @@ const eventAssistanceWorkflowCatalog = <EventAssistanceWorkflowDescriptor>[
     hostCommands: <EventAssistanceCommandKind>[],
     guestCommands: <EventAssistanceCommandKind>[],
     overridePolicy: EventAssistanceOverridePolicy.none,
+    resolutionBoundary:
+        EventAssistanceResolutionBoundary.navigation,
     hostProjection: EventAssistanceHostProjection(
       surfaces: <EventAssistanceHostSurface>[
         EventAssistanceHostSurface.liveNow,
@@ -1017,6 +1108,8 @@ const eventAssistanceWorkflowCatalog = <EventAssistanceWorkflowDescriptor>[
     ],
     guestCommands: <EventAssistanceCommandKind>[],
     overridePolicy: EventAssistanceOverridePolicy.scopedReasonedExpiring,
+    resolutionBoundary:
+        EventAssistanceResolutionBoundary.eventAssistanceCommand,
     hostProjection: EventAssistanceHostProjection(
       surfaces: <EventAssistanceHostSurface>[
         EventAssistanceHostSurface.liveNow,
@@ -1037,6 +1130,8 @@ const eventAssistanceWorkflowCatalog = <EventAssistanceWorkflowDescriptor>[
     ],
     guestCommands: <EventAssistanceCommandKind>[],
     overridePolicy: EventAssistanceOverridePolicy.scopedReasonedExpiring,
+    resolutionBoundary:
+        EventAssistanceResolutionBoundary.eventAssistanceCommand,
     hostProjection: EventAssistanceHostProjection(
       surfaces: <EventAssistanceHostSurface>[
         EventAssistanceHostSurface.liveNow,
@@ -1058,6 +1153,8 @@ const eventAssistanceWorkflowCatalog = <EventAssistanceWorkflowDescriptor>[
     ],
     guestCommands: <EventAssistanceCommandKind>[],
     overridePolicy: EventAssistanceOverridePolicy.none,
+    resolutionBoundary:
+        EventAssistanceResolutionBoundary.eventAssistanceCommand,
     hostProjection: EventAssistanceHostProjection(
       surfaces: <EventAssistanceHostSurface>[
         EventAssistanceHostSurface.eventReport,
@@ -1079,6 +1176,8 @@ const eventAssistanceWorkflowCatalog = <EventAssistanceWorkflowDescriptor>[
     ],
     guestCommands: <EventAssistanceCommandKind>[],
     overridePolicy: EventAssistanceOverridePolicy.none,
+    resolutionBoundary:
+        EventAssistanceResolutionBoundary.eventAssistanceCommand,
     hostProjection: EventAssistanceHostProjection(
       surfaces: <EventAssistanceHostSurface>[
         EventAssistanceHostSurface.today,
@@ -1102,6 +1201,8 @@ const eventAssistanceWorkflowCatalog = <EventAssistanceWorkflowDescriptor>[
     ],
     guestCommands: <EventAssistanceCommandKind>[],
     overridePolicy: EventAssistanceOverridePolicy.none,
+    resolutionBoundary:
+        EventAssistanceResolutionBoundary.eventAssistanceCommand,
     hostProjection: EventAssistanceHostProjection(
       surfaces: <EventAssistanceHostSurface>[
         EventAssistanceHostSurface.today,
@@ -1120,6 +1221,8 @@ const eventAssistanceWorkflowCatalog = <EventAssistanceWorkflowDescriptor>[
     hostCommands: <EventAssistanceCommandKind>[],
     guestCommands: <EventAssistanceCommandKind>[],
     overridePolicy: EventAssistanceOverridePolicy.none,
+    resolutionBoundary:
+        EventAssistanceResolutionBoundary.reportReview,
     hostProjection: EventAssistanceHostProjection(
       surfaces: <EventAssistanceHostSurface>[
         EventAssistanceHostSurface.eventReport,
