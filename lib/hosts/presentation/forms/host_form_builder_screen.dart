@@ -6,14 +6,18 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
-import 'package:catch_dating_app/hosts/domain/host_form.dart';
-import 'package:catch_dating_app/hosts/domain/host_form_operations.dart';
+import 'package:catch_dating_app/hosts/domain/forms/host_form_configuration.dart';
+import 'package:catch_dating_app/hosts/domain/forms/host_form_definition.dart';
+import 'package:catch_dating_app/hosts/domain/forms/host_form_logic.dart';
+import 'package:catch_dating_app/hosts/domain/forms/host_form_question.dart';
+import 'package:catch_dating_app/hosts/domain/forms/host_form_response.dart';
+import 'package:catch_dating_app/hosts/domain/forms/host_form_section.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_copy.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_metrics.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_renderer.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_responses_panel.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_forms_screen.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_tokens/catch_tokens.dart';
@@ -97,7 +101,7 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
             ? context.l10n.hostFormSettings
             : context.l10n.hostAudienceFormWorkspaceTitle,
         subtitle: settings && editorValue != null
-            ? _saveLabel(context, editorValue)
+            ? hostFormSaveLabel(context, editorValue)
             : null,
         navigation: const CatchTopBarNavigation(
           mode: CatchTopBarNavigationMode.back,
@@ -457,7 +461,7 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
             CatchField.read(
               copy: catchFieldCopy(context.l10n),
               title: context.l10n.hostFormConsequencesTitle,
-              body: _builderConsequenceSummary(
+              body: hostFormBuilderConsequenceSummary(
                 context,
                 purpose: definition.purpose,
                 identityPolicy: definition.identityPolicy,
@@ -474,7 +478,7 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
             CatchField.read(
               copy: catchFieldCopy(context.l10n),
               title: context.l10n.hostFormAvailability,
-              body: _availabilitySummary(context, definition),
+              body: hostFormAvailabilitySummary(context, definition),
             ),
           ],
         ),
@@ -601,7 +605,7 @@ class HostFormWorkspaceHeader extends StatelessWidget {
             ),
             Text(
               form.activeVersionId == null
-                  ? _saveLabel(context, state)
+                  ? hostFormSaveLabel(context, state)
                   : context.l10n.hostAudienceFormVersionContext(
                       purpose: hostFormPurposeLabel(context, form.purpose),
                       version: form.publishedVersion,
@@ -1151,7 +1155,7 @@ class _CompactQuestionRows extends StatelessWidget {
                 child: CatchField.sortable(
                   copy: catchFieldCopy(context.l10n),
                   title: question.label,
-                  metadata: _questionSummary(context, question),
+                  metadata: hostFormQuestionSummary(context, question),
                   leading: section.questions.length > 1
                       ? ReorderableDragStartListener(
                           index: questionIndex,
@@ -1273,37 +1277,6 @@ Future<void> _showSectionEditorSheet(
     },
   ),
 );
-
-String _questionSummary(BuildContext context, HostFormQuestion question) =>
-    context.l10n.hostFormQuestionSummary(
-      type: hostFormQuestionKindLabel(context, question.kind),
-      requirement: question.required
-          ? context.l10n.hostFormRequiredShort
-          : context.l10n.hostFormOptionalShort,
-    );
-
-String _availabilitySummary(
-  BuildContext context,
-  HostFormDefinition definition,
-) {
-  final opensAt = definition.opensAt;
-  final closesAt = definition.closesAt;
-  if (opensAt == null && closesAt == null) {
-    return context.l10n.hostFormAvailabilityAlwaysOpen;
-  }
-  final localizations = MaterialLocalizations.of(context);
-  final opensLabel = opensAt == null
-      ? null
-      : context.l10n.hostFormAvailabilityOpens(
-          date: localizations.formatMediumDate(opensAt.toLocal()),
-        );
-  final closesLabel = closesAt == null
-      ? null
-      : context.l10n.hostFormAvailabilityCloses(
-          date: localizations.formatMediumDate(closesAt.toLocal()),
-        );
-  return [opensLabel, closesLabel].whereType<String>().join(' · ');
-}
 
 class _ExpandedFormEditor extends StatelessWidget {
   const _ExpandedFormEditor({
@@ -1522,7 +1495,7 @@ class _FormSettings extends StatelessWidget {
             copy: catchFieldCopy(context.l10n),
             title: context.l10n.hostFormIdentityConsequenceTitle,
             body:
-                '${_identityConsequence(context, definition.identityPolicy)}. '
+                '${hostFormBuilderIdentityConsequence(context, definition.identityPolicy)}. '
                 '${context.l10n.hostFormConsequenceNoMessagingPermission}',
             bodyMaxLines: 5,
           ),
@@ -1540,7 +1513,8 @@ class _FormSettings extends StatelessWidget {
             contractValueBuilder: (value) => value.name,
             values: HostFormAppearancePreset.values,
             value: definition.appearancePreset,
-            itemLabelBuilder: (value) => _appearanceLabel(context, value),
+            itemLabelBuilder: (value) =>
+                hostFormAppearanceLabel(context, value),
             onChanged: (value) =>
                 notifier.updateMetadata(appearancePreset: value),
           ),
@@ -1678,7 +1652,8 @@ class _FormSettings extends StatelessWidget {
             contractValueBuilder: (value) => value.name,
             values: HostFormCompletionAction.values,
             value: definition.completionAction,
-            itemLabelBuilder: (value) => _completionActionLabel(context, value),
+            itemLabelBuilder: (value) =>
+                hostFormCompletionActionLabel(context, value),
             onChanged: (value) => notifier.updateMetadata(
               completionAction: value,
               clearCompletionActionLabel:
@@ -1732,7 +1707,11 @@ class _FormSettings extends StatelessWidget {
           for (final ruleEntry in definition.logicRules.indexed)
             CatchField.action(
               copy: catchFieldCopy(context.l10n),
-              title: _logicRuleSummary(context, definition, ruleEntry.$2),
+              title: hostFormLogicRuleSummary(
+                context,
+                definition,
+                ruleEntry.$2,
+              ),
               actions: IconButton(
                 tooltip: context.l10n.hostFormRemoveRule,
                 icon: Icon(CatchIcons.deleteOutlineRounded),
@@ -1792,7 +1771,7 @@ class _SectionEditor extends StatelessWidget {
           copy: catchFieldCopy(context.l10n),
           key: ValueKey(questionEntry.$2.questionId),
           title: questionEntry.$2.label,
-          body: _questionSummary(context, questionEntry.$2),
+          body: hostFormQuestionSummary(context, questionEntry.$2),
           onTap: () => onSelectionChanged(sectionIndex, questionEntry.$1),
         ),
       CatchField.add(
@@ -1957,7 +1936,7 @@ class _QuestionEditFields extends StatelessWidget {
           contractValueBuilder: (value) => value.name,
           values: HostFormPrivacyClass.values,
           value: question.privacyClass,
-          itemLabelBuilder: (value) => _privacyLabel(context, value),
+          itemLabelBuilder: (value) => hostFormPrivacyLabel(context, value),
           onChanged: (value) => notifier.updateQuestion(
             sectionIndex,
             questionIndex,
@@ -1974,7 +1953,7 @@ class _QuestionEditFields extends StatelessWidget {
           contractValueBuilder: (value) => value.name,
           values: HostFormPrefillPolicy.values,
           value: question.prefillPolicy,
-          itemLabelBuilder: (value) => _prefillLabel(context, value),
+          itemLabelBuilder: (value) => hostFormPrefillLabel(context, value),
           onChanged: (value) => notifier.updateQuestion(
             sectionIndex,
             questionIndex,
@@ -1991,7 +1970,8 @@ class _QuestionEditFields extends StatelessWidget {
           contractValueBuilder: (value) => value.name,
           values: HostFormPresentation.values,
           value: question.hostPresentation,
-          itemLabelBuilder: (value) => _presentationLabel(context, value),
+          itemLabelBuilder: (value) =>
+              hostFormPresentationLabel(context, value),
           onChanged: (value) => notifier.updateQuestion(
             sectionIndex,
             questionIndex,
@@ -2141,7 +2121,7 @@ class _QuestionValidationFormSchemaFields extends StatelessWidget {
             values: HostFormPatternPreset.values,
             value: validation.patternPreset,
             hintText: context.l10n.hostFormPatternNone,
-            itemLabelBuilder: (value) => _patternLabel(context, value),
+            itemLabelBuilder: (value) => hostFormPatternLabel(context, value),
             onChanged: (value) {
               if (value != null) {
                 update(validation.copyWith(patternPreset: value));
@@ -2573,118 +2553,6 @@ class _DateFormSchemaField extends StatelessWidget {
 int? _nullableInt(String value) =>
     value.trim().isEmpty ? null : int.tryParse(value.trim());
 
-String _appearanceLabel(
-  BuildContext context,
-  HostFormAppearancePreset value,
-) => switch (value) {
-  HostFormAppearancePreset.editorial =>
-    context.l10n.hostFormAppearanceEditorial,
-  HostFormAppearancePreset.minimal => context.l10n.hostFormAppearanceMinimal,
-  HostFormAppearancePreset.activity => context.l10n.hostFormAppearanceActivity,
-};
-
-String _completionActionLabel(
-  BuildContext context,
-  HostFormCompletionAction value,
-) => switch (value) {
-  HostFormCompletionAction.none => context.l10n.hostFormCompletionActionNone,
-  HostFormCompletionAction.externalUrl =>
-    context.l10n.hostFormCompletionActionExternal,
-  HostFormCompletionAction.event => context.l10n.hostFormCompletionActionEvent,
-  HostFormCompletionAction.eventRuntime =>
-    context.l10n.hostFormCompletionActionRuntime,
-};
-
-String _privacyLabel(BuildContext context, HostFormPrivacyClass value) =>
-    switch (value) {
-      HostFormPrivacyClass.contact => context.l10n.hostFormPrivacyContact,
-      HostFormPrivacyClass.profile => context.l10n.hostFormPrivacyProfile,
-      HostFormPrivacyClass.sensitive => context.l10n.hostFormPrivacySensitive,
-      HostFormPrivacyClass.organizerCustom =>
-        context.l10n.hostFormPrivacyCustom,
-    };
-
-String _prefillLabel(BuildContext context, HostFormPrefillPolicy value) =>
-    switch (value) {
-      HostFormPrefillPolicy.never => context.l10n.hostFormPrefillNever,
-      HostFormPrefillPolicy.participantReviewRequired =>
-        context.l10n.hostFormPrefillReview,
-    };
-
-String _presentationLabel(
-  BuildContext context,
-  HostFormPresentation value,
-) => switch (value) {
-  HostFormPresentation.detailOnly => context.l10n.hostFormPresentationDetail,
-  HostFormPresentation.filterable => context.l10n.hostFormPresentationFilter,
-  HostFormPresentation.sortable => context.l10n.hostFormPresentationSort,
-};
-
-String _patternLabel(BuildContext context, HostFormPatternPreset value) =>
-    switch (value) {
-      HostFormPatternPreset.lettersAndSpaces =>
-        context.l10n.hostFormPatternLetters,
-      HostFormPatternPreset.alphanumeric =>
-        context.l10n.hostFormPatternAlphanumeric,
-      HostFormPatternPreset.postalCode => context.l10n.hostFormPatternPostal,
-      HostFormPatternPreset.handle => context.l10n.hostFormPatternHandle,
-    };
-
-String _logicOperatorLabel(
-  BuildContext context,
-  HostFormLogicOperator value,
-) => switch (value) {
-  HostFormLogicOperator.equals => context.l10n.hostFormOperatorEquals,
-  HostFormLogicOperator.notEquals => context.l10n.hostFormOperatorNotEquals,
-  HostFormLogicOperator.contains => context.l10n.hostFormOperatorContains,
-  HostFormLogicOperator.notContains => context.l10n.hostFormOperatorNotContains,
-  HostFormLogicOperator.greaterThan => context.l10n.hostFormOperatorGreater,
-  HostFormLogicOperator.lessThan => context.l10n.hostFormOperatorLess,
-  HostFormLogicOperator.answered => context.l10n.hostFormOperatorAnswered,
-  HostFormLogicOperator.notAnswered => context.l10n.hostFormOperatorNotAnswered,
-};
-
-String _logicActionLabel(
-  BuildContext context,
-  HostFormLogicAction value,
-) => switch (value) {
-  HostFormLogicAction.showQuestion => context.l10n.hostFormActionShowQuestion,
-  HostFormLogicAction.hideQuestion => context.l10n.hostFormActionHideQuestion,
-  HostFormLogicAction.showSection => context.l10n.hostFormActionShowSection,
-  HostFormLogicAction.hideSection => context.l10n.hostFormActionHideSection,
-  HostFormLogicAction.routeToSection => context.l10n.hostFormActionRouteSection,
-  HostFormLogicAction.finish => context.l10n.hostFormActionFinish,
-};
-
-String _logicRuleSummary(
-  BuildContext context,
-  HostFormDefinition definition,
-  HostFormLogicRule rule,
-) {
-  final questions = definition.sections
-      .expand((section) => section.questions)
-      .toList(growable: false);
-  final source = questions
-      .where((question) => question.questionId == rule.condition.questionId)
-      .map((question) => question.label)
-      .firstOrNull;
-  final target = rule.targetQuestionId == null
-      ? definition.sections
-            .where((section) => section.sectionId == rule.targetSectionId)
-            .map((section) => section.title)
-            .firstOrNull
-      : questions
-            .where((question) => question.questionId == rule.targetQuestionId)
-            .map((question) => question.label)
-            .firstOrNull;
-  return [
-    source,
-    _logicOperatorLabel(context, rule.condition.operator),
-    _logicActionLabel(context, rule.action),
-    target,
-  ].whereType<String>().join(' · ');
-}
-
 Future<void> _showLogicRuleBuilder(
   BuildContext context, {
   required HostFormDefinition definition,
@@ -2830,7 +2698,7 @@ Future<void> _showLogicRuleBuilder(
                   values: operators,
                   value: operator,
                   itemLabelBuilder: (value) =>
-                      _logicOperatorLabel(context, value),
+                      hostFormLogicOperatorLabel(context, value),
                   onChanged: (value) {
                     if (value != null) setState(() => operator = value);
                   },
@@ -2882,7 +2750,7 @@ Future<void> _showLogicRuleBuilder(
                   values: HostFormLogicAction.values,
                   value: action,
                   itemLabelBuilder: (value) =>
-                      _logicActionLabel(context, value),
+                      hostFormLogicActionLabel(context, value),
                   onChanged: (value) {
                     if (value != null) setState(() => action = value);
                   },
@@ -2962,108 +2830,3 @@ List<HostFormLogicOperator> _operatorsFor(HostFormQuestionKind kind) =>
         HostFormLogicOperator.notAnswered,
       ],
     };
-
-String _saveLabel(BuildContext context, HostFormEditorState state) =>
-    switch (state.saveState) {
-      HostFormSaveState.saved => context.l10n.hostFormSaved,
-      HostFormSaveState.dirty => context.l10n.hostFormUnsaved,
-      HostFormSaveState.saving => context.l10n.hostFormSaving,
-      HostFormSaveState.conflict => context.l10n.hostFormSaveConflict,
-      HostFormSaveState.failed => context.l10n.hostFormSaveFailed,
-    };
-
-String _builderConsequenceSummary(
-  BuildContext context, {
-  required HostFormPurpose purpose,
-  required HostFormIdentityPolicy identityPolicy,
-  required HostFormConsequences consequences,
-}) {
-  final parts = <String>[_identityConsequence(context, identityPolicy)];
-  if (purpose == HostFormPurpose.application) {
-    parts.add(context.l10n.hostFormConsequenceApplicationReview);
-  }
-  if (!consequences.isExact) {
-    parts.add(context.l10n.hostFormAutomationConsequencesUnavailable);
-    return parts.join(' · ');
-  }
-  final enabledActions = consequences.enabledAutomationActionKinds;
-  if (enabledActions.contains(HostFormAutomationActionKind.createCrmContact)) {
-    parts.add(context.l10n.hostFormConsequenceCreatesCustomer);
-  }
-  if (purpose != HostFormPurpose.application &&
-      enabledActions.contains(
-        HostFormAutomationActionKind.addApplicationQueue,
-      )) {
-    parts.add(context.l10n.hostFormConsequenceApplicationReview);
-  }
-  if (enabledActions.contains(
-    HostFormAutomationActionKind.proposeEventAttendee,
-  )) {
-    parts.add(context.l10n.hostFormConsequenceProposesAttendee);
-  }
-  if (enabledActions.contains(HostFormAutomationActionKind.addOrganizerTag)) {
-    parts.add(context.l10n.hostFormConsequenceAppliesTags);
-  }
-  if (enabledActions.contains(HostFormAutomationActionKind.notifyTeam)) {
-    parts.add(context.l10n.hostFormConsequenceNotifiesTeam);
-  }
-  if (enabledActions.contains(HostFormAutomationActionKind.signedWebhook)) {
-    parts.add(context.l10n.hostFormConsequenceCallsWebhook);
-  }
-  if (enabledActions.contains(HostFormAutomationActionKind.campaignHandoff)) {
-    parts.add(context.l10n.hostFormConsequencePreparesSend);
-  }
-  if (parts.length == 1) {
-    parts.add(context.l10n.hostFormConsequenceFormsOnly);
-  }
-  return parts.join(' · ');
-}
-
-String _identityConsequence(
-  BuildContext context,
-  HostFormIdentityPolicy policy,
-) => switch (policy) {
-  HostFormIdentityPolicy.anonymous =>
-    context.l10n.hostFormConsequenceIdentityAnonymous,
-  HostFormIdentityPolicy.emailVerified =>
-    context.l10n.hostFormConsequenceIdentityEmail,
-  HostFormIdentityPolicy.phoneVerified =>
-    context.l10n.hostFormConsequenceIdentityPhone,
-  HostFormIdentityPolicy.emailOrPhoneVerified =>
-    context.l10n.hostFormConsequenceIdentityEmailOrPhone,
-  HostFormIdentityPolicy.catchAccount =>
-    context.l10n.hostFormConsequenceIdentityCatchAccount,
-};
-
-String hostFormIdentityLabel(
-  BuildContext context,
-  HostFormIdentityPolicy policy,
-) => switch (policy) {
-  HostFormIdentityPolicy.anonymous => context.l10n.hostFormIdentityAnonymous,
-  HostFormIdentityPolicy.emailVerified => context.l10n.hostFormIdentityEmail,
-  HostFormIdentityPolicy.phoneVerified => context.l10n.hostFormIdentityPhone,
-  HostFormIdentityPolicy.emailOrPhoneVerified =>
-    context.l10n.hostFormIdentityEmailOrPhone,
-  HostFormIdentityPolicy.catchAccount =>
-    context.l10n.hostFormIdentityCatchAccount,
-};
-
-String hostFormQuestionKindLabel(
-  BuildContext context,
-  HostFormQuestionKind kind,
-) => switch (kind) {
-  HostFormQuestionKind.shortText => context.l10n.hostFormTypeShortText,
-  HostFormQuestionKind.longText => context.l10n.hostFormTypeLongText,
-  HostFormQuestionKind.singleChoice => context.l10n.hostFormTypeSingleChoice,
-  HostFormQuestionKind.multiChoice => context.l10n.hostFormTypeMultiChoice,
-  HostFormQuestionKind.date => context.l10n.hostFormTypeDate,
-  HostFormQuestionKind.phone => context.l10n.hostFormTypePhone,
-  HostFormQuestionKind.email => context.l10n.hostFormTypeEmail,
-  HostFormQuestionKind.url => context.l10n.hostFormTypeUrl,
-  HostFormQuestionKind.number => context.l10n.hostFormTypeNumber,
-  HostFormQuestionKind.boolean => context.l10n.hostFormTypeBoolean,
-  HostFormQuestionKind.file => context.l10n.hostFormTypeFile,
-  HostFormQuestionKind.acknowledgement =>
-    context.l10n.hostFormTypeAcknowledgement,
-  HostFormQuestionKind.signature => context.l10n.hostFormTypeSignature,
-};

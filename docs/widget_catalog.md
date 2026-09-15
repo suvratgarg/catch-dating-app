@@ -759,14 +759,14 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>HostSavedPlacesSection</code> | <code>lib/hosts/presentation/event_management/widgets/where_step.dart:210</code> | — | — | No class documentation or registry summary. |
 | <code>WhereStep</code> | <code>lib/hosts/presentation/event_management/widgets/where_step.dart:18</code> | — | — | No class documentation or registry summary. |
 | <code>HostAutomationRuleEditor</code> | <code>lib/hosts/presentation/forms/host_automation_rule_editor.dart:4</code> | — | — | Explicit approval of a versioned rule; no customer actions run in the editor. |
-| <code>HostFormWorkspaceHeader</code> | <code>lib/hosts/presentation/forms/host_form_builder_screen.dart:562</code> | — | — | No class documentation or registry summary. |
-| <code>HostFormWorkspaceOverview</code> | <code>lib/hosts/presentation/forms/host_form_builder_screen.dart:638</code> | — | — | No class documentation or registry summary. |
+| <code>HostFormWorkspaceHeader</code> | <code>lib/hosts/presentation/forms/host_form_builder_screen.dart:566</code> | — | — | No class documentation or registry summary. |
+| <code>HostFormWorkspaceOverview</code> | <code>lib/hosts/presentation/forms/host_form_builder_screen.dart:642</code> | — | — | No class documentation or registry summary. |
 | <code>HostFormMetrics</code> | <code>lib/hosts/presentation/forms/host_form_metrics.dart:5</code> | — | — | Form-workspace statistics composed from the canonical unboxed stat primitive. |
-| <code>HostFormRenderer</code> | <code>lib/hosts/presentation/forms/host_form_renderer.dart:9</code> | — | — | No class documentation or registry summary. |
-| <code>HostFormResponsePrimaryAction</code> | <code>lib/hosts/presentation/forms/host_form_response_detail_screen.dart:465</code> | — | — | No class documentation or registry summary. |
-| <code>HostFormResponseRelatedActions</code> | <code>lib/hosts/presentation/forms/host_form_response_detail_screen.dart:548</code> | — | — | No class documentation or registry summary. |
+| <code>HostFormRenderer</code> | <code>lib/hosts/presentation/forms/host_form_renderer.dart:11</code> | — | — | No class documentation or registry summary. |
+| <code>HostFormResponsePrimaryAction</code> | <code>lib/hosts/presentation/forms/host_form_response_detail_screen.dart:466</code> | — | — | No class documentation or registry summary. |
+| <code>HostFormResponseRelatedActions</code> | <code>lib/hosts/presentation/forms/host_form_response_detail_screen.dart:549</code> | — | — | No class documentation or registry summary. |
 | <code>HostFormResponsesPanel</code> | <code>lib/hosts/presentation/forms/host_form_responses_panel.dart:18</code> | — | — | No class documentation or registry summary. |
-| <code>HostFormsNoOrganizer</code> | <code>lib/hosts/presentation/forms/host_forms_screen.dart:806</code> | — | — | No class documentation or registry summary. |
+| <code>HostFormsNoOrganizer</code> | <code>lib/hosts/presentation/forms/host_forms_screen.dart:745</code> | — | — | No class documentation or registry summary. |
 | <code>HostAudienceStateScaffold</code> | <code>lib/hosts/presentation/host_audience_view.dart:21</code> | — | — | Canonical Audience destination owner for route-level loading, auth, error, and no-organizer states. |
 | <code>HostAudienceTabRail</code> | <code>lib/hosts/presentation/host_audience_view.dart:65</code> | — | — | No class documentation or registry summary. |
 | <code>HostActionRow</code> | <code>lib/hosts/presentation/host_event_manage_screen.dart:1592</code> | — | — | No class documentation or registry summary. |
@@ -1101,14 +1101,14 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>HostCreateEventRouteLoadingScreen</code> | <code>lib/hosts/presentation/event_management/host_create_event_route_loading_screen.dart:7</code> | — | — | No class documentation or registry summary. |
 | <code>HostCreateEventRouteScreen</code> | <code>lib/hosts/presentation/event_management/host_create_event_screen.dart:43</code> | — | — | No class documentation or registry summary. |
 | <code>RoutePathBuilderScreen</code> | <code>lib/hosts/presentation/event_management/widgets/route_path_builder_screen.dart:10</code> | — | — | Tap-to-build route geometry used by moving event formats. |
-| <code>HostFormAnalyticsScreen</code> | <code>lib/hosts/presentation/forms/host_form_analytics_screen.dart:20</code> | — | — | No class documentation or registry summary. |
+| <code>HostFormAnalyticsScreen</code> | <code>lib/hosts/presentation/forms/host_form_analytics_screen.dart:22</code> | — | — | No class documentation or registry summary. |
 | <code>HostFormAutomationsScreen</code> | <code>lib/hosts/presentation/forms/host_form_automations_screen.dart:22</code> | — | — | No class documentation or registry summary. |
-| <code>HostFormBuilderScreen</code> | <code>lib/hosts/presentation/forms/host_form_builder_screen.dart:31</code> | — | — | No class documentation or registry summary. |
+| <code>HostFormBuilderScreen</code> | <code>lib/hosts/presentation/forms/host_form_builder_screen.dart:35</code> | — | — | No class documentation or registry summary. |
 | <code>HostFormPreviewScreen</code> | <code>lib/hosts/presentation/forms/host_form_preview_screen.dart:11</code> | — | — | No class documentation or registry summary. |
-| <code>HostFormResponseDetailScreen</code> | <code>lib/hosts/presentation/forms/host_form_response_detail_screen.dart:21</code> | — | — | No class documentation or registry summary. |
-| <code>HostFormShareScreen</code> | <code>lib/hosts/presentation/forms/host_form_share_screen.dart:19</code> | — | — | No class documentation or registry summary. |
-| <code>HostFormTemplatesScreen</code> | <code>lib/hosts/presentation/forms/host_form_templates_screen.dart:17</code> | — | — | No class documentation or registry summary. |
-| <code>HostFormsScreen</code> | <code>lib/hosts/presentation/forms/host_forms_screen.dart:40</code> | — | — | No class documentation or registry summary. |
+| <code>HostFormResponseDetailScreen</code> | <code>lib/hosts/presentation/forms/host_form_response_detail_screen.dart:22</code> | — | — | No class documentation or registry summary. |
+| <code>HostFormShareScreen</code> | <code>lib/hosts/presentation/forms/host_form_share_screen.dart:20</code> | — | — | No class documentation or registry summary. |
+| <code>HostFormTemplatesScreen</code> | <code>lib/hosts/presentation/forms/host_form_templates_screen.dart:18</code> | — | — | No class documentation or registry summary. |
+| <code>HostFormsScreen</code> | <code>lib/hosts/presentation/forms/host_forms_screen.dart:41</code> | — | — | No class documentation or registry summary. |
 | <code>HostEventManageRouteScreen</code> | <code>lib/hosts/presentation/host_event_manage_route_screen.dart:5</code> | — | — | No class documentation or registry summary. |
 | <code>HostEventManageScreen</code> | <code>lib/hosts/presentation/host_event_manage_screen.dart:80</code> | — | — | No class documentation or registry summary. |
 | <code>HostEventOperatorScreen</code> | <code>lib/hosts/presentation/host_event_operator_screen.dart:13</code> | — | — | No class documentation or registry summary. |
