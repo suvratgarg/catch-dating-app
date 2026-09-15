@@ -612,8 +612,8 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>GuestWhoIsGoing</code> | <code>lib/events/presentation/widgets/event_detail_social_section.dart:82</code> | — | — | No class documentation or registry summary. |
 | <code>EventHypeAvatarStack</code> | <code>lib/events/presentation/widgets/event_hype_avatar_stack.dart:50</code> | — | — | Event-detail attendee-hype avatar stack that composes the shared Catch person-avatar stack for hidden and revealed roster states. |
 | <code>EventPhotoHeader</code> | <code>lib/events/presentation/widgets/event_photo_header.dart:10</code> | — | — | Hero visual for the event detail screen. |
-| <code>EventPinsMap</code> | <code>lib/events/presentation/widgets/event_pins_map.dart:20</code> | — | — | No class documentation or registry summary. |
-| <code>EventPinsMapPlaceholder</code> | <code>lib/events/presentation/widgets/event_pins_map.dart:908</code> | — | — | No class documentation or registry summary. |
+| <code>EventPinsMap</code> | <code>lib/events/presentation/widgets/event_pins_map.dart:22</code> | — | — | No class documentation or registry summary. |
+| <code>EventPinsMapPlaceholder</code> | <code>lib/events/presentation/widgets/event_pins_map.dart:639</code> | — | — | No class documentation or registry summary. |
 | <code>EventStatsGrid</code> | <code>lib/events/presentation/widgets/event_stats_grid.dart:9</code> | — | — | No class documentation or registry summary. |
 | <code>MapOverlayControls</code> | <code>lib/events/presentation/widgets/map_overlay_controls.dart:5</code> | — | — | No class documentation or registry summary. |
 | <code>RequirementsRow</code> | <code>lib/events/presentation/widgets/requirements_row.dart:9</code> | — | — | No class documentation or registry summary. |
