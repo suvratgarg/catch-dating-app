@@ -2,6 +2,7 @@ import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/components/catch_field_geometry_scope.dart';
 import 'package:catch_ui/src/components/catch_field_geometry_scope_variant.dart';
 import 'package:catch_ui/src/components/catch_field_motion.dart';
+import 'package:catch_ui/src/patterns/catch_row_viewport.dart';
 import 'package:flutter/material.dart';
 
 /// Field state paint: row backgrounds and the focus ring of a small target.
@@ -59,117 +60,131 @@ class CatchFieldSurface extends StatelessWidget {
         ],
       );
     }
-    final hovered = states.contains(WidgetState.hovered);
-    final active = states.contains(WidgetState.selected);
-    final focused = states.contains(WidgetState.focused);
-    final pressed = states.contains(WidgetState.pressed);
-    final interactionShape = CatchFieldGeometryScope.interactionShapeOf(
-      context,
-    );
-    final interactionBorderRadius = switch (interactionShape) {
-      CatchFieldGeometryScopeVariant.roundedTile => BorderRadius.circular(
-        CatchFieldTokens.tileRadius,
-      ),
-      CatchFieldGeometryScopeVariant.sectionClipped ||
-      CatchFieldGeometryScopeVariant.fullBleedBand => BorderRadius.zero,
-    };
-    final interactionBorder = CatchBorder.resolve(
-      t,
-      CatchBorderRole.boundary,
-    ).all;
-    final fullBleedFocusBorder = CatchBorder.resolve(
-      t,
-      CatchBorderRole.focus,
-    ).all;
-    final fullBleedFocused =
-        interactionShape == CatchFieldGeometryScopeVariant.fullBleedBand &&
-        focused &&
-        !pressed;
-    final activeDecoration = BoxDecoration(
-      color: active && !pressed
-          ? CatchFieldTokens.activeSurface(t)
-          : Colors.transparent,
-      borderRadius: interactionBorderRadius,
-      // The active and pressed layers hand one stroke between them. This
-      // prevents their animated decorations from ever stacking two outlines.
-      border: fullBleedFocused
-          ? fullBleedFocusBorder
-          : active &&
-                !pressed &&
-                interactionShape != CatchFieldGeometryScopeVariant.fullBleedBand
-          ? interactionBorder
-          : null,
-      boxShadow:
-          active &&
-              interactionShape == CatchFieldGeometryScopeVariant.roundedTile
-          ? CatchElevation.fieldActive(Theme.of(context).brightness)
-          : CatchElevation.none,
-    );
-    final pressDecoration = BoxDecoration(
-      color: pressed
-          ? CatchFieldTokens.pressedSurface(t)
-          : hovered
-          ? t.ink.withValues(alpha: CatchOpacity.controlOverlayHover)
-          : Colors.transparent,
-      borderRadius: interactionBorderRadius,
-      // A divided or standalone row owns its complete pressed silhouette.
-      // A contained row inherits the section perimeter and stays a tint-only
-      // internal band. A rounded row temporarily owns the one shared stroke
-      // while pressed, whether or not it was already active.
-      border:
-          pressed &&
-              interactionShape == CatchFieldGeometryScopeVariant.roundedTile
-          ? interactionBorder
-          : null,
-    );
-    final overlayOutsets = CatchFieldGeometryScope.interactionOutsetsOf(
-      context,
-    );
-    final verticalOutset = CatchFieldGeometryScope.exactBoundsOf(context)
-        ? 0.0
-        : CatchStroke.hairline;
-    return Stack(
-      fit: StackFit.passthrough,
-      clipBehavior: Clip.none,
-      children: [
-        Positioned(
-          left: -overlayOutsets.left,
-          right: -overlayOutsets.right,
-          top: -verticalOutset,
-          bottom: -verticalOutset,
-          child: IgnorePointer(
-            child: Stack(
-              fit: StackFit.expand,
-              clipBehavior: Clip.none,
-              children: [
-                AnimatedContainer(
-                  key: _pressedOverlayKey,
-                  duration: catchFieldMotionDuration(
-                    context,
-                    pressed
-                        ? CatchFieldTokens.pressIn
-                        : CatchFieldTokens.pressOut,
-                  ),
-                  curve: CatchFieldTokens.curve,
-                  decoration: pressDecoration,
-                ),
-                AnimatedContainer(
-                  key: const ValueKey('catch-field-active-overlay'),
-                  duration: catchFieldMotionDuration(
-                    context,
-                    active
-                        ? CatchFieldTokens.standard
-                        : CatchFieldTokens.pressOut,
-                  ),
-                  curve: CatchFieldTokens.curve,
-                  decoration: activeDecoration,
-                ),
-              ],
-            ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final overlayOutsets = CatchFieldGeometryScope.interactionOutsetsOf(
+          context,
+        );
+        final hovered = states.contains(WidgetState.hovered);
+        final active = states.contains(WidgetState.selected);
+        final focused = states.contains(WidgetState.focused);
+        final pressed = states.contains(WidgetState.pressed);
+        final requestedShape = CatchFieldGeometryScope.interactionShapeOf(
+          context,
+        );
+        final interactionShape =
+            requestedShape == CatchFieldGeometryScopeVariant.fullBleedBand &&
+                CatchRowViewport.matches(
+                      context,
+                      constraints.maxWidth + overlayOutsets.horizontal,
+                    ) !=
+                    true
+            ? CatchFieldGeometryScopeVariant.roundedTile
+            : requestedShape;
+        final interactionBorderRadius = switch (interactionShape) {
+          CatchFieldGeometryScopeVariant.roundedTile => BorderRadius.circular(
+            CatchFieldTokens.tileRadius,
           ),
-        ),
-        child,
-      ],
+          CatchFieldGeometryScopeVariant.sectionClipped ||
+          CatchFieldGeometryScopeVariant.fullBleedBand => BorderRadius.zero,
+        };
+        final interactionBorder = CatchBorder.resolve(
+          t,
+          CatchBorderRole.boundary,
+        ).all;
+        final fullBleedFocusBorder = CatchBorder.resolve(
+          t,
+          CatchBorderRole.focus,
+        ).all;
+        final fullBleedFocused =
+            interactionShape == CatchFieldGeometryScopeVariant.fullBleedBand &&
+            focused &&
+            !pressed;
+        final activeDecoration = BoxDecoration(
+          color: active && !pressed
+              ? CatchFieldTokens.activeSurface(t)
+              : Colors.transparent,
+          borderRadius: interactionBorderRadius,
+          // The active and pressed layers hand one stroke between them. This
+          // prevents their animated decorations from ever stacking two outlines.
+          border: fullBleedFocused
+              ? fullBleedFocusBorder
+              : active &&
+                    !pressed &&
+                    interactionShape !=
+                        CatchFieldGeometryScopeVariant.fullBleedBand
+              ? interactionBorder
+              : null,
+          boxShadow:
+              active &&
+                  interactionShape == CatchFieldGeometryScopeVariant.roundedTile
+              ? CatchElevation.fieldActive(Theme.of(context).brightness)
+              : CatchElevation.none,
+        );
+        final pressDecoration = BoxDecoration(
+          color: pressed
+              ? CatchFieldTokens.pressedSurface(t)
+              : hovered
+              ? t.ink.withValues(alpha: CatchOpacity.controlOverlayHover)
+              : Colors.transparent,
+          borderRadius: interactionBorderRadius,
+          // A divided or standalone row owns its complete pressed silhouette.
+          // A contained row inherits the section perimeter and stays a tint-only
+          // internal band. A rounded row temporarily owns the one shared stroke
+          // while pressed, whether or not it was already active.
+          border:
+              pressed &&
+                  interactionShape == CatchFieldGeometryScopeVariant.roundedTile
+              ? interactionBorder
+              : null,
+        );
+        final verticalOutset = CatchFieldGeometryScope.exactBoundsOf(context)
+            ? 0.0
+            : CatchStroke.hairline;
+        return Stack(
+          fit: StackFit.passthrough,
+          clipBehavior: Clip.none,
+          children: [
+            Positioned(
+              left: -overlayOutsets.left,
+              right: -overlayOutsets.right,
+              top: -verticalOutset,
+              bottom: -verticalOutset,
+              child: IgnorePointer(
+                child: Stack(
+                  fit: StackFit.expand,
+                  clipBehavior: Clip.none,
+                  children: [
+                    AnimatedContainer(
+                      key: _pressedOverlayKey,
+                      duration: catchFieldMotionDuration(
+                        context,
+                        pressed
+                            ? CatchFieldTokens.pressIn
+                            : CatchFieldTokens.pressOut,
+                      ),
+                      curve: CatchFieldTokens.curve,
+                      decoration: pressDecoration,
+                    ),
+                    AnimatedContainer(
+                      key: const ValueKey('catch-field-active-overlay'),
+                      duration: catchFieldMotionDuration(
+                        context,
+                        active
+                            ? CatchFieldTokens.standard
+                            : CatchFieldTokens.pressOut,
+                      ),
+                      curve: CatchFieldTokens.curve,
+                      decoration: activeDecoration,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            child,
+          ],
+        );
+      },
     );
   }
 }

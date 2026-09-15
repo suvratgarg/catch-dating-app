@@ -602,6 +602,10 @@ cannot accept callbacks. Secondary targets belong to `CatchFieldSecondaryAction`
 form flows. Never wrap full-width row sections with an additional horizontal
 page inset. `CatchScaffold`, `CatchMasterDetailViewport` and
 `CatchSectionList.panes` publish local viewport bounds for geometry assertions.
+Square full-width feedback requires a matching published paint extent. Missing
+geometry context uses rounded containment; a known mismatch asserts in debug
+and remains rounded in release. The Field paint owner checks legacy geometry
+declarations too, so omitting Section cannot authorize an inset square highlight.
 `CatchScrollTerminalGap` owns terminal clearance, with `.sliver` for a sliver
 scroll owner. `CatchStateViewport` owns the visible area for empty/error
 placement, also with `.sliver`; both protocols share one obstruction policy.

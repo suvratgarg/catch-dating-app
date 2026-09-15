@@ -230,6 +230,11 @@ sort/filter action treatment. Color communicates positive, attention, or affinit
 meaning and does not introduce a brand accent. These recipes supersede the
 feature-local Audience preview typography and palette.
 
+Only a verified page or pane perimeter permits square full-width feedback.
+If the renderer has no matching perimeter, feedback uses rounded containment.
+This rule applies to hover, press, focus and selection, including legacy
+geometry adapters; missing context must never imply edge-to-edge geometry.
+
 Action and CTA labels wrap naturally at the selected platform font size.
 `CatchButton.selection` is the explicit compact-chrome exception for a current
 value (for example, the selected city): one visible line with ellipsis, full

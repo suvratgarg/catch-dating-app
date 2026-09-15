@@ -140,7 +140,38 @@ class HostSavedAudienceOverview extends ConsumerWidget {
               builder: (context, state) => Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  CatchSection.containedRows(title: context.l10n.hostSavedAudienceMembers,count: state.preview.matchCount,trailing: CatchButton.text(key: const ValueKey('host-saved-audience-refresh-preview'), label: context.l10n.hostSavedAudiencePreview, onPressed: () => ref.invalidate(provider)),children: [if (state.members.isEmpty) CatchField.read(copy: catchFieldCopy(context.l10n),body: context.l10n.hostSavedAudienceNoMembers), for (final member in state.members) CatchField.navigate(key: ValueKey('host-saved-audience-member-${member.contactId}'), onActivate: () => context.pushNamed(Routes.hostCustomerDetailScreen.name, pathParameters: {'contactId' : member.contactId}, queryParameters: {'organizerId' : audience.organizerId}), content: CatchPersonLayout(name: member.displayName))]),
+                  CatchSection.containedRows(
+                    title: context.l10n.hostSavedAudienceMembers,
+                    count: state.preview.matchCount,
+                    trailing: CatchButton.text(
+                      key: const ValueKey(
+                        'host-saved-audience-refresh-preview',
+                      ),
+                      label: context.l10n.hostSavedAudiencePreview,
+                      onPressed: () => ref.invalidate(provider),
+                    ),
+                    children: [
+                      if (state.members.isEmpty)
+                        CatchField.read(
+                          copy: catchFieldCopy(context.l10n),
+                          body: context.l10n.hostSavedAudienceNoMembers,
+                        ),
+                      for (final member in state.members)
+                        CatchField.navigate(
+                          key: ValueKey(
+                            'host-saved-audience-member-${member.contactId}',
+                          ),
+                          onActivate: () => context.pushNamed(
+                            Routes.hostCustomerDetailScreen.name,
+                            pathParameters: {'contactId': member.contactId},
+                            queryParameters: {
+                              'organizerId': audience.organizerId,
+                            },
+                          ),
+                          content: CatchPersonLayout(name: member.displayName),
+                        ),
+                    ],
+                  ),
                   if (state.loadMoreError case final error?) ...[
                     gapH16,
                     CatchLocalizedErrorState(

@@ -11,10 +11,12 @@ class CatchRowViewport extends StatelessWidget {
         CatchRowViewportScope(width: constraints.maxWidth, child: child),
   );
 
-  static bool matches(BuildContext context, double width) {
+  /// Null means no page/pane owner proved the perimeter. Renderers must use
+  /// rounded containment in that case; absence cannot authorize square paint.
+  static bool? matches(BuildContext context, double width) {
     final viewport = context
         .dependOnInheritedWidgetOfExactType<CatchRowViewportScope>();
-    return viewport == null || (viewport.width - width).abs() < 0.5;
+    return viewport == null ? null : (viewport.width - width).abs() < 0.5;
   }
 }
 

@@ -3058,7 +3058,26 @@
           "select",
           "select-disabled",
           "select-error",
-          "add"
+          "add",
+          "directory",
+          "directory-large-text",
+          "roster",
+          "roster-trailing",
+          "chat-preview",
+          "chat-preview-new",
+          "chat-preview-unread",
+          "chat-preview-square-avatar",
+          "chat-context",
+          "chat-typing",
+          "contact-identity-only",
+          "contact-navigable",
+          "contact-message-enabled",
+          "contact-verified",
+          "long-copy",
+          "read-only",
+          "navigable",
+          "multiline",
+          "facts"
         ],
         "slots": [
           {
@@ -4127,6 +4146,38 @@
               ],
               "reason": "Internal press renderer for the exact Field, button, index and choice owners; never exported for product row composition."
             }
+          },
+          {
+            "id": "catch.field.person_copy",
+            "symbol": "CatchPersonRowCopy",
+            "file": "packages/catch_ui/lib/src/components/catch_person_row_copy.dart",
+            "summary": "Caller-resolved person status and accessibility copy used by passive Field layouts.",
+            "states": [
+              "default"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.field",
+              "parentConceptId": "catch.field",
+              "qualifier": "anatomy",
+              "decisionRef": "contract-family:catch.field"
+            }
+          },
+          {
+            "id": "catch.field.activity_notification",
+            "symbol": "CatchFieldActivityNotification",
+            "file": "packages/catch_ui/lib/src/components/catch_field_activity_notification.dart",
+            "summary": "Internal Field activity handoff used by Section to suppress adjacent rules without moving geometry.",
+            "states": [
+              "default"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.field",
+              "parentConceptId": "catch.field",
+              "qualifier": "anatomy",
+              "decisionRef": "contract-family:catch.field"
+            }
           }
         ],
         "accessibility": {
@@ -4636,6 +4687,11 @@
           }
         ],
         "states": [
+          "resting",
+          "hovered",
+          "disabled",
+          "contained",
+          "titled",
           "divided-section",
           "contained-section",
           "plain-section",

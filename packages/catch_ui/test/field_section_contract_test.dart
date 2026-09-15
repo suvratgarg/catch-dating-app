@@ -6,6 +6,37 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets(
+    'legacy full-band declarations still require a proven paint extent',
+    (tester) async {
+      const key = ValueKey('unowned-full-band');
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CatchTheme.dark,
+          home: const Scaffold(
+            body: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: CatchFieldGeometryScope(
+                gutterOwnership: CatchFieldGeometryScopeMode.container,
+                interactionShape: CatchFieldGeometryScopeVariant.fullBleedBand,
+                child: CatchFieldSurface(
+                  pressedOverlayKey: key,
+                  states: {WidgetState.hovered},
+                  child: SizedBox(height: 60, width: double.infinity),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      final paint = tester.widget<AnimatedContainer>(find.byKey(key));
+      final decoration = paint.decoration! as BoxDecoration;
+      expect(decoration.borderRadius, isNotNull);
+      expect(decoration.borderRadius, isNot(BorderRadius.zero));
+      expect(tester.takeException(), isNull);
+    },
+  );
+
   testWidgets('section names wrap above the content-width rule at large text', (
     tester,
   ) async {
@@ -47,7 +78,10 @@ void main() {
             textDirection: direction,
             child: Align(
               alignment: Alignment.topLeft,
-              child: SizedBox(width: 390, child: child),
+              child: SizedBox(
+                width: 390,
+                child: CatchSectionList.panes(body: child),
+              ),
             ),
           ),
         ),
@@ -116,6 +150,38 @@ void main() {
     expect(decoration.color!.a, greaterThan(0));
     await pointer.removePointer();
     semantics.dispose();
+  });
+
+  testWidgets('an unowned inset cannot authorize a square highlight', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CatchTheme.dark,
+        home: Scaffold(
+          body: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: CatchSection.rows(
+              children: [
+                CatchField.navigate(
+                  content: const CatchPersonLayout(name: 'Riya'),
+                  states: const {WidgetState.hovered},
+                  onActivate: () {},
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final paint = find.byKey(CatchField.pressOverlayKey);
+    final decoration =
+        tester.widget<AnimatedContainer>(paint).decoration! as BoxDecoration;
+    expect(decoration.borderRadius, isNot(BorderRadius.zero));
+    expect(decoration.borderRadius, isNotNull);
+    expect(tester.getRect(paint).left, greaterThan(0));
+    expect(tester.takeException(), isNull);
   });
 
   for (final direction in TextDirection.values) {

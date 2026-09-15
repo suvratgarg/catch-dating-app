@@ -54,7 +54,10 @@ class _FakeConversationRepository implements ConversationRepository {
   final List<(String matchId, String uid)> markReadCalls = [];
 
   @override
-  Future<ConversationMessagePage> fetchMessagesPage({required String conversationId, ConversationMessageCursor? cursor}) async => const ConversationMessagePage(messages: []);
+  Future<ConversationMessagePage> fetchMessagesPage({
+    required String conversationId,
+    ConversationMessageCursor? cursor,
+  }) async => const ConversationMessagePage(messages: []);
 
   @override
   Future<void> sendTextMessage({

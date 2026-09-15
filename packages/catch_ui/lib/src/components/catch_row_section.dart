@@ -192,7 +192,8 @@ class _CatchRowSectionState extends State<CatchRowSection> {
       return SliverLayoutBuilder(
         builder: (context, constraints) {
           assert(
-            CatchRowViewport.matches(context, constraints.crossAxisExtent),
+            CatchRowViewport.matches(context, constraints.crossAxisExtent) !=
+                false,
             'A row section must fill its page or pane. Remove outer padding; use containedRows for an inset surface.',
           );
           final gutter = catchSectionContentGutter(constraints.crossAxisExtent);
@@ -211,10 +212,12 @@ class _CatchRowSectionState extends State<CatchRowSection> {
                   context,
                   index,
                   gutter,
-                  fullPlane: CatchRowViewport.matches(
-                    context,
-                    constraints.crossAxisExtent,
-                  ),
+                  fullPlane:
+                      CatchRowViewport.matches(
+                        context,
+                        constraints.crossAxisExtent,
+                      ) ==
+                      true,
                 ),
               ),
             ],
@@ -230,7 +233,7 @@ class _CatchRowSectionState extends State<CatchRowSection> {
         );
         assert(
           widget.contained ||
-              CatchRowViewport.matches(context, constraints.maxWidth),
+              CatchRowViewport.matches(context, constraints.maxWidth) != false,
           'A row section must fill its page or pane. Remove outer padding; use containedRows for an inset surface.',
         );
         final gutter = catchSectionContentGutter(constraints.maxWidth);
@@ -246,10 +249,9 @@ class _CatchRowSectionState extends State<CatchRowSection> {
                 widget.contained
                     ? CatchFieldTokens.rowHorizontalPadding
                     : gutter,
-                fullPlane: CatchRowViewport.matches(
-                  context,
-                  constraints.maxWidth,
-                ),
+                fullPlane:
+                    CatchRowViewport.matches(context, constraints.maxWidth) ==
+                    true,
               ),
           ],
         );

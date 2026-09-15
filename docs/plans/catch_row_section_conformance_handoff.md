@@ -1,9 +1,9 @@
 ---
 doc_id: catch_row_section_conformance_handoff
-version: 3.1.0
+version: 3.2.0
 updated: 2026-09-16
 owner: ui_elevation_initiative
-status: implementing
+status: implemented
 ---
 
 # Catch UI composition and Host screen implementation handoff
@@ -26,6 +26,12 @@ The implementation starts at fresh main
 `6a948955bf5bf4167a6278f2b0f37211fee97139`. Catch UI extraction and its Phase 4/5
 follow-ups are merged. Reconcile the historical findings below with that source;
 this plan's presence is not evidence a requirement has been implemented.
+
+The authorized non-menu source migration is implemented. Section 0 describes
+the executable API and current delivery boundaries; §§1–13 retain the design
+exploration and acceptance rationale. References there to former row classes,
+proposed names or pre-migration findings are historical, not remaining work.
+The menu/accordion/autocomplete follow-up and release remain separate.
 
 The implementation lives on `codex/host-screen-composition-20260916`.
 The pilot intake additions to form copy and submitted-response gating are
@@ -67,6 +73,10 @@ and outer row insets; page/pane extent assertions with rounded release fallback;
 package widget tests measuring paint, taps, divider offsets, containment, lazy
 construction, RTL and large text; production screen tests and rendered captures.
 No AST ancestry rule proves an opaque helper's runtime geometry by itself.
+When no page or pane owner publishes a verified width, the row renderer uses
+rounded containment. Only a matching published perimeter authorizes square
+full-width paint. Known inset mismatches assert in debug and remain rounded in
+release; omitting the geometry owner cannot restore the invalid sharp rectangle.
 
 Identity top bars publish a text-scaled preferred height. Section headers wrap
 within the content lane and keep the rule below the complete title. Messaging
@@ -143,9 +153,9 @@ rewrite of every feature controller. Preserve unrelated work and concurrent
 extraction changes. Source tests, merged CI, distribution and installed device
 behavior are separate evidence states.
 
-### Source-backed causes
+### Historical source-backed causes
 
-| Cause | Current/source evidence | Required correction |
+| Cause | Evidence from the pre-migration audit | Required correction |
 |---|---|---|
 | Multiple interaction owners | `packages/catch_ui/lib/src/components/catch_record_row.dart`, `catch_person_row.dart` delegate to `src/primitives/catch_row_press_surface.dart`. The surface paints a rectangular parent-sized overlay. | Layouts become passive; Field owns row interaction. |
 | Wrong section role | `lib/hosts/events/presentation/widgets/host_events_list.dart`, `HostEventsTimelinePage`, still constructs `CatchSection.plain` around `HostEventLifecycleRow`/`CatchRecordRow`. | Typed row sections supply header rule and text-lane sibling separators. The month label already uses shared section infrastructure; a different label widget alone cannot fix it. |
@@ -155,9 +165,10 @@ behavior are separate evidence states.
 | Checks certify weaker facts | The 2026-09-07 header/divider scanners returned zero high-confidence findings; the People feedback test accepted a row-local overlay. | Replace weak expectations with production geometry assertions and negative/mutation fixtures. Re-run after relocation; these historical results are not current test results. |
 | Meaning is lost in generic props | `title/body/valueText`, arbitrary `child/children`, `control`, and styling flags accept unrelated semantic roles. | Named capabilities and typed content roles; eliminate replacement-row escape hatches. |
 
-The source audit is not fresh visual validation of Today or Messaging. Their
-font/control findings below identify selected code roles and composition; new
-production captures remain an implementation acceptance requirement.
+The original source audit was not visual validation of Today or Messaging.
+The migration now includes production-tree captures for all five screens and
+dedicated person-messaging previews. Their scope is stated in §0; the historical
+font/control findings below explain why the composition changed.
 
 ## 2. Semantic decision rules
 
@@ -1487,40 +1498,30 @@ After transferring implemented requirements into the existing owners and checks,
 retire this temporary plan. Git preserves its design history; no replacement
 audit ledger or tracked test-run receipt is needed.
 
-## 14. Ready-to-send implementation task
+## 14. Review and follow-up handoff
 
-> Implement the Catch UI composition and Host-screen handoff in
-> `docs/plans/catch_row_section_conformance_handoff.md` (version 2.1.0,
-> 2026-09-08). Read the complete specification and the current owning documents.
-> Retrieve the spec from `codex/catch-ui-composition-handoff-20260908` if it has
-> not reached main; it is the replacement for the earlier narrower handoff.
-> The spec's source baseline is `6030865f9c95a7513fc71d7d72e79782e506fd57`, where
-> Phase 3 extraction was merged; begin from freshly fetched main in a guarded
-> worktree and reconcile extraction follow-ups and concurrent feature changes.
->
-> Deliver Section → Field → passive layout for ordinary rows, full-bleed default
-> feedback with working gutter hit targets, explicit rounded containment,
-> canonical content-width header rules and text-lane sibling dividers. Close
-> public geometry/interaction escape hatches, including person/record/conversation
-> row shells. Preserve specialized controls, media, transcripts and composers.
-> Use the five screen trees and API sketches as the implementation contract,
-> resolving recommended naming through representative compile fixtures.
->
-> Implement the lint/compiler, package, app-state, paint/semantics and focused
-> mutation checks specified here. Prove the original Organizer/Audience/Events
-> regression, then adopt Today and Messaging and the stated dependency/mixed-
-> content slices. Reconcile the dependency foundation at checkpoint
-> `c5434f42dde36dfc4ba972fe717541f22cdeae22`; do not transplant its old branch
-> wholesale or treat unfinished visuals/continuations as completed work.
->
-> Preserve domain/permission/save/send behavior and route compatibility. Provide
-> one Inbox row and combined authorized history per resolved person across Catch
-> and WhatsApp, using authoritative identity links, honest counts/coverage and an
-> explicit reply route. Preserve source messages/permissions and channel-scoped
-> idempotency; no name matching, silent transport fallback or contact mutation.
-> Keep optional follow-ups separate and raise only concrete unresolved decisions.
-> Work in the reviewable slices in §13, extend existing authorities/checks, derive
-> required gates from the current planner, and preserve each coherent result in
-> Git. Provide production captures and distinguish automated verification from
-> visual acceptance. Report remaining scope honestly; do not equate package
-> extraction, a passing lint or a source commit with a completed device fix.
+Review `codex/host-screen-composition-20260916` against the freshly fetched main
+and the executable API described in §0. Do not restart the superseded extraction
+or implement the historical API sketches alongside the finished constructors.
+The durable owners and portable package checks now contain the accepted rules.
+
+Review the five production compositions, the new-message directory and route
+selection, verified person joining, and the retained specialized-control
+boundaries. Verify full-width paint and edge hit targets, content-width header
+rules, text-lane sibling rules, rounded fallback without a proven perimeter,
+large text, RTL, lazy collections and account/scope transitions. Use the
+existing planner to derive checks for the exact revision being integrated;
+local captures and passing tests do not replace required CI.
+
+The separate menu task covers the accordion-expanding field, anchored dropdown
+menu and location-autocomplete results. Preserve their existing behavior until
+that follow-up is taken up. Other optional product ideas remain optional:
+cross-four-tab Audience swiping, message-body search, process-persistent drafts,
+and a new Today recommendation engine are not part of this source migration.
+
+Release is a separate action. The WhatsApp linked-identity projection needs its
+backend deployed before that live data can be joined by person; the client
+safely leaves unverified endpoints separate. Verify the reviewed source,
+required CI, backend state, distributed build and physical-device behavior
+independently when release is authorized. Do not send live messages as a
+substitute for deterministic authorization and transport tests.

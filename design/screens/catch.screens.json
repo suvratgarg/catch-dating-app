@@ -2051,9 +2051,9 @@
               "unverified"
             ],
             "previewIds": [
-              "CatchPersonRow/Contact states"
+              "CatchPersonLayout/Contact states"
             ],
-            "migration": "Club lookup is route-owned and mapped through EventDetailHostState; identity and contact actions mount the registered CatchPersonRow.contact recipe."
+            "migration": "Club lookup remains route-owned. The Hosted by Section contains a Field with PersonLayout identity, verified status and typed secondary actions."
           },
           {
             "id": "section.event.who_is_going",
@@ -7462,14 +7462,14 @@
               "NewMatchMarker"
             ],
             "flutter": {
-              "file": "packages/catch_ui/lib/src/components/catch_person_row.dart",
-              "symbol": "CatchPersonRow"
+              "file": "packages/catch_ui/lib/src/components/catch_field.dart",
+              "symbol": "CatchField"
             },
-            "currentOwner": "ChatConversationsList",
-            "targetOwner": "registered conversation row compound shared by consumer and host inbox",
+            "currentOwner": "CatchField + CatchConversationLayout",
+            "targetOwner": "Section owns the pane perimeter; Field owns row interaction; ConversationLayout owns passive values.",
             "dependencies": [
-              "catch.badge",
-              "catch.surface"
+              "catch.field",
+              "catch.section"
             ],
             "states": [
               "new_match",
@@ -10403,10 +10403,10 @@
             ],
             "flutter": {
               "file": "lib/hosts/events/presentation/widgets/host_events_list.dart",
-              "symbol": "HostEventLifecycleRow"
+              "symbol": "HostEventsTimelinePage"
             },
-            "currentOwner": "HostEventLifecycleRow",
-            "targetOwner": "Host lifecycle semantic adapter over canonical CatchRecordRow",
+            "currentOwner": "HostEventsTimelinePage + hostEventRecordLayout",
+            "targetOwner": "CatchSection.sliverRows -> CatchField -> CatchRecordLayout",
             "dependencies": [
               "catch.field"
             ],
@@ -10417,10 +10417,10 @@
               "long_title",
               "divider"
             ],
-            "migration": "HostEventLifecycleRow maps title, activity glyph, locale/clock-aware schedule, location, registration or attendance, and destination into CatchRecordRow. It owns no independent padding, font sizing, hit treatment or date-block renderer; primary facts reflow without truncation.",
+            "migration": "Event-owned projection formats activity, schedule, location and attendance facts as passive RecordLayout values. Section owns month headers and sibling rules; Field owns navigation and interaction.",
             "previewIds": [
               "hostHomeRouteStates",
-              "HostEventLifecycleRow/Exact catalog"
+              "HostEventsTimelinePage/Exact catalog"
             ]
           },
           {
@@ -17291,7 +17291,7 @@
         "symbol": "HostInboxScreen"
       },
       "stateController": {
-        "primary": "hostOrganizerSelectionProvider + HostMessagingWorkspace + HostInboxViewModel.compose + HostSendsWorkspaceSliver + HostCampaignComposer + showHostFollowerUpdateComposer + resolveHostInboxScope + chatsListViewModelProvider + hostSendsProvider + hostMessagingSetupProvider + watchClubPostRemainingWeeklyQuotaProvider + chatSearchQueryProvider",
+        "primary": "hostOrganizerSelectionProvider + resolveHostInboxScope + composeHostInboxPeople + HostInboxCatchPages + HostInboxWhatsappPages + HostPersonConversationController + HostConversationHistory + HostReplyDrafts + hostSendsProvider + hostMessagingSetupProvider + chatSearchQueryProvider",
         "files": [
           {
             "file": "lib/hosts/presentation/inbox/host_inbox_screen.dart",
@@ -17346,10 +17346,6 @@
             "symbol": "ChatConversationsList"
           },
           {
-            "file": "packages/catch_ui/lib/src/components/catch_person_row.dart",
-            "symbol": "CatchPersonRow"
-          },
-          {
             "file": "lib/chats/presentation/inbox/widgets/chats_empty_state.dart",
             "symbol": "ChatsEmptyState"
           },
@@ -17384,6 +17380,30 @@
           {
             "file": "lib/hosts/data/crm/host_whatsapp_repository.dart",
             "symbol": "hostMessagingSetup"
+          },
+          {
+            "file": "lib/hosts/presentation/inbox/host_inbox_people.dart",
+            "symbol": "composeHostInboxPeople"
+          },
+          {
+            "file": "lib/hosts/presentation/inbox/host_inbox_catch_pages_controller.dart",
+            "symbol": "HostInboxCatchPages"
+          },
+          {
+            "file": "lib/hosts/presentation/inbox/host_inbox_whatsapp_pages_controller.dart",
+            "symbol": "HostInboxWhatsappPages"
+          },
+          {
+            "file": "lib/hosts/presentation/inbox/host_person_conversation_controller.dart",
+            "symbol": "HostPersonConversationController"
+          },
+          {
+            "file": "lib/hosts/presentation/inbox/host_conversation_history_controller.dart",
+            "symbol": "HostConversationHistory"
+          },
+          {
+            "file": "lib/hosts/presentation/inbox/host_reply_drafts.dart",
+            "symbol": "HostReplyDrafts"
           }
         ],
         "mutationOwners": [
@@ -17404,7 +17424,7 @@
             "symbol": "HostClubPostController"
           }
         ],
-        "notes": "HostInboxScreen is the Host-owned Inbox destination and follows the shell-selected organizer. Inbox selects that organizer's live or nearest-upcoming event, keeps General explicit, scopes personal inquiry threads by organizer and event, classifies Booked and Prospective rows, and derives broadcast counts from eventParticipations rather than conversation count. The user-facing Sends workspace owns mixed Campaign/Announcement/Follower update history, groups every registered route under In Catch or WhatsApp, owns the route-specific follower composer and durable personal-WhatsApp handoff queue, and owns the complete campaign lifecycle; its compatibility wire value remains campaigns. Manual handoffs distinguish queued, device-opened and explicit host-asserted states, revalidate a stored endpoint immediately before every queue launch, and never claim provider delivery or read evidence. WhatsApp sender setup lives on the dedicated organizer messaging route. Event broadcasts and follower updates create durable Activity plus preference-gated push and never create chat fan-out."
+        "notes": "HostInboxScreen is the Host-owned Inbox destination and follows the shell-selected organizer. Inbox selects that organizer's live or nearest-upcoming event, keeps General explicit, scopes personal inquiry threads by organizer and event, classifies Booked and Prospective rows, and derives broadcast counts from eventParticipations rather than conversation count. The user-facing Sends workspace owns mixed Campaign/Announcement/Follower update history, groups every registered route under In Catch or WhatsApp, owns the route-specific follower composer and durable personal-WhatsApp handoff queue, and owns the complete campaign lifecycle; its compatibility wire value remains campaigns. Manual handoffs distinguish queued, device-opened and explicit host-asserted states, revalidate a stored endpoint immediately before every queue launch, and never claim provider delivery or read evidence. WhatsApp sender setup lives on the dedicated organizer messaging route. Event broadcasts and follower updates create durable Activity plus preference-gated push and never create chat fan-out. Person rows combine only server-verified organizer-scoped identity. Every reply chooses one authorized route; paging, read receipts and drafts retain source identity and account generation. New message selects a person before resolving available routes."
       },
       "designRefs": [
         {
@@ -18266,13 +18286,14 @@
               "HostInboxRowList"
             ],
             "flutter": {
-              "file": "lib/chats/presentation/inbox/widgets/chat_conversations_list.dart",
-              "symbol": "ChatConversationsList"
+              "file": "lib/hosts/presentation/inbox/host_inbox_workspace_section.dart",
+              "symbol": "HostInboxPeopleSection"
             },
-            "currentOwner": "ChatsListScreen + ChatConversationsList",
-            "targetOwner": "provider-free host inbox row list",
+            "currentOwner": "HostInboxPeopleSection",
+            "targetOwner": "Organizer-scoped person collection rendered through lazy Section rows.",
             "dependencies": [
-              "catch.surface"
+              "catch.field",
+              "catch.section"
             ],
             "states": [
               "route_to_host_chat",
@@ -18295,13 +18316,14 @@
               "ChatThreadPreview"
             ],
             "flutter": {
-              "file": "packages/catch_ui/lib/src/components/catch_person_row.dart",
-              "symbol": "CatchPersonRow"
+              "file": "packages/catch_ui/lib/src/components/catch_field.dart",
+              "symbol": "CatchField"
             },
-            "currentOwner": "CatchPersonRow",
-            "targetOwner": "provider-free host inbox row primitive or shared person row with host variant",
+            "currentOwner": "CatchField + CatchConversationLayout",
+            "targetOwner": "Section owns the pane perimeter; Field owns row interaction; ConversationLayout owns passive values.",
             "dependencies": [
-              "catch.badge"
+              "catch.field",
+              "catch.section"
             ],
             "states": [
               "read",

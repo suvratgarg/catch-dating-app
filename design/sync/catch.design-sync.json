@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "845fa89ff859e045510d17618b452997a9d2bd92f549921883f2327c0e2c8ed9",
+  "sourceDigest": "1a7b9e528122a6b8b6c15892374b78e1a9219dc0b101305a5741490a67e934ae",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "845fa89ff859e045510d17618b452997a9d2bd92f549921883f2327c0e2c8ed9",
-    "contractDigest": "845fa89ff859e045510d17618b452997a9d2bd92f549921883f2327c0e2c8ed9"
+    "digest": "1a7b9e528122a6b8b6c15892374b78e1a9219dc0b101305a5741490a67e934ae",
+    "contractDigest": "1a7b9e528122a6b8b6c15892374b78e1a9219dc0b101305a5741490a67e934ae"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "ad94f6f31621cb7063e67dc034da038595caebe91c54f88aeed87b135a6d1081",
+    "handoffRequestDigest": "4661dbf8c54f70f0be04e1c0fae0200d06adaa0ac87d801ef8d0995cb4c57284",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -83,15 +83,15 @@
   },
   "metrics": {
     "contractCount": 68,
-    "publicClassCount": 226,
+    "publicClassCount": 228,
     "conceptCount": 60,
-    "memberCount": 148,
-    "membersPerConcept": 2.47,
+    "memberCount": 150,
+    "membersPerConcept": 2.5,
     "unclassifiedCount": 0,
     "byConceptRole": {
       "composition": 3,
       "concept": 60,
-      "member": 148,
+      "member": 150,
       "screen": 15
     },
     "collisionCount": 30,
@@ -197,6 +197,7 @@
           "CatchDividedFieldInteractionScope",
           "CatchField",
           "CatchFieldActionRow",
+          "CatchFieldActivityNotification",
           "CatchFieldChoicePickedNotification",
           "CatchFieldCommitButton",
           "CatchFieldContentRow",
@@ -228,6 +229,7 @@
           "CatchFormTextField",
           "CatchFormTextRow",
           "CatchPersonLayout",
+          "CatchPersonRowCopy",
           "CatchRecordLayout",
           "CatchResponsiveFieldInteractionPolicy",
           "CatchRowBadge",
@@ -826,7 +828,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Field",
       "claudeAllowed": true,
-      "contractDigest": "b46955845296a6a36ac906150e42f7d2aadf1aef33f93ba1b53aad534f467f97"
+      "contractDigest": "e431aca684798eaa2b8ec475e1b457ca0a5a5433c457ffac958cc35d7a5ff5e7"
     },
     {
       "contractId": "catch.section",
@@ -850,7 +852,7 @@
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
       "figmaExpectedPropertyCount": 18,
-      "figmaExpectedPropertyDigest": "b3519ced5928682c88b7cb3abd1a0a0d6be066499a260ad3c7a47c2e04a2992d",
+      "figmaExpectedPropertyDigest": "a90c3ec95dfc32af45e99a41bea85ef23acdc3cbf44942cc2d015291f92af42f",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
@@ -858,7 +860,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Section",
       "claudeAllowed": true,
-      "contractDigest": "7a091a8d9b1a1032f9a470aeab0b6a239d3528d2643d89230afc8fcf8195534c"
+      "contractDigest": "3045d6f01eae45902f1926b1206edc72a09f0ad990933dd43827207d69daec9c"
     },
     {
       "contractId": "catch.skeleton",
