@@ -260,7 +260,7 @@ class LiveTab extends StatelessWidget {
             ),
     );
 
-    Widget microPodsCard() => MicroPodsHostCard(
+    Widget microPodsCard() => EventSuccessHostPodSection(
       event: event,
       assignments: assignments,
       participantProfiles: assignmentParticipantProfiles,
@@ -270,7 +270,7 @@ class LiveTab extends StatelessWidget {
       onOverride: onOverrideGroupAssignments,
     );
 
-    Widget rotationsCard() => RotationsHostCard(
+    Widget rotationsCard() => EventSuccessHostRotationSection(
       event: event,
       rotationIntervalMinutes:
           plan.structureConfig.rotationIntervalMinutes ?? 15,

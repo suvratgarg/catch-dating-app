@@ -236,7 +236,8 @@
             "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
             "lib/event_success/presentation/companion_parts/event_success_companion_live_cards.dart",
             "lib/event_success/presentation/host_parts/event_success_host_live.dart",
-            "lib/event_success/presentation/host_parts/event_success_host_overrides.dart",
+            "lib/event_success/presentation/assignments/event_success_host_pod_section.dart",
+            "lib/event_success/presentation/assignments/event_success_host_rotation_section.dart",
             "lib/event_success/presentation/host_parts/event_success_host_shared.dart",
             "test/event_success/event_success_companion_screen_state_test.dart"
           ],

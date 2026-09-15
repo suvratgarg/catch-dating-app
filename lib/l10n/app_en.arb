@@ -9765,14 +9765,14 @@
   },
   "eventSuccessEventSuccessHostOverridesTextSmallStarterGroups": "Small starter groups",
   "@eventSuccessEventSuccessHostOverridesTextSmallStarterGroups": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (Text).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_pod_section.dart (Text).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesLabelLengthAssigned": "{length} assigned",
   "@eventSuccessEventSuccessHostOverridesLabelLengthAssigned": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).",
     "placeholders": {
       "length": {}
     },
@@ -9782,7 +9782,7 @@
   },
   "eventSuccessEventSuccessHostOverridesLabelOptedoutcountOptedOut": "{optedOutCount} opted out",
   "@eventSuccessEventSuccessHostOverridesLabelOptedoutcountOptedOut": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).",
     "placeholders": {
       "optedOutCount": {}
     },
@@ -9792,84 +9792,84 @@
   },
   "eventSuccessEventSuccessHostOverridesLabelHostEdited": "Host edited",
   "@eventSuccessEventSuccessHostOverridesLabelHostEdited": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesTextRegenerateToRemoveOpted": "Regenerate to remove opted-out attendee cards from the current pod set.",
   "@eventSuccessEventSuccessHostOverridesTextRegenerateToRemoveOpted": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (Text).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_pod_section.dart (Text).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesTextGenerateAttendeePodCards": "Generate attendee pod cards from the roster, excluding opted-out attendees.",
   "@eventSuccessEventSuccessHostOverridesTextGenerateAttendeePodCards": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (Text).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_pod_section.dart (Text).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesTextGenerateAttendeePodCards4cbcdf": "Generate attendee pod cards from the current booked and checked-in roster.",
   "@eventSuccessEventSuccessHostOverridesTextGenerateAttendeePodCards4cbcdf": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (Text).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_pod_section.dart (Text).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesCatchbuttonEventsuccessgeneratemicropodsbutton": "eventSuccessGenerateMicroPodsButton",
   "@eventSuccessEventSuccessHostOverridesCatchbuttonEventsuccessgeneratemicropodsbutton": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (CatchButton).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_pod_section.dart (CatchButton).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesLabelGenerateMicroPods": "Generate micro-pods",
   "@eventSuccessEventSuccessHostOverridesLabelGenerateMicroPods": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesLabelRegenerate": "Regenerate",
   "@eventSuccessEventSuccessHostOverridesLabelRegenerate": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesLabelEditGroups": "Edit groups",
   "@eventSuccessEventSuccessHostOverridesLabelEditGroups": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesTitleEditGroups": "Edit groups",
   "@eventSuccessEventSuccessHostOverridesTitleEditGroups": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (title).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_group_override_sheet.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesSubtitleHostOverride": "Host override",
   "@eventSuccessEventSuccessHostOverridesSubtitleHostOverride": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (subtitle).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_group_override_sheet.dart, lib/event_success/presentation/assignments/event_success_rotation_override_sheet.dart (subtitle).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesLabelSaveOverrides": "Save overrides",
   "@eventSuccessEventSuccessHostOverridesLabelSaveOverrides": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesLabelGroupValue1": "Group {value1}",
   "@eventSuccessEventSuccessHostOverridesLabelGroupValue1": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).",
     "placeholders": {
       "value1": {}
     },
@@ -9879,7 +9879,7 @@
   },
   "eventSuccessEventSuccessHostOverridesTextRoundValue1": "Round {value1}",
   "@eventSuccessEventSuccessHostOverridesTextRoundValue1": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (Text).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_pod_section.dart (Text).",
     "placeholders": {
       "value1": {}
     },
@@ -9889,70 +9889,70 @@
   },
   "eventSuccessEventSuccessHostOverridesLabelAddGroup": "Add group",
   "@eventSuccessEventSuccessHostOverridesLabelAddGroup": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesTextNoGroupsInThis": "No groups in this round.",
   "@eventSuccessEventSuccessHostOverridesTextNoGroupsInThis": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (Text).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_pod_section.dart (Text).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesTitleGroupLabel": "Group label",
   "@eventSuccessEventSuccessHostOverridesTitleGroupLabel": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (title).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_group_override_sheet.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesTooltipRemoveGroup": "Remove group",
   "@eventSuccessEventSuccessHostOverridesTooltipRemoveGroup": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (tooltip).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_group_override_round_section.dart (tooltip).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesLabelAddAttendee": "Add attendee",
   "@eventSuccessEventSuccessHostOverridesLabelAddAttendee": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesTitleGroupAttendee": "Group attendee",
   "@eventSuccessEventSuccessHostOverridesTitleGroupAttendee": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (title).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_group_override_sheet.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesHinttextAttendee": "Attendee",
   "@eventSuccessEventSuccessHostOverridesHinttextAttendee": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (hintText).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_rotation_override_round_section.dart, lib/event_success/presentation/assignments/event_success_group_override_round_section.dart (hintText).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesTooltipRemoveAttendee": "Remove attendee",
   "@eventSuccessEventSuccessHostOverridesTooltipRemoveAttendee": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (tooltip).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_group_override_round_section.dart (tooltip).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesTextTimedPartnerRotations": "Timed partner rotations",
   "@eventSuccessEventSuccessHostOverridesTextTimedPartnerRotations": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (Text).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_pod_section.dart (Text).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesLabelRoundcountRounds": "{roundCount} rounds",
   "@eventSuccessEventSuccessHostOverridesLabelRoundcountRounds": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).",
     "placeholders": {
       "roundCount": {}
     },
@@ -9962,21 +9962,21 @@
   },
   "eventSuccessEventSuccessHostOverridesTextRegenerateToRemoveOpted4eddde": "Regenerate to remove opted-out attendees from timed rotations.",
   "@eventSuccessEventSuccessHostOverridesTextRegenerateToRemoveOpted4eddde": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (Text).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_pod_section.dart (Text).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesTextGeneratePairingsFromEvent": "Generate pairings from event duration, saved cadence, checked-in participants, and mutual gender interest.",
   "@eventSuccessEventSuccessHostOverridesTextGeneratePairingsFromEvent": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (Text).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_pod_section.dart (Text).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesLabelEventrotationcapacityPossible": "{eventRotationCapacity} possible",
   "@eventSuccessEventSuccessHostOverridesLabelEventrotationcapacityPossible": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).",
     "placeholders": {
       "eventRotationCapacity": {}
     },
@@ -9986,7 +9986,7 @@
   },
   "eventSuccessEventSuccessHostOverridesLabelSitoutroundcountPlannedBreaks": "{sitOutRoundCount} planned breaks",
   "@eventSuccessEventSuccessHostOverridesLabelSitoutroundcountPlannedBreaks": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).",
     "placeholders": {
       "sitOutRoundCount": {}
     },
@@ -9996,7 +9996,7 @@
   },
   "eventSuccessEventSuccessHostOverridesLabelRepeatpeercountRepeatedPeers": "{repeatPeerCount} repeated peers",
   "@eventSuccessEventSuccessHostOverridesLabelRepeatpeercountRepeatedPeers": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).",
     "placeholders": {
       "repeatPeerCount": {}
     },
@@ -10006,77 +10006,77 @@
   },
   "eventSuccessEventSuccessHostOverridesCatchbuttonEventsuccessgeneraterotationsbutton": "eventSuccessGenerateRotationsButton",
   "@eventSuccessEventSuccessHostOverridesCatchbuttonEventsuccessgeneraterotationsbutton": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (CatchButton).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_pod_section.dart (CatchButton).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesLabelGenerateRotations": "Generate rotations",
   "@eventSuccessEventSuccessHostOverridesLabelGenerateRotations": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesLabelEditRotations": "Edit rotations",
   "@eventSuccessEventSuccessHostOverridesLabelEditRotations": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesTitleEditRotations": "Edit rotations",
   "@eventSuccessEventSuccessHostOverridesTitleEditRotations": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (title).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_group_override_sheet.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesLabelAddPair": "Add pair",
   "@eventSuccessEventSuccessHostOverridesLabelAddPair": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesTextNoPairsInThis": "No pairs in this round.",
   "@eventSuccessEventSuccessHostOverridesTextNoPairsInThis": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (Text).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_pod_section.dart (Text).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesTitleFirstRotationAttendee": "First rotation attendee",
   "@eventSuccessEventSuccessHostOverridesTitleFirstRotationAttendee": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (title).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_group_override_sheet.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesTitleSecondRotationAttendee": "Second rotation attendee",
   "@eventSuccessEventSuccessHostOverridesTitleSecondRotationAttendee": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (title).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_group_override_sheet.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesHinttextPartner": "Partner",
   "@eventSuccessEventSuccessHostOverridesHinttextPartner": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (hintText).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_rotation_override_round_section.dart, lib/event_success/presentation/assignments/event_success_group_override_round_section.dart (hintText).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesTooltipRemovePair": "Remove pair",
   "@eventSuccessEventSuccessHostOverridesTooltipRemovePair": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (tooltip).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_group_override_round_section.dart (tooltip).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesLabelKeyValueAssigned": "{key} · {value} assigned",
   "@eventSuccessEventSuccessHostOverridesLabelKeyValueAssigned": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).",
     "placeholders": {
       "key": {},
       "value": {}
@@ -10087,7 +10087,7 @@
   },
   "eventSuccessEventSuccessHostOverridesTextAssignmentNotes": "Assignment notes",
   "@eventSuccessEventSuccessHostOverridesTextAssignmentNotes": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (Text).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_pod_section.dart (Text).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
@@ -16355,63 +16355,63 @@
   },
   "eventSuccessEventSuccessHostOverridesVisiblecopyHostOverrideV1": "host_override_v1",
   "@eventSuccessEventSuccessHostOverridesVisiblecopyHostOverrideV1": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesVisiblecopyAddAtLeastOne": "Add at least one group.",
   "@eventSuccessEventSuccessHostOverridesVisiblecopyAddAtLeastOne": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesVisiblecopyNameEveryGroup": "Name every group.",
   "@eventSuccessEventSuccessHostOverridesVisiblecopyNameEveryGroup": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesVisiblecopyAddAtLeastOne64c0b6": "Add at least one attendee to every group.",
   "@eventSuccessEventSuccessHostOverridesVisiblecopyAddAtLeastOne64c0b6": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesVisiblecopyChooseEveryAttendeeSlot": "Choose every attendee slot.",
   "@eventSuccessEventSuccessHostOverridesVisiblecopyChooseEveryAttendeeSlot": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesVisiblecopyEachAttendeeCanAppear": "Each attendee can appear once per round.",
   "@eventSuccessEventSuccessHostOverridesVisiblecopyEachAttendeeCanAppear": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesVisiblecopyAddAtLeastOne76e783": "Add at least one pair.",
   "@eventSuccessEventSuccessHostOverridesVisiblecopyAddAtLeastOne76e783": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesVisiblecopyChooseBothAttendeesFor": "Choose both attendees for every pair.",
   "@eventSuccessEventSuccessHostOverridesVisiblecopyChooseBothAttendeesFor": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesVisiblecopyChooseTwoDifferentAttendees": "Choose two different attendees.",
   "@eventSuccessEventSuccessHostOverridesVisiblecopyChooseTwoDifferentAttendees": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"

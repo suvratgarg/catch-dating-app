@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_assignment.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
+import 'package:catch_dating_app/event_success/presentation/assignments/event_success_host_rotation_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_host_screen.dart';
 import 'package:catch_dating_app/event_success/presentation/reveal/event_success_host_reveal_surface.dart';
 import 'package:flutter/material.dart';
@@ -71,7 +72,7 @@ void main() {
         theme: AppTheme.light,
         home: Scaffold(
           body: SingleChildScrollView(
-            child: RotationsHostCard(
+            child: EventSuccessHostRotationSection(
               event: event,
               rotationIntervalMinutes: 15,
               assignments: [assignment],
