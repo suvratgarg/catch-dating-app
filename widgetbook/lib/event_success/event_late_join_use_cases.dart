@@ -84,7 +84,9 @@ class _PreviewState extends State<_Preview> {
         clubId: view.scope.organizerId,
         startTime: DateTime.fromMillisecondsSinceEpoch(view.serverTime),
         endTime: DateTime.fromMillisecondsSinceEpoch(setup.eventEnd),
-        meetingPoint: setup.destinations.first.location.name,
+        meetingPoint:
+            setup.destinations.first.location?.name ??
+            setup.destinations.first.label,
         distanceKm: 0,
         pace: PaceLevel.easy,
         capacityLimit: 40,
