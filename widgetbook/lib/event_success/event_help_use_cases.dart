@@ -8,7 +8,7 @@ import 'package:catch_dating_app/event_success/data/event_assistance_cases_repos
 import 'package:catch_dating_app/event_success/domain/event_assistance_case_scope.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_cases_page.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_help_decision_section.dart';
-import 'package:catch_dating_app/event_success/presentation/event_assistance_help_entry.dart';
+import 'package:catch_dating_app/event_success/presentation/event_assistance_help_entry_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_help_queue_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_help_queue_sheet.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_help_sheet.dart';
@@ -23,7 +23,7 @@ import 'event_help_preview_repositories.dart';
 const _path = '[P1 product surfaces]/Event Success/Guest help';
 @widgetbook.UseCase(
   name: 'Shared help entry',
-  type: EventAssistanceHelpEntry,
+  type: EventAssistanceHelpEntrySection,
   path: _path,
 )
 Widget assistanceHelpEntry(BuildContext context) =>

@@ -25,24 +25,24 @@ export 'presentation/event_assistance_checkpoint_section.dart'; // public-api: s
 export 'presentation/event_assistance_deliveries_provider.dart'; // public-api: account-scoped Host delivery pages and reviewed actions
 export 'presentation/event_assistance_delivery_controller.dart'; // public-api: per-message reviewed handoff and exact retry state
 export 'presentation/event_assistance_delivery_decision_section.dart'; // public-api: shared delivery review
-export 'presentation/event_assistance_delivery_entry.dart'; // public-api: shared delivery review composition for rehearsal and live events
+export 'presentation/event_assistance_delivery_entry_section.dart'; // public-api: shared delivery review composition for rehearsal and live events
 export 'presentation/event_assistance_delivery_queue_section.dart'; // public-api: shared delivery review
 export 'presentation/event_assistance_departure_history_section.dart'; // public-api: shared live and rehearsal historical roster navigation
 export 'presentation/event_assistance_departure_section.dart'; // public-api: shared live and rehearsal departure controls
 export 'presentation/event_assistance_group_roster_section.dart'; // public-api: shared live and rehearsal group guest selection
 export 'presentation/event_assistance_group_staff_copy.dart'; // public-api: shared live and rehearsal group duty descriptions
 export 'presentation/event_assistance_help_decision_section.dart'; // public-api: shared live and rehearsal practical help decisions
-export 'presentation/event_assistance_help_entry.dart'; // public-api: shared live and rehearsal practical help entry
+export 'presentation/event_assistance_help_entry_section.dart'; // public-api: shared live and rehearsal practical help entry
 export 'presentation/event_assistance_help_queue_section.dart'; // public-api: shared live and rehearsal practical help records
 export 'presentation/event_assistance_late_join_section.dart'; // public-api: shared live and rehearsal rule controls
 export 'presentation/event_assistance_membership_section.dart'; // public-api: shared live and rehearsal group responsibility controls
 export 'presentation/event_assistance_movement_section.dart'; // public-api: shared live and rehearsal group movement entry
 export 'presentation/event_assistance_runtime_copy.dart'
     show runtimeRouteLabel; // public-api: shared channel labels
-export 'presentation/event_assistance_runtime_limits.dart'; // public-api: shared value controls without sender authority
+export 'presentation/event_assistance_runtime_limits_section.dart'; // public-api: shared value controls without sender authority
 export 'presentation/event_assistance_sweep_section.dart'; // public-api: shared live and rehearsal sweep roster
 export 'presentation/event_assistance_visit_section.dart'; // public-api: shared live and rehearsal visit observation controls
-export 'presentation/event_message_preferences_entry.dart'; // public-api: consumer event message preferences entry
+export 'presentation/event_message_preferences_navigation_section.dart'; // public-api: consumer event message preferences entry
 export 'presentation/event_sender_preference_controller.dart'; // public-api: verified participant WhatsApp and RCS sender navigation and consent state
 export 'presentation/event_sms_preference_controller.dart'; // public-api: verified participant SMS review and mutation state for guest route composition
 export 'presentation/event_success_companion_screen.dart'; // public-api: route entry point exposed to app routing

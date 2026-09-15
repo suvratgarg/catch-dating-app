@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/event_success/presentation/event_assistance_runtime_channels.dart';
-import 'package:catch_dating_app/event_success/presentation/event_assistance_runtime_limits.dart';
+import 'package:catch_dating_app/event_success/presentation/event_assistance_runtime_channels_section.dart';
+import 'package:catch_dating_app/event_success/presentation/event_assistance_runtime_limits_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_runtime_section.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -31,9 +31,9 @@ void main() {
         expect(tester.takeException(), isNull);
         expect(
           preview == assistanceRuntimeChannels
-              ? find.byType(EventAssistanceRuntimeChannels)
+              ? find.byType(EventAssistanceRuntimeChannelsSection)
               : preview == assistanceRuntimeLimits
-              ? find.byType(EventAssistanceRuntimeLimits)
+              ? find.byType(EventAssistanceRuntimeLimitsSection)
               : find.byType(EventAssistanceRuntimeSection),
           findsOneWidget,
         );

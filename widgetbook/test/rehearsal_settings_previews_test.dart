@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_runtime_fields.dart';
+import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_runtime_preview_section.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_runtime_section.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_settings_section.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_settings_sheet.dart';
@@ -14,7 +14,7 @@ void main() {
       (rehearsalSettingsEntry, EventRehearsalSettingsSection),
       (rehearsalSettingsSheet, EventRehearsalSettingsSheet),
       (rehearsalRuntimeSection, EventRehearsalRuntimeSection),
-      (rehearsalRuntimeFields, EventRehearsalRuntimeFields),
+      (rehearsalRuntimeFields, EventRehearsalRuntimePreviewSection),
     ]) {
       await tester.pumpWidget(
         MaterialApp(

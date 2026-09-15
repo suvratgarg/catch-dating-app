@@ -8,8 +8,8 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
 /// Explicit channel order with named, server-reviewed sender choices.
-class EventAssistanceRuntimeChannels extends StatelessWidget {
-  const EventAssistanceRuntimeChannels({
+class EventAssistanceRuntimeChannelsSection extends StatelessWidget {
+  const EventAssistanceRuntimeChannelsSection({
     super.key,
     required this.draft,
     required this.choices,

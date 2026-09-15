@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_late_join_destination_field.dart';
-import 'package:catch_dating_app/event_success/presentation/event_assistance_late_join_rules_fields.dart';
+import 'package:catch_dating_app/event_success/presentation/event_assistance_late_join_rules_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_late_join_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_live_settings_section.dart';
 import 'package:flutter/material.dart';
@@ -36,7 +36,7 @@ void main() {
           preview == assistanceLateJoinEntry
               ? find.byType(EventAssistanceLiveSettingsSection)
               : preview == assistanceLateJoinRules
-              ? find.byType(EventAssistanceLateJoinRulesFields)
+              ? find.byType(EventAssistanceLateJoinRulesSection)
               : preview == assistanceLateJoinDestinations
               ? find.byType(EventAssistanceLateJoinDestinationField)
               : find.byType(EventAssistanceLateJoinSection),

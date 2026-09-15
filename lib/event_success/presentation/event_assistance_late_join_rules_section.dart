@@ -8,8 +8,8 @@ import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
-class EventAssistanceLateJoinRulesFields extends StatelessWidget {
-  const EventAssistanceLateJoinRulesFields({
+class EventAssistanceLateJoinRulesSection extends StatelessWidget {
+  const EventAssistanceLateJoinRulesSection({
     super.key,
     required this.rules,
     required this.setup,

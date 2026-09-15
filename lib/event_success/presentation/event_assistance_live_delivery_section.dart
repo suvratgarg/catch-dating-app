@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/event_success/domain/event_assistance_delivery_scope.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_deliveries_provider.dart';
-import 'package:catch_dating_app/event_success/presentation/event_assistance_delivery_entry.dart';
+import 'package:catch_dating_app/event_success/presentation/event_assistance_delivery_entry_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_delivery_queue_sheet.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_pending_deliveries.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -16,7 +16,7 @@ class EventAssistanceLiveDeliverySection extends ConsumerWidget {
   final String organizerId, eventId;
   @override
   Widget build(BuildContext context, WidgetRef ref) =>
-      EventAssistanceDeliveryEntry(
+      EventAssistanceDeliveryEntrySection(
         confirmationNeeded: ref
             .watch(eventAssistancePendingDeliveriesProvider)
             .any((s) => s.organizerId == organizerId && s.eventId == eventId),

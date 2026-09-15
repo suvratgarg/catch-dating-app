@@ -103,6 +103,8 @@ import 'package:widgetbook_workspace/event_success/event_help_use_cases.dart'
     as _widgetbook_workspace_event_success_event_help_use_cases;
 import 'package:widgetbook_workspace/event_success/event_late_join_use_cases.dart'
     as _widgetbook_workspace_event_success_event_late_join_use_cases;
+import 'package:widgetbook_workspace/event_success/event_message_preferences_use_cases.dart'
+    as _widgetbook_workspace_event_success_event_message_preferences_use_cases;
 import 'package:widgetbook_workspace/event_success/event_runtime_use_cases.dart'
     as _widgetbook_workspace_event_success_event_runtime_use_cases;
 import 'package:widgetbook_workspace/event_success/event_success_module_consolidation_prototypes.dart'
@@ -6455,7 +6457,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'Automatic guest updates',
             children: [
               _widgetbook.WidgetbookComponent(
-                name: 'EventAssistanceRuntimeChannels',
+                name: 'EventAssistanceRuntimeChannelsSection',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Named sender order and fallback choices',
@@ -6466,7 +6468,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'EventAssistanceRuntimeLimits',
+                name: 'EventAssistanceRuntimeLimitsSection',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Optional response deadline and bounded retry limits',
@@ -6515,7 +6517,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'EventAssistanceHelpEntry',
+                name: 'EventAssistanceHelpEntrySection',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Shared help entry',
@@ -6599,6 +6601,77 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_event_success_event_help_use_cases
                             .assistancePracticeHelpRequest,
+                  ),
+                ],
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookFolder(
+            name: 'Guest message permissions',
+            children: [
+              _widgetbook.WidgetbookComponent(
+                name: 'EventMessageChannelAccordion',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Collapsed channel summary',
+                    builder:
+                        _widgetbook_workspace_event_success_event_message_preferences_use_cases
+                            .eventMessageChannelAccordion,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventMessagePreferenceSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Server-authored permission terms',
+                    builder:
+                        _widgetbook_workspace_event_success_event_message_preferences_use_cases
+                            .eventMessagePreferenceSection,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventMessagePreferencesNavigationSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Event detail entry',
+                    builder:
+                        _widgetbook_workspace_event_success_event_message_preferences_use_cases
+                            .eventMessagePreferencesNavigation,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventMessagePreferencesSheet',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Linked guest and independent channels',
+                    builder:
+                        _widgetbook_workspace_event_success_event_message_preferences_use_cases
+                            .eventMessagePreferencesSheet,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventMessageSenderSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Reviewed WhatsApp sender',
+                    builder:
+                        _widgetbook_workspace_event_success_event_message_preferences_use_cases
+                            .eventMessageSenderSection,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventMessageSmsSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Legacy SMS permission owner',
+                    builder:
+                        _widgetbook_workspace_event_success_event_message_preferences_use_cases
+                            .eventMessageSmsSection,
                   ),
                 ],
               ),
@@ -6992,7 +7065,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'EventAssistanceLateJoinRulesFields',
+                name: 'EventAssistanceLateJoinRulesSection',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Custom rules preserve the remaining configuration',
@@ -7052,7 +7125,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'EventAssistanceDeliveryEntry',
+                name: 'EventAssistanceDeliveryEntrySection',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Shared delivery entry',
@@ -7145,7 +7218,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'Rehearsal settings',
             children: [
               _widgetbook.WidgetbookComponent(
-                name: 'EventRehearsalRuntimeFields',
+                name: 'EventRehearsalRuntimePreviewSection',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Simulated outcome sequence',

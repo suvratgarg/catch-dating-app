@@ -5,7 +5,7 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/event_success/data/event_participant_context_repository.dart';
 import 'package:catch_dating_app/event_success/data/event_sender_preference_repository.dart';
-import 'package:catch_dating_app/event_success/presentation/event_message_preferences_entry.dart';
+import 'package:catch_dating_app/event_success/presentation/event_message_preferences_navigation_section.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
@@ -183,7 +183,7 @@ Future<void> _pump(
             child: child!,
           ),
           home: const Scaffold(
-            body: EventMessagePreferencesEntry(eventId: 'event-1'),
+            body: EventMessagePreferencesNavigationSection(eventId: 'event-1'),
           ),
         ),
       ),

@@ -4,7 +4,7 @@ import 'package:catch_dating_app/event_success/data/event_assistance_late_join_s
 import 'package:catch_dating_app/event_success/domain/event_assistance_late_join_rules.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_late_join_setting.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_late_join_destination_field.dart';
-import 'package:catch_dating_app/event_success/presentation/event_assistance_late_join_rules_fields.dart';
+import 'package:catch_dating_app/event_success/presentation/event_assistance_late_join_rules_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_late_join_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_late_join_sheet.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_live_settings_section.dart';
@@ -41,7 +41,7 @@ Widget assistanceLateJoinForm(BuildContext context) =>
     const _Preview(surface: _Surface.sheet);
 @widgetbook.UseCase(
   name: 'Custom rules preserve the remaining configuration',
-  type: EventAssistanceLateJoinRulesFields,
+  type: EventAssistanceLateJoinRulesSection,
   path: _path,
 )
 Widget assistanceLateJoinRules(BuildContext context) =>
@@ -126,7 +126,7 @@ class _PreviewState extends State<_Preview> {
                             () => _rules = rules.copyWith(destination: v),
                           ),
                         )
-                      : EventAssistanceLateJoinRulesFields(
+                      : EventAssistanceLateJoinRulesSection(
                           rules: rules,
                           setup: setup,
                           serverTime: view.serverTime,

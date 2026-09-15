@@ -2,8 +2,8 @@ import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
-class EventAssistanceDeliveryEntry extends StatelessWidget {
-  const EventAssistanceDeliveryEntry({
+class EventAssistanceDeliveryEntrySection extends StatelessWidget {
+  const EventAssistanceDeliveryEntrySection({
     super.key,
     required this.onReview,
     this.confirmationNeeded = false,

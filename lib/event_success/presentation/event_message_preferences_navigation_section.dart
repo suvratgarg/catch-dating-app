@@ -5,8 +5,11 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
 /// Consumer event-detail entry. No identity or preference reads until opened.
-class EventMessagePreferencesEntry extends StatelessWidget {
-  const EventMessagePreferencesEntry({super.key, required this.eventId});
+class EventMessagePreferencesNavigationSection extends StatelessWidget {
+  const EventMessagePreferencesNavigationSection({
+    super.key,
+    required this.eventId,
+  });
   final String eventId;
   @override
   Widget build(BuildContext context) => CatchSection.fieldRows(

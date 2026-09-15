@@ -7,7 +7,7 @@ import 'package:catch_dating_app/event_success/data/event_assistance_deliveries_
 import 'package:catch_dating_app/event_success/domain/event_assistance_delivery_scope.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_deliveries_page.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_delivery_decision_section.dart';
-import 'package:catch_dating_app/event_success/presentation/event_assistance_delivery_entry.dart';
+import 'package:catch_dating_app/event_success/presentation/event_assistance_delivery_entry_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_delivery_queue_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_delivery_queue_sheet.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_delivery_sheet.dart';
@@ -22,7 +22,7 @@ import 'event_delivery_preview_repositories.dart';
 const _path = '[P1 product surfaces]/Event Success/Message delivery';
 @widgetbook.UseCase(
   name: 'Shared delivery entry',
-  type: EventAssistanceDeliveryEntry,
+  type: EventAssistanceDeliveryEntrySection,
   path: _path,
 )
 Widget assistanceDeliveryEntry(BuildContext context) =>

@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_help_decision_section.dart';
-import 'package:catch_dating_app/event_success/presentation/event_assistance_help_entry.dart';
+import 'package:catch_dating_app/event_success/presentation/event_assistance_help_entry_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_help_queue_section.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -35,7 +35,7 @@ void main() {
         expect(
           preview == assistanceLiveHelpEntry ||
                   preview == assistancePracticeHelpEntry
-              ? find.byType(EventAssistanceHelpEntry)
+              ? find.byType(EventAssistanceHelpEntrySection)
               : preview == assistanceLiveHelpQueue ||
                     preview == assistancePracticeHelpQueue
               ? find.byType(EventAssistanceHelpQueueSection)

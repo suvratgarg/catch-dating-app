@@ -7,8 +7,8 @@ import 'package:catch_dating_app/event_success/domain/event_assistance_runtime_d
 import 'package:catch_dating_app/event_success/domain/event_assistance_runtime_result.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_runtime_scope.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_runtime_setting.dart';
-import 'package:catch_dating_app/event_success/presentation/event_assistance_runtime_channels.dart';
-import 'package:catch_dating_app/event_success/presentation/event_assistance_runtime_limits.dart';
+import 'package:catch_dating_app/event_success/presentation/event_assistance_runtime_channels_section.dart';
+import 'package:catch_dating_app/event_success/presentation/event_assistance_runtime_limits_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_runtime_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_runtime_sheet.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
@@ -35,14 +35,14 @@ Widget assistanceRuntimeForm(BuildContext context) =>
     const _Preview(surface: _Surface.sheet);
 @widgetbook.UseCase(
   name: 'Named sender order and fallback choices',
-  type: EventAssistanceRuntimeChannels,
+  type: EventAssistanceRuntimeChannelsSection,
   path: _path,
 )
 Widget assistanceRuntimeChannels(BuildContext context) =>
     const _Preview(surface: _Surface.channels);
 @widgetbook.UseCase(
   name: 'Optional response deadline and bounded retry limits',
-  type: EventAssistanceRuntimeLimits,
+  type: EventAssistanceRuntimeLimitsSection,
   path: _path,
 )
 Widget assistanceRuntimeLimits(BuildContext context) =>
@@ -97,7 +97,7 @@ class _PreviewState extends State<_Preview> {
               : SingleChildScrollView(
                   child: CatchPageBody(
                     child: widget.surface == _Surface.channels
-                        ? EventAssistanceRuntimeChannels(
+                        ? EventAssistanceRuntimeChannelsSection(
                             draft: draft,
                             choices: view.senderSetup!.choices,
                             moreRoutes: const {},
@@ -105,7 +105,7 @@ class _PreviewState extends State<_Preview> {
                             onChanged: (v) => setState(() => _draft = v),
                             onMore: (_) {},
                           )
-                        : EventAssistanceRuntimeLimits(
+                        : EventAssistanceRuntimeLimitsSection(
                             draft: draft,
                             eventEnd: view.eventEnd,
                             enabled: true,

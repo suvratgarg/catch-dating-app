@@ -4,9 +4,9 @@ import 'package:catch_dating_app/event_success/domain/event_assistance_runtime_d
 import 'package:catch_dating_app/event_success/domain/event_assistance_runtime_sender.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_runtime_setting.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_late_join_copy.dart';
-import 'package:catch_dating_app/event_success/presentation/event_assistance_runtime_channels.dart';
+import 'package:catch_dating_app/event_success/presentation/event_assistance_runtime_channels_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_runtime_copy.dart';
-import 'package:catch_dating_app/event_success/presentation/event_assistance_runtime_limits.dart';
+import 'package:catch_dating_app/event_success/presentation/event_assistance_runtime_limits_section.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -149,7 +149,7 @@ class _EventAssistanceRuntimeSectionState
         ],
         gapH16,
         if (_editable)
-          EventAssistanceRuntimeChannels(
+          EventAssistanceRuntimeChannelsSection(
             draft: value,
             choices: widget.choices,
             moreRoutes: widget.moreRoutes,
@@ -202,7 +202,7 @@ class _EventAssistanceRuntimeSectionState
             onPressed: () => setState(() => _customizing = !_customizing),
           ),
           if (_customizing)
-            EventAssistanceRuntimeLimits(
+            EventAssistanceRuntimeLimitsSection(
               draft: value,
               eventEnd: widget.view.eventEnd,
               enabled: _canConfigure,

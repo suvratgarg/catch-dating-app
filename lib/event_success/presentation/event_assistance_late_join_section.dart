@@ -6,7 +6,7 @@ import 'package:catch_dating_app/event_success/domain/event_assistance_late_join
 import 'package:catch_dating_app/event_success/domain/event_assistance_late_join_setting.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_late_join_setup.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_late_join_copy.dart';
-import 'package:catch_dating_app/event_success/presentation/event_assistance_late_join_rules_fields.dart';
+import 'package:catch_dating_app/event_success/presentation/event_assistance_late_join_rules_section.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -253,7 +253,7 @@ class _EventAssistanceLateJoinSectionState
             ),
             if (_customizing)
               CatchSection.fieldRows(
-                child: EventAssistanceLateJoinRulesFields(
+                child: EventAssistanceLateJoinRulesSection(
                   rules: rules,
                   setup: widget.setup!,
                   serverTime: widget.serverTime,

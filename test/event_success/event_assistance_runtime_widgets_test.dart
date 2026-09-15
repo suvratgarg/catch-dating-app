@@ -8,7 +8,7 @@ import 'package:catch_dating_app/event_success/data/event_assistance_runtime_rep
 import 'package:catch_dating_app/event_success/domain/event_assistance_runtime_setting.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_live_settings_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_runtime_copy.dart';
-import 'package:catch_dating_app/event_success/presentation/event_assistance_runtime_limits.dart';
+import 'package:catch_dating_app/event_success/presentation/event_assistance_runtime_limits_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_runtime_section.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
@@ -102,7 +102,7 @@ void main() {
 
         await tap(find.byKey(const ValueKey('runtime.open')));
         expect(find.byType(EventAssistanceRuntimeSection), findsOneWidget);
-        expect(find.byType(EventAssistanceRuntimeLimits), findsNothing);
+        expect(find.byType(EventAssistanceRuntimeLimitsSection), findsNothing);
         expect(repository.writes, isEmpty);
         await capture('initial');
         await tap(find.byKey(const ValueKey('runtime.channel.0')));
@@ -113,7 +113,10 @@ void main() {
               .hitTestable(),
         );
         await tap(find.byKey(const ValueKey('runtime.customize')));
-        expect(find.byType(EventAssistanceRuntimeLimits), findsOneWidget);
+        expect(
+          find.byType(EventAssistanceRuntimeLimitsSection),
+          findsOneWidget,
+        );
         expect(repository.writes, isEmpty);
         await capture('limits');
         await tap(find.byKey(const ValueKey('runtime.customize')));

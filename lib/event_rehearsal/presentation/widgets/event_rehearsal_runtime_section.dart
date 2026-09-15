@@ -5,7 +5,7 @@ import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_runtime_
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_runtime_draft.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_settings_change.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_settings_controller.dart';
-import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_runtime_fields.dart';
+import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_runtime_preview_section.dart';
 import 'package:catch_dating_app/event_success/event_success.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -129,7 +129,7 @@ class _EventRehearsalRuntimeSectionState
           ),
         ],
         gapH16,
-        EventRehearsalRuntimeFields(
+        EventRehearsalRuntimePreviewSection(
           draft: value,
           enabled: _editable,
           consumedPrefix: RehearsalRuntimeDraft.consumedPrefix(widget.snapshot),
@@ -157,7 +157,7 @@ class _EventRehearsalRuntimeSectionState
           onPressed: () => setState(() => _advanced = !_advanced),
         ),
         if (_advanced || !_editable) ...[
-          EventAssistanceRuntimeLimits.values(
+          EventAssistanceRuntimeLimitsSection.values(
             expiresAt: view.eventEnd,
             responseDeadline: value.responseDeadline,
             deliveryPolicy: value.deliveryPolicy,
@@ -168,7 +168,7 @@ class _EventRehearsalRuntimeSectionState
             onChooseTime: _chooseTime,
           ),
           gapH12,
-          EventRehearsalRuntimeFields(
+          EventRehearsalRuntimePreviewSection(
             draft: value,
             enabled: _editable,
             consumedPrefix: RehearsalRuntimeDraft.consumedPrefix(

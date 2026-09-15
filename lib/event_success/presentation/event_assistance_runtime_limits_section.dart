@@ -8,15 +8,15 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
 /// Optional timing and delivery limits preserve the rest of the configuration.
-class EventAssistanceRuntimeLimits extends StatelessWidget {
-  factory EventAssistanceRuntimeLimits({
+class EventAssistanceRuntimeLimitsSection extends StatelessWidget {
+  factory EventAssistanceRuntimeLimitsSection({
     Key? key,
     required AssistanceRuntimeDraft draft,
     required int eventEnd,
     required bool enabled,
     required ValueChanged<AssistanceRuntimeDraft> onChanged,
     required ValueChanged<bool> onChooseTime,
-  }) => EventAssistanceRuntimeLimits.values(
+  }) => EventAssistanceRuntimeLimitsSection.values(
     key: key,
     expiresAt: draft.expiresAt,
     responseDeadline: draft.responseDeadline,
@@ -30,7 +30,7 @@ class EventAssistanceRuntimeLimits extends StatelessWidget {
   );
 
   /// Both modes share these value controls. No sender or execution scope is needed.
-  const EventAssistanceRuntimeLimits.values({
+  const EventAssistanceRuntimeLimitsSection.values({
     super.key,
     required this.expiresAt,
     required this.responseDeadline,

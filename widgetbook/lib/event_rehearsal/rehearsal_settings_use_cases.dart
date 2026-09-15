@@ -5,7 +5,7 @@ import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_runtime_draft.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_settings_change.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_settings_controller.dart';
-import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_runtime_fields.dart';
+import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_runtime_preview_section.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_runtime_section.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_settings_section.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_settings_sheet.dart';
@@ -40,7 +40,7 @@ Widget rehearsalRuntimeSection(BuildContext context) =>
     const _Preview(surface: _Surface.form);
 @widgetbook.UseCase(
   name: 'Simulated outcome sequence',
-  type: EventRehearsalRuntimeFields,
+  type: EventRehearsalRuntimePreviewSection,
   path: _path,
 )
 Widget rehearsalRuntimeFields(BuildContext context) =>
@@ -112,7 +112,7 @@ class _PreviewState extends State<_Preview> {
                         onReload: () {},
                         onDone: () {},
                       ),
-                      _Surface.outcomes => EventRehearsalRuntimeFields(
+                      _Surface.outcomes => EventRehearsalRuntimePreviewSection(
                         draft: draft,
                         enabled: true,
                         consumedPrefix: 0,

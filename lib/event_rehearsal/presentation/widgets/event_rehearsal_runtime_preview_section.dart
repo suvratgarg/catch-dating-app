@@ -8,8 +8,8 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
 /// Practice choices carry route kinds and synthetic receipts, never sender IDs.
-class EventRehearsalRuntimeFields extends StatelessWidget {
-  const EventRehearsalRuntimeFields({
+class EventRehearsalRuntimePreviewSection extends StatelessWidget {
+  const EventRehearsalRuntimePreviewSection({
     super.key,
     required this.draft,
     required this.enabled,

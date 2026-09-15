@@ -7,7 +7,7 @@ import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_settings
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_runtime_section.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_settings_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_late_join_section.dart';
-import 'package:catch_dating_app/event_success/presentation/event_assistance_runtime_limits.dart';
+import 'package:catch_dating_app/event_success/presentation/event_assistance_runtime_limits_section.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -64,11 +64,14 @@ void main() {
 
         await tap(find.byKey(const ValueKey('practice.openRuntime')));
         expect(find.byType(EventRehearsalRuntimeSection), findsOneWidget);
-        expect(find.byType(EventAssistanceRuntimeLimits), findsNothing);
+        expect(find.byType(EventAssistanceRuntimeLimitsSection), findsNothing);
         expect(repository.writes, isEmpty);
         await capture('initial');
         await tap(find.byKey(const ValueKey('practice.customize')));
-        expect(find.byType(EventAssistanceRuntimeLimits), findsOneWidget);
+        expect(
+          find.byType(EventAssistanceRuntimeLimitsSection),
+          findsOneWidget,
+        );
         await tap(find.byKey(const ValueKey('practice.addOutcome')));
         await capture('advanced');
         await tap(find.byKey(const ValueKey('practice.save')), busy: true);
