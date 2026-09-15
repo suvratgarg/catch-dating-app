@@ -46,10 +46,6 @@
       "maxLines": 1313
     },
     {
-      "path": "lib/hosts/presentation/payments/host_payment_account_card.dart",
-      "maxLines": 923
-    },
-    {
       "path": "lib/routing/go_router.dart",
       "maxLines": 1423
     },

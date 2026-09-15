@@ -830,11 +830,11 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>HostSendsWorkspaceSliver</code> | <code>lib/hosts/presentation/inbox/host_sends_workspace.dart:30</code> | — | — | No class documentation or registry summary. |
 | <code>HostWhatsappThreadRow</code> | <code>lib/hosts/presentation/inbox/host_whatsapp_thread_sheet.dart:17</code> | — | — | No class documentation or registry summary. |
 | <code>HostWhatsappThreadSheet</code> | <code>lib/hosts/presentation/inbox/host_whatsapp_thread_sheet.dart:59</code> | — | — | No class documentation or registry summary. |
-| <code>HostPaymentAccountCard</code> | <code>lib/hosts/presentation/payments/host_payment_account_card.dart:32</code> | — | — | No class documentation or registry summary. |
-| <code>HostPaymentAccountContentCard</code> | <code>lib/hosts/presentation/payments/host_payment_account_card.dart:220</code> | — | — | No class documentation or registry summary. |
-| <code>HostPaymentAccountErrorCard</code> | <code>lib/hosts/presentation/payments/host_payment_account_card.dart:875</code> | — | — | No class documentation or registry summary. |
-| <code>HostPaymentAccountLoadingCard</code> | <code>lib/hosts/presentation/payments/host_payment_account_card.dart:846</code> | — | — | No class documentation or registry summary. |
+| <code>HostPaymentAccountCard</code> | <code>lib/hosts/presentation/payments/host_payment_account_card.dart:34</code> | — | — | No class documentation or registry summary. |
+| <code>HostPaymentAccountErrorCard</code> | <code>lib/hosts/presentation/payments/host_payment_account_card.dart:676</code> | — | — | No class documentation or registry summary. |
+| <code>HostPaymentAccountLoadingCard</code> | <code>lib/hosts/presentation/payments/host_payment_account_card.dart:647</code> | — | — | No class documentation or registry summary. |
 | <code>HostPaymentAccountControllerCard</code> | <code>lib/hosts/presentation/payments/host_payment_account_controller_card.dart:16</code> | — | — | No class documentation or registry summary. |
+| <code>HostPaymentAccountSection</code> | <code>lib/hosts/presentation/payments/host_payment_account_section.dart:3</code> | — | — | No class documentation or registry summary. |
 | <code>CatchRosterActionCell</code> | <code>lib/hosts/presentation/widgets/catch_roster_board.dart:288</code> | — | — | No class documentation or registry summary. |
 | <code>CatchRosterDecideTarget</code> | <code>lib/hosts/presentation/widgets/catch_roster_board.dart:363</code> | — | — | No class documentation or registry summary. |
 | <code>CatchRosterRow</code> | <code>lib/hosts/presentation/widgets/catch_roster_board.dart:195</code> | — | <code>catch.roster_row</code> | Design-system `RosterRow` (`components/hosting/RosterBoard`): one participant — avatar, condensed name over a mono meta line, a signal [CatchBadge], and a spec-driven [action] cell. Columns are fixed 5/3/3 to match [CatchRosterTable]. |
