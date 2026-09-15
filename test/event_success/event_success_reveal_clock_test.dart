@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/event_success/presentation/reveal/event_success_reveal_clock_state.dart';
+import 'package:catch_dating_app/event_success/presentation/reveal/event_success_reveal_clock_mixin.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -74,7 +74,8 @@ class _ClockHarness extends StatefulWidget {
   State<_ClockHarness> createState() => _ClockHarnessState();
 }
 
-class _ClockHarnessState extends EventSuccessRevealClockState<_ClockHarness> {
+class _ClockHarnessState extends State<_ClockHarness>
+    with EventSuccessRevealClockMixin<_ClockHarness> {
   @override
   bool get revealClockEnabled => widget.enabled;
 

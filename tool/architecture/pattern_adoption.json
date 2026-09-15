@@ -963,8 +963,8 @@
           "status": "aligned"
         },
         {
-          "path": "lib/event_success/presentation/reveal/event_success_reveal_clock_state.dart",
-          "role": "provider-free Flutter State lifecycle base for the shared reveal timer; owns enable, pause, resume, and disposal while concrete reveal surfaces own rendering",
+          "path": "lib/event_success/presentation/reveal/event_success_reveal_clock_mixin.dart",
+          "role": "provider-free Flutter State lifecycle mixin for the shared reveal timer; owns enable, pause, resume, and disposal while concrete reveal surfaces own rendering",
           "providerFree": true,
           "status": "aligned"
         },
