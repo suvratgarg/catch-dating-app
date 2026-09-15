@@ -39,7 +39,7 @@ part 'event_repository_actions.dart';
 
 const _collectionPath = 'events';
 
-class EventRepository {
+class EventRepository with EventRepositoryActions {
   const EventRepository(this._db, this._functions);
 
   final FirebaseFirestore _db;
