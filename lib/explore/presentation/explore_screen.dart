@@ -17,16 +17,20 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_localized_sliver_error_s
 import 'package:catch_dating_app/cross_paths/cross_paths.dart';
 import 'package:catch_dating_app/events/shared/event_detail_route_transition.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/explore/presentation/explore_chrome_state.dart';
 import 'package:catch_dating_app/explore/presentation/explore_city_controller.dart';
 import 'package:catch_dating_app/explore/presentation/explore_cross_paths_provider.dart';
 import 'package:catch_dating_app/explore/presentation/explore_discovery_window_controller.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
+import 'package:catch_dating_app/explore/presentation/explore_filter_state.dart';
 import 'package:catch_dating_app/explore/presentation/explore_screen_state.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_body.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_city_picker.dart';
+import 'package:catch_dating_app/explore/presentation/widgets/explore_feed_skeleton.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_filter_rail.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_header.dart';
+import 'package:catch_dating_app/explore/presentation/widgets/explore_screen_empty_state.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_tokens/catch_tokens.dart';
@@ -429,7 +433,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
               SliverToBoxAdapter(
                 child: Padding(
                   padding: CatchInsets.pageBody.copyWith(bottom: 0),
-                  child: const ExploreSkeletonList(),
+                  child: const ExploreFeedSkeleton(),
                 ),
               ),
             ],
@@ -777,147 +781,4 @@ double _mapLauncherBottomOffset(BuildContext context) {
     context,
     minimum: CatchSpacing.s5,
   );
-}
-
-class ExploreScreenEmptyState extends StatelessWidget {
-  const ExploreScreenEmptyState({
-    super.key,
-    required this.state,
-    this.onClearSearch,
-    this.onClearFilters,
-    this.onChangeCity,
-  });
-
-  final ExploreDiscoveryEmptyState state;
-  final VoidCallback? onClearSearch;
-  final VoidCallback? onClearFilters;
-  final VoidCallback? onChangeCity;
-
-  @override
-  Widget build(BuildContext context) {
-    final action = state.action == ExploreDiscoveryEmptyAction.none
-        ? null
-        : ExploreClearAction(
-            clearSearch: state.clearSearch,
-            clearFilters: state.clearFilters,
-            onClearSearch: onClearSearch,
-            onClearFilters: onClearFilters,
-          );
-    return switch (state.kind) {
-      ExploreDiscoveryEmptyKind.noSourceClubs => Center(
-        child: Padding(
-          padding: CatchInsets.contentRelaxed,
-          child: CatchEmptyState(
-            icon: CatchIcons.groupsOutlined,
-            title: context.l10n.exploreExploreScreenTitleNoClubsInCitylabel(
-              cityLabel: state.cityLabel,
-            ),
-            message: context.l10n.exploreExploreScreenMessageTryAnotherCityFrom,
-            actions: [
-              CatchButton(
-                label: context.l10n.exploreExploreScreenLabelChangeCity,
-                leading: Icon(CatchIcons.locationOnOutlined),
-                onPressed: onChangeCity,
-              ),
-            ],
-          ),
-        ),
-      ),
-      ExploreDiscoveryEmptyKind.noFilteredSearchResults => Center(
-        child: Padding(
-          padding: CatchInsets.contentRelaxed,
-          child: CatchEmptyState(
-            icon: CatchIcons.groupsOutlined,
-            title: context.l10n.exploreExploreScreenTitleNoClubsMatchThis,
-            message: context.l10n.exploreExploreScreenMessageClearTheSearchOr,
-            actions: [?action],
-          ),
-        ),
-      ),
-      ExploreDiscoveryEmptyKind.noSearchResults => Center(
-        child: Padding(
-          padding: CatchInsets.contentRelaxed,
-          child: CatchEmptyState(
-            icon: CatchIcons.groupsOutlined,
-            title: context.l10n.exploreExploreScreenTitleNoClubsMatchThis,
-            message: context
-                .l10n
-                .exploreExploreScreenMessageTryAnotherClubNeighborhood,
-            actions: [?action],
-          ),
-        ),
-      ),
-      ExploreDiscoveryEmptyKind.noFilterResults => Center(
-        child: Padding(
-          padding: CatchInsets.contentRelaxed,
-          child: CatchEmptyState(
-            icon: CatchIcons.groupsOutlined,
-            title: context.l10n.exploreExploreScreenTitleNoClubsMatchThese,
-            message: context.l10n.exploreExploreScreenMessageClearOneOrMore,
-            actions: [?action],
-          ),
-        ),
-      ),
-    };
-  }
-}
-
-class ExploreClearAction extends StatelessWidget {
-  const ExploreClearAction({
-    super.key,
-    required this.clearSearch,
-    required this.clearFilters,
-    this.onClearSearch,
-    this.onClearFilters,
-    this.icon,
-  });
-
-  final bool clearSearch;
-  final bool clearFilters;
-  final VoidCallback? onClearSearch;
-  final VoidCallback? onClearFilters;
-
-  /// Optional override for the action icon. Defaults to [CatchIcons.clear].
-  final IconData? icon;
-
-  @override
-  Widget build(BuildContext context) {
-    final label = switch ((clearSearch, clearFilters)) {
-      (true, true) =>
-        context.l10n.exploreExploreScreenLabelClearSearchAndFilters,
-      (true, false) => context.l10n.exploreExploreScreenLabelClearSearch,
-      (false, true) => context.l10n.exploreExploreScreenLabelClearFilters,
-      (false, false) => context.l10n.exploreExploreScreenLabelClear,
-    };
-    return CatchButton(
-      label: label,
-      onPressed: () {
-        if (clearSearch) {
-          onClearSearch?.call();
-        }
-        if (clearFilters) {
-          onClearFilters?.call();
-        }
-      },
-      variant: CatchButtonVariant.secondary,
-      leading: Icon(icon ?? CatchIcons.clear),
-    );
-  }
-}
-
-class ExploreSkeletonList extends StatelessWidget {
-  const ExploreSkeletonList({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        CatchSkeleton.card(height: CatchLayout.exploreEventsSkeletonHeight),
-        gapH16,
-        CatchSkeleton.card(height: CatchLayout.skeletonCardCompactHeight),
-        gapH12,
-        CatchSkeleton.card(height: CatchLayout.skeletonCardCompactHeight),
-      ],
-    );
-  }
 }

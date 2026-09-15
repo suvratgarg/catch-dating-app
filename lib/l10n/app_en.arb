@@ -2556,63 +2556,63 @@
   },
   "exploreExploreScreenTitleNoClubsMatchThis": "No organizers match this search",
   "@exploreExploreScreenTitleNoClubsMatchThis": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen.dart (title).",
+    "description": "Product copy used by lib/explore/presentation/widgets/explore_screen_empty_state.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen"
   },
   "exploreExploreScreenMessageClearTheSearchOr": "Clear the search or filters to bring nearby organizers back into view.",
   "@exploreExploreScreenMessageClearTheSearchOr": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen.dart (message).",
+    "description": "Product copy used by lib/explore/presentation/widgets/explore_screen_empty_state.dart (message).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen"
   },
   "exploreExploreScreenMessageTryAnotherClubNeighborhood": "Try another organizer, neighborhood, host, or tag.",
   "@exploreExploreScreenMessageTryAnotherClubNeighborhood": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen.dart (message).",
+    "description": "Product copy used by lib/explore/presentation/widgets/explore_screen_empty_state.dart (message).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen"
   },
   "exploreExploreScreenTitleNoClubsMatchThese": "No organizers match these filters",
   "@exploreExploreScreenTitleNoClubsMatchThese": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen.dart (title).",
+    "description": "Product copy used by lib/explore/presentation/widgets/explore_screen_empty_state.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen"
   },
   "exploreExploreScreenMessageClearOneOrMore": "Clear one or more filters to bring nearby organizers back into view.",
   "@exploreExploreScreenMessageClearOneOrMore": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen.dart (message).",
+    "description": "Product copy used by lib/explore/presentation/widgets/explore_screen_empty_state.dart (message).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen"
   },
   "exploreExploreScreenLabelClearSearchAndFilters": "Clear search and filters",
   "@exploreExploreScreenLabelClearSearchAndFilters": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen.dart (label).",
+    "description": "Product copy used by lib/explore/presentation/widgets/explore_clear_button.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen"
   },
   "exploreExploreScreenLabelClearSearch": "Clear search",
   "@exploreExploreScreenLabelClearSearch": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen.dart (label).",
+    "description": "Product copy used by lib/explore/presentation/widgets/explore_clear_button.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen"
   },
   "exploreExploreScreenLabelClearFilters": "Clear filters",
   "@exploreExploreScreenLabelClearFilters": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen.dart (label).",
+    "description": "Product copy used by lib/explore/presentation/widgets/explore_clear_button.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen"
   },
   "exploreExploreScreenLabelClear": "Clear",
   "@exploreExploreScreenLabelClear": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen.dart (label).",
+    "description": "Product copy used by lib/explore/presentation/widgets/explore_clear_button.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen"
@@ -7656,7 +7656,7 @@
   },
   "exploreExploreScreenTitleNoClubsInCitylabel": "No organizers in {cityLabel} yet",
   "@exploreExploreScreenTitleNoClubsInCitylabel": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen.dart (title).",
+    "description": "Product copy used by lib/explore/presentation/widgets/explore_screen_empty_state.dart (title).",
     "placeholders": {
       "cityLabel": {}
     },
@@ -12329,7 +12329,7 @@
   },
   "exploreExploreScreenMessageTryAnotherCityFrom": "Try another city from the location control, or create the first organizer when you are ready to host.",
   "@exploreExploreScreenMessageTryAnotherCityFrom": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen.dart (message).",
+    "description": "Product copy used by lib/explore/presentation/widgets/explore_screen_empty_state.dart (message).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen"
@@ -13367,7 +13367,7 @@
   },
   "exploreExploreScreenStateLabelMap": "Map",
   "@exploreExploreScreenStateLabelMap": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (label).",
+    "description": "Product copy used by lib/explore/presentation/explore_chrome_state.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen_state"
@@ -13386,35 +13386,35 @@
   },
   "exploreExploreScreenStateLabelAny": "Any",
   "@exploreExploreScreenStateLabelAny": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (label).",
+    "description": "Product copy used by lib/explore/presentation/explore_filter_state.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen_state"
   },
   "exploreExploreScreenStateLabel1Km": "1 km",
   "@exploreExploreScreenStateLabel1Km": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (label).",
+    "description": "Product copy used by lib/explore/presentation/explore_filter_state.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen_state"
   },
   "exploreExploreScreenStateLabel3Km": "3 km",
   "@exploreExploreScreenStateLabel3Km": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (label).",
+    "description": "Product copy used by lib/explore/presentation/explore_filter_state.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen_state"
   },
   "exploreExploreScreenStateLabel5Km": "5 km",
   "@exploreExploreScreenStateLabel5Km": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (label).",
+    "description": "Product copy used by lib/explore/presentation/explore_filter_state.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen_state"
   },
   "exploreExploreScreenStateLabel10Km": "10 km",
   "@exploreExploreScreenStateLabel10Km": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (label).",
+    "description": "Product copy used by lib/explore/presentation/explore_filter_state.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen_state"
@@ -13457,21 +13457,21 @@
   },
   "exploreExploreScreenStateActionlabelOpen": "Open",
   "@exploreExploreScreenStateActionlabelOpen": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (actionLabel).",
+    "description": "Product copy used by lib/explore/presentation/explore_event_display_state.dart (actionLabel).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen_state"
   },
   "exploreExploreScreenStateActionlabelNoLink": "No link",
   "@exploreExploreScreenStateActionlabelNoLink": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (actionLabel).",
+    "description": "Product copy used by lib/explore/presentation/explore_event_display_state.dart (actionLabel).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen_state"
   },
   "exploreExploreScreenStateCaptionClubToKnow": "Organizer to know",
   "@exploreExploreScreenStateCaptionClubToKnow": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (caption).",
+    "description": "Product copy used by lib/explore/presentation/explore_club_display_state.dart (caption).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen_state"
@@ -16796,7 +16796,7 @@
   },
   "exploreExploreScreenStateVisiblecopyChooseCityLabel": "Choose city: {label}",
   "@exploreExploreScreenStateVisiblecopyChooseCityLabel": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/explore/presentation/explore_chrome_state.dart (visibleCopy).",
     "placeholders": {
       "label": {}
     },
@@ -16806,7 +16806,7 @@
   },
   "exploreExploreScreenStateVisiblecopyExploreLabel": "EXPLORE · {label}",
   "@exploreExploreScreenStateVisiblecopyExploreLabel": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/explore/presentation/explore_chrome_state.dart (visibleCopy).",
     "placeholders": {
       "label": {}
     },
@@ -16816,28 +16816,28 @@
   },
   "exploreExploreScreenStateVisiblecopyExplore": "Explore",
   "@exploreExploreScreenStateVisiblecopyExplore": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/explore/presentation/explore_chrome_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen_state"
   },
   "exploreExploreScreenStateVisiblecopySearchEventsOrClubs": "Search events or organizers",
   "@exploreExploreScreenStateVisiblecopySearchEventsOrClubs": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/explore/presentation/explore_chrome_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen_state"
   },
   "exploreExploreScreenStateVisiblecopyOpenExploreFilters": "Open explore filters",
   "@exploreExploreScreenStateVisiblecopyOpenExploreFilters": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/explore/presentation/explore_filter_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen_state"
   },
   "exploreExploreScreenStateVisiblecopyOpenExploreFiltersActivecount": "Open explore filters, {activeCount} active",
   "@exploreExploreScreenStateVisiblecopyOpenExploreFiltersActivecount": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/explore/presentation/explore_filter_state.dart (visibleCopy).",
     "placeholders": {
       "activeCount": {}
     },
@@ -16847,7 +16847,7 @@
   },
   "exploreExploreScreenStateVisiblecopyTimePricelabel": "{time} - {priceLabel}",
   "@exploreExploreScreenStateVisiblecopyTimePricelabel": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/explore/presentation/explore_event_display_state.dart (visibleCopy).",
     "placeholders": {
       "time": {},
       "priceLabel": {}
@@ -16858,7 +16858,7 @@
   },
   "exploreExploreScreenStateVisiblecopySignedupcountGoingCoverspotslabel": "{signedUpCount} going - {coverSpotsLabel}",
   "@exploreExploreScreenStateVisiblecopySignedupcountGoingCoverspotslabel": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/explore/presentation/explore_event_display_state.dart (visibleCopy).",
     "placeholders": {
       "signedUpCount": {},
       "coverSpotsLabel": {}
@@ -16869,7 +16869,7 @@
   },
   "exploreExploreScreenStateVisiblecopyFromTouppercase": "FROM {toUpperCase}",
   "@exploreExploreScreenStateVisiblecopyFromTouppercase": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/explore/presentation/explore_event_display_state.dart (visibleCopy).",
     "placeholders": {
       "toUpperCase": {}
     },
@@ -16879,14 +16879,14 @@
   },
   "exploreExploreScreenStateVisiblecopyExternal": "External",
   "@exploreExploreScreenStateVisiblecopyExternal": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/explore/presentation/explore_event_display_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen_state"
   },
   "exploreExploreScreenStateVisiblecopyTimePricelabelc30029": "{time} · {priceLabel}",
   "@exploreExploreScreenStateVisiblecopyTimePricelabelc30029": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/explore/presentation/explore_event_display_state.dart (visibleCopy).",
     "placeholders": {
       "time": {},
       "priceLabel": {}
@@ -16897,49 +16897,49 @@
   },
   "exploreExploreScreenStateVisiblecopyOpenExternalEventSource": "Open external event source",
   "@exploreExploreScreenStateVisiblecopyOpenExternalEventSource": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/explore/presentation/explore_event_display_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen_state"
   },
   "exploreExploreScreenStateVisiblecopyExternalEventLinkUnavailable": "External event link unavailable",
   "@exploreExploreScreenStateVisiblecopyExternalEventLinkUnavailable": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/explore/presentation/explore_event_display_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen_state"
   },
   "exploreExploreScreenStateVisiblecopyReadOnlySupplyNo": "READ-ONLY SUPPLY · NO CATCH BOOKING",
   "@exploreExploreScreenStateVisiblecopyReadOnlySupplyNo": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/explore/presentation/explore_event_display_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen_state"
   },
   "exploreExploreScreenStateVisiblecopyClubToKnow": "ORGANIZER TO KNOW",
   "@exploreExploreScreenStateVisiblecopyClubToKnow": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/explore/presentation/explore_club_display_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen_state"
   },
   "exploreExploreScreenStateVisiblecopyPlan": "PLAN",
   "@exploreExploreScreenStateVisiblecopyPlan": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/explore/presentation/explore_mixed_feed_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen_state"
   },
   "exploreExploreScreenStateVisiblecopyPlans": "PLANS",
   "@exploreExploreScreenStateVisiblecopyPlans": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/explore/presentation/explore_mixed_feed_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen_state"
   },
   "exploreExploreScreenStateVisiblecopyCountNoun": "{count} {noun}",
   "@exploreExploreScreenStateVisiblecopyCountNoun": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/explore/presentation/explore_mixed_feed_state.dart (visibleCopy).",
     "placeholders": {
       "count": {},
       "noun": {}
@@ -16961,7 +16961,7 @@
   },
   "exploreExploreScreenStateVisiblecopyCountNounDatespan": "{count} {noun} · {dateSpan}",
   "@exploreExploreScreenStateVisiblecopyCountNounDatespan": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/explore/presentation/explore_mixed_feed_state.dart (visibleCopy).",
     "placeholders": {
       "count": {},
       "noun": {},
@@ -16985,7 +16985,7 @@
   },
   "exploreExploreScreenStateVisiblecopyNextNextevent": "Next: {nextEvent}",
   "@exploreExploreScreenStateVisiblecopyNextNextevent": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/explore/presentation/explore_club_display_state.dart (visibleCopy).",
     "placeholders": {
       "nextEvent": {}
     },
@@ -16995,7 +16995,7 @@
   },
   "exploreExploreScreenStateVisiblecopyClubmembercountlabelArea": "{clubMemberCountLabel} - {area}",
   "@exploreExploreScreenStateVisiblecopyClubmembercountlabelArea": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/explore/presentation/explore_club_display_state.dart (visibleCopy).",
     "placeholders": {
       "clubMemberCountLabel": {},
       "area": {}
@@ -17006,7 +17006,7 @@
   },
   "exploreExploreScreenStateVisiblecopyCovertimescopeNameLocationname": "{coverTimeScope} - {name} - {locationName}",
   "@exploreExploreScreenStateVisiblecopyCovertimescopeNameLocationname": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/explore/presentation/explore_event_display_state.dart (visibleCopy).",
     "placeholders": {
       "coverTimeScope": {},
       "name": {},
@@ -17018,35 +17018,35 @@
   },
   "exploreExploreScreenStateVisiblecopyTonight": "Tonight",
   "@exploreExploreScreenStateVisiblecopyTonight": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/explore/presentation/explore_event_display_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen_state"
   },
   "exploreExploreScreenStateVisiblecopyTomorrow": "Tomorrow",
   "@exploreExploreScreenStateVisiblecopyTomorrow": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/explore/presentation/explore_event_display_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen_state"
   },
   "exploreExploreScreenStateVisiblecopyThisWeek": "This week",
   "@exploreExploreScreenStateVisiblecopyThisWeek": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/explore/presentation/explore_event_display_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen_state"
   },
   "exploreExploreScreenStateVisiblecopy1Left": "1 left",
   "@exploreExploreScreenStateVisiblecopy1Left": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/explore/presentation/explore_event_display_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen_state"
   },
   "exploreExploreScreenStateVisiblecopySpotsLeft": "{spots} left",
   "@exploreExploreScreenStateVisiblecopySpotsLeft": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/explore/presentation/explore_event_display_state.dart (visibleCopy).",
     "placeholders": {
       "spots": {}
     },

@@ -70,14 +70,6 @@
       "maxLines": 960
     },
     {
-      "path": "lib/explore/presentation/explore_screen_state.dart",
-      "maxLines": 1623
-    },
-    {
-      "path": "lib/explore/presentation/explore_screen.dart",
-      "maxLines": 923
-    },
-    {
       "path": "lib/hosts/presentation/club_management/create/create_club_screen.dart",
       "maxLines": 870
     },

@@ -635,9 +635,6 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>EventTicketStub</code> | <code>lib/events/shared/event_tiles/event_date_rail_card.dart:241</code> | — | <code>catch.event_card</code> | Canonical decision row used by date-rail and agenda ticket compositions. |
 | <code>PerforationLine</code> | <code>lib/events/shared/event_tiles/event_date_rail_card.dart:484</code> | — | — | No class documentation or registry summary. |
 | <code>MapPinTile</code> | <code>lib/events/shared/map_pin_tile.dart:7</code> | — | — | No class documentation or registry summary. |
-| <code>ExploreClearAction</code> | <code>lib/explore/presentation/explore_screen.dart:865</code> | — | — | No class documentation or registry summary. |
-| <code>ExploreScreenEmptyState</code> | <code>lib/explore/presentation/explore_screen.dart:782</code> | — | — | No class documentation or registry summary. |
-| <code>ExploreSkeletonList</code> | <code>lib/explore/presentation/explore_screen.dart:908</code> | — | — | No class documentation or registry summary. |
 | <code>CatchCoverStory</code> | <code>lib/explore/presentation/widgets/catch_cover_story.dart:18</code> | — | <code>catch.cover_story</code> | Design-system `CoverStory` (`components/explore/CoverStory`): the dark "wow" cover that opens Explore — tonight's headline event as a magazine cover. A near-black ground, an activity-pigment radial glow, a faint diagonal scrim, a giant ghosted activity glyph, a condensed Archivo headline, and a paper CTA + mono data block. Also serves as a neutral masthead (omit [activityKind] for the brand glow, set [showGhostGlyph] false, pass [body] for a hook line). |
 | <code>CoverStoryChrome</code> | <code>lib/explore/presentation/widgets/catch_cover_story.dart:165</code> | — | — | No class documentation or registry summary. |
 | <code>CoverStoryContent</code> | <code>lib/explore/presentation/widgets/catch_cover_story.dart:259</code> | — | — | No class documentation or registry summary. |
@@ -645,6 +642,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>CityTrigger</code> | <code>lib/explore/presentation/widgets/explore_city_picker.dart:83</code> | — | — | No class documentation or registry summary. |
 | <code>ExploreCityPicker</code> | <code>lib/explore/presentation/widgets/explore_city_picker.dart:10</code> | — | — | No class documentation or registry summary. |
 | <code>ExploreCityPickerSheet</code> | <code>lib/explore/presentation/widgets/explore_city_picker.dart:138</code> | — | — | No class documentation or registry summary. |
+| <code>ExploreClearButton</code> | <code>lib/explore/presentation/widgets/explore_clear_button.dart:5</code> | — | — | No class documentation or registry summary. |
 | <code>ExploreClubTags</code> | <code>lib/explore/presentation/widgets/explore_club_cards.dart:171</code> | — | — | No class documentation or registry summary. |
 | <code>ExploreFeedClubRow</code> | <code>lib/explore/presentation/widgets/explore_club_cards.dart:88</code> | — | — | No class documentation or registry summary. |
 | <code>ExploreOrganizerPosterCard</code> | <code>lib/explore/presentation/widgets/explore_club_cards.dart:13</code> | — | <code>catch.organizer_poster</code> | Explore spotlight adopter that composes organizer authority, rating, host identity, and tags into the canonical poster. |
@@ -658,19 +656,21 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>EventTypeBrowseSkeleton</code> | <code>lib/explore/presentation/widgets/explore_event_type_browse_grid.dart:273</code> | — | — | No class documentation or registry summary. |
 | <code>ExploreEventTypeBrowseGrid</code> | <code>lib/explore/presentation/widgets/explore_event_type_browse_grid.dart:13</code> | — | — | No class documentation or registry summary. |
 | <code>MoreActivityTypesRow</code> | <code>lib/explore/presentation/widgets/explore_event_type_browse_grid.dart:239</code> | — | — | No class documentation or registry summary. |
-| <code>ExploreEventsSection</code> | <code>lib/explore/presentation/widgets/explore_events_section.dart:138</code> | — | — | Compatibility shim — earlier call sites used `const ExploreEventsSection()` as a single sliver. New call sites should prefer [buildExploreEventsSlivers] so the slivers are spread into the parent flat slivers list. |
-| <code>ExploreFeedContentSliver</code> | <code>lib/explore/presentation/widgets/explore_events_section.dart:194</code> | — | — | No class documentation or registry summary. |
+| <code>ExploreEventsSection</code> | <code>lib/explore/presentation/widgets/explore_events_section.dart:139</code> | — | — | Compatibility shim — earlier call sites used `const ExploreEventsSection()` as a single sliver. New call sites should prefer [buildExploreEventsSlivers] so the slivers are spread into the parent flat slivers list. |
+| <code>ExploreFeedContentSliver</code> | <code>lib/explore/presentation/widgets/explore_events_section.dart:195</code> | — | — | No class documentation or registry summary. |
 | <code>ExploreEventsEmptySliver</code> | <code>lib/explore/presentation/widgets/explore_events_status_slivers.dart:36</code> | — | — | No class documentation or registry summary. |
 | <code>ExploreEventsLoadingSliver</code> | <code>lib/explore/presentation/widgets/explore_events_status_slivers.dart:14</code> | — | — | No class documentation or registry summary. |
+| <code>ExploreFeedSkeleton</code> | <code>lib/explore/presentation/widgets/explore_feed_skeleton.dart:5</code> | — | — | No class documentation or registry summary. |
 | <code>ExploreAppliedFilterChips</code> | <code>lib/explore/presentation/widgets/explore_filter_rail.dart:109</code> | — | — | Removable Explore filters that scroll beneath the pinned time-scope rail. |
 | <code>ExploreFilterRail</code> | <code>lib/explore/presentation/widgets/explore_filter_rail.dart:16</code> | — | — | Explore's pinned primary time-scope rail. |
 | <code>ExploreFilterSheet</code> | <code>lib/explore/presentation/widgets/explore_filter_rail.dart:207</code> | — | — | No class documentation or registry summary. |
-| <code>ExploreBrowseHeaderContent</code> | <code>lib/explore/presentation/widgets/explore_header.dart:17</code> | — | — | Non-sliver browse header embeddable in [CatchSliverHeader.bottom] or a regular column. Uses [CatchTopBar] with built-in search support instead of a custom animated search morph. |
-| <code>ExploreDiscoveryCoverHeader</code> | <code>lib/explore/presentation/widgets/explore_header.dart:78</code> | — | — | No class documentation or registry summary. |
+| <code>ExploreBrowseHeaderContent</code> | <code>lib/explore/presentation/widgets/explore_header.dart:18</code> | — | — | Non-sliver browse header embeddable in [CatchSliverHeader.bottom] or a regular column. Uses [CatchTopBar] with built-in search support instead of a custom animated search morph. |
+| <code>ExploreDiscoveryCoverHeader</code> | <code>lib/explore/presentation/widgets/explore_header.dart:79</code> | — | — | No class documentation or registry summary. |
 | <code>ClubDirectorySkeletonCard</code> | <code>lib/explore/presentation/widgets/explore_list.dart:205</code> | — | — | No class documentation or registry summary. |
 | <code>ClubDirectorySkeletonList</code> | <code>lib/explore/presentation/widgets/explore_list.dart:188</code> | — | — | No class documentation or registry summary. |
 | <code>ExploreList</code> | <code>lib/explore/presentation/widgets/explore_list.dart:13</code> | — | — | No class documentation or registry summary. |
 | <code>ExploreListEmptyState</code> | <code>lib/explore/presentation/widgets/explore_list.dart:91</code> | — | — | No class documentation or registry summary. |
+| <code>ExploreScreenEmptyState</code> | <code>lib/explore/presentation/widgets/explore_screen_empty_state.dart:8</code> | — | — | No class documentation or registry summary. |
 | <code>RecommendCard</code> | <code>lib/explore/presentation/widgets/recommend_card.dart:18</code> | — | — | Explore recommendation card. |
 | <code>Recommendations</code> | <code>lib/explore/presentation/widgets/recommendations.dart:8</code> | — | — | No class documentation or registry summary. |
 | <code>UpdateRequiredContent</code> | <code>lib/force_update/presentation/update_required_screen.dart:55</code> | — | — | Provider-free full-screen update prompt rendered by [UpdateRequiredScreen]. |
@@ -1096,7 +1096,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>EventCheckInCelebrationScreen</code> | <code>lib/events/shared/event_check_in_celebration_screen.dart:9</code> | — | — | No class documentation or registry summary. |
 | <code>EventJoinedCelebrationScreen</code> | <code>lib/events/shared/event_joined_celebration_screen.dart:10</code> | — | — | No class documentation or registry summary. |
 | <code>ExploreMapScreen</code> | <code>lib/explore/presentation/explore_map_screen.dart:38</code> | — | — | Full-screen event map opened from the Explore feed's map pill. |
-| <code>ExploreScreen</code> | <code>lib/explore/presentation/explore_screen.dart:48</code> | — | — | Explore — the supply-side feed (design-system Explore). |
+| <code>ExploreScreen</code> | <code>lib/explore/presentation/explore_screen.dart:52</code> | — | — | Explore — the supply-side feed (design-system Explore). |
 | <code>UpdateRequiredScreen</code> | <code>lib/force_update/presentation/update_required_screen.dart:15</code> | — | — | Blocking screen shown when the running app version is below [minVersion]. |
 | <code>HostApp</code> | <code>lib/host_app.dart:5</code> | — | — | No class documentation or registry summary. |
 | <code>HostEventsScreen</code> | <code>lib/hosts/events/presentation/host_events_screen.dart:30</code> | — | — | No class documentation or registry summary. |

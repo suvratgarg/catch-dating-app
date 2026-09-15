@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.65.4
+version: 1.65.5
 updated: 2026-09-15
 owner: app_architecture
 status: active
@@ -393,6 +393,17 @@ The first folder-boundary cleanup applied after this spec uses these owners:
 - Club display-name lookup is a data/provider seam in `lib/clubs/data`.
 
 ### Explore discovery scope and filter boundary
+
+Explore display models are split by responsibility: `explore_screen_state.dart`
+owns route branches and empty recovery; `explore_chrome_state.dart` owns search,
+city and map-launcher display; `explore_filter_state.dart` owns filter choices
+and live counts; `explore_event_display_state.dart` and
+`explore_club_display_state.dart` own event and organizer labels;
+`explore_mixed_feed_state.dart` owns feed ordering and grouping. These libraries
+accept plain values and keep provider reads in the route boundary.
+The screen mounts `ExploreScreenEmptyState`, `ExploreClearButton`, and
+`ExploreFeedSkeleton` from their component files; empty-state callbacks and
+loading shapes retain their existing contracts.
 
 Explore's visible date strip is an intent selector, not a set of overlapping
 weekly taxonomies. `Tonight`, the next six local dates, and `Any` are the only
