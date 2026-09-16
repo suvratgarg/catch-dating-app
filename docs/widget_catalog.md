@@ -828,8 +828,8 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>HostMessagingWorkspaceTabBar</code> | <code>lib/hosts/presentation/inbox/host_inbox_workspace_section.dart:224</code> | — | — | No class documentation or registry summary. |
 | <code>HostManualSendQueue</code> | <code>lib/hosts/presentation/inbox/host_manual_send_queue.dart:18</code> | — | — | No class documentation or registry summary. |
 | <code>HostNewMessageRouteSection</code> | <code>lib/hosts/presentation/inbox/host_new_message_screen.dart:250</code> | — | — | No class documentation or registry summary. |
-| <code>HostPersonConversationMenu</code> | <code>lib/hosts/presentation/inbox/host_person_conversation_menu.dart:17</code> | — | — | Keeps the existing Catch conversation actions available in the shared pane. The parent supplies only a currently authorized source and its messages. |
-| <code>HostPersonConversationPageBody</code> | <code>lib/hosts/presentation/inbox/host_person_conversation_page_body.dart:26</code> | — | — | Embedded presentation: the route/workspace owns Scaffold and keyboard insets. |
+| <code>HostPersonConversationMenu</code> | <code>lib/hosts/presentation/inbox/host_person_conversation_menu.dart:15</code> | — | — | Keeps the existing Catch conversation actions available in the shared pane. The parent supplies only a currently authorized source and its messages. |
+| <code>HostPersonConversationPageBody</code> | <code>lib/hosts/presentation/inbox/host_person_conversation_page_body.dart:24</code> | — | — | Embedded presentation: the route/workspace owns Scaffold and keyboard insets. |
 | <code>HostSendIntentMenu</code> | <code>lib/hosts/presentation/inbox/host_send_intent_menu.dart:17</code> | — | — | No class documentation or registry summary. |
 | <code>HostSendsBackButton</code> | <code>lib/hosts/presentation/inbox/host_sends_back_button.dart:5</code> | — | — | No class documentation or registry summary. |
 | <code>HostSendsWorkspaceSliver</code> | <code>lib/hosts/presentation/inbox/host_sends_workspace.dart:29</code> | — | — | No class documentation or registry summary. |

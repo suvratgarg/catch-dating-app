@@ -273,9 +273,7 @@ class HostNewMessageRouteSection extends ConsumerWidget {
         plan.singleRecipient.contactId == id;
     final catchAvailable =
         valid &&
-        plan.singleRecipient
-            .route(HostCommunicationRouteId.catchChat)
-            .isAvailable;
+        plan.singleRecipient.outcome == HostCommunicationOutcome.inCatch;
     final whatsappState = catchAsyncStateFromAsyncValue(
       ref.watch(hostInboxWhatsappPagesProvider(organizerId)),
     );
