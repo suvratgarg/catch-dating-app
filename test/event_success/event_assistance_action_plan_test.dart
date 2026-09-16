@@ -80,7 +80,16 @@ void main() {
     expect(
       byKind[EventAssistanceWorkflowKind.requiredGuestData]
           ?.implementationStatus,
-      EventAssistanceWorkflowImplementationStatus.complete,
+      EventAssistanceWorkflowImplementationStatus.partial,
+    );
+    final override = byKind[EventAssistanceWorkflowKind.requiredGuestData]
+        ?.commands
+        .singleWhere(
+          (command) => command.kind == EventAssistanceCommandKind.applyOverride,
+        );
+    expect(
+      override?.binding.missingCapability,
+      EventAssistanceMissingCapability.liveScopedRuleOverride,
     );
     expect(
       byKind[EventAssistanceWorkflowKind.financialReconciliation]
