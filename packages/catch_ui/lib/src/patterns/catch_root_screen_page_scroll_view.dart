@@ -27,7 +27,24 @@ class CatchRootScreenPageScrollView extends StatefulWidget
     this.onRefresh,
   }) : bodyLayout = CatchPageBodyMode.standard,
        includeTerminalPadding = true,
+       _sectionRhythm = false,
        constrainToContentWidth = true;
+
+  /// Normal section-based page. Sections own readable gutters while Field
+  /// targets span the local viewport. Page owns top rhythm and shell clearance.
+  const CatchRootScreenPageScrollView.sections({
+    super.key,
+    required this.scrollKey,
+    required this.children,
+    this.controller,
+    this.scrollStateController,
+    this.physics,
+    this.onRefresh,
+  }) : bodyLayout = CatchPageBodyMode.fullBleed,
+       includeTerminalPadding = true,
+       _sectionRhythm = true,
+       constrainToContentWidth = false,
+       maxContentExtent = null;
 
   /// Full-bleed root page whose sliver children still use shell-owned terminal
   /// clearance.
@@ -41,6 +58,7 @@ class CatchRootScreenPageScrollView extends StatefulWidget
     this.onRefresh,
   }) : bodyLayout = CatchPageBodyMode.fullBleed,
        includeTerminalPadding = true,
+       _sectionRhythm = false,
        constrainToContentWidth = false,
        maxContentExtent = null;
 
@@ -56,9 +74,11 @@ class CatchRootScreenPageScrollView extends StatefulWidget
     this.onRefresh,
   }) : bodyLayout = CatchPageBodyMode.fullBleed,
        includeTerminalPadding = false,
+       _sectionRhythm = false,
        constrainToContentWidth = false,
        maxContentExtent = null;
 
+  final bool _sectionRhythm;
   final PageStorageKey<String> scrollKey;
   final CatchPageBodyMode bodyLayout;
 
@@ -193,6 +213,10 @@ class _CatchRootScreenPageScrollViewState
                   context,
                 ),
               ),
+              if (widget._sectionRhythm)
+                const SliverToBoxAdapter(
+                  child: SizedBox(height: CatchSpacing.screenPt),
+                ),
               CatchPageBody.slivers(
                 mode: widget.bodyLayout,
                 constrainToContentWidth: widget.constrainToContentWidth,

@@ -72,7 +72,7 @@ test("flags modal, contained, or duplicate saved-audience presentation", () => {
     routeContractSource: "",
   });
   assert.ok(findings.some((item) => /overflow or a modal/u.test(item.reason)));
-  assert.ok(findings.some((item) => /divided section/u.test(item.reason)));
+  assert.ok(findings.some((item) => /typed row section/u.test(item.reason)));
   assert.ok(findings.some((item) => /exactly one/u.test(item.reason)));
   assert.ok(findings.some((item) => /parallel modal/u.test(item.reason)));
   assert.ok(findings.some((item) => /all four peer workspaces/u.test(item.reason)));
@@ -81,6 +81,53 @@ test("flags modal, contained, or duplicate saved-audience presentation", () => {
       .length,
     2,
   );
+});
+
+test("saved-audience directories require the canonical typed row APIs", () => {
+  const scanWorkspace = (workspaceSource) => audienceWorkspacePresentationFindings({
+    audienceViewPath: "audience_view.dart",
+    audienceViewSource: [
+      "enum HostAudienceView { people, audiences, forms, responses }",
+      "class HostAudienceTabRail {}",
+      "ValueKey<String>('host-audience-view-tabs')",
+    ].join("\n"),
+    customersPath: "customers.dart",
+    customersSource: [
+      "CatchRootScreenScaffold.withPrimaryRail(",
+      "HostSavedAudiencesWorkspace(",
+      "actions: peopleView",
+    ].join("\n"),
+    workspacePath: "workspace.dart",
+    workspaceSource: workspaceSource + "ValueKey('host-saved-audience-create')",
+    editorSheetsPath: "sheets.dart",
+    editorSheetsSource: "",
+    routeContractPath: "routes.dart",
+    routeContractSource: [
+      "hostCreateSavedAudienceScreen(\n    '/host/audience/audiences/new'",
+      "hostSavedAudienceDetailScreen(\n    '/host/audience/audiences/:audienceId'",
+    ].join("\n"),
+  });
+  for (const section of ["rows", "sliverRows"]) {
+    assert.deepEqual(scanWorkspace(
+      `CatchSection.${section}( CatchField.navigate(`,
+    ), []);
+  }
+  for (const source of [
+    "CatchSection.containedRows( CatchField.navigate(",
+    "CatchSection.content( CatchField.navigate(",
+    "CatchSection.divided( CatchField.nav(",
+    "CatchSection.sliverRows( CatchField.nav(",
+  ]) {
+    assert.ok(scanWorkspace(source).some((item) =>
+      /typed row section/u.test(item.reason)));
+  }
+});
+
+test("new-message presentation consumes the resolved conversation outcome", () => {
+  assert.deepEqual(scanPresentationFile({
+    relativePath: "lib/hosts/presentation/inbox/host_new_message_screen.dart",
+    source: "plan.singleRecipient.outcome == HostCommunicationOutcome.inCatch",
+  }), []);
 });
 
 test("flags saved-audience mutation outside Customers", () => {

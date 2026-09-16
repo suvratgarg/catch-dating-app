@@ -1,5 +1,6 @@
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/patterns/catch_master_detail_pane_builder.dart';
+import 'package:catch_ui/src/patterns/catch_row_viewport.dart';
 import 'package:flutter/material.dart';
 
 /// Index/detail pane geometry with explicit or local-width split selection.
@@ -55,19 +56,22 @@ class CatchMasterDetailViewport extends StatelessWidget {
       );
     }
     final fixed = _fixed!;
-    if (!fixed.expanded) return fixed.leading;
+    if (!fixed.expanded) return CatchRowViewport(child: fixed.leading);
     final tokens = CatchTokens.of(context);
     return Row(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        SizedBox(width: indexPaneWidth, child: fixed.leading),
+        SizedBox(
+          width: indexPaneWidth,
+          child: CatchRowViewport(child: fixed.leading),
+        ),
         VerticalDivider(
           key: const ValueKey('catch-master-detail-divider'),
           width: CatchStroke.hairline,
           thickness: CatchStroke.hairline,
           color: tokens.line,
         ),
-        Expanded(child: body),
+        Expanded(child: CatchRowViewport(child: body)),
       ],
     );
   }

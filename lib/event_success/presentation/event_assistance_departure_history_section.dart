@@ -48,35 +48,45 @@ class EventAssistanceDepartureHistorySection extends StatelessWidget {
             l10n.eventAssistanceHistoryEmpty,
             style: CatchTextStyles.supporting(context),
           ),
-        for (final row in items)
-          CatchRecordRow(
-            key: ValueKey('checkpoint.history.${row.revision}'),
-            icon: CatchIcons.group,
-            title: row.title ?? l10n.eventAssistanceHistoryEarlierSetup,
-            metadata: l10n.eventAssistanceHistoryDepartureAt(
-              number: row.revision,
-              date: local.formatMediumDate(
-                DateTime.fromMillisecondsSinceEpoch(row.confirmedAt),
-              ),
-              time: local.formatTimeOfDay(
-                TimeOfDay.fromDateTime(
-                  DateTime.fromMillisecondsSinceEpoch(row.confirmedAt),
+        if (items.isNotEmpty)
+          CatchSection.containedRows(
+            children: items.map((row) {
+              final content = CatchRecordLayout(
+                icon: CatchIcons.group,
+                title: row.title ?? l10n.eventAssistanceHistoryEarlierSetup,
+                metadata: l10n.eventAssistanceHistoryDepartureAt(
+                  number: row.revision,
+                  date: local.formatMediumDate(
+                    DateTime.fromMillisecondsSinceEpoch(row.confirmedAt),
+                  ),
+                  time: local.formatTimeOfDay(
+                    TimeOfDay.fromDateTime(
+                      DateTime.fromMillisecondsSinceEpoch(row.confirmedAt),
+                    ),
+                  ),
                 ),
-              ),
-            ),
-            facts: [
-              l10n.eventAssistanceHistoryRosterSize(count: row.rosterSize),
-              if (row.hasCheckpoint)
-                row.reportRevision == 0
-                    ? l10n.eventAssistanceHistoryNoReport
-                    : l10n.eventAssistanceHistoryObserved(
-                        count: row.accountedForCount,
-                        total: row.rosterSize,
-                      )
-              else
-                l10n.eventAssistanceHistoryNoCheckpoint,
-            ],
-            onTap: row.hasCheckpoint ? () => onCheckpoint(row.revision) : null,
+                facts: [
+                  l10n.eventAssistanceHistoryRosterSize(count: row.rosterSize),
+                  if (row.hasCheckpoint)
+                    row.reportRevision == 0
+                        ? l10n.eventAssistanceHistoryNoReport
+                        : l10n.eventAssistanceHistoryObserved(
+                            count: row.accountedForCount,
+                            total: row.rosterSize,
+                          )
+                  else
+                    l10n.eventAssistanceHistoryNoCheckpoint,
+                ],
+              );
+              final key = ValueKey('checkpoint.history.${row.revision}');
+              return row.hasCheckpoint
+                  ? CatchField.navigate(
+                      key: key,
+                      content: content,
+                      onActivate: () => onCheckpoint(row.revision),
+                    )
+                  : CatchField.read(key: key, content: content);
+            }).toList(),
           ),
         gapH12,
         Wrap(

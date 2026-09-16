@@ -2,7 +2,7 @@ part of 'catch_field.dart';
 
 extension _CatchFieldRowModes on _CatchFieldState {
   double get _rowTrailingTopPadding {
-    if (widget._contentRow) return 0;
+    if (widget._rowLayout != null || widget._contentRow) return 0;
     if (!_isEdit && widget.emphasis == CatchFieldEmphasis.title) {
       return 0;
     }

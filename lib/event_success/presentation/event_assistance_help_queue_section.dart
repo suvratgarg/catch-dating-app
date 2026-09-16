@@ -96,26 +96,35 @@ class EventAssistanceHelpQueueSection extends StatelessWidget {
                 : l10n.eventAssistanceHelpEmptyHandled,
             style: CatchTextStyles.supporting(context),
           ),
-        for (final row in items)
-          CatchRecordRow(
-            key: ValueKey('help.request.${row.id}'),
-            icon: CatchIcons.group,
-            title: row.displayName ?? l10n.eventAssistanceHelpUnknownGuest,
-            metadata: helpReceivedLabel(context, row.receivedAt),
-            facts: [
-              helpCategoryLabel(l10n, row.category),
-              if (row.assignment != null)
-                helpAssignmentLabel(l10n, row.assignment!, options)
-              else
-                row.sourceChanged
-                    ? l10n.eventAssistanceHelpSourceChanged
-                    : l10n.eventAssistanceHelpLegacy,
-              if (row.resolution != null)
-                row.resolution == AssistanceCaseResolutionOutcome.resolved
-                    ? l10n.eventAssistanceHelpResolved
-                    : l10n.eventAssistanceHelpDeclined,
+        if (items.isNotEmpty)
+          CatchSection.containedRows(
+            children: [
+              for (final row in items)
+                CatchField.navigate(
+                  key: ValueKey('help.request.${row.id}'),
+                  content: CatchRecordLayout(
+                    icon: CatchIcons.group,
+                    title:
+                        row.displayName ?? l10n.eventAssistanceHelpUnknownGuest,
+                    metadata: helpReceivedLabel(context, row.receivedAt),
+                    facts: [
+                      helpCategoryLabel(l10n, row.category),
+                      if (row.assignment != null)
+                        helpAssignmentLabel(l10n, row.assignment!, options)
+                      else
+                        row.sourceChanged
+                            ? l10n.eventAssistanceHelpSourceChanged
+                            : l10n.eventAssistanceHelpLegacy,
+                      if (row.resolution != null)
+                        row.resolution ==
+                                AssistanceCaseResolutionOutcome.resolved
+                            ? l10n.eventAssistanceHelpResolved
+                            : l10n.eventAssistanceHelpDeclined,
+                    ],
+                  ),
+                  onActivate: () => onReview(row.id),
+                ),
             ],
-            onTap: () => onReview(row.id),
           ),
         gapH12,
         Text(

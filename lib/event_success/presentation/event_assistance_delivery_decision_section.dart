@@ -128,23 +128,26 @@ class EventAssistanceDeliveryDecisionSection extends StatelessWidget {
         if (item.attempts.isNotEmpty)
           CatchSection.divided(
             title: l10n.eventAssistanceDeliveryAttempts,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
+            child: CatchSection.containedRows(
               children: [
                 for (var i = 0; i < item.attempts.length; i++)
-                  CatchRecordRow(
+                  CatchField.read(
                     key: ValueKey('delivery.attempt.$i'),
-                    icon: CatchIcons.chatCircle,
-                    title: switch (item.attempts[i].channel) {
-                      AssistanceDeliveryChannel.sms =>
-                        l10n.eventAssistanceRuntimeSms,
-                      AssistanceDeliveryChannel.whatsapp =>
-                        l10n.eventAssistanceRuntimeWhatsapp,
-                      AssistanceDeliveryChannel.rcs =>
-                        l10n.eventAssistanceRuntimeRcs,
-                    },
-                    metadata: deliveryTimeLabel(context, item.attempts[i].at),
-                    facts: [deliveryAttemptLabel(l10n, item.attempts[i].state)],
+                    content: CatchRecordLayout(
+                      icon: CatchIcons.chatCircle,
+                      title: switch (item.attempts[i].channel) {
+                        AssistanceDeliveryChannel.sms =>
+                          l10n.eventAssistanceRuntimeSms,
+                        AssistanceDeliveryChannel.whatsapp =>
+                          l10n.eventAssistanceRuntimeWhatsapp,
+                        AssistanceDeliveryChannel.rcs =>
+                          l10n.eventAssistanceRuntimeRcs,
+                      },
+                      metadata: deliveryTimeLabel(context, item.attempts[i].at),
+                      facts: [
+                        deliveryAttemptLabel(l10n, item.attempts[i].state),
+                      ],
+                    ),
                   ),
               ],
             ),

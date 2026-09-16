@@ -485,10 +485,17 @@ class MatchesChatFixtureConversationRepository
       Future.value('$conversationId-design-message');
 
   @override
+  Future<ConversationMessagePage> fetchMessagesPage({
+    required String conversationId,
+    ConversationMessageCursor? cursor,
+  }) async => const ConversationMessagePage(messages: []);
+
+  @override
   Future<void> sendTextMessage({
     required String conversationId,
     required String senderId,
     required String text,
+    String? messageId,
   }) async {
     sendCalls.add((
       conversationId: conversationId,

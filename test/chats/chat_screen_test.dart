@@ -33,6 +33,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../events/events_test_helpers.dart';
 import '../test_pump_helpers.dart';
+import 'chat_screen_conversation_repository.dart';
 
 part 'chat_screen_suvbot_tests.dart';
 
@@ -58,60 +59,6 @@ class FakeMatchRepository extends Fake implements MatchRepository {
   @override
   Stream<List<Match>> watchMatchesForUser({required String uid}) =>
       const Stream.empty();
-}
-
-class FakeConversationRepository implements ConversationRepository {
-  FakeConversationRepository({
-    this.failSends = false,
-    this.messageStream,
-    this.sendCompleter,
-  });
-
-  final bool failSends;
-  final Stream<List<ChatMessage>>? messageStream;
-  final Completer<void>? sendCompleter;
-  final Map<String, List<ChatMessage>> messagesByMatch = {};
-  final List<(String matchId, String senderId, String text)> sendCalls = [];
-  final List<(String matchId, String uid)> markReadCalls = [];
-
-  @override
-  Future<void> sendTextMessage({
-    required String conversationId,
-    required String senderId,
-    required String text,
-  }) async {
-    sendCalls.add((conversationId, senderId, text));
-    await sendCompleter?.future;
-    if (failSends) {
-      throw Exception('send failed');
-    }
-  }
-
-  @override
-  Stream<List<ChatMessage>> watchMessages({required String conversationId}) {
-    return messageStream ??
-        Stream.value(messagesByMatch[conversationId] ?? const []);
-  }
-
-  @override
-  Future<String> createMessageId({required String conversationId}) async =>
-      'message-1';
-
-  @override
-  Future<void> sendImageMessage({
-    required String conversationId,
-    required String senderId,
-    required String messageId,
-    required String imageUrl,
-  }) async {}
-
-  @override
-  Future<void> markRead({
-    required String conversationId,
-    required String uid,
-  }) async {
-    markReadCalls.add((conversationId, uid));
-  }
 }
 
 class FakeSuvbotRepository implements SuvbotRepository {

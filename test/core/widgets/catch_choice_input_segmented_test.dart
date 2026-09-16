@@ -13,6 +13,41 @@ Widget _app(Widget child) => MaterialApp(
 );
 
 void main() {
+  testWidgets('a fitting control never scrolls an ancestor pager', (
+    tester,
+  ) async {
+    final pager = PageController(initialPage: 1);
+    addTearDown(pager.dispose);
+    Widget screen(String selected) => _app(
+      PageView(
+        controller: pager,
+        allowImplicitScrolling: true,
+        children: [
+          CatchChoiceInput<String>.segmented(
+            key: const ValueKey('local-control'),
+            selected: selected,
+            options: const [
+              CatchOption(value: 'a', label: 'A'),
+              CatchOption(value: 'b', label: 'B'),
+            ],
+            onChanged: (_) {},
+          ),
+          const Center(child: Text('Current page', style: TextStyle())),
+        ],
+      ),
+    );
+    await tester.pumpWidget(screen('a'));
+    await pumpFeatureUi(tester);
+    expect(
+      find.byKey(const ValueKey('local-control'), skipOffstage: false),
+      findsOneWidget,
+    );
+    expect(pager.page, 1);
+    await tester.pumpWidget(screen('b'));
+    await pumpFeatureUi(tester);
+    expect(pager.page, 1);
+  });
+
   testWidgets(
     'same-length source changes refresh contract-filtered label anchors',
     (tester) async {

@@ -7,11 +7,11 @@
   "allowedFindings": [
     {
       "path": "lib/event_success/presentation/event_success_room_map.dart",
-      "maxLines": 1089
+      "maxLines": 1034
     },
     {
       "path": "lib/hosts/presentation/host_operations/host_analytics.dart",
-      "maxLines": 1138
+      "maxLines": 1088
     },
     {
       "path": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
@@ -19,7 +19,7 @@
     },
     {
       "path": "lib/routing/go_router.dart",
-      "maxLines": 1422
+      "maxLines": 1395
     },
     {
       "path": "packages/catch_tokens/lib/src/semantic/catch_layout.dart",
@@ -27,11 +27,11 @@
     },
     {
       "path": "packages/catch_ui_lints/lib/src/catch_ui_rules.dart",
-      "maxLines": 2828
+      "maxLines": 2490
     },
     {
       "path": "packages/catch_ui/lib/src/components/catch_field.dart",
-      "maxLines": 1100
+      "maxLines": 1090
     }
   ]
 }

@@ -1681,8 +1681,8 @@
   },
   "eventSuccessEventSuccessSetupBodyLabelOff": "Off",
   "@eventSuccessEventSuccessSetupBodyLabelOff": {
-    "description": "Disabled match clue questionnaire mode.",
-    "x-audience": "host",
+    "description": "Product copy used by lib/event_success/presentation/event_success_setup_body.dart (label).",
+    "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_setup_body"
   },
@@ -4315,13 +4315,6 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.inbox.host_inbox_screen"
   },
-  "hostsHostInboxScreenMessagePersonalQuestionsAppearHere": "Personal questions appear here. Broadcast audience size is based on the event roster, not this thread list.",
-  "@hostsHostInboxScreenMessagePersonalQuestionsAppearHere": {
-    "description": "Product copy used by lib/hosts/presentation/inbox/host_inbox_screen.dart (message).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.inbox.host_inbox_screen"
-  },
   "hostsHostPaymentAccountCardTitleSetUpPayouts": "Set up payouts",
   "@hostsHostPaymentAccountCardTitleSetUpPayouts": {
     "description": "Product copy used by lib/hosts/presentation/payments/host_payment_account_card.dart (title).",
@@ -6667,13 +6660,6 @@
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_setup_body"
   },
-  "eventSuccessEventSuccessSetupBodyLabelOff": "Off",
-  "@eventSuccessEventSuccessSetupBodyLabelOff": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_setup_body.dart (label).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "event_success.presentation.event_success_setup_body"
-  },
   "eventSuccessEventSuccessSetupBodyLabel5s": "5s",
   "@eventSuccessEventSuccessSetupBodyLabel5s": {
     "description": "Product copy used by lib/event_success/presentation/event_success_setup_body.dart (label).",
@@ -7297,13 +7283,6 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.inbox.host_inbox_screen"
   },
-  "hostsHostInboxScreenMessageQuestionsThatAreNot": "Questions that are not tied to one event will appear here.",
-  "@hostsHostInboxScreenMessageQuestionsThatAreNot": {
-    "description": "Product copy used by lib/hosts/presentation/inbox/host_inbox_screen.dart (message).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.inbox.host_inbox_screen"
-  },
   "hostsHostPaymentAccountCardTitlePayouts": "Payouts",
   "@hostsHostPaymentAccountCardTitlePayouts": {
     "description": "Product copy used by lib/hosts/presentation/payments/host_payment_account_card.dart (title).",
@@ -7897,7 +7876,7 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.inbox.host_broadcast_composer_sheet"
   },
-  "hostsHostInboxScreenLabelBookedBookedthreadcount": "BOOKED · {bookedThreadCount}",
+  "hostsHostInboxScreenLabelBookedBookedthreadcount": "Booked · {bookedThreadCount}",
   "@hostsHostInboxScreenLabelBookedBookedthreadcount": {
     "description": "Product copy used by lib/hosts/presentation/inbox/host_inbox_screen.dart (label).",
     "placeholders": {
@@ -7907,7 +7886,7 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.inbox.host_inbox_screen"
   },
-  "hostsHostInboxScreenLabelProspectiveProspectivethreadcount": "PROSPECTIVE · {prospectiveThreadCount}",
+  "hostsHostInboxScreenLabelProspectiveProspectivethreadcount": "Prospective · {prospectiveThreadCount}",
   "@hostsHostInboxScreenLabelProspectiveProspectivethreadcount": {
     "description": "Product copy used by lib/hosts/presentation/inbox/host_inbox_screen.dart (label).",
     "placeholders": {
@@ -11735,20 +11714,6 @@
     "x-owner": "product",
     "x-surface": "hosts.events.presentation.host_event_entry_sheet"
   },
-  "hostsHostEventsListTextLive": "LIVE",
-  "@hostsHostEventsListTextLive": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_events_list.dart (Text).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_events_list"
-  },
-  "hostsHostEventsListTextToday": "TODAY",
-  "@hostsHostEventsListTextToday": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_events_list.dart (Text).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_events_list"
-  },
   "hostEventsUpcomingTab": "Upcoming",
   "@hostEventsUpcomingTab": {
     "description": "Peer view containing live and upcoming events.",
@@ -12039,13 +12004,6 @@
   "hostsHostTodayLabelGoing": "expected",
   "@hostsHostTodayLabelGoing": {
     "description": "Expected guest count label in the Host Today current-event focus.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.today"
-  },
-  "hostsHostTodayLabelWaiting": "checked in",
-  "@hostsHostTodayLabelWaiting": {
-    "description": "Checked-in guest count label in the Host Today current-event focus.",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.today"
@@ -21759,8 +21717,6 @@
   "@hostSendsFollowerDeliveryStatus": {"description": "User-facing delivery state for an organizer follower update.", "placeholders": {"status": {"type": "String"}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.inbox"},
   "hostInboxWhatsappChannel": "WhatsApp Business · Organizer number",
   "@hostInboxWhatsappChannel": {"description": "Channel facet label for retained WhatsApp threads.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.inbox"},
-  "hostInboxCatchChatPreview": "Catch chat · Organizer · {details}",
-  "@hostInboxCatchChatPreview": {"description": "Explicit channel/sender prefix for a Catch inquiry row.", "placeholders": {"details": {"type": "String"}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.inbox"},
   "hostInboxAnnouncementDisclosure": "Recipients see a durable Activity update and may receive a push notification. This does not create a chat thread.",
   "@hostInboxAnnouncementDisclosure": {"description": "Delivery disclosure in the event announcement composer.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.inbox"},
   "hostInboxWhatsappReply": "Reply",
@@ -23716,12 +23672,7 @@
     "x-surface": "hosts.presentation.customers"
   },
   "hostAudienceChooseForm": "Choose a form",
-  "@hostAudienceChooseForm": {
-    "description": "Saved audience filter authoring label.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.customers"
-  },
+  "@hostAudienceChooseForm": {"description": "Response directory form picker title.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
   "hostAudienceChooseEvent": "Choose an event",
   "@hostAudienceChooseEvent": {
     "description": "Saved audience filter authoring label.",
@@ -24042,14 +23993,10 @@
   "@hostAudienceFormLastResponse": {"description": "Latest submitted response activity on a form record.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms", "placeholders": {"time": {"type": "String"}}},
   "hostAudienceFormRecordStatus": "{status} · {count, plural, =0{No responses} =1{1 response} other{{count} responses}}",
   "@hostAudienceFormRecordStatus": {"description": "Form record lifecycle and submitted response count.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms", "placeholders": {"status": {"type": "String"}, "count": {"type": "int"}}},
-  "hostAudienceAllResponses": "All responses",
-  "@hostAudienceAllResponses": {"description": "Summary view for every form submission.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
   "hostAudienceAllForms": "All forms",
   "@hostAudienceAllForms": {"description": "Response directory without a form filter.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
   "hostAudienceSelectedForm": "Selected form",
   "@hostAudienceSelectedForm": {"description": "Scoped response label while the form title is loading.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
-  "hostAudienceChooseForm": "Choose a form",
-  "@hostAudienceChooseForm": {"description": "Response directory form picker title.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
   "hostAudienceFormWorkspaceTitle": "Form",
   "@hostAudienceFormWorkspaceTitle": {"description": "Route title for the shared form workspace.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
   "hostAudienceFormOverview": "Overview",
@@ -24094,100 +24041,98 @@
   "@hostAudienceSourceTotalsScope": {"description": "Separates source-link lifetime totals from version-specific question analytics.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
   "hostAudiencePreparingExport": "Preparing export…",
   "@hostAudiencePreparingExport": {"description": "Pending state while the requested form export is prepared.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
-"hostAudienceResponseTitle": "Response",
-"@hostAudienceResponseTitle": {"description": "Response", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
-"hostAudienceSubmissionDetails": "Submission details",
-"@hostAudienceSubmissionDetails": {"description": "Submission details", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
-"hostAudienceReviewApplication": "Review application",
-"@hostAudienceReviewApplication": {"description": "Review application", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
-"hostAudienceApplicationTitle": "Application",
-"@hostAudienceApplicationTitle": {"description": "Application", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
-"hostAudienceApplicationAccepted": "Accepted into People. Event admission is handled separately.",
-"@hostAudienceApplicationAccepted": {"description": "Accepted into People. Event admission is handled separately.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
-"hostAudienceApplicationAdmission": "Accepting adds this person to People. Event admission is handled separately.",
-"@hostAudienceApplicationAdmission": {"description": "Accepting adds this person to People. Event admission is handled separately.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
-"hostAudienceApplicationsNew": "New applications",
-"@hostAudienceApplicationsNew": {"description": "New applications", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
-"hostAudienceApplicationsAll": "All applications",
-"@hostAudienceApplicationsAll": {"description": "All applications", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
-"hostAudienceApplicationEvent": "Event application",
-"@hostAudienceApplicationEvent": {"description": "Event application", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
-"hostAudienceApplicationOrganizer": "Organizer application",
-"@hostAudienceApplicationOrganizer": {"description": "Organizer application", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
-"hostAudienceApplicationActivity": "Activity",
-"@hostAudienceApplicationActivity": {"description": "Activity", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
-"hostAudienceManualGroup": "Selected people",
-"@hostAudienceManualGroup": {"description": "Selected people", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
-"hostAudienceAutomaticGroup": "Automatic membership",
-"@hostAudienceAutomaticGroup": {"description": "Automatic membership", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
-"hostAudienceGroupMembershipHelp": "Membership is checked when you refresh a group. Sending eligibility is checked in Inbox.",
-"@hostAudienceGroupMembershipHelp": {"description": "Membership is checked when you refresh a group. Sending eligibility is checked in Inbox.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
-"hostAudienceGroupChecked": "Checked {date}",
-"@hostAudienceGroupChecked": {"description": "Checked {date}", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers", "placeholders": {"date": {"type": "String"}}},
-"hostAudienceGroupTitle": "Group",
-"@hostAudienceGroupTitle": {"description": "Group", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
-"hostAudienceEditGroup": "Edit group",
-"@hostAudienceEditGroup": {"description": "Edit group", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
-"hostAudienceOpenInbox": "Open in Inbox",
-"@hostAudienceOpenInbox": {"description": "Open in Inbox", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
-"hostAudienceGroupReach": "Reach",
-"@hostAudienceGroupReach": {"description": "Reach", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
-"hostAudienceGroupInboxHelp": "Inbox checks available contact routes before sending.",
-"@hostAudienceGroupInboxHelp": {"description": "Inbox checks available contact routes before sending.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
-"hostAudienceGroupReachUnknown": "Refresh membership to check contact options.",
-"@hostAudienceGroupReachUnknown": {"description": "Refresh membership to check contact options.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
-"hostAudienceSaveCheckMembership": "Save and check membership",
-"@hostAudienceSaveCheckMembership": {"description": "Save and check membership", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
-"hostAudienceCreateCheckMembership": "Create group",
-"@hostAudienceCreateCheckMembership": {"description": "Create group", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
-"hostAudienceSavedGroupPreviewHelp": "This is the saved group. Saving changes checks membership again.",
-"@hostAudienceSavedGroupPreviewHelp": {"description": "This is the saved group. Saving changes checks membership again.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
-"hostAudienceSavedPreviewFailed": "Group saved. Membership could not be checked.",
-"@hostAudienceSavedPreviewFailed": {"description": "Group saved. Membership could not be checked.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
-"hostAudienceAllAutomations": "Audience automations",
-"@hostAudienceAllAutomations": {"description": "Audience automations", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
-"hostAudienceThisForm": "Selected form",
-"@hostAudienceThisForm": {"description": "Selected form", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
-"hostAudienceAutomationScopeAll": "Rules across forms and audience activity.",
-"@hostAudienceAutomationScopeAll": {"description": "Rules across forms and audience activity.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
-"hostAudienceAutomationScopeForm": "Rules that run for this form.",
-"@hostAudienceAutomationScopeForm": {"description": "Rules that run for this form.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
-"hostAudienceAutomationActive": "Active",
-"@hostAudienceAutomationActive": {"description": "Active", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
-"hostAudienceAutomationPaused": "Paused",
-"@hostAudienceAutomationPaused": {"description": "Paused", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
-"hostAudienceAutomationShortcuts": "Quick setup",
-"@hostAudienceAutomationShortcuts": {"description": "Quick setup", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
-"hostAudienceAutomationDelay": "After {minutes} minutes",
-"@hostAudienceAutomationDelay": {"description": "After {minutes} minutes", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers", "placeholders": {"minutes": {"type": "int"}}},
-"hostAudienceAutomationWhen": "When",
-"@hostAudienceAutomationWhen": {"description": "When", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
-"hostAudienceAutomationThen": "Then",
-"@hostAudienceAutomationThen": {"description": "Then", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
-"hostAudienceApplicationApprovedUnlinked": "Application approved. Event admission is handled separately.",
-"@hostAudienceApplicationApprovedUnlinked": {"description": "Application approved. Event admission is handled separately.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
-"hostAudienceContactMethod": "Contact method",
-"@hostAudienceContactMethod": {"description": "Contact method", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
-"hostAudienceAddedContactPermission": "These details were added by you. Adding a person does not grant permission to send messages.",
-"@hostAudienceAddedContactPermission": {"description": "These details were added by you. Adding a person does not grant permission to send messages.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
-"hostAudienceRecentlyChecked": "Recently checked",
-"@hostAudienceRecentlyChecked": {"description": "Recently checked", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
-"hostAudienceAllGroups": "All groups",
-"@hostAudienceAllGroups": {"description": "All groups", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
-"hostAudienceAutomationConsequence": "{trigger}, then {actions}",
-"@hostAudienceAutomationConsequence": {"description": "{trigger}, then {actions}", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers", "placeholders": {"trigger": {"type": "String"}, "actions": {"type": "String"}}},
-"hostAudienceAtAGlance": "At a glance",
-"@hostAudienceAtAGlance": {"description": "At a glance", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
-"hostAudienceContactRequirement": "Add at least one contact method.",
-"@hostAudienceContactRequirement": {"description": "Add at least one contact method.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"}
-,
-"hostAudienceRetrySourceNames": "Form and event names unavailable · Retry",
-"@hostAudienceRetrySourceNames": {"description": "Retry the shared organizer source labels without blocking application review.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.applications"}
-,
-"hostAudienceWhoWillBelong": "Who will belong",
-"@hostAudienceWhoWillBelong": {"description": "Summary of the current group definition before saving.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
-"hostAudienceMembershipCheckOnSave": "Membership is checked when you save. Incomplete conditions must be finished first.",
-"@hostAudienceMembershipCheckOnSave": {"description": "Distinguishes an unsaved definition from evaluated group membership.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
+  "hostAudienceResponseTitle": "Response",
+  "@hostAudienceResponseTitle": {"description": "Response", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostAudienceSubmissionDetails": "Submission details",
+  "@hostAudienceSubmissionDetails": {"description": "Submission details", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostAudienceReviewApplication": "Review application",
+  "@hostAudienceReviewApplication": {"description": "Review application", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostAudienceApplicationTitle": "Application",
+  "@hostAudienceApplicationTitle": {"description": "Application", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostAudienceApplicationAccepted": "Accepted into People. Event admission is handled separately.",
+  "@hostAudienceApplicationAccepted": {"description": "Accepted into People. Event admission is handled separately.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostAudienceApplicationAdmission": "Accepting adds this person to People. Event admission is handled separately.",
+  "@hostAudienceApplicationAdmission": {"description": "Accepting adds this person to People. Event admission is handled separately.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostAudienceApplicationsNew": "New applications",
+  "@hostAudienceApplicationsNew": {"description": "New applications", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostAudienceApplicationsAll": "All applications",
+  "@hostAudienceApplicationsAll": {"description": "All applications", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostAudienceApplicationEvent": "Event application",
+  "@hostAudienceApplicationEvent": {"description": "Event application", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostAudienceApplicationOrganizer": "Organizer application",
+  "@hostAudienceApplicationOrganizer": {"description": "Organizer application", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostAudienceApplicationActivity": "Activity",
+  "@hostAudienceApplicationActivity": {"description": "Activity", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostAudienceManualGroup": "Selected people",
+  "@hostAudienceManualGroup": {"description": "Selected people", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
+  "hostAudienceAutomaticGroup": "Automatic membership",
+  "@hostAudienceAutomaticGroup": {"description": "Automatic membership", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
+  "hostAudienceGroupMembershipHelp": "Membership is checked when you refresh a group. Sending eligibility is checked in Inbox.",
+  "@hostAudienceGroupMembershipHelp": {"description": "Membership is checked when you refresh a group. Sending eligibility is checked in Inbox.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
+  "hostAudienceGroupChecked": "Checked {date}",
+  "@hostAudienceGroupChecked": {"description": "Checked {date}", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers", "placeholders": {"date": {"type": "String"}}},
+  "hostAudienceGroupTitle": "Group",
+  "@hostAudienceGroupTitle": {"description": "Group", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
+  "hostAudienceEditGroup": "Edit group",
+  "@hostAudienceEditGroup": {"description": "Edit group", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
+  "hostAudienceOpenInbox": "Open in Inbox",
+  "@hostAudienceOpenInbox": {"description": "Open in Inbox", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
+  "hostAudienceGroupReach": "Reach",
+  "@hostAudienceGroupReach": {"description": "Reach", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
+  "hostAudienceGroupInboxHelp": "Inbox checks available contact routes before sending.",
+  "@hostAudienceGroupInboxHelp": {"description": "Inbox checks available contact routes before sending.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
+  "hostAudienceGroupReachUnknown": "Refresh membership to check contact options.",
+  "@hostAudienceGroupReachUnknown": {"description": "Refresh membership to check contact options.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
+  "hostAudienceSaveCheckMembership": "Save and check membership",
+  "@hostAudienceSaveCheckMembership": {"description": "Save and check membership", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
+  "hostAudienceCreateCheckMembership": "Create group",
+  "@hostAudienceCreateCheckMembership": {"description": "Create group", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
+  "hostAudienceSavedGroupPreviewHelp": "This is the saved group. Saving changes checks membership again.",
+  "@hostAudienceSavedGroupPreviewHelp": {"description": "This is the saved group. Saving changes checks membership again.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
+  "hostAudienceSavedPreviewFailed": "Group saved. Membership could not be checked.",
+  "@hostAudienceSavedPreviewFailed": {"description": "Group saved. Membership could not be checked.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
+  "hostAudienceAllAutomations": "Audience automations",
+  "@hostAudienceAllAutomations": {"description": "Audience automations", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
+  "hostAudienceThisForm": "Selected form",
+  "@hostAudienceThisForm": {"description": "Selected form", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
+  "hostAudienceAutomationScopeAll": "Rules across forms and audience activity.",
+  "@hostAudienceAutomationScopeAll": {"description": "Rules across forms and audience activity.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
+  "hostAudienceAutomationScopeForm": "Rules that run for this form.",
+  "@hostAudienceAutomationScopeForm": {"description": "Rules that run for this form.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
+  "hostAudienceAutomationActive": "Active",
+  "@hostAudienceAutomationActive": {"description": "Active", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
+  "hostAudienceAutomationPaused": "Paused",
+  "@hostAudienceAutomationPaused": {"description": "Paused", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
+  "hostAudienceAutomationShortcuts": "Quick setup",
+  "@hostAudienceAutomationShortcuts": {"description": "Quick setup", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
+  "hostAudienceAutomationDelay": "After {minutes} minutes",
+  "@hostAudienceAutomationDelay": {"description": "After {minutes} minutes", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers", "placeholders": {"minutes": {"type": "int"}}},
+  "hostAudienceAutomationWhen": "When",
+  "@hostAudienceAutomationWhen": {"description": "When", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
+  "hostAudienceAutomationThen": "Then",
+  "@hostAudienceAutomationThen": {"description": "Then", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
+  "hostAudienceApplicationApprovedUnlinked": "Application approved. Event admission is handled separately.",
+  "@hostAudienceApplicationApprovedUnlinked": {"description": "Application approved. Event admission is handled separately.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
+  "hostAudienceContactMethod": "Contact method",
+  "@hostAudienceContactMethod": {"description": "Contact method", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
+  "hostAudienceAddedContactPermission": "These details were added by you. Adding a person does not grant permission to send messages.",
+  "@hostAudienceAddedContactPermission": {"description": "These details were added by you. Adding a person does not grant permission to send messages.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
+  "hostAudienceRecentlyChecked": "Recently checked",
+  "@hostAudienceRecentlyChecked": {"description": "Recently checked", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
+  "hostAudienceAllGroups": "All groups",
+  "@hostAudienceAllGroups": {"description": "All groups", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
+  "hostAudienceAutomationConsequence": "{trigger}, then {actions}",
+  "@hostAudienceAutomationConsequence": {"description": "{trigger}, then {actions}", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers", "placeholders": {"trigger": {"type": "String"}, "actions": {"type": "String"}}},
+  "hostAudienceAtAGlance": "At a glance",
+  "@hostAudienceAtAGlance": {"description": "At a glance", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
+  "hostAudienceContactRequirement": "Add at least one contact method.",
+  "@hostAudienceContactRequirement": {"description": "Add at least one contact method.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
+  "hostAudienceRetrySourceNames": "Form and event names unavailable · Retry",
+  "@hostAudienceRetrySourceNames": {"description": "Retry the shared organizer source labels without blocking application review.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.applications"},
+  "hostAudienceWhoWillBelong": "Who will belong",
+  "@hostAudienceWhoWillBelong": {"description": "Summary of the current group definition before saving.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
+  "hostAudienceMembershipCheckOnSave": "Membership is checked when you save. Incomplete conditions must be finished first.",
+  "@hostAudienceMembershipCheckOnSave": {"description": "Distinguishes an unsaved definition from evaluated group membership.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
   "hostsCreateEventBasicsTitle": "Event basics",
   "@hostsCreateEventBasicsTitle": {
     "description": "Shared event creation: BasicsTitle.",
@@ -26264,5 +26209,260 @@
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation"
-  }
+  },
+  "hostTodayTaskCountPartial": "{count}+",
+  "@hostTodayTaskCountPartial": {
+    "description": "Lower bound for known tasks when some attention sources are incomplete.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today.presentation",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hostTodayTaskCoverageIncomplete": "Some tasks may be missing",
+  "@hostTodayTaskCoverageIncomplete": {
+    "description": "Explains incomplete attention coverage.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today.presentation"
+  },
+  "hostTodayTonight": "Tonight",
+  "@hostTodayTonight": {
+    "description": "Event day label only for an event this evening.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today.presentation"
+  },
+  "hostTodayLiveNow": "Live now",
+  "@hostTodayLiveNow": {
+    "description": "Featured event currently running.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today.presentation"
+  },
+  "hostTodayStartsInMinutes": "Starts in {minutes} min",
+  "@hostTodayStartsInMinutes": {
+    "description": "Imminent featured event countdown.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today.presentation",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "hostTodayStartsInHours": "Starts in {hours}h {minutes}m",
+  "@hostTodayStartsInHours": {
+    "description": "Featured event countdown later today.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today.presentation",
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "hostTodayStartsOn": "Starts {date} · {time}",
+  "@hostTodayStartsOn": {
+    "description": "Featured event start on a later date.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today.presentation",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "hostTodayCheckedIn": "{count} checked in",
+  "@hostTodayCheckedIn": {
+    "description": "Actual checked-in attendance, distinct from waitlist.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today.presentation",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hostInboxNewMessage": "New message",
+  "@hostInboxNewMessage": {
+    "description": "Person-based Host messaging interface copy.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.inbox"
+  },
+  "hostInboxFindPerson": "Find a person",
+  "@hostInboxFindPerson": {
+    "description": "Person-based Host messaging interface copy.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.inbox"
+  },
+  "hostInboxChoosePerson": "Choose someone from People or add a new person.",
+  "@hostInboxChoosePerson": {
+    "description": "Person-based Host messaging interface copy.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.inbox"
+  },
+  "hostInboxAddPerson": "Add person",
+  "@hostInboxAddPerson": {
+    "description": "Person-based Host messaging interface copy.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.inbox"
+  },
+  "hostInboxReplyVia": "Reply via",
+  "@hostInboxReplyVia": {
+    "description": "Person-based Host messaging interface copy.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.inbox"
+  },
+  "hostInboxCatchChannel": "Catch",
+  "@hostInboxCatchChannel": {
+    "description": "Person-based Host messaging interface copy.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.inbox"
+  },
+  "hostInboxPartialSources": "Some conversations are still loading or unavailable. Available messages are shown.",
+  "@hostInboxPartialSources": {
+    "description": "Person-based Host messaging interface copy.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.inbox"
+  },
+  "hostInboxMoreConversations": "Load more conversations",
+  "@hostInboxMoreConversations": {
+    "description": "Person-based Host messaging interface copy.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.inbox"
+  },
+  "hostInboxUnclassified": "Booking status is unavailable for some people. Their conversations are included below.",
+  "@hostInboxUnclassified": {
+    "description": "Person-based Host messaging interface copy.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.inbox"
+  },
+  "hostInboxUnknownBooking": "Booking status unavailable",
+  "@hostInboxUnknownBooking": {
+    "description": "Person-based Host messaging interface copy.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.inbox"
+  },
+  "hostInboxPartialUnread": "At least {count} unread messages. Some source read counts are unavailable.",
+  "@hostInboxPartialUnread": {
+    "description": "Person-based Host messaging interface copy.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.inbox",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hostInboxHistoryCoverage": "This conversation shows available retained history. Some older messages may be missing.",
+  "@hostInboxHistoryCoverage": {
+    "description": "Person-based Host messaging interface copy.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.inbox"
+  },
+  "hostInboxSharedThreadHistory": "This source conversation also covers other events. Its messages are shown together because individual messages do not carry event labels.",
+  "@hostInboxSharedThreadHistory": {
+    "description": "Person-based Host messaging interface copy.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.inbox"
+  },
+  "hostInboxSelectionUnavailable": "This conversation is no longer available in the selected organizer and scope.",
+  "@hostInboxSelectionUnavailable": {
+    "description": "Person-based Host messaging interface copy.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.inbox"
+  },
+  "hostInboxRouteUnavailable": "This reply route is unavailable. Choose an available route or review the person’s details.",
+  "@hostInboxRouteUnavailable": {
+    "description": "Person-based Host messaging interface copy.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.inbox"
+  },
+  "hostInboxChooseReplyRoute": "Choose a reply route before writing a message.",
+  "@hostInboxChooseReplyRoute": {
+    "description": "Person-based Host messaging interface copy.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.inbox"
+  },
+  "hostInboxAvailableRoutes": "Available ways to message",
+  "@hostInboxAvailableRoutes": {
+    "description": "Person-based Host messaging interface copy.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.inbox"
+  },
+  "hostInboxOpenPerson": "Open person details",
+  "@hostInboxOpenPerson": {
+    "description": "Person-based Host messaging interface copy.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.inbox"
+  },
+  "hostInboxNewMessageUnavailable": "No in-app reply route is currently available. Review contact details and messaging permissions on the person’s record.",
+  "@hostInboxNewMessageUnavailable": {
+    "description": "Person-based Host messaging interface copy.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.inbox"
+  },
+  "hostInboxMessageVia": "Message via {channel}",
+  "@hostInboxMessageVia": {
+    "description": "Person-based Host messaging interface copy.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.inbox",
+    "placeholders": {
+      "channel": {
+        "type": "String"
+      }
+    }
+  },
+  "hostInboxBookedStatus": "Booked",
+  "@hostInboxBookedStatus": {
+    "description": "Person-based Host messaging interface copy.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.inbox"
+  },
+  "hostInboxProspectiveStatus": "Prospective",
+  "@hostInboxProspectiveStatus": {
+    "description": "Person-based Host messaging interface copy.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.inbox"
+  },
+  "hostInboxOlderMessages": "Load older Catch messages",
+  "@hostInboxOlderMessages": {"description": "History pagination action for a Catch conversation source.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.inbox.host_person_conversation"},
+  "hostInboxWhatsappReplyChannel": "WhatsApp",
+  "@hostInboxWhatsappReplyChannel": {"description": "Short label for the WhatsApp reply route and transcript source.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.inbox"}
 }

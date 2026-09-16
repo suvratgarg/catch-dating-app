@@ -6,6 +6,7 @@ class HostWhatsappThreadSummary {
   const HostWhatsappThreadSummary({
     required this.threadId,
     required this.contactId,
+    this.linkedUid,
     required this.displayName,
     required this.eventIds,
     required this.lastMessageBody,
@@ -21,6 +22,7 @@ class HostWhatsappThreadSummary {
   ) => HostWhatsappThreadSummary(
     threadId: crmRequiredString(map, 'threadId'),
     contactId: crmRequiredString(map, 'contactId'),
+    linkedUid: crmNullableString(map['linkedUid']),
     displayName: crmRequiredString(map, 'displayName'),
     eventIds: crmStringList(map['eventIds']),
     lastMessageBody: crmRequiredString(map, 'lastMessageBody'),
@@ -40,6 +42,7 @@ class HostWhatsappThreadSummary {
 
   final String threadId;
   final String contactId;
+  final String? linkedUid;
   final String displayName;
   final List<String> eventIds;
   final String lastMessageBody;
@@ -105,6 +108,7 @@ class HostWhatsappThreadDetail {
     required this.organizerId,
     required this.threadId,
     required this.contactId,
+    this.linkedUid,
     required this.displayName,
     required this.lastInboundAt,
     required this.serviceWindowExpiresAt,
@@ -119,6 +123,7 @@ class HostWhatsappThreadDetail {
       organizerId: crmRequiredString(map, 'organizerId'),
       threadId: crmRequiredString(map, 'threadId'),
       contactId: crmRequiredString(map, 'contactId'),
+      linkedUid: crmNullableString(map['linkedUid']),
       displayName: crmRequiredString(map, 'displayName'),
       lastInboundAt: crmRequiredDateTimeFromMillis(map, 'lastInboundAtMillis'),
       serviceWindowExpiresAt: crmRequiredDateTimeFromMillis(
@@ -137,6 +142,7 @@ class HostWhatsappThreadDetail {
   final String organizerId;
   final String threadId;
   final String contactId;
+  final String? linkedUid;
   final String displayName;
   final DateTime lastInboundAt;
   final DateTime serviceWindowExpiresAt;

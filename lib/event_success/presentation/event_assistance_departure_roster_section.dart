@@ -69,48 +69,30 @@ class _EventAssistanceDepartureRosterSectionState
             style: CatchTextStyles.supporting(context),
           ),
         ],
-        for (final guest in matches.skip(page * 12).take(12))
-          Semantics(
-            container: true,
-            excludeSemantics: true,
-            checked: widget.selectedIds.contains(guest.id),
-            enabled:
-                widget.selectedIds.length < 1000 ||
-                widget.selectedIds.contains(guest.id),
-            label: guest.name,
-            onTap:
-                widget.selectedIds.length < 1000 ||
+        if (matches.isNotEmpty)
+          CatchSection.containedRows(
+            children: [
+              for (final guest in matches.skip(page * 12).take(12))
+                CatchField.action(
+                  key: ValueKey('departure.guest.${guest.id}'),
+                  copy: catchFieldCopy(l10n),
+                  title: guest.name,
+                  states: widget.selectedIds.contains(guest.id)
+                      ? const {WidgetState.selected}
+                      : const {},
+                  leading: Icon(
                     widget.selectedIds.contains(guest.id)
-                ? () => _toggle(guest.id)
-                : null,
-            child: CatchRowPressSurface(
-              key: ValueKey('departure.guest.${guest.id}'),
-              semanticButton: false,
-              onTap:
-                  widget.selectedIds.length < 1000 ||
-                      widget.selectedIds.contains(guest.id)
-                  ? () => _toggle(guest.id)
-                  : null,
-              child: Padding(
-                padding: CatchInsets.contentVertical,
-                child: Row(
-                  children: [
-                    Icon(
-                      widget.selectedIds.contains(guest.id)
-                          ? CatchIcons.checkCircle
-                          : CatchIcons.circle,
-                    ),
-                    gapW12,
-                    Expanded(
-                      child: Text(
-                        guest.name,
-                        style: CatchTextStyles.labelL(context),
-                      ),
-                    ),
-                  ],
+                        ? CatchIcons.checkCircle
+                        : CatchIcons.circle,
+                  ),
+                  leadingExtent: CatchSpacing.s10,
+                  onTap:
+                      widget.selectedIds.length < 1000 ||
+                          widget.selectedIds.contains(guest.id)
+                      ? () => _toggle(guest.id)
+                      : null,
                 ),
-              ),
-            ),
+            ],
           ),
         if (matches.length > 12)
           Wrap(

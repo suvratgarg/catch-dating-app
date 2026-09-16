@@ -39,18 +39,27 @@ class EventAssistanceDeliveryQueueSection extends StatelessWidget {
             l10n.eventAssistanceDeliveryEmpty,
             style: CatchTextStyles.supporting(context),
           ),
-        for (final row in items)
-          CatchRecordRow(
-            key: ValueKey('delivery.message.${row.messageId}'),
-            icon: CatchIcons.chatCircle,
-            title: row.displayName ?? l10n.eventAssistanceDeliveryUnknownGuest,
-            metadata: deliveryTimeLabel(context, row.createdAt),
-            facts: [
-              deliveryPurposeLabel(l10n, row.purpose),
-              deliveryStatusLabel(l10n, row.status),
-              deliveryHandlingLabel(l10n, row.handling, actorUid),
+        if (items.isNotEmpty)
+          CatchSection.containedRows(
+            children: [
+              for (final row in items)
+                CatchField.navigate(
+                  key: ValueKey('delivery.message.${row.messageId}'),
+                  content: CatchRecordLayout(
+                    icon: CatchIcons.chatCircle,
+                    title:
+                        row.displayName ??
+                        l10n.eventAssistanceDeliveryUnknownGuest,
+                    metadata: deliveryTimeLabel(context, row.createdAt),
+                    facts: [
+                      deliveryPurposeLabel(l10n, row.purpose),
+                      deliveryStatusLabel(l10n, row.status),
+                      deliveryHandlingLabel(l10n, row.handling, actorUid),
+                    ],
+                  ),
+                  onActivate: () => onReview(row.messageId),
+                ),
             ],
-            onTap: () => onReview(row.messageId),
           ),
         gapH12,
         Text(

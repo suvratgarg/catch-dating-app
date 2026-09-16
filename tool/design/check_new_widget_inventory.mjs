@@ -4,6 +4,7 @@ import path from "node:path";
 import {spawnSync} from "node:child_process";
 import {fromRepo, repoRoot} from "../lib/repo_paths.mjs";
 import {newWidgetPolicyIssues} from "./component_concepts.mjs";
+import {isOwnedCompositionRenderer} from "./lib/owned_composition_renderers.mjs";
 import {
   buildLineStarts,
   collectClassDeclarations,
@@ -168,7 +169,8 @@ function scanSnapshot({files, readFile}) {
       classRanges,
       widgetTypeNames,
     )) {
-      widgetHelpers.push({...helper, file, library});
+      const entry = {...helper, file, library};
+      if (!isOwnedCompositionRenderer(entry)) widgetHelpers.push(entry);
     }
   }
 

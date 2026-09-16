@@ -933,4 +933,53 @@ class TokenConsumerProbe extends StatelessWidget {
 DART
 expect_probe clean
 
+
+probe_path="$probe_root/lib/events/presentation/widgets/row_boundary_probe.dart"
+stage_probe "resolved row geometry boundaries" <<'DART'
+import 'package:catch_ui/catch_ui.dart' as ui;
+import 'package:catch_ui/src/components/catch_row_section.dart' as internal;
+import 'package:catch_ui/src/patterns/catch_row_viewport.dart' as viewport;
+import 'package:flutter/widgets.dart';
+
+typedef SectionAlias = ui.CatchSection;
+final forbiddenFactory = SectionAlias.formRows;
+Widget bypass() => internal.CatchRowSection(children: const []);
+Widget fabricatedWidth() => viewport.CatchRowViewportScope(width: 20, child: const SizedBox());
+Widget unscopedFactory() => ui.CatchField.navigate(
+  content: const ui.CatchPersonLayout(name: 'Someone'), onActivate: () {});
+Widget inset() => Padding(padding: const EdgeInsets.symmetric(horizontal: 20),
+  child: ui.CatchSection.rows(children: const []));
+Widget content() => ui.CatchSection.content(child: const ui.CatchField.read(
+  content: ui.CatchPersonLayout(name:'Someone')));
+Widget legacy() => ui.CatchSection.divided(children: const [ui.CatchField.read(
+ content: ui.CatchPersonLayout(name:'Someone'))]);
+Widget recognizer() => GestureDetector(onTap: () {}, child: const ui.CatchField.read(
+  content: ui.CatchPersonLayout(name:'Someone')));
+Widget paint() => ColoredBox(color: const Color(0xff222222), child: const ui.CatchField.read(
+  content: ui.CatchPersonLayout(name:'Someone')));
+DART
+expect_code_count "resolved row geometry boundaries" "catch_row_geometry_is_internal" 3
+expect_code_count "resolved row geometry boundaries" "catch_row_section_fills_viewport" 1
+expect_code_count "resolved row geometry boundaries" "catch_section_content_is_passive" 5
+expect_code_count "resolved row geometry boundaries" "catch_field_owns_row_interaction" 2
+
+probe_path="$probe_root/lib/events/presentation/widgets/row_valid_probe.dart"
+stage_probe "valid typed row recipes" <<'DART'
+import 'package:catch_ui/catch_ui.dart' as ui;
+import 'package:flutter/widgets.dart';
+Widget rows() => ui.CatchSection.rows(children: const [ui.CatchField.read(
+  content: ui.CatchPersonLayout(name:'Someone'))]);
+Widget contained() => Padding(padding: const EdgeInsets.symmetric(horizontal:20),
+  child:ui.CatchSection.containedRows(children:const []));
+Widget vertical() => Padding(padding: const EdgeInsets.only(top:20),
+  child:ui.CatchSection.rows(children:const []));
+typedef FieldAlias = ui.CatchField;
+FieldAlias fieldFactory() => const ui.CatchField.read(
+  content: ui.CatchPersonLayout(name:'Someone'));
+DART
+expect_probe exact catch_row_geometry_is_internal 0
+expect_probe exact catch_row_section_fills_viewport 0
+expect_probe exact catch_section_content_is_passive 0
+expect_probe exact catch_field_owns_row_interaction 0
+
 node tool/lib/lint_probe_batch.mjs "$probe_root" "$probe_manifest" "$dart_bin"

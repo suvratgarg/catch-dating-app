@@ -53,13 +53,20 @@ class _EventAssistanceDeliveryQueueSheetState
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          for (final scope in pending)
-            CatchRecordRow(
-              key: ValueKey('delivery.pending.${scope.messageId}'),
-              icon: CatchIcons.refresh,
-              title: context.l10n.eventAssistanceDeliveryPending,
-              metadata: context.l10n.eventAssistanceDeliveryPendingBody,
-              onTap: () => review(scope),
+          if (pending.isNotEmpty)
+            CatchSection.containedRows(
+              children: [
+                for (final scope in pending)
+                  CatchField.navigate(
+                    key: ValueKey('delivery.pending.${scope.messageId}'),
+                    content: CatchRecordLayout(
+                      icon: CatchIcons.refresh,
+                      title: context.l10n.eventAssistanceDeliveryPending,
+                      metadata: context.l10n.eventAssistanceDeliveryPendingBody,
+                    ),
+                    onActivate: () => review(scope),
+                  ),
+              ],
             ),
           CatchAsyncBoundary<EventAssistanceDeliveriesSession>(
             value: ref.watch(provider),

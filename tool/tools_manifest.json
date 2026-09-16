@@ -2102,6 +2102,7 @@
       "path": "tool/architecture/check_ui_composition_contracts.dart",
       "impactPaths": [
         "test/tool/ui_composition_contracts_test.dart",
+        "test/tool/catch_row_api_contract_test.dart",
         "test/tool/ui_composition_ownership_test.dart",
         "test/tool/route_discovery_adversarial_test.dart",
         "test/tool/fixtures/scaffold_ownership_fixture.dart",

@@ -76,36 +76,47 @@ class _EventAssistanceCheckpointVisitsSectionState
             l10n.eventAssistanceDepartureNoGuests,
             style: CatchTextStyles.supporting(context),
           ),
-        for (final member in matches.skip(page * 12).take(12))
-          CatchRecordRow(
-            key: ValueKey('checkpoint.visit.${member.attendeeId}'),
-            icon: CatchIcons.group,
-            title:
-                widget.names[member.attendeeId] ??
-                l10n.eventAssistanceCheckpointUnknownGuest,
-            description: widget.names[member.attendeeId] == null
-                ? l10n.eventAssistanceCheckpointUnknownGuestBody
-                : switch (member.disposition) {
-                    AssistanceCheckpointResolvedDisposition(
-                      :final disposition,
-                    ) =>
-                      assistanceVisitLabel(l10n, disposition),
-                    AssistanceCheckpointDispositionUnresolved() =>
-                      l10n.eventSuccessAccountabilityUnresolved,
-                    AssistanceCheckpointDispositionNotProvided() =>
-                      l10n.eventAssistanceCheckpointVisitUnknown,
-                    AssistanceCheckpointDispositionUnavailable(:final reason) =>
-                      reason ==
-                              AssistanceCheckpointDispositionUnavailableReason
-                                  .beforeDeparture
-                          ? l10n.eventAssistanceCheckpointVisitBeforeDeparture
-                          : l10n.eventAssistanceCheckpointVisitChanged,
-                  },
-            onTap:
-                widget.onReview != null &&
-                    widget.reviewableGuestIds.contains(member.attendeeId)
-                ? () => widget.onReview!(member.attendeeId)
-                : null,
+        if (matches.isNotEmpty)
+          CatchSection.containedRows(
+            children: matches.skip(page * 12).take(12).map((member) {
+              final content = CatchRecordLayout(
+                icon: CatchIcons.group,
+                title:
+                    widget.names[member.attendeeId] ??
+                    l10n.eventAssistanceCheckpointUnknownGuest,
+                description: widget.names[member.attendeeId] == null
+                    ? l10n.eventAssistanceCheckpointUnknownGuestBody
+                    : switch (member.disposition) {
+                        AssistanceCheckpointResolvedDisposition(
+                          :final disposition,
+                        ) =>
+                          assistanceVisitLabel(l10n, disposition),
+                        AssistanceCheckpointDispositionUnresolved() =>
+                          l10n.eventSuccessAccountabilityUnresolved,
+                        AssistanceCheckpointDispositionNotProvided() =>
+                          l10n.eventAssistanceCheckpointVisitUnknown,
+                        AssistanceCheckpointDispositionUnavailable(
+                          :final reason,
+                        ) =>
+                          reason ==
+                                  AssistanceCheckpointDispositionUnavailableReason
+                                      .beforeDeparture
+                              ? l10n.eventAssistanceCheckpointVisitBeforeDeparture
+                              : l10n.eventAssistanceCheckpointVisitChanged,
+                      },
+              );
+              final key = ValueKey('checkpoint.visit.${member.attendeeId}');
+              final reviewable =
+                  widget.onReview != null &&
+                  widget.reviewableGuestIds.contains(member.attendeeId);
+              return reviewable
+                  ? CatchField.navigate(
+                      key: key,
+                      content: content,
+                      onActivate: () => widget.onReview!(member.attendeeId),
+                    )
+                  : CatchField.read(key: key, content: content);
+            }).toList(),
           ),
         if (matches.length > 12)
           Wrap(

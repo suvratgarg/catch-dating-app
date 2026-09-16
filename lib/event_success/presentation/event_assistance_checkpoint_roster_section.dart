@@ -65,21 +65,46 @@ class _EventAssistanceCheckpointRosterSectionState
             style: CatchTextStyles.supporting(context),
           ),
         ],
-        for (final member in matches.skip(page * 12).take(12))
-          EventAssistanceCheckpointGuestRow(
-            key: ValueKey('checkpoint.guest.${member.attendeeId}'),
-            member: member,
-            name: widget.names[member.attendeeId],
-            selected: widget.selectedIds.contains(member.attendeeId),
-            enabled:
-                widget.enabled &&
-                widget.names.containsKey(member.attendeeId) &&
-                (member.canAddObservation || member.accountedFor),
-            onTap: () {
-              final next = {...widget.selectedIds};
-              if (!next.remove(member.attendeeId)) next.add(member.attendeeId);
-              widget.onChanged(next);
-            },
+        if (matches.isNotEmpty)
+          CatchSection.containedRows(
+            children: [
+              for (final member in matches.skip(page * 12).take(12))
+                CatchField.action(
+                  key: ValueKey('checkpoint.guest.${member.attendeeId}'),
+                  copy: catchFieldCopy(l10n),
+                  title:
+                      widget.names[member.attendeeId] ??
+                      l10n.eventAssistanceCheckpointUnknownGuest,
+                  body: _checkpointGuestDetail(
+                    l10n,
+                    member,
+                    name: widget.names[member.attendeeId],
+                    selected: widget.selectedIds.contains(member.attendeeId),
+                  ),
+                  bodyMaxLines: 3,
+                  states: widget.selectedIds.contains(member.attendeeId)
+                      ? const {WidgetState.selected}
+                      : const {},
+                  leading: Icon(
+                    widget.selectedIds.contains(member.attendeeId)
+                        ? CatchIcons.checkCircle
+                        : CatchIcons.circle,
+                  ),
+                  leadingExtent: CatchSpacing.s10,
+                  onTap:
+                      widget.enabled &&
+                          widget.names.containsKey(member.attendeeId) &&
+                          (member.canAddObservation || member.accountedFor)
+                      ? () {
+                          final next = {...widget.selectedIds};
+                          if (!next.remove(member.attendeeId)) {
+                            next.add(member.attendeeId);
+                          }
+                          widget.onChanged(next);
+                        }
+                      : null,
+                ),
+            ],
           ),
         if (matches.length > 12)
           Wrap(
@@ -123,49 +148,43 @@ class EventAssistanceCheckpointGuestRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final label = name ?? l10n.eventAssistanceCheckpointUnknownGuest;
-    final detail = name == null
-        ? l10n.eventAssistanceCheckpointUnknownGuestBody
-        : !member.canAddObservation
-        ? l10n.eventAssistanceCheckpointVisitChanged
-        : member.accountedFor
-        ? selected
-              ? l10n.eventAssistanceCheckpointEarlierObservation
-              : l10n.eventAssistanceCheckpointRemovingObservation
-        : selected
-        ? l10n.eventAssistanceCheckpointSelectedObservation
-        : l10n.eventAssistanceCheckpointNotObserved;
-    return Semantics(
-      container: true,
-      excludeSemantics: true,
-      checked: selected,
-      enabled: enabled,
-      label: '$label. $detail',
-      onTap: enabled ? onTap : null,
-      child: CatchRowPressSurface(
-        semanticButton: false,
-        onTap: enabled ? onTap : null,
-        child: Padding(
-          padding: CatchInsets.contentVertical,
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Icon(selected ? CatchIcons.checkCircle : CatchIcons.circle),
-              gapW12,
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(label, style: CatchTextStyles.labelL(context)),
-                    gapH4,
-                    Text(detail, style: CatchTextStyles.supporting(context)),
-                  ],
-                ),
-              ),
-            ],
+    return CatchSection.containedRows(
+      children: [
+        CatchField.action(
+          copy: catchFieldCopy(l10n),
+          title: name ?? l10n.eventAssistanceCheckpointUnknownGuest,
+          body: _checkpointGuestDetail(
+            l10n,
+            member,
+            name: name,
+            selected: selected,
           ),
+          bodyMaxLines: 3,
+          states: selected ? const {WidgetState.selected} : const {},
+          leading: Icon(selected ? CatchIcons.checkCircle : CatchIcons.circle),
+          leadingExtent: CatchSpacing.s10,
+          onTap: enabled ? onTap : null,
         ),
-      ),
+      ],
     );
   }
+}
+
+String _checkpointGuestDetail(
+  AppLocalizations l10n,
+  AssistanceCheckpointMember member, {
+  required String? name,
+  required bool selected,
+}) {
+  return name == null
+      ? l10n.eventAssistanceCheckpointUnknownGuestBody
+      : !member.canAddObservation
+      ? l10n.eventAssistanceCheckpointVisitChanged
+      : member.accountedFor
+      ? selected
+            ? l10n.eventAssistanceCheckpointEarlierObservation
+            : l10n.eventAssistanceCheckpointRemovingObservation
+      : selected
+      ? l10n.eventAssistanceCheckpointSelectedObservation
+      : l10n.eventAssistanceCheckpointNotObserved;
 }

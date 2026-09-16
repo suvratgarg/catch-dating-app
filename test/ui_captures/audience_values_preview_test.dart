@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math' as math;
 
-import 'package:catch_dating_app/hosts/presentation/customers/host_customer_row.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_audience_view.dart';
 import 'package:catch_tokens/catch_tokens.dart';
@@ -57,13 +56,15 @@ void main() {
               };
             }
 
-            final rowContext = tester.element(
-              find.byWidgetPredicate(
-                (widget) =>
-                    widget is HostCustomerRow &&
-                    widget.contact.displayName == 'Ananya Rao',
-              ),
+            final personRows = find.byWidgetPredicate(
+              (widget) =>
+                  widget is CatchField &&
+                  widget.key is ValueKey<String> &&
+                  (widget.key! as ValueKey<String>).value.startsWith(
+                    'host-customer-',
+                  ),
             );
+            final rowContext = tester.element(personRows.first);
             final tokens = CatchTokens.of(rowContext);
             for (final foreground in [
               tokens.affinityText,
@@ -85,37 +86,30 @@ void main() {
             }
 
             final rowMetrics = <Map<String, Object>>[];
-            for (final element in find.byType(HostCustomerRow).evaluate()) {
+            for (final element in personRows.evaluate()) {
               final finder = find.byWidget(element.widget);
-              final row = element.widget as HostCustomerRow;
+              final title = tester
+                  .widget<Text>(
+                    find
+                        .descendant(of: finder, matching: find.byType(Text))
+                        .first,
+                  )
+                  .data!;
               final bounds = tester.getRect(finder);
-              final paragraph = tester.renderObject<RenderParagraph>(
-                find.byKey(
-                  ValueKey('host-customer-activity-${row.contact.contactId}'),
-                ),
-              );
-              expect(
-                paragraph.didExceedMaxLines,
-                isFalse,
-                reason: 'Activity/date metadata must remain readable',
-              );
-              if (textScale == 1) {
+              expect(bounds.left, 0);
+              for (final paragraph
+                  in find
+                      .descendant(of: finder, matching: find.byType(RichText))
+                      .evaluate()) {
                 expect(
-                  bounds.height,
-                  closeTo(
-                    CatchRecordTokens.verticalPadding * 2 +
-                        CatchPlatformTokens.typography.name.fontSize! *
-                            CatchPlatformTokens.typography.name.height! +
-                        CatchRecordTokens.titleGap +
-                        CatchPlatformTokens.typography.secondary.fontSize! *
-                            CatchPlatformTokens.typography.secondary.height!,
-                    0.1,
-                  ),
-                  reason: 'Badges must not change the two-line customer rhythm',
+                  (paragraph.renderObject! as RenderParagraph)
+                      .didExceedMaxLines,
+                  isFalse,
+                  reason: 'Identity, activity and status remain readable',
                 );
               }
               rowMetrics.add({
-                'name': row.contact.displayName,
+                'name': title,
                 'row': rect(finder),
                 'avatar': rect(
                   find.descendant(
@@ -124,10 +118,7 @@ void main() {
                   ),
                 ),
                 'nameLine': rect(
-                  find.descendant(
-                    of: finder,
-                    matching: find.text(row.contact.displayName),
-                  ),
+                  find.descendant(of: finder, matching: find.text(title)),
                 ),
               });
             }

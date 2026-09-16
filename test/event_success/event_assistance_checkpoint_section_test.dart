@@ -1,6 +1,5 @@
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_checkpoint_change.dart';
-import 'package:catch_dating_app/event_success/presentation/event_assistance_checkpoint_roster_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_checkpoint_section.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -87,12 +86,12 @@ void main() {
         ),
         names: const {'b': 'Priya Sharma'},
       );
-      final row = tester.widget<EventAssistanceCheckpointGuestRow>(
+      final row = tester.widget<CatchField>(
         find.byKey(const ValueKey('checkpoint.guest.a')),
       );
-      expect(row.enabled, isFalse);
-      expect(row.selected, isTrue);
+      expect(row.states.contains(WidgetState.selected), isTrue);
       expect(find.text('Guest record unavailable'), findsOneWidget);
+      await tap(tester, find.byKey(const ValueKey('checkpoint.guest.a')));
       await tap(tester, find.byKey(const ValueKey('checkpoint.guest.b')));
       await tap(tester, find.byKey(const ValueKey('checkpoint.confirm')));
       expect(decisions.single.accountedFor, ['a', 'b']);

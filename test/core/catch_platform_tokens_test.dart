@@ -152,20 +152,20 @@ void main() {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            CatchPersonRow.directory(
-                              data: const CatchPersonRowData(
+                            CatchField.navigate(
+                              onActivate: () => opened = true,
+                              content: const CatchPersonLayout(
                                 name: 'Ananya Rao with a longer family name',
-                              ),
-                              onTap: () => opened = true,
-                              meta: const Text(
-                                '8 events · Last seen 18 June 2026',
-                              ),
-                              body: const Text(
-                                'Returning customer from the weekend event',
-                              ),
-                              trailing: const CatchBadge.status(
-                                label: 'Needs identity review',
-                                tone: CatchBadgeTone.warning,
+                                supportingText:
+                                    '8 events · Last seen 18 June 2026',
+                                context:
+                                    'Returning customer from the weekend event',
+                                badges: [
+                                  CatchRowBadge(
+                                    label: 'Needs identity review',
+                                    tone: CatchBadgeTone.warning,
+                                  ),
+                                ],
                               ),
                             ),
                             Align(

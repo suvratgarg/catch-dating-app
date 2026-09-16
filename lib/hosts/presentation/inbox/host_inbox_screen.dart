@@ -1,7 +1,5 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
-import 'package:catch_dating_app/chats/chats.dart' show ChatScreen;
 import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.dart';
-import 'package:catch_dating_app/chats/presentation/inbox/widgets/chat_conversations_list.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/widgets/chats_empty_state.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/widgets/chats_list.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/widgets/chats_sliver_header.dart';
@@ -17,12 +15,16 @@ import 'package:catch_dating_app/events/data/event_participation_repository.dart
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/hosts/data/crm/host_whatsapp_repository.dart';
-import 'package:catch_dating_app/hosts/domain/crm/host_whatsapp_thread.dart';
 import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_catch_pages_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_people.dart';
+import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_person_page_body.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_scope_menu.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
+import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_whatsapp_pages_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/inbox/host_new_message_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/inbox/host_reply_drafts.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_sends_workspace.dart';
-import 'package:catch_dating_app/hosts/presentation/inbox/host_whatsapp_thread_sheet.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_tokens/catch_tokens.dart';
@@ -30,6 +32,8 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
+part 'host_inbox_workspace_section.dart';
 
 enum HostMessagingWorkspace { inbox, campaigns }
 
@@ -66,8 +70,9 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
   late HostInboxAudienceSegment _segment;
   late HostMessagingWorkspace _workspace;
   bool _campaignBusy = false;
+  String? _accountId;
   String? _selectedThreadId;
-  final Map<String, String> _threadDrafts = {};
+  final _threadDrafts = HostReplyDrafts();
 
   @override
   void initState() {
@@ -97,12 +102,23 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
   }
 
   @override
+  void dispose() {
+    _threadDrafts.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final now = widget.now ?? DateTime.now();
     final uidAsync = ref.watch(uidProvider);
     final uidState = catchAsyncStateFromAsyncValue(uidAsync);
     final uid = uidState.value;
+    if (_accountId != null && _accountId != uid && !uidState.isLoading) {
+      _threadDrafts.clear();
+      _selectedThreadId = null;
+    }
+    if (!uidState.isLoading) _accountId = uid;
     final clubsAsync = uid == null
         ? const AsyncLoading<List<Club>>()
         : ref.watch(hostOperableClubsProvider(uid));
@@ -122,24 +138,12 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
           );
     final query = ref.watch(chatSearchQueryProvider);
     final isInbox = _workspace == HostMessagingWorkspace.inbox;
-    final inbox = isInbox
-        ? catchAsyncStateFromAsyncValue(
-            ref.watch(chatsListViewModelProvider),
-          ).value
-        : null;
-    final selectedThreadCount = selectedClub == null || inbox == null
-        ? 0
-        : [
-            ...inbox.newMatches,
-            ...inbox.conversations,
-          ].where((preview) => preview.match.clubId == selectedClub.id).length;
-    final showSearch =
-        isInbox && (selectedThreadCount > 0 || query.trim().isNotEmpty);
+    final showSearch = isInbox;
     final selectedThreadId = _selectedThreadId;
 
     Widget buildMaster(BuildContext context, bool splitView) {
       final workspaceSliver = isInbox
-          ? _HostInboxWorkspaceGroup(
+          ? HostInboxWorkspaceSection(
               uidState: uidState,
               uid: uid,
               clubsState: clubsState,
@@ -152,8 +156,7 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
               onRetry: _retry,
               onScopeChanged: _selectScope,
               onSegmentChanged: _selectSegment,
-              onThreadSelected: (preview) =>
-                  _openThread(preview, splitView: splitView),
+              onPersonSelected: (person) => _openPerson(person),
             )
           : CatchViewport.sliverLane(
               maxExtent: CatchLayout.hostMessagingSendsPageMaxExtent,
@@ -188,9 +191,17 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
             showHostSubtitle: !isInbox,
             subtitle: isInbox ? null : context.l10n.hostSendsSubtitle,
             compactForPrimaryRail: true,
+            actions: [
+              if (isInbox && selectedClub != null)
+                CatchIconAction(
+                  tooltip: context.l10n.hostInboxNewMessage,
+                  onPressed: () => _newMessage(selectedClub.id),
+                  child: Icon(CatchIcons.editOutlined),
+                ),
+            ],
           ),
         ),
-        actions: HostMessagingWorkspaceRail(
+        actions: HostMessagingWorkspaceTabBar(
           selected: _workspace,
           onChanged: _campaignBusy ? null : _selectWorkspace,
         ),
@@ -207,19 +218,20 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
       );
     }
 
-    final detail = selectedThreadId == null
+    final detail = selectedThreadId == null || selectedClub == null
         ? CatchEmptyState(
             icon: CatchIcons.chatBubbleOutlineRounded,
             title: context.l10n.hostInboxSelectConversationTitle,
             message: context.l10n.hostInboxSelectConversationBody,
           )
-        : ChatScreen(
-            key: ValueKey<String>('host-inbox-thread-$selectedThreadId'),
-            matchId: selectedThreadId,
-            initialDraftText: _threadDrafts[selectedThreadId],
-            onDraftChanged: (draft) =>
-                _rememberThreadDraft(selectedThreadId, draft),
-            embedded: true,
+        : HostInboxPersonPageBody(
+            organizerId: selectedClub.id,
+            selection: selectedThreadId,
+            scope: _requestedScope,
+            now: now,
+            segment: _segment,
+            drafts: _threadDrafts,
+            onBack: _closePerson,
           );
 
     return CatchScaffold.workspace(
@@ -227,7 +239,10 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
       body: isInbox
           ? CatchMasterDetailViewport.adaptive(
               minimumExpandedWidth: CatchLayout.hostMessagingSplitViewMinWidth,
-              leadingBuilder: buildMaster,
+              leadingBuilder: (context, split) =>
+                  !split && selectedThreadId != null
+                  ? detail
+                  : buildMaster(context, split),
               body: detail,
             )
           : CatchMasterDetailViewport(
@@ -260,10 +275,16 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
   }
 
   void _retry(String? organizerId) {
+    final uid = catchAsyncStateFromAsyncValue(ref.read(uidProvider)).value;
     ref.invalidate(uidProvider);
     ref.invalidate(chatsListViewModelProvider);
-    final uid = ref.read(uidProvider).asData?.value;
-    if (uid != null) ref.invalidate(hostOperableClubsProvider(uid));
+    if (uid != null) {
+      ref.invalidate(hostOperableClubsProvider(uid));
+      ref.invalidate(hostInboxCatchPagesProvider(uid));
+    }
+    if (_requestedScope?.eventId case final eventId?) {
+      ref.invalidate(watchEventParticipationsForEventProvider(eventId));
+    }
     if (organizerId != null) {
       ref.invalidate(watchEventsForClubProvider(organizerId));
       ref.invalidate(hostMessagingSetupProvider(organizerId));
@@ -297,32 +318,54 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
     );
   }
 
-  void _openThread(ChatThreadPreview preview, {required bool splitView}) {
-    if (splitView) {
-      setState(() => _selectedThreadId = preview.matchId);
-      if (widget.syncSelectionToRoute) {
-        context.goNamed(
-          Routes.hostInboxScreen.name,
-          queryParameters: _routeQuery(
-            organizerId: preview.match.clubId,
-            threadId: preview.matchId,
-          ),
-        );
-      }
-      return;
+  void _openPerson(HostInboxPerson person) {
+    setState(() {
+      _selectedThreadId = person.personId;
+      _requestedScope = person.scope;
+    });
+    if (widget.syncSelectionToRoute) {
+      context.goNamed(
+        Routes.hostInboxScreen.name,
+        queryParameters: _routeQuery(
+          organizerId: person.organizerId,
+          threadId: person.personId,
+        ),
+      );
     }
-    context.goNamed(
-      Routes.hostChatScreen.name,
-      pathParameters: {'matchId': preview.matchId},
-    );
   }
 
-  void _rememberThreadDraft(String threadId, String draft) {
-    if (draft.isEmpty) {
-      _threadDrafts.remove(threadId);
-      return;
+  void _closePerson() {
+    setState(() => _selectedThreadId = null);
+    if (widget.syncSelectionToRoute) {
+      context.goNamed(
+        Routes.hostInboxScreen.name,
+        queryParameters: _routeQuery(),
+      );
     }
-    _threadDrafts[threadId] = draft;
+  }
+
+  Future<void> _newMessage(String organizerId) async {
+    final accountId = _accountId;
+    final selection = await Navigator.of(context).push<HostNewMessageSelection>(
+      MaterialPageRoute(
+        builder: (_) => HostNewMessageScreen(organizerId: organizerId),
+      ),
+    );
+    if (!mounted || selection == null || accountId != _accountId) return;
+    ref.invalidate(chatsListViewModelProvider);
+    setState(() {
+      _requestedScope = selection.scope;
+      _selectedThreadId = selection.endpointId;
+    });
+    if (widget.syncSelectionToRoute) {
+      context.goNamed(
+        Routes.hostInboxScreen.name,
+        queryParameters: _routeQuery(
+          organizerId: organizerId,
+          threadId: selection.endpointId,
+        ),
+      );
+    }
   }
 
   Map<String, String> _routeQuery({
@@ -337,6 +380,7 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
       if (effectiveWorkspace != HostMessagingWorkspace.inbox)
         'workspace': effectiveWorkspace.name,
       if (effectiveScope?.isGeneral == true) 'scope': 'general',
+      'segment': _segment.name,
       'eventId': ?effectiveScope?.eventId,
       if (organizerId != null && organizerId.isNotEmpty)
         'organizerId': organizerId,
@@ -345,148 +389,6 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
   }
 
   bool get _broadcastEnabled => widget.broadcastEnabled ?? true;
-}
-
-class _HostInboxWorkspaceGroup extends ConsumerWidget {
-  const _HostInboxWorkspaceGroup({
-    required this.uidState,
-    required this.uid,
-    required this.clubsState,
-    required this.selectedClub,
-    required this.query,
-    required this.now,
-    required this.requestedScope,
-    required this.selectedSegment,
-    required this.selectedThreadId,
-    required this.onRetry,
-    required this.onScopeChanged,
-    required this.onSegmentChanged,
-    required this.onThreadSelected,
-  });
-
-  final CatchAsyncState<String?> uidState;
-  final String? uid;
-  final CatchAsyncState<List<Club>> clubsState;
-  final Club? selectedClub;
-  final String query;
-  final DateTime now;
-  final HostInboxScope? requestedScope;
-  final HostInboxAudienceSegment selectedSegment;
-  final String? selectedThreadId;
-  final ValueChanged<String?> onRetry;
-  final ValueChanged<HostInboxScope> onScopeChanged;
-  final ValueChanged<HostInboxAudienceSegment> onSegmentChanged;
-  final ChatThreadSelectedCallback onThreadSelected;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    if (uidState.hasError || clubsState.hasError) {
-      final failed = uidState.hasError ? uidState : clubsState;
-      return CatchLocalizedSliverErrorState(
-        failed.error!,
-        context: AppErrorContext.chat,
-        onRetry: () => onRetry(selectedClub?.id),
-      );
-    }
-    if (uidState.isLoading) return const ChatsListSkeleton();
-    if (uid == null) return const _HostAuthRequiredSliver();
-    if (clubsState.isLoading) return const ChatsListSkeleton();
-    final club = selectedClub;
-    if (club == null) return const _HostNoOrganizerSliver();
-
-    final eventsAsync = ref.watch(watchEventsForClubProvider(club.id));
-    final inboxAsync = ref.watch(chatsListViewModelProvider);
-    final whatsappAsync = ref.watch(hostWhatsappThreadsProvider(club.id));
-    final eventsState = catchAsyncStateFromAsyncValue(eventsAsync);
-    final inboxState = catchAsyncStateFromAsyncValue(inboxAsync);
-    final whatsappState = catchAsyncStateFromAsyncValue(whatsappAsync);
-    final events = eventsState.value;
-    final scope = events == null
-        ? const HostInboxScope.general()
-        : resolveHostInboxScope(
-            events: events,
-            now: now,
-            requestedScope: requestedScope,
-          );
-    final eventId = scope.eventId;
-    final participationsAsync = eventId == null
-        ? const AsyncData<List<EventParticipation>>([])
-        : ref.watch(watchEventParticipationsForEventProvider(eventId));
-    final asyncStates = <CatchAsyncState<dynamic>>[
-      eventsState,
-      inboxState,
-      catchAsyncStateFromAsyncValue(participationsAsync),
-    ];
-    final failed = asyncStates.where((value) => value.hasError).firstOrNull;
-    if (failed != null) {
-      return CatchLocalizedSliverErrorState(
-        failed.error!,
-        context: AppErrorContext.chat,
-        onRetry: () => onRetry(club.id),
-      );
-    }
-    final loading = asyncStates.any((value) => value.isLoading);
-    final inbox = inboxState.value;
-    final participations = asyncStates[2].value as List<EventParticipation>?;
-    final whatsappPage = whatsappState.value;
-    final workspace = events == null || inbox == null || participations == null
-        ? null
-        : HostInboxViewModel.compose(
-            events: events,
-            inbox: inbox,
-            participations: participations,
-            selectedOrganizerId: club.id,
-            selectedScope: scope,
-            selectedSegment: selectedSegment,
-            query: query,
-            now: now,
-          );
-    if (loading || workspace == null) {
-      return const ChatsListSkeleton();
-    }
-    final normalizedQuery = query.trim().toLowerCase();
-    final whatsappThreads = (whatsappPage?.threads ?? const [])
-        .where((thread) {
-          final inScope = scope.isGeneral
-              ? thread.eventIds.isEmpty
-              : selectedSegment == HostInboxAudienceSegment.booked &&
-                    thread.eventIds.contains(scope.eventId);
-          if (!inScope) return false;
-          return normalizedQuery.isEmpty ||
-              thread.displayName.toLowerCase().contains(normalizedQuery) ||
-              thread.lastMessageBody.toLowerCase().contains(normalizedQuery);
-        })
-        .toList(growable: false);
-    return SliverMainAxisGroup(
-      slivers: [
-        if (workspace.scopeOptions.length > 1)
-          HostInboxScopeMenu(
-            workspace: workspace,
-            now: now,
-            onChanged: onScopeChanged,
-          ),
-        if (!workspace.isGeneral)
-          HostInboxAudienceRail(
-            workspace: workspace,
-            onChanged: onSegmentChanged,
-          ),
-        HostInboxWorkspaceSliver(
-          workspace: workspace,
-          whatsappThreads: whatsappThreads,
-          now: now,
-          selectedThreadId: selectedThreadId,
-          onThreadSelected: onThreadSelected,
-          onWhatsappSelected: (thread) => showCatchBottomSheet<void>(
-            context: context,
-            builder: (_) => HostWhatsappThreadSheet(
-              organizerId: club.id,
-              threadId: thread.threadId,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
 }
 
 class _HostCampaignWorkspaceSliver extends StatelessWidget {
@@ -576,206 +478,4 @@ class _HostAuthRequiredSliver extends StatelessWidget {
       ],
     ),
   );
-}
-
-class HostMessagingWorkspaceRail extends StatelessWidget
-    implements CatchPrimaryRail, CatchScaledPreferredSize {
-  const HostMessagingWorkspaceRail({
-    super.key,
-    required this.selected,
-    required this.onChanged,
-  });
-
-  final HostMessagingWorkspace selected;
-  final ValueChanged<HostMessagingWorkspace>? onChanged;
-
-  @override
-  Size get preferredSize => Size.fromHeight(CatchPageTabBar.minimumHeight);
-
-  @override
-  Size preferredSizeFor(BuildContext context) =>
-      Size.fromHeight(CatchPageTabBar.heightFor(context));
-
-  @override
-  Widget build(BuildContext context) => CatchPageTabBar<HostMessagingWorkspace>(
-    key: const ValueKey<String>('host-messaging-workspace-rail'),
-    selected: selected,
-    options: [
-      CatchOption(
-        value: HostMessagingWorkspace.inbox,
-        label: context.l10n.hostMessagingWorkspaceInbox,
-      ),
-      CatchOption(
-        value: HostMessagingWorkspace.campaigns,
-        label: context.l10n.hostMessagingWorkspaceSends,
-      ),
-    ],
-    onChanged: onChanged,
-  );
-}
-
-class HostInboxAudienceRail extends StatelessWidget {
-  const HostInboxAudienceRail({
-    super.key,
-    required this.workspace,
-    required this.onChanged,
-  });
-
-  final HostInboxViewModel workspace;
-  final ValueChanged<HostInboxAudienceSegment> onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    return SliverToBoxAdapter(
-      child: Padding(
-        padding: CatchInsets.pageHorizontal,
-        child: CatchChoiceInput<HostInboxAudienceSegment>.segmented(
-          contract:
-              CatchContractConstraints.mobileFormStateHostInboxAudienceSegment,
-          contractValueBuilder: (segment) => segment.name,
-          selected: workspace.selectedSegment,
-          options: [
-            CatchOption(
-              value: HostInboxAudienceSegment.booked,
-              label: context.l10n
-                  .hostsHostInboxScreenLabelBookedBookedthreadcount(
-                    bookedThreadCount: workspace.bookedThreadCount,
-                  ),
-            ),
-            CatchOption(
-              value: HostInboxAudienceSegment.prospective,
-              label: context.l10n
-                  .hostsHostInboxScreenLabelProspectiveProspectivethreadcount(
-                    prospectiveThreadCount: workspace.prospectiveThreadCount,
-                  ),
-            ),
-          ],
-          variant: CatchChoiceInputVariant.mono,
-          onChanged: onChanged,
-        ),
-      ),
-    );
-  }
-}
-
-class HostInboxWorkspaceSliver extends StatelessWidget {
-  const HostInboxWorkspaceSliver({
-    super.key,
-    required this.workspace,
-    this.whatsappThreads = const [],
-    required this.now,
-    this.selectedThreadId,
-    required this.onThreadSelected,
-    this.onWhatsappSelected,
-  });
-
-  final HostInboxViewModel workspace;
-  final List<HostWhatsappThreadSummary> whatsappThreads;
-  final DateTime now;
-  final String? selectedThreadId;
-  final ChatThreadSelectedCallback onThreadSelected;
-  final ValueChanged<HostWhatsappThreadSummary>? onWhatsappSelected;
-
-  @override
-  Widget build(BuildContext context) {
-    final rowsByMatchId = {
-      for (final row in workspace.threads) row.preview.matchId: row,
-    };
-
-    return SliverMainAxisGroup(
-      slivers: [
-        if (workspace.threads.isNotEmpty)
-          ChatConversationsList(
-            matches: workspace.threads
-                .map((row) => row.preview)
-                .toList(growable: false),
-            now: now,
-            timestampTextFor: (preview) =>
-                AppTimeFormatters.compactRelativeTime(
-                  preview.timestamp,
-                  now: now,
-                ),
-            previewTextFor: (preview) {
-              final row = rowsByMatchId[preview.matchId];
-              return row == null
-                  ? preview.previewText
-                  : context.l10n.hostInboxCatchChatPreview(
-                      details: row.supportingText,
-                    );
-            },
-            selectedMatchId: selectedThreadId,
-            onThreadSelected: onThreadSelected,
-          ),
-        if (whatsappThreads.isNotEmpty)
-          SliverPadding(
-            padding: CatchInsets.pageBody.copyWith(top: CatchSpacing.s2),
-            sliver: SliverList.list(
-              children: [
-                for (final thread in whatsappThreads) ...[
-                  HostWhatsappThreadRow(
-                    thread: thread,
-                    onTap: () => onWhatsappSelected?.call(thread),
-                  ),
-                  gapH8,
-                ],
-              ],
-            ),
-          ),
-        if (workspace.threads.isEmpty && whatsappThreads.isEmpty)
-          CatchStateViewport.sliver(
-            child: workspace.query.isNotEmpty && workspace.hasUnfilteredThreads
-                ? const ChatsEmptyState.noHostSearchResults()
-                : workspace.isGeneral
-                ? HostInboxEmptyState(
-                    title: context
-                        .l10n
-                        .hostsHostInboxScreenTitleNoGeneralInquiries,
-                    message: context
-                        .l10n
-                        .hostsHostInboxScreenMessageQuestionsThatAreNot,
-                  )
-                : HostInboxEmptyState(
-                    title: context.l10n
-                        .hostsHostInboxScreenTitleNoValue1HaveWritten(
-                          value1:
-                              workspace.selectedSegment ==
-                                  HostInboxAudienceSegment.booked
-                              ? context
-                                    .l10n
-                                    .hostsHostInboxScreenTitleBookedAttendees
-                              : context
-                                    .l10n
-                                    .hostsHostInboxScreenTitleProspectiveAttendees,
-                        ),
-                    message: context
-                        .l10n
-                        .hostsHostInboxScreenMessagePersonalQuestionsAppearHere,
-                  ),
-          ),
-      ],
-    );
-  }
-}
-
-class HostInboxEmptyState extends StatelessWidget {
-  const HostInboxEmptyState({
-    super.key,
-    required this.title,
-    required this.message,
-  });
-
-  final String title;
-  final String message;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: CatchInsets.contentRelaxed,
-      child: CatchEmptyState(
-        icon: CatchIcons.chatBubbleOutlineRounded,
-        title: title,
-        message: message,
-      ),
-    );
-  }
 }

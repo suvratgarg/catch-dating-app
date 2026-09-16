@@ -64,13 +64,20 @@ class _EventRehearsalHelpQueueSheetState
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          for (final scope in pending)
-            CatchRecordRow(
-              key: ValueKey('help.pending.${scope.caseId}'),
-              icon: CatchIcons.refresh,
-              title: context.l10n.eventAssistanceHelpPending,
-              metadata: context.l10n.eventAssistanceHelpPendingBody,
-              onTap: () => review(scope),
+          if (pending.isNotEmpty)
+            CatchSection.containedRows(
+              children: [
+                for (final scope in pending)
+                  CatchField.navigate(
+                    key: ValueKey('help.pending.${scope.caseId}'),
+                    content: CatchRecordLayout(
+                      icon: CatchIcons.refresh,
+                      title: context.l10n.eventAssistanceHelpPending,
+                      metadata: context.l10n.eventAssistanceHelpPendingBody,
+                    ),
+                    onActivate: () => review(scope),
+                  ),
+              ],
             ),
           CatchAsyncBoundary<RehearsalAssistanceReview>(
             value: ref.watch(provider),

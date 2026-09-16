@@ -10,6 +10,10 @@ export interface ListOrganizerWhatsappThreadsCallableResponse {
   threads: {
     threadId: string;
     contactId: string;
+    /**
+     * Verified current account identity for this organizer contact; absent on older servers and null for unresolved, merged, hidden or deleted identities.
+     */
+    linkedUid?: string | null;
     displayName: string;
     /**
      * @maxItems 50

@@ -339,6 +339,8 @@ class _HostCustomerManualTagChip extends StatelessWidget {
   }
 }
 
+/// Sliver-native directory. The page owns scrolling; the section builds only
+/// visible people and preserves each contact's identity across filter changes.
 class HostCustomersDirectory extends StatelessWidget {
   const HostCustomersDirectory({
     super.key,
@@ -347,10 +349,12 @@ class HostCustomersDirectory extends StatelessWidget {
     required this.onCustomerSelected,
     required this.onLoadMore,
     required this.onRefreshCoverage,
+    this.selectedContactId,
   });
 
   final HostCustomersDirectoryState state;
   final bool hasActiveQuery;
+  final String? selectedContactId;
   final ValueChanged<HostCustomerDirectoryContact> onCustomerSelected;
   final VoidCallback? onLoadMore;
   final VoidCallback onRefreshCoverage;
@@ -358,71 +362,97 @@ class HostCustomersDirectory extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final contacts = state.contacts;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        if (state.sourceCoverage != HostCustomerDirectoryCoverage.exact) ...[
-          CatchBanner(
-            title: context.l10n.hostsHostAudienceCoveragePartial,
-            message: context.l10n.hostsHostAudienceCoveragePartialBody,
-            icon: CatchIcons.infoOutlineRounded,
-            tone: CatchBannerTone.warning,
-          ),
-          gapH8,
-          Align(
-            alignment: Alignment.centerLeft,
-            child: CatchButton(
-              key: const ValueKey('host-customers-refresh-coverage'),
-              label: context.l10n.hostCustomersCoverageRefresh,
-              variant: CatchButtonVariant.secondary,
-              size: CatchButtonSize.sm,
-              onPressed: onRefreshCoverage,
+    return SliverMainAxisGroup(
+      slivers: [
+        if (state.sourceCoverage != HostCustomerDirectoryCoverage.exact)
+          CatchPageBody.sliver(
+            child: SliverToBoxAdapter(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  CatchBanner(
+                    title: context.l10n.hostsHostAudienceCoveragePartial,
+                    message: context.l10n.hostsHostAudienceCoveragePartialBody,
+                    icon: CatchIcons.infoOutlineRounded,
+                    tone: CatchBannerTone.warning,
+                  ),
+                  gapH8,
+                  Align(
+                    alignment: AlignmentDirectional.centerStart,
+                    child: CatchButton(
+                      key: const ValueKey('host-customers-refresh-coverage'),
+                      label: context.l10n.hostCustomersCoverageRefresh,
+                      variant: CatchButtonVariant.secondary,
+                      size: CatchButtonSize.sm,
+                      onPressed: onRefreshCoverage,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
-          gapH12,
-        ],
         if (contacts.isEmpty)
-          CatchEmptyState(
-            icon: CatchIcons.peopleOutlineRounded,
-            title: hasActiveQuery
-                ? context.l10n.hostCustomersNoResults
-                : context.l10n.hostCustomersEmpty,
-            message: hasActiveQuery ? null : context.l10n.hostCustomersIntro,
-            variant: CatchEmptyStateVariant.inline,
+          SliverToBoxAdapter(
+            child: CatchEmptyState(
+              icon: CatchIcons.peopleOutlineRounded,
+              title: hasActiveQuery
+                  ? context.l10n.hostCustomersNoResults
+                  : context.l10n.hostCustomersEmpty,
+              message: hasActiveQuery ? null : context.l10n.hostCustomersIntro,
+              variant: CatchEmptyStateVariant.inline,
+            ),
           )
         else
-          CatchSection.divided(
+          CatchSection.sliverRows(
             key: const ValueKey('host-customers-directory-list'),
-            first: true,
-            children: [
-              for (final contact in contacts)
-                HostCustomerRow(
-                  contact: contact,
-                  onTap: () => onCustomerSelected(contact),
-                ),
-            ],
+            itemCount: contacts.length,
+            indexForKeyBuilder: (key) {
+              final index = contacts.indexWhere(
+                (contact) =>
+                    key == ValueKey('host-customer-${contact.contactId}'),
+              );
+              return index < 0 ? null : index;
+            },
+            itemBuilder: (context, index) {
+              final contact = contacts[index];
+              return CatchField.navigate(
+                key: ValueKey('host-customer-${contact.contactId}'),
+                content: hostCustomerPersonLayout(context, contact),
+                states: {
+                  if (contact.contactId == selectedContactId)
+                    WidgetState.selected,
+                },
+                onActivate: () => onCustomerSelected(contact),
+              );
+            },
           ),
-        if (onLoadMore != null) ...[
-          gapH12,
-          CatchButton(
-            label: context.l10n.hostCustomersLoadMore,
-            variant: CatchButtonVariant.secondary,
-            size: CatchButtonSize.sm,
-            status: (state.loadingMore)
-                ? CatchButtonStatus.loading
-                : CatchButtonStatus.idle,
-            onPressed: state.loadingMore ? null : onLoadMore,
+        if (onLoadMore != null || state.loadMoreError != null)
+          CatchPageBody.sliver(
+            child: SliverToBoxAdapter(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  if (onLoadMore != null)
+                    CatchButton(
+                      label: context.l10n.hostCustomersLoadMore,
+                      variant: CatchButtonVariant.secondary,
+                      size: CatchButtonSize.sm,
+                      status: state.loadingMore
+                          ? CatchButtonStatus.loading
+                          : CatchButtonStatus.idle,
+                      onPressed: state.loadingMore ? null : onLoadMore,
+                    ),
+                  if (state.loadMoreError != null)
+                    CatchLocalizedErrorState(
+                      state.loadMoreError!,
+                      context: AppErrorContext.club,
+                      mode: CatchErrorStateMode.compact,
+                      onRetry: onLoadMore,
+                    ),
+                ],
+              ),
+            ),
           ),
-        ],
-        if (state.loadMoreError != null) ...[
-          gapH8,
-          CatchLocalizedErrorState(
-            state.loadMoreError!,
-            context: AppErrorContext.club,
-            mode: CatchErrorStateMode.compact,
-            onRetry: onLoadMore,
-          ),
-        ],
       ],
     );
   }

@@ -1,8 +1,6 @@
 import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.dart';
-import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
-import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
@@ -30,51 +28,49 @@ class ChatConversationsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SliverPadding(
-      padding: CatchInsets.chatListGutter,
-      sliver: SliverList(
-        delegate: SliverChildBuilderDelegate((context, index) {
-          final preview = matches[index];
-          final unreadCount = preview.unreadCount;
-          final isNew = !preview.hasConversation;
-          final row = CatchPersonRow(
-            copy: catchPersonRowCopy(context.l10n),
-            data: CatchPersonRowData(
-              name: preview.displayName,
-              imageUrl: preview.photoUrl,
-              lastMessage: previewTextFor?.call(preview) ?? preview.previewText,
-              timestamp:
-                  timestampTextFor?.call(preview) ??
-                  AppTimeFormatters.chatTimestamp(preview.timestamp, now: now),
-              unreadCount: unreadCount,
-              isFresh: unreadCount > 0 || isNew,
-              showFreshDot: unreadCount == 0 && isNew,
-              avatarShape: preview.match.isClubHostInquiry
-                  ? CatchAvatarVariant.square
-                  : CatchAvatarVariant.circle,
-            ),
-            avatarSize: CatchLayout.chatListAvatarExtent,
-            padding: CatchInsets.chatListTileVertical,
-            divider: index > 0,
-            showFreshBackground: false,
-            onTap: () => onThreadSelected(preview),
-          );
-          if (selectedMatchId != preview.matchId) return row;
-          return Semantics(
-            key: ValueKey<String>(
-              'chat-conversation-selected-${preview.matchId}',
-            ),
-            container: true,
-            selected: true,
-            child: ColoredBox(
-              color: CatchTokens.of(
-                context,
-              ).ink.withValues(alpha: CatchOpacity.tabBarPillFill),
-              child: row,
-            ),
-          );
-        }, childCount: matches.length),
-      ),
+    return CatchSection.sliverRows(
+      itemCount: matches.length,
+      indexForKeyBuilder: (key) {
+        final index = matches.indexWhere(
+          (preview) => ValueKey(preview.matchId) == key,
+        );
+        return index < 0 ? null : index;
+      },
+      itemBuilder: (context, index) {
+        final preview = matches[index];
+        final unread = preview.unreadCount;
+        final fresh = !preview.hasConversation;
+        return CatchField.navigate(
+          key: ValueKey(preview.matchId),
+          states: {
+            if (selectedMatchId == preview.matchId) WidgetState.selected,
+          },
+          onActivate: () => onThreadSelected(preview),
+          content: CatchConversationLayout(
+            name: preview.displayName,
+            imageUrl: preview.photoUrl,
+            avatarShape: preview.match.isClubHostInquiry
+                ? CatchAvatarVariant.square
+                : CatchAvatarVariant.circle,
+            preview: previewTextFor?.call(preview) ?? preview.previewText,
+            timestamp:
+                timestampTextFor?.call(preview) ??
+                AppTimeFormatters.chatTimestamp(preview.timestamp, now: now),
+            activityLabel: unread > 0
+                ? '$unread'
+                : fresh
+                ? context.l10n.coreCatchPersonRowLabelNewMatch
+                : null,
+            activitySemantics: unread > 0
+                ? context.l10n.coreCatchPersonRowLabelLabelUnreadChats(
+                    label: unread,
+                  )
+                : fresh
+                ? context.l10n.coreCatchPersonRowLabelNewMatch
+                : null,
+          ),
+        );
+      },
     );
   }
 }

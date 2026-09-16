@@ -3,6 +3,7 @@ import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_sliver_error_state.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_response.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_summary.dart';
@@ -53,165 +54,169 @@ class _HostFormResponsesPanelState
       query: widget.query,
     );
     final responses = ref.watch(hostFormResponsesControllerProvider(request));
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        CatchChoiceInput<bool>.segmented(
-          key: const ValueKey('host-form-responses-review-applications'),
-          options: [
-            CatchOption(
-              value: false,
-              label: context.l10n.hostAudienceAllResponses,
-            ),
-            CatchOption(value: true, label: context.l10n.hostApplicationsTitle),
-          ],
-          selected: false,
-          variant: CatchChoiceInputVariant.summary,
-          contractExemption:
-              'Navigation between raw submissions and the application review queue; not a stored value.',
-          onChanged: (applications) {
-            if (!applications) return;
-            context.pushNamed(
-              Routes.hostApplicationsScreen.name,
-              queryParameters: {
-                'organizerId': widget.organizerId,
-                if (widget.formId != null) 'formId': widget.formId!,
-              },
-            );
-          },
-        ),
-        gapH16,
-        Wrap(
-          alignment: WrapAlignment.spaceBetween,
-          spacing: CatchSpacing.s4,
-          children: [
-            if (widget.showFormContext)
-              CatchButton.command(
-                label: widget.formId == null
-                    ? context.l10n.hostAudienceAllForms
-                    : widget.formTitle ??
-                          catchAsyncStateFromAsyncValue(
-                            responses,
-                          ).value?.responses.firstOrNull?.formTitle ??
-                          context.l10n.hostAudienceSelectedForm,
-                leading: Icon(CatchIcons.descriptionOutlined),
-                onPressed: widget.onFormChanged != null
-                    ? _chooseForm
-                    : widget.onClearFormFilter,
+    return SliverMainAxisGroup(
+      slivers: [
+        SliverToBoxAdapter(
+          child: CatchSection.rows(
+            children: [
+              CatchField.navigate(
+                key: const ValueKey('host-form-responses-review-applications'),
+                content: CatchRecordLayout(
+                  title: context.l10n.hostApplicationsTitle,
+                  icon: CatchIcons.factCheckOutlined,
+                ),
+                onActivate: () => context.pushNamed(
+                  Routes.hostApplicationsScreen.name,
+                  queryParameters: {
+                    'organizerId': widget.organizerId,
+                    if (widget.formId != null) 'formId': widget.formId!,
+                  },
+                ),
               ),
-            CatchButton.command(
-              label: switch (_status) {
-                HostFormResponseStatus.submitted =>
-                  context.l10n.hostFormResponsesSubmitted,
-                HostFormResponseStatus.withdrawn =>
-                  context.l10n.hostFormResponsesWithdrawn,
-                null => context.l10n.hostAudienceAllStatuses,
-              },
-              leading: Icon(CatchIcons.tune),
-              onPressed: _selectStatus,
-            ),
-          ],
+            ],
+          ),
         ),
-        gapH8,
-        CatchAsyncBoundary<HostFormResponsesState>(
+        CatchPageBody.sliver(
+          child: SliverToBoxAdapter(
+            child: Wrap(
+              alignment: WrapAlignment.spaceBetween,
+              spacing: CatchSpacing.s4,
+              children: [
+                if (widget.showFormContext)
+                  CatchButton.command(
+                    label: widget.formId == null
+                        ? context.l10n.hostAudienceAllForms
+                        : widget.formTitle ??
+                              catchAsyncStateFromAsyncValue(
+                                responses,
+                              ).value?.responses.firstOrNull?.formTitle ??
+                              context.l10n.hostAudienceSelectedForm,
+                    leading: Icon(CatchIcons.descriptionOutlined),
+                    onPressed: widget.onFormChanged != null
+                        ? _chooseForm
+                        : widget.onClearFormFilter,
+                  ),
+                CatchButton.command(
+                  label: switch (_status) {
+                    HostFormResponseStatus.submitted =>
+                      context.l10n.hostFormResponsesSubmitted,
+                    HostFormResponseStatus.withdrawn =>
+                      context.l10n.hostFormResponsesWithdrawn,
+                    null => context.l10n.hostAudienceAllStatuses,
+                  },
+                  leading: Icon(CatchIcons.tune),
+                  onPressed: _selectStatus,
+                ),
+              ],
+            ),
+          ),
+        ),
+        CatchAsyncBoundary<HostFormResponsesState>.sliver(
           value: responses,
           onRetry: () =>
               ref.invalidate(hostFormResponsesControllerProvider(request)),
           initialLoadTimeout: null,
-          loadingBuilder: (_) => const CatchSkeleton.rows(count: 6),
+          loadingBuilder: (_) =>
+              const SliverToBoxAdapter(child: CatchSkeleton.rows(count: 6)),
           errorBuilder: (_, error, _, onBoundaryRetry) =>
-              CatchLocalizedErrorState(
+              CatchLocalizedSliverErrorState(
                 error,
                 context: AppErrorContext.formResponses,
-                mode: CatchErrorStateMode.compact,
+                fillRemaining: false,
                 onRetry: onBoundaryRetry,
               ),
           builder: (context, state) {
             if (state.responses.isEmpty) {
               final filtered = widget.query != null || _status != null;
-              return CatchEmptyState(
-                icon: CatchIcons.descriptionOutlined,
-                title: filtered
-                    ? context.l10n.hostFormResponsesNoMatchesTitle
-                    : context.l10n.hostFormResponsesEmptyTitle,
-                message: filtered
-                    ? context.l10n.hostFormResponsesNoMatchesBody
-                    : context.l10n.hostFormResponsesEmptyBody,
+              return SliverToBoxAdapter(
+                child: CatchEmptyState(
+                  icon: CatchIcons.descriptionOutlined,
+                  title: filtered
+                      ? context.l10n.hostFormResponsesNoMatchesTitle
+                      : context.l10n.hostFormResponsesEmptyTitle,
+                  message: filtered
+                      ? context.l10n.hostFormResponsesNoMatchesBody
+                      : context.l10n.hostFormResponsesEmptyBody,
+                ),
               );
             }
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                CatchSection.divided(
-                  first: true,
-                  children: [
-                    for (final response in state.responses)
-                      CatchPersonRow.directory(
-                        key: ValueKey(
-                          'host-form-response-${response.responseId}',
-                        ),
-                        data: CatchPersonRowData(
-                          name:
-                              response.identity.primaryLabel ??
-                              context.l10n.hostFormResponsesAnonymous,
-                          seed: response.responseId,
-                        ),
-                        meta: Text(
-                          response.formTitle,
-                          style: CatchTextStyles.supporting(context),
-                        ),
-                        body: Text(
-                          '${AppTimeFormatters.compactRelativeTime(response.submittedAt)} · ${response.sourceLabel ?? context.l10n.hostFormResponseDirectSource}',
-                          style: CatchTextStyles.recordContext(context),
-                        ),
-                        trailing: CatchBadge.status(
-                          label:
-                              response.status ==
-                                  HostFormResponseStatus.withdrawn
-                              ? context.l10n.hostFormResponsesWithdrawn
-                              : context.l10n.hostFormResponsesSubmitted,
-                        ),
-                        onTap: () => context.pushNamed(
-                          Routes.hostFormResponseDetailScreen.name,
-                          pathParameters: {'responseId': response.responseId},
-                          queryParameters: {'organizerId': widget.organizerId},
-                        ),
+            return SliverMainAxisGroup(
+              slivers: [
+                CatchSection.sliverRows(
+                  itemCount: state.responses.length,
+                  indexForKeyBuilder: (key) {
+                    final index = state.responses.indexWhere(
+                      (response) =>
+                          key ==
+                          ValueKey('host-form-response-${response.responseId}'),
+                    );
+                    return index < 0 ? null : index;
+                  },
+                  itemBuilder: (context, index) {
+                    final response = state.responses[index];
+                    return CatchField.navigate(
+                      key: ValueKey(
+                        'host-form-response-${response.responseId}',
                       ),
-                  ],
+                      content: CatchPersonLayout(
+                        name:
+                            response.identity.primaryLabel ??
+                            context.l10n.hostFormResponsesAnonymous,
+                        supportingText: response.formTitle,
+                        context:
+                            '${AppTimeFormatters.compactRelativeTime(response.submittedAt)} · ${response.sourceLabel ?? context.l10n.hostFormResponseDirectSource}',
+                        badges: [
+                          CatchRowBadge(
+                            label:
+                                response.status ==
+                                    HostFormResponseStatus.withdrawn
+                                ? context.l10n.hostFormResponsesWithdrawn
+                                : context.l10n.hostFormResponsesSubmitted,
+                            tone: CatchBadgeTone.neutral,
+                          ),
+                        ],
+                      ),
+                      onActivate: () => context.pushNamed(
+                        Routes.hostFormResponseDetailScreen.name,
+                        pathParameters: {'responseId': response.responseId},
+                        queryParameters: {'organizerId': widget.organizerId},
+                      ),
+                    );
+                  },
                 ),
-                if (state.canLoadMore) ...[
-                  gapH16,
-                  CatchButton(
-                    label: context.l10n.hostFormResponsesLoadMore,
-                    variant: CatchButtonVariant.secondary,
-                    status: (state.loadingMore)
-                        ? CatchButtonStatus.loading
-                        : CatchButtonStatus.idle,
-                    fullWidth: true,
-                    onPressed: state.loadingMore
-                        ? null
-                        : () => ref
-                              .read(
-                                hostFormResponsesControllerProvider(
-                                  request,
-                                ).notifier,
-                              )
-                              .loadMore(),
+                if (state.canLoadMore)
+                  CatchPageBody.sliver(
+                    child: SliverToBoxAdapter(
+                      child: CatchButton(
+                        label: context.l10n.hostFormResponsesLoadMore,
+                        variant: CatchButtonVariant.secondary,
+                        status: state.loadingMore
+                            ? CatchButtonStatus.loading
+                            : CatchButtonStatus.idle,
+                        fullWidth: true,
+                        onPressed: state.loadingMore
+                            ? null
+                            : () => ref
+                                  .read(
+                                    hostFormResponsesControllerProvider(
+                                      request,
+                                    ).notifier,
+                                  )
+                                  .loadMore(),
+                      ),
+                    ),
                   ),
-                ],
-                if (state.loadMoreError case final error?) ...[
-                  gapH12,
-                  CatchLocalizedErrorState(
+                if (state.loadMoreError case final error?)
+                  CatchLocalizedSliverErrorState(
                     error,
                     context: AppErrorContext.formResponses,
-                    mode: CatchErrorStateMode.compact,
+                    fillRemaining: false,
                     onRetry: () => ref
                         .read(
                           hostFormResponsesControllerProvider(request).notifier,
                         )
                         .loadMore(),
                   ),
-                ],
               ],
             );
           },

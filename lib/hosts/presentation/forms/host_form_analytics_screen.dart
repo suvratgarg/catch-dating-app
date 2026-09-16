@@ -249,20 +249,22 @@ class _HostFormAnalyticsScreenState
               ),
               if (value.sources.isNotEmpty) ...[
                 gapH24,
-                CatchSection.divided(
+                CatchSection.containedRows(
                   title: context.l10n.hostFormAnalyticsSources,
                   children: [
                     for (final source in value.sources)
-                      CatchRecordRow(
-                        title: source.label,
-                        icon: CatchIcons.linkOutlined,
-                        facts: [
-                          context.l10n.hostFormAnalyticsSourceSummary(
-                            opens: source.opens,
-                            starts: source.starts,
-                            submissions: source.submissions,
-                          ),
-                        ],
+                      CatchField.read(
+                        content: CatchRecordLayout(
+                          title: source.label,
+                          icon: CatchIcons.linkOutlined,
+                          facts: [
+                            context.l10n.hostFormAnalyticsSourceSummary(
+                              opens: source.opens,
+                              starts: source.starts,
+                              submissions: source.submissions,
+                            ),
+                          ],
+                        ),
                       ),
                   ],
                 ),

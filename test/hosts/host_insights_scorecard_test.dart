@@ -31,8 +31,6 @@ void main() {
       find.byKey(const ValueKey('host-analytics-sync-footnote')),
       findsOneWidget,
     );
-    expect(find.text('ALL TIME'), findsOneWidget);
-    expect(find.text('PERFORMANCE PERIOD'), findsOneWidget);
     expect(find.text('PERFORMANCE'), findsOneWidget);
     expect(find.text('TREND · BOOKINGS VS DEMAND'), findsOneWidget);
     expect(find.text('RECENT EVENTS'), findsOneWidget);
@@ -274,8 +272,6 @@ Future<void> _pumpReport(
             report: report,
             rangePreset: HostClubInsightsRangePreset.thirtyDays,
             currencyCode: 'INR',
-            allTimeOverview: const Text('ALL_TIME_FIXTURE'),
-            onRangeChanged: (_) {},
             onOpenEventReport: onOpenEventReport,
             onOpenAllEvents: onOpenAllEvents,
             onOpenEventDefaults: onOpenEventDefaults ?? () {},
