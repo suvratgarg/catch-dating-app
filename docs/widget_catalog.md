@@ -753,7 +753,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>Recommendations</code> | <code>lib/explore/presentation/widgets/recommendations.dart:8</code> | — | — | No class documentation or registry summary. |
 | <code>UpdateRequiredContent</code> | <code>lib/force_update/presentation/update_required_screen.dart:55</code> | — | — | Provider-free full-screen update prompt rendered by [UpdateRequiredScreen]. |
 | <code>HostEventEntrySheet</code> | <code>lib/hosts/events/presentation/host_event_entry_sheet.dart:23</code> | — | — | No class documentation or registry summary. |
-| <code>HostEventsRouteScaffold</code> | <code>lib/hosts/events/presentation/host_events_screen.dart:107</code> | — | — | No class documentation or registry summary. |
+| <code>HostEventsRouteScaffold</code> | <code>lib/hosts/events/presentation/host_events_screen.dart:102</code> | — | — | No class documentation or registry summary. |
 | <code>HostEventLifecycleRow</code> | <code>lib/hosts/events/presentation/widgets/host_events_list.dart:337</code> | — | — | Host lifecycle semantics over the canonical record row. Both tabs use this adapter; it cannot choose its own padding, typography or interaction shape. |
 | <code>HostEventsClubCard</code> | <code>lib/hosts/events/presentation/widgets/host_events_list.dart:21</code> | — | — | No class documentation or registry summary. |
 | <code>HostEventsClubSection</code> | <code>lib/hosts/events/presentation/widgets/host_events_list.dart:95</code> | — | — | No class documentation or registry summary. |
@@ -971,10 +971,10 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>HostTeamManagementSection</code> | <code>lib/hosts/presentation/widgets/host_team_management_section.dart:16</code> | — | — | No class documentation or registry summary. |
 | <code>HostTeamOwnerHostRow</code> | <code>lib/hosts/presentation/widgets/host_team_management_section.dart:276</code> | — | — | No class documentation or registry summary. |
 | <code>StepperFooter</code> | <code>lib/hosts/presentation/widgets/stepper_footer.dart:6</code> | — | — | No class documentation or registry summary. |
-| <code>HostTodayOrganizerEmptyState</code> | <code>lib/hosts/today/presentation/host_today_screen.dart:304</code> | — | — | No class documentation or registry summary. |
+| <code>HostTodayOrganizerEmptyState</code> | <code>lib/hosts/today/presentation/host_today_screen.dart:357</code> | — | — | No class documentation or registry summary. |
 | <code>HostTodayBody</code> | <code>lib/hosts/today/presentation/widgets/host_today_body.dart:13</code> | — | — | No class documentation or registry summary. |
-| <code>HostTodayHeader</code> | <code>lib/hosts/today/presentation/widgets/host_today_body.dart:74</code> | — | — | No class documentation or registry summary. |
-| <code>HostTodayQuietState</code> | <code>lib/hosts/today/presentation/widgets/host_today_body.dart:99</code> | — | — | No class documentation or registry summary. |
+| <code>HostTodayHeader</code> | <code>lib/hosts/today/presentation/widgets/host_today_body.dart:77</code> | — | — | No class documentation or registry summary. |
+| <code>HostTodayQuietState</code> | <code>lib/hosts/today/presentation/widgets/host_today_body.dart:102</code> | — | — | No class documentation or registry summary. |
 | <code>HostTodayAttentionCard</code> | <code>lib/hosts/today/presentation/widgets/host_today_overview.dart:507</code> | — | — | No class documentation or registry summary. |
 | <code>HostTodayAttentionSection</code> | <code>lib/hosts/today/presentation/widgets/host_today_overview.dart:257</code> | — | — | No class documentation or registry summary. |
 | <code>HostTodayEventDateBlock</code> | <code>lib/hosts/today/presentation/widgets/host_today_overview.dart:580</code> | — | — | No class documentation or registry summary. |
@@ -1161,7 +1161,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>DashboardHomeScreen</code> | <code>lib/dashboard/presentation/dashboard_home_screen.dart:3</code> | — | — | No class documentation or registry summary. |
 | <code>DashboardLoadingScreen</code> | <code>lib/dashboard/presentation/dashboard_loading_screen.dart:3</code> | — | — | No class documentation or registry summary. |
 | <code>DashboardScreen</code> | <code>lib/dashboard/presentation/dashboard_screen.dart:25</code> | — | — | No class documentation or registry summary. |
-| <code>HostEventRehearsalScreen</code> | <code>lib/event_rehearsal/presentation/host_event_rehearsal_screen.dart:36</code> | — | — | No class documentation or registry summary. |
+| <code>HostEventRehearsalScreen</code> | <code>lib/event_rehearsal/presentation/host_event_rehearsal_screen.dart:38</code> | — | — | No class documentation or registry summary. |
 | <code>HostEventRehearsalStartScreen</code> | <code>lib/event_rehearsal/presentation/host_event_rehearsal_start_screen.dart:14</code> | — | — | No class documentation or registry summary. |
 | <code>EventSuccessCompanionScreen</code> | <code>lib/event_success/presentation/event_success_companion_body_screen.dart:3</code> | — | — | No class documentation or registry summary. |
 | <code>EventSuccessCompanionRouteScreen</code> | <code>lib/event_success/presentation/event_success_companion_screen.dart:203</code> | — | — | No class documentation or registry summary. |
@@ -1179,7 +1179,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>ExploreScreen</code> | <code>lib/explore/presentation/explore_screen.dart:54</code> | — | — | Explore — the supply-side feed (design-system Explore). |
 | <code>UpdateRequiredScreen</code> | <code>lib/force_update/presentation/update_required_screen.dart:15</code> | — | — | Blocking screen shown when the running app version is below [minVersion]. |
 | <code>HostApp</code> | <code>lib/host_app.dart:5</code> | — | — | No class documentation or registry summary. |
-| <code>HostEventsScreen</code> | <code>lib/hosts/events/presentation/host_events_screen.dart:30</code> | — | — | No class documentation or registry summary. |
+| <code>HostEventsScreen</code> | <code>lib/hosts/events/presentation/host_events_screen.dart:25</code> | — | — | No class documentation or registry summary. |
 | <code>HostEventsTimelinePage</code> | <code>lib/hosts/events/presentation/widgets/host_events_list.dart:213</code> | — | — | One lifecycle page. The root owns tabs and scrolling chrome; this adapter selects data/state only, and the shared page/section/record owners lay it out. |
 | <code>HostApplicationDetailScreen</code> | <code>lib/hosts/presentation/applications/host_application_detail_screen.dart:3</code> | — | — | No class documentation or registry summary. |
 | <code>HostApplicationsScreen</code> | <code>lib/hosts/presentation/applications/host_applications_screen.dart:26</code> | — | — | No class documentation or registry summary. |
@@ -1216,8 +1216,8 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>HostLoadingScreen</code> | <code>lib/hosts/presentation/host_operations/host_loading_screen.dart:3</code> | — | — | No class documentation or registry summary. |
 | <code>HostInboxScreen</code> | <code>lib/hosts/presentation/inbox/host_inbox_screen.dart:36</code> | — | — | No class documentation or registry summary. |
 | <code>HostMessagingSetupScreen</code> | <code>lib/hosts/presentation/inbox/host_messaging_setup_screen.dart:10</code> | — | — | No class documentation or registry summary. |
-| <code>HostTodayLoadedRoute</code> | <code>lib/hosts/today/presentation/host_today_screen.dart:243</code> | — | — | No class documentation or registry summary. |
-| <code>HostTodayScreen</code> | <code>lib/hosts/today/presentation/host_today_screen.dart:25</code> | — | — | No class documentation or registry summary. |
+| <code>HostTodayLoadedRoute</code> | <code>lib/hosts/today/presentation/host_today_screen.dart:249</code> | — | — | No class documentation or registry summary. |
+| <code>HostTodayScreen</code> | <code>lib/hosts/today/presentation/host_today_screen.dart:31</code> | — | — | No class documentation or registry summary. |
 | <code>ProfilePhotoEditorScreen</code> | <code>lib/image_uploads/shared/profile_photo_editor_screen.dart:22</code> | — | — | No class documentation or registry summary. |
 | <code>LaunchAccessApplicationScreen</code> | <code>lib/launch_access/presentation/launch_access_application_screen.dart:17</code> | — | — | No class documentation or registry summary. |
 | <code>OnboardingScreen</code> | <code>lib/onboarding/presentation/onboarding_screen.dart:19</code> | — | — | No class documentation or registry summary. |
