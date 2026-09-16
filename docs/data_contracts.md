@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.129.0
+version: 1.130.0
 updated: 2026-09-16
 owner: recursive_audit_loop
 status: active
@@ -1171,6 +1171,12 @@ server-only collections:
 | `eventRehearsalMovements/{movementId}` | Clock/group/revision-bound immutable departure and separately revised checkpoint report | At most one departure per counted Host action, 500 per session, 50 selected synthetic visits; manager-only read pages contain at most 25 departures |
 | `eventRehearsalRouteDecisions/{decisionDocumentId}` | Immutable source-fenced route override layered on a recorded synthetic departure | Manager-only typed command; advances the shared progress revision without changing the departure roster, checkpoint, itinerary or route setup |
 
+The Dart movement review verifies every projected alternative ID against its
+canonical target and binds a route overlay to the session, clock, group, source,
+departure and shared progress revision. Its immutable `changeRoute` command
+freezes the selected alternative and decision ID; the result check requires the
+matching control receipt and exact immediate overlay.
+
 The schemas under `contracts/firestore/event_rehearsal_*.schema.json` and
 `contracts/callables/*event_rehearsal*.schema.json` are authoritative.
 Functions may read `events/{sourceEventId}` exactly once during creation to
@@ -1269,6 +1275,17 @@ changing actors or reclassifying unresolved rows. `rosterReview` exposes every
 row and bounded outcome counts, omitting Host and operation identities. Legacy
 sessions without a committed source fail closed until reset. No live import,
 attendee or event roster is read or written.
+
+The Dart rehearsal boundary treats each of these optional reviews as an exact
+projection rather than an untyped map. Parsing rejects unknown fields, duplicate
+identities, actor/assignment drift, changed unit scope and inconsistent status
+metadata. Required-data, outcome, reveal, allocation and roster mutations are
+immutable reviewed commands built through the generated control callable DTO.
+Their result checks bind session, organizer, setup generation, runtime receipt
+and the operation-specific next state, while allowing an exact retry to return
+a newer current projection. The exact older private required-data state shape is
+treated as non-actionable legacy input; it never supplies a synthetic source
+hash or mutation authority.
 
 Movement controls carry their own closed group command with the parent setup and
 runtime revisions; action receipts use `actorId: null`. The departure freezes its

@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.150.0
+version: 1.151.0
 updated: 2026-09-16
 owner: recursive_audit_loop
 status: active
@@ -1369,8 +1369,12 @@ message and script cursor. Current accepted membership still gates subgroup
 directions; virtual time and GPS never substitute for a departure. A source change
 or reset withholds stale instructions.
 
-Native recipe/configuration and movement screen composition remain integration
-work.
+The native movement adapter now validates opaque alternative identities and the
+complete immutable route-decision overlay, derives guidance from the active
+overlay and sends `changeRoute` with the reviewed source and progress revision.
+An immediate response must return the exact decision and action receipt; a later
+retry can rely on that receipt after a newer departure supersedes the overlay.
+Movement screen composition remains integration work.
 
 
 `movementDecisions.ts` owns the shared, side-effect-free departure and
@@ -2740,6 +2744,17 @@ reviewed source id and revision, marks that source reconciled and exposes every
 row and outcome count. Setup changes and reset rebuild the source at the next
 generation. The adapter does not add, delete or relabel practice actors and
 never reads or writes a live import, attendee or event roster.
+
+The native rehearsal client parses required-data, outcome, reveal, allocation
+and roster reviews into closed types and checks each projection against the
+current actor and unit scope. Host changes freeze the reviewed setup/runtime
+generation, operation-specific revision or source hash, and one client action
+id. An uncertain retry therefore resends the same payload. The response must
+contain the matching action receipt; an immediate response must also prove the
+requested state transition. These adapters are exposed through the rehearsal
+repository and controller without adding a second Event Success runtime UI.
+An exact legacy fixture state without Host review metadata remains readable but
+does not grant the required-data command.
 
 With the shared execution and SMS/WhatsApp/RCS boundaries in source, the next
 implementation sequence is:

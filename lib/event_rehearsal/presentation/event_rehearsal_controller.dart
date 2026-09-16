@@ -5,6 +5,7 @@ import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/event_rehearsal/data/event_rehearsal_repository.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_assistance_command.dart';
+import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_operation_change.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -16,6 +17,7 @@ class EventRehearsalController extends _$EventRehearsalController {
   static final setupMutation = Mutation<void>();
   static final controlMutation = Mutation<void>();
   static final assistanceMutation = Mutation<EventRehearsalBootstrap>();
+  static final operationMutation = Mutation<EventRehearsalBootstrap>();
   static final behaviorMutation = Mutation<void>();
   static final spatialMutation = Mutation<void>();
   static final resetMutation = Mutation<void>();
@@ -83,6 +85,18 @@ class EventRehearsalController extends _$EventRehearsalController {
         .read(eventRehearsalRepositoryProvider)
         .applyAssistance(change);
     if (ref.mounted) ref.invalidate(eventRehearsalProvider(change.session.id));
+    return result;
+  }
+
+  Future<EventRehearsalBootstrap> applyOperation(
+    RehearsalOperationChange change,
+  ) async {
+    final result = await ref
+        .read(eventRehearsalRepositoryProvider)
+        .applyOperation(change);
+    if (ref.mounted) {
+      ref.invalidate(eventRehearsalProvider(change.snapshot.session.id));
+    }
     return result;
   }
 

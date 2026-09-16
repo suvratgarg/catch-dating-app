@@ -7,6 +7,7 @@ import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_assistance_command.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_movement.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_movement_command.dart';
+import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_operation_change.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_settings_change.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_staff.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_staff_change.dart';
@@ -258,6 +259,20 @@ class EventRehearsalRepository {
         parse: EventRehearsalCreated.fromCallableData,
       );
 
+  /// Reuse the frozen operation unchanged after an uncertain network result.
+  Future<EventRehearsalBootstrap> applyOperation(
+    RehearsalOperationChange change,
+  ) => _call(
+    name: 'controlEventRehearsal',
+    payload: change.toJson(),
+    action: 'apply a typed rehearsal operation',
+    parse: (data) {
+      final result = EventRehearsalBootstrap.fromCallableData(data);
+      change.requireResult(result);
+      return result;
+    },
+  );
+
   Future<EventRehearsalBootstrap> rotateGuestLink(String sessionId) => _call(
     name: 'rotateEventRehearsalGuestLink',
     payload: RotateEventRehearsalGuestLinkCallableRequest(
@@ -316,6 +331,16 @@ final class EventRehearsalAssistanceCommands {
 
   Future<EventRehearsalBootstrap> apply(RehearsalAssistanceChange change) =>
       _repository.applyAssistance(change);
+}
+
+/// Typed mutation seam for bounded non-messaging rehearsal operations.
+final class EventRehearsalOperationCommands {
+  const EventRehearsalOperationCommands(this._repository);
+
+  final EventRehearsalRepository _repository;
+
+  Future<EventRehearsalBootstrap> apply(RehearsalOperationChange change) =>
+      _repository.applyOperation(change);
 }
 
 // keepalive: One callable client owns the isolated rehearsal domain.

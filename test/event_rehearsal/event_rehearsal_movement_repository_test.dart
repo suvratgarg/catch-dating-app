@@ -42,13 +42,13 @@ void main() {
         selection: s.movementReview!.selection,
         actorUid: 'host-1',
       );
-      expect(r.selected!.revision, 4);
-      expect(r.revision, 5);
+      expect(r.selected!.revision, 5);
+      expect(r.revision, 6);
       expect(f.calls.single.name, 'getEventRehearsalMovement');
       expect(f.calls.single.input, {
         'sessionId': 'session-1',
         'expectedSetupRevision': 0,
-        'scope': {'groupId': 'event:whole', 'progressRevision': 4},
+        'scope': {'groupId': 'event:whole', 'progressRevision': 5},
       });
       await expectLater(
         repo.fetchMovement(

@@ -84,10 +84,37 @@ final class RehearsalMovementSelection {
 
 typedef RehearsalMovementGroup = ({String groupId, String label});
 typedef RehearsalMovementDestination = ({
+  String alternativeId,
   AssistanceJoiningTarget target,
   String label,
   String text,
 });
+
+final class RehearsalRouteDecision {
+  const RehearsalRouteDecision({
+    required this.progressRevision,
+    required this.previousRevision,
+    required this.departureRevision,
+    required this.sourceHash,
+    required this.alternativeId,
+    required this.destination,
+    required this.decisionId,
+    required this.operationId,
+    required this.decidedBy,
+    required this.decidedAt,
+  });
+
+  final int progressRevision;
+  final int previousRevision;
+  final int departureRevision;
+  final String sourceHash;
+  final String alternativeId;
+  final AssistanceJoiningTarget destination;
+  final String decisionId;
+  final String operationId;
+  final String decidedBy;
+  final int decidedAt;
+}
 
 enum RehearsalDepartureUnavailableReason {
   notCheckedIn,
@@ -110,6 +137,7 @@ final class RehearsalMovementReview {
     required this.runtimeLive,
     required this.destinations,
     required this.current,
+    required this.routeDecision,
     required this.guidance,
     required this.selected,
     required this.rosterSourceHash,
@@ -130,6 +158,7 @@ final class RehearsalMovementReview {
   final List<RehearsalMovementGroup> groups;
   final List<RehearsalMovementDestination> destinations;
   final RehearsalMovementRecord? current, selected;
+  final RehearsalRouteDecision? routeDecision;
   final AssistanceJoiningGuidance? guidance;
   final List<RehearsalDepartureMember> candidates;
   final Map<String, RehearsalDepartureUnavailableReason> unavailable;
@@ -166,6 +195,17 @@ final class RehearsalMovementReview {
         EventRehearsalStatus.paused,
         EventRehearsalStatus.complete,
       ].contains(session.status);
+  bool get canChangeRoute =>
+      (staffReview?.isManager ?? true) &&
+      current != null &&
+      revision < 500 &&
+      eventOpen &&
+      runtimeLive &&
+      destinations.any((item) => item.target != activeDestination) &&
+      session.actionCount < 500 &&
+      session.runtimeRevision < 2147483647;
+  AssistanceJoiningTarget? get activeDestination =>
+      routeDecision?.destination ?? current?.departure.destination;
 
   factory RehearsalMovementReview.fromBootstrapJson(
     Object? value, {
@@ -277,6 +317,7 @@ final class RehearsalMovementReview {
       'runtimeLive',
       'destinations',
       'current',
+      'routeDecision',
       'guidance',
     });
     final revision = _movementRevision(progress['revision']);
@@ -296,9 +337,20 @@ final class RehearsalMovementReview {
       );
     }
     final destinations = _movementList(progress['destinations'], 41).map((v) {
-      final m = assistanceObject(v, {'target', 'label', 'text'});
+      final m = assistanceObject(v, {
+        'alternativeId',
+        'target',
+        'label',
+        'text',
+      });
+      final target = _movementTarget(m['target'], scope);
+      final alternativeId = _movementAlternativeId(m['alternativeId']);
+      if (alternativeId != 'alternative:${_movementHash(target.toJson())}') {
+        throw const FormatException('Invalid rehearsal route alternative.');
+      }
       return (
-        target: _movementTarget(m['target'], scope),
+        alternativeId: alternativeId,
+        target: target,
         label: assistanceText(m['label'], 500),
         text: assistanceText(m['text'], 4000),
       );
@@ -310,21 +362,36 @@ final class RehearsalMovementReview {
     final current = progress['current'] == null
         ? null
         : RehearsalMovementRecord._parse(progress['current'], scope, session);
-    if (revision != (current?.revision ?? 0)) {
+    final routeDecision = progress['routeDecision'] == null
+        ? null
+        : _parseRouteDecision(
+            progress['routeDecision'],
+            scope: scope,
+            session: session,
+            sourceHash: sourceHash,
+            revision: revision,
+            current: current,
+            destinations: destinations,
+          );
+    if (revision !=
+        (routeDecision?.progressRevision ?? current?.revision ?? 0)) {
       throw const FormatException('Movement progress revision mismatch.');
     }
     final guidance = progress['guidance'] == null
         ? null
         : AssistanceJoiningGuidance.fromJson(progress['guidance']);
+    final activeDestination =
+        routeDecision?.destination ?? current?.departure.destination;
     final destination = destinations
-        .where((d) => d.target == current?.departure.destination)
+        .where((d) => d.target == activeDestination)
         .firstOrNull;
     final hasGuidance =
         current != null &&
         destination != null &&
         eventOpen &&
         runtimeLive &&
-        current.departure.sourceHash == sourceHash;
+        (routeDecision?.sourceHash ?? current.departure.sourceHash) ==
+            sourceHash;
     if (hasGuidance != (guidance != null) ||
         guidance != null &&
             (guidance.revision != revision ||
@@ -441,6 +508,7 @@ final class RehearsalMovementReview {
       runtimeLive: runtimeLive,
       destinations: List.unmodifiable(destinations),
       current: current,
+      routeDecision: routeDecision,
       guidance: guidance,
       selected: selected,
       rosterSourceHash: assistanceHash(roster['sourceHash']),
@@ -451,6 +519,79 @@ final class RehearsalMovementReview {
       nextBeforeRevision: cursor,
     );
   }
+}
+
+RehearsalRouteDecision _parseRouteDecision(
+  Object? value, {
+  required RehearsalMovementScope scope,
+  required EventRehearsalSession session,
+  required String sourceHash,
+  required int revision,
+  required RehearsalMovementRecord? current,
+  required List<RehearsalMovementDestination> destinations,
+}) {
+  final map = assistanceObject(value, {
+    'sessionId',
+    'clockId',
+    'groupId',
+    'progressRevision',
+    'previousRevision',
+    'departureRevision',
+    'sourceHash',
+    'alternativeId',
+    'destination',
+    'decisionId',
+    'operationId',
+    'decidedBy',
+    'decidedAt',
+  });
+  final destination = _movementTarget(map['destination'], scope);
+  final alternativeId = _movementAlternativeId(map['alternativeId']);
+  final progressRevision = _movementRevision(
+    map['progressRevision'],
+    positive: true,
+  );
+  final previousRevision = _movementRevision(
+    map['previousRevision'],
+    positive: true,
+  );
+  final departureRevision = _movementRevision(
+    map['departureRevision'],
+    positive: true,
+  );
+  final decidedAt = assistanceInteger(map['decidedAt']);
+  final decisionId = assistanceText(map['decisionId'], 160);
+  final start = session.virtualStartedAt!.millisecondsSinceEpoch;
+  if (current == null ||
+      map['sessionId'] != scope.sessionId ||
+      map['clockId'] != scope.clockId ||
+      map['groupId'] != scope.groupId ||
+      progressRevision != revision ||
+      previousRevision != progressRevision - 1 ||
+      departureRevision != current.revision ||
+      map['sourceHash'] != sourceHash ||
+      alternativeId != 'alternative:${_movementHash(destination.toJson())}' ||
+      !destinations.any(
+        (item) =>
+            item.alternativeId == alternativeId && item.target == destination,
+      ) ||
+      !RegExp(r'^[A-Za-z0-9][A-Za-z0-9._:-]*$').hasMatch(decisionId) ||
+      decidedAt < start ||
+      decidedAt > session.virtualNow.millisecondsSinceEpoch) {
+    throw const FormatException('Invalid rehearsal route decision.');
+  }
+  return RehearsalRouteDecision(
+    progressRevision: progressRevision,
+    previousRevision: previousRevision,
+    departureRevision: departureRevision,
+    sourceHash: sourceHash,
+    alternativeId: alternativeId,
+    destination: destination,
+    decisionId: decisionId,
+    operationId: _movementId(map['operationId']),
+    decidedBy: _movementId(map['decidedBy']),
+    decidedAt: decidedAt,
+  );
 }
 
 List<Object?> _movementList(Object? value, int max) {
@@ -464,6 +605,14 @@ String _movementId(Object? value) {
   final id = assistanceText(value, 180);
   if (id.contains('/') || id.trim() != id) {
     throw const FormatException('Invalid movement identity.');
+  }
+  return id;
+}
+
+String _movementAlternativeId(Object? value) {
+  final id = assistanceText(value, 77);
+  if (!RegExp(r'^alternative:[a-f0-9]{64}$').hasMatch(id)) {
+    throw const FormatException('Invalid movement alternative identity.');
   }
   return id;
 }

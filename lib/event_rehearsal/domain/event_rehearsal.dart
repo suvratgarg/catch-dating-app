@@ -5,6 +5,7 @@ import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_delivery
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_help_requests.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_membership.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_movement.dart';
+import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_operations.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_settings.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_staff.dart';
 import 'package:catch_dating_app/events/domain/event_itinerary.dart';
@@ -341,6 +342,7 @@ class EventRehearsalActor {
     this.assistanceMessage,
     this.assistanceDelivery,
     this.assistanceAutomation,
+    this.requiredData,
   });
 
   factory EventRehearsalActor.fromMap(Map<Object?, Object?> map) {
@@ -386,6 +388,9 @@ class EventRehearsalActor {
       assistanceAutomation: map['assistanceAutomation'] == null
           ? null
           : RehearsalAssistanceAutomation.fromJson(map['assistanceAutomation']),
+      requiredData: RehearsalRequiredDataReview.fromHostJson(
+        map['requiredData'],
+      ),
     );
   }
 
@@ -412,6 +417,7 @@ class EventRehearsalActor {
   final RehearsalJoiningInstruction? assistanceMessage;
   final RehearsalDeliveryView? assistanceDelivery;
   final RehearsalAssistanceAutomation? assistanceAutomation;
+  final RehearsalRequiredDataReview? requiredData;
 }
 
 class EventRehearsalActionRecord {
@@ -458,6 +464,10 @@ class EventRehearsalBootstrap {
     this.movementReview,
     this.staffReview,
     this.settingsReview,
+    this.outcomeReview,
+    this.revealReview,
+    this.allocationReview,
+    this.rosterReview,
   });
 
   factory EventRehearsalBootstrap.fromCallableData(Object? data) {
@@ -507,6 +517,32 @@ class EventRehearsalBootstrap {
               session: session,
               staff: staff,
             ),
+      outcomeReview: !map.containsKey('outcomeReview')
+          ? null
+          : RehearsalOutcomeReview.fromJson(
+              map['outcomeReview'],
+              expectedUnitIds: actors
+                  .map((actor) => actor.layoutUnitId)
+                  .nonNulls
+                  .toSet(),
+            ),
+      revealReview: !map.containsKey('revealReview')
+          ? null
+          : RehearsalRevealReview.fromJson(map['revealReview']),
+      allocationReview: !map.containsKey('allocationReview')
+          ? null
+          : RehearsalAllocationReview.fromJson(
+              map['allocationReview'],
+              actorAssignments: {
+                for (final actor in actors) actor.actorId: actor.layoutUnitId,
+              },
+            ),
+      rosterReview: !map.containsKey('rosterReview')
+          ? null
+          : RehearsalRosterReview.fromJson(
+              map['rosterReview'],
+              actorIds: actors.map((actor) => actor.actorId).toSet(),
+            ),
       movementReview: movement,
       membershipReviews: membership,
       accountabilityReviews: !map.containsKey('accountabilityReviews')
@@ -553,6 +589,10 @@ class EventRehearsalBootstrap {
   final RehearsalMovementReview? movementReview;
   final RehearsalStaffReview? staffReview;
   final RehearsalSettingsReview? settingsReview;
+  final RehearsalOutcomeReview? outcomeReview;
+  final RehearsalRevealReview? revealReview;
+  final RehearsalAllocationReview? allocationReview;
+  final RehearsalRosterReview? rosterReview;
 
   int get presentCount => actors
       .where(

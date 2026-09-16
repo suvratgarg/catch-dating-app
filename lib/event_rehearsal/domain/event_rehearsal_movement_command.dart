@@ -24,6 +24,46 @@ sealed class RehearsalMovementCommand {
   Map<String, Object?> toJson();
 }
 
+final class RehearsalChangeRoute extends RehearsalMovementCommand {
+  RehearsalChangeRoute({
+    required RehearsalMovementReview snapshot,
+    required this.alternativeId,
+    required this.decisionId,
+  }) : super(snapshot) {
+    final choices = snapshot.destinations.where(
+      (item) => item.alternativeId == alternativeId,
+    );
+    if (!snapshot.canChangeRoute ||
+        choices.length != 1 ||
+        choices.single.target == snapshot.activeDestination ||
+        !RegExp(r'^[A-Za-z0-9][A-Za-z0-9._:-]{0,159}$').hasMatch(decisionId)) {
+      throw const FormatException('Review a current route alternative.');
+    }
+  }
+
+  final String alternativeId;
+  final String decisionId;
+
+  RehearsalMovementDestination get destination => snapshot.destinations
+      .singleWhere((item) => item.alternativeId == alternativeId);
+
+  @override
+  String get kind => 'changeRoute';
+  @override
+  int get selectedRevision => snapshot.current!.revision;
+  @override
+  Map<String, Object?> toJson() => {
+    'kind': kind,
+    'payload': {
+      'routeRevision': snapshot.revision,
+      'groupId': snapshot.scope.groupId,
+      'expectedSourceHash': snapshot.sourceHash,
+      'alternativeId': alternativeId,
+      'decisionId': decisionId,
+    },
+  };
+}
+
 final class RehearsalConfirmDeparture extends RehearsalMovementCommand {
   RehearsalConfirmDeparture({
     required RehearsalMovementReview snapshot,
@@ -197,6 +237,24 @@ final class RehearsalMovementChange {
     }
     final record = next.selected!;
     switch (command) {
+      case final RehearsalChangeRoute change:
+        final route = next.routeDecision;
+        if (!immediate && route?.operationId != clientActionId) break;
+        if (route == null ||
+            route.progressRevision != snapshot.revision + 1 ||
+            route.previousRevision != snapshot.revision ||
+            route.departureRevision != snapshot.current!.revision ||
+            route.sourceHash != snapshot.sourceHash ||
+            route.alternativeId != change.alternativeId ||
+            route.destination != change.destination.target ||
+            route.decisionId != change.decisionId ||
+            route.operationId != clientActionId ||
+            route.decidedBy != snapshot.actorUid ||
+            route.decidedAt != snapshot.serverTime) {
+          throw const FormatException(
+            'Route confirmation changed the reviewed decision.',
+          );
+        }
       case final RehearsalResolveCheckpointVisit visit:
         visit._requireResult(next, immediate);
       case final RehearsalManageCheckpoint management:

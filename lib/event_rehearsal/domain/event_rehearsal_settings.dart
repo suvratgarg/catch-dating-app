@@ -77,7 +77,17 @@ final class RehearsalSettingsGroup {
         eventEnd: assistanceInteger(setup['eventEnd']),
         groupId: id,
         destinations: destinations.map((v) {
-          final d = assistanceObject(v, {'target', 'label', 'text'});
+          final d = assistanceObject(v, {
+            'alternativeId',
+            'target',
+            'label',
+            'text',
+          });
+          if (!RegExp(
+            r'^alternative:[a-f0-9]{64}$',
+          ).hasMatch(assistanceText(d['alternativeId'], 77))) {
+            throw const FormatException('Invalid practice route alternative.');
+          }
           assistanceText(d['text']);
           return (
             target: AssistanceJoiningTarget.fromJson(d['target']),

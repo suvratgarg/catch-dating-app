@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:catch_dating_app/core/schema_contracts/generated/schema_contracts.g.dart'
+    as schemas;
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_movement_command.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_checkpoint.dart';
@@ -7,6 +9,7 @@ import 'package:catch_dating_app/event_success/domain/event_assistance_checkpoin
 import 'package:catch_dating_app/event_success/domain/event_assistance_departure.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_observation.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:json_schema/json_schema.dart';
 
 import 'event_rehearsal_checkpoint_visit_fixtures.dart';
 import 'event_rehearsal_movement_fixtures.dart';
@@ -19,6 +22,7 @@ void main() {
         'initial',
         'ready',
         'departed',
+        'rerouted',
         'partial',
         'reentered',
         'reported',
@@ -68,13 +72,115 @@ void main() {
     'history selection does not replace current progress or invent a fixed-place checkpoint',
     () {
       final r = movementReview('oldFixed');
-      expect(r.revision, 5);
-      expect(r.selected!.revision, 4);
+      expect(r.revision, 6);
+      expect(r.selected!.revision, 5);
       expect(r.selected!.departure.destination, isA<AssistanceFixedPlace>());
       expect(r.checkpoint, isNull);
       expect(r.guidance!.destination, r.current!.departure.destination);
     },
   );
+  test(
+    'route changes bind the reviewed alternative and immutable decision',
+    () {
+      final before = movementReview('departed');
+      final destination = before.destinations.firstWhere(
+        (item) => item.target != before.activeDestination,
+      );
+      final change = RehearsalMovementChange(
+        command: RehearsalChangeRoute(
+          snapshot: before,
+          alternativeId: destination.alternativeId,
+          decisionId: 'route-choice-0001',
+        ),
+        clientActionId: 'route_action_0001',
+      );
+      expect(change.command.toJson(), {
+        'kind': 'changeRoute',
+        'payload': {
+          'routeRevision': 1,
+          'groupId': 'event:whole',
+          'expectedSourceHash': before.sourceHash,
+          'alternativeId': destination.alternativeId,
+          'decisionId': 'route-choice-0001',
+        },
+      });
+      expect(
+        JsonSchema.create(
+          schemas
+              .schemaContractsByName['ControlEventRehearsalCallablePayload']!,
+        ).validate(change.toJson()).isValid,
+        isTrue,
+      );
+      expect(
+        () => RehearsalChangeRoute(
+          snapshot: before,
+          alternativeId: before.destinations
+              .singleWhere((item) => item.target == before.activeDestination)
+              .alternativeId,
+          decisionId: 'same-route-1',
+        ),
+        throwsFormatException,
+      );
+      final wire = movementBootstrap('rerouted');
+      wire['actions'] = [
+        {
+          'clientActionId': change.clientActionId,
+          'actorId': null,
+          'kind': 'control',
+          'name': 'movement:changeRoute',
+          'runtimeRevision': 3,
+          'virtualNowMillis': before.serverTime,
+        },
+      ];
+      final result = EventRehearsalBootstrap.fromCallableData(wire);
+      expect(result.movementReview!.activeDestination, destination.target);
+      expect(
+        result.movementReview!.routeDecision!.decisionId,
+        'route-choice-0001',
+      );
+      expect(() => change.requireResult(result), returnsNormally);
+    },
+  );
+  test('a later route decision can return to the departure destination', () {
+    final wire = movementBootstrap('rerouted');
+    final session = movementObjectAt(wire, ['session']);
+    final review = movementObjectAt(wire, ['movementReview']);
+    final progress = movementObjectAt(review, ['progress']);
+    final current = movementObjectAt(progress, ['current']);
+    final departure = movementObjectAt(current, ['departure']);
+    final route = movementObjectAt(progress, ['routeDecision']);
+    final original = (progress['destinations']! as List<Object?>)
+        .cast<Map<String, Object?>>()
+        .singleWhere(
+          (item) =>
+              jsonEncode(item['target']) ==
+              jsonEncode(departure['destination']),
+        );
+    final originalGuidance = movementObjectAt(movementBootstrap('departed'), [
+      'movementReview',
+      'progress',
+      'guidance',
+    ]);
+    session['runtimeRevision'] = 4;
+    session['actionCount'] = 3;
+    review['runtimeRevision'] = 4;
+    progress['revision'] = 3;
+    progress['guidance'] = {...originalGuidance, 'revision': 3};
+    route
+      ..['progressRevision'] = 3
+      ..['previousRevision'] = 2
+      ..['alternativeId'] = original['alternativeId']
+      ..['destination'] = original['target']
+      ..['decisionId'] = 'route-choice-0002'
+      ..['operationId'] = 'route_action_0002';
+
+    final result = EventRehearsalBootstrap.fromCallableData(wire);
+    expect(
+      result.movementReview!.activeDestination,
+      result.movementReview!.current!.departure.destination,
+    );
+    expect(result.movementReview!.routeDecision!.previousRevision, 2);
+  });
   test(
     're-entry preserves prior observations and removing one requires a reason',
     () {
