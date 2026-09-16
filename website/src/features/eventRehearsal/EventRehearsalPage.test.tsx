@@ -80,7 +80,8 @@ describe("EventRehearsalPreview", () => {
     render(<EventRehearsalPreview
       bootstrap={{...bootstrap, actor: {...bootstrap.actor,
         status: "present", connectionState: "disconnected"}}}
-      onRefresh={vi.fn()} onReply={vi.fn()} onAction={vi.fn()} pending={false} status={{message: "", tone: ""}}
+      onRefresh={vi.fn()} onReply={vi.fn()} onRequiredData={vi.fn()}
+      onAction={vi.fn()} pending={false} status={{message: "", tone: ""}}
     />);
     expect(screen.getByText(eventRehearsalCopy.disconnectedNotice)).toBeTruthy();
     expect(screen.getByText("Rhea · Present")).toBeTruthy();
@@ -95,7 +96,8 @@ describe("EventRehearsalPreview", () => {
     render(
       <EventRehearsalPreview
         bootstrap={bootstrap}
-        onRefresh={vi.fn()} onReply={vi.fn()} onAction={onAction}
+        onRefresh={vi.fn()} onReply={vi.fn()} onRequiredData={vi.fn()}
+        onAction={onAction}
         pending={false}
         status={{message: "", tone: ""}}
       />
@@ -117,6 +119,45 @@ describe("EventRehearsalPreview", () => {
     )).toBeTruthy();
   });
 
+  it("offers a synthetic response to a current required-data request", () => {
+    const onRequiredData = vi.fn();
+    const now = bootstrap.session.virtualNowMillis;
+    render(<EventRehearsalPreview bootstrap={{...bootstrap,
+      actor: {...bootstrap.actor, requiredData: {
+        sourceHash: "a".repeat(64), profileRevision: 0, requestRevision: 1,
+        availableFieldIds: ["paceBand", "teamName"], completedFieldIds: [],
+        request: {revision: 1, fieldIds: ["paceBand", "teamName"],
+          completedFieldIds: [], status: "pending", requestedAt: now,
+          expiresAt: now + 60000, completedAt: null},
+      }}}} onAction={vi.fn()} onReply={vi.fn()}
+      onRequiredData={onRequiredData} onRefresh={vi.fn()} pending={false}
+      status={{message: "", tone: ""}} />);
+    expect(screen.getByText("Running pace")).toBeTruthy();
+    expect(screen.getByText("Team name")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", {
+      name: eventRehearsalCopy.requiredDataSubmit,
+    }));
+    expect(onRequiredData).toHaveBeenCalledOnce();
+  });
+
+  it("keeps a completed practice data request read-only", () => {
+    const now = bootstrap.session.virtualNowMillis;
+    render(<EventRehearsalPreview bootstrap={{...bootstrap,
+      actor: {...bootstrap.actor, requiredData: {
+        sourceHash: "b".repeat(64), profileRevision: 1, requestRevision: 1,
+        availableFieldIds: ["paceBand"], completedFieldIds: ["paceBand"],
+        request: {revision: 1, fieldIds: ["paceBand"],
+          completedFieldIds: ["paceBand"], status: "completed",
+          requestedAt: now, expiresAt: now + 60000, completedAt: now},
+      }}}} onAction={vi.fn()} onReply={vi.fn()}
+      onRequiredData={vi.fn()} onRefresh={vi.fn()} pending={false}
+      status={{message: "", tone: ""}} />);
+    expect(screen.getByText(eventRehearsalCopy.requiredDataComplete)).toBeTruthy();
+    expect(screen.queryByRole("button", {
+      name: eventRehearsalCopy.requiredDataSubmit,
+    })).toBeNull();
+  });
+
   it("shows fault guidance and removes actions when practice completes", () => {
     render(
       <EventRehearsalPreview
@@ -129,7 +170,8 @@ describe("EventRehearsalPreview", () => {
           },
           actor: {...bootstrap.actor, guestMoment: "complete"},
         }}
-        onRefresh={vi.fn()} onReply={vi.fn()} onAction={vi.fn()}
+        onRefresh={vi.fn()} onReply={vi.fn()} onRequiredData={vi.fn()}
+        onAction={vi.fn()}
         pending={false}
         status={{message: "", tone: ""}}
       />
@@ -211,7 +253,8 @@ describe("rehearsal joining instructions", () => {
     canRespond: true, responseChoiceId: null,
   };
   const props = {bootstrap: {...bootstrap, actor: {...bootstrap.actor, assistanceMessage: message}},
-    onAction: vi.fn(), onReply: vi.fn(), onRefresh: vi.fn(),
+    onAction: vi.fn(), onReply: vi.fn(), onRequiredData: vi.fn(),
+    onRefresh: vi.fn(),
     pending: false, status: {message: "", tone: "" as const}};
   it("submits a typed reply independently of the check-in control", () => {
     render(<EventRehearsalPreview {...props} />);

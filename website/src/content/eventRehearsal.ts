@@ -32,6 +32,14 @@ export const eventRehearsalCopy = {
   replyClosed: "Replies to this instruction are closed. Refresh for the latest update.",
   replyUncertain: "We could not confirm your reply. Refresh or retry the same response.",
   replyStale: "Reconnect and refresh before choosing a response.",
+  requiredDataTitle: "Practice profile request",
+  requiredDataBody:
+    "The Host requested these details. This marks synthetic answers as provided; it does not collect personal information.",
+  requiredDataSubmit: "Provide sample answers",
+  requiredDataUncertain:
+    "We could not confirm these sample answers. Retry to check the same request.",
+  requiredDataComplete: "Sample answers provided to the Host.",
+  requiredDataClosed: "This practice request is no longer open.",
   refresh: "Refresh practice room",
   actionsBody:
     "Every action changes only this synthetic guest and appears on the Host practice screen.",

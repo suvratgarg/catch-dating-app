@@ -55,9 +55,10 @@ export const EventRehearsalLive: Story = {
         "fault",
         "complete",
         "unavailable", "joining-instruction", "reply-saved", "reply-uncertain", "reply-closed",
+        "required-data-request", "required-data-closed",
       ],
       stateCoverage: {
-        storybook: ["live-moment", "joining-instruction", "reply-saved", "reply-uncertain", "reply-closed"],
+        storybook: ["live-moment", "joining-instruction", "reply-saved", "reply-uncertain", "reply-closed", "required-data-request", "required-data-closed"],
         manual: ["loading", "welcome", "fault", "complete", "unavailable"],
       },
     },
@@ -71,6 +72,7 @@ export const EventRehearsalLive: Story = {
         "fault",
         "complete",
         "unavailable", "joining-instruction", "reply-saved", "reply-uncertain", "reply-closed",
+        "required-data-request", "required-data-closed",
       ],
     },
   },
@@ -83,7 +85,7 @@ export const EventRehearsalPreviewShell: Story = {
     catchComponent: {
       id: "event_rehearsal_preview",
       routeIds: ["event_rehearsal"],
-      states: ["live-moment", "fault", "complete", "joining-instruction", "reply-saved", "reply-uncertain", "reply-closed"],
+      states: ["live-moment", "fault", "complete", "joining-instruction", "reply-saved", "reply-uncertain", "reply-closed", "required-data-request", "required-data-closed"],
     },
   },
   render: () => <EventRehearsalPreviewStory />,
@@ -95,6 +97,7 @@ function EventRehearsalPreviewStory() {
       bootstrap={fixture}
       onAction={() => undefined}
       onReply={() => undefined}
+      onRequiredData={() => undefined}
       onRefresh={() => undefined}
       pending={false}
       status={{message: "", tone: ""}}
@@ -150,7 +153,8 @@ function JoiningStory({mode}: {mode: "ready" | "saved" | "uncertain" | "closed"}
     assistanceMessage: {...message, responseChoiceId: response,
       lifecycle: response ? "responded" : "active", canRespond: !response && mode !== "closed"}}};
   return <EventRehearsalPreview bootstrap={bootstrap} onAction={() => undefined}
-    onReply={(reply) => setResponse(reply.choiceId)} onRefresh={() => undefined}
+    onReply={(reply) => setResponse(reply.choiceId)}
+    onRequiredData={() => undefined} onRefresh={() => undefined}
     pending={false} status={{message: "", tone: ""}}
     replyState={{fresh: true, pendingChoice: null,
       retryChoice: mode === "uncertain" && !response ? "on-my-way" : null,
@@ -158,3 +162,42 @@ function JoiningStory({mode}: {mode: "ready" | "saved" | "uncertain" | "closed"}
 }
 
 export const JoiningPhone: Story = {render: () => <JoiningStory mode="ready" />};
+
+export const RequiredDataRequest: Story = {
+  render: () => <RequiredDataStory initialComplete={false} />,
+  play: async ({canvasElement}) => {
+    const canvas = within(canvasElement);
+    await expect(canvas.getByText("Running pace")).toBeVisible();
+    await userEvent.click(canvas.getByRole("button", {
+      name: eventRehearsalCopy.requiredDataSubmit,
+    }));
+    await expect(canvas.getByText(eventRehearsalCopy.requiredDataComplete))
+      .toBeVisible();
+  },
+};
+export const RequiredDataClosed: Story = {
+  render: () => <RequiredDataStory initialComplete />,
+};
+
+function RequiredDataStory({initialComplete}: {initialComplete: boolean}) {
+  const [complete, setComplete] = useState(initialComplete);
+  const fields = ["paceBand", "teamName"] as const;
+  const review: NonNullable<EventRehearsalGuestBootstrap["actor"]["requiredData"]> = {
+    sourceHash: (complete ? "b" : "a").repeat(64),
+    profileRevision: complete ? 1 : 0,
+    requestRevision: 1,
+    availableFieldIds: [...fields],
+    completedFieldIds: complete ? [...fields] : [],
+    request: {revision: 1, fieldIds: [...fields],
+      completedFieldIds: complete ? [...fields] : [],
+      status: complete ? "completed" : "pending",
+      requestedAt: fixture.session.virtualNowMillis,
+      expiresAt: fixture.session.virtualNowMillis + 3_600_000,
+      completedAt: complete ? fixture.session.virtualNowMillis : null},
+  };
+  return <EventRehearsalPreview
+    bootstrap={{...fixture, actor: {...fixture.actor, requiredData: review}}}
+    onAction={() => undefined} onReply={() => undefined}
+    onRequiredData={() => setComplete(true)} onRefresh={() => undefined}
+    pending={false} status={{message: "", tone: ""}} />;
+}

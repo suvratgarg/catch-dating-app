@@ -9,15 +9,18 @@ import type {SubmitEventRehearsalGuestActionCallablePayload as WireAction} from
   "../../shared/contracts/generated/submitEventRehearsalGuestActionCallablePayload";
 import {websiteQueryKeys} from "../../shared/query/queryKeys";
 import {availableEventRehearsalGuestActions, canReplyToRehearsal,
-  reconcileRehearsalProjection,
-  type RehearsalReply, type RehearsalReplyState} from "./eventRehearsalModel";
+  pendingRehearsalRequiredData, reconcileRehearsalProjection,
+  type RehearsalReply, type RehearsalReplyState,
+  type RehearsalRequiredDataSubmission} from "./eventRehearsalModel";
 
 const clientStoragePrefix = "catch:event-rehearsal:client:";
 const slotStoragePrefix = "catch:event-rehearsal:slot:";
 type Submission = Pick<WireAction,
   "publicRehearsalId" | "slotToken" | "clientActionId"> & (
     {action: EventRehearsalGuestAction} |
-    ({action: "respondToAssistance"} & RehearsalReply));
+    ({action: "respondToAssistance"} & RehearsalReply) |
+    {action: "submitRequiredData";
+      requiredData: RehearsalRequiredDataSubmission});
 
 // The route remounts this controller for each public link. Private query data
 // belongs to this mounted phone; cancelled reads cannot undo a confirmed reply.
@@ -107,6 +110,19 @@ export function useEventRehearsalController(publicRehearsalId: string) {
     pending.current.intentRevision === instruction?.intentRevision &&
     !instruction?.responseChoiceId && displayed &&
     canReplyToRehearsal(displayed) ? pending.current : null;
+  const requestedData = displayed && pendingRehearsalRequiredData(displayed);
+  const pendingRequiredData = pending.current?.action === "submitRequiredData"
+    ? pending.current : null;
+  const unresolvedRequiredData = pendingRequiredData && displayed &&
+    requestedData && pendingRequiredData.slotToken === displayed.slotToken &&
+    pendingRequiredData.requiredData.expectedSourceHash ===
+      requestedData.expectedSourceHash &&
+    pendingRequiredData.requiredData.expectedProfileRevision ===
+      requestedData.expectedProfileRevision &&
+    pendingRequiredData.requiredData.expectedRequestRevision ===
+      requestedData.expectedRequestRevision &&
+    pendingRequiredData.requiredData.fieldIds.join("|") ===
+      requestedData.fieldIds.join("|") ? pendingRequiredData : null;
   const isFresh = () => !query.isError && performance.now() < freshUntil.current;
 
   function send(input: Submission) {
@@ -118,7 +134,8 @@ export function useEventRehearsalController(publicRehearsalId: string) {
   }
   function submit(action: EventRehearsalGuestAction) {
     const current = client.getQueryData<EventRehearsalGuestBootstrap>(queryKey);
-    if (locked.current || unresolved || !isFresh() || !current ||
+    if (locked.current || unresolved || unresolvedRequiredData ||
+        !isFresh() || !current ||
         current !== displayed || !availableEventRehearsalGuestActions(current).includes(action)) return;
     const previous = pending.current;
     send(previous?.action === action && previous.slotToken === current.slotToken
@@ -128,7 +145,8 @@ export function useEventRehearsalController(publicRehearsalId: string) {
   function reply(input: RehearsalReply) {
     const current = client.getQueryData<EventRehearsalGuestBootstrap>(queryKey);
     const message = current?.actor.assistanceMessage;
-    if (locked.current || !isFresh() || !current || current !== displayed ||
+    if (locked.current || unresolvedRequiredData || !isFresh() ||
+        !current || current !== displayed ||
         !message || message.messageId !== input.messageId ||
         message.intentRevision !== input.intentRevision ||
         !message.choices.some((choice) => choice.choiceId === input.choiceId)) return;
@@ -136,6 +154,16 @@ export function useEventRehearsalController(publicRehearsalId: string) {
     if (!unresolved && !canReplyToRehearsal(current)) return;
     send(unresolved ?? {...input, publicRehearsalId, slotToken: current.slotToken,
       clientActionId: `guest_${crypto.randomUUID()}`, action: "respondToAssistance"});
+  }
+  function submitRequiredData() {
+    const current = client.getQueryData<EventRehearsalGuestBootstrap>(queryKey);
+    if (locked.current || unresolved || !isFresh() || !current ||
+        current !== displayed) return;
+    const requiredData = pendingRehearsalRequiredData(current);
+    if (!requiredData) return;
+    send(unresolvedRequiredData ?? {publicRehearsalId,
+      slotToken: current.slotToken, clientActionId: `guest_${crypto.randomUUID()}`,
+      action: "submitRequiredData", requiredData});
   }
   const replyState: RehearsalReplyState = {
     fresh: isFresh(),
@@ -153,7 +181,8 @@ export function useEventRehearsalController(publicRehearsalId: string) {
     status: {message: pending.current?.action === "respondToAssistance" ? "" :
       query.isError ? copy.refreshNotice : notice,
       tone: mutation.isError ? "is-error" as const : "" as const},
-    submit, reply, replyState,
+    submit, reply, submitRequiredData, replyState,
+    requiredDataRetry: unresolvedRequiredData !== null,
   };
 }
 

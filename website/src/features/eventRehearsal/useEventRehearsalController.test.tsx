@@ -100,6 +100,56 @@ describe("useEventRehearsalController", () => {
   });
 });
 
+describe("rehearsal required-data response", () => {
+  const request = {
+    sourceHash: "a".repeat(64), profileRevision: 0, requestRevision: 1,
+    availableFieldIds: ["paceBand", "teamName"], completedFieldIds: [],
+    request: {revision: 1, fieldIds: ["paceBand", "teamName"],
+      completedFieldIds: [], status: "pending", requestedAt: 1,
+      expiresAt: 60000, completedAt: null},
+  } as const;
+  const waiting = {...bootstrap, actor: {...bootstrap.actor, requiredData: request}};
+  const saved = {...waiting, session: {...waiting.session, runtimeRevision: 2},
+    actor: {...waiting.actor, requiredData: {...request, profileRevision: 1,
+      completedFieldIds: ["paceBand", "teamName"],
+      request: {...request.request, status: "completed",
+        completedFieldIds: ["paceBand", "teamName"], completedAt: 1}}}};
+  beforeEach(() => {
+    vi.clearAllMocks();
+    window.sessionStorage.clear();
+    getEventRehearsalGuestBootstrap.mockResolvedValue(waiting);
+    submitEventRehearsalGuestAction.mockResolvedValue(saved);
+  });
+
+  it("freezes field IDs and review fences across an uncertain retry", async () => {
+    submitEventRehearsalGuestAction.mockRejectedValueOnce(new Error("offline"));
+    const {result, unmount} = renderHook(
+      () => useEventRehearsalController("practice-required-data"),
+      {wrapper: wrapper()}
+    );
+    await waitFor(() => expect(result.current.bootstrap).not.toBeNull());
+    act(() => result.current.submitRequiredData());
+    await waitFor(() => expect(result.current.status.message).toBeTruthy());
+    expect(result.current.requiredDataRetry).toBe(true);
+    const first = submitEventRehearsalGuestAction.mock.calls[0][0];
+    expect(first).toEqual({publicRehearsalId: "practice-required-data",
+      slotToken: waiting.slotToken, clientActionId: expect.stringMatching(/^guest_/u),
+      action: "submitRequiredData", requiredData: {
+        fieldIds: ["paceBand", "teamName"], expectedProfileRevision: 0,
+        expectedRequestRevision: 1, expectedSourceHash: "a".repeat(64),
+      }});
+    act(() => result.current.submit("checkIn"));
+    expect(submitEventRehearsalGuestAction).toHaveBeenCalledTimes(1);
+    act(() => result.current.submitRequiredData());
+    await waitFor(() => expect(submitEventRehearsalGuestAction).toHaveBeenCalledTimes(2));
+    expect(submitEventRehearsalGuestAction.mock.calls[1][0]).toEqual(first);
+    await waitFor(() => expect(result.current.bootstrap?.actor.requiredData?.request?.status)
+      .toBe("completed"));
+    expect(result.current.requiredDataRetry).toBe(false);
+    unmount();
+  });
+});
+
 const instruction = {
   messageId: `outbox:${"a".repeat(64)}`, intentId: `message:${"b".repeat(64)}`,
   intentRevision: 1, text: "We have left the meetup. Join us at the first stop.",

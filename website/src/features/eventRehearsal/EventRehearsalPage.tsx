@@ -21,7 +21,8 @@ import {
   FormStatus,
 } from "../../shared/ui/primitives";
 import {availableEventRehearsalGuestActions, canReplyToRehearsal,
-  type RehearsalReply, type RehearsalReplyState} from "./eventRehearsalModel";
+  pendingRehearsalRequiredData, type RehearsalReply,
+  type RehearsalReplyState, type RehearsalRequiredField} from "./eventRehearsalModel";
 import {useEventRehearsalController} from "./useEventRehearsalController";
 
 export function EventRehearsalPage() {
@@ -76,6 +77,8 @@ function EventRehearsalGuest({publicRehearsalId}: {publicRehearsalId: string}) {
       bootstrap={controller.bootstrap}
       onAction={controller.submit}
       onReply={controller.reply}
+      onRequiredData={controller.submitRequiredData}
+      requiredDataRetry={controller.requiredDataRetry}
       onRefresh={controller.refresh}
       replyState={controller.replyState}
       pending={controller.pending}
@@ -88,6 +91,8 @@ export function EventRehearsalPreview({
   bootstrap,
   onAction,
   onReply,
+  onRequiredData,
+  requiredDataRetry = false,
   onRefresh,
   replyState = {fresh: true, pendingChoice: null, retryChoice: null, notice: ""},
   pending,
@@ -96,6 +101,8 @@ export function EventRehearsalPreview({
   bootstrap: EventRehearsalGuestBootstrap;
   onAction: (action: EventRehearsalGuestAction) => void;
   onReply: (reply: RehearsalReply) => void;
+  onRequiredData: () => void;
+  requiredDataRetry?: boolean;
   onRefresh: () => void;
   replyState?: RehearsalReplyState;
   pending: boolean;
@@ -146,7 +153,14 @@ export function EventRehearsalPreview({
         {bootstrap.actor.assistanceMessage ? (
           <EventRehearsalJoiningInstruction bootstrap={bootstrap}
             pending={pending} state={replyState} onReply={onReply}
-            onRefresh={onRefresh} />
+            onRefresh={onRefresh} blocked={requiredDataRetry} />
+        ) : null}
+
+        {bootstrap.actor.requiredData?.request ? (
+          <EventRehearsalRequiredData bootstrap={bootstrap} pending={pending}
+            fresh={replyState.fresh} retryRequired={requiredDataRetry}
+            blockedByReply={replyState.retryChoice !== null}
+            onSubmit={onRequiredData} />
         ) : null}
 
         <EventRuntimeModule title={eventRehearsalCopy.momentTitles[moment]}>
@@ -177,7 +191,8 @@ export function EventRehearsalPreview({
             <EventRuntimeActionGrid>
               {actions.map((action) => (
                 <Button
-                  disabled={pending || !replyState.fresh || replyState.retryChoice !== null}
+                  disabled={pending || !replyState.fresh ||
+                    replyState.retryChoice !== null || requiredDataRetry}
                   key={action}
                   loading={pending}
                   loadingLabel={eventRehearsalCopy.actionPending}
@@ -219,12 +234,60 @@ export function EventRehearsalPreview({
   );
 }
 
-function EventRehearsalJoiningInstruction({bootstrap, pending, state, onReply, onRefresh}: {
+const requiredFieldLabels = {
+  displayName: "Name",
+  gender: "Gender",
+  interestedInGenders: "Who you want to meet",
+  relationshipGoal: "Relationship goal",
+  dateOfBirth: "Age",
+  paceBand: "Running pace",
+  skillBand: "Skill level",
+  dietaryAndSeatingNotes: "Dietary or seating needs",
+  questionnaireAnswerIds: "Event questions",
+  teamName: "Team name",
+} satisfies Record<RehearsalRequiredField, string>;
+
+function EventRehearsalRequiredData({bootstrap, pending, fresh, retryRequired,
+  blockedByReply, onSubmit}: {
+  bootstrap: EventRehearsalGuestBootstrap;
+  pending: boolean;
+  fresh: boolean;
+  retryRequired: boolean;
+  blockedByReply: boolean;
+  onSubmit: () => void;
+}) {
+  const request = bootstrap.actor.requiredData!.request!;
+  const submission = pendingRehearsalRequiredData(bootstrap);
+  return (
+    <EventRuntimeModule title={eventRehearsalCopy.requiredDataTitle} accent="coral">
+      {submission ? <>
+        <p>{eventRehearsalCopy.requiredDataBody}</p>
+        <ul>{submission.fieldIds.map((field) =>
+          <li key={field}>{requiredFieldLabels[field]}</li>)}</ul>
+        <Button type="button" disabled={pending || !fresh || blockedByReply}
+          loading={pending}
+          loadingLabel={eventRehearsalCopy.actionPending} onClick={onSubmit}>
+          {eventRehearsalCopy.requiredDataSubmit}
+        </Button>
+        {retryRequired && !pending ? (
+          <p role="status">{eventRehearsalCopy.requiredDataUncertain}</p>
+        ) : null}
+        {!fresh ? <p role="status">{eventRehearsalCopy.replyStale}</p> : null}
+      </> : <p role="status">{request.status === "completed"
+        ? eventRehearsalCopy.requiredDataComplete
+        : eventRehearsalCopy.requiredDataClosed}</p>}
+    </EventRuntimeModule>
+  );
+}
+
+function EventRehearsalJoiningInstruction({bootstrap, pending, state, onReply,
+  onRefresh, blocked}: {
   bootstrap: EventRehearsalGuestBootstrap;
   pending: boolean;
   state: RehearsalReplyState;
   onReply: (reply: RehearsalReply) => void;
   onRefresh: () => void;
+  blocked: boolean;
 }) {
   const message = bootstrap.actor.assistanceMessage!;
   const saved = message.choices.find((choice) => choice.choiceId === message.responseChoiceId);
@@ -238,7 +301,7 @@ function EventRehearsalJoiningInstruction({bootstrap, pending, state, onReply, o
           <EventRuntimeActionGrid>
             {message.choices.map((choice) => (
               <Button key={choice.choiceId} type="button" variant="ghost"
-                disabled={pending || !state.fresh ||
+                disabled={pending || blocked || !state.fresh ||
                   (state.retryChoice !== null && state.retryChoice !== choice.choiceId)}
                 loading={state.pendingChoice === choice.choiceId}
                 loadingLabel={eventRehearsalCopy.replyPending}
