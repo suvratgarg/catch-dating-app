@@ -2676,6 +2676,93 @@ export interface EventAssistanceSmsDispatchDocument {
   senderMask: string;
 }
 
+/**
+ * Latest finance review decision for one event, route, sender, and purpose. This record grants no spending authority and is not a dispatch budget.
+ */
+export interface EventMessagingBudgetDecisionDocument {
+  schemaVersion: 1;
+  decisionId: string;
+  revision: number;
+  requestId: string;
+  requestHash: string;
+  context: {
+    mode: "live";
+    eventId: string;
+    organizerId: string;
+  };
+  routeId: "catchEventSms" | "catchEventRcs" | "organizerEventWhatsapp";
+  senderId: string;
+  purpose:
+    | "joiningUpdate"
+    | "joiningInstructions"
+    | "planChanged"
+    | "eventCancelled"
+    | "eventFinished"
+    | "guestRequirement"
+    | "assignmentChanged"
+    | "participationCheck"
+    | "followUp";
+  decision:
+    | {
+        kind: "approve";
+        currency: string;
+        eventLimitMicros: number;
+        senderDayLimitMicros: number;
+        validUntil: number;
+      }
+    | {
+        kind: "hold";
+      }
+    | {
+        kind: "reject";
+      };
+  decisionStatus: "approved" | "held" | "rejected";
+  reviewEvidence: {
+    observedAt: number;
+    completedAt: number;
+    eventEnd: number;
+    runtimeSourceHash: string;
+    senderReviewHash: string;
+    budgetSourceHash: string;
+    setupReviewHash: string;
+    eventBudget: {
+      budgetId: string;
+      revision: number | null;
+      reviewHash: string | null;
+      chargedMicros: number;
+    };
+    senderDayBudget: {
+      budgetId: string;
+      revision: number | null;
+      reviewHash: string | null;
+      chargedMicros: number;
+    };
+  };
+  reviewedByUid: string;
+  note: string;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  effect: "decision_only_no_spending_authority";
+  grantsSpendingAuthority: false;
+}
+
+/**
+ * Immutable request receipt for an event-messaging budget decision. It preserves exact replay without granting spending authority.
+ */
+export interface EventMessagingBudgetDecisionReceiptDocument {
+  schemaVersion: 1;
+  receiptId: string;
+  decisionId: string;
+  requestId: string;
+  requestHash: string;
+  revision: number;
+  decisionStatus: "approved" | "held" | "rejected";
+  decisionPath: string;
+  effect: "decision_only_no_spending_authority";
+  grantsSpendingAuthority: false;
+  createdAt: FirebaseFirestore.Timestamp;
+}
+
 export interface EventAssistanceGuestDocument {
   schemaVersion: 1;
   guestId: string;

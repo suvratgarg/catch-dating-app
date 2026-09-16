@@ -567,6 +567,37 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/eventMessagingSetupReview.ts",
   },
   {
+    name: "AdminDecideEventMessagingBudgetCallablePayload",
+    source:
+      "callables/admin_decide_event_messaging_budget_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "adminDecideEventMessagingBudgetCallablePayload.ts",
+  },
+  {
+    name: "AdminDecideEventMessagingBudgetCallableResponse",
+    source:
+      "callable_responses/" +
+      "admin_decide_event_messaging_budget_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "adminDecideEventMessagingBudgetCallableResponse.ts",
+  },
+  {
+    name: "EventMessagingBudgetDecisionDocument",
+    source: "firestore/event_messaging_budget_decisions.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/eventMessagingBudgetDecisionDocument.ts",
+  },
+  {
+    name: "EventMessagingBudgetDecisionReceiptDocument",
+    source:
+      "firestore/event_messaging_budget_decision_receipts.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "eventMessagingBudgetDecisionReceiptDocument.ts",
+  },
+  {
     "name": "EventAssistanceGuestDocument",
     "source": "firestore/event_assistance_guests.schema.json",
     "typeOutput": "functions/src/shared/generated/eventAssistanceGuestDocument.ts"

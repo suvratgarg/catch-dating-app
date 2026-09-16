@@ -1,7 +1,7 @@
 // GENERATED FILE. Run: node tool/admin/generate_admin_action_catalog.mjs
 export const adminActionCatalog = {
   "schemaVersion": 1,
-  "catalogVersion": "1.1.0",
+  "catalogVersion": "1.2.0",
   "actions": [
     {
       "actionId": "overview.get",
@@ -147,6 +147,22 @@ export const adminActionCatalog = {
         "analyticsViewer"
       ],
       "summary": "Load the bounded analytics report for one exact user id.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "finance.decide-event-messaging-budget",
+      "callable": "adminDecideEventMessagingBudget",
+      "workflowIds": [
+        "finance"
+      ],
+      "guiPath": "/finance",
+      "kind": "mutation",
+      "risk": "critical",
+      "roles": [
+        "adminOwner",
+        "finance"
+      ],
+      "summary": "Record a source-fenced event-messaging ceiling decision without creating or activating a spending budget.",
       "controlPlane": false
     },
     {
@@ -857,13 +873,15 @@ export const adminActionCatalog = {
       "guiPath": "/finance",
       "actions": [
         "overview.get",
-        "analytics.host"
+        "analytics.host",
+        "finance.decide-event-messaging-budget"
       ],
       "blockedCapabilities": [
         "retry_payment",
         "refund",
         "payout_mutation",
-        "settlement_mutation"
+        "settlement_mutation",
+        "messaging_budget_activation"
       ]
     },
     {

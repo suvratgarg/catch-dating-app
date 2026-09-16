@@ -37,61 +37,72 @@ export type MessageSetupReview = EventMessagingSetupReview;
 export async function reviewEventMessageSetup(db: Firestore,
   input: MessageSetupScope, clock: () => number = Date.now):
   Promise<MessageSetupReview> {
+  return db.runTransaction((tx) =>
+    reviewEventMessageSetupInTransaction(db, tx, input, clock),
+  {readOnly: true});
+}
+
+/**
+ * Reads one setup review inside an existing transaction. Privileged decision
+ * boundaries use this form so the evidence they store and the decision
+ * revision are observed atomically.
+ */
+export async function reviewEventMessageSetupInTransaction(db: Firestore,
+  tx: Transaction, input: MessageSetupScope,
+  clock: () => number = Date.now): Promise<MessageSetupReview> {
   requireDocumentId(input.senderId);
   if (input.context.mode !== "live") throw new Error("Live setup required");
   const runtimeId = runtimeConfigId(input.context);
   if (!["catchEventSms", "catchEventRcs", "organizerEventWhatsapp"]
     .includes(input.routeId)) throw new Error("Invalid message channel");
-  return db.runTransaction(async (tx) => {
-    const now = clock();
-    const [event, plan, runtime] = await tx.getAll(
-      db.collection("events").doc(input.context.eventId),
-      db.collection("eventSuccessPlans").doc(input.context.eventId),
-      db.collection(RUNTIME_CONFIGS).doc(runtimeId));
-    const source = runtimeConfigSource(input.context, event, plan, now);
-    const record = runtime.exists ?
-      parseRuntimeConfig(runtime.data(), input.context, now) : null;
-    const sender = await readMessageSenderChoice(db, tx, input.context,
-      input, input.purpose, now);
-    const budgetSource = sender ? await readBudgetSource(db, tx, input) : null;
-    let budgets: MessageSetupReview["budgets"] = {kind: "senderUnavailable"};
-    if (budgetSource) {
-      const scopes = budgetSource.scopes(input.context, now);
-      const ids = scopes.map(budgetSource.id);
-      const snapshots = await tx.getAll(...ids.map((id) =>
-        db.collection(budgetSource.collection).doc(id)));
-      const reviews = snapshots.map((snap, i) => reviewBudget(snap.data(),
-        scopes[i], ids[i], budgetSource, now));
-      budgets = {kind: "reviewed", currency: budgetSource.currency,
-        sourceHash: budgetSource.sourceHash,
-        event: reviews[0], senderDay: reviews[1]};
-    }
-    const completedAt = clock();
-    if (!Number.isSafeInteger(completedAt) || completedAt < now) {
-      throw new Error("Invalid setup review clock");
-    }
-    // A review that crosses a billing-day boundary must not display yesterday's
-    // sender-day ceiling. Re-run the bounded read instead of guessing a budget.
-    if (budgetSource && operationContentHash(budgetSource.scopes(input.context,
-      completedAt)) !== operationContentHash(budgetSource.scopes(input.context,
-      now))) throw new Error("Message setup review crossed a billing day");
-    const review: MessageSetupReview = {schemaVersion: 1,
-      kind: "recordedSetupReview", ...input, observedAt: now, completedAt,
-      grantsDispatchAuthority: false,
-      runtime: {appliesToPurpose: input.purpose === "joiningUpdate",
-        status: runtimeConfigStatus(record, source, now),
-        revision: record?.revision ?? null, sourceHash: source.hash,
-        eventEnd: source.eventEnd,
-        selected: input.purpose === "joiningUpdate" &&
-          (record?.configuration?.options.routes.some((r) =>
-            r.routeId === input.routeId &&
-            r.senderId === input.senderId) ?? false)},
-      sender, budgets};
-    if (!validateEventMessagingSetupReview(review)) {
-      throw new Error("Invalid event messaging setup review");
-    }
-    return review;
-  }, {readOnly: true});
+  const now = clock();
+  const [event, plan, runtime] = await tx.getAll(
+    db.collection("events").doc(input.context.eventId),
+    db.collection("eventSuccessPlans").doc(input.context.eventId),
+    db.collection(RUNTIME_CONFIGS).doc(runtimeId));
+  const source = runtimeConfigSource(input.context, event, plan, now);
+  const record = runtime.exists ?
+    parseRuntimeConfig(runtime.data(), input.context, now) : null;
+  const sender = await readMessageSenderChoice(db, tx, input.context,
+    input, input.purpose, now);
+  const budgetSource = sender ? await readBudgetSource(db, tx, input) : null;
+  let budgets: MessageSetupReview["budgets"] = {kind: "senderUnavailable"};
+  if (budgetSource) {
+    const scopes = budgetSource.scopes(input.context, now);
+    const ids = scopes.map(budgetSource.id);
+    const snapshots = await tx.getAll(...ids.map((id) =>
+      db.collection(budgetSource.collection).doc(id)));
+    const reviews = snapshots.map((snap, i) => reviewBudget(snap.data(),
+      scopes[i], ids[i], budgetSource, now));
+    budgets = {kind: "reviewed", currency: budgetSource.currency,
+      sourceHash: budgetSource.sourceHash,
+      event: reviews[0], senderDay: reviews[1]};
+  }
+  const completedAt = clock();
+  if (!Number.isSafeInteger(completedAt) || completedAt < now) {
+    throw new Error("Invalid setup review clock");
+  }
+  // A review that crosses a billing-day boundary must not display yesterday's
+  // sender-day ceiling. Re-run the bounded read instead of guessing a budget.
+  if (budgetSource && operationContentHash(budgetSource.scopes(input.context,
+    completedAt)) !== operationContentHash(budgetSource.scopes(input.context,
+    now))) throw new Error("Message setup review crossed a billing day");
+  const review: MessageSetupReview = {schemaVersion: 1,
+    kind: "recordedSetupReview", ...input, observedAt: now, completedAt,
+    grantsDispatchAuthority: false,
+    runtime: {appliesToPurpose: input.purpose === "joiningUpdate",
+      status: runtimeConfigStatus(record, source, now),
+      revision: record?.revision ?? null, sourceHash: source.hash,
+      eventEnd: source.eventEnd,
+      selected: input.purpose === "joiningUpdate" &&
+        (record?.configuration?.options.routes.some((r) =>
+          r.routeId === input.routeId &&
+          r.senderId === input.senderId) ?? false)},
+    sender, budgets};
+  if (!validateEventMessagingSetupReview(review)) {
+    throw new Error("Invalid event messaging setup review");
+  }
+  return review;
 }
 
 interface BudgetSource {

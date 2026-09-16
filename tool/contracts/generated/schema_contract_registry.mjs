@@ -47891,6 +47891,810 @@ export const eventMessagingSetupReviewSchema = {
   }
 };
 
+export const adminDecideEventMessagingBudgetCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_decide_event_messaging_budget_payload.schema.json",
+  "title": "AdminDecideEventMessagingBudgetCallablePayload",
+  "description": "Finance review decision for proposed event-messaging ceilings. The callable records evidence only and does not create, update, or activate a spending budget.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "requestId",
+    "organizerId",
+    "eventId",
+    "routeId",
+    "senderId",
+    "purpose",
+    "expectedRevision",
+    "expectedRuntimeSourceHash",
+    "expectedSenderReviewHash",
+    "expectedBudgetSourceHash",
+    "decision",
+    "note"
+  ],
+  "properties": {
+    "requestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "routeId": {
+      "type": "string",
+      "enum": [
+        "catchEventSms",
+        "catchEventRcs",
+        "organizerEventWhatsapp"
+      ]
+    },
+    "senderId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "purpose": {
+      "type": "string",
+      "enum": [
+        "joiningUpdate",
+        "joiningInstructions",
+        "planChanged",
+        "eventCancelled",
+        "eventFinished",
+        "guestRequirement",
+        "assignmentChanged",
+        "participationCheck",
+        "followUp"
+      ]
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "expectedRuntimeSourceHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "expectedSenderReviewHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "expectedBudgetSourceHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "decision": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "currency",
+            "eventLimitMicros",
+            "senderDayLimitMicros",
+            "validUntil"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "approve"
+            },
+            "currency": {
+              "type": "string",
+              "pattern": "^[A-Z]{3}$"
+            },
+            "eventLimitMicros": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "senderDayLimitMicros": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "validUntil": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "hold"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "reject"
+            }
+          }
+        }
+      ]
+    },
+    "note": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
+    }
+  },
+  "definitions": {
+    "decision": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "currency",
+            "eventLimitMicros",
+            "senderDayLimitMicros",
+            "validUntil"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "approve"
+            },
+            "currency": {
+              "type": "string",
+              "pattern": "^[A-Z]{3}$"
+            },
+            "eventLimitMicros": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "senderDayLimitMicros": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "validUntil": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "hold"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "reject"
+            }
+          }
+        }
+      ]
+    }
+  }
+};
+
+export const adminDecideEventMessagingBudgetCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_decide_event_messaging_budget_response.schema.json",
+  "title": "AdminDecideEventMessagingBudgetCallableResponse",
+  "description": "Result of recording a finance review decision. The response explicitly grants no spending authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "applied",
+    "replayed",
+    "decisionId",
+    "revision",
+    "decisionStatus",
+    "decisionPath",
+    "effect",
+    "grantsSpendingAuthority"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "integer",
+      "const": 1
+    },
+    "applied": {
+      "type": "boolean"
+    },
+    "replayed": {
+      "type": "boolean"
+    },
+    "decisionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "decisionStatus": {
+      "type": "string",
+      "enum": [
+        "approved",
+        "held",
+        "rejected"
+      ]
+    },
+    "decisionPath": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500
+    },
+    "effect": {
+      "type": "string",
+      "const": "decision_only_no_spending_authority"
+    },
+    "grantsSpendingAuthority": {
+      "type": "boolean",
+      "const": false
+    }
+  }
+};
+
+export const eventMessagingBudgetDecisionDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_messaging_budget_decisions.schema.json",
+  "title": "EventMessagingBudgetDecisionDocument",
+  "description": "Latest finance review decision for one event, route, sender, and purpose. This record grants no spending authority and is not a dispatch budget.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventMessagingBudgetDecisions",
+  "x-firestore-path": "eventMessagingBudgetDecisions/{decisionId}",
+  "x-document-id-field": "decisionId",
+  "x-owner": "adminDecideEventMessagingBudget callable",
+  "required": [
+    "schemaVersion",
+    "decisionId",
+    "revision",
+    "requestId",
+    "requestHash",
+    "context",
+    "routeId",
+    "senderId",
+    "purpose",
+    "decision",
+    "decisionStatus",
+    "reviewEvidence",
+    "reviewedByUid",
+    "note",
+    "createdAt",
+    "updatedAt",
+    "effect",
+    "grantsSpendingAuthority"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "integer",
+      "const": 1
+    },
+    "decisionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "requestHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "eventId",
+        "organizerId"
+      ],
+      "properties": {
+        "mode": {
+          "type": "string",
+          "const": "live"
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        }
+      }
+    },
+    "routeId": {
+      "type": "string",
+      "enum": [
+        "catchEventSms",
+        "catchEventRcs",
+        "organizerEventWhatsapp"
+      ]
+    },
+    "senderId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "purpose": {
+      "type": "string",
+      "enum": [
+        "joiningUpdate",
+        "joiningInstructions",
+        "planChanged",
+        "eventCancelled",
+        "eventFinished",
+        "guestRequirement",
+        "assignmentChanged",
+        "participationCheck",
+        "followUp"
+      ]
+    },
+    "decision": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "currency",
+            "eventLimitMicros",
+            "senderDayLimitMicros",
+            "validUntil"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "approve"
+            },
+            "currency": {
+              "type": "string",
+              "pattern": "^[A-Z]{3}$"
+            },
+            "eventLimitMicros": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "senderDayLimitMicros": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "validUntil": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "hold"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "reject"
+            }
+          }
+        }
+      ]
+    },
+    "decisionStatus": {
+      "type": "string",
+      "enum": [
+        "approved",
+        "held",
+        "rejected"
+      ]
+    },
+    "reviewEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "observedAt",
+        "completedAt",
+        "eventEnd",
+        "runtimeSourceHash",
+        "senderReviewHash",
+        "budgetSourceHash",
+        "setupReviewHash",
+        "eventBudget",
+        "senderDayBudget"
+      ],
+      "properties": {
+        "observedAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "completedAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "eventEnd": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "runtimeSourceHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "senderReviewHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "budgetSourceHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "setupReviewHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "eventBudget": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "budgetId",
+            "revision",
+            "reviewHash",
+            "chargedMicros"
+          ],
+          "properties": {
+            "budgetId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "revision": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "reviewHash": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "chargedMicros": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          }
+        },
+        "senderDayBudget": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "budgetId",
+            "revision",
+            "reviewHash",
+            "chargedMicros"
+          ],
+          "properties": {
+            "budgetId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "revision": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "reviewHash": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "chargedMicros": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          }
+        }
+      }
+    },
+    "reviewedByUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "note": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "effect": {
+      "type": "string",
+      "const": "decision_only_no_spending_authority"
+    },
+    "grantsSpendingAuthority": {
+      "type": "boolean",
+      "const": false
+    }
+  },
+  "definitions": {
+    "budgetEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "budgetId",
+        "revision",
+        "reviewHash",
+        "chargedMicros"
+      ],
+      "properties": {
+        "budgetId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "revision": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "reviewHash": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "chargedMicros": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      }
+    }
+  }
+};
+
+export const eventMessagingBudgetDecisionReceiptDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_messaging_budget_decision_receipts.schema.json",
+  "title": "EventMessagingBudgetDecisionReceiptDocument",
+  "description": "Immutable request receipt for an event-messaging budget decision. It preserves exact replay without granting spending authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventMessagingBudgetDecisionReceipts",
+  "x-firestore-path": "eventMessagingBudgetDecisionReceipts/{receiptId}",
+  "x-document-id-field": "receiptId",
+  "x-owner": "adminDecideEventMessagingBudget callable",
+  "required": [
+    "schemaVersion",
+    "receiptId",
+    "decisionId",
+    "requestId",
+    "requestHash",
+    "revision",
+    "decisionStatus",
+    "decisionPath",
+    "effect",
+    "grantsSpendingAuthority",
+    "createdAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "integer",
+      "const": 1
+    },
+    "receiptId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "decisionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "requestHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "decisionStatus": {
+      "type": "string",
+      "enum": [
+        "approved",
+        "held",
+        "rejected"
+      ]
+    },
+    "decisionPath": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500
+    },
+    "effect": {
+      "type": "string",
+      "const": "decision_only_no_spending_authority"
+    },
+    "grantsSpendingAuthority": {
+      "type": "boolean",
+      "const": false
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    }
+  }
+};
+
 export const eventAssistanceGuestDocumentSchema = {
   "type": "object",
   "additionalProperties": false,

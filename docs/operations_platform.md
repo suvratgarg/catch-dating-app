@@ -1,6 +1,6 @@
 ---
 doc_id: operations_platform
-version: 1.28.0
+version: 1.29.0
 updated: 2026-09-16
 owner: operations_platform
 status: active
@@ -894,6 +894,33 @@ contract fixes the channel, purpose, source hash, sender availability, exact
 event service horizon, budget currency and budget-source hash, exact budget
 scopes and recorded ceilings while preserving the literal
 `grantsDispatchAuthority: false` boundary.
+
+### Event messaging budget decisions
+
+`adminDecideEventMessagingBudget` gives Admin Owners and Finance reviewers a
+typed decision boundary after the read-only setup review. The callable records
+approve, hold or reject against one deterministic event, route, sender and
+purpose scope. The request must echo the current runtime source, sender review
+and budget-source hashes plus the expected decision revision. Exact request-id
+replay returns the original receipt; changed reuse fails, and another decision
+must advance the scope revision.
+
+Approval requires an eligible sender, a reviewed currency, ceilings no lower
+than already recorded conservative charges, and an expiry no later than the
+event service horizon. A late-join approval also requires that exact route and
+sender to be selected in the current configured runtime. The decision and its
+admin audit entry commit atomically. Stored evidence includes the complete setup
+review hash and the revisions and hashes of any existing event and sender-day
+budgets.
+
+This boundary is deliberately decision-only. It writes
+`eventMessagingBudgetDecisions` plus one immutable request receipt, never any
+channel budget collection. The receipt preserves exact replay after later scope
+decisions. The decision, receipt and response fix
+`grantsSpendingAuthority: false` and
+`effect: decision_only_no_spending_authority`. Creating or changing a budget,
+preserving charged amounts, rechecking the approved decision, provisioning a
+provider and activating a worker remain separate work.
 
 ## Adding Another Workflow
 

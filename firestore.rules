@@ -961,6 +961,16 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // Finance review receipts for event messaging ceilings. A decision is not
+    // a dispatch budget; only the role-gated callable may write or read it.
+    match /eventMessagingBudgetDecisions/{decisionId} {
+      allow read, write: if false;
+    }
+
+    match /eventMessagingBudgetDecisionReceipts/{receiptId} {
+      allow read, write: if false;
+    }
+
     // Written exclusively by admin organizer publishing callables to reserve
     // public website routes before pages become indexable.
     match /publicRouteReservations/{routeKey} {

@@ -4431,6 +4431,8 @@ describe("firestore.rules", () => {
         "operationRuleProposals",
         "operationRuleEvaluations",
         "adminActionExecutions",
+        "eventMessagingBudgetDecisions",
+        "eventMessagingBudgetDecisionReceipts",
       ];
       for (const collectionName of collections) {
         await seed([collectionName, "record-1"], {schemaVersion: 1});

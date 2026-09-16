@@ -130,6 +130,10 @@ Do not edit it by hand.
 | EventAssistanceRcsConfig | `operations/event_assistance_rcs_config.schema.json` | `functions/src/shared/generated/eventAssistanceRcsConfig.ts` |
 | EventAssistanceSmsConfig | `operations/event_assistance_sms_config.schema.json` | `functions/src/shared/generated/eventAssistanceSmsConfig.ts` |
 | EventMessagingSetupReview | `operations/event_messaging_setup_review.schema.json` | `functions/src/shared/generated/eventMessagingSetupReview.ts` |
+| AdminDecideEventMessagingBudgetCallablePayload | `callables/admin_decide_event_messaging_budget_payload.schema.json` | `functions/src/shared/generated/adminDecideEventMessagingBudgetCallablePayload.ts` |
+| AdminDecideEventMessagingBudgetCallableResponse | `callable_responses/admin_decide_event_messaging_budget_response.schema.json` | `functions/src/shared/generated/adminDecideEventMessagingBudgetCallableResponse.ts` |
+| EventMessagingBudgetDecisionDocument | `firestore/event_messaging_budget_decisions.schema.json` | `functions/src/shared/generated/eventMessagingBudgetDecisionDocument.ts` |
+| EventMessagingBudgetDecisionReceiptDocument | `firestore/event_messaging_budget_decision_receipts.schema.json` | `functions/src/shared/generated/eventMessagingBudgetDecisionReceiptDocument.ts` |
 | EventAssistanceGuestDocument | `firestore/event_assistance_guests.schema.json` | `functions/src/shared/generated/eventAssistanceGuestDocument.ts` |
 | EventAssistanceThreadDocument | `firestore/event_assistance_threads.schema.json` | `functions/src/shared/generated/eventAssistanceThreadDocument.ts` |
 | EventAssistanceGuestGrantDocument | `firestore/event_assistance_guest_grants.schema.json` | `functions/src/shared/generated/eventAssistanceGuestGrantDocument.ts` |
@@ -814,6 +818,10 @@ Do not edit it by hand.
 | `schemaEventAssistanceRcsConfigSchema` | EventAssistanceRcsConfig | `operations/event_assistance_rcs_config.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_rcs_config.g.dart` |
 | `schemaEventAssistanceSmsConfigSchema` | EventAssistanceSmsConfig | `operations/event_assistance_sms_config.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_sms_config.g.dart` |
 | `schemaEventMessagingSetupReviewSchema` | EventMessagingSetupReview | `operations/event_messaging_setup_review.schema.json` | `lib/core/schema_contracts/generated/schemas/event_messaging_setup_review.g.dart` |
+| `schemaAdminDecideEventMessagingBudgetCallablePayloadSchema` | AdminDecideEventMessagingBudgetCallablePayload | `callables/admin_decide_event_messaging_budget_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_decide_event_messaging_budget_callable_payload.g.dart` |
+| `schemaAdminDecideEventMessagingBudgetCallableResponseSchema` | AdminDecideEventMessagingBudgetCallableResponse | `callable_responses/admin_decide_event_messaging_budget_response.schema.json` | `lib/core/schema_contracts/generated/schemas/admin_decide_event_messaging_budget_callable_response.g.dart` |
+| `schemaEventMessagingBudgetDecisionDocumentSchema` | EventMessagingBudgetDecisionDocument | `firestore/event_messaging_budget_decisions.schema.json` | `lib/core/schema_contracts/generated/schemas/event_messaging_budget_decision_document.g.dart` |
+| `schemaEventMessagingBudgetDecisionReceiptDocumentSchema` | EventMessagingBudgetDecisionReceiptDocument | `firestore/event_messaging_budget_decision_receipts.schema.json` | `lib/core/schema_contracts/generated/schemas/event_messaging_budget_decision_receipt_document.g.dart` |
 | `schemaEventAssistanceGuestDocumentSchema` | EventAssistanceGuestDocument | `firestore/event_assistance_guests.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_guest_document.g.dart` |
 | `schemaEventAssistanceThreadDocumentSchema` | EventAssistanceThreadDocument | `firestore/event_assistance_threads.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_thread_document.g.dart` |
 | `schemaEventAssistanceGuestGrantDocumentSchema` | EventAssistanceGuestGrantDocument | `firestore/event_assistance_guest_grants.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_guest_grant_document.g.dart` |
@@ -1647,6 +1655,7 @@ Do not edit it by hand.
 | SetEventAssistanceSettingCallablePayload | cannot map field "preference" (no type) |
 | SetEventWhatsappPreferenceCallablePayload | cannot map field "decision" (no type) |
 | SetEventAssistanceSmsPreferenceCallablePayload | cannot map field "decision" (no type) |
+| AdminDecideEventMessagingBudgetCallablePayload | cannot map field "decision" (no type) |
 | UpdateOrganizerCallablePayloadPatch | no Dart patch config |
 | UpdateClubCallablePayloadPatch | cannot map patch field "clubPhotos" (type=array) |
 | AdminUpdateClubDetailsCallablePayloadPatch | no Dart patch config |

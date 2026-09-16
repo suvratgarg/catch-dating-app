@@ -2351,6 +2351,38 @@
       ]
     },
     {
+      "id": "eventMessagingBudgetDecisions",
+      "path": "eventMessagingBudgetDecisions/{decisionId}",
+      "rulesMatch": "/eventMessagingBudgetDecisions/{decisionId}",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "adminDecideEventMessagingBudget callable",
+      "read": "server/admin callable only",
+      "write": "server only",
+      "exportedFunctions": [
+        "adminDecideEventMessagingBudget"
+      ],
+      "migrationNotes": [
+        "Stores a revision-fenced finance decision bound to current runtime, sender, budget-source and setup-review hashes.",
+        "The record has a literal decision-only effect and grants no spending, dispatch, provider or activation authority."
+      ]
+    },
+    {
+      "id": "eventMessagingBudgetDecisionReceipts",
+      "path": "eventMessagingBudgetDecisionReceipts/{receiptId}",
+      "rulesMatch": "/eventMessagingBudgetDecisionReceipts/{receiptId}",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "adminDecideEventMessagingBudget callable",
+      "read": "server/admin callable only",
+      "write": "server only",
+      "exportedFunctions": [
+        "adminDecideEventMessagingBudget"
+      ],
+      "migrationNotes": [
+        "Immutable request-hash receipt preserves exact replay after later scope decisions.",
+        "The receipt returns only decision identity and status and grants no spending authority."
+      ]
+    },
+    {
       "id": "seedEvents",
       "path": "seedEvents/{manifestId}",
       "rulesMatch": "/seedEvents/{manifestId}",

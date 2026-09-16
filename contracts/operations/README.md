@@ -20,6 +20,12 @@ The contracts deliberately separate:
 review for one event messaging runtime, sender and its event and sender-day
 ceilings. Its literal `grantsDispatchAuthority: false` prevents the artifact
 from being mistaken for sender activation, spend approval or send permission.
+The separate callable and Firestore contracts for
+`adminDecideEventMessagingBudget` bind a finance decision to that review's
+current runtime, sender and budget-source hashes. The resulting receipt has a
+literal `decision_only_no_spending_authority` effect; it cannot create a budget
+or authorize dispatch. A separate immutable request receipt preserves exact
+replay after a later revision replaces the current decision view.
 
 For the Supply Intake reference workflow, `primaryStage` is always exactly one
 of `incoming`, `verify`, `resolve`, or `ready`. Publication, rejection, expiry,

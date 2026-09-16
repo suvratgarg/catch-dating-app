@@ -149,8 +149,12 @@ function compare(left: unknown, right: unknown): number | null {
 }
 
 class FakeCollection extends FakeQuery {
-  doc(id: string): FakeDocReference {
-    return new FakeDocReference(this.firestore, this.collectionPath, id);
+  doc(id?: string): FakeDocReference {
+    return new FakeDocReference(
+      this.firestore,
+      this.collectionPath,
+      id ?? this.firestore.autoId()
+    );
   }
 }
 
@@ -198,6 +202,7 @@ class FakeTransaction {
 export class FakeFirestore {
   private readonly docs = new Map<string, FakeData>();
   private transactionTail: Promise<unknown> = Promise.resolve();
+  private nextAutoId = 0;
   failNextCommit = false;
 
   collection(path: string): FakeCollection {
@@ -237,5 +242,10 @@ export class FakeFirestore {
   entries(): Array<[string, FakeData]> {
     return [...this.docs.entries()].map(([path, value]) =>
       [path, structuredClone(value)]);
+  }
+
+  autoId(): string {
+    this.nextAutoId += 1;
+    return `auto-${this.nextAutoId}`;
   }
 }

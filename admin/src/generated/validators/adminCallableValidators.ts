@@ -5851,6 +5851,36 @@ const model = {
                 ],
                 "properties": {
                   "kind": {
+                    "const": "operationalNoticeFanout"
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "workflowId": {
+                "const": "event-assistance"
+              },
+              "entityKind": {
+                "const": "notice_fanout"
+              },
+              "normalizedPayload": {
+                "$ref": "event_assistance_operational_notice_fanout.schema.json"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "normalizedPayload": {
+                "type": "object",
+                "required": [
+                  "kind"
+                ],
+                "properties": {
+                  "kind": {
                     "const": "liveMessageDelivery"
                   }
                 }
@@ -11713,6 +11743,118 @@ const model = {
             }
           }
         },
+        "EventMessageRouteSelection": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "routeId",
+                "senderId"
+              ],
+              "properties": {
+                "routeId": {
+                  "type": "string",
+                  "const": "catchEventSms"
+                },
+                "senderId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "routeId",
+                "senderId"
+              ],
+              "properties": {
+                "routeId": {
+                  "type": "string",
+                  "const": "organizerEventWhatsapp"
+                },
+                "senderId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "routeId",
+                "senderId"
+              ],
+              "properties": {
+                "routeId": {
+                  "type": "string",
+                  "const": "catchEventRcs"
+                },
+                "senderId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                }
+              }
+            }
+          ]
+        },
+        "EventMessageDeliveryPolicy": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "maxAttempts",
+            "maxAttemptsPerRoute",
+            "minimumRetrySeconds"
+          ],
+          "properties": {
+            "maxAttempts": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 6
+            },
+            "maxAttemptsPerRoute": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 3
+            },
+            "minimumRetrySeconds": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 3600
+            }
+          }
+        },
+        "OperationalNoticeDelivery": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "routes",
+            "policy"
+          ],
+          "properties": {
+            "routes": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 3,
+              "uniqueItems": true,
+              "items": {
+                "$ref": "#/definitions/EventMessageRouteSelection"
+              }
+            },
+            "policy": {
+              "$ref": "#/definitions/EventMessageDeliveryPolicy"
+            }
+          }
+        },
         "planChangeCommunicationConfig": {
           "type": "object",
           "additionalProperties": false,
@@ -11720,7 +11862,8 @@ const model = {
             "templateIntent",
             "audience",
             "maximumPerGuest",
-            "expiryMinutes"
+            "expiryMinutes",
+            "delivery"
           ],
           "properties": {
             "templateIntent": {
@@ -11740,6 +11883,9 @@ const model = {
               "type": "integer",
               "minimum": 0,
               "maximum": 10080
+            },
+            "delivery": {
+              "$ref": "#/definitions/OperationalNoticeDelivery"
             }
           }
         },
@@ -11971,7 +12117,8 @@ const model = {
             "templateIntent",
             "audience",
             "maximumPerGuest",
-            "expiryMinutes"
+            "expiryMinutes",
+            "delivery"
           ],
           "properties": {
             "templateIntent": {
@@ -11991,6 +12138,9 @@ const model = {
               "type": "integer",
               "minimum": 0,
               "maximum": 10080
+            },
+            "delivery": {
+              "$ref": "#/definitions/OperationalNoticeDelivery"
             }
           }
         },
@@ -13834,6 +13984,152 @@ const model = {
             }
           ]
         },
+        "ChangeRouteCommand": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "context",
+            "eventId",
+            "operationId",
+            "payload"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "changeRoute"
+            },
+            "context": {
+              "$ref": "#/definitions/ExecutionContext"
+            },
+            "eventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "operationId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "payload": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "routeRevision",
+                "groupId",
+                "expectedSourceHash",
+                "alternativeId",
+                "decisionId"
+              ],
+              "properties": {
+                "routeRevision": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991,
+                  "description": "Nonnegative safe integer revision."
+                },
+                "groupId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "expectedSourceHash": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "alternativeId": {
+                  "type": "string",
+                  "pattern": "^alternative:[a-f0-9]{64}$"
+                },
+                "decisionId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            }
+          }
+        },
+        "RequestRequiredDataCommand": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "context",
+            "eventId",
+            "operationId",
+            "payload"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "requestRequiredData"
+            },
+            "context": {
+              "$ref": "#/definitions/ExecutionContext"
+            },
+            "eventId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "operationId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "payload": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "attendeeId",
+                "fieldIds",
+                "expiresAt",
+                "expectedProfileRevision",
+                "expectedRequestRevision",
+                "expectedSourceHash"
+              ],
+              "properties": {
+                "attendeeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "fieldIds": {
+                  "$ref": "event_runtime_profile.schema.json#/definitions/NonEmptyRuntimeFieldIds"
+                },
+                "expiresAt": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991,
+                  "description": "UTC milliseconds."
+                },
+                "expectedProfileRevision": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "expectedRequestRevision": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "expectedSourceHash": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                }
+              }
+            }
+          }
+        },
         "Command": {
           "oneOf": [
             {
@@ -14592,64 +14888,7 @@ const model = {
               }
             },
             {
-              "type": "object",
-              "additionalProperties": false,
-              "required": [
-                "kind",
-                "context",
-                "eventId",
-                "operationId",
-                "payload"
-              ],
-              "properties": {
-                "kind": {
-                  "type": "string",
-                  "const": "changeRoute"
-                },
-                "context": {
-                  "$ref": "#/definitions/ExecutionContext"
-                },
-                "eventId": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 160,
-                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-                },
-                "operationId": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 160,
-                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-                },
-                "payload": {
-                  "type": "object",
-                  "additionalProperties": false,
-                  "required": [
-                    "routeRevision",
-                    "alternativeId",
-                    "decisionId"
-                  ],
-                  "properties": {
-                    "routeRevision": {
-                      "type": "integer",
-                      "minimum": 0,
-                      "maximum": 9007199254740991,
-                      "description": "Nonnegative safe integer revision."
-                    },
-                    "alternativeId": {
-                      "type": "string",
-                      "minLength": 1,
-                      "maxLength": 2000
-                    },
-                    "decisionId": {
-                      "type": "string",
-                      "minLength": 1,
-                      "maxLength": 160,
-                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-                    }
-                  }
-                }
-              }
+              "$ref": "#/definitions/ChangeRouteCommand"
             },
             {
               "$ref": "#/definitions/ResolveAccountabilityCommand"
@@ -14918,70 +15157,7 @@ const model = {
               }
             },
             {
-              "type": "object",
-              "additionalProperties": false,
-              "required": [
-                "kind",
-                "context",
-                "eventId",
-                "operationId",
-                "payload"
-              ],
-              "properties": {
-                "kind": {
-                  "type": "string",
-                  "const": "requestRequiredData"
-                },
-                "context": {
-                  "$ref": "#/definitions/ExecutionContext"
-                },
-                "eventId": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 160,
-                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-                },
-                "operationId": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 160,
-                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-                },
-                "payload": {
-                  "type": "object",
-                  "additionalProperties": false,
-                  "required": [
-                    "attendeeId",
-                    "fieldIds",
-                    "expiresAt"
-                  ],
-                  "properties": {
-                    "attendeeId": {
-                      "type": "string",
-                      "minLength": 1,
-                      "maxLength": 160,
-                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-                    },
-                    "fieldIds": {
-                      "type": "array",
-                      "minItems": 1,
-                      "maxItems": 1000,
-                      "items": {
-                        "type": "string",
-                        "minLength": 1,
-                        "maxLength": 2000
-                      },
-                      "uniqueItems": true
-                    },
-                    "expiresAt": {
-                      "type": "integer",
-                      "minimum": 0,
-                      "maximum": 9007199254740991,
-                      "description": "UTC milliseconds."
-                    }
-                  }
-                }
-              }
+              "$ref": "#/definitions/RequestRequiredDataCommand"
             },
             {
               "type": "object",
@@ -17038,6 +17214,45 @@ const model = {
                 }
               }
             }
+          }
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/shared/event_runtime_profile.schema.json",
+      "title": "Event runtime profile definitions",
+      "definitions": {
+        "RuntimeFieldId": {
+          "type": "string",
+          "enum": [
+            "displayName",
+            "gender",
+            "interestedInGenders",
+            "relationshipGoal",
+            "dateOfBirth",
+            "paceBand",
+            "skillBand",
+            "dietaryAndSeatingNotes",
+            "questionnaireAnswerIds",
+            "teamName"
+          ]
+        },
+        "RuntimeFieldIds": {
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 10,
+          "items": {
+            "$ref": "#/definitions/RuntimeFieldId"
+          }
+        },
+        "NonEmptyRuntimeFieldIds": {
+          "type": "array",
+          "uniqueItems": true,
+          "minItems": 1,
+          "maxItems": 10,
+          "items": {
+            "$ref": "#/definitions/RuntimeFieldId"
           }
         }
       }
@@ -19217,6 +19432,215 @@ const model = {
     },
     {
       "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/operations/event_assistance_operational_notice_fanout.schema.json",
+      "title": "EventAssistanceOperationalNoticeFanout",
+      "description": "Private bounded attendee fanout for one trusted plan-change or post-event source. The work binds a reviewed policy revision and grants no provider authority by itself.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "kind",
+        "signalId",
+        "context",
+        "source",
+        "policyBinding",
+        "expiresAt",
+        "checkpoint"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1
+        },
+        "kind": {
+          "type": "string",
+          "const": "operationalNoticeFanout"
+        },
+        "signalId": {
+          "$ref": "common.schema.json#/definitions/id"
+        },
+        "context": {
+          "$ref": "../shared/event_assistance_guest.schema.json#/definitions/liveContext"
+        },
+        "source": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "sourceId",
+            "revision",
+            "occurredAt",
+            "validUntil"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "enum": [
+                "planChange",
+                "followUp"
+              ]
+            },
+            "sourceId": {
+              "$ref": "common.schema.json#/definitions/id"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "occurredAt": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "validUntil": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            }
+          }
+        },
+        "policyBinding": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "groupId",
+            "workflowKind",
+            "settingId",
+            "settingRevision"
+          ],
+          "properties": {
+            "groupId": {
+              "type": "string",
+              "const": "event:whole"
+            },
+            "workflowKind": {
+              "type": "string",
+              "enum": [
+                "planChangeCommunication",
+                "postEventFollowUp"
+              ]
+            },
+            "settingId": {
+              "$ref": "common.schema.json#/definitions/id"
+            },
+            "settingRevision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            }
+          }
+        },
+        "expiresAt": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "checkpoint": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "phase",
+            "cursor",
+            "visited",
+            "published",
+            "skipped",
+            "dueAt",
+            "failures",
+            "retries",
+            "stopReason"
+          ],
+          "properties": {
+            "phase": {
+              "type": "string",
+              "enum": [
+                "scan",
+                "retry",
+                "complete",
+                "review",
+                "expired",
+                "stopped"
+              ]
+            },
+            "cursor": {
+              "anyOf": [
+                {
+                  "$ref": "common.schema.json#/definitions/id"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "visited": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10000
+            },
+            "published": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10000
+            },
+            "skipped": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10000
+            },
+            "dueAt": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "failures": {
+              "type": "array",
+              "maxItems": 100,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "attendeeId",
+                  "reason"
+                ],
+                "properties": {
+                  "attendeeId": {
+                    "$ref": "common.schema.json#/definitions/id"
+                  },
+                  "reason": {
+                    "type": "string",
+                    "enum": [
+                      "unavailable"
+                    ]
+                  }
+                }
+              }
+            },
+            "retries": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 5
+            },
+            "stopReason": {
+              "enum": [
+                null,
+                "policyUnavailable",
+                "policyChanged",
+                "sourceChanged"
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
       "$id": "https://catch.app/contracts/operations/event_assistance_delivery_work.schema.json",
       "title": "EventAssistanceDeliveryWork",
       "description": "Private resumable delivery coordination for one published automatic message. The outbox owns provider attempts; a checkpoint never grants dispatch authority.",
@@ -20373,6 +20797,9 @@ const model = {
                       }
                     }
                   }
+                },
+                "automation": {
+                  "$ref": "#/definitions/OperationalNoticeAutomation"
                 }
               }
             }
@@ -21420,6 +21847,76 @@ const model = {
               "type": "integer",
               "minimum": 0,
               "maximum": 9007199254740991
+            }
+          }
+        },
+        "OperationalNoticeAutomation": {
+          "type": "object",
+          "description": "Trusted live publisher binding for plan-change and follow-up notices. The delivery worker rechecks the saved assistance setting and every channel permission before sending. Absence denotes an explicit publisher path without automatic delivery authority.",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "noticeKind",
+            "policyVersion",
+            "groupId",
+            "settingId",
+            "settingRevision",
+            "sourceId",
+            "sourceRevision",
+            "contentHash",
+            "routes"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "operationalNotice"
+            },
+            "noticeKind": {
+              "type": "string",
+              "enum": [
+                "planChanged",
+                "followUp"
+              ]
+            },
+            "policyVersion": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "groupId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+            },
+            "settingId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+            },
+            "settingRevision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "sourceId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+            },
+            "sourceRevision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "contentHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "routes": {
+              "$ref": "#/definitions/LateJoinAutomation/properties/routes"
             }
           }
         },

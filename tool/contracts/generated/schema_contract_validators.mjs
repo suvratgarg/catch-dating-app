@@ -121,6 +121,10 @@ import {
   eventAssistanceRcsConfigSchema,
   eventAssistanceSmsConfigSchema,
   eventMessagingSetupReviewSchema,
+  adminDecideEventMessagingBudgetCallablePayloadSchema,
+  adminDecideEventMessagingBudgetCallableResponseSchema,
+  eventMessagingBudgetDecisionDocumentSchema,
+  eventMessagingBudgetDecisionReceiptDocumentSchema,
   eventAssistanceGuestDocumentSchema,
   eventAssistanceThreadDocumentSchema,
   eventAssistanceGuestGrantDocumentSchema,
@@ -824,6 +828,10 @@ export const validateEventAssistanceSmsDispatchDocument = ajv.compile(eventAssis
 export const validateEventAssistanceRcsConfig = ajv.compile(eventAssistanceRcsConfigSchema);
 export const validateEventAssistanceSmsConfig = ajv.compile(eventAssistanceSmsConfigSchema);
 export const validateEventMessagingSetupReview = ajv.compile(eventMessagingSetupReviewSchema);
+export const validateAdminDecideEventMessagingBudgetCallablePayload = ajv.compile(adminDecideEventMessagingBudgetCallablePayloadSchema);
+export const validateAdminDecideEventMessagingBudgetCallableResponse = ajv.compile(adminDecideEventMessagingBudgetCallableResponseSchema);
+export const validateEventMessagingBudgetDecisionDocument = ajv.compile(eventMessagingBudgetDecisionDocumentSchema);
+export const validateEventMessagingBudgetDecisionReceiptDocument = ajv.compile(eventMessagingBudgetDecisionReceiptDocumentSchema);
 export const validateEventAssistanceGuestDocument = ajv.compile(eventAssistanceGuestDocumentSchema);
 export const validateEventAssistanceThreadDocument = ajv.compile(eventAssistanceThreadDocumentSchema);
 export const validateEventAssistanceGuestGrantDocument = ajv.compile(eventAssistanceGuestGrantDocumentSchema);

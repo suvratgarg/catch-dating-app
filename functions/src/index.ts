@@ -526,6 +526,9 @@ export {
   adminDecideOrganizerPolicyGap,
 } from "./admin/organizerPolicyGap";
 export {
+  adminDecideEventMessagingBudget,
+} from "./admin/eventMessagingBudget";
+export {
   adminCreateMarketingContentDraft,
   adminGetMarketingOpsDashboard,
   adminRecordMarketingReviewDecision,

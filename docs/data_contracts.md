@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.131.0
+version: 1.132.0
 updated: 2026-09-16
 owner: recursive_audit_loop
 status: active
@@ -3607,6 +3607,21 @@ remain charged across uncertain outcomes and provider rejections until an
 explicit reconciliation implementation accounts for them. They are spending
 reservations, not billing receipts. Firestore clients, including admins, cannot
 read or write any of these six collections.
+
+`eventMessagingBudgetDecisions` is the server-only, revisioned finance review
+record for a proposed messaging ceiling. `adminDecideEventMessagingBudget`
+reads the event runtime, selected sender and both channel budget scopes in the
+same transaction as the decision revision, then binds the result to the exact
+runtime, sender, budget-source and complete setup-review hashes. Admin Owner or
+Finance authority, a unique request id, current expected revision and admin
+audit entry are required. Approval checks currency, event service horizon and
+existing conservative charges. The document is not one of the three channel
+budget records: its literal effect is decision-only and
+`grantsSpendingAuthority` is always false. An immutable
+`eventMessagingBudgetDecisionReceipts` row preserves exact request replay even
+after a newer scope decision. A later apply boundary must consume
+and revalidate this evidence before it may preserve charges and change a real
+budget.
 
 The dormant `eventAssistanceSmsDeliveryWebhook` accepts a bounded, strictly
 decoded GET report and delegates credential/scope validation to the reporting

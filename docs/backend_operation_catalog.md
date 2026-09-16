@@ -1,6 +1,6 @@
 ---
 doc_id: backend_operation_catalog
-version: 1.71.0
+version: 1.72.0
 updated: 2026-09-16
 owner: recursive_audit_loop
 status: active
@@ -76,6 +76,8 @@ The current admin callable is a role-gated, rate-limited read projection only.
 | `operationRuleProposals/{ruleProposalId}` | Evidence-derived extractor/rule proposal | Trusted learning worker |
 | `operationRuleEvaluations/{ruleEvaluationId}` | Replay, holdout, shadow, and canary metrics | Trusted evaluation worker |
 | `adminActionExecutions/{executionId}` | Hash-only start/terminal receipt for one agent CLI admin action | Role-gated admin execution callables |
+| `eventMessagingBudgetDecisions/{decisionId}` | Revisioned finance decision bound to exact messaging setup evidence; never a spend grant | `adminDecideEventMessagingBudget` callable |
+| `eventMessagingBudgetDecisionReceipts/{receiptId}` | Immutable request-hash replay evidence for a messaging budget decision | `adminDecideEventMessagingBudget` callable |
 
 `contracts/admin/admin_action_catalog.json` binds every callable-backed admin
 GUI action to the same stable CLI action id, role set, request schema, GUI
@@ -194,6 +196,7 @@ is `docs/migrations/clubs_to_organizers.md`.
 | `createPublicOrganizerReview` / `listPublicOrganizerReviews` | Callable | Public website listing | `reviews/{reviewId}` with `organizerId` and compatibility `clubId` | Public review scope is bound to a published canonical organizer route. |
 | `adminGetOrganizerDetails` / `adminListOrganizerDetails` / `adminUpdateOrganizerDetails` | Callable | React admin Organizers workspace | canonical organizer read/update projections plus audited legacy shadow | Organizer-named admin wire contract; internal `AdminClub*` adapters are transitional only. |
 | `adminDecideOrganizerEventCandidate` | Callable | React Organizer Intake review | `organizerEventCandidateReviewDecisions/{candidateId}` | Records approve/reject plus one explicit resolved/waived decision for every governed import blocker. A waiver must reference the accepted matching policy-gap decision. |
+| `adminDecideEventMessagingBudget` | Admin callable | Guarded Admin CLI action; Finance GUI integration pending | `eventMessagingBudgetDecisions/{decisionId}`, immutable `eventMessagingBudgetDecisionReceipts/{receiptId}`, `adminAuditLogs/{id}`; transactionally reads the event runtime, sender and current channel budget scopes | Restricted to Admin Owner or Finance. Records approve, hold or reject with request-id replay, expected revision and current runtime/sender/budget-source hashes. Approval validates currency, existing charges, service horizon and applicable route selection. Both the stored document and response grant no spending authority, and no channel budget or provider is changed. |
 | `adminPublishExternalEvent` | Callable | React Events external-supply workspace | `externalEvents/{eventId}`, `externalEventPublicationReceipts/{receiptId}` | Dry-run/apply authority for one reviewed outbound-only event. Enforces market identity, organizer capability/visibility ceiling, exact blocker decisions, immutable idempotency, and never writes canonical `events`. |
 | `adminTakedownExternalEvent` | Callable | React Events external-supply workspace | `externalEvents/{eventId}`, `externalEventPublicationReceipts/{receiptId}` | Dry-run/apply takedown; preserves the record and attribution, records takedown metadata, and is idempotent. |
 | `createClub`, `updateClub`, `archiveClub`, `deleteClub`, `joinClub`, `leaveClub`, `createClubPost`, `requestClubClaim`, `adminDecideClubClaim` | Callable compatibility wrappers | Released clients only | legacy club projection and/or canonical organizer adapter | No new client may adopt these names. Remove only after released-client and remote-parity evidence. |
@@ -390,6 +393,8 @@ is `docs/migrations/clubs_to_organizers.md`.
 | `eventRuntimeClaimRequests/{eventId_uid}` | Runtime claim and Host decision callables | Authorized organizer managers may read their event's pending queue; all direct writes and claimant roster-detail reads are denied. |
 | `eventCrossPathsConsents/{eventId_uid}` | `setCrossPathsEventConsent` callable | Caller may read only their own deterministic edge, including an own-edge constrained query that returns empty when no choice exists. Direct client writes and other-member reads are denied. |
 | `crossPathsShowcaseEligibility/{uid}` | `adminSetCrossPathsShowcaseEligibility` callable and account-deletion cleanup | Server-only reviewed status, coarse reasons, versions, neutral checklist, and profile fingerprint. Every client read/write is denied; authorized reviewers use the sanitized Admin callable projection. |
+| `eventMessagingBudgetDecisions/{decisionId}` | `adminDecideEventMessagingBudget` callable | Server-only finance review evidence. Direct access is denied even to signed-in Admin clients; the callable is the role, validation, revision and audit boundary. It is not a dispatch budget and grants no spending authority. |
+| `eventMessagingBudgetDecisionReceipts/{receiptId}` | `adminDecideEventMessagingBudget` callable | Server-only immutable request receipt. It preserves exact replay after later decisions and contains no spending authority. |
 | `crossPathsSuggestionExposures/{exposureId}` | `getCrossPathsSuggestions` callable and account-deletion cleanup | Server-only session-idempotent exposure/fatigue receipt. Every client read/write is denied; it contains no roster projection or private preference value. `expiresAt` requires the environment's 30-day Firestore TTL policy. |
 | `crossPathsPairHolds/{holdId}` | `respondCrossPathsInvitation`, canonical booking/payment fulfillment, lifecycle triggers, expiry scheduler, and account deletion | Participant-get-only, server-write-only companion reservation. `active` is not a booking; frozen quote, independent booking states, expiry/release, payment, and plan linkage remain callable-owned. List is denied and aggregate capacity lives on the event document. |
 | `eventBroadcasts/{broadcastId}` | `sendEventBroadcast` callable and account-deletion cleanup | Server-only operational receipt. Direct client reads and writes are denied; clients receive only sanitized callable response counts. `expiresAt` requires a 90-day Firestore TTL policy. |

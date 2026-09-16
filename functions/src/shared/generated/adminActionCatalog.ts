@@ -82,6 +82,15 @@ export const ADMIN_ACTION_CATALOG = {
       "analyticsViewer"
     ]
   },
+  "finance.decide-event-messaging-budget": {
+    "callable": "adminDecideEventMessagingBudget",
+    "controlPlane": false,
+    "kind": "mutation",
+    "roles": [
+      "adminOwner",
+      "finance"
+    ]
+  },
   "cross-paths-showcase.list": {
     "callable": "adminListCrossPathsShowcaseCandidates",
     "controlPlane": false,
