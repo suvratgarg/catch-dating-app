@@ -216415,11 +216415,9 @@ export const eventAssistanceCommandBindingCatalog = {
     {
       "commandKind": "controlUnitProgress",
       "live": {
-        "bindingType": "domainAdapter",
-        "operations": [
-          "controlEventSuccessLive"
-        ],
-        "missingCapability": null
+        "bindingType": "contractOnly",
+        "operations": [],
+        "missingCapability": "liveUnitProgressControl"
       },
       "rehearsal": {
         "bindingType": "contractOnly",

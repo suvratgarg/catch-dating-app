@@ -2773,6 +2773,10 @@ coverage. Extend, skip and reorder remain unavailable. The live control
 callable changes the active guide step, reveal state and completion state; it
 does not execute the canonical pause, resume, extend, skip or reorder command,
 so the former complete live binding is now an explicit capability gap.
+It also cannot execute `controlUnitProgress`: that command names a unit and a
+revision-fenced `ready`/`active`/`paused`/`completed` transition, while the live
+callable has no per-unit progress state. The live unit-progress binding is
+therefore contract-only until its owning operation exists.
 
 With the shared execution and SMS/WhatsApp/RCS boundaries in source, the next
 implementation sequence is:

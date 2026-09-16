@@ -107,7 +107,15 @@ test("unimplemented live commands name their missing capability", () => {
   assert.deepEqual(gaps, {
     changeProgramme: "liveProgrammeControl",
     reconcileFinance: "eventPaymentCaseResolution",
+    controlUnitProgress: "liveUnitProgressControl",
   });
+});
+
+test("live guide-step control does not claim per-unit progress", () => {
+  const binding = commandBinding("controlUnitProgress", "live");
+  assert.equal(binding.bindingType, "contractOnly");
+  assert.deepEqual(binding.operations, []);
+  assert.equal(commandCoverage("controlUnitProgress", "live"), "none");
 });
 
 test("direct live bindings only name command-consuming callables", () => {

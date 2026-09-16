@@ -180,6 +180,7 @@ enum EventAssistanceMissingCapability {
   rehearsalProgrammeControl,
   eventPaymentCaseResolution,
   rehearsalFinanceReconciliation,
+  liveUnitProgressControl,
   rehearsalUnitProgressControl,
   rehearsalOverrideControl,
   rehearsalLocationSharing,
@@ -2047,15 +2048,13 @@ const eventAssistanceCommandBindingCatalog =
   EventAssistanceCommandBindingDescriptor(
     commandKind: EventAssistanceCommandKind.controlUnitProgress,
     live: EventAssistanceModeBinding(
-      bindingType: EventAssistanceCommandBindingType.domainAdapter,
-      coverage: EventAssistanceCommandCoverage.complete,
+      bindingType: EventAssistanceCommandBindingType.contractOnly,
+      coverage: EventAssistanceCommandCoverage.none,
       variantField: null,
       implementedVariants: <EventAssistanceCommandCoverageVariant>[],
       missingVariants: <EventAssistanceCommandCoverageVariant>[],
-      operations: <String>[
-        'controlEventSuccessLive',
-      ],
-      missingCapability: null,
+      operations: <String>[],
+      missingCapability: EventAssistanceMissingCapability.liveUnitProgressControl,
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.contractOnly,
