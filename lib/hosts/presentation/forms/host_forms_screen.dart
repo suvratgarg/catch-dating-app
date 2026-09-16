@@ -18,7 +18,6 @@ import 'package:catch_dating_app/hosts/presentation/forms/host_form_responses_pa
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_audience_view.dart';
 import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeletons.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_tokens/catch_tokens.dart';
@@ -126,11 +125,7 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
       return HostAudienceStateScaffold(
         selected: _view,
         scrollKey: const PageStorageKey<String>('host-forms-route-state'),
-        slivers: const [
-          CatchStateViewport.sliver(
-            child: HostRouteLoadingBody(padding: EdgeInsets.zero),
-          ),
-        ],
+        slivers: const [CatchStateViewport.sliverLoading()],
       );
     }
     if (uid == null) {
@@ -169,11 +164,7 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
       return HostAudienceStateScaffold(
         selected: _view,
         scrollKey: const PageStorageKey<String>('host-forms-route-state'),
-        slivers: const [
-          CatchStateViewport.sliver(
-            child: HostRouteLoadingBody(padding: EdgeInsets.zero),
-          ),
-        ],
+        slivers: const [CatchStateViewport.sliverLoading()],
       );
     }
     final clubs = clubsState.value ?? const <Club>[];

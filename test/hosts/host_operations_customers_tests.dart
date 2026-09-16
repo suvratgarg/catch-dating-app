@@ -20,7 +20,7 @@ void _registerHostOperationsCustomersTests() {
         resetProviderScope: true,
       );
       _expectAudienceStateOwner(tester, selected: view);
-      expect(find.byType(HostRouteLoadingBody), findsOneWidget);
+      expect(find.byType(CircularProgressIndicator), findsOneWidget);
       expect(find.byType(CatchStateViewport), findsOneWidget);
 
       await _pumpHostScreen(
@@ -69,7 +69,7 @@ void _registerHostOperationsCustomersTests() {
         resetProviderScope: true,
       );
       _expectAudienceStateOwner(tester, selected: view);
-      expect(find.byType(HostRouteLoadingBody), findsOneWidget);
+      expect(find.byType(CircularProgressIndicator), findsOneWidget);
       expect(find.byType(CatchStateViewport), findsOneWidget);
 
       await _pumpHostScreen(

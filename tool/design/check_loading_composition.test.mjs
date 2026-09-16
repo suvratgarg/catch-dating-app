@@ -52,9 +52,9 @@ test('allows known Field layouts and tracks unmigrated Host debt', () => {
   assert.equal(legacy.findings.length, 0);
   assert.equal(legacy.legacyCount, 1);
   assert.equal(legacyRowAllowanceFor('lib/hosts/presentation/applications/host_application_detail_screen.dart'), 1);
-  assert.equal(legacyRowAllowanceFor('lib/hosts/presentation/widgets/host_loading_skeletons.dart'), 3);
+  assert.equal(legacyRowAllowanceFor('lib/hosts/presentation/widgets/host_loading_skeletons.dart'), 2);
   assert.equal(legacyRowAllowanceFor('lib/hosts/presentation/new_screen.dart'), 0);
-  assert.equal(legacyCollectionAllowanceFor('lib/swipes/presentation/swipe_hub_screen.dart'), 2);
+  assert.equal(legacyCollectionAllowanceFor('lib/swipes/presentation/swipe_hub_screen.dart'), 0);
   assert.equal(legacyCollectionAllowanceFor('lib/swipes/presentation/new_screen.dart'), 0);
 });
 

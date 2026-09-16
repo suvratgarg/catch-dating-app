@@ -29,15 +29,12 @@ const allowedLegacyRowsByPath = Object.freeze({
   'lib/hosts/presentation/inbox/host_whatsapp_thread_sheet.dart': 1,
   'lib/hosts/presentation/widgets/host_event_attendance_panel.dart': 1,
   'lib/hosts/presentation/widgets/host_event_participants_section_list.dart': 1,
-  'lib/hosts/presentation/widgets/host_loading_skeletons.dart': 3,
+  'lib/hosts/presentation/widgets/host_loading_skeletons.dart': 2,
   'lib/routing/go_router.dart': 1,
 });
 const allowedLegacyCollectionsByPath = Object.freeze({
-  'lib/clubs/presentation/detail/widgets/club_detail_skeleton.dart': 1,
   'lib/event_success/presentation/host_components/event_success_host_section_skeleton.dart': 1,
   'lib/hosts/presentation/club_management/create/widgets/host_club_editor_loading_screen.dart': 2,
-  'lib/swipes/presentation/filters_screen.dart': 1,
-  'lib/swipes/presentation/swipe_hub_screen.dart': 2,
 });
 export const legacyRowRecipeCeiling = Object.values(
   allowedLegacyRowsByPath,

@@ -17,21 +17,6 @@ import 'preview.dart';
 
 @widgetbook.UseCase(
   name: 'Skeleton states',
-  type: HostRouteLoadingBody,
-  path: '[P1 product surfaces]/Host operations/Components',
-)
-@widgetbook.UseCase(
-  name: 'Skeleton states',
-  type: HostSummarySkeleton,
-  path: '[P1 product surfaces]/Host operations/Components',
-)
-@widgetbook.UseCase(
-  name: 'Skeleton states',
-  type: HostTabRailSkeleton,
-  path: '[P1 product surfaces]/Host operations/Components',
-)
-@widgetbook.UseCase(
-  name: 'Skeleton states',
   type: HostAnalyticsReportSkeleton,
   path: '[P1 product surfaces]/Host operations/Components',
 )
@@ -55,23 +40,6 @@ Widget hostLoadingSkeletonCatalogStates(BuildContext context) {
     title: 'Host loading skeletons',
     contractId: 'component.host.loading_skeletons',
     children: [
-      WidgetbookPageStateCard(
-        label: 'route loading body',
-        child: WidgetbookHostDeviceFrame(
-          child: Scaffold(
-            body: HostRouteLoadingBody(
-              showTabRail: true,
-              padding: EdgeInsets.zero,
-            ),
-          ),
-        ),
-      ),
-      WidgetbookPageStateCard(
-        label: 'summary and tab rail',
-        child: Column(
-          children: [HostTabRailSkeleton(), gapH12, HostSummarySkeleton()],
-        ),
-      ),
       WidgetbookPageStateCard(
         label: 'row and settings groups',
         child: Column(

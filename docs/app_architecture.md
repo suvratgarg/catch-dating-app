@@ -1446,6 +1446,16 @@ second row tree or enclosing card. Leaf `CatchSkeleton.box/text/circle` shapes
 remain appropriate only where no actual child layout exists yet, such as an
 unknown remote image or chart.
 
+When the fetched data determines whether the screen has a conversation, form,
+roster, card, or empty state, there is no honest layout to skeletonize yet.
+Keep the known header and controls mounted and use
+`CatchStateViewport.sliverLoading` below them, or
+`CatchStateViewport.loading` in a bounded, non-scrolling route body. These
+variants center progress in the remaining visible area and account for a
+floating bottom navigation bar. `CatchAsyncBoundary.sliver` uses the sliver
+variant by default when `fillRemaining` is true. Do not fabricate a likely
+card or row collection while the route structure is unresolved.
+
 The route scaffold and its body geometry belong outside async state switches.
 For example, Today selects `CatchRootScreenScaffold.sections` once, then
 switches only the sliver content. A state change cannot substitute a standard
@@ -2402,9 +2412,10 @@ or implementation technique cannot justify a second shared implementation.
   Banner owns persistent inline feedback, with error/retry as named recipes.
   Notice owns transient notification delivery with dismissal/open behavior;
   sharing an icon and message does not make those delivery contracts identical.
-  Skeleton owns content-shaped loading. Explicit shapes, derived content,
-  card lists, row recipes, equal boxes and wrapping chips use named constructors
-  on `CatchSkeleton`; recipe configuration remains private and const-capable.
+  Skeleton owns content-shaped loading. Derived content uses the real widget
+  composition; leaf shapes are for media and values with no renderable layout.
+  Generic card lists, row recipes, equal boxes, and wrapping chips are legacy
+  recipes tracked by the loading-composition ratchet, not new usage patterns.
   `CatchScreenSkeleton` and `CatchSliverSkeleton` retain their page-body and
   render-sliver placement protocols. They do not select asynchronous state.
   Scaffold owns the page surface, platform safe area, keyboard resize and

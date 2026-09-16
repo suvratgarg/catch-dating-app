@@ -61,7 +61,7 @@ class _HostClubTeamScreenState extends ConsumerState<HostClubTeamScreen>
       );
     }
     if (uidState.isLoading) {
-      return HostLoadingScreen(title: routeTitle, showTabRail: true);
+      return HostLoadingScreen(title: routeTitle);
     }
 
     final uid = uidState.value;
@@ -114,7 +114,7 @@ class _HostClubTeamScreenState extends ConsumerState<HostClubTeamScreen>
       );
     }
     if (clubsState.isLoading) {
-      return HostLoadingScreen(title: routeTitle, showTabRail: true);
+      return HostLoadingScreen(title: routeTitle);
     }
     final clubs = clubsState.value ?? const <Club>[];
     final club = clubs.where((item) => item.id == widget.clubId).firstOrNull;

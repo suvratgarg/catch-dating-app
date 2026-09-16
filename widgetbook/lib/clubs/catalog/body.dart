@@ -1,6 +1,5 @@
 import 'package:catch_dating_app/clubs/presentation/detail/club_detail_read_only_preview.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_detail_body.dart';
-import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_detail_skeleton.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
@@ -86,23 +85,3 @@ Widget clubDetailReadOnlyPreviewComposition(BuildContext context) {
 )
 Widget clubDetailSliverBodyComposition(BuildContext context) =>
     clubDetailReadOnlyPreviewComposition(context);
-
-@widgetbook.UseCase(
-  name: 'Shared loading sliver composition',
-  type: ClubDetailLoadingSliverBody,
-  path: '[Club Detail]/Sections',
-)
-Widget clubDetailLoadingSliverBodyComposition(BuildContext context) {
-  return const WidgetbookScrollCatalogFrame(
-    title: 'ClubDetailLoadingSliverBody',
-    catalogId: 'screen.club.detail.sections.loading_sliver',
-    children: [
-      WidgetbookPageStateCard(
-        label: 'consumer loading composition',
-        child: WidgetbookClubDeviceFrame(
-          child: CustomScrollView(slivers: [ClubDetailLoadingSliverBody()]),
-        ),
-      ),
-    ],
-  );
-}

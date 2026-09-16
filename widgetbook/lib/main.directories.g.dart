@@ -49,8 +49,6 @@ import 'package:widgetbook_workspace/clubs/catalog/hosts.dart'
     as _widgetbook_workspace_clubs_catalog_hosts;
 import 'package:widgetbook_workspace/clubs/catalog/identity.dart'
     as _widgetbook_workspace_clubs_catalog_identity;
-import 'package:widgetbook_workspace/clubs/catalog/loading.dart'
-    as _widgetbook_workspace_clubs_catalog_loading;
 import 'package:widgetbook_workspace/clubs/catalog/membership.dart'
     as _widgetbook_workspace_clubs_catalog_membership;
 import 'package:widgetbook_workspace/clubs/catalog/poster.dart'
@@ -670,91 +668,6 @@ final directories = <_widgetbook.WidgetbookNode>[
         ],
       ),
       _widgetbook.WidgetbookFolder(
-        name: 'Loading',
-        children: [
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchSkeleton',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Tag skeleton states',
-                builder: _widgetbook_workspace_clubs_catalog_loading
-                    .clubTagLoadingSkeletonStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'ClubHeroLoadingSkeleton',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Hero skeleton states',
-                builder: _widgetbook_workspace_clubs_catalog_loading
-                    .clubHeroLoadingSkeletonStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'ClubHostLoadingSkeleton',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Host skeleton states',
-                builder: _widgetbook_workspace_clubs_catalog_loading
-                    .clubHostLoadingSkeletonStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'ClubScheduleLoadingSkeleton',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Schedule skeleton states',
-                builder: _widgetbook_workspace_clubs_catalog_loading
-                    .clubScheduleLoadingSkeletonStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'ClubStatLoadingSkeleton',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Stat skeleton states',
-                builder: _widgetbook_workspace_clubs_catalog_loading
-                    .clubStatLoadingSkeletonStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'ClubStatsDividerSkeleton',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Stats divider skeleton states',
-                builder: _widgetbook_workspace_clubs_catalog_loading
-                    .clubStatsDividerSkeletonStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'ClubStatsLoadingSkeleton',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Stats skeleton states',
-                builder: _widgetbook_workspace_clubs_catalog_loading
-                    .clubStatsLoadingSkeletonStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'ClubTextLoadingSkeleton',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Text skeleton states',
-                builder: _widgetbook_workspace_clubs_catalog_loading
-                    .clubTextLoadingSkeletonStates,
-              ),
-            ],
-          ),
-        ],
-      ),
-      _widgetbook.WidgetbookFolder(
         name: 'Screen',
         children: [
           _widgetbook.WidgetbookComponent(
@@ -799,26 +712,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Body composition',
                 builder: _widgetbook_workspace_clubs_catalog_body
                     .clubDetailBodyComposition,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'ClubDetailLoadingBody',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Loading body states',
-                builder: _widgetbook_workspace_clubs_catalog_loading
-                    .clubDetailLoadingBodyStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'ClubDetailLoadingSliverBody',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Shared loading sliver composition',
-                builder: _widgetbook_workspace_clubs_catalog_body
-                    .clubDetailLoadingSliverBodyComposition,
               ),
             ],
           ),
@@ -5889,7 +5782,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'FiltersContentSkeleton',
+                name: 'FiltersContent',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Filters loading composition',
@@ -8987,6 +8880,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'HostAnalyticsReportSkeleton',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Skeleton states',
+                    builder:
+                        _widgetbook_workspace_hosts_operations_loading_and_tools
+                            .hostLoadingSkeletonCatalogStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostClubManagementPanel',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -8994,17 +8898,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_operations_loading_and_tools
                             .hostToolCardCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostRouteLoadingBody',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Skeleton states',
-                    builder:
-                        _widgetbook_workspace_hosts_operations_loading_and_tools
-                            .hostLoadingSkeletonCatalogStates,
                   ),
                 ],
               ),

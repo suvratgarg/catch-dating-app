@@ -52,7 +52,7 @@ void main() {
     expect(repository.updatedFields?['minAgePreference'], 20);
   });
 
-  testWidgets('shows filter-shaped skeleton while profile loads', (
+  testWidgets('skeletonizes the real filter controls while profile loads', (
     tester,
   ) async {
     final profileController = StreamController<UserProfile?>();
@@ -72,10 +72,11 @@ void main() {
 
     expect(find.byType(CatchRouteScaffold), findsOneWidget);
     expect(find.text('Filters'), findsOneWidget);
-    expect(find.byType(FiltersContentSkeleton), findsOneWidget);
+    expect(find.byType(FiltersContent), findsOneWidget);
     expect(find.byType(CatchSkeleton), findsWidgets);
     expect(find.byType(CircularProgressIndicator), findsNothing);
-    expect(find.byKey(SwipeKeys.ageRangeSlider), findsNothing);
+    expect(find.byKey(SwipeKeys.ageRangeSlider), findsOneWidget);
+    expect(find.byType(CatchChip), findsNWidgets(Gender.values.length));
   });
 
   testWidgets('shows a retryable profile state instead of a blank body', (

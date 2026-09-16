@@ -13,7 +13,6 @@ import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_audience_view.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeletons.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -151,7 +150,7 @@ void main() {
         settle: false,
       );
       _expectFormsAudienceStateOwner(tester, selected: view);
-      expect(find.byType(HostRouteLoadingBody), findsOneWidget);
+      expect(find.byType(CircularProgressIndicator), findsOneWidget);
       expect(find.byType(CatchStateViewport), findsOneWidget);
 
       await _pumpFormsRouteState(
@@ -191,7 +190,7 @@ void main() {
         settle: false,
       );
       _expectFormsAudienceStateOwner(tester, selected: view);
-      expect(find.byType(HostRouteLoadingBody), findsOneWidget);
+      expect(find.byType(CircularProgressIndicator), findsOneWidget);
       expect(find.byType(CatchStateViewport), findsOneWidget);
 
       await _pumpFormsRouteState(
