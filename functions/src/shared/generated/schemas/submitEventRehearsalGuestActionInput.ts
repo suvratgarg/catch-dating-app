@@ -37,6 +37,7 @@ export const submitEventRehearsalGuestActionCallablePayloadSchema: Record<string
         "optIn",
         "askForHelp",
         "completePrompt",
+        "submitRequiredData",
         "respondToAssistance"
       ]
     },
@@ -53,41 +54,118 @@ export const submitEventRehearsalGuestActionCallablePayloadSchema: Record<string
       "type": "string",
       "minLength": 1,
       "maxLength": 160
-    }
-  },
-  "if": {
-    "properties": {
-      "action": {
-        "const": "respondToAssistance"
+    },
+    "requiredData": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "fieldIds",
+        "expectedProfileRevision",
+        "expectedRequestRevision",
+        "expectedSourceHash"
+      ],
+      "properties": {
+        "fieldIds": {
+          "type": "array",
+          "uniqueItems": true,
+          "minItems": 1,
+          "maxItems": 10,
+          "items": {
+            "type": "string",
+            "enum": [
+              "displayName",
+              "gender",
+              "interestedInGenders",
+              "relationshipGoal",
+              "dateOfBirth",
+              "paceBand",
+              "skillBand",
+              "dietaryAndSeatingNotes",
+              "questionnaireAnswerIds",
+              "teamName"
+            ]
+          }
+        },
+        "expectedProfileRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "expectedRequestRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "expectedSourceHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
       }
     }
   },
-  "then": {
-    "required": [
-      "messageId",
-      "intentRevision",
-      "choiceId"
-    ]
-  },
-  "else": {
-    "not": {
-      "anyOf": [
-        {
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "action": {
+            "const": "respondToAssistance"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "messageId",
+          "intentRevision",
+          "choiceId"
+        ],
+        "not": {
           "required": [
-            "messageId"
-          ]
-        },
-        {
-          "required": [
-            "intentRevision"
-          ]
-        },
-        {
-          "required": [
-            "choiceId"
+            "requiredData"
           ]
         }
-      ]
+      },
+      "else": {
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "messageId"
+              ]
+            },
+            {
+              "required": [
+                "intentRevision"
+              ]
+            },
+            {
+              "required": [
+                "choiceId"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "action": {
+            "const": "submitRequiredData"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "requiredData"
+        ]
+      },
+      "else": {
+        "not": {
+          "required": [
+            "requiredData"
+          ]
+        }
+      }
     }
-  }
+  ]
 } as const;

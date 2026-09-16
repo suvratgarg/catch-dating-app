@@ -142,6 +142,18 @@ test("rehearsal route recovery names its movement command boundary", () => {
   assert.equal(binding.missingCapability, null);
 });
 
+test("rehearsal required data binds both Host and guest boundaries", () => {
+  const binding = commandBinding("requestRequiredData", "rehearsal");
+  assert.equal(binding.bindingType, "domainAdapter");
+  assert.deepEqual(binding.operations, [
+    "controlEventRehearsal",
+    "getEventRehearsalBootstrap",
+    "getEventRehearsalGuestBootstrap",
+    "submitEventRehearsalGuestAction",
+  ]);
+  assert.equal(binding.missingCapability, null);
+});
+
 test("every workflow names its command or external resolution boundary", () => {
   const externallyResolved = Object.fromEntries(
     workflowDefinitions

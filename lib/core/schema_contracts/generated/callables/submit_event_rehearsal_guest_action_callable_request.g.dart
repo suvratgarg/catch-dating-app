@@ -15,6 +15,7 @@ final class SubmitEventRehearsalGuestActionCallableRequest {
     this.messageId,
     this.intentRevision,
     this.choiceId,
+    this.requiredData,
   });
 
   final String publicRehearsalId;
@@ -24,6 +25,7 @@ final class SubmitEventRehearsalGuestActionCallableRequest {
   final String? messageId;
   final int? intentRevision;
   final String? choiceId;
+  final Map<String, Object?>? requiredData;
 
   Map<String, Object?> toJson() => {
     'publicRehearsalId': publicRehearsalId,
@@ -33,5 +35,6 @@ final class SubmitEventRehearsalGuestActionCallableRequest {
     'messageId': ?messageId,
     'intentRevision': ?intentRevision,
     'choiceId': ?choiceId,
+    'requiredData': ?requiredData,
   };
 }

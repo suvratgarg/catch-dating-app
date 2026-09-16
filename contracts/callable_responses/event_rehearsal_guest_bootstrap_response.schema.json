@@ -117,6 +117,9 @@
               "type": "null"
             }
           ]
+        },
+        "requiredData": {
+          "$ref": "../shared/event_rehearsal_required_data.schema.json#/definitions/Review"
         }
       }
     }

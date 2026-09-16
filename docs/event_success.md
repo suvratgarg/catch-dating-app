@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.145.0
+version: 1.146.0
 updated: 2026-09-16
 owner: recursive_audit_loop
 status: active
@@ -2681,6 +2681,18 @@ verify the deployed branded response route. No fabricated approval receipt,
 fixture permission or quote can satisfy live onboarding. Host and rehearsal
 projections now expose runtime configuration, guest help, movement, checkpoint,
 delivery and attendance-closeout state without widening provider authority.
+
+The rehearsal adapter now executes `requestRequiredData` end to end with only
+synthetic profile-completion evidence. A Host review exposes the canonical ten
+runtime field identifiers, current completion, source hash, profile revision,
+request revision and virtual deadline. The Host can request only missing fields
+inside the virtual event window. The anonymous practice guest receives that
+prompt and may simulate completion in one or more submissions; each submission
+advances the synthetic profile revision and closes the prompt only after every
+requested field is complete. Changed source, reset generation, stale revisions,
+expired virtual time and changed idempotency content fail closed. The rehearsal
+stores no real profile values and does not touch runtime participants, onboarding
+drafts, provider channels or any live event collection.
 
 With the shared execution and SMS/WhatsApp/RCS boundaries in source, the next
 implementation sequence is:

@@ -9455,6 +9455,64 @@ export interface EventRehearsalActorDocument {
      */
     assignmentRevision?: number;
   };
+  requiredData?: {
+    profileRevision: number;
+    /**
+     * @maxItems 10
+     */
+    completedFieldIds: (
+      | "displayName"
+      | "gender"
+      | "interestedInGenders"
+      | "relationshipGoal"
+      | "dateOfBirth"
+      | "paceBand"
+      | "skillBand"
+      | "dietaryAndSeatingNotes"
+      | "questionnaireAnswerIds"
+      | "teamName"
+    )[];
+    requestRevision: number;
+    request: {
+      revision: number;
+      sourceHash: string;
+      /**
+       * @minItems 1
+       * @maxItems 10
+       */
+      fieldIds: (
+        | "displayName"
+        | "gender"
+        | "interestedInGenders"
+        | "relationshipGoal"
+        | "dateOfBirth"
+        | "paceBand"
+        | "skillBand"
+        | "dietaryAndSeatingNotes"
+        | "questionnaireAnswerIds"
+        | "teamName"
+      )[];
+      /**
+       * @maxItems 10
+       */
+      completedFieldIds: (
+        | "displayName"
+        | "gender"
+        | "interestedInGenders"
+        | "relationshipGoal"
+        | "dateOfBirth"
+        | "paceBand"
+        | "skillBand"
+        | "dietaryAndSeatingNotes"
+        | "questionnaireAnswerIds"
+        | "teamName"
+      )[];
+      status: "pending" | "completed";
+      requestedAt: FirebaseFirestore.Timestamp;
+      expiresAt: FirebaseFirestore.Timestamp;
+      completedAt: FirebaseFirestore.Timestamp | null;
+    } | null;
+  };
 }
 
 /**

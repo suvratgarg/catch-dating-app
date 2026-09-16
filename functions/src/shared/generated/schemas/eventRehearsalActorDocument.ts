@@ -2048,6 +2048,196 @@ export const eventRehearsalActorDocumentSchema: Record<string, unknown> = {
         }
       },
       "x-catch-ownership": "callable-owned"
+    },
+    "requiredData": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "profileRevision",
+        "completedFieldIds",
+        "requestRevision",
+        "request"
+      ],
+      "properties": {
+        "profileRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "completedFieldIds": {
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 10,
+          "items": {
+            "type": "string",
+            "enum": [
+              "displayName",
+              "gender",
+              "interestedInGenders",
+              "relationshipGoal",
+              "dateOfBirth",
+              "paceBand",
+              "skillBand",
+              "dietaryAndSeatingNotes",
+              "questionnaireAnswerIds",
+              "teamName"
+            ]
+          }
+        },
+        "requestRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "request": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "revision",
+                "sourceHash",
+                "fieldIds",
+                "completedFieldIds",
+                "status",
+                "requestedAt",
+                "expiresAt",
+                "completedAt"
+              ],
+              "properties": {
+                "revision": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                },
+                "sourceHash": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "fieldIds": {
+                  "type": "array",
+                  "uniqueItems": true,
+                  "minItems": 1,
+                  "maxItems": 10,
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "displayName",
+                      "gender",
+                      "interestedInGenders",
+                      "relationshipGoal",
+                      "dateOfBirth",
+                      "paceBand",
+                      "skillBand",
+                      "dietaryAndSeatingNotes",
+                      "questionnaireAnswerIds",
+                      "teamName"
+                    ]
+                  }
+                },
+                "completedFieldIds": {
+                  "type": "array",
+                  "uniqueItems": true,
+                  "maxItems": 10,
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "displayName",
+                      "gender",
+                      "interestedInGenders",
+                      "relationshipGoal",
+                      "dateOfBirth",
+                      "paceBand",
+                      "skillBand",
+                      "dietaryAndSeatingNotes",
+                      "questionnaireAnswerIds",
+                      "teamName"
+                    ]
+                  }
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "pending",
+                    "completed"
+                  ]
+                },
+                "requestedAt": {
+                  "type": "object",
+                  "description": "Serialized Firestore Timestamp fixture shape.",
+                  "x-firestore-type": "timestamp",
+                  "additionalProperties": false,
+                  "required": [
+                    "_seconds",
+                    "_nanoseconds"
+                  ],
+                  "properties": {
+                    "_seconds": {
+                      "type": "integer"
+                    },
+                    "_nanoseconds": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 999999999
+                    }
+                  }
+                },
+                "expiresAt": {
+                  "type": "object",
+                  "description": "Serialized Firestore Timestamp fixture shape.",
+                  "x-firestore-type": "timestamp",
+                  "additionalProperties": false,
+                  "required": [
+                    "_seconds",
+                    "_nanoseconds"
+                  ],
+                  "properties": {
+                    "_seconds": {
+                      "type": "integer"
+                    },
+                    "_nanoseconds": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 999999999
+                    }
+                  }
+                },
+                "completedAt": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "description": "Serialized Firestore Timestamp fixture shape.",
+                      "x-firestore-type": "timestamp",
+                      "additionalProperties": false,
+                      "required": [
+                        "_seconds",
+                        "_nanoseconds"
+                      ],
+                      "properties": {
+                        "_seconds": {
+                          "type": "integer"
+                        },
+                        "_nanoseconds": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 999999999
+                        }
+                      }
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "x-catch-ownership": "callable-owned"
     }
   }
 } as const;

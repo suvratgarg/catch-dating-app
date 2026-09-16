@@ -51,6 +51,9 @@
     },
     "settings": {
       "$ref": "../shared/event_rehearsal_settings.schema.json#/definitions/Command"
+    },
+    "requiredData": {
+      "$ref": "../shared/event_rehearsal_required_data.schema.json#/definitions/HostCommand"
     }
   },
   "allOf": [
@@ -87,6 +90,11 @@
             {
               "required": [
                 "settings"
+              ]
+            },
+            {
+              "required": [
+                "requiredData"
               ]
             }
           ]
@@ -134,6 +142,11 @@
               "required": [
                 "settings"
               ]
+            },
+            {
+              "required": [
+                "requiredData"
+              ]
             }
           ]
         }
@@ -180,6 +193,11 @@
               "required": [
                 "settings"
               ]
+            },
+            {
+              "required": [
+                "requiredData"
+              ]
             }
           ]
         }
@@ -201,7 +219,8 @@
                 "assistance",
                 "movement",
                 "staff",
-                "settings"
+                "settings",
+                "requiredData"
               ]
             }
           }
@@ -289,6 +308,11 @@
               "required": [
                 "practiceOperatorId"
               ]
+            },
+            {
+              "required": [
+                "requiredData"
+              ]
             }
           ]
         }
@@ -297,6 +321,38 @@
         "not": {
           "required": [
             "settings"
+          ]
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "action": {
+            "const": "requiredData"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "requiredData",
+          "expectedSetupRevision"
+        ],
+        "not": {
+          "anyOf": [
+            {"required": ["assistance"]},
+            {"required": ["movement"]},
+            {"required": ["staff"]},
+            {"required": ["minutes"]},
+            {"required": ["settings"]},
+            {"required": ["practiceOperatorId"]}
+          ]
+        }
+      },
+      "else": {
+        "not": {
+          "required": [
+            "requiredData"
           ]
         }
       }

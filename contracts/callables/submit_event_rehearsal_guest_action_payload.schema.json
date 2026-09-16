@@ -40,41 +40,62 @@
       "type": "string",
       "minLength": 1,
       "maxLength": 160
+    },
+    "requiredData": {
+      "$ref": "../shared/event_rehearsal_required_data.schema.json#/definitions/GuestSubmission"
     }
   },
-  "if": {
-    "properties": {
-      "action": {
-        "const": "respondToAssistance"
-      }
-    }
-  },
-  "then": {
-    "required": [
-      "messageId",
-      "intentRevision",
-      "choiceId"
-    ]
-  },
-  "else": {
-    "not": {
-      "anyOf": [
-        {
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "action": {
+            "const": "respondToAssistance"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "messageId",
+          "intentRevision",
+          "choiceId"
+        ],
+        "not": {
           "required": [
-            "messageId"
-          ]
-        },
-        {
-          "required": [
-            "intentRevision"
-          ]
-        },
-        {
-          "required": [
-            "choiceId"
+            "requiredData"
           ]
         }
-      ]
+      },
+      "else": {
+        "not": {
+          "anyOf": [
+            {"required": ["messageId"]},
+            {"required": ["intentRevision"]},
+            {"required": ["choiceId"]}
+          ]
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "action": {
+            "const": "submitRequiredData"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "requiredData"
+        ]
+      },
+      "else": {
+        "not": {
+          "required": [
+            "requiredData"
+          ]
+        }
+      }
     }
-  }
+  ]
 }

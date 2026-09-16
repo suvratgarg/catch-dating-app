@@ -2247,6 +2247,168 @@ export const eventRehearsalBootstrapCallableResponseSchema: Record<string, unkno
                 "description": "Server-owned event configuration enrollment. Absence preserves the explicitly configured per-guest recipe."
               }
             }
+          },
+          "requiredData": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "sourceHash",
+              "profileRevision",
+              "requestRevision",
+              "availableFieldIds",
+              "completedFieldIds",
+              "request"
+            ],
+            "properties": {
+              "sourceHash": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "profileRevision": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "requestRevision": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "availableFieldIds": {
+                "type": "array",
+                "uniqueItems": true,
+                "maxItems": 10,
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "displayName",
+                    "gender",
+                    "interestedInGenders",
+                    "relationshipGoal",
+                    "dateOfBirth",
+                    "paceBand",
+                    "skillBand",
+                    "dietaryAndSeatingNotes",
+                    "questionnaireAnswerIds",
+                    "teamName"
+                  ]
+                }
+              },
+              "completedFieldIds": {
+                "type": "array",
+                "uniqueItems": true,
+                "maxItems": 10,
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "displayName",
+                    "gender",
+                    "interestedInGenders",
+                    "relationshipGoal",
+                    "dateOfBirth",
+                    "paceBand",
+                    "skillBand",
+                    "dietaryAndSeatingNotes",
+                    "questionnaireAnswerIds",
+                    "teamName"
+                  ]
+                }
+              },
+              "request": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "revision",
+                      "fieldIds",
+                      "completedFieldIds",
+                      "status",
+                      "requestedAt",
+                      "expiresAt",
+                      "completedAt"
+                    ],
+                    "properties": {
+                      "revision": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 9007199254740991
+                      },
+                      "fieldIds": {
+                        "type": "array",
+                        "uniqueItems": true,
+                        "minItems": 1,
+                        "maxItems": 10,
+                        "items": {
+                          "type": "string",
+                          "enum": [
+                            "displayName",
+                            "gender",
+                            "interestedInGenders",
+                            "relationshipGoal",
+                            "dateOfBirth",
+                            "paceBand",
+                            "skillBand",
+                            "dietaryAndSeatingNotes",
+                            "questionnaireAnswerIds",
+                            "teamName"
+                          ]
+                        }
+                      },
+                      "completedFieldIds": {
+                        "type": "array",
+                        "uniqueItems": true,
+                        "maxItems": 10,
+                        "items": {
+                          "type": "string",
+                          "enum": [
+                            "displayName",
+                            "gender",
+                            "interestedInGenders",
+                            "relationshipGoal",
+                            "dateOfBirth",
+                            "paceBand",
+                            "skillBand",
+                            "dietaryAndSeatingNotes",
+                            "questionnaireAnswerIds",
+                            "teamName"
+                          ]
+                        }
+                      },
+                      "status": {
+                        "type": "string",
+                        "enum": [
+                          "pending",
+                          "completed",
+                          "expired"
+                        ]
+                      },
+                      "requestedAt": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      "expiresAt": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      "completedAt": {
+                        "type": [
+                          "integer",
+                          "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      }
+                    }
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            }
           }
         }
       }
@@ -11076,6 +11238,168 @@ export const eventRehearsalBootstrapCallableResponseSchema: Record<string, unkno
             "origin": {
               "const": "eventSettings",
               "description": "Server-owned event configuration enrollment. Absence preserves the explicitly configured per-guest recipe."
+            }
+          }
+        },
+        "requiredData": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "sourceHash",
+            "profileRevision",
+            "requestRevision",
+            "availableFieldIds",
+            "completedFieldIds",
+            "request"
+          ],
+          "properties": {
+            "sourceHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "profileRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "requestRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "availableFieldIds": {
+              "type": "array",
+              "uniqueItems": true,
+              "maxItems": 10,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "displayName",
+                  "gender",
+                  "interestedInGenders",
+                  "relationshipGoal",
+                  "dateOfBirth",
+                  "paceBand",
+                  "skillBand",
+                  "dietaryAndSeatingNotes",
+                  "questionnaireAnswerIds",
+                  "teamName"
+                ]
+              }
+            },
+            "completedFieldIds": {
+              "type": "array",
+              "uniqueItems": true,
+              "maxItems": 10,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "displayName",
+                  "gender",
+                  "interestedInGenders",
+                  "relationshipGoal",
+                  "dateOfBirth",
+                  "paceBand",
+                  "skillBand",
+                  "dietaryAndSeatingNotes",
+                  "questionnaireAnswerIds",
+                  "teamName"
+                ]
+              }
+            },
+            "request": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "revision",
+                    "fieldIds",
+                    "completedFieldIds",
+                    "status",
+                    "requestedAt",
+                    "expiresAt",
+                    "completedAt"
+                  ],
+                  "properties": {
+                    "revision": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 9007199254740991
+                    },
+                    "fieldIds": {
+                      "type": "array",
+                      "uniqueItems": true,
+                      "minItems": 1,
+                      "maxItems": 10,
+                      "items": {
+                        "type": "string",
+                        "enum": [
+                          "displayName",
+                          "gender",
+                          "interestedInGenders",
+                          "relationshipGoal",
+                          "dateOfBirth",
+                          "paceBand",
+                          "skillBand",
+                          "dietaryAndSeatingNotes",
+                          "questionnaireAnswerIds",
+                          "teamName"
+                        ]
+                      }
+                    },
+                    "completedFieldIds": {
+                      "type": "array",
+                      "uniqueItems": true,
+                      "maxItems": 10,
+                      "items": {
+                        "type": "string",
+                        "enum": [
+                          "displayName",
+                          "gender",
+                          "interestedInGenders",
+                          "relationshipGoal",
+                          "dateOfBirth",
+                          "paceBand",
+                          "skillBand",
+                          "dietaryAndSeatingNotes",
+                          "questionnaireAnswerIds",
+                          "teamName"
+                        ]
+                      }
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "pending",
+                        "completed",
+                        "expired"
+                      ]
+                    },
+                    "requestedAt": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "expiresAt": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "completedAt": {
+                      "type": [
+                        "integer",
+                        "null"
+                      ],
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
             }
           }
         }

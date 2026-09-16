@@ -2051,5 +2051,195 @@ const schemaEventRehearsalActorDocumentSchema = <String, Object?>{
       },
       'x-catch-ownership': 'callable-owned',
     },
+    'requiredData': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'profileRevision',
+        'completedFieldIds',
+        'requestRevision',
+        'request',
+      ],
+      'properties': <String, Object?>{
+        'profileRevision': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 9007199254740991,
+        },
+        'completedFieldIds': <String, Object?>{
+          'type': 'array',
+          'uniqueItems': true,
+          'maxItems': 10,
+          'items': <String, Object?>{
+            'type': 'string',
+            'enum': <Object?>[
+              'displayName',
+              'gender',
+              'interestedInGenders',
+              'relationshipGoal',
+              'dateOfBirth',
+              'paceBand',
+              'skillBand',
+              'dietaryAndSeatingNotes',
+              'questionnaireAnswerIds',
+              'teamName',
+            ],
+          },
+        },
+        'requestRevision': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 9007199254740991,
+        },
+        'request': <String, Object?>{
+          'anyOf': <Object?>[
+            <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'revision',
+                'sourceHash',
+                'fieldIds',
+                'completedFieldIds',
+                'status',
+                'requestedAt',
+                'expiresAt',
+                'completedAt',
+              ],
+              'properties': <String, Object?>{
+                'revision': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 1,
+                  'maximum': 9007199254740991,
+                },
+                'sourceHash': <String, Object?>{
+                  'type': 'string',
+                  'pattern': '^[a-f0-9]{64}\$',
+                },
+                'fieldIds': <String, Object?>{
+                  'type': 'array',
+                  'uniqueItems': true,
+                  'minItems': 1,
+                  'maxItems': 10,
+                  'items': <String, Object?>{
+                    'type': 'string',
+                    'enum': <Object?>[
+                      'displayName',
+                      'gender',
+                      'interestedInGenders',
+                      'relationshipGoal',
+                      'dateOfBirth',
+                      'paceBand',
+                      'skillBand',
+                      'dietaryAndSeatingNotes',
+                      'questionnaireAnswerIds',
+                      'teamName',
+                    ],
+                  },
+                },
+                'completedFieldIds': <String, Object?>{
+                  'type': 'array',
+                  'uniqueItems': true,
+                  'maxItems': 10,
+                  'items': <String, Object?>{
+                    'type': 'string',
+                    'enum': <Object?>[
+                      'displayName',
+                      'gender',
+                      'interestedInGenders',
+                      'relationshipGoal',
+                      'dateOfBirth',
+                      'paceBand',
+                      'skillBand',
+                      'dietaryAndSeatingNotes',
+                      'questionnaireAnswerIds',
+                      'teamName',
+                    ],
+                  },
+                },
+                'status': <String, Object?>{
+                  'type': 'string',
+                  'enum': <Object?>[
+                    'pending',
+                    'completed',
+                  ],
+                },
+                'requestedAt': <String, Object?>{
+                  'type': 'object',
+                  'description': 'Serialized Firestore Timestamp fixture shape.',
+                  'x-firestore-type': 'timestamp',
+                  'additionalProperties': false,
+                  'required': <Object?>[
+                    '_seconds',
+                    '_nanoseconds',
+                  ],
+                  'properties': <String, Object?>{
+                    '_seconds': <String, Object?>{
+                      'type': 'integer',
+                    },
+                    '_nanoseconds': <String, Object?>{
+                      'type': 'integer',
+                      'minimum': 0,
+                      'maximum': 999999999,
+                    },
+                  },
+                },
+                'expiresAt': <String, Object?>{
+                  'type': 'object',
+                  'description': 'Serialized Firestore Timestamp fixture shape.',
+                  'x-firestore-type': 'timestamp',
+                  'additionalProperties': false,
+                  'required': <Object?>[
+                    '_seconds',
+                    '_nanoseconds',
+                  ],
+                  'properties': <String, Object?>{
+                    '_seconds': <String, Object?>{
+                      'type': 'integer',
+                    },
+                    '_nanoseconds': <String, Object?>{
+                      'type': 'integer',
+                      'minimum': 0,
+                      'maximum': 999999999,
+                    },
+                  },
+                },
+                'completedAt': <String, Object?>{
+                  'anyOf': <Object?>[
+                    <String, Object?>{
+                      'type': 'object',
+                      'description': 'Serialized Firestore Timestamp fixture shape.',
+                      'x-firestore-type': 'timestamp',
+                      'additionalProperties': false,
+                      'required': <Object?>[
+                        '_seconds',
+                        '_nanoseconds',
+                      ],
+                      'properties': <String, Object?>{
+                        '_seconds': <String, Object?>{
+                          'type': 'integer',
+                        },
+                        '_nanoseconds': <String, Object?>{
+                          'type': 'integer',
+                          'minimum': 0,
+                          'maximum': 999999999,
+                        },
+                      },
+                    },
+                    <String, Object?>{
+                      'type': 'null',
+                    },
+                  ],
+                },
+              },
+            },
+            <String, Object?>{
+              'type': 'null',
+            },
+          ],
+        },
+      },
+      'x-catch-ownership': 'callable-owned',
+    },
   },
 };

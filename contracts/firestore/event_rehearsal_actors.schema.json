@@ -150,6 +150,10 @@
     "groupMembership": {
       "$ref": "../shared/event_rehearsal_membership.schema.json#/definitions/membership",
       "x-catch-ownership": "callable-owned"
+    },
+    "requiredData": {
+      "$ref": "../shared/event_rehearsal_required_data.schema.json#/definitions/State",
+      "x-catch-ownership": "callable-owned"
     }
   }
 }

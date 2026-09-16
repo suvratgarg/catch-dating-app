@@ -79,7 +79,8 @@
         "assistance",
         "movement",
         "staff",
-        "settings"
+        "settings",
+        "requiredData"
       ]
     },
     "behavior": {
@@ -109,6 +110,7 @@
         "optIn",
         "askForHelp",
         "completePrompt",
+        "submitRequiredData",
         "respondToAssistance"
       ]
     },

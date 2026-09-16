@@ -44,7 +44,8 @@ export const controlEventRehearsalCallablePayloadSchema: Record<string, unknown>
         "assistance",
         "movement",
         "staff",
-        "settings"
+        "settings",
+        "requiredData"
       ]
     },
     "minutes": {
@@ -3040,6 +3041,67 @@ export const controlEventRehearsalCallablePayloadSchema: Record<string, unknown>
         }
       ],
       "type": "object"
+    },
+    "requiredData": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "attendeeId",
+        "fieldIds",
+        "expiresAt",
+        "expectedProfileRevision",
+        "expectedRequestRevision",
+        "expectedSourceHash"
+      ],
+      "properties": {
+        "attendeeId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "fieldIds": {
+          "type": "array",
+          "uniqueItems": true,
+          "minItems": 1,
+          "maxItems": 10,
+          "items": {
+            "type": "string",
+            "enum": [
+              "displayName",
+              "gender",
+              "interestedInGenders",
+              "relationshipGoal",
+              "dateOfBirth",
+              "paceBand",
+              "skillBand",
+              "dietaryAndSeatingNotes",
+              "questionnaireAnswerIds",
+              "teamName"
+            ]
+          }
+        },
+        "expiresAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991,
+          "description": "UTC milliseconds."
+        },
+        "expectedProfileRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "expectedRequestRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "expectedSourceHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
     }
   },
   "allOf": [
@@ -3076,6 +3138,11 @@ export const controlEventRehearsalCallablePayloadSchema: Record<string, unknown>
             {
               "required": [
                 "settings"
+              ]
+            },
+            {
+              "required": [
+                "requiredData"
               ]
             }
           ]
@@ -3123,6 +3190,11 @@ export const controlEventRehearsalCallablePayloadSchema: Record<string, unknown>
               "required": [
                 "settings"
               ]
+            },
+            {
+              "required": [
+                "requiredData"
+              ]
             }
           ]
         }
@@ -3169,6 +3241,11 @@ export const controlEventRehearsalCallablePayloadSchema: Record<string, unknown>
               "required": [
                 "settings"
               ]
+            },
+            {
+              "required": [
+                "requiredData"
+              ]
             }
           ]
         }
@@ -3190,7 +3267,8 @@ export const controlEventRehearsalCallablePayloadSchema: Record<string, unknown>
                 "assistance",
                 "movement",
                 "staff",
-                "settings"
+                "settings",
+                "requiredData"
               ]
             }
           }
@@ -3278,6 +3356,11 @@ export const controlEventRehearsalCallablePayloadSchema: Record<string, unknown>
               "required": [
                 "practiceOperatorId"
               ]
+            },
+            {
+              "required": [
+                "requiredData"
+              ]
             }
           ]
         }
@@ -3286,6 +3369,62 @@ export const controlEventRehearsalCallablePayloadSchema: Record<string, unknown>
         "not": {
           "required": [
             "settings"
+          ]
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "action": {
+            "const": "requiredData"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "requiredData",
+          "expectedSetupRevision"
+        ],
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "assistance"
+              ]
+            },
+            {
+              "required": [
+                "movement"
+              ]
+            },
+            {
+              "required": [
+                "staff"
+              ]
+            },
+            {
+              "required": [
+                "minutes"
+              ]
+            },
+            {
+              "required": [
+                "settings"
+              ]
+            },
+            {
+              "required": [
+                "practiceOperatorId"
+              ]
+            }
+          ]
+        }
+      },
+      "else": {
+        "not": {
+          "required": [
+            "requiredData"
           ]
         }
       }

@@ -480,4 +480,77 @@ export interface EventRehearsalActorDocument {
      */
     assignmentRevision?: number;
   };
+  requiredData?: {
+    profileRevision: number;
+    /**
+     * @maxItems 10
+     */
+    completedFieldIds: (
+      | "displayName"
+      | "gender"
+      | "interestedInGenders"
+      | "relationshipGoal"
+      | "dateOfBirth"
+      | "paceBand"
+      | "skillBand"
+      | "dietaryAndSeatingNotes"
+      | "questionnaireAnswerIds"
+      | "teamName"
+    )[];
+    requestRevision: number;
+    request: {
+      revision: number;
+      sourceHash: string;
+      /**
+       * @minItems 1
+       * @maxItems 10
+       */
+      fieldIds: (
+        | "displayName"
+        | "gender"
+        | "interestedInGenders"
+        | "relationshipGoal"
+        | "dateOfBirth"
+        | "paceBand"
+        | "skillBand"
+        | "dietaryAndSeatingNotes"
+        | "questionnaireAnswerIds"
+        | "teamName"
+      )[];
+      /**
+       * @maxItems 10
+       */
+      completedFieldIds: (
+        | "displayName"
+        | "gender"
+        | "interestedInGenders"
+        | "relationshipGoal"
+        | "dateOfBirth"
+        | "paceBand"
+        | "skillBand"
+        | "dietaryAndSeatingNotes"
+        | "questionnaireAnswerIds"
+        | "teamName"
+      )[];
+      status: "pending" | "completed";
+      /**
+       * Serialized Firestore Timestamp fixture shape.
+       */
+      requestedAt: {
+        _seconds: number;
+        _nanoseconds: number;
+      };
+      /**
+       * Serialized Firestore Timestamp fixture shape.
+       */
+      expiresAt: {
+        _seconds: number;
+        _nanoseconds: number;
+      };
+      completedAt: {
+        _seconds: number;
+        _nanoseconds: number;
+      } | null;
+    } | null;
+  };
 }

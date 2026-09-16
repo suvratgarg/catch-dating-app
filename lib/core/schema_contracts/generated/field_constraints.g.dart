@@ -6998,7 +6998,7 @@ abstract final class CatchContractConstraints {
     path: 'controlEventRehearsalCallablePayload.action',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['markReady', 'start', 'pause', 'resume', 'advance', 'previous', 'advanceClock', 'complete', 'assistance', 'movement', 'staff', 'settings'],
+    enumValues: <String>['markReady', 'start', 'pause', 'resume', 'advance', 'previous', 'advanceClock', 'complete', 'assistance', 'movement', 'staff', 'settings', 'requiredData'],
   );
 
   static const controlEventRehearsalCallablePayloadAssistance = CatchContractFieldConstraints(
@@ -7044,6 +7044,64 @@ abstract final class CatchContractConstraints {
     path: 'controlEventRehearsalCallablePayload.practiceOperatorId',
     valueTypes: <String>['string'],
     pattern: '^practice-staff:[A-Za-z0-9_-]{1,60}\$',
+  );
+
+  static const controlEventRehearsalCallablePayloadRequiredDataAttendeeId = CatchContractFieldConstraints(
+    path: 'controlEventRehearsalCallablePayload.requiredData.attendeeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const controlEventRehearsalCallablePayloadRequiredDataExpectedProfileRevision = CatchContractFieldConstraints(
+    path: 'controlEventRehearsalCallablePayload.requiredData.expectedProfileRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const controlEventRehearsalCallablePayloadRequiredDataExpectedRequestRevision = CatchContractFieldConstraints(
+    path: 'controlEventRehearsalCallablePayload.requiredData.expectedRequestRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const controlEventRehearsalCallablePayloadRequiredDataExpectedSourceHash = CatchContractFieldConstraints(
+    path: 'controlEventRehearsalCallablePayload.requiredData.expectedSourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const controlEventRehearsalCallablePayloadRequiredDataExpiresAt = CatchContractFieldConstraints(
+    path: 'controlEventRehearsalCallablePayload.requiredData.expiresAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const controlEventRehearsalCallablePayloadRequiredDataFieldIds = CatchContractFieldConstraints(
+    path: 'controlEventRehearsalCallablePayload.requiredData.fieldIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['displayName', 'gender', 'interestedInGenders', 'relationshipGoal', 'dateOfBirth', 'paceBand', 'skillBand', 'dietaryAndSeatingNotes', 'questionnaireAnswerIds', 'teamName'],
+    minItems: 1,
+    maxItems: 10,
+    uniqueItems: true,
+  );
+
+  static const controlEventRehearsalCallablePayloadRequiredDataFieldIdsItems = CatchContractFieldConstraints(
+    path: 'controlEventRehearsalCallablePayload.requiredData.fieldIds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['displayName', 'gender', 'interestedInGenders', 'relationshipGoal', 'dateOfBirth', 'paceBand', 'skillBand', 'dietaryAndSeatingNotes', 'questionnaireAnswerIds', 'teamName'],
   );
 
   static const controlEventRehearsalCallablePayloadSessionId = CatchContractFieldConstraints(
@@ -32060,6 +32118,138 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['boolean'],
   );
 
+  static const eventRehearsalActorDocumentRequiredDataCompletedFieldIds = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.requiredData.completedFieldIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['displayName', 'gender', 'interestedInGenders', 'relationshipGoal', 'dateOfBirth', 'paceBand', 'skillBand', 'dietaryAndSeatingNotes', 'questionnaireAnswerIds', 'teamName'],
+    maxItems: 10,
+    uniqueItems: true,
+  );
+
+  static const eventRehearsalActorDocumentRequiredDataCompletedFieldIdsItems = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.requiredData.completedFieldIds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['displayName', 'gender', 'interestedInGenders', 'relationshipGoal', 'dateOfBirth', 'paceBand', 'skillBand', 'dietaryAndSeatingNotes', 'questionnaireAnswerIds', 'teamName'],
+  );
+
+  static const eventRehearsalActorDocumentRequiredDataProfileRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.requiredData.profileRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalActorDocumentRequiredDataRequestCompletedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.requiredData.request.completedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventRehearsalActorDocumentRequiredDataRequestCompletedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.requiredData.request.completedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventRehearsalActorDocumentRequiredDataRequestCompletedFieldIds = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.requiredData.request.completedFieldIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['displayName', 'gender', 'interestedInGenders', 'relationshipGoal', 'dateOfBirth', 'paceBand', 'skillBand', 'dietaryAndSeatingNotes', 'questionnaireAnswerIds', 'teamName'],
+    maxItems: 10,
+    uniqueItems: true,
+  );
+
+  static const eventRehearsalActorDocumentRequiredDataRequestCompletedFieldIdsItems = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.requiredData.request.completedFieldIds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['displayName', 'gender', 'interestedInGenders', 'relationshipGoal', 'dateOfBirth', 'paceBand', 'skillBand', 'dietaryAndSeatingNotes', 'questionnaireAnswerIds', 'teamName'],
+  );
+
+  static const eventRehearsalActorDocumentRequiredDataRequestExpiresAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.requiredData.request.expiresAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventRehearsalActorDocumentRequiredDataRequestExpiresAtSeconds = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.requiredData.request.expiresAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventRehearsalActorDocumentRequiredDataRequestFieldIds = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.requiredData.request.fieldIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['displayName', 'gender', 'interestedInGenders', 'relationshipGoal', 'dateOfBirth', 'paceBand', 'skillBand', 'dietaryAndSeatingNotes', 'questionnaireAnswerIds', 'teamName'],
+    minItems: 1,
+    maxItems: 10,
+    uniqueItems: true,
+  );
+
+  static const eventRehearsalActorDocumentRequiredDataRequestFieldIdsItems = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.requiredData.request.fieldIds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['displayName', 'gender', 'interestedInGenders', 'relationshipGoal', 'dateOfBirth', 'paceBand', 'skillBand', 'dietaryAndSeatingNotes', 'questionnaireAnswerIds', 'teamName'],
+  );
+
+  static const eventRehearsalActorDocumentRequiredDataRequestRequestedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.requiredData.request.requestedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventRehearsalActorDocumentRequiredDataRequestRequestedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.requiredData.request.requestedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventRehearsalActorDocumentRequiredDataRequestRevisionAtRequiredDataPropertyRequestPropertyRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.requiredData.request.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalActorDocumentRequiredDataRequestSourceHash = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.requiredData.request.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventRehearsalActorDocumentRequiredDataRequestStatus = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.requiredData.request.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['pending', 'completed'],
+  );
+
+  static const eventRehearsalActorDocumentRequiredDataRequestRevisionAtRequiredDataPropertyRequestRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.requiredData.requestRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
   static const eventRehearsalActorDocumentSessionId = CatchContractFieldConstraints(
     path: 'eventRehearsalActorDocument.sessionId',
     maxLength: 180,
@@ -33028,6 +33218,136 @@ abstract final class CatchContractConstraints {
     path: 'eventRehearsalBootstrapCallableResponse.actors.items.promptCompleted',
     required: true,
     valueTypes: <String>['boolean'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsRequiredDataAvailableFieldIds = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.requiredData.availableFieldIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['displayName', 'gender', 'interestedInGenders', 'relationshipGoal', 'dateOfBirth', 'paceBand', 'skillBand', 'dietaryAndSeatingNotes', 'questionnaireAnswerIds', 'teamName'],
+    maxItems: 10,
+    uniqueItems: true,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsRequiredDataAvailableFieldIdsItems = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.requiredData.availableFieldIds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['displayName', 'gender', 'interestedInGenders', 'relationshipGoal', 'dateOfBirth', 'paceBand', 'skillBand', 'dietaryAndSeatingNotes', 'questionnaireAnswerIds', 'teamName'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsRequiredDataCompletedFieldIds = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.requiredData.completedFieldIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['displayName', 'gender', 'interestedInGenders', 'relationshipGoal', 'dateOfBirth', 'paceBand', 'skillBand', 'dietaryAndSeatingNotes', 'questionnaireAnswerIds', 'teamName'],
+    maxItems: 10,
+    uniqueItems: true,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsRequiredDataCompletedFieldIdsItems = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.requiredData.completedFieldIds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['displayName', 'gender', 'interestedInGenders', 'relationshipGoal', 'dateOfBirth', 'paceBand', 'skillBand', 'dietaryAndSeatingNotes', 'questionnaireAnswerIds', 'teamName'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsRequiredDataProfileRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.requiredData.profileRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsRequiredDataRequestCompletedAt = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.requiredData.request.completedAt',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsRequiredDataRequestCompletedFieldIds = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.requiredData.request.completedFieldIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['displayName', 'gender', 'interestedInGenders', 'relationshipGoal', 'dateOfBirth', 'paceBand', 'skillBand', 'dietaryAndSeatingNotes', 'questionnaireAnswerIds', 'teamName'],
+    maxItems: 10,
+    uniqueItems: true,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsRequiredDataRequestCompletedFieldIdsItems = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.requiredData.request.completedFieldIds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['displayName', 'gender', 'interestedInGenders', 'relationshipGoal', 'dateOfBirth', 'paceBand', 'skillBand', 'dietaryAndSeatingNotes', 'questionnaireAnswerIds', 'teamName'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsRequiredDataRequestExpiresAt = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.requiredData.request.expiresAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsRequiredDataRequestFieldIds = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.requiredData.request.fieldIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['displayName', 'gender', 'interestedInGenders', 'relationshipGoal', 'dateOfBirth', 'paceBand', 'skillBand', 'dietaryAndSeatingNotes', 'questionnaireAnswerIds', 'teamName'],
+    minItems: 1,
+    maxItems: 10,
+    uniqueItems: true,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsRequiredDataRequestFieldIdsItems = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.requiredData.request.fieldIds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['displayName', 'gender', 'interestedInGenders', 'relationshipGoal', 'dateOfBirth', 'paceBand', 'skillBand', 'dietaryAndSeatingNotes', 'questionnaireAnswerIds', 'teamName'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsRequiredDataRequestRequestedAt = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.requiredData.request.requestedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsRequiredDataRequestRevisionAtActorsPropertyItemsPropertyRequiredDataPropertyRequestPropertyRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.requiredData.request.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsRequiredDataRequestStatus = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.requiredData.request.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['pending', 'completed', 'expired'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsRequiredDataRequestRevisionAtActorsPropertyItemsPropertyRequiredDataPropertyRequestRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.requiredData.requestRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsRequiredDataSourceHash = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.requiredData.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
   );
 
   static const eventRehearsalBootstrapCallableResponseActorsItemsStatus = CatchContractFieldConstraints(
@@ -38499,6 +38819,136 @@ abstract final class CatchContractConstraints {
     path: 'eventRehearsalGuestBootstrapCallableResponse.actor.promptCompleted',
     required: true,
     valueTypes: <String>['boolean'],
+  );
+
+  static const eventRehearsalGuestBootstrapCallableResponseActorRequiredDataAvailableFieldIds = CatchContractFieldConstraints(
+    path: 'eventRehearsalGuestBootstrapCallableResponse.actor.requiredData.availableFieldIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['displayName', 'gender', 'interestedInGenders', 'relationshipGoal', 'dateOfBirth', 'paceBand', 'skillBand', 'dietaryAndSeatingNotes', 'questionnaireAnswerIds', 'teamName'],
+    maxItems: 10,
+    uniqueItems: true,
+  );
+
+  static const eventRehearsalGuestBootstrapCallableResponseActorRequiredDataAvailableFieldIdsItems = CatchContractFieldConstraints(
+    path: 'eventRehearsalGuestBootstrapCallableResponse.actor.requiredData.availableFieldIds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['displayName', 'gender', 'interestedInGenders', 'relationshipGoal', 'dateOfBirth', 'paceBand', 'skillBand', 'dietaryAndSeatingNotes', 'questionnaireAnswerIds', 'teamName'],
+  );
+
+  static const eventRehearsalGuestBootstrapCallableResponseActorRequiredDataCompletedFieldIds = CatchContractFieldConstraints(
+    path: 'eventRehearsalGuestBootstrapCallableResponse.actor.requiredData.completedFieldIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['displayName', 'gender', 'interestedInGenders', 'relationshipGoal', 'dateOfBirth', 'paceBand', 'skillBand', 'dietaryAndSeatingNotes', 'questionnaireAnswerIds', 'teamName'],
+    maxItems: 10,
+    uniqueItems: true,
+  );
+
+  static const eventRehearsalGuestBootstrapCallableResponseActorRequiredDataCompletedFieldIdsItems = CatchContractFieldConstraints(
+    path: 'eventRehearsalGuestBootstrapCallableResponse.actor.requiredData.completedFieldIds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['displayName', 'gender', 'interestedInGenders', 'relationshipGoal', 'dateOfBirth', 'paceBand', 'skillBand', 'dietaryAndSeatingNotes', 'questionnaireAnswerIds', 'teamName'],
+  );
+
+  static const eventRehearsalGuestBootstrapCallableResponseActorRequiredDataProfileRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalGuestBootstrapCallableResponse.actor.requiredData.profileRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalGuestBootstrapCallableResponseActorRequiredDataRequestCompletedAt = CatchContractFieldConstraints(
+    path: 'eventRehearsalGuestBootstrapCallableResponse.actor.requiredData.request.completedAt',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalGuestBootstrapCallableResponseActorRequiredDataRequestCompletedFieldIds = CatchContractFieldConstraints(
+    path: 'eventRehearsalGuestBootstrapCallableResponse.actor.requiredData.request.completedFieldIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['displayName', 'gender', 'interestedInGenders', 'relationshipGoal', 'dateOfBirth', 'paceBand', 'skillBand', 'dietaryAndSeatingNotes', 'questionnaireAnswerIds', 'teamName'],
+    maxItems: 10,
+    uniqueItems: true,
+  );
+
+  static const eventRehearsalGuestBootstrapCallableResponseActorRequiredDataRequestCompletedFieldIdsItems = CatchContractFieldConstraints(
+    path: 'eventRehearsalGuestBootstrapCallableResponse.actor.requiredData.request.completedFieldIds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['displayName', 'gender', 'interestedInGenders', 'relationshipGoal', 'dateOfBirth', 'paceBand', 'skillBand', 'dietaryAndSeatingNotes', 'questionnaireAnswerIds', 'teamName'],
+  );
+
+  static const eventRehearsalGuestBootstrapCallableResponseActorRequiredDataRequestExpiresAt = CatchContractFieldConstraints(
+    path: 'eventRehearsalGuestBootstrapCallableResponse.actor.requiredData.request.expiresAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalGuestBootstrapCallableResponseActorRequiredDataRequestFieldIds = CatchContractFieldConstraints(
+    path: 'eventRehearsalGuestBootstrapCallableResponse.actor.requiredData.request.fieldIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['displayName', 'gender', 'interestedInGenders', 'relationshipGoal', 'dateOfBirth', 'paceBand', 'skillBand', 'dietaryAndSeatingNotes', 'questionnaireAnswerIds', 'teamName'],
+    minItems: 1,
+    maxItems: 10,
+    uniqueItems: true,
+  );
+
+  static const eventRehearsalGuestBootstrapCallableResponseActorRequiredDataRequestFieldIdsItems = CatchContractFieldConstraints(
+    path: 'eventRehearsalGuestBootstrapCallableResponse.actor.requiredData.request.fieldIds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['displayName', 'gender', 'interestedInGenders', 'relationshipGoal', 'dateOfBirth', 'paceBand', 'skillBand', 'dietaryAndSeatingNotes', 'questionnaireAnswerIds', 'teamName'],
+  );
+
+  static const eventRehearsalGuestBootstrapCallableResponseActorRequiredDataRequestRequestedAt = CatchContractFieldConstraints(
+    path: 'eventRehearsalGuestBootstrapCallableResponse.actor.requiredData.request.requestedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalGuestBootstrapCallableResponseActorRequiredDataRequestRevisionAtActorPropertyRequiredDataPropertyRequestPropertyRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalGuestBootstrapCallableResponse.actor.requiredData.request.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalGuestBootstrapCallableResponseActorRequiredDataRequestStatus = CatchContractFieldConstraints(
+    path: 'eventRehearsalGuestBootstrapCallableResponse.actor.requiredData.request.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['pending', 'completed', 'expired'],
+  );
+
+  static const eventRehearsalGuestBootstrapCallableResponseActorRequiredDataRequestRevisionAtActorPropertyRequiredDataPropertyRequestRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalGuestBootstrapCallableResponse.actor.requiredData.requestRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalGuestBootstrapCallableResponseActorRequiredDataSourceHash = CatchContractFieldConstraints(
+    path: 'eventRehearsalGuestBootstrapCallableResponse.actor.requiredData.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
   );
 
   static const eventRehearsalGuestBootstrapCallableResponseActorStatus = CatchContractFieldConstraints(
@@ -86430,7 +86880,7 @@ abstract final class CatchContractConstraints {
     path: 'submitEventRehearsalGuestActionCallablePayload.action',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['checkIn', 'confirmArrival', 'optOut', 'optIn', 'askForHelp', 'completePrompt', 'respondToAssistance'],
+    enumValues: <String>['checkIn', 'confirmArrival', 'optOut', 'optIn', 'askForHelp', 'completePrompt', 'submitRequiredData', 'respondToAssistance'],
   );
 
   static const submitEventRehearsalGuestActionCallablePayloadChoiceId = CatchContractFieldConstraints(
@@ -86466,6 +86916,47 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     pattern: '^[A-Za-z0-9_-]{20,80}\$',
+  );
+
+  static const submitEventRehearsalGuestActionCallablePayloadRequiredDataExpectedProfileRevision = CatchContractFieldConstraints(
+    path: 'submitEventRehearsalGuestActionCallablePayload.requiredData.expectedProfileRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const submitEventRehearsalGuestActionCallablePayloadRequiredDataExpectedRequestRevision = CatchContractFieldConstraints(
+    path: 'submitEventRehearsalGuestActionCallablePayload.requiredData.expectedRequestRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const submitEventRehearsalGuestActionCallablePayloadRequiredDataExpectedSourceHash = CatchContractFieldConstraints(
+    path: 'submitEventRehearsalGuestActionCallablePayload.requiredData.expectedSourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const submitEventRehearsalGuestActionCallablePayloadRequiredDataFieldIds = CatchContractFieldConstraints(
+    path: 'submitEventRehearsalGuestActionCallablePayload.requiredData.fieldIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['displayName', 'gender', 'interestedInGenders', 'relationshipGoal', 'dateOfBirth', 'paceBand', 'skillBand', 'dietaryAndSeatingNotes', 'questionnaireAnswerIds', 'teamName'],
+    minItems: 1,
+    maxItems: 10,
+    uniqueItems: true,
+  );
+
+  static const submitEventRehearsalGuestActionCallablePayloadRequiredDataFieldIdsItems = CatchContractFieldConstraints(
+    path: 'submitEventRehearsalGuestActionCallablePayload.requiredData.fieldIds.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['displayName', 'gender', 'interestedInGenders', 'relationshipGoal', 'dateOfBirth', 'paceBand', 'skillBand', 'dietaryAndSeatingNotes', 'questionnaireAnswerIds', 'teamName'],
   );
 
   static const submitEventRehearsalGuestActionCallablePayloadSlotToken = CatchContractFieldConstraints(
@@ -95457,6 +95948,13 @@ abstract final class CatchContractConstraints {
     'controlEventRehearsalCallablePayload.minutes': controlEventRehearsalCallablePayloadMinutes,
     'controlEventRehearsalCallablePayload.movement': controlEventRehearsalCallablePayloadMovement,
     'controlEventRehearsalCallablePayload.practiceOperatorId': controlEventRehearsalCallablePayloadPracticeOperatorId,
+    'controlEventRehearsalCallablePayload.requiredData.attendeeId': controlEventRehearsalCallablePayloadRequiredDataAttendeeId,
+    'controlEventRehearsalCallablePayload.requiredData.expectedProfileRevision': controlEventRehearsalCallablePayloadRequiredDataExpectedProfileRevision,
+    'controlEventRehearsalCallablePayload.requiredData.expectedRequestRevision': controlEventRehearsalCallablePayloadRequiredDataExpectedRequestRevision,
+    'controlEventRehearsalCallablePayload.requiredData.expectedSourceHash': controlEventRehearsalCallablePayloadRequiredDataExpectedSourceHash,
+    'controlEventRehearsalCallablePayload.requiredData.expiresAt': controlEventRehearsalCallablePayloadRequiredDataExpiresAt,
+    'controlEventRehearsalCallablePayload.requiredData.fieldIds': controlEventRehearsalCallablePayloadRequiredDataFieldIds,
+    'controlEventRehearsalCallablePayload.requiredData.fieldIds.items': controlEventRehearsalCallablePayloadRequiredDataFieldIdsItems,
     'controlEventRehearsalCallablePayload.sessionId': controlEventRehearsalCallablePayloadSessionId,
     'controlEventRehearsalCallablePayload.settings': controlEventRehearsalCallablePayloadSettings,
     'controlEventRehearsalCallablePayload.staff.decision.duty': controlEventRehearsalCallablePayloadStaffDecisionDuty,
@@ -98812,6 +99310,23 @@ abstract final class CatchContractConstraints {
     'eventRehearsalActorDocument.participation.state': eventRehearsalActorDocumentParticipationState,
     'eventRehearsalActorDocument.persona': eventRehearsalActorDocumentPersona,
     'eventRehearsalActorDocument.promptCompleted': eventRehearsalActorDocumentPromptCompleted,
+    'eventRehearsalActorDocument.requiredData.completedFieldIds': eventRehearsalActorDocumentRequiredDataCompletedFieldIds,
+    'eventRehearsalActorDocument.requiredData.completedFieldIds.items': eventRehearsalActorDocumentRequiredDataCompletedFieldIdsItems,
+    'eventRehearsalActorDocument.requiredData.profileRevision': eventRehearsalActorDocumentRequiredDataProfileRevision,
+    'eventRehearsalActorDocument.requiredData.request.completedAt._nanoseconds': eventRehearsalActorDocumentRequiredDataRequestCompletedAtNanoseconds,
+    'eventRehearsalActorDocument.requiredData.request.completedAt._seconds': eventRehearsalActorDocumentRequiredDataRequestCompletedAtSeconds,
+    'eventRehearsalActorDocument.requiredData.request.completedFieldIds': eventRehearsalActorDocumentRequiredDataRequestCompletedFieldIds,
+    'eventRehearsalActorDocument.requiredData.request.completedFieldIds.items': eventRehearsalActorDocumentRequiredDataRequestCompletedFieldIdsItems,
+    'eventRehearsalActorDocument.requiredData.request.expiresAt._nanoseconds': eventRehearsalActorDocumentRequiredDataRequestExpiresAtNanoseconds,
+    'eventRehearsalActorDocument.requiredData.request.expiresAt._seconds': eventRehearsalActorDocumentRequiredDataRequestExpiresAtSeconds,
+    'eventRehearsalActorDocument.requiredData.request.fieldIds': eventRehearsalActorDocumentRequiredDataRequestFieldIds,
+    'eventRehearsalActorDocument.requiredData.request.fieldIds.items': eventRehearsalActorDocumentRequiredDataRequestFieldIdsItems,
+    'eventRehearsalActorDocument.requiredData.request.requestedAt._nanoseconds': eventRehearsalActorDocumentRequiredDataRequestRequestedAtNanoseconds,
+    'eventRehearsalActorDocument.requiredData.request.requestedAt._seconds': eventRehearsalActorDocumentRequiredDataRequestRequestedAtSeconds,
+    'eventRehearsalActorDocument.requiredData.request.revision': eventRehearsalActorDocumentRequiredDataRequestRevisionAtRequiredDataPropertyRequestPropertyRevision,
+    'eventRehearsalActorDocument.requiredData.request.sourceHash': eventRehearsalActorDocumentRequiredDataRequestSourceHash,
+    'eventRehearsalActorDocument.requiredData.request.status': eventRehearsalActorDocumentRequiredDataRequestStatus,
+    'eventRehearsalActorDocument.requiredData.requestRevision': eventRehearsalActorDocumentRequiredDataRequestRevisionAtRequiredDataPropertyRequestRevision,
     'eventRehearsalActorDocument.sessionId': eventRehearsalActorDocumentSessionId,
     'eventRehearsalActorDocument.status': eventRehearsalActorDocumentStatus,
     'eventRehearsalActorDocument.untrackedHelpRequested': eventRehearsalActorDocumentUntrackedHelpRequested,
@@ -98947,6 +99462,22 @@ abstract final class CatchContractConstraints {
     'eventRehearsalBootstrapCallableResponse.actors.items.optedOut': eventRehearsalBootstrapCallableResponseActorsItemsOptedOut,
     'eventRehearsalBootstrapCallableResponse.actors.items.persona': eventRehearsalBootstrapCallableResponseActorsItemsPersona,
     'eventRehearsalBootstrapCallableResponse.actors.items.promptCompleted': eventRehearsalBootstrapCallableResponseActorsItemsPromptCompleted,
+    'eventRehearsalBootstrapCallableResponse.actors.items.requiredData.availableFieldIds': eventRehearsalBootstrapCallableResponseActorsItemsRequiredDataAvailableFieldIds,
+    'eventRehearsalBootstrapCallableResponse.actors.items.requiredData.availableFieldIds.items': eventRehearsalBootstrapCallableResponseActorsItemsRequiredDataAvailableFieldIdsItems,
+    'eventRehearsalBootstrapCallableResponse.actors.items.requiredData.completedFieldIds': eventRehearsalBootstrapCallableResponseActorsItemsRequiredDataCompletedFieldIds,
+    'eventRehearsalBootstrapCallableResponse.actors.items.requiredData.completedFieldIds.items': eventRehearsalBootstrapCallableResponseActorsItemsRequiredDataCompletedFieldIdsItems,
+    'eventRehearsalBootstrapCallableResponse.actors.items.requiredData.profileRevision': eventRehearsalBootstrapCallableResponseActorsItemsRequiredDataProfileRevision,
+    'eventRehearsalBootstrapCallableResponse.actors.items.requiredData.request.completedAt': eventRehearsalBootstrapCallableResponseActorsItemsRequiredDataRequestCompletedAt,
+    'eventRehearsalBootstrapCallableResponse.actors.items.requiredData.request.completedFieldIds': eventRehearsalBootstrapCallableResponseActorsItemsRequiredDataRequestCompletedFieldIds,
+    'eventRehearsalBootstrapCallableResponse.actors.items.requiredData.request.completedFieldIds.items': eventRehearsalBootstrapCallableResponseActorsItemsRequiredDataRequestCompletedFieldIdsItems,
+    'eventRehearsalBootstrapCallableResponse.actors.items.requiredData.request.expiresAt': eventRehearsalBootstrapCallableResponseActorsItemsRequiredDataRequestExpiresAt,
+    'eventRehearsalBootstrapCallableResponse.actors.items.requiredData.request.fieldIds': eventRehearsalBootstrapCallableResponseActorsItemsRequiredDataRequestFieldIds,
+    'eventRehearsalBootstrapCallableResponse.actors.items.requiredData.request.fieldIds.items': eventRehearsalBootstrapCallableResponseActorsItemsRequiredDataRequestFieldIdsItems,
+    'eventRehearsalBootstrapCallableResponse.actors.items.requiredData.request.requestedAt': eventRehearsalBootstrapCallableResponseActorsItemsRequiredDataRequestRequestedAt,
+    'eventRehearsalBootstrapCallableResponse.actors.items.requiredData.request.revision': eventRehearsalBootstrapCallableResponseActorsItemsRequiredDataRequestRevisionAtActorsPropertyItemsPropertyRequiredDataPropertyRequestPropertyRevision,
+    'eventRehearsalBootstrapCallableResponse.actors.items.requiredData.request.status': eventRehearsalBootstrapCallableResponseActorsItemsRequiredDataRequestStatus,
+    'eventRehearsalBootstrapCallableResponse.actors.items.requiredData.requestRevision': eventRehearsalBootstrapCallableResponseActorsItemsRequiredDataRequestRevisionAtActorsPropertyItemsPropertyRequiredDataPropertyRequestRevision,
+    'eventRehearsalBootstrapCallableResponse.actors.items.requiredData.sourceHash': eventRehearsalBootstrapCallableResponseActorsItemsRequiredDataSourceHash,
     'eventRehearsalBootstrapCallableResponse.actors.items.status': eventRehearsalBootstrapCallableResponseActorsItemsStatus,
     'eventRehearsalBootstrapCallableResponse.canUseInternalFaults': eventRehearsalBootstrapCallableResponseCanUseInternalFaults,
     'eventRehearsalBootstrapCallableResponse.deliveryReviews.context': eventRehearsalBootstrapCallableResponseDeliveryReviewsContext,
@@ -99679,6 +100210,22 @@ abstract final class CatchContractConstraints {
     'eventRehearsalGuestBootstrapCallableResponse.actor.helpRequested': eventRehearsalGuestBootstrapCallableResponseActorHelpRequested,
     'eventRehearsalGuestBootstrapCallableResponse.actor.optedOut': eventRehearsalGuestBootstrapCallableResponseActorOptedOut,
     'eventRehearsalGuestBootstrapCallableResponse.actor.promptCompleted': eventRehearsalGuestBootstrapCallableResponseActorPromptCompleted,
+    'eventRehearsalGuestBootstrapCallableResponse.actor.requiredData.availableFieldIds': eventRehearsalGuestBootstrapCallableResponseActorRequiredDataAvailableFieldIds,
+    'eventRehearsalGuestBootstrapCallableResponse.actor.requiredData.availableFieldIds.items': eventRehearsalGuestBootstrapCallableResponseActorRequiredDataAvailableFieldIdsItems,
+    'eventRehearsalGuestBootstrapCallableResponse.actor.requiredData.completedFieldIds': eventRehearsalGuestBootstrapCallableResponseActorRequiredDataCompletedFieldIds,
+    'eventRehearsalGuestBootstrapCallableResponse.actor.requiredData.completedFieldIds.items': eventRehearsalGuestBootstrapCallableResponseActorRequiredDataCompletedFieldIdsItems,
+    'eventRehearsalGuestBootstrapCallableResponse.actor.requiredData.profileRevision': eventRehearsalGuestBootstrapCallableResponseActorRequiredDataProfileRevision,
+    'eventRehearsalGuestBootstrapCallableResponse.actor.requiredData.request.completedAt': eventRehearsalGuestBootstrapCallableResponseActorRequiredDataRequestCompletedAt,
+    'eventRehearsalGuestBootstrapCallableResponse.actor.requiredData.request.completedFieldIds': eventRehearsalGuestBootstrapCallableResponseActorRequiredDataRequestCompletedFieldIds,
+    'eventRehearsalGuestBootstrapCallableResponse.actor.requiredData.request.completedFieldIds.items': eventRehearsalGuestBootstrapCallableResponseActorRequiredDataRequestCompletedFieldIdsItems,
+    'eventRehearsalGuestBootstrapCallableResponse.actor.requiredData.request.expiresAt': eventRehearsalGuestBootstrapCallableResponseActorRequiredDataRequestExpiresAt,
+    'eventRehearsalGuestBootstrapCallableResponse.actor.requiredData.request.fieldIds': eventRehearsalGuestBootstrapCallableResponseActorRequiredDataRequestFieldIds,
+    'eventRehearsalGuestBootstrapCallableResponse.actor.requiredData.request.fieldIds.items': eventRehearsalGuestBootstrapCallableResponseActorRequiredDataRequestFieldIdsItems,
+    'eventRehearsalGuestBootstrapCallableResponse.actor.requiredData.request.requestedAt': eventRehearsalGuestBootstrapCallableResponseActorRequiredDataRequestRequestedAt,
+    'eventRehearsalGuestBootstrapCallableResponse.actor.requiredData.request.revision': eventRehearsalGuestBootstrapCallableResponseActorRequiredDataRequestRevisionAtActorPropertyRequiredDataPropertyRequestPropertyRevision,
+    'eventRehearsalGuestBootstrapCallableResponse.actor.requiredData.request.status': eventRehearsalGuestBootstrapCallableResponseActorRequiredDataRequestStatus,
+    'eventRehearsalGuestBootstrapCallableResponse.actor.requiredData.requestRevision': eventRehearsalGuestBootstrapCallableResponseActorRequiredDataRequestRevisionAtActorPropertyRequiredDataPropertyRequestRevision,
+    'eventRehearsalGuestBootstrapCallableResponse.actor.requiredData.sourceHash': eventRehearsalGuestBootstrapCallableResponseActorRequiredDataSourceHash,
     'eventRehearsalGuestBootstrapCallableResponse.actor.status': eventRehearsalGuestBootstrapCallableResponseActorStatus,
     'eventRehearsalGuestBootstrapCallableResponse.practiceBanner': eventRehearsalGuestBootstrapCallableResponsePracticeBanner,
     'eventRehearsalGuestBootstrapCallableResponse.session.activeStepIndex': eventRehearsalGuestBootstrapCallableResponseSessionActiveStepIndex,
@@ -106205,6 +106752,11 @@ abstract final class CatchContractConstraints {
     'submitEventRehearsalGuestActionCallablePayload.intentRevision': submitEventRehearsalGuestActionCallablePayloadIntentRevision,
     'submitEventRehearsalGuestActionCallablePayload.messageId': submitEventRehearsalGuestActionCallablePayloadMessageId,
     'submitEventRehearsalGuestActionCallablePayload.publicRehearsalId': submitEventRehearsalGuestActionCallablePayloadPublicRehearsalId,
+    'submitEventRehearsalGuestActionCallablePayload.requiredData.expectedProfileRevision': submitEventRehearsalGuestActionCallablePayloadRequiredDataExpectedProfileRevision,
+    'submitEventRehearsalGuestActionCallablePayload.requiredData.expectedRequestRevision': submitEventRehearsalGuestActionCallablePayloadRequiredDataExpectedRequestRevision,
+    'submitEventRehearsalGuestActionCallablePayload.requiredData.expectedSourceHash': submitEventRehearsalGuestActionCallablePayloadRequiredDataExpectedSourceHash,
+    'submitEventRehearsalGuestActionCallablePayload.requiredData.fieldIds': submitEventRehearsalGuestActionCallablePayloadRequiredDataFieldIds,
+    'submitEventRehearsalGuestActionCallablePayload.requiredData.fieldIds.items': submitEventRehearsalGuestActionCallablePayloadRequiredDataFieldIdsItems,
     'submitEventRehearsalGuestActionCallablePayload.slotToken': submitEventRehearsalGuestActionCallablePayloadSlotToken,
     'submitEventRuntimeProfileCallablePayload.fields.dateOfBirthMillis': submitEventRuntimeProfileCallablePayloadFieldsDateOfBirthMillis,
     'submitEventRuntimeProfileCallablePayload.fields.dietaryAndSeatingNotes': submitEventRuntimeProfileCallablePayloadFieldsDietaryAndSeatingNotes,

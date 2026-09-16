@@ -23,7 +23,8 @@ export type ControlEventRehearsalCallablePayload = {
     | "assistance"
     | "movement"
     | "staff"
-    | "settings";
+    | "settings"
+    | "requiredData";
   minutes?: number;
   assistance?:
     | {
@@ -705,4 +706,30 @@ export type ControlEventRehearsalCallablePayload = {
         kind: "pause";
         expectedSourceHash: string;
       };
+  requiredData?: {
+    attendeeId: string;
+    /**
+     * @minItems 1
+     * @maxItems 10
+     */
+    fieldIds: (
+      | "displayName"
+      | "gender"
+      | "interestedInGenders"
+      | "relationshipGoal"
+      | "dateOfBirth"
+      | "paceBand"
+      | "skillBand"
+      | "dietaryAndSeatingNotes"
+      | "questionnaireAnswerIds"
+      | "teamName"
+    )[];
+    /**
+     * UTC milliseconds.
+     */
+    expiresAt: number;
+    expectedProfileRevision: number;
+    expectedRequestRevision: number;
+    expectedSourceHash: string;
+  };
 };

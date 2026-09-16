@@ -13,6 +13,7 @@ import type {InjectEventRehearsalBehaviorCallablePayload} from
   "../shared/generated/injectEventRehearsalBehaviorCallablePayload";
 import type {SubmitEventRehearsalGuestActionCallablePayload} from
   "../shared/generated/submitEventRehearsalGuestActionCallablePayload";
+import {initialPracticeRequiredData} from "./requiredData";
 
 export const REHEARSAL_MAX_ACTORS = 50;
 export const REHEARSAL_MAX_ACTIONS = 500;
@@ -150,6 +151,7 @@ export function buildRehearsalActors(
       helpRequested: false,
       untrackedHelpRequested: false,
       promptCompleted: false,
+      requiredData: initialPracticeRequiredData(),
       layoutUnitId: `table-${Math.floor(index / 4) + 1}`,
       confirmedLayoutUnitId: null,
       lastActionAt: null,
@@ -171,6 +173,7 @@ export function resolveRehearsalControl(
   case "staff":
   case "movement":
   case "assistance":
+  case "requiredData":
     throw new Error("Assistance commands require their rehearsal transaction.");
   case "markReady":
     assertStatus(session.status, ["draft", "ready"], action);
@@ -392,6 +395,8 @@ export function applyRehearsalGuestAction(
   switch (action) {
   case "respondToAssistance":
     throw new Error("Assistance replies require their rehearsal transaction.");
+  case "submitRequiredData":
+    throw new Error("Profile submissions require their rehearsal transaction.");
   case "checkIn":
   case "confirmArrival":
     return applyRehearsalBehavior(actor, "arrive", [], now, virtualNowMillis);

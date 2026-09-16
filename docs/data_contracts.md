@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.124.0
+version: 1.125.0
 updated: 2026-09-16
 owner: recursive_audit_loop
 status: active
@@ -1163,7 +1163,7 @@ server-only collections:
 | Collection | Purpose | Limits and authority |
 |---|---|---|
 | `eventRehearsals/{sessionId}` | Frozen source snapshot, editable pre-start setup, scenario/seed, virtual clock, lifecycle and revisions | Organizer manager reads through Host callables only; 24-hour expiry; at most five active sessions per owner |
-| `eventRehearsalActors/{sessionId_actorId}` | Deterministically generated synthetic people, visit-bound accountability, attendance/status, independent connection state, guest moment, Room placement/confirmation, opt-out/help/prompt flags and keep-apart ids | At most 50 actors; no participant UID, phone, email, booking, payment, match, chat, or production attendee id. A resolving Host UID is private audit evidence only. |
+| `eventRehearsalActors/{sessionId_actorId}` | Deterministically generated synthetic people, visit-bound accountability, attendance/status, independent connection state, guest moment, Room placement/confirmation, opt-out/help/prompt flags, keep-apart ids and synthetic required-data completion | At most 50 actors; required-data state stores canonical field identifiers, revisions and virtual-time prompt status without profile values. No participant UID, phone, email, booking, payment, match, chat, or production attendee id. A resolving Host UID is private audit evidence only. |
 | `eventRehearsalActions/{sessionId_actionKey}` | Idempotent Host/guest controls and deterministic replay history | At most 500 actions; a stable hash of session plus client action id deduplicates delivery |
 | `eventRehearsalGuestViews/{sessionId_slotId}` | One browser-instance-to-actor lease with hashed bearer token state | Created only by the public guest bootstrap callable; link rotation invalidates prior slots |
 | `eventRehearsalMessages/{messageDocumentId}` | Typed practice plan, joining instruction, simulated delivery evidence and response | Created only by a counted Host action; at most 200 messages per actor and run; no live sender binding or production outbox reference |
@@ -1206,6 +1206,18 @@ history query includes session, actor and clock generation. Reset invalidates
 that generation and deletes messages; cleanup drains bounded batches so older
 remnants cannot survive a page limit. The Host projection additionally exposes
 simulated attempts; the guest projection excludes delivery internals.
+
+Optional `eventRehearsalActors.requiredData` stores a synthetic profile revision,
+the canonical completed field identifiers, a request revision and the current
+prompt. Its source hash binds the rehearsal clock/setup generation, actor,
+modules and completion state. Host requests require that reviewed hash and both
+revisions, may name only missing canonical fields and must expire within the
+virtual event window. Guest submissions require the current hash and revisions,
+can complete the prompt in parts and advance the synthetic profile revision.
+Projections convert Firestore timestamps to virtual UTC milliseconds and mark a
+pending prompt expired without mutating history. Reset regenerates the initial
+display-name-only state. No profile value, Consumer profile, runtime participant
+or onboarding draft is read or written.
 
 Movement controls carry their own closed group command with the parent setup and
 runtime revisions; action receipts use `actorId: null`. The departure freezes its

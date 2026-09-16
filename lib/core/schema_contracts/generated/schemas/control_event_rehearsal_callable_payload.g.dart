@@ -47,6 +47,7 @@ const schemaControlEventRehearsalCallablePayloadSchema = <String, Object?>{
         'movement',
         'staff',
         'settings',
+        'requiredData',
       ],
     },
     'minutes': <String, Object?>{
@@ -3043,6 +3044,67 @@ const schemaControlEventRehearsalCallablePayloadSchema = <String, Object?>{
       ],
       'type': 'object',
     },
+    'requiredData': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'attendeeId',
+        'fieldIds',
+        'expiresAt',
+        'expectedProfileRevision',
+        'expectedRequestRevision',
+        'expectedSourceHash',
+      ],
+      'properties': <String, Object?>{
+        'attendeeId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 160,
+          'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+        },
+        'fieldIds': <String, Object?>{
+          'type': 'array',
+          'uniqueItems': true,
+          'minItems': 1,
+          'maxItems': 10,
+          'items': <String, Object?>{
+            'type': 'string',
+            'enum': <Object?>[
+              'displayName',
+              'gender',
+              'interestedInGenders',
+              'relationshipGoal',
+              'dateOfBirth',
+              'paceBand',
+              'skillBand',
+              'dietaryAndSeatingNotes',
+              'questionnaireAnswerIds',
+              'teamName',
+            ],
+          },
+        },
+        'expiresAt': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 9007199254740991,
+          'description': 'UTC milliseconds.',
+        },
+        'expectedProfileRevision': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 9007199254740991,
+        },
+        'expectedRequestRevision': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 9007199254740991,
+        },
+        'expectedSourceHash': <String, Object?>{
+          'type': 'string',
+          'pattern': '^[a-f0-9]{64}\$',
+        },
+      },
+    },
   },
   'allOf': <Object?>[
     <String, Object?>{
@@ -3078,6 +3140,11 @@ const schemaControlEventRehearsalCallablePayloadSchema = <String, Object?>{
             <String, Object?>{
               'required': <Object?>[
                 'settings',
+              ],
+            },
+            <String, Object?>{
+              'required': <Object?>[
+                'requiredData',
               ],
             },
           ],
@@ -3126,6 +3193,11 @@ const schemaControlEventRehearsalCallablePayloadSchema = <String, Object?>{
                 'settings',
               ],
             },
+            <String, Object?>{
+              'required': <Object?>[
+                'requiredData',
+              ],
+            },
           ],
         },
       },
@@ -3172,6 +3244,11 @@ const schemaControlEventRehearsalCallablePayloadSchema = <String, Object?>{
                 'settings',
               ],
             },
+            <String, Object?>{
+              'required': <Object?>[
+                'requiredData',
+              ],
+            },
           ],
         },
       },
@@ -3193,6 +3270,7 @@ const schemaControlEventRehearsalCallablePayloadSchema = <String, Object?>{
                 'movement',
                 'staff',
                 'settings',
+                'requiredData',
               ],
             },
           },
@@ -3281,6 +3359,11 @@ const schemaControlEventRehearsalCallablePayloadSchema = <String, Object?>{
                 'practiceOperatorId',
               ],
             },
+            <String, Object?>{
+              'required': <Object?>[
+                'requiredData',
+              ],
+            },
           ],
         },
       },
@@ -3288,6 +3371,62 @@ const schemaControlEventRehearsalCallablePayloadSchema = <String, Object?>{
         'not': <String, Object?>{
           'required': <Object?>[
             'settings',
+          ],
+        },
+      },
+    },
+    <String, Object?>{
+      'if': <String, Object?>{
+        'properties': <String, Object?>{
+          'action': <String, Object?>{
+            'const': 'requiredData',
+          },
+        },
+      },
+      'then': <String, Object?>{
+        'required': <Object?>[
+          'requiredData',
+          'expectedSetupRevision',
+        ],
+        'not': <String, Object?>{
+          'anyOf': <Object?>[
+            <String, Object?>{
+              'required': <Object?>[
+                'assistance',
+              ],
+            },
+            <String, Object?>{
+              'required': <Object?>[
+                'movement',
+              ],
+            },
+            <String, Object?>{
+              'required': <Object?>[
+                'staff',
+              ],
+            },
+            <String, Object?>{
+              'required': <Object?>[
+                'minutes',
+              ],
+            },
+            <String, Object?>{
+              'required': <Object?>[
+                'settings',
+              ],
+            },
+            <String, Object?>{
+              'required': <Object?>[
+                'practiceOperatorId',
+              ],
+            },
+          ],
+        },
+      },
+      'else': <String, Object?>{
+        'not': <String, Object?>{
+          'required': <Object?>[
+            'requiredData',
           ],
         },
       },

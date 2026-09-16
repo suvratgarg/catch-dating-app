@@ -210,5 +210,78 @@ export interface EventRehearsalGuestBootstrapCallableResponse {
       canRespond: boolean;
       responseChoiceId: string | null;
     } | null;
+    requiredData?: {
+      sourceHash: string;
+      profileRevision: number;
+      requestRevision: number;
+      /**
+       * @maxItems 10
+       */
+      availableFieldIds: (
+        | "displayName"
+        | "gender"
+        | "interestedInGenders"
+        | "relationshipGoal"
+        | "dateOfBirth"
+        | "paceBand"
+        | "skillBand"
+        | "dietaryAndSeatingNotes"
+        | "questionnaireAnswerIds"
+        | "teamName"
+      )[];
+      /**
+       * @maxItems 10
+       */
+      completedFieldIds: (
+        | "displayName"
+        | "gender"
+        | "interestedInGenders"
+        | "relationshipGoal"
+        | "dateOfBirth"
+        | "paceBand"
+        | "skillBand"
+        | "dietaryAndSeatingNotes"
+        | "questionnaireAnswerIds"
+        | "teamName"
+      )[];
+      request: {
+        revision: number;
+        /**
+         * @minItems 1
+         * @maxItems 10
+         */
+        fieldIds: (
+          | "displayName"
+          | "gender"
+          | "interestedInGenders"
+          | "relationshipGoal"
+          | "dateOfBirth"
+          | "paceBand"
+          | "skillBand"
+          | "dietaryAndSeatingNotes"
+          | "questionnaireAnswerIds"
+          | "teamName"
+        )[];
+        /**
+         * @maxItems 10
+         */
+        completedFieldIds: (
+          | "displayName"
+          | "gender"
+          | "interestedInGenders"
+          | "relationshipGoal"
+          | "dateOfBirth"
+          | "paceBand"
+          | "skillBand"
+          | "dietaryAndSeatingNotes"
+          | "questionnaireAnswerIds"
+          | "teamName"
+        )[];
+        status: "pending" | "completed" | "expired";
+        requestedAt: number;
+        expiresAt: number;
+        completedAt: number | null;
+      } | null;
+    };
   };
 }
