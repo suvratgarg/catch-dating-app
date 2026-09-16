@@ -10,6 +10,18 @@ import type {AdminSetCrossPathsShowcaseEligibilityCallablePayload} from
   "../../generated/contracts/adminSetCrossPathsShowcaseEligibilityCallablePayload";
 import type {AdminSetCrossPathsShowcaseEligibilityCallableResponse} from
   "../../generated/contracts/adminSetCrossPathsShowcaseEligibilityCallableResponse";
+import type {AdminReviewEventMessagingBudgetCallablePayload} from
+  "../../generated/contracts/adminReviewEventMessagingBudgetCallablePayload";
+import type {AdminReviewEventMessagingBudgetCallableResponse} from
+  "../../generated/contracts/adminReviewEventMessagingBudgetCallableResponse";
+import type {AdminDecideEventMessagingBudgetCallablePayload} from
+  "../../generated/contracts/adminDecideEventMessagingBudgetCallablePayload";
+import type {AdminDecideEventMessagingBudgetCallableResponse} from
+  "../../generated/contracts/adminDecideEventMessagingBudgetCallableResponse";
+import type {AdminApplyEventMessagingBudgetCallablePayload} from
+  "../../generated/contracts/adminApplyEventMessagingBudgetCallablePayload";
+import type {AdminApplyEventMessagingBudgetCallableResponse} from
+  "../../generated/contracts/adminApplyEventMessagingBudgetCallableResponse";
 import {
   sampleClubDetails,
   sampleEventDetails,
@@ -219,6 +231,15 @@ const sampleAdminUsers = new Map<string, AdminUserRoleRecord>([
     assignmentPath: "adminRoleAssignments/support-ops",
   }],
 ]);
+
+const sampleMessagingBudgetDecisions = new Map<
+  string,
+  NonNullable<AdminReviewEventMessagingBudgetCallableResponse["decision"]>
+>();
+const sampleMessagingBudgetDecisionRoutes = new Map<
+  string,
+  AdminReviewEventMessagingBudgetCallablePayload["routeId"]
+>();
 
 function sampleAdminRoleAssignments(
   payload: AdminListAdminRoleAssignmentsPayload = {}
@@ -2209,4 +2230,172 @@ function titleFromCamel(value: string): string {
   return value
     .replace(/([a-z])([A-Z])/g, "$1 $2")
     .replace(/\b\w/g, (character) => character.toUpperCase());
+}
+
+export async function reviewEventMessagingBudget(
+  payload: AdminReviewEventMessagingBudgetCallablePayload
+): Promise<AdminReviewEventMessagingBudgetCallableResponse> {
+  if (dataMode() === "sample") {
+    const now = Date.parse(sampleGeneratedAt);
+    const context = {
+      mode: "live" as const,
+      eventId: payload.eventId,
+      organizerId: payload.organizerId,
+    };
+    return {
+      schemaVersion: 1,
+      review: {
+        schemaVersion: 1,
+        kind: "recordedSetupReview",
+        context,
+        routeId: payload.routeId,
+        senderId: payload.senderId,
+        purpose: payload.purpose,
+        observedAt: now,
+        completedAt: now,
+        grantsDispatchAuthority: false,
+        runtime: {
+          appliesToPurpose: true,
+          status: "configured",
+          revision: 3,
+          selected: true,
+          sourceHash: "a".repeat(64),
+          eventEnd: Date.parse("2099-07-19T00:00:00.000Z"),
+        },
+        sender: {
+          routeId: payload.routeId,
+          senderId: payload.senderId,
+          displayName: "Sample approved sender",
+          displayAddress: payload.routeId === "organizerEventWhatsapp" ?
+            "+919999999999" : "CATCH",
+          availability: "eligible",
+          reviewHash: "b".repeat(64),
+        },
+        budgets: {
+          kind: "reviewed",
+          currency: "INR",
+          sourceHash: "c".repeat(64),
+          event: {
+            budgetId: "sample-event-budget",
+            scope: {kind: "event", context},
+            kind: "unavailable",
+            reason: "missing",
+          },
+          senderDay: {
+            budgetId: "sample-sender-day-budget",
+            scope: {kind: "senderDay", day: "2099-07-18"},
+            kind: "unavailable",
+            reason: "missing",
+          },
+        },
+      },
+      decision: sampleMessagingBudgetDecisions.get(
+        sampleMessagingBudgetScopeKey(payload)
+      ) ?? null,
+      grantsSpendingAuthority: false,
+      grantsDispatchAuthority: false,
+    };
+  }
+  const callable = httpsCallable<
+    AdminReviewEventMessagingBudgetCallablePayload,
+    AdminReviewEventMessagingBudgetCallableResponse
+  >(functions, "adminReviewEventMessagingBudget");
+  return (await callable(payload)).data;
+}
+
+export async function decideEventMessagingBudget(
+  payload: AdminDecideEventMessagingBudgetCallablePayload
+): Promise<AdminDecideEventMessagingBudgetCallableResponse> {
+  if (dataMode() === "sample") {
+    const decisionStatus: "approved" | "held" | "rejected" =
+      payload.decision.kind === "approve" ?
+      "approved" : payload.decision.kind === "hold" ? "held" : "rejected";
+    const decision = {
+      decisionId: payload.requestId,
+      revision: payload.expectedRevision + 1,
+      decisionStatus,
+      decisionKind: payload.decision.kind,
+      reviewedByUid: "sample-finance-reviewer",
+      note: payload.note,
+      effect: "decision_only_no_spending_authority" as const,
+      grantsSpendingAuthority: false as const,
+    };
+    const scopeKey = sampleMessagingBudgetScopeKey(payload);
+    sampleMessagingBudgetDecisions.set(scopeKey, decision);
+    sampleMessagingBudgetDecisionRoutes.set(decision.decisionId, payload.routeId);
+    return {
+      schemaVersion: 1,
+      applied: true,
+      replayed: false,
+      decisionId: decision.decisionId,
+      revision: decision.revision,
+      decisionStatus,
+      decisionPath: `eventMessagingBudgetDecisions/${decision.decisionId}`,
+      effect: "decision_only_no_spending_authority",
+      grantsSpendingAuthority: false,
+    };
+  }
+  const callable = httpsCallable<
+    AdminDecideEventMessagingBudgetCallablePayload,
+    AdminDecideEventMessagingBudgetCallableResponse
+  >(functions, "adminDecideEventMessagingBudget");
+  return (await callable(payload)).data;
+}
+
+export async function stageEventMessagingBudget(
+  payload: AdminApplyEventMessagingBudgetCallablePayload
+): Promise<AdminApplyEventMessagingBudgetCallableResponse> {
+  if (dataMode() === "sample") {
+    const routeId = sampleMessagingBudgetDecisionRoutes.get(payload.decisionId);
+    if (!routeId) throw new Error("Review and approve the sample scope first.");
+    return {
+      schemaVersion: 1,
+      applied: true,
+      replayed: false,
+      decisionId: payload.decisionId,
+      decisionRevision: payload.expectedDecisionRevision,
+      receiptId: payload.requestId,
+      receiptPath: `eventMessagingBudgetApplications/${payload.requestId}`,
+      routeId,
+      eventBudget: {
+        budgetId: "sample-event-budget",
+        revision: 1,
+        path: "eventMessagingBudgets/sample-event-budget",
+        status: "paused",
+      },
+      senderDayBudget: {
+        budgetId: "sample-sender-day-budget",
+        revision: 1,
+        path: "senderDayMessagingBudgets/sample-sender-day-budget",
+        status: "paused",
+      },
+      effect: "budgets_staged_paused_no_spending_or_dispatch_authority",
+      stagesSpendingCeilings: true,
+      grantsSpendingAuthority: false,
+      grantsDispatchAuthority: false,
+      providerContacted: false,
+      workerActivated: false,
+    };
+  }
+  const callable = httpsCallable<
+    AdminApplyEventMessagingBudgetCallablePayload,
+    AdminApplyEventMessagingBudgetCallableResponse
+  >(functions, "adminApplyEventMessagingBudget");
+  return (await callable(payload)).data;
+}
+
+function sampleMessagingBudgetScopeKey(payload: {
+  organizerId: string;
+  eventId: string;
+  routeId: string;
+  senderId: string;
+  purpose: string;
+}): string {
+  return [
+    payload.organizerId,
+    payload.eventId,
+    payload.routeId,
+    payload.senderId,
+    payload.purpose,
+  ].join("|");
 }

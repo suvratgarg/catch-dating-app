@@ -123,6 +123,8 @@ export {eventAssistanceSmsDispatchDocumentSchema} from "./schemas/eventAssistanc
 export {eventAssistanceRcsConfigSchema} from "./schemas/eventAssistanceRcsConfig";
 export {eventAssistanceSmsConfigSchema} from "./schemas/eventAssistanceSmsConfig";
 export {eventMessagingSetupReviewSchema} from "./schemas/eventMessagingSetupReview";
+export {adminReviewEventMessagingBudgetCallablePayloadSchema} from "./schemas/adminReviewEventMessagingBudgetInput";
+export {adminReviewEventMessagingBudgetCallableResponseSchema} from "./schemas/adminReviewEventMessagingBudgetOutput";
 export {adminDecideEventMessagingBudgetCallablePayloadSchema} from "./schemas/adminDecideEventMessagingBudgetInput";
 export {adminDecideEventMessagingBudgetCallableResponseSchema} from "./schemas/adminDecideEventMessagingBudgetOutput";
 export {eventMessagingBudgetDecisionDocumentSchema} from "./schemas/eventMessagingBudgetDecisionDocument";

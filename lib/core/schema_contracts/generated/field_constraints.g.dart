@@ -3079,6 +3079,576 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const adminReviewEventMessagingBudgetCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallablePayload.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminReviewEventMessagingBudgetCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminReviewEventMessagingBudgetCallablePayloadPurpose = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallablePayload.purpose',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['joiningUpdate', 'joiningInstructions', 'planChanged', 'eventCancelled', 'eventFinished', 'guestRequirement', 'assignmentChanged', 'participationCheck', 'followUp'],
+  );
+
+  static const adminReviewEventMessagingBudgetCallablePayloadRouteId = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallablePayload.routeId',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['catchEventSms', 'catchEventRcs', 'organizerEventWhatsapp'],
+  );
+
+  static const adminReviewEventMessagingBudgetCallablePayloadSenderId = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallablePayload.senderId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const adminReviewEventMessagingBudgetCallableResponseDecisionDecisionId = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallableResponse.decision.decisionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminReviewEventMessagingBudgetCallableResponseDecisionDecisionKind = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallableResponse.decision.decisionKind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['approve', 'hold', 'reject'],
+  );
+
+  static const adminReviewEventMessagingBudgetCallableResponseDecisionDecisionStatus = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallableResponse.decision.decisionStatus',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['approved', 'held', 'rejected'],
+  );
+
+  static const adminReviewEventMessagingBudgetCallableResponseDecisionEffect = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallableResponse.decision.effect',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminReviewEventMessagingBudgetCallableResponseDecisionGrantsSpendingAuthority = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallableResponse.decision.grantsSpendingAuthority',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminReviewEventMessagingBudgetCallableResponseDecisionNote = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallableResponse.decision.note',
+    maxLength: 1000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminReviewEventMessagingBudgetCallableResponseDecisionReviewedByUid = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallableResponse.decision.reviewedByUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminReviewEventMessagingBudgetCallableResponseDecisionRevision = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallableResponse.decision.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const adminReviewEventMessagingBudgetCallableResponseGrantsDispatchAuthority = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallableResponse.grantsDispatchAuthority',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminReviewEventMessagingBudgetCallableResponseGrantsSpendingAuthority = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallableResponse.grantsSpendingAuthority',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminReviewEventMessagingBudgetCallableResponseReviewBudgetsCurrency = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallableResponse.review.budgets.currency',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Z]{3}\$',
+  );
+
+  static const adminReviewEventMessagingBudgetCallableResponseReviewBudgetsEventApprovalId = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallableResponse.review.budgets.event.approvalId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const adminReviewEventMessagingBudgetCallableResponseReviewBudgetsEventBudgetId = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallableResponse.review.budgets.event.budgetId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const adminReviewEventMessagingBudgetCallableResponseReviewBudgetsEventChargedMicros = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallableResponse.review.budgets.event.chargedMicros',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const adminReviewEventMessagingBudgetCallableResponseReviewBudgetsEventCurrency = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallableResponse.review.budgets.event.currency',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Z]{3}\$',
+  );
+
+  static const adminReviewEventMessagingBudgetCallableResponseReviewBudgetsEventEndsAt = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallableResponse.review.budgets.event.endsAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const adminReviewEventMessagingBudgetCallableResponseReviewBudgetsEventIssue = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallableResponse.review.budgets.event.issue',
+    valueTypes: <String>['string'],
+    enumValues: <String>['paused', 'expired', 'currencyChanged', 'agentChanged', 'exhausted'],
+  );
+
+  static const adminReviewEventMessagingBudgetCallableResponseReviewBudgetsEventKind = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallableResponse.review.budgets.event.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminReviewEventMessagingBudgetCallableResponseReviewBudgetsEventLimitMicros = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallableResponse.review.budgets.event.limitMicros',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const adminReviewEventMessagingBudgetCallableResponseReviewBudgetsEventReason = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallableResponse.review.budgets.event.reason',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['missing', 'invalid'],
+  );
+
+  static const adminReviewEventMessagingBudgetCallableResponseReviewBudgetsEventRemainingMicros = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallableResponse.review.budgets.event.remainingMicros',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const adminReviewEventMessagingBudgetCallableResponseReviewBudgetsEventReviewHash = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallableResponse.review.budgets.event.reviewHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const adminReviewEventMessagingBudgetCallableResponseReviewBudgetsEventRevision = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallableResponse.review.budgets.event.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const adminReviewEventMessagingBudgetCallableResponseReviewBudgetsEventScopeContextEventId = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallableResponse.review.budgets.event.scope.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const adminReviewEventMessagingBudgetCallableResponseReviewBudgetsEventScopeContextMode = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallableResponse.review.budgets.event.scope.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminReviewEventMessagingBudgetCallableResponseReviewBudgetsEventScopeContextOrganizerId = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallableResponse.review.budgets.event.scope.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminReviewEventMessagingBudgetCallableResponseReviewBudgetsEventScopeDay = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallableResponse.review.budgets.event.scope.day',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^\\d{4}-\\d{2}-\\d{2}\$',
+  );
+
+  static const adminReviewEventMessagingBudgetCallableResponseReviewBudgetsEventScopeKind = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallableResponse.review.budgets.event.scope.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminReviewEventMessagingBudgetCallableResponseReviewBudgetsEventStartsAt = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallableResponse.review.budgets.event.startsAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const adminReviewEventMessagingBudgetCallableResponseReviewBudgetsKind = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallableResponse.review.budgets.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminReviewEventMessagingBudgetCallableResponseReviewBudgetsSenderDayApprovalId = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallableResponse.review.budgets.senderDay.approvalId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const adminReviewEventMessagingBudgetCallableResponseReviewBudgetsSenderDayBudgetId = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallableResponse.review.budgets.senderDay.budgetId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const adminReviewEventMessagingBudgetCallableResponseReviewBudgetsSenderDayChargedMicros = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallableResponse.review.budgets.senderDay.chargedMicros',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const adminReviewEventMessagingBudgetCallableResponseReviewBudgetsSenderDayCurrency = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallableResponse.review.budgets.senderDay.currency',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Z]{3}\$',
+  );
+
+  static const adminReviewEventMessagingBudgetCallableResponseReviewBudgetsSenderDayEndsAt = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallableResponse.review.budgets.senderDay.endsAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const adminReviewEventMessagingBudgetCallableResponseReviewBudgetsSenderDayIssue = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallableResponse.review.budgets.senderDay.issue',
+    valueTypes: <String>['string'],
+    enumValues: <String>['paused', 'expired', 'currencyChanged', 'agentChanged', 'exhausted'],
+  );
+
+  static const adminReviewEventMessagingBudgetCallableResponseReviewBudgetsSenderDayKind = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallableResponse.review.budgets.senderDay.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminReviewEventMessagingBudgetCallableResponseReviewBudgetsSenderDayLimitMicros = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallableResponse.review.budgets.senderDay.limitMicros',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const adminReviewEventMessagingBudgetCallableResponseReviewBudgetsSenderDayReason = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallableResponse.review.budgets.senderDay.reason',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['missing', 'invalid'],
+  );
+
+  static const adminReviewEventMessagingBudgetCallableResponseReviewBudgetsSenderDayRemainingMicros = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallableResponse.review.budgets.senderDay.remainingMicros',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const adminReviewEventMessagingBudgetCallableResponseReviewBudgetsSenderDayReviewHash = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallableResponse.review.budgets.senderDay.reviewHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const adminReviewEventMessagingBudgetCallableResponseReviewBudgetsSenderDayRevision = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallableResponse.review.budgets.senderDay.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const adminReviewEventMessagingBudgetCallableResponseReviewBudgetsSenderDayScopeContextEventId = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallableResponse.review.budgets.senderDay.scope.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const adminReviewEventMessagingBudgetCallableResponseReviewBudgetsSenderDayScopeContextMode = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallableResponse.review.budgets.senderDay.scope.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminReviewEventMessagingBudgetCallableResponseReviewBudgetsSenderDayScopeContextOrganizerId = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallableResponse.review.budgets.senderDay.scope.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminReviewEventMessagingBudgetCallableResponseReviewBudgetsSenderDayScopeDay = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallableResponse.review.budgets.senderDay.scope.day',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^\\d{4}-\\d{2}-\\d{2}\$',
+  );
+
+  static const adminReviewEventMessagingBudgetCallableResponseReviewBudgetsSenderDayScopeKind = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallableResponse.review.budgets.senderDay.scope.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminReviewEventMessagingBudgetCallableResponseReviewBudgetsSenderDayStartsAt = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallableResponse.review.budgets.senderDay.startsAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const adminReviewEventMessagingBudgetCallableResponseReviewBudgetsSourceHash = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallableResponse.review.budgets.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const adminReviewEventMessagingBudgetCallableResponseReviewCompletedAt = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallableResponse.review.completedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const adminReviewEventMessagingBudgetCallableResponseReviewContextEventId = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallableResponse.review.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const adminReviewEventMessagingBudgetCallableResponseReviewContextMode = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallableResponse.review.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminReviewEventMessagingBudgetCallableResponseReviewContextOrganizerId = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallableResponse.review.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminReviewEventMessagingBudgetCallableResponseReviewGrantsDispatchAuthority = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallableResponse.review.grantsDispatchAuthority',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminReviewEventMessagingBudgetCallableResponseReviewKind = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallableResponse.review.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminReviewEventMessagingBudgetCallableResponseReviewObservedAt = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallableResponse.review.observedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const adminReviewEventMessagingBudgetCallableResponseReviewPurpose = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallableResponse.review.purpose',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['joiningUpdate', 'joiningInstructions', 'planChanged', 'eventCancelled', 'eventFinished', 'guestRequirement', 'assignmentChanged', 'participationCheck', 'followUp'],
+  );
+
+  static const adminReviewEventMessagingBudgetCallableResponseReviewRouteId = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallableResponse.review.routeId',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['catchEventSms', 'catchEventRcs', 'organizerEventWhatsapp'],
+  );
+
+  static const adminReviewEventMessagingBudgetCallableResponseReviewRuntimeAppliesToPurpose = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallableResponse.review.runtime.appliesToPurpose',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminReviewEventMessagingBudgetCallableResponseReviewRuntimeEventEnd = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallableResponse.review.runtime.eventEnd',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const adminReviewEventMessagingBudgetCallableResponseReviewRuntimeRevision = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallableResponse.review.runtime.revision',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const adminReviewEventMessagingBudgetCallableResponseReviewRuntimeSelected = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallableResponse.review.runtime.selected',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminReviewEventMessagingBudgetCallableResponseReviewRuntimeSourceHash = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallableResponse.review.runtime.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const adminReviewEventMessagingBudgetCallableResponseReviewRuntimeStatus = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallableResponse.review.runtime.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['unconfigured', 'paused', 'sourceChanged', 'expired', 'eventClosed', 'configured'],
+  );
+
+  static const adminReviewEventMessagingBudgetCallableResponseReviewSchemaVersion = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallableResponse.review.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const adminReviewEventMessagingBudgetCallableResponseReviewSenderAvailability = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallableResponse.review.sender.availability',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['eligible', 'setupRequired', 'approvalExpired', 'templateUnavailable'],
+  );
+
+  static const adminReviewEventMessagingBudgetCallableResponseReviewSenderDisplayAddress = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallableResponse.review.sender.displayAddress',
+    maxLength: 2000,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminReviewEventMessagingBudgetCallableResponseReviewSenderDisplayName = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallableResponse.review.sender.displayName',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminReviewEventMessagingBudgetCallableResponseReviewSenderReviewHash = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallableResponse.review.sender.reviewHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const adminReviewEventMessagingBudgetCallableResponseReviewSenderRouteId = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallableResponse.review.sender.routeId',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['catchEventSms', 'catchEventRcs', 'organizerEventWhatsapp'],
+  );
+
+  static const adminReviewEventMessagingBudgetCallableResponseReviewSenderSenderId = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallableResponse.review.sender.senderId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const adminReviewEventMessagingBudgetCallableResponseReviewSenderId = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallableResponse.review.senderId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const adminReviewEventMessagingBudgetCallableResponseSchemaVersion = CatchContractFieldConstraints(
+    path: 'adminReviewEventMessagingBudgetCallableResponse.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
   static const adminSetAdminUserRolesCallablePayloadNote = CatchContractFieldConstraints(
     path: 'adminSetAdminUserRolesCallablePayload.note',
     maxLength: 1000,
@@ -97872,6 +98442,84 @@ abstract final class CatchContractConstraints {
     'adminResolveOrganizerEventLocationCallablePayload.location.notes': adminResolveOrganizerEventLocationCallablePayloadLocationNotes,
     'adminResolveOrganizerEventLocationCallablePayload.location.placeId': adminResolveOrganizerEventLocationCallablePayloadLocationPlaceId,
     'adminResolveOrganizerEventLocationCallablePayload.note': adminResolveOrganizerEventLocationCallablePayloadNote,
+    'adminReviewEventMessagingBudgetCallablePayload.eventId': adminReviewEventMessagingBudgetCallablePayloadEventId,
+    'adminReviewEventMessagingBudgetCallablePayload.organizerId': adminReviewEventMessagingBudgetCallablePayloadOrganizerId,
+    'adminReviewEventMessagingBudgetCallablePayload.purpose': adminReviewEventMessagingBudgetCallablePayloadPurpose,
+    'adminReviewEventMessagingBudgetCallablePayload.routeId': adminReviewEventMessagingBudgetCallablePayloadRouteId,
+    'adminReviewEventMessagingBudgetCallablePayload.senderId': adminReviewEventMessagingBudgetCallablePayloadSenderId,
+    'adminReviewEventMessagingBudgetCallableResponse.decision.decisionId': adminReviewEventMessagingBudgetCallableResponseDecisionDecisionId,
+    'adminReviewEventMessagingBudgetCallableResponse.decision.decisionKind': adminReviewEventMessagingBudgetCallableResponseDecisionDecisionKind,
+    'adminReviewEventMessagingBudgetCallableResponse.decision.decisionStatus': adminReviewEventMessagingBudgetCallableResponseDecisionDecisionStatus,
+    'adminReviewEventMessagingBudgetCallableResponse.decision.effect': adminReviewEventMessagingBudgetCallableResponseDecisionEffect,
+    'adminReviewEventMessagingBudgetCallableResponse.decision.grantsSpendingAuthority': adminReviewEventMessagingBudgetCallableResponseDecisionGrantsSpendingAuthority,
+    'adminReviewEventMessagingBudgetCallableResponse.decision.note': adminReviewEventMessagingBudgetCallableResponseDecisionNote,
+    'adminReviewEventMessagingBudgetCallableResponse.decision.reviewedByUid': adminReviewEventMessagingBudgetCallableResponseDecisionReviewedByUid,
+    'adminReviewEventMessagingBudgetCallableResponse.decision.revision': adminReviewEventMessagingBudgetCallableResponseDecisionRevision,
+    'adminReviewEventMessagingBudgetCallableResponse.grantsDispatchAuthority': adminReviewEventMessagingBudgetCallableResponseGrantsDispatchAuthority,
+    'adminReviewEventMessagingBudgetCallableResponse.grantsSpendingAuthority': adminReviewEventMessagingBudgetCallableResponseGrantsSpendingAuthority,
+    'adminReviewEventMessagingBudgetCallableResponse.review.budgets.currency': adminReviewEventMessagingBudgetCallableResponseReviewBudgetsCurrency,
+    'adminReviewEventMessagingBudgetCallableResponse.review.budgets.event.approvalId': adminReviewEventMessagingBudgetCallableResponseReviewBudgetsEventApprovalId,
+    'adminReviewEventMessagingBudgetCallableResponse.review.budgets.event.budgetId': adminReviewEventMessagingBudgetCallableResponseReviewBudgetsEventBudgetId,
+    'adminReviewEventMessagingBudgetCallableResponse.review.budgets.event.chargedMicros': adminReviewEventMessagingBudgetCallableResponseReviewBudgetsEventChargedMicros,
+    'adminReviewEventMessagingBudgetCallableResponse.review.budgets.event.currency': adminReviewEventMessagingBudgetCallableResponseReviewBudgetsEventCurrency,
+    'adminReviewEventMessagingBudgetCallableResponse.review.budgets.event.endsAt': adminReviewEventMessagingBudgetCallableResponseReviewBudgetsEventEndsAt,
+    'adminReviewEventMessagingBudgetCallableResponse.review.budgets.event.issue': adminReviewEventMessagingBudgetCallableResponseReviewBudgetsEventIssue,
+    'adminReviewEventMessagingBudgetCallableResponse.review.budgets.event.kind': adminReviewEventMessagingBudgetCallableResponseReviewBudgetsEventKind,
+    'adminReviewEventMessagingBudgetCallableResponse.review.budgets.event.limitMicros': adminReviewEventMessagingBudgetCallableResponseReviewBudgetsEventLimitMicros,
+    'adminReviewEventMessagingBudgetCallableResponse.review.budgets.event.reason': adminReviewEventMessagingBudgetCallableResponseReviewBudgetsEventReason,
+    'adminReviewEventMessagingBudgetCallableResponse.review.budgets.event.remainingMicros': adminReviewEventMessagingBudgetCallableResponseReviewBudgetsEventRemainingMicros,
+    'adminReviewEventMessagingBudgetCallableResponse.review.budgets.event.reviewHash': adminReviewEventMessagingBudgetCallableResponseReviewBudgetsEventReviewHash,
+    'adminReviewEventMessagingBudgetCallableResponse.review.budgets.event.revision': adminReviewEventMessagingBudgetCallableResponseReviewBudgetsEventRevision,
+    'adminReviewEventMessagingBudgetCallableResponse.review.budgets.event.scope.context.eventId': adminReviewEventMessagingBudgetCallableResponseReviewBudgetsEventScopeContextEventId,
+    'adminReviewEventMessagingBudgetCallableResponse.review.budgets.event.scope.context.mode': adminReviewEventMessagingBudgetCallableResponseReviewBudgetsEventScopeContextMode,
+    'adminReviewEventMessagingBudgetCallableResponse.review.budgets.event.scope.context.organizerId': adminReviewEventMessagingBudgetCallableResponseReviewBudgetsEventScopeContextOrganizerId,
+    'adminReviewEventMessagingBudgetCallableResponse.review.budgets.event.scope.day': adminReviewEventMessagingBudgetCallableResponseReviewBudgetsEventScopeDay,
+    'adminReviewEventMessagingBudgetCallableResponse.review.budgets.event.scope.kind': adminReviewEventMessagingBudgetCallableResponseReviewBudgetsEventScopeKind,
+    'adminReviewEventMessagingBudgetCallableResponse.review.budgets.event.startsAt': adminReviewEventMessagingBudgetCallableResponseReviewBudgetsEventStartsAt,
+    'adminReviewEventMessagingBudgetCallableResponse.review.budgets.kind': adminReviewEventMessagingBudgetCallableResponseReviewBudgetsKind,
+    'adminReviewEventMessagingBudgetCallableResponse.review.budgets.senderDay.approvalId': adminReviewEventMessagingBudgetCallableResponseReviewBudgetsSenderDayApprovalId,
+    'adminReviewEventMessagingBudgetCallableResponse.review.budgets.senderDay.budgetId': adminReviewEventMessagingBudgetCallableResponseReviewBudgetsSenderDayBudgetId,
+    'adminReviewEventMessagingBudgetCallableResponse.review.budgets.senderDay.chargedMicros': adminReviewEventMessagingBudgetCallableResponseReviewBudgetsSenderDayChargedMicros,
+    'adminReviewEventMessagingBudgetCallableResponse.review.budgets.senderDay.currency': adminReviewEventMessagingBudgetCallableResponseReviewBudgetsSenderDayCurrency,
+    'adminReviewEventMessagingBudgetCallableResponse.review.budgets.senderDay.endsAt': adminReviewEventMessagingBudgetCallableResponseReviewBudgetsSenderDayEndsAt,
+    'adminReviewEventMessagingBudgetCallableResponse.review.budgets.senderDay.issue': adminReviewEventMessagingBudgetCallableResponseReviewBudgetsSenderDayIssue,
+    'adminReviewEventMessagingBudgetCallableResponse.review.budgets.senderDay.kind': adminReviewEventMessagingBudgetCallableResponseReviewBudgetsSenderDayKind,
+    'adminReviewEventMessagingBudgetCallableResponse.review.budgets.senderDay.limitMicros': adminReviewEventMessagingBudgetCallableResponseReviewBudgetsSenderDayLimitMicros,
+    'adminReviewEventMessagingBudgetCallableResponse.review.budgets.senderDay.reason': adminReviewEventMessagingBudgetCallableResponseReviewBudgetsSenderDayReason,
+    'adminReviewEventMessagingBudgetCallableResponse.review.budgets.senderDay.remainingMicros': adminReviewEventMessagingBudgetCallableResponseReviewBudgetsSenderDayRemainingMicros,
+    'adminReviewEventMessagingBudgetCallableResponse.review.budgets.senderDay.reviewHash': adminReviewEventMessagingBudgetCallableResponseReviewBudgetsSenderDayReviewHash,
+    'adminReviewEventMessagingBudgetCallableResponse.review.budgets.senderDay.revision': adminReviewEventMessagingBudgetCallableResponseReviewBudgetsSenderDayRevision,
+    'adminReviewEventMessagingBudgetCallableResponse.review.budgets.senderDay.scope.context.eventId': adminReviewEventMessagingBudgetCallableResponseReviewBudgetsSenderDayScopeContextEventId,
+    'adminReviewEventMessagingBudgetCallableResponse.review.budgets.senderDay.scope.context.mode': adminReviewEventMessagingBudgetCallableResponseReviewBudgetsSenderDayScopeContextMode,
+    'adminReviewEventMessagingBudgetCallableResponse.review.budgets.senderDay.scope.context.organizerId': adminReviewEventMessagingBudgetCallableResponseReviewBudgetsSenderDayScopeContextOrganizerId,
+    'adminReviewEventMessagingBudgetCallableResponse.review.budgets.senderDay.scope.day': adminReviewEventMessagingBudgetCallableResponseReviewBudgetsSenderDayScopeDay,
+    'adminReviewEventMessagingBudgetCallableResponse.review.budgets.senderDay.scope.kind': adminReviewEventMessagingBudgetCallableResponseReviewBudgetsSenderDayScopeKind,
+    'adminReviewEventMessagingBudgetCallableResponse.review.budgets.senderDay.startsAt': adminReviewEventMessagingBudgetCallableResponseReviewBudgetsSenderDayStartsAt,
+    'adminReviewEventMessagingBudgetCallableResponse.review.budgets.sourceHash': adminReviewEventMessagingBudgetCallableResponseReviewBudgetsSourceHash,
+    'adminReviewEventMessagingBudgetCallableResponse.review.completedAt': adminReviewEventMessagingBudgetCallableResponseReviewCompletedAt,
+    'adminReviewEventMessagingBudgetCallableResponse.review.context.eventId': adminReviewEventMessagingBudgetCallableResponseReviewContextEventId,
+    'adminReviewEventMessagingBudgetCallableResponse.review.context.mode': adminReviewEventMessagingBudgetCallableResponseReviewContextMode,
+    'adminReviewEventMessagingBudgetCallableResponse.review.context.organizerId': adminReviewEventMessagingBudgetCallableResponseReviewContextOrganizerId,
+    'adminReviewEventMessagingBudgetCallableResponse.review.grantsDispatchAuthority': adminReviewEventMessagingBudgetCallableResponseReviewGrantsDispatchAuthority,
+    'adminReviewEventMessagingBudgetCallableResponse.review.kind': adminReviewEventMessagingBudgetCallableResponseReviewKind,
+    'adminReviewEventMessagingBudgetCallableResponse.review.observedAt': adminReviewEventMessagingBudgetCallableResponseReviewObservedAt,
+    'adminReviewEventMessagingBudgetCallableResponse.review.purpose': adminReviewEventMessagingBudgetCallableResponseReviewPurpose,
+    'adminReviewEventMessagingBudgetCallableResponse.review.routeId': adminReviewEventMessagingBudgetCallableResponseReviewRouteId,
+    'adminReviewEventMessagingBudgetCallableResponse.review.runtime.appliesToPurpose': adminReviewEventMessagingBudgetCallableResponseReviewRuntimeAppliesToPurpose,
+    'adminReviewEventMessagingBudgetCallableResponse.review.runtime.eventEnd': adminReviewEventMessagingBudgetCallableResponseReviewRuntimeEventEnd,
+    'adminReviewEventMessagingBudgetCallableResponse.review.runtime.revision': adminReviewEventMessagingBudgetCallableResponseReviewRuntimeRevision,
+    'adminReviewEventMessagingBudgetCallableResponse.review.runtime.selected': adminReviewEventMessagingBudgetCallableResponseReviewRuntimeSelected,
+    'adminReviewEventMessagingBudgetCallableResponse.review.runtime.sourceHash': adminReviewEventMessagingBudgetCallableResponseReviewRuntimeSourceHash,
+    'adminReviewEventMessagingBudgetCallableResponse.review.runtime.status': adminReviewEventMessagingBudgetCallableResponseReviewRuntimeStatus,
+    'adminReviewEventMessagingBudgetCallableResponse.review.schemaVersion': adminReviewEventMessagingBudgetCallableResponseReviewSchemaVersion,
+    'adminReviewEventMessagingBudgetCallableResponse.review.sender.availability': adminReviewEventMessagingBudgetCallableResponseReviewSenderAvailability,
+    'adminReviewEventMessagingBudgetCallableResponse.review.sender.displayAddress': adminReviewEventMessagingBudgetCallableResponseReviewSenderDisplayAddress,
+    'adminReviewEventMessagingBudgetCallableResponse.review.sender.displayName': adminReviewEventMessagingBudgetCallableResponseReviewSenderDisplayName,
+    'adminReviewEventMessagingBudgetCallableResponse.review.sender.reviewHash': adminReviewEventMessagingBudgetCallableResponseReviewSenderReviewHash,
+    'adminReviewEventMessagingBudgetCallableResponse.review.sender.routeId': adminReviewEventMessagingBudgetCallableResponseReviewSenderRouteId,
+    'adminReviewEventMessagingBudgetCallableResponse.review.sender.senderId': adminReviewEventMessagingBudgetCallableResponseReviewSenderSenderId,
+    'adminReviewEventMessagingBudgetCallableResponse.review.senderId': adminReviewEventMessagingBudgetCallableResponseReviewSenderId,
+    'adminReviewEventMessagingBudgetCallableResponse.schemaVersion': adminReviewEventMessagingBudgetCallableResponseSchemaVersion,
     'adminSetAdminUserRolesCallablePayload.note': adminSetAdminUserRolesCallablePayloadNote,
     'adminSetAdminUserRolesCallablePayload.roles': adminSetAdminUserRolesCallablePayloadRoles,
     'adminSetAdminUserRolesCallablePayload.roles.items': adminSetAdminUserRolesCallablePayloadRolesItems,

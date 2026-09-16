@@ -4,10 +4,12 @@ import addFormats from "ajv-formats";
 
 const model = {
   "names": [
+    "adminApplyEventMessagingBudget",
     "adminAssignSafetyTriageItem",
     "adminCreateMarketingContentDraft",
     "adminCreateOrganizerDraftFromCandidate",
     "adminDecideAccessApplication",
+    "adminDecideEventMessagingBudget",
     "adminDecideOrganizerClaim",
     "adminDecideOrganizerEventCandidate",
     "adminDecideOrganizerIntake",
@@ -38,6 +40,7 @@ const model = {
     "adminRecordMarketingReviewDecision",
     "adminRecordOrganizerCuration",
     "adminResolveOrganizerEventLocation",
+    "adminReviewEventMessagingBudget",
     "adminSetAdminUserRoles",
     "adminSetCrossPathsShowcaseEligibility",
     "adminSetOrganizerIndexStatus",
@@ -48,302 +51,33 @@ const model = {
   "schemas": [
     {
       "$schema": "http://json-schema.org/draft-07/schema#",
-      "$id": "https://catch.app/contracts/callables/admin_assign_safety_triage_item_payload.schema.json",
-      "title": "Admin Assign Safety Triage Item Callable Payload",
+      "$id": "https://catch.app/contracts/callables/admin_apply_event_messaging_budget_payload.schema.json",
+      "title": "AdminApplyEventMessagingBudgetCallablePayload",
+      "description": "Stages one still-current approved event-messaging budget decision as paused event and sender-day ceilings. The operation grants no spending or dispatch authority and cannot activate a worker.",
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "targetPath",
-        "assigneeUid",
+        "requestId",
+        "decisionId",
+        "expectedDecisionRevision",
         "note"
       ],
       "properties": {
-        "targetPath": {
-          "type": "string",
-          "maxLength": 260,
-          "pattern": "^(reports|moderationFlags|eventSafetyReports|eventAssistanceCases)/[^/]+$"
+        "requestId": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
         },
-        "assigneeUid": {
-          "anyOf": [
-            {
-              "type": "string",
-              "pattern": "^[A-Za-z0-9_-]{3,128}$"
-            },
-            {
-              "type": "null"
-            }
-          ]
+        "decisionId": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        },
+        "expectedDecisionRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
         },
         "note": {
           "type": "string",
           "minLength": 1,
           "maxLength": 1000
-        }
-      }
-    },
-    {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "$id": "https://catch.app/contracts/callables/admin_create_marketing_content_draft_payload.schema.json",
-      "title": "Admin Create Marketing Content Draft Callable Payload",
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "draftType"
-      ],
-      "properties": {
-        "draftType": {
-          "type": "string",
-          "enum": [
-            "event_highlights",
-            "feature_explainer"
-          ]
-        },
-        "cityId": {
-          "anyOf": [
-            {
-              "type": "string",
-              "pattern": "^[a-z0-9-]{2,60}$"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "weekStart": {
-          "anyOf": [
-            {
-              "type": "string",
-              "format": "date"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "sourceRecommendationSetId": {
-          "anyOf": [
-            {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 180
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "title": {
-          "anyOf": [
-            {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 140
-            },
-            {
-              "type": "null"
-            }
-          ]
-        }
-      }
-    },
-    {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "$id": "https://catch.app/contracts/callables/admin_create_organizer_draft_from_candidate_payload.schema.json",
-      "title": "AdminCreateOrganizerDraftFromCandidateCallablePayload",
-      "description": "Creates one unclaimed, source-backed organizer draft from an exact reviewed Supply Intake work item. The callable cannot publish, index, expose in the app, enable crawling, or assign ownership.",
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "workItemId",
-        "candidateId",
-        "publicSlug",
-        "name",
-        "organizerType",
-        "reviewNote"
-      ],
-      "properties": {
-        "workItemId": {
-          "$ref": "../operations/common.schema.json#/definitions/id"
-        },
-        "candidateId": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 240
-        },
-        "publicSlug": {
-          "type": "string",
-          "minLength": 3,
-          "maxLength": 64,
-          "pattern": "^[a-z0-9](?:[a-z0-9-]{1,62}[a-z0-9])$",
-          "description": "Human-readable public route slug. The callable allocates a separate opaque Firestore organizer document id."
-        },
-        "name": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 120
-        },
-        "organizerType": {
-          "$ref": "../shared/event_common.schema.json#/definitions/organizerType"
-        },
-        "reviewNote": {
-          "type": "string",
-          "minLength": 10,
-          "maxLength": 500
-        }
-      }
-    },
-    {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "$id": "https://catch.app/contracts/operations/common.schema.json",
-      "title": "OperationsCommonDefinitions",
-      "definitions": {
-        "id": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 180,
-          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-        },
-        "workflowId": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 120,
-          "pattern": "^[a-z][a-z0-9_-]*$"
-        },
-        "code": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 120,
-          "pattern": "^[a-z][a-z0-9_.:-]*$"
-        },
-        "isoDateTime": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "nullableIsoDateTime": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "format": "date-time"
-        },
-        "sha256": {
-          "type": "string",
-          "pattern": "^[a-f0-9]{64}$"
-        },
-        "actor": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "actorType",
-            "actorId"
-          ],
-          "properties": {
-            "actorType": {
-              "type": "string",
-              "enum": [
-                "human",
-                "agent",
-                "system"
-              ]
-            },
-            "actorId": {
-              "$ref": "#/definitions/id"
-            }
-          }
-        },
-        "evidenceRef": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "artifactId",
-            "contentHash",
-            "observedAt",
-            "locator"
-          ],
-          "properties": {
-            "artifactId": {
-              "$ref": "#/definitions/id"
-            },
-            "contentHash": {
-              "$ref": "#/definitions/sha256"
-            },
-            "observedAt": {
-              "$ref": "#/definitions/isoDateTime"
-            },
-            "locator": {
-              "type": [
-                "string",
-                "null"
-              ],
-              "maxLength": 1000
-            }
-          }
-        },
-        "failure": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "code",
-            "message",
-            "retryable"
-          ],
-          "properties": {
-            "code": {
-              "$ref": "#/definitions/code"
-            },
-            "message": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 2000
-            },
-            "retryable": {
-              "type": "boolean"
-            }
-          }
-        },
-        "metricSet": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "fieldExactness",
-            "eventPrecision",
-            "duplicatePrecision",
-            "duplicateRecall",
-            "correctionRate",
-            "escalationRate"
-          ],
-          "properties": {
-            "fieldExactness": {
-              "type": "number",
-              "minimum": 0,
-              "maximum": 1
-            },
-            "eventPrecision": {
-              "type": "number",
-              "minimum": 0,
-              "maximum": 1
-            },
-            "duplicatePrecision": {
-              "type": "number",
-              "minimum": 0,
-              "maximum": 1
-            },
-            "duplicateRecall": {
-              "type": "number",
-              "minimum": 0,
-              "maximum": 1
-            },
-            "correctionRate": {
-              "type": "number",
-              "minimum": 0,
-              "maximum": 1
-            },
-            "escalationRate": {
-              "type": "number",
-              "minimum": 0,
-              "maximum": 1
-            }
-          }
         }
       }
     },
@@ -2177,6 +1911,307 @@ const model = {
     },
     {
       "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_assign_safety_triage_item_payload.schema.json",
+      "title": "Admin Assign Safety Triage Item Callable Payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "targetPath",
+        "assigneeUid",
+        "note"
+      ],
+      "properties": {
+        "targetPath": {
+          "type": "string",
+          "maxLength": 260,
+          "pattern": "^(reports|moderationFlags|eventSafetyReports|eventAssistanceCases)/[^/]+$"
+        },
+        "assigneeUid": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]{3,128}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "note": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_create_marketing_content_draft_payload.schema.json",
+      "title": "Admin Create Marketing Content Draft Callable Payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "draftType"
+      ],
+      "properties": {
+        "draftType": {
+          "type": "string",
+          "enum": [
+            "event_highlights",
+            "feature_explainer"
+          ]
+        },
+        "cityId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[a-z0-9-]{2,60}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "weekStart": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "sourceRecommendationSetId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "title": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 140
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_create_organizer_draft_from_candidate_payload.schema.json",
+      "title": "AdminCreateOrganizerDraftFromCandidateCallablePayload",
+      "description": "Creates one unclaimed, source-backed organizer draft from an exact reviewed Supply Intake work item. The callable cannot publish, index, expose in the app, enable crawling, or assign ownership.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "workItemId",
+        "candidateId",
+        "publicSlug",
+        "name",
+        "organizerType",
+        "reviewNote"
+      ],
+      "properties": {
+        "workItemId": {
+          "$ref": "../operations/common.schema.json#/definitions/id"
+        },
+        "candidateId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "publicSlug": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 64,
+          "pattern": "^[a-z0-9](?:[a-z0-9-]{1,62}[a-z0-9])$",
+          "description": "Human-readable public route slug. The callable allocates a separate opaque Firestore organizer document id."
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "organizerType": {
+          "$ref": "../shared/event_common.schema.json#/definitions/organizerType"
+        },
+        "reviewNote": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 500
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/operations/common.schema.json",
+      "title": "OperationsCommonDefinitions",
+      "definitions": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "workflowId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120,
+          "pattern": "^[a-z][a-z0-9_-]*$"
+        },
+        "code": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120,
+          "pattern": "^[a-z][a-z0-9_.:-]*$"
+        },
+        "isoDateTime": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "nullableIsoDateTime": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "actor": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "actorType",
+            "actorId"
+          ],
+          "properties": {
+            "actorType": {
+              "type": "string",
+              "enum": [
+                "human",
+                "agent",
+                "system"
+              ]
+            },
+            "actorId": {
+              "$ref": "#/definitions/id"
+            }
+          }
+        },
+        "evidenceRef": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "artifactId",
+            "contentHash",
+            "observedAt",
+            "locator"
+          ],
+          "properties": {
+            "artifactId": {
+              "$ref": "#/definitions/id"
+            },
+            "contentHash": {
+              "$ref": "#/definitions/sha256"
+            },
+            "observedAt": {
+              "$ref": "#/definitions/isoDateTime"
+            },
+            "locator": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 1000
+            }
+          }
+        },
+        "failure": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "code",
+            "message",
+            "retryable"
+          ],
+          "properties": {
+            "code": {
+              "$ref": "#/definitions/code"
+            },
+            "message": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "retryable": {
+              "type": "boolean"
+            }
+          }
+        },
+        "metricSet": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "fieldExactness",
+            "eventPrecision",
+            "duplicatePrecision",
+            "duplicateRecall",
+            "correctionRate",
+            "escalationRate"
+          ],
+          "properties": {
+            "fieldExactness": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "eventPrecision": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "duplicatePrecision": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "duplicateRecall": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "correctionRate": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "escalationRate": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            }
+          }
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
       "$id": "https://catch.app/contracts/callables/admin_decide_access_application_payload.schema.json",
       "title": "Admin Decide Access Application Callable Payload",
       "type": "object",
@@ -2219,5992 +2254,244 @@ const model = {
     },
     {
       "$schema": "http://json-schema.org/draft-07/schema#",
-      "$id": "https://catch.app/contracts/callables/admin_decide_club_claim_payload.schema.json",
-      "title": "AdminDecideClubClaimCallablePayload",
-      "description": "Callable payload accepted by adminDecideClubClaim.",
+      "$id": "https://catch.app/contracts/callables/admin_decide_event_messaging_budget_payload.schema.json",
+      "title": "AdminDecideEventMessagingBudgetCallablePayload",
+      "description": "Finance review decision for proposed event-messaging ceilings. The callable records evidence only and does not create, update, or activate a spending budget.",
       "type": "object",
       "additionalProperties": false,
       "required": [
         "requestId",
-        "decision"
+        "organizerId",
+        "eventId",
+        "routeId",
+        "senderId",
+        "purpose",
+        "expectedRevision",
+        "expectedRuntimeSourceHash",
+        "expectedSenderReviewHash",
+        "expectedBudgetSourceHash",
+        "decision",
+        "note"
       ],
       "properties": {
         "requestId": {
           "$ref": "../shared/event_common.schema.json#/definitions/documentId"
         },
-        "decision": {
-          "type": "string",
-          "enum": [
-            "approve",
-            "reject"
-          ]
-        },
-        "decisionReason": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "maxLength": 1000
-        }
-      }
-    },
-    {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "$id": "https://catch.app/contracts/callables/admin_decide_organizer_event_candidate_payload.schema.json",
-      "title": "AdminDecideOrganizerEventCandidateCallablePayload",
-      "description": "Callable payload accepted by adminDecideOrganizerEventCandidate. This records a manual admin review decision for a private external event candidate without importing the event.",
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "candidateId",
-        "decision",
-        "checklist",
-        "blockerResolutions",
-        "note"
-      ],
-      "properties": {
-        "candidateId": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 240
-        },
-        "decision": {
-          "type": "string",
-          "enum": [
-            "approve_for_import",
-            "hold",
-            "reject"
-          ]
-        },
-        "checklist": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "identityReviewed",
-            "sourceEventReviewed",
-            "timeReviewed",
-            "locationReviewed",
-            "dedupeReviewed",
-            "ownerSafeCopyReviewed",
-            "importPolicyAcknowledged"
-          ],
-          "properties": {
-            "identityReviewed": {
-              "type": "boolean"
-            },
-            "sourceEventReviewed": {
-              "type": "boolean"
-            },
-            "timeReviewed": {
-              "type": "boolean"
-            },
-            "locationReviewed": {
-              "type": "boolean"
-            },
-            "dedupeReviewed": {
-              "type": "boolean"
-            },
-            "ownerSafeCopyReviewed": {
-              "type": "boolean"
-            },
-            "importPolicyAcknowledged": {
-              "type": "boolean"
-            }
-          }
-        },
-        "blockerResolutions": {
-          "type": "array",
-          "maxItems": 6,
-          "items": {
-            "$ref": "../embedded/external_event_blocker_resolution.schema.json"
-          }
-        },
-        "note": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 1000
-        }
-      }
-    },
-    {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "$id": "https://catch.app/contracts/embedded/external_event_blocker_resolution.schema.json",
-      "title": "ExternalEventBlockerResolution",
-      "description": "One explicit, event-scoped resolution or policy-backed waiver for a governed external-event import blocker.",
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "blockerCode",
-        "outcome",
-        "policyGapDecisionId",
-        "note"
-      ],
-      "properties": {
-        "blockerCode": {
-          "type": "string",
-          "enum": [
-            "missing_exact_coordinates",
-            "missing_end_time",
-            "missing_location_detail",
-            "requires_event_defaults_policy",
-            "requires_owner_safe_copy_review",
-            "duplicate_normalized_event_key"
-          ]
-        },
-        "outcome": {
-          "type": "string",
-          "enum": [
-            "resolved",
-            "waived"
-          ]
-        },
-        "policyGapDecisionId": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "minLength": 1,
-          "maxLength": 180
-        },
-        "note": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 1000
-        }
-      },
-      "allOf": [
-        {
-          "if": {
-            "properties": {
-              "outcome": {
-                "const": "waived"
-              }
-            }
-          },
-          "then": {
-            "properties": {
-              "policyGapDecisionId": {
-                "type": "string"
-              }
-            }
-          }
-        },
-        {
-          "if": {
-            "properties": {
-              "outcome": {
-                "const": "resolved"
-              }
-            }
-          },
-          "then": {
-            "properties": {
-              "policyGapDecisionId": {
-                "type": "null"
-              }
-            }
-          }
-        }
-      ]
-    },
-    {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "$id": "https://catch.app/contracts/callables/admin_decide_organizer_intake_payload.schema.json",
-      "title": "AdminDecideOrganizerIntakeCallablePayload",
-      "description": "Callable payload accepted by adminDecideOrganizerIntake. This records a manual admin review decision for a private organizer-intake candidate.",
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "entityId",
-        "decision",
-        "publishStatus",
-        "indexStatus",
-        "appVisibility",
-        "checklist",
-        "note"
-      ],
-      "properties": {
-        "entityId": {
-          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
-        },
-        "decision": {
-          "type": "string",
-          "enum": [
-            "approve_public",
-            "hold",
-            "suppress"
-          ]
-        },
-        "publishStatus": {
-          "type": "string",
-          "enum": [
-            "draft",
-            "published",
-            "suppressed"
-          ],
-          "description": "Explicit public-web publication switch. Approval does not imply publication."
-        },
-        "indexStatus": {
-          "type": "string",
-          "enum": [
-            "noindex",
-            "indexed"
-          ],
-          "description": "Explicit search-indexing switch. Indexed requires a published web page."
-        },
-        "appVisibility": {
-          "type": "string",
-          "enum": [
-            "hidden",
-            "discoverable"
-          ]
-        },
-        "checklist": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "identityReviewed",
-            "surfaceInventoryReviewed",
-            "ownerSafeCopyReviewed",
-            "marketScopeReviewed",
-            "mediaRightsReviewed",
-            "crawlDisabledReviewed"
-          ],
-          "properties": {
-            "identityReviewed": {
-              "type": "boolean"
-            },
-            "surfaceInventoryReviewed": {
-              "type": "boolean"
-            },
-            "ownerSafeCopyReviewed": {
-              "type": "boolean"
-            },
-            "marketScopeReviewed": {
-              "type": "boolean"
-            },
-            "mediaRightsReviewed": {
-              "type": "boolean"
-            },
-            "crawlDisabledReviewed": {
-              "type": "boolean"
-            },
-            "manualReportsReviewed": {
-              "type": "boolean",
-              "description": "True when the reviewer explicitly inspected manual reports that have no local raw artifact. Raw evidence remains outside Firestore; replay validation decides when this acknowledgement is required."
-            },
-            "claimTargetReviewed": {
-              "type": "boolean"
-            },
-            "takedownPathReviewed": {
-              "type": "boolean"
-            },
-            "impersonationReviewed": {
-              "type": "boolean"
-            },
-            "operatingStatusReviewed": {
-              "type": "boolean"
-            },
-            "eventAccuracyReviewed": {
-              "type": "boolean"
-            },
-            "unclaimedAffordancesReviewed": {
-              "type": "boolean"
-            }
-          }
-        },
-        "note": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 1000
-        }
-      }
-    },
-    {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "$id": "https://catch.app/contracts/callables/admin_decide_organizer_policy_gap_payload.schema.json",
-      "title": "AdminDecideOrganizerPolicyGapCallablePayload",
-      "description": "Callable payload accepted by adminDecideOrganizerPolicyGap. This records a manual product/admin review decision for an organizer intake policy gap without enabling crawls, provider lookups, imports, defaults, or naming migrations.",
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "gapId",
-        "decision",
-        "requiredInputsReviewed",
-        "checklist",
-        "note"
-      ],
-      "properties": {
-        "gapId": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 160
-        },
-        "decision": {
-          "type": "string",
-          "enum": [
-            "accept",
-            "hold",
-            "reject"
-          ]
-        },
-        "requiredInputsReviewed": {
-          "type": "array",
-          "maxItems": 20,
-          "items": {
-            "type": "string",
-            "minLength": 1,
-            "maxLength": 240
-          },
-          "uniqueItems": true
-        },
-        "checklist": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "requiredInputsReviewed",
-            "costAndSafetyReviewed",
-            "implementationOwnerReviewed",
-            "behaviorStillDisabledAcknowledged"
-          ],
-          "properties": {
-            "requiredInputsReviewed": {
-              "type": "boolean"
-            },
-            "costAndSafetyReviewed": {
-              "type": "boolean"
-            },
-            "implementationOwnerReviewed": {
-              "type": "boolean"
-            },
-            "behaviorStillDisabledAcknowledged": {
-              "type": "boolean"
-            }
-          }
-        },
-        "note": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 1000
-        }
-      }
-    },
-    {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "$id": "https://catch.app/contracts/callables/admin_decide_safety_triage_item_payload.schema.json",
-      "title": "Admin Decide Safety Triage Item Callable Payload",
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "targetPath",
-        "decision",
-        "note"
-      ],
-      "properties": {
-        "targetPath": {
-          "$ref": "#/definitions/targetPath"
-        },
-        "decision": {
-          "type": "string",
-          "enum": [
-            "review",
-            "dismiss"
-          ]
-        },
-        "note": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 1000
-        }
-      },
-      "definitions": {
-        "targetPath": {
-          "type": "string",
-          "maxLength": 260,
-          "pattern": "^(reports|moderationFlags|eventSafetyReports|eventAssistanceCases)/[^/]+$"
-        }
-      }
-    },
-    {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "$id": "https://catch.app/contracts/callables/admin_get_access_application_details_payload.schema.json",
-      "title": "AdminGetAccessApplicationDetailsCallablePayload",
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "applicationUid"
-      ],
-      "properties": {
-        "applicationUid": {
-          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
-        }
-      }
-    },
-    {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "$id": "https://catch.app/contracts/callables/admin_get_admin_user_roles_payload.schema.json",
-      "title": "AdminGetAdminUserRolesCallablePayload",
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "targetUid"
-      ],
-      "properties": {
-        "targetUid": {
-          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
-        }
-      }
-    },
-    {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "$id": "https://catch.app/contracts/callables/admin_get_event_details_payload.schema.json",
-      "title": "AdminGetEventDetailsCallablePayload",
-      "description": "Callable payload accepted by adminGetEventDetails. This loads a canonical events/{eventId} document for the admin event publishing workspace.",
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "eventId"
-      ],
-      "properties": {
-        "eventId": {
-          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
-        }
-      }
-    },
-    {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "$id": "https://catch.app/contracts/callables/admin_get_event_intake_dashboard_payload.schema.json",
-      "title": "AdminGetEventIntakeDashboardCallablePayload",
-      "type": "object",
-      "additionalProperties": false
-    },
-    {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "$id": "https://catch.app/contracts/callables/admin_get_event_supply_readiness_payload.schema.json",
-      "title": "AdminGetEventSupplyReadinessCallablePayload",
-      "type": "object",
-      "additionalProperties": false
-    },
-    {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "$id": "https://catch.app/contracts/callables/admin_get_marketing_ops_dashboard_payload.schema.json",
-      "title": "AdminGetMarketingOpsDashboardCallablePayload",
-      "type": "object",
-      "additionalProperties": false
-    },
-    {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "$id": "https://catch.app/contracts/callables/admin_get_organizer_details_payload.schema.json",
-      "title": "AdminGetOrganizerDetailsCallablePayload",
-      "description": "Callable payload accepted by adminGetOrganizerDetails.",
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "organizerId"
-      ],
-      "properties": {
         "organizerId": {
           "$ref": "../shared/event_common.schema.json#/definitions/documentId"
-        }
-      }
-    },
-    {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "$id": "https://catch.app/contracts/callables/admin_get_overview_payload.schema.json",
-      "title": "Admin Get Overview Callable Payload",
-      "type": "object",
-      "additionalProperties": false
-    },
-    {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "$id": "https://catch.app/contracts/callables/admin_get_safety_triage_details_payload.schema.json",
-      "title": "AdminGetSafetyTriageDetailsCallablePayload",
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "targetPath"
-      ],
-      "properties": {
-        "targetPath": {
-          "type": "string",
-          "pattern": "^(reports|moderationFlags|eventSafetyReports|eventAssistanceCases)/[A-Za-z0-9][A-Za-z0-9._:-]{0,179}$"
-        }
-      }
-    },
-    {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "$id": "https://catch.app/contracts/callables/admin_list_action_executions_payload.schema.json",
-      "title": "AdminListActionExecutionsCallablePayload",
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "limit": {
-          "type": "integer",
-          "minimum": 1,
-          "maximum": 100
         },
-        "cursor": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "maxLength": 1000
-        }
-      }
-    },
-    {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "$id": "https://catch.app/contracts/callables/admin_list_admin_role_assignments_payload.schema.json",
-      "title": "AdminListAdminRoleAssignmentsCallablePayload",
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "status": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "enum": [
-            "active",
-            "revoked",
-            "all",
-            null
-          ]
-        },
-        "limit": {
-          "type": [
-            "integer",
-            "null"
-          ],
-          "minimum": 1,
-          "maximum": 100
-        }
-      }
-    },
-    {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "$id": "https://catch.app/contracts/callables/admin_list_cross_paths_showcase_candidates_payload.schema.json",
-      "title": "AdminListCrossPathsShowcaseCandidatesCallablePayload",
-      "description": "Callable payload for a bounded, role-gated Cross Paths showcase review queue.",
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "uid": {
-          "anyOf": [
-            {
-              "$ref": "../shared/event_common.schema.json#/definitions/documentId"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "status": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "enum": [
-            "all",
-            "eligible",
-            "needsReview",
-            "paused",
-            null
-          ]
-        },
-        "marketId": {
-          "anyOf": [
-            {
-              "$ref": "../shared/event_common.schema.json#/definitions/marketId"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "cursor": {
-          "anyOf": [
-            {
-              "$ref": "../shared/event_common.schema.json#/definitions/documentId"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "limit": {
-          "type": "integer",
-          "minimum": 1,
-          "maximum": 50
-        }
-      }
-    },
-    {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "$id": "https://catch.app/contracts/callables/admin_list_event_details_payload.schema.json",
-      "title": "AdminListEventDetailsCallablePayload",
-      "description": "Callable payload accepted by adminListEventDetails. This lists canonical events/{eventId} rows for the admin event publishing workspace.",
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "query": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "maxLength": 160
-        },
-        "clubId": {
-          "anyOf": [
-            {
-              "$ref": "../shared/event_common.schema.json#/definitions/documentId"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "organizerId": {
-          "anyOf": [
-            {
-              "$ref": "../shared/event_common.schema.json#/definitions/documentId"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "citySlug": {
-          "anyOf": [
-            {
-              "$ref": "../shared/event_common.schema.json#/definitions/marketId"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "citySlugs": {
-          "anyOf": [
-            {
-              "type": "array",
-              "items": {
-                "$ref": "../shared/event_common.schema.json#/definitions/marketId"
-              },
-              "minItems": 1,
-              "maxItems": 10,
-              "uniqueItems": true
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "activityKind": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "enum": [
-            "socialRun",
-            "running",
-            "walking",
-            "pickleball",
-            "padel",
-            "tennis",
-            "badminton",
-            "cycling",
-            "spinClass",
-            "yoga",
-            "strengthTraining",
-            "pubQuiz",
-            "barCrawl",
-            "dinner",
-            "singlesMixer",
-            "openActivity",
-            null
-          ]
-        },
-        "status": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "enum": [
-            "active",
-            "cancelled",
-            null
-          ]
-        },
-        "timeWindow": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "enum": [
-            "upcoming",
-            "past",
-            "all",
-            null
-          ],
-          "description": "Optional server-side startTime window used by admin event lists. Upcoming and past are evaluated against callable server time."
-        },
-        "limit": {
-          "type": "integer",
-          "minimum": 1,
-          "maximum": 100
-        }
-      }
-    },
-    {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "$id": "https://catch.app/contracts/callables/admin_list_external_event_details_payload.schema.json",
-      "title": "AdminListExternalEventDetailsCallablePayload",
-      "description": "Callable payload accepted by adminListExternalEventDetails. This lists read-only externalEvents/{eventId} rows for the admin event supply workspace.",
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "query": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "maxLength": 160
-        },
-        "citySlug": {
-          "anyOf": [
-            {
-              "$ref": "../shared/event_common.schema.json#/definitions/citySlug"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "citySlugs": {
-          "anyOf": [
-            {
-              "type": "array",
-              "items": {
-                "$ref": "../shared/event_common.schema.json#/definitions/citySlug"
-              },
-              "minItems": 1,
-              "maxItems": 10,
-              "uniqueItems": true
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "publicationStatus": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "enum": [
-            "draft",
-            "public",
-            "archived",
-            "removed",
-            null
-          ]
-        },
-        "status": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "enum": [
-            "active",
-            "cancelled",
-            null
-          ]
-        },
-        "timeWindow": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "enum": [
-            "upcoming",
-            "past",
-            "all",
-            null
-          ],
-          "description": "Optional server-side startTime window used by admin external event lists. Upcoming and past are evaluated against callable server time."
-        },
-        "limit": {
-          "type": "integer",
-          "minimum": 1,
-          "maximum": 100
-        }
-      }
-    },
-    {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "$id": "https://catch.app/contracts/callables/admin_list_intake_operations_payload.schema.json",
-      "title": "AdminListIntakeOperationsCallablePayload",
-      "description": "Read-only filters for the durable Supply Intake operations inventory. This callable never requests or executes a run.",
-      "type": "object",
-      "additionalProperties": false,
-      "allOf": [
-        {
-          "if": {
-            "required": [
-              "humanReviewRequired"
-            ],
-            "properties": {
-              "humanReviewRequired": {
-                "const": true
-              }
-            }
-          },
-          "then": {
-            "properties": {
-              "primaryStage": {
-                "type": "null"
-              },
-              "entityKind": {
-                "type": "null"
-              },
-              "lifecycleStatus": {
-                "type": "null"
-              }
-            }
-          }
-        }
-      ],
-      "properties": {
-        "workflowId": {
-          "type": "string",
-          "enum": [
-            "supply-intake"
-          ]
-        },
-        "runId": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "minLength": 1,
-          "maxLength": 160,
-          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-        },
-        "primaryStage": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "enum": [
-            "incoming",
-            "verify",
-            "resolve",
-            "ready",
-            null
-          ]
-        },
-        "entityKind": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "enum": [
-            "event",
-            "organizer",
-            "source_result",
-            "source_profile",
-            null
-          ]
-        },
-        "lifecycleStatus": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "enum": [
-            "queued",
-            "in_progress",
-            "waiting",
-            "ready",
-            "published",
-            "terminal",
-            null
-          ]
-        },
-        "runStatus": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "enum": [
-            "planned",
-            "queued",
-            "running",
-            "paused",
-            "completed",
-            "failed",
-            "cancelled",
-            null
-          ]
-        },
-        "humanReviewRequired": {
-          "type": "boolean",
-          "description": "When true, returns only work items carrying the canonical human_review_required task flag."
-        },
-        "runLimit": {
-          "type": "integer",
-          "minimum": 1,
-          "maximum": 25
-        },
-        "workItemLimit": {
-          "type": "integer",
-          "minimum": 1,
-          "maximum": 200
-        },
-        "runCursor": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "maxLength": 1000
-        },
-        "workItemCursor": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "maxLength": 1000
-        }
-      }
-    },
-    {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "$id": "https://catch.app/contracts/callables/admin_list_organizer_details_payload.schema.json",
-      "title": "AdminListOrganizerDetailsCallablePayload",
-      "description": "Callable payload accepted by adminListOrganizerDetails. This lists canonical organizer profile rows from organizers/{organizerId} for the admin publishing workspace.",
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "query": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "maxLength": 160
-        },
-        "citySlug": {
-          "anyOf": [
-            {
-              "$ref": "../shared/event_common.schema.json#/definitions/marketId"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "citySlugs": {
-          "anyOf": [
-            {
-              "type": "array",
-              "items": {
-                "$ref": "../shared/event_common.schema.json#/definitions/marketId"
-              },
-              "minItems": 1,
-              "maxItems": 10,
-              "uniqueItems": true
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "publishStatus": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "enum": [
-            "draft",
-            "qa",
-            "published",
-            "suppressed",
-            "removed",
-            null
-          ]
-        },
-        "appVisibility": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "enum": [
-            "discoverable",
-            "hidden",
-            null
-          ]
-        },
-        "limit": {
-          "type": "integer",
-          "minimum": 1,
-          "maximum": 100
-        }
-      }
-    },
-    {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "$id": "https://catch.app/contracts/callables/admin_publish_external_event_payload.schema.json",
-      "title": "AdminPublishExternalEventCallablePayload",
-      "description": "Callable payload accepted by adminPublishExternalEvent. This publishes one preflight-approved read-only externalEvents/{eventId} document from eventSupplyReadiness/current.",
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "sourceActionId",
-        "targetPath",
-        "executionMode",
-        "idempotencyKey",
-        "reviewNote",
-        "checklist"
-      ],
-      "properties": {
-        "sourceActionId": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 240
-        },
-        "targetPath": {
-          "type": "string",
-          "pattern": "^externalEvents/[A-Za-z0-9_-]{1,180}$"
-        },
-        "executionMode": {
-          "type": "string",
-          "enum": [
-            "dry_run",
-            "apply"
-          ]
-        },
-        "idempotencyKey": {
-          "type": "string",
-          "minLength": 8,
-          "maxLength": 180,
-          "pattern": "^[A-Za-z0-9:_-]+$"
-        },
-        "reviewNote": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 1000
-        },
-        "checklist": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "preflightActionReviewed",
-            "outboundLinksReviewed",
-            "noCatchBookingPaymentsWaitlist",
-            "ownerSafeCopyReviewed"
-          ],
-          "properties": {
-            "preflightActionReviewed": {
-              "type": "boolean"
-            },
-            "outboundLinksReviewed": {
-              "type": "boolean"
-            },
-            "noCatchBookingPaymentsWaitlist": {
-              "type": "boolean"
-            },
-            "ownerSafeCopyReviewed": {
-              "type": "boolean"
-            }
-          }
-        }
-      }
-    },
-    {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "$id": "https://catch.app/contracts/callables/admin_record_event_intake_review_decision_payload.schema.json",
-      "title": "AdminRecordEventIntakeReviewDecisionCallablePayload",
-      "description": "Callable payload accepted by adminRecordEventIntakeReviewDecision. This records a manual admin decision for private event-intake artifacts without publishing marketing content or creating canonical events.",
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "targetType",
-        "targetId",
-        "decision",
-        "checklist",
-        "note"
-      ],
-      "properties": {
-        "targetType": {
-          "type": "string",
-          "enum": [
-            "source_profile",
-            "query_template",
-            "run_plan",
-            "source_result",
-            "event_candidate"
-          ]
-        },
-        "targetId": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 240
-        },
-        "decision": {
-          "type": "string",
-          "enum": [
-            "approve",
-            "needs_changes",
-            "hold",
-            "reject"
-          ]
-        },
-        "runId": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "maxLength": 180
-        },
-        "note": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 2000
-        },
-        "edits": {
-          "type": "object",
-          "description": "Changed fields only. Each entry freezes the reviewed before and after values so extractor-learning and audit consumers can distinguish a correction from a whole-record resubmission.",
-          "maxProperties": 40,
-          "additionalProperties": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": [
-              "before",
-              "after"
-            ],
-            "properties": {
-              "before": {},
-              "after": {}
-            }
-          }
-        },
-        "checklist": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "sourceReviewed",
-            "dateReviewed",
-            "venueReviewed",
-            "copyReviewed",
-            "rightsReviewed",
-            "noCatchHostingImplied"
-          ],
-          "properties": {
-            "sourceReviewed": {
-              "type": "boolean"
-            },
-            "dateReviewed": {
-              "type": "boolean"
-            },
-            "venueReviewed": {
-              "type": "boolean"
-            },
-            "copyReviewed": {
-              "type": "boolean"
-            },
-            "rightsReviewed": {
-              "type": "boolean"
-            },
-            "noCatchHostingImplied": {
-              "type": "boolean"
-            }
-          }
-        }
-      }
-    },
-    {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "$id": "https://catch.app/contracts/callables/admin_record_marketing_review_decision_payload.schema.json",
-      "title": "Admin Record Marketing Review Decision Callable Payload",
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "targetType",
-        "targetId",
-        "decision",
-        "note"
-      ],
-      "properties": {
-        "targetType": {
-          "type": "string",
-          "enum": [
-            "source_profile",
-            "query_template",
-            "run_plan",
-            "source_result",
-            "event_candidate",
-            "recommendation_item",
-            "recommendation_set",
-            "content_draft"
-          ]
-        },
-        "targetId": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 500
-        },
-        "decision": {
-          "type": "string",
-          "enum": [
-            "approve",
-            "needs_changes",
-            "hold",
-            "reject",
-            "export_ready"
-          ]
-        },
-        "runId": {
-          "anyOf": [
-            {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 180
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "note": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 2000
-        },
-        "edits": {
-          "type": "object",
-          "additionalProperties": true
-        },
-        "checklist": {
-          "$ref": "#/definitions/checklist"
-        }
-      },
-      "definitions": {
-        "checklist": {
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "sourceReviewed": {
-              "type": "boolean"
-            },
-            "dateReviewed": {
-              "type": "boolean"
-            },
-            "venueReviewed": {
-              "type": "boolean"
-            },
-            "copyReviewed": {
-              "type": "boolean"
-            },
-            "rightsReviewed": {
-              "type": "boolean"
-            },
-            "noCatchHostingImplied": {
-              "type": "boolean"
-            }
-          }
-        }
-      }
-    },
-    {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "$id": "https://catch.app/contracts/callables/admin_record_organizer_curation_payload.schema.json",
-      "title": "AdminRecordOrganizerCurationCallablePayload",
-      "description": "Callable payload accepted by adminRecordOrganizerCuration. This records one durable low-volume manual organizer-intake curation operation in Firestore.",
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "operationType",
-        "reason"
-      ],
-      "properties": {
-        "operationId": {
-          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
-        },
-        "operationType": {
-          "type": "string",
-          "enum": [
-            "attach_surface",
-            "merge_entity",
-            "split_surface",
-            "suppress_entity",
-            "surface_decision"
-          ]
-        },
-        "entityId": {
-          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
-        },
-        "sourceEntityId": {
-          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
-        },
-        "targetEntityId": {
-          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
-        },
-        "surfaceId": {
-          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
-        },
-        "newEntityId": {
-          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
-        },
-        "sourceCandidateId": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 240
-        },
-        "decision": {
-          "type": "string",
-          "enum": [
-            "accept_primary",
-            "accept_secondary",
-            "reject_wrong_entity",
-            "mark_ambiguous",
-            "mark_historical"
-          ]
-        },
-        "surface": {
-          "$ref": "#/definitions/surface"
-        },
-        "reason": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 500
-        }
-      },
-      "definitions": {
-        "urlOrNull": {
-          "anyOf": [
-            {
-              "type": "string",
-              "format": "uri"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "surface": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "surfaceId",
-            "platform",
-            "surfaceKind",
-            "url",
-            "normalizedKey",
-            "role",
-            "status",
-            "confidence",
-            "crawl",
-            "evidenceRefs",
-            "notes"
-          ],
-          "properties": {
-            "surfaceId": {
-              "$ref": "../shared/event_common.schema.json#/definitions/documentId"
-            },
-            "platform": {
-              "type": "string",
-              "enum": [
-                "bookMyShow",
-                "district",
-                "instagram",
-                "linkedin",
-                "luma",
-                "news",
-                "officialWebsite",
-                "partiful",
-                "sortMyScene",
-                "userReport",
-                "other"
-              ]
-            },
-            "surfaceKind": {
-              "type": "string",
-              "enum": [
-                "eventListing",
-                "eventCalendar",
-                "organizerProfile",
-                "personProfile",
-                "press",
-                "socialProfile",
-                "website",
-                "wrongEntity"
-              ]
-            },
-            "url": {
-              "$ref": "#/definitions/urlOrNull"
-            },
-            "normalizedKey": {
-              "type": [
-                "string",
-                "null"
-              ],
-              "maxLength": 240
-            },
-            "role": {
-              "type": "string",
-              "enum": [
-                "primary",
-                "secondary",
-                "backup",
-                "historical",
-                "ambiguous",
-                "rejected"
-              ]
-            },
-            "status": {
-              "type": "string",
-              "enum": [
-                "active",
-                "candidate",
-                "ambiguous",
-                "historical",
-                "rejected"
-              ]
-            },
-            "confidence": {
-              "type": "object",
-              "additionalProperties": false,
-              "required": [
-                "entityMatch",
-                "ownership",
-                "city"
-              ],
-              "properties": {
-                "entityMatch": {
-                  "type": "string",
-                  "enum": [
-                    "low",
-                    "medium",
-                    "high"
-                  ]
-                },
-                "ownership": {
-                  "type": "string",
-                  "enum": [
-                    "low",
-                    "medium",
-                    "high"
-                  ]
-                },
-                "city": {
-                  "type": "string",
-                  "enum": [
-                    "low",
-                    "medium",
-                    "high"
-                  ]
-                }
-              }
-            },
-            "crawl": {
-              "type": "object",
-              "additionalProperties": false,
-              "required": [
-                "eventDiscoveryStatus",
-                "policy",
-                "supportsEventExtraction"
-              ],
-              "properties": {
-                "eventDiscoveryStatus": {
-                  "type": "string",
-                  "enum": [
-                    "disabled",
-                    "candidate",
-                    "approved",
-                    "paused"
-                  ]
-                },
-                "policy": {
-                  "type": "string",
-                  "enum": [
-                    "manualOnly",
-                    "blocked",
-                    "apiPreferred"
-                  ]
-                },
-                "supportsEventExtraction": {
-                  "type": "boolean"
-                }
-              }
-            },
-            "evidenceRefs": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/evidenceRef"
-              }
-            },
-            "notes": {
-              "type": "string",
-              "maxLength": 500
-            }
-          }
-        },
-        "evidenceRef": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "type",
-            "ref",
-            "description"
-          ],
-          "properties": {
-            "type": {
-              "type": "string",
-              "enum": [
-                "hostDiscoveryRun",
-                "seedClub",
-                "userReportedSearchResult",
-                "manualNote"
-              ]
-            },
-            "ref": {
-              "type": [
-                "string",
-                "null"
-              ],
-              "maxLength": 240
-            },
-            "description": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 400
-            }
-          }
-        }
-      }
-    },
-    {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "$id": "https://catch.app/contracts/callables/admin_resolve_organizer_event_location_payload.schema.json",
-      "title": "AdminResolveOrganizerEventLocationCallablePayload",
-      "description": "Callable payload accepted by adminResolveOrganizerEventLocation. This records reviewed coordinates for a private external event candidate without importing the event.",
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "candidateId",
-        "location",
-        "checklist",
-        "note"
-      ],
-      "properties": {
-        "candidateId": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 240
-        },
-        "location": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "name",
-            "latitude",
-            "longitude"
-          ],
-          "properties": {
-            "name": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 240
-            },
-            "address": {
-              "type": [
-                "string",
-                "null"
-              ],
-              "maxLength": 500
-            },
-            "placeId": {
-              "type": [
-                "string",
-                "null"
-              ],
-              "minLength": 1,
-              "maxLength": 256
-            },
-            "latitude": {
-              "$ref": "../shared/event_common.schema.json#/definitions/latitude"
-            },
-            "longitude": {
-              "$ref": "../shared/event_common.schema.json#/definitions/longitude"
-            },
-            "notes": {
-              "type": [
-                "string",
-                "null"
-              ],
-              "maxLength": 1000
-            }
-          }
-        },
-        "checklist": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "sourceLocationReviewed",
-            "coordinatesReviewed",
-            "placeIdentityReviewed",
-            "importSafetyReviewed"
-          ],
-          "properties": {
-            "sourceLocationReviewed": {
-              "type": "boolean"
-            },
-            "coordinatesReviewed": {
-              "type": "boolean"
-            },
-            "placeIdentityReviewed": {
-              "type": "boolean"
-            },
-            "importSafetyReviewed": {
-              "type": "boolean"
-            }
-          }
-        },
-        "note": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 1000
-        }
-      }
-    },
-    {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "$id": "https://catch.app/contracts/callables/admin_set_admin_user_roles_payload.schema.json",
-      "title": "Admin Set Admin User Roles Callable Payload",
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "targetUid",
-        "roles",
-        "note"
-      ],
-      "properties": {
-        "targetUid": {
-          "type": "string",
-          "pattern": "^[A-Za-z0-9_-]{3,128}$"
-        },
-        "roles": {
-          "type": "array",
-          "uniqueItems": true,
-          "items": {
-            "$ref": "#/definitions/adminRole"
-          }
-        },
-        "note": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 1000
-        }
-      },
-      "definitions": {
-        "adminRole": {
-          "type": "string",
-          "enum": [
-            "admin",
-            "adminOwner",
-            "safetyReviewer",
-            "support",
-            "finance",
-            "analyticsViewer"
-          ]
-        }
-      }
-    },
-    {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "$id": "https://catch.app/contracts/callables/admin_set_cross_paths_showcase_eligibility_payload.schema.json",
-      "title": "AdminSetCrossPathsShowcaseEligibilityCallablePayload",
-      "description": "Callable payload for an audited human Cross Paths showcase eligibility decision.",
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "uid",
-        "status",
-        "reviewChecklist",
-        "reviewNote"
-      ],
-      "properties": {
-        "uid": {
-          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
-        },
-        "status": {
-          "type": "string",
-          "enum": [
-            "eligible",
-            "needsReview",
-            "paused"
-          ]
-        },
-        "reviewChecklist": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "primaryPortraitClear",
-            "profileRepresentsCurrentMember",
-            "showcasePolicyReviewed"
-          ],
-          "properties": {
-            "primaryPortraitClear": {
-              "type": "boolean"
-            },
-            "profileRepresentsCurrentMember": {
-              "type": "boolean"
-            },
-            "showcasePolicyReviewed": {
-              "type": "boolean"
-            }
-          }
-        },
-        "reviewNote": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 1000
-        }
-      }
-    },
-    {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "$id": "https://catch.app/contracts/callables/admin_takedown_external_event_payload.schema.json",
-      "title": "AdminTakedownExternalEventCallablePayload",
-      "description": "Callable payload accepted by adminTakedownExternalEvent. Dry-run validates and receipts a reviewed takedown; apply removes the external event from discovery without deleting audit history.",
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "eventId",
-        "executionMode",
-        "idempotencyKey",
-        "reviewNote",
-        "checklist"
-      ],
-      "properties": {
-        "eventId": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 180,
-          "pattern": "^[A-Za-z0-9_-]+$"
-        },
-        "executionMode": {
-          "type": "string",
-          "enum": [
-            "dry_run",
-            "apply"
-          ]
-        },
-        "idempotencyKey": {
-          "type": "string",
-          "minLength": 8,
-          "maxLength": 180,
-          "pattern": "^[A-Za-z0-9:_-]+$"
-        },
-        "reviewNote": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 1000
-        },
-        "checklist": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "sourceStatusReviewed",
-            "takedownAuthorityReviewed",
-            "downstreamVisibilityReviewed"
-          ],
-          "properties": {
-            "sourceStatusReviewed": {
-              "type": "boolean"
-            },
-            "takedownAuthorityReviewed": {
-              "type": "boolean"
-            },
-            "downstreamVisibilityReviewed": {
-              "type": "boolean"
-            }
-          }
-        }
-      }
-    },
-    {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "$id": "https://catch.app/contracts/callables/admin_update_event_details_payload.schema.json",
-      "title": "AdminUpdateEventDetailsCallablePayload",
-      "description": "Callable payload accepted by adminUpdateEventDetails. This edits low-risk app-facing canonical event fields through an audited admin callable.",
-      "x-callable-shape": "patch",
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "eventId",
-        "fields"
-      ],
-      "properties": {
         "eventId": {
           "$ref": "../shared/event_common.schema.json#/definitions/documentId"
         },
-        "reviewNote": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "maxLength": 1000
+        "routeId": {
+          "$ref": "../operations/event_messaging_setup_review.schema.json#/definitions/routeId"
         },
-        "fields": {
-          "type": "object",
-          "additionalProperties": false,
-          "minProperties": 1,
-          "properties": {
-            "description": {
-              "type": "string",
-              "maxLength": 2000
-            },
-            "photoUrl": {
-              "$ref": "../shared/event_common.schema.json#/definitions/urlOrNull"
-            },
-            "distanceKm": {
-              "type": "number",
-              "minimum": 0,
-              "maximum": 100
-            },
-            "pace": {
-              "$ref": "../shared/event_common.schema.json#/definitions/paceLevel"
-            },
-            "crossPathsDiscoveryEnabled": {
-              "type": "boolean"
-            },
-            "eventFormat": {
-              "$ref": "../shared/event_common.schema.json#/definitions/eventFormatSnapshot"
-            }
-          }
-        }
-      }
-    },
-    {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "$id": "https://catch.app/contracts/callables/admin_update_organizer_details_payload.schema.json",
-      "title": "AdminUpdateOrganizerDetailsCallablePayload",
-      "description": "Callable payload accepted by adminUpdateOrganizerDetails. This edits owner-safe organizer listing fields through an audited admin callable.",
-      "x-callable-shape": "patch",
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "organizerId",
-        "fields"
-      ],
-      "properties": {
-        "organizerId": {
-          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        "senderId": {
+          "$ref": "../operations/event_messaging_setup_review.schema.json#/definitions/id"
         },
-        "fields": {
-          "type": "object",
-          "additionalProperties": false,
-          "minProperties": 1,
-          "properties": {
-            "name": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 120
-            },
-            "description": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 2000
-            },
-            "location": {
-              "$ref": "../shared/event_common.schema.json#/definitions/marketId"
-            },
-            "area": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 120
-            },
-            "tags": {
-              "type": "array",
-              "maxItems": 20,
-              "uniqueItems": true,
-              "items": {
-                "type": "string",
-                "minLength": 1,
-                "maxLength": 80
-              }
-            },
-            "instagramHandle": {
-              "$ref": "../shared/event_common.schema.json#/definitions/contactString"
-            },
-            "phoneNumber": {
-              "$ref": "../shared/event_common.schema.json#/definitions/contactString"
-            },
-            "email": {
-              "$ref": "../shared/event_common.schema.json#/definitions/contactString"
-            },
-            "imageUrl": {
-              "$ref": "../shared/event_common.schema.json#/definitions/urlOrNull"
-            },
-            "profileImageUrl": {
-              "$ref": "../shared/event_common.schema.json#/definitions/urlOrNull"
-            },
-            "organizerType": {
-              "$ref": "../shared/event_common.schema.json#/definitions/organizerType"
-            },
-            "publicCategoryLabel": {
-              "type": [
-                "string",
-                "null"
-              ],
-              "maxLength": 120
-            },
-            "entityKind": {
-              "type": "string",
-              "enum": [
-                "club",
-                "venue",
-                "eventOrganizer",
-                "creatorCommunity",
-                "brand"
-              ]
-            },
-            "entitySubtypes": {
-              "type": "array",
-              "maxItems": 20,
-              "uniqueItems": true,
-              "items": {
-                "type": "string",
-                "minLength": 1,
-                "maxLength": 80
-              }
-            },
-            "displayCategory": {
-              "type": [
-                "string",
-                "null"
-              ],
-              "maxLength": 120
-            },
-            "cityName": {
-              "type": [
-                "string",
-                "null"
-              ],
-              "maxLength": 120
-            },
-            "regionName": {
-              "type": [
-                "string",
-                "null"
-              ],
-              "maxLength": 120
-            },
-            "countryCode": {
-              "type": [
-                "string",
-                "null"
-              ],
-              "pattern": "^[A-Z]{2}$"
-            },
-            "countryName": {
-              "type": [
-                "string",
-                "null"
-              ],
-              "maxLength": 120
-            },
-            "appVisibility": {
-              "type": "string",
-              "enum": [
-                "discoverable",
-                "hidden"
-              ]
-            },
-            "publicPage": {
-              "type": "object",
-              "additionalProperties": false,
-              "minProperties": 1,
-              "properties": {
-                "slug": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 160,
-                  "pattern": "^[a-z0-9-]+$"
-                },
-                "citySlug": {
-                  "$ref": "../shared/event_common.schema.json#/definitions/citySlug"
-                },
-                "canonicalPath": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 240
-                },
-                "publishStatus": {
-                  "type": "string",
-                  "enum": [
-                    "draft",
-                    "qa",
-                    "published",
-                    "suppressed",
-                    "removed"
-                  ]
-                },
-                "seoTitle": {
-                  "type": [
-                    "string",
-                    "null"
-                  ],
-                  "maxLength": 120
-                },
-                "seoDescription": {
-                  "type": [
-                    "string",
-                    "null"
-                  ],
-                  "maxLength": 320
-                }
-              }
-            },
-            "provenance": {
-              "type": "object",
-              "additionalProperties": false,
-              "minProperties": 1,
-              "properties": {
-                "sourceConfidence": {
-                  "type": "string",
-                  "enum": [
-                    "seedOnly",
-                    "low",
-                    "medium",
-                    "high",
-                    "ownerVerified"
-                  ]
-                },
-                "verificationStatus": {
-                  "type": "string",
-                  "enum": [
-                    "unverified",
-                    "sourceBacked",
-                    "ownerVerified"
-                  ]
-                }
-              }
-            },
-            "publicProfile": {
-              "type": "object",
-              "additionalProperties": false,
-              "minProperties": 1,
-              "properties": {
-                "headline": {
-                  "type": [
-                    "string",
-                    "null"
-                  ],
-                  "maxLength": 160
-                },
-                "summary": {
-                  "type": [
-                    "string",
-                    "null"
-                  ],
-                  "maxLength": 800
-                },
-                "sourceSummary": {
-                  "type": [
-                    "string",
-                    "null"
-                  ],
-                  "maxLength": 800
-                },
-                "formats": {
-                  "type": "array",
-                  "maxItems": 12,
-                  "items": {
-                    "type": "string",
-                    "minLength": 1,
-                    "maxLength": 80
-                  }
-                },
-                "fitNotes": {
-                  "type": "array",
-                  "maxItems": 8,
-                  "items": {
-                    "type": "string",
-                    "minLength": 1,
-                    "maxLength": 400
-                  }
-                },
-                "missingEvidence": {
-                  "type": "array",
-                  "maxItems": 12,
-                  "items": {
-                    "type": "string",
-                    "minLength": 1,
-                    "maxLength": 200
-                  }
-                }
-              }
-            }
-          }
+        "purpose": {
+          "$ref": "../operations/event_messaging_setup_review.schema.json#/definitions/purpose"
         },
-        "reviewNote": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "maxLength": 1000
-        }
-      }
-    },
-    {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "$id": "https://catch.app/contracts/callables/host_analytics_query_payload.schema.json",
-      "title": "HostAnalyticsQueryCallablePayload",
-      "description": "Callable payload accepted by getHostAnalytics and adminGetHostAnalytics.",
-      "x-callable-aliases": [
-        "getHostAnalytics",
-        "adminGetHostAnalytics"
-      ],
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "clubId": {
-          "anyOf": [
-            {
-              "$ref": "../shared/event_common.schema.json#/definitions/documentId"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "organizerId": {
-          "anyOf": [
-            {
-              "$ref": "../shared/event_common.schema.json#/definitions/documentId"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "eventId": {
-          "anyOf": [
-            {
-              "$ref": "../shared/event_common.schema.json#/definitions/documentId"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "rangePreset": {
-          "type": "string",
-          "enum": [
-            "7d",
-            "30d",
-            "90d",
-            "12m",
-            "month",
-            "custom"
-          ]
-        },
-        "startDate": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
-        },
-        "endDate": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
-        },
-        "granularity": {
-          "type": "string",
-          "enum": [
-            "day",
-            "week",
-            "month"
-          ]
-        },
-        "timezone": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 64
-        }
-      }
-    },
-    {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "$id": "https://catch.app/contracts/callables/user_analytics_query_payload.schema.json",
-      "title": "UserAnalyticsQueryCallablePayload",
-      "description": "Callable payload accepted by getUserAnalytics and adminGetUserAnalytics.",
-      "x-callable-aliases": [
-        "getUserAnalytics",
-        "adminGetUserAnalytics"
-      ],
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "userId": {
-          "anyOf": [
-            {
-              "$ref": "../shared/event_common.schema.json#/definitions/documentId"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "description": "Admin-only user scope override. getUserAnalytics always scopes to the signed-in user."
-        },
-        "rangePreset": {
-          "type": "string",
-          "enum": [
-            "7d",
-            "30d",
-            "90d",
-            "month",
-            "custom"
-          ]
-        },
-        "startDate": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
-        },
-        "endDate": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
-        },
-        "granularity": {
-          "type": "string",
-          "enum": [
-            "day",
-            "week",
-            "month"
-          ]
-        }
-      }
-    },
-    {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "$id": "https://catch.app/contracts/callables/admin_list_club_claim_requests_payload.schema.json",
-      "title": "AdminListClubClaimRequestsCallablePayload",
-      "type": "object",
-      "additionalProperties": false
-    },
-    {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "$id": "https://catch.app/contracts/callables/admin_get_club_claim_request_details_payload.schema.json",
-      "title": "AdminGetClubClaimRequestDetailsCallablePayload",
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "requestId"
-      ],
-      "properties": {
-        "requestId": {
-          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
-        }
-      }
-    },
-    {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "$id": "https://catch.app/contracts/callables/admin_set_club_index_status_payload.schema.json",
-      "title": "AdminSetClubIndexStatusCallablePayload",
-      "description": "Callable payload accepted by adminSetClubIndexStatus.",
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "clubId",
-        "indexStatus",
-        "checklist"
-      ],
-      "properties": {
-        "clubId": {
-          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
-        },
-        "indexStatus": {
-          "type": "string",
-          "enum": [
-            "noindex",
-            "indexReady",
-            "indexed"
-          ]
-        },
-        "checklist": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "sourceEvidenceVerified",
-            "mediaRightsVerified",
-            "cadenceVerified",
-            "ownerContactVerified"
-          ],
-          "properties": {
-            "sourceEvidenceVerified": {
-              "type": "boolean"
-            },
-            "mediaRightsVerified": {
-              "type": "boolean"
-            },
-            "cadenceVerified": {
-              "type": "boolean"
-            },
-            "ownerContactVerified": {
-              "type": "boolean"
-            }
-          }
-        },
-        "reviewNote": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "maxLength": 1000
-        }
-      }
-    },
-    {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "$id": "https://catch.app/contracts/callable_responses/admin_assign_safety_triage_item_response.schema.json",
-      "title": "Admin Assign Safety Triage Item Callable Response",
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "targetPath",
-        "assignment"
-      ],
-      "properties": {
-        "targetPath": {
-          "type": "string",
-          "maxLength": 260,
-          "pattern": "^(reports|moderationFlags|eventSafetyReports|eventAssistanceCases)/[^/]+$"
-        },
-        "assignment": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "ownerTeam",
-            "assigneeUid",
-            "queue",
-            "severity"
-          ],
-          "properties": {
-            "ownerTeam": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 120
-            },
-            "assigneeUid": {
-              "anyOf": [
-                {
-                  "type": "string",
-                  "pattern": "^[A-Za-z0-9_-]{3,128}$"
-                },
-                {
-                  "type": "null"
-                }
-              ]
-            },
-            "queue": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 120
-            },
-            "severity": {
-              "type": "string",
-              "enum": [
-                "high",
-                "medium",
-                "watch"
-              ]
-            }
-          }
-        }
-      }
-    },
-    {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "$id": "https://catch.app/contracts/callable_responses/admin_create_marketing_content_draft_response.schema.json",
-      "title": "Admin Create Marketing Content Draft Callable Response",
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "draft",
-        "bridge",
-        "dashboardPath"
-      ],
-      "properties": {
-        "draft": {
-          "type": "object",
-          "minProperties": 1,
-          "additionalProperties": true
-        },
-        "bridge": {
-          "type": "object",
-          "minProperties": 1,
-          "additionalProperties": true
-        },
-        "dashboardPath": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 260
-        }
-      }
-    },
-    {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "$id": "https://catch.app/contracts/callable_responses/admin_create_organizer_draft_from_candidate_response.schema.json",
-      "title": "AdminCreateOrganizerDraftFromCandidateCallableResponse",
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "organizerId",
-        "organizerPath",
-        "curationPath",
-        "created",
-        "appVisibility",
-        "ownershipState",
-        "claimState",
-        "publishStatus",
-        "indexStatus",
-        "crawlStatus"
-      ],
-      "properties": {
-        "organizerId": {
-          "type": "string",
-          "minLength": 3,
-          "maxLength": 64
-        },
-        "organizerPath": {
-          "type": "string",
-          "pattern": "^organizers/[^/]+$"
-        },
-        "curationPath": {
-          "type": "string",
-          "pattern": "^organizerIntakeCurationDecisions/[^/]+$"
-        },
-        "created": {
-          "type": "boolean"
-        },
-        "appVisibility": {
-          "const": "hidden"
-        },
-        "ownershipState": {
-          "const": "programmatic"
-        },
-        "claimState": {
-          "const": "unclaimed"
-        },
-        "publishStatus": {
-          "const": "draft"
-        },
-        "indexStatus": {
-          "const": "noindex"
-        },
-        "crawlStatus": {
-          "const": "disabled"
-        }
-      }
-    },
-    {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "$id": "https://catch.app/contracts/callable_responses/admin_decide_access_application_response.schema.json",
-      "title": "Admin Decide Access Application Callable Response",
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "applicationUid",
-        "decision",
-        "status"
-      ],
-      "properties": {
-        "applicationUid": {
-          "type": "string",
-          "pattern": "^[A-Za-z0-9_-]{3,128}$"
-        },
-        "decision": {
-          "type": "string",
-          "enum": [
-            "approve",
-            "deny"
-          ]
-        },
-        "status": {
-          "type": "string",
-          "enum": [
-            "approvedForProfile",
-            "notSelectedYet"
-          ]
-        }
-      }
-    },
-    {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "$id": "https://catch.app/contracts/callable_responses/admin_decide_safety_triage_item_response.schema.json",
-      "title": "Admin Decide Safety Triage Item Callable Response",
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "targetPath",
-        "decision",
-        "status"
-      ],
-      "properties": {
-        "targetPath": {
-          "type": "string",
-          "maxLength": 260,
-          "pattern": "^(reports|moderationFlags|eventSafetyReports|eventAssistanceCases)/[^/]+$"
-        },
-        "decision": {
-          "type": "string",
-          "enum": [
-            "review",
-            "dismiss"
-          ]
-        },
-        "status": {
-          "type": "string",
-          "enum": [
-            "reviewed",
-            "dismissed",
-            "resolved"
-          ]
-        }
-      }
-    },
-    {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "$id": "https://catch.app/contracts/callable_responses/admin_get_overview_response.schema.json",
-      "title": "Admin Get Overview Callable Response",
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "generatedAt",
-        "timezone",
-        "metrics",
-        "queues",
-        "dataQuality"
-      ],
-      "properties": {
-        "generatedAt": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "timezone": {
-          "const": "UTC"
-        },
-        "metrics": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/metric"
-          }
-        },
-        "queues": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "safetyReports",
-            "moderationFlags",
-            "eventSafetyReports",
-            "accessApplications",
-            "clubClaimRequests",
-            "clubIndexReviews",
-            "paymentIssues"
-          ],
-          "properties": {
-            "safetyReports": {
-              "$ref": "#/definitions/queue"
-            },
-            "moderationFlags": {
-              "$ref": "#/definitions/queue"
-            },
-            "eventSafetyReports": {
-              "$ref": "#/definitions/queue"
-            },
-            "accessApplications": {
-              "$ref": "#/definitions/queue"
-            },
-            "clubClaimRequests": {
-              "$ref": "#/definitions/queue"
-            },
-            "clubIndexReviews": {
-              "$ref": "#/definitions/queue"
-            },
-            "paymentIssues": {
-              "$ref": "#/definitions/queue"
-            }
-          }
-        },
-        "dataQuality": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/dataQuality"
-          }
-        }
-      },
-      "definitions": {
-        "metric": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "id",
-            "label",
-            "value"
-          ],
-          "properties": {
-            "id": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 120
-            },
-            "label": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 160
-            },
-            "value": {
-              "type": "number"
-            },
-            "unit": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 80
-            }
-          }
-        },
-        "queue": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/queueItem"
-          }
-        },
-        "queueItem": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "id",
-            "title",
-            "detail",
-            "status",
-            "createdAt",
-            "targetPath"
-          ],
-          "properties": {
-            "id": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 180
-            },
-            "title": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 240
-            },
-            "detail": {
-              "type": "string",
-              "maxLength": 1000
-            },
-            "status": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 80
-            },
-            "createdAt": {
-              "anyOf": [
-                {
-                  "type": "string",
-                  "format": "date-time"
-                },
-                {
-                  "type": "null"
-                }
-              ]
-            },
-            "targetPath": {
-              "type": "string",
-              "minLength": 3,
-              "maxLength": 260
-            }
-          }
-        },
-        "dataQuality": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "id",
-            "label",
-            "state",
-            "detail",
-            "owner",
-            "runbook",
-            "nextAction"
-          ],
-          "properties": {
-            "id": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 120
-            },
-            "label": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 160
-            },
-            "state": {
-              "type": "string",
-              "enum": [
-                "ok",
-                "warning",
-                "blocked"
-              ]
-            },
-            "detail": {
-              "type": "string",
-              "maxLength": 1000
-            },
-            "owner": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 160
-            },
-            "runbook": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 260
-            },
-            "nextAction": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 1000
-            }
-          }
-        }
-      }
-    },
-    {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "$id": "https://catch.app/contracts/callable_responses/admin_list_action_executions_response.schema.json",
-      "title": "AdminListActionExecutionsCallableResponse",
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "schemaVersion",
-        "generatedAt",
-        "rows",
-        "nextCursor"
-      ],
-      "properties": {
-        "schemaVersion": {
-          "const": 1
-        },
-        "generatedAt": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "rows": {
-          "type": "array",
-          "maxItems": 100,
-          "items": {
-            "$ref": "#/definitions/execution"
-          }
-        },
-        "nextCursor": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "maxLength": 1000
-        }
-      },
-      "definitions": {
-        "execution": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "schemaVersion",
-            "executionId",
-            "actionId",
-            "callable",
-            "actorUid",
-            "actorRoles",
-            "status",
-            "requestHash",
-            "responseHash",
-            "target",
-            "errorCode",
-            "errorMessage",
-            "cliVersion",
-            "startedAt",
-            "finishedAt",
-            "updatedAt"
-          ],
-          "properties": {
-            "schemaVersion": {
-              "const": 1
-            },
-            "executionId": {
-              "type": "string",
-              "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
-            },
-            "actionId": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 120
-            },
-            "callable": {
-              "type": "string",
-              "pattern": "^admin[A-Z][A-Za-z0-9]+$"
-            },
-            "actorUid": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 128
-            },
-            "actorRoles": {
-              "type": "array",
-              "uniqueItems": true,
-              "items": {
-                "enum": [
-                  "admin",
-                  "adminOwner",
-                  "safetyReviewer",
-                  "support",
-                  "finance",
-                  "analyticsViewer"
-                ]
-              }
-            },
-            "status": {
-              "enum": [
-                "started",
-                "succeeded",
-                "failed",
-                "indeterminate"
-              ]
-            },
-            "requestHash": {
-              "type": "string",
-              "pattern": "^[0-9a-f]{64}$"
-            },
-            "responseHash": {
-              "type": [
-                "string",
-                "null"
-              ],
-              "pattern": "^[0-9a-f]{64}$"
-            },
-            "target": {
-              "type": [
-                "string",
-                "null"
-              ],
-              "maxLength": 500
-            },
-            "errorCode": {
-              "type": [
-                "string",
-                "null"
-              ],
-              "maxLength": 120
-            },
-            "errorMessage": {
-              "type": [
-                "string",
-                "null"
-              ],
-              "maxLength": 500
-            },
-            "cliVersion": {
-              "type": [
-                "string",
-                "null"
-              ],
-              "maxLength": 80
-            },
-            "startedAt": {
-              "type": "string",
-              "format": "date-time"
-            },
-            "finishedAt": {
-              "type": [
-                "string",
-                "null"
-              ],
-              "format": "date-time"
-            },
-            "updatedAt": {
-              "type": "string",
-              "format": "date-time"
-            }
-          }
-        }
-      }
-    },
-    {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "$id": "https://catch.app/contracts/callable_responses/admin_list_cross_paths_showcase_candidates_response.schema.json",
-      "title": "AdminListCrossPathsShowcaseCandidatesCallableResponse",
-      "description": "Bounded admin-safe projection of public profiles and their server-only Cross Paths showcase review state.",
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "schemaVersion",
-        "generatedAt",
-        "candidates",
-        "nextCursor"
-      ],
-      "properties": {
-        "schemaVersion": {
-          "type": "integer",
-          "const": 1
-        },
-        "generatedAt": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "candidates": {
-          "type": "array",
-          "maxItems": 50,
-          "items": {
-            "$ref": "#/definitions/candidate"
-          }
-        },
-        "nextCursor": {
-          "anyOf": [
-            {
-              "$ref": "../shared/event_common.schema.json#/definitions/documentId"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        }
-      },
-      "definitions": {
-        "reasonCode": {
-          "type": "string",
-          "enum": [
-            "insufficient_photos",
-            "incomplete_prompts",
-            "missing_relationship_goal",
-            "broken_media",
-            "photo_moderation_pending",
-            "photo_moderation_rejected",
-            "public_profile_missing",
-            "profile_changed",
-            "reviewer_hold",
-            "manual_pause"
-          ]
-        },
-        "candidate": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "uid",
-            "name",
-            "age",
-            "gender",
-            "city",
-            "photoUrls",
-            "promptAnswers",
-            "relationshipGoal",
-            "automaticStatus",
-            "automaticReasonCodes",
-            "storedStatus",
-            "effectiveStatus",
-            "effectiveReasonCodes",
-            "profileFingerprint",
-            "reviewedByUid",
-            "reviewedAt",
-            "reviewNote"
-          ],
-          "properties": {
-            "uid": {
-              "$ref": "../shared/event_common.schema.json#/definitions/documentId"
-            },
-            "name": {
-              "type": [
-                "string",
-                "null"
-              ],
-              "minLength": 1,
-              "maxLength": 80
-            },
-            "age": {
-              "type": [
-                "integer",
-                "null"
-              ],
-              "minimum": 18,
-              "maximum": 99
-            },
-            "gender": {
-              "type": [
-                "string",
-                "null"
-              ],
-              "minLength": 1,
-              "maxLength": 40
-            },
-            "city": {
-              "type": [
-                "string",
-                "null"
-              ],
-              "maxLength": 80
-            },
-            "photoUrls": {
-              "type": "array",
-              "maxItems": 6,
-              "items": {
-                "type": "string",
-                "format": "uri",
-                "maxLength": 2048
-              }
-            },
-            "promptAnswers": {
-              "type": "array",
-              "maxItems": 3,
-              "items": {
-                "type": "object",
-                "additionalProperties": false,
-                "required": [
-                  "prompt",
-                  "answer"
-                ],
-                "properties": {
-                  "prompt": {
-                    "type": "string",
-                    "maxLength": 140
-                  },
-                  "answer": {
-                    "type": "string",
-                    "maxLength": 300
-                  }
-                }
-              }
-            },
-            "relationshipGoal": {
-              "type": [
-                "string",
-                "null"
-              ],
-              "maxLength": 80
-            },
-            "automaticStatus": {
-              "type": "string",
-              "enum": [
-                "ready",
-                "blocked"
-              ]
-            },
-            "automaticReasonCodes": {
-              "type": "array",
-              "maxItems": 7,
-              "uniqueItems": true,
-              "items": {
-                "$ref": "#/definitions/reasonCode"
-              }
-            },
-            "storedStatus": {
-              "type": [
-                "string",
-                "null"
-              ],
-              "enum": [
-                "eligible",
-                "needsReview",
-                "paused",
-                null
-              ]
-            },
-            "effectiveStatus": {
-              "type": "string",
-              "enum": [
-                "eligible",
-                "needsReview",
-                "paused"
-              ]
-            },
-            "effectiveReasonCodes": {
-              "type": "array",
-              "maxItems": 12,
-              "uniqueItems": true,
-              "items": {
-                "$ref": "#/definitions/reasonCode"
-              }
-            },
-            "profileFingerprint": {
-              "type": "string",
-              "pattern": "^[a-f0-9]{64}$"
-            },
-            "reviewedByUid": {
-              "type": [
-                "string",
-                "null"
-              ],
-              "maxLength": 128
-            },
-            "reviewedAt": {
-              "type": [
-                "string",
-                "null"
-              ],
-              "format": "date-time"
-            },
-            "reviewNote": {
-              "type": [
-                "string",
-                "null"
-              ],
-              "maxLength": 1000
-            }
-          }
-        }
-      }
-    },
-    {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "$id": "https://catch.app/contracts/callable_responses/admin_list_intake_operations_response.schema.json",
-      "title": "AdminListIntakeOperationsCallableResponse",
-      "description": "Read-only persisted run and work-item projection for the Supply Intake Operations workspace.",
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "schemaVersion",
-        "generatedAt",
-        "workflowId",
-        "executionMode",
-        "source",
-        "capabilities",
-        "summary",
-        "runs",
-        "workItems",
-        "organizerDraftLinks",
-        "nextRunCursor",
-        "nextWorkItemCursor"
-      ],
-      "properties": {
-        "schemaVersion": {
-          "type": "integer",
-          "const": 1
-        },
-        "generatedAt": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "workflowId": {
-          "type": "string",
-          "const": "supply-intake"
-        },
-        "executionMode": {
-          "type": "string",
-          "const": "shadow"
-        },
-        "source": {
-          "type": "string",
-          "enum": [
-            "firestore",
-            "sample"
-          ]
-        },
-        "capabilities": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "requestRuns",
-            "networkFetches",
-            "modelCalls",
-            "publicWrites",
-            "ruleDeployment"
-          ],
-          "properties": {
-            "requestRuns": {
-              "type": "boolean",
-              "const": false
-            },
-            "networkFetches": {
-              "type": "boolean",
-              "const": false
-            },
-            "modelCalls": {
-              "type": "boolean",
-              "const": false
-            },
-            "publicWrites": {
-              "type": "boolean",
-              "const": false
-            },
-            "ruleDeployment": {
-              "type": "boolean",
-              "const": false
-            }
-          }
-        },
-        "summary": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "loadedRunCount",
-            "workItemCount",
-            "humanReviewCount",
-            "stages"
-          ],
-          "properties": {
-            "loadedRunCount": {
-              "type": "integer",
-              "minimum": 0
-            },
-            "workItemCount": {
-              "type": "integer",
-              "minimum": 0
-            },
-            "humanReviewCount": {
-              "type": "integer",
-              "minimum": 0
-            },
-            "stages": {
-              "type": "object",
-              "additionalProperties": false,
-              "required": [
-                "incoming",
-                "verify",
-                "resolve",
-                "ready"
-              ],
-              "properties": {
-                "incoming": {
-                  "type": "integer",
-                  "minimum": 0
-                },
-                "verify": {
-                  "type": "integer",
-                  "minimum": 0
-                },
-                "resolve": {
-                  "type": "integer",
-                  "minimum": 0
-                },
-                "ready": {
-                  "type": "integer",
-                  "minimum": 0
-                }
-              }
-            }
-          }
-        },
-        "runs": {
-          "type": "array",
-          "maxItems": 25,
-          "items": {
-            "$ref": "../operations/run.schema.json"
-          }
-        },
-        "workItems": {
-          "type": "array",
-          "maxItems": 200,
-          "items": {
-            "allOf": [
-              {
-                "$ref": "../operations/work_item.schema.json"
-              },
-              {
-                "properties": {
-                  "workflowId": {
-                    "const": "supply-intake"
-                  },
-                  "primaryStage": {
-                    "enum": [
-                      "incoming",
-                      "verify",
-                      "resolve",
-                      "ready"
-                    ]
-                  }
-                }
-              }
-            ]
-          }
-        },
-        "organizerDraftLinks": {
-          "type": "array",
-          "maxItems": 200,
-          "items": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": [
-              "workItemId",
-              "candidateId",
-              "organizerId",
-              "curationPath"
-            ],
-            "properties": {
-              "workItemId": {
-                "type": "string",
-                "minLength": 1,
-                "maxLength": 200
-              },
-              "candidateId": {
-                "type": "string",
-                "minLength": 1,
-                "maxLength": 200
-              },
-              "organizerId": {
-                "type": "string",
-                "minLength": 3,
-                "maxLength": 64,
-                "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
-              },
-              "curationPath": {
-                "type": "string",
-                "pattern": "^organizerIntakeCurationDecisions/[A-Za-z0-9_-]+$",
-                "maxLength": 300
-              }
-            }
-          }
-        },
-        "nextRunCursor": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "maxLength": 1000
-        },
-        "nextWorkItemCursor": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "maxLength": 1000
-        }
-      }
-    },
-    {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "$id": "https://catch.app/contracts/operations/run.schema.json",
-      "title": "OperationRun",
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "schemaVersion",
-        "runId",
-        "workflowId",
-        "revision",
-        "mode",
-        "status",
-        "scope",
-        "rulesetVersion",
-        "policyVersion",
-        "inputHash",
-        "budgets",
-        "counters",
-        "checkpoint",
-        "createdAt",
-        "updatedAt",
-        "startedAt",
-        "finishedAt",
-        "failure",
-        "metadata"
-      ],
-      "properties": {
-        "schemaVersion": {
-          "type": "integer",
-          "const": 1
-        },
-        "runId": {
-          "$ref": "common.schema.json#/definitions/id"
-        },
-        "workflowId": {
-          "$ref": "common.schema.json#/definitions/workflowId"
-        },
-        "revision": {
-          "type": "integer",
-          "minimum": 0
-        },
-        "mode": {
-          "type": "string",
-          "enum": [
-            "shadow",
-            "assisted",
-            "autonomous"
-          ]
-        },
-        "status": {
-          "type": "string",
-          "enum": [
-            "planned",
-            "queued",
-            "running",
-            "paused",
-            "completed",
-            "failed",
-            "cancelled"
-          ]
-        },
-        "scope": {
-          "type": "object",
-          "additionalProperties": true,
-          "maxProperties": 40
-        },
-        "rulesetVersion": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 120
-        },
-        "policyVersion": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 120
-        },
-        "inputHash": {
-          "$ref": "common.schema.json#/definitions/sha256"
-        },
-        "budgets": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "maxWorkItems",
-            "maxModelCalls",
-            "maxModelTokens",
-            "maxCostMicros",
-            "deadlineAt"
-          ],
-          "properties": {
-            "maxWorkItems": {
-              "type": "integer",
-              "minimum": 1,
-              "maximum": 10000
-            },
-            "maxModelCalls": {
-              "type": "integer",
-              "minimum": 0
-            },
-            "maxModelTokens": {
-              "type": "integer",
-              "minimum": 0
-            },
-            "maxCostMicros": {
-              "type": "integer",
-              "minimum": 0
-            },
-            "deadlineAt": {
-              "$ref": "common.schema.json#/definitions/nullableIsoDateTime"
-            }
-          }
-        },
-        "counters": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "discovered",
-            "processed",
-            "modelCalls",
-            "modelTokens",
-            "costMicros",
-            "escalated",
-            "published",
-            "failed"
-          ],
-          "properties": {
-            "discovered": {
-              "type": "integer",
-              "minimum": 0
-            },
-            "processed": {
-              "type": "integer",
-              "minimum": 0
-            },
-            "modelCalls": {
-              "type": "integer",
-              "minimum": 0
-            },
-            "modelTokens": {
-              "type": "integer",
-              "minimum": 0
-            },
-            "costMicros": {
-              "type": "integer",
-              "minimum": 0
-            },
-            "escalated": {
-              "type": "integer",
-              "minimum": 0
-            },
-            "published": {
-              "type": "integer",
-              "minimum": 0
-            },
-            "failed": {
-              "type": "integer",
-              "minimum": 0
-            }
-          }
-        },
-        "checkpoint": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "lastSequence",
-            "cursor"
-          ],
-          "properties": {
-            "lastSequence": {
-              "type": "integer",
-              "minimum": 0
-            },
-            "cursor": {
-              "type": [
-                "string",
-                "null"
-              ],
-              "maxLength": 1000
-            }
-          }
-        },
-        "createdAt": {
-          "$ref": "common.schema.json#/definitions/isoDateTime"
-        },
-        "updatedAt": {
-          "$ref": "common.schema.json#/definitions/isoDateTime"
-        },
-        "startedAt": {
-          "$ref": "common.schema.json#/definitions/nullableIsoDateTime"
-        },
-        "finishedAt": {
-          "$ref": "common.schema.json#/definitions/nullableIsoDateTime"
-        },
-        "failure": {
-          "anyOf": [
-            {
-              "$ref": "common.schema.json#/definitions/failure"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "metadata": {
-          "type": "object",
-          "additionalProperties": true,
-          "maxProperties": 40
-        }
-      }
-    },
-    {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "$id": "https://catch.app/contracts/operations/work_item.schema.json",
-      "title": "OperationWorkItem",
-      "description": "One exclusively staged unit of work. Task flags are orthogonal and may overlap.",
-      "type": "object",
-      "additionalProperties": false,
-      "allOf": [
-        {
-          "if": {
-            "properties": {
-              "normalizedPayload": {
-                "type": "object",
-                "required": [
-                  "kind"
-                ],
-                "properties": {
-                  "kind": {
-                    "const": "liveCheckpointReport"
-                  }
-                }
-              }
-            }
-          },
-          "then": {
-            "properties": {
-              "workflowId": {
-                "const": "event-assistance"
-              },
-              "entityKind": {
-                "const": "checkpoint_report"
-              },
-              "normalizedPayload": {
-                "$ref": "event_assistance_checkpoint_work.schema.json"
-              }
-            }
-          }
-        },
-        {
-          "if": {
-            "properties": {
-              "normalizedPayload": {
-                "type": "object",
-                "required": [
-                  "kind"
-                ],
-                "properties": {
-                  "kind": {
-                    "const": "operationalNoticeFanout"
-                  }
-                }
-              }
-            }
-          },
-          "then": {
-            "properties": {
-              "workflowId": {
-                "const": "event-assistance"
-              },
-              "entityKind": {
-                "const": "notice_fanout"
-              },
-              "normalizedPayload": {
-                "$ref": "event_assistance_operational_notice_fanout.schema.json"
-              }
-            }
-          }
-        },
-        {
-          "if": {
-            "properties": {
-              "normalizedPayload": {
-                "type": "object",
-                "required": [
-                  "kind"
-                ],
-                "properties": {
-                  "kind": {
-                    "const": "liveMessageDelivery"
-                  }
-                }
-              }
-            }
-          },
-          "then": {
-            "properties": {
-              "workflowId": {
-                "const": "event-assistance"
-              },
-              "entityKind": {
-                "const": "message_delivery"
-              },
-              "normalizedPayload": {
-                "$ref": "event_assistance_delivery_work.schema.json"
-              }
-            }
-          }
-        },
-        {
-          "if": {
-            "properties": {
-              "normalizedPayload": {
-                "type": "object",
-                "required": [
-                  "kind"
-                ],
-                "properties": {
-                  "kind": {
-                    "const": "liveRosterEnrollment"
-                  }
-                }
-              }
-            }
-          },
-          "then": {
-            "properties": {
-              "workflowId": {
-                "const": "event-assistance"
-              },
-              "entityKind": {
-                "const": "runtime_roster"
-              },
-              "normalizedPayload": {
-                "$ref": "event_assistance_roster_work.schema.json"
-              }
-            }
-          }
-        },
-        {
-          "if": {
-            "properties": {
-              "normalizedPayload": {
-                "type": "object",
-                "required": [
-                  "kind"
-                ],
-                "properties": {
-                  "kind": {
-                    "const": "liveSourceWake"
-                  }
-                }
-              }
-            }
-          },
-          "then": {
-            "properties": {
-              "workflowId": {
-                "const": "event-assistance"
-              },
-              "entityKind": {
-                "const": "source_signal"
-              },
-              "normalizedPayload": {
-                "$ref": "event_assistance_source_work.schema.json"
-              }
-            }
-          }
-        },
-        {
-          "if": {
-            "properties": {
-              "normalizedPayload": {
-                "type": "object",
-                "required": [
-                  "kind"
-                ],
-                "properties": {
-                  "kind": {
-                    "const": "liveLateJoin"
-                  }
-                }
-              }
-            }
-          },
-          "then": {
-            "properties": {
-              "workflowId": {
-                "const": "event-assistance"
-              },
-              "entityKind": {
-                "const": "guest_episode"
-              },
-              "normalizedPayload": {
-                "$ref": "event_assistance_live_work.schema.json"
-              }
-            }
-          }
-        },
-        {
-          "if": {
-            "properties": {
-              "lifecycleStatus": {
-                "const": "terminal"
-              }
-            }
-          },
-          "then": {
-            "properties": {
-              "outcome": {
-                "type": "string",
-                "not": {
-                  "const": "published"
-                }
-              }
-            }
-          }
-        },
-        {
-          "if": {
-            "properties": {
-              "lifecycleStatus": {
-                "const": "published"
-              }
-            }
-          },
-          "then": {
-            "properties": {
-              "outcome": {
-                "const": "published"
-              }
-            }
-          }
-        },
-        {
-          "if": {
-            "properties": {
-              "lifecycleStatus": {
-                "enum": [
-                  "queued",
-                  "in_progress",
-                  "waiting",
-                  "ready"
-                ]
-              }
-            }
-          },
-          "then": {
-            "properties": {
-              "outcome": {
-                "type": "null"
-              }
-            }
-          }
-        },
-        {
-          "if": {
-            "anyOf": [
-              {
-                "required": [
-                  "blockerCodes"
-                ],
-                "properties": {
-                  "blockerCodes": {
-                    "contains": {
-                      "const": "human_review_required"
-                    }
-                  }
-                }
-              },
-              {
-                "required": [
-                  "normalizedPayload"
-                ],
-                "properties": {
-                  "normalizedPayload": {
-                    "type": "object",
-                    "required": [
-                      "owner"
-                    ],
-                    "properties": {
-                      "owner": {
-                        "const": "human"
-                      }
-                    }
-                  }
-                }
-              }
-            ]
-          },
-          "then": {
-            "properties": {
-              "taskFlags": {
-                "contains": {
-                  "const": "human_review_required"
-                }
-              }
-            }
-          }
-        },
-        {
-          "if": {
-            "required": [
-              "lifecycleStatus"
-            ],
-            "properties": {
-              "lifecycleStatus": {
-                "enum": [
-                  "published",
-                  "terminal"
-                ]
-              }
-            }
-          },
-          "then": {
-            "properties": {
-              "taskFlags": {
-                "not": {
-                  "contains": {
-                    "const": "human_review_required"
-                  }
-                }
-              },
-              "blockerCodes": {
-                "not": {
-                  "contains": {
-                    "const": "human_review_required"
-                  }
-                }
-              },
-              "normalizedPayload": {
-                "not": {
-                  "required": [
-                    "owner"
-                  ],
-                  "properties": {
-                    "owner": {
-                      "const": "human"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        {
-          "if": {
-            "properties": {
-              "normalizedPayload": {
-                "type": "object",
-                "required": [
-                  "intake"
-                ],
-                "properties": {
-                  "intake": {
-                    "type": "object",
-                    "required": [
-                      "recordType"
-                    ],
-                    "properties": {
-                      "recordType": {
-                        "const": "organizer_publication_packet"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "then": {
-            "properties": {
-              "normalizedPayload": {
-                "properties": {
-                  "intake": {
-                    "$ref": "#/definitions/organizerPublicationPacketIntake"
-                  }
-                }
-              }
-            }
-          }
-        },
-        {
-          "if": {
-            "properties": {
-              "normalizedPayload": {
-                "type": "object",
-                "required": [
-                  "intake"
-                ],
-                "properties": {
-                  "intake": {
-                    "type": "object",
-                    "required": [
-                      "recordType"
-                    ],
-                    "properties": {
-                      "recordType": {
-                        "const": "supply_freshness_coverage"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "then": {
-            "properties": {
-              "normalizedPayload": {
-                "properties": {
-                  "intake": {
-                    "$ref": "#/definitions/supplyFreshnessCoverageIntake"
-                  }
-                }
-              }
-            }
-          }
-        },
-        {
-          "if": {
-            "properties": {
-              "normalizedPayload": {
-                "type": "object",
-                "required": [
-                  "intake"
-                ],
-                "properties": {
-                  "intake": {
-                    "type": "object",
-                    "required": [
-                      "recordType"
-                    ],
-                    "properties": {
-                      "recordType": {
-                        "const": "orphan_event_candidate"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "then": {
-            "properties": {
-              "entityKind": {
-                "const": "event"
-              },
-              "lifecycleStatus": {
-                "not": {
-                  "const": "published"
-                }
-              },
-              "blockerCodes": {
-                "contains": {
-                  "const": "organizer_not_in_inventory"
-                }
-              },
-              "normalizedPayload": {
-                "properties": {
-                  "intake": {
-                    "$ref": "#/definitions/orphanEventCandidateIntake"
-                  }
-                }
-              }
-            }
-          }
-        },
-        {
-          "if": {
-            "properties": {
-              "normalizedPayload": {
-                "type": "object",
-                "required": [
-                  "intake"
-                ],
-                "properties": {
-                  "intake": {
-                    "type": "object",
-                    "required": [
-                      "recordType"
-                    ],
-                    "properties": {
-                      "recordType": {
-                        "const": "event_candidate"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "then": {
-            "properties": {
-              "entityKind": {
-                "const": "event"
-              },
-              "normalizedPayload": {
-                "properties": {
-                  "intake": {
-                    "$ref": "#/definitions/eventCandidateIntake"
-                  }
-                }
-              }
-            }
-          }
-        },
-        {
-          "if": {
-            "properties": {
-              "normalizedPayload": {
-                "type": "object",
-                "required": [
-                  "intake"
-                ],
-                "properties": {
-                  "intake": {
-                    "type": "object",
-                    "required": [
-                      "recordType"
-                    ],
-                    "properties": {
-                      "recordType": {
-                        "const": "event_source_result"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "then": {
-            "properties": {
-              "entityKind": {
-                "const": "source_result"
-              },
-              "normalizedPayload": {
-                "properties": {
-                  "intake": {
-                    "$ref": "#/definitions/eventSourceResultIntake"
-                  }
-                }
-              }
-            }
-          }
-        },
-        {
-          "if": {
-            "properties": {
-              "normalizedPayload": {
-                "type": "object",
-                "required": [
-                  "intake"
-                ],
-                "properties": {
-                  "intake": {
-                    "type": "object",
-                    "required": [
-                      "recordType"
-                    ],
-                    "properties": {
-                      "recordType": {
-                        "const": "event_source_profile"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "then": {
-            "properties": {
-              "entityKind": {
-                "const": "source_profile"
-              },
-              "normalizedPayload": {
-                "properties": {
-                  "intake": {
-                    "$ref": "#/definitions/eventSourceProfileIntake"
-                  }
-                }
-              }
-            }
-          }
-        }
-      ],
-      "definitions": {
-        "boundedString": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 500
-        },
-        "boundedStringArray": {
-          "type": "array",
-          "maxItems": 40,
-          "items": {
-            "$ref": "#/definitions/boundedString"
-          }
-        },
-        "eventCandidateIntake": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "recordType",
-            "candidate"
-          ],
-          "properties": {
-            "recordType": {
-              "const": "event_candidate"
-            },
-            "candidate": {
-              "type": "object",
-              "additionalProperties": true,
-              "required": [
-                "id",
-                "title",
-                "startDate",
-                "sourceResultIds",
-                "reviewState",
-                "requiresVerification",
-                "warnings",
-                "blockerCodes",
-                "publicationEligibility"
-              ],
-              "properties": {
-                "id": {
-                  "$ref": "#/definitions/boundedString"
-                },
-                "title": {
-                  "$ref": "#/definitions/boundedString"
-                },
-                "startDate": {
-                  "type": "string",
-                  "maxLength": 40
-                },
-                "sourceResultIds": {
-                  "type": "array",
-                  "maxItems": 40,
-                  "items": {
-                    "$ref": "#/definitions/boundedString"
-                  }
-                },
-                "reviewState": {
-                  "$ref": "#/definitions/boundedString"
-                },
-                "requiresVerification": {
-                  "type": "boolean"
-                },
-                "warnings": {
-                  "$ref": "#/definitions/boundedStringArray"
-                },
-                "blockerCodes": {
-                  "$ref": "#/definitions/boundedStringArray"
-                },
-                "publicationEligibility": {
-                  "const": "review_gated"
-                }
-              }
-            }
-          }
-        },
-        "eventSourceResultIntake": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "recordType",
-            "result"
-          ],
-          "properties": {
-            "recordType": {
-              "const": "event_source_result"
-            },
-            "result": {
-              "type": "object",
-              "additionalProperties": false,
-              "required": [
-                "id",
-                "sourceProfileId",
-                "sourceLabel",
-                "queryTemplateId",
-                "resultType",
-                "title",
-                "url",
-                "snippet",
-                "observedAt",
-                "status",
-                "riskFlags",
-                "operatorNotes"
-              ],
-              "properties": {
-                "id": {
-                  "$ref": "#/definitions/boundedString"
-                },
-                "sourceProfileId": {
-                  "$ref": "#/definitions/boundedString"
-                },
-                "sourceLabel": {
-                  "$ref": "#/definitions/boundedString"
-                },
-                "queryTemplateId": {
-                  "$ref": "#/definitions/boundedString"
-                },
-                "resultType": {
-                  "$ref": "#/definitions/boundedString"
-                },
-                "title": {
-                  "$ref": "#/definitions/boundedString"
-                },
-                "url": {
-                  "type": "string",
-                  "maxLength": 2000
-                },
-                "snippet": {
-                  "type": "string",
-                  "maxLength": 1000
-                },
-                "observedAt": {
-                  "type": "string",
-                  "maxLength": 80
-                },
-                "status": {
-                  "$ref": "#/definitions/boundedString"
-                },
-                "riskFlags": {
-                  "$ref": "#/definitions/boundedStringArray"
-                },
-                "operatorNotes": {
-                  "type": "string",
-                  "maxLength": 1000
-                }
-              }
-            }
-          }
-        },
-        "eventSourceProfileIntake": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "recordType",
-            "profile"
-          ],
-          "properties": {
-            "recordType": {
-              "const": "event_source_profile"
-            },
-            "profile": {
-              "type": "object",
-              "additionalProperties": false,
-              "required": [
-                "id",
-                "label",
-                "type",
-                "status",
-                "cadence",
-                "riskLevel",
-                "allowedUse",
-                "items"
-              ],
-              "properties": {
-                "id": {
-                  "$ref": "#/definitions/boundedString"
-                },
-                "label": {
-                  "$ref": "#/definitions/boundedString"
-                },
-                "type": {
-                  "$ref": "#/definitions/boundedString"
-                },
-                "status": {
-                  "$ref": "#/definitions/boundedString"
-                },
-                "cadence": {
-                  "$ref": "#/definitions/boundedString"
-                },
-                "riskLevel": {
-                  "type": "string",
-                  "enum": [
-                    "low",
-                    "medium",
-                    "high"
-                  ]
-                },
-                "allowedUse": {
-                  "$ref": "#/definitions/boundedString"
-                },
-                "items": {
-                  "type": "array",
-                  "maxItems": 40,
-                  "items": {
-                    "type": "object",
-                    "additionalProperties": false,
-                    "required": [
-                      "label",
-                      "url"
-                    ],
-                    "properties": {
-                      "label": {
-                        "$ref": "#/definitions/boundedString"
-                      },
-                      "url": {
-                        "type": "string",
-                        "maxLength": 2000
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "orphanEventCandidateIntake": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "recordType",
-            "candidate"
-          ],
-          "properties": {
-            "recordType": {
-              "const": "orphan_event_candidate"
-            },
-            "candidate": {
-              "type": "object",
-              "additionalProperties": true,
-              "required": [
-                "id",
-                "candidateId",
-                "publicationEligibility",
-                "blockerCodes",
-                "attribution"
-              ],
-              "properties": {
-                "id": {
-                  "$ref": "#/definitions/boundedString"
-                },
-                "candidateId": {
-                  "$ref": "#/definitions/boundedString"
-                },
-                "publicationEligibility": {
-                  "const": "blocked_orphan"
-                },
-                "blockerCodes": {
-                  "type": "array",
-                  "maxItems": 40,
-                  "contains": {
-                    "const": "organizer_not_in_inventory"
-                  },
-                  "items": {
-                    "$ref": "#/definitions/boundedString"
-                  }
-                },
-                "attribution": {
-                  "type": "object",
-                  "additionalProperties": false,
-                  "required": [
-                    "state",
-                    "organizerEvidence",
-                    "match"
-                  ],
-                  "properties": {
-                    "state": {
-                      "const": "orphan"
-                    },
-                    "organizerEvidence": {
-                      "type": "object",
-                      "additionalProperties": false,
-                      "required": [
-                        "name",
-                        "url"
-                      ],
-                      "properties": {
-                        "name": {
-                          "anyOf": [
-                            {
-                              "$ref": "#/definitions/boundedString"
-                            },
-                            {
-                              "type": "null"
-                            }
-                          ]
-                        },
-                        "url": {
-                          "anyOf": [
-                            {
-                              "$ref": "#/definitions/boundedString"
-                            },
-                            {
-                              "type": "null"
-                            }
-                          ]
-                        }
-                      }
-                    },
-                    "match": {
-                      "type": "object",
-                      "additionalProperties": false,
-                      "required": [
-                        "decision",
-                        "policyId",
-                        "threshold",
-                        "rationale",
-                        "matchedEntityId",
-                        "score",
-                        "matchingSignals",
-                        "blockingKeys"
-                      ],
-                      "properties": {
-                        "decision": {
-                          "$ref": "#/definitions/boundedString"
-                        },
-                        "policyId": {
-                          "$ref": "#/definitions/boundedString"
-                        },
-                        "threshold": {
-                          "type": "number",
-                          "minimum": 0,
-                          "maximum": 1
-                        },
-                        "rationale": {
-                          "$ref": "#/definitions/boundedString"
-                        },
-                        "matchedEntityId": {
-                          "type": "null"
-                        },
-                        "score": {
-                          "type": "number",
-                          "minimum": 0,
-                          "maximum": 1
-                        },
-                        "matchingSignals": {
-                          "$ref": "#/definitions/boundedStringArray"
-                        },
-                        "blockingKeys": {
-                          "$ref": "#/definitions/boundedStringArray"
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "supplyFreshnessCoverageIntake": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "recordType",
-            "coverage"
-          ],
-          "properties": {
-            "recordType": {
-              "const": "supply_freshness_coverage"
-            },
-            "coverage": {
-              "type": "object",
-              "additionalProperties": false,
-              "required": [
-                "schemaVersion",
-                "recordType",
-                "coverageId",
-                "runId",
-                "kind",
-                "scopeKey",
-                "runKey",
-                "market",
-                "sourceProfileId",
-                "entityId",
-                "surfaceId",
-                "schedulerStatus",
-                "surfacePolicy",
-                "fetchEnabled",
-                "completedAt",
-                "policyVersion",
-                "requestHash"
-              ],
-              "properties": {
-                "schemaVersion": {
-                  "type": "integer",
-                  "const": 1
-                },
-                "recordType": {
-                  "const": "supply_freshness_coverage"
-                },
-                "coverageId": {
-                  "$ref": "common.schema.json#/definitions/id"
-                },
-                "runId": {
-                  "$ref": "common.schema.json#/definitions/id"
-                },
-                "kind": {
-                  "type": "string",
-                  "enum": [
-                    "city_discovery_sweep",
-                    "candidate_verification",
-                    "known_organizer_event_refresh",
-                    "event_detail_prepublication"
-                  ]
-                },
-                "scopeKey": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 500
-                },
-                "runKey": {
-                  "type": [
-                    "string",
-                    "null"
-                  ],
-                  "maxLength": 500
-                },
-                "market": {
-                  "type": [
-                    "string",
-                    "null"
-                  ],
-                  "maxLength": 80
-                },
-                "sourceProfileId": {
-                  "type": [
-                    "string",
-                    "null"
-                  ],
-                  "maxLength": 160
-                },
-                "entityId": {
-                  "type": [
-                    "string",
-                    "null"
-                  ],
-                  "maxLength": 200
-                },
-                "surfaceId": {
-                  "type": [
-                    "string",
-                    "null"
-                  ],
-                  "maxLength": 200
-                },
-                "schedulerStatus": {
-                  "type": [
-                    "string",
-                    "null"
-                  ],
-                  "maxLength": 40
-                },
-                "surfacePolicy": {
-                  "type": [
-                    "string",
-                    "null"
-                  ],
-                  "maxLength": 80
-                },
-                "fetchEnabled": {
-                  "type": "boolean"
-                },
-                "completedAt": {
-                  "$ref": "common.schema.json#/definitions/isoDateTime"
-                },
-                "policyVersion": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 120
-                },
-                "requestHash": {
-                  "$ref": "common.schema.json#/definitions/sha256"
-                }
-              }
-            }
-          }
-        },
-        "organizerPublicationPacketIntake": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "recordType",
-            "packet"
-          ],
-          "properties": {
-            "recordType": {
-              "const": "organizer_publication_packet"
-            },
-            "packet": {
-              "type": "object",
-              "additionalProperties": false,
-              "required": [
-                "packetId",
-                "entityId",
-                "canonicalHostId",
-                "displayName",
-                "status",
-                "priority",
-                "markets",
-                "blockers",
-                "dataBlockers",
-                "evidenceBlockers",
-                "approvalChecklist",
-                "evidenceSummary",
-                "publicPresence",
-                "adminDecision",
-                "nextActions"
-              ],
-              "properties": {
-                "packetId": {
-                  "$ref": "#/definitions/boundedString"
-                },
-                "entityId": {
-                  "$ref": "#/definitions/boundedString"
-                },
-                "canonicalHostId": {
-                  "$ref": "#/definitions/boundedString"
-                },
-                "displayName": {
-                  "$ref": "#/definitions/boundedString"
-                },
-                "status": {
-                  "$ref": "#/definitions/boundedString"
-                },
-                "priority": {
-                  "$ref": "#/definitions/boundedString"
-                },
-                "markets": {
-                  "type": "array",
-                  "maxItems": 8,
-                  "items": {
-                    "type": "object",
-                    "additionalProperties": false,
-                    "required": [
-                      "slug",
-                      "displayName"
-                    ],
-                    "properties": {
-                      "slug": {
-                        "$ref": "#/definitions/boundedString"
-                      },
-                      "displayName": {
-                        "$ref": "#/definitions/boundedString"
-                      }
-                    }
-                  }
-                },
-                "blockers": {
-                  "$ref": "#/definitions/boundedStringArray"
-                },
-                "dataBlockers": {
-                  "$ref": "#/definitions/boundedStringArray"
-                },
-                "evidenceBlockers": {
-                  "$ref": "#/definitions/boundedStringArray"
-                },
-                "approvalChecklist": {
-                  "type": "object",
-                  "additionalProperties": false,
-                  "required": [
-                    "crawlDisabledReviewed",
-                    "identityReviewed",
-                    "marketScopeReviewed",
-                    "mediaRightsReviewed",
-                    "ownerSafeCopyReviewed",
-                    "surfaceInventoryReviewed"
-                  ],
-                  "properties": {
-                    "crawlDisabledReviewed": {
-                      "type": "boolean"
-                    },
-                    "identityReviewed": {
-                      "type": "boolean"
-                    },
-                    "marketScopeReviewed": {
-                      "type": "boolean"
-                    },
-                    "mediaRightsReviewed": {
-                      "type": "boolean"
-                    },
-                    "ownerSafeCopyReviewed": {
-                      "type": "boolean"
-                    },
-                    "surfaceInventoryReviewed": {
-                      "type": "boolean"
-                    }
-                  }
-                },
-                "evidenceSummary": {
-                  "type": "object",
-                  "additionalProperties": false,
-                  "required": [
-                    "records",
-                    "manualReportsWithoutArtifacts",
-                    "unresolvedLocalRefs",
-                    "missingSurfaceEvidence",
-                    "rawProviderArtifactRefs",
-                    "firestoreForbiddenArtifactRefs",
-                    "riskFlags"
-                  ],
-                  "properties": {
-                    "records": {
-                      "type": "integer",
-                      "minimum": 0
-                    },
-                    "manualReportsWithoutArtifacts": {
-                      "type": "integer",
-                      "minimum": 0
-                    },
-                    "unresolvedLocalRefs": {
-                      "type": "integer",
-                      "minimum": 0
-                    },
-                    "missingSurfaceEvidence": {
-                      "type": "integer",
-                      "minimum": 0
-                    },
-                    "rawProviderArtifactRefs": {
-                      "type": "integer",
-                      "minimum": 0
-                    },
-                    "firestoreForbiddenArtifactRefs": {
-                      "type": "integer",
-                      "minimum": 0
-                    },
-                    "riskFlags": {
-                      "type": "array",
-                      "maxItems": 12,
-                      "items": {
-                        "$ref": "#/definitions/boundedString"
-                      }
-                    }
-                  }
-                },
-                "publicPresence": {
-                  "type": "object",
-                  "additionalProperties": false,
-                  "required": [
-                    "canonicalPath",
-                    "claimTargetPath",
-                    "publishStatus",
-                    "indexStatus",
-                    "appVisibility",
-                    "projectionStatus"
-                  ],
-                  "properties": {
-                    "canonicalPath": {
-                      "anyOf": [
-                        {
-                          "$ref": "#/definitions/boundedString"
-                        },
-                        {
-                          "type": "null"
-                        }
-                      ]
-                    },
-                    "claimTargetPath": {
-                      "anyOf": [
-                        {
-                          "$ref": "#/definitions/boundedString"
-                        },
-                        {
-                          "type": "null"
-                        }
-                      ]
-                    },
-                    "publishStatus": {
-                      "$ref": "#/definitions/boundedString"
-                    },
-                    "indexStatus": {
-                      "$ref": "#/definitions/boundedString"
-                    },
-                    "appVisibility": {
-                      "$ref": "#/definitions/boundedString"
-                    },
-                    "projectionStatus": {
-                      "$ref": "#/definitions/boundedString"
-                    }
-                  }
-                },
-                "adminDecision": {
-                  "type": "object",
-                  "additionalProperties": false,
-                  "required": [
-                    "allowedDecisions",
-                    "defaultAppVisibility",
-                    "currentDecision"
-                  ],
-                  "properties": {
-                    "allowedDecisions": {
-                      "$ref": "#/definitions/boundedStringArray"
-                    },
-                    "defaultAppVisibility": {
-                      "$ref": "#/definitions/boundedString"
-                    },
-                    "currentDecision": {
-                      "anyOf": [
-                        {
-                          "type": "null"
-                        },
-                        {
-                          "type": "object",
-                          "additionalProperties": false,
-                          "required": [
-                            "decision",
-                            "publishStatus",
-                            "indexStatus",
-                            "decidedAt",
-                            "appVisibility"
-                          ],
-                          "properties": {
-                            "decision": {
-                              "$ref": "#/definitions/boundedString"
-                            },
-                            "publishStatus": {
-                              "$ref": "#/definitions/boundedString"
-                            },
-                            "indexStatus": {
-                              "$ref": "#/definitions/boundedString"
-                            },
-                            "decidedAt": {
-                              "$ref": "#/definitions/boundedString"
-                            },
-                            "appVisibility": {
-                              "$ref": "#/definitions/boundedString"
-                            }
-                          }
-                        }
-                      ]
-                    }
-                  }
-                },
-                "nextActions": {
-                  "type": "array",
-                  "maxItems": 12,
-                  "items": {
-                    "$ref": "#/definitions/boundedString"
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "required": [
-        "schemaVersion",
-        "workItemId",
-        "workflowId",
-        "runId",
-        "entityKind",
-        "externalKey",
-        "revision",
-        "candidateHash",
-        "primaryStage",
-        "lifecycleStatus",
-        "outcome",
-        "taskFlags",
-        "blockerCodes",
-        "warningCodes",
-        "priority",
-        "attemptCount",
-        "evidenceRefs",
-        "fieldProvenance",
-        "normalizedPayload",
-        "decisionId",
-        "publicationPlanId",
-        "createdAt",
-        "updatedAt",
-        "staleAt",
-        "expiresAt"
-      ],
-      "properties": {
-        "schemaVersion": {
-          "type": "integer",
-          "const": 1
-        },
-        "workItemId": {
-          "$ref": "common.schema.json#/definitions/id"
-        },
-        "workflowId": {
-          "$ref": "common.schema.json#/definitions/workflowId"
-        },
-        "runId": {
-          "$ref": "common.schema.json#/definitions/id"
-        },
-        "entityKind": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 80,
-          "pattern": "^[a-z][a-z0-9_]*$"
-        },
-        "externalKey": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "maxLength": 500
-        },
-        "revision": {
-          "type": "integer",
-          "minimum": 0
-        },
-        "candidateHash": {
-          "$ref": "common.schema.json#/definitions/sha256"
-        },
-        "primaryStage": {
-          "type": "string",
-          "minLength": 1,
-          "maxLength": 80,
-          "pattern": "^[a-z][a-z0-9_]*$"
-        },
-        "lifecycleStatus": {
-          "type": "string",
-          "enum": [
-            "queued",
-            "in_progress",
-            "waiting",
-            "ready",
-            "published",
-            "terminal"
-          ]
-        },
-        "outcome": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "maxLength": 120,
-          "pattern": "^[a-z][a-z0-9_]*$"
-        },
-        "taskFlags": {
-          "type": "array",
-          "maxItems": 40,
-          "uniqueItems": true,
-          "items": {
-            "$ref": "common.schema.json#/definitions/code"
-          }
-        },
-        "blockerCodes": {
-          "type": "array",
-          "maxItems": 40,
-          "uniqueItems": true,
-          "items": {
-            "$ref": "common.schema.json#/definitions/code"
-          }
-        },
-        "warningCodes": {
-          "type": "array",
-          "maxItems": 40,
-          "uniqueItems": true,
-          "items": {
-            "$ref": "common.schema.json#/definitions/code"
-          }
-        },
-        "priority": {
+        "expectedRevision": {
           "type": "integer",
           "minimum": 0,
-          "maximum": 1000000
+          "maximum": 9007199254740991
         },
-        "attemptCount": {
-          "type": "integer",
-          "minimum": 0
+        "expectedRuntimeSourceHash": {
+          "$ref": "../operations/common.schema.json#/definitions/sha256"
         },
-        "evidenceRefs": {
-          "type": "array",
-          "maxItems": 100,
-          "items": {
-            "$ref": "common.schema.json#/definitions/evidenceRef"
-          }
+        "expectedSenderReviewHash": {
+          "$ref": "../operations/common.schema.json#/definitions/sha256"
         },
-        "fieldProvenance": {
-          "type": "array",
-          "maxItems": 200,
-          "items": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": [
-              "field",
-              "artifactId",
-              "contentHash",
-              "locator",
-              "extractedBy",
-              "extractorVersion",
-              "confidence"
-            ],
-            "properties": {
-              "field": {
-                "type": "string",
-                "minLength": 1,
-                "maxLength": 160
-              },
-              "artifactId": {
-                "$ref": "common.schema.json#/definitions/id"
-              },
-              "contentHash": {
-                "$ref": "common.schema.json#/definitions/sha256"
-              },
-              "locator": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "maxLength": 1000
-              },
-              "extractedBy": {
-                "type": "string",
-                "enum": [
-                  "deterministic",
-                  "model",
-                  "human"
-                ]
-              },
-              "extractorVersion": {
-                "type": "string",
-                "minLength": 1,
-                "maxLength": 160
-              },
-              "confidence": {
-                "type": [
-                  "number",
-                  "null"
-                ],
-                "minimum": 0,
-                "maximum": 1
+        "expectedBudgetSourceHash": {
+          "$ref": "../operations/common.schema.json#/definitions/sha256"
+        },
+        "decision": {
+          "$ref": "#/definitions/decision"
+        },
+        "note": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        }
+      },
+      "definitions": {
+        "decision": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "currency",
+                "eventLimitMicros",
+                "senderDayLimitMicros",
+                "validUntil"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "approve"
+                },
+                "currency": {
+                  "type": "string",
+                  "pattern": "^[A-Z]{3}$"
+                },
+                "eventLimitMicros": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                },
+                "senderDayLimitMicros": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                },
+                "validUntil": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "hold"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "reject"
+                }
               }
             }
-          }
-        },
-        "normalizedPayload": {
-          "type": "object",
-          "additionalProperties": true
-        },
-        "decisionId": {
-          "anyOf": [
-            {
-              "$ref": "common.schema.json#/definitions/id"
-            },
-            {
-              "type": "null"
-            }
           ]
-        },
-        "publicationPlanId": {
-          "anyOf": [
-            {
-              "$ref": "common.schema.json#/definitions/id"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "createdAt": {
-          "$ref": "common.schema.json#/definitions/isoDateTime"
-        },
-        "updatedAt": {
-          "$ref": "common.schema.json#/definitions/isoDateTime"
-        },
-        "staleAt": {
-          "$ref": "common.schema.json#/definitions/nullableIsoDateTime"
-        },
-        "expiresAt": {
-          "$ref": "common.schema.json#/definitions/nullableIsoDateTime"
         }
       }
     },
     {
       "$schema": "http://json-schema.org/draft-07/schema#",
-      "$id": "https://catch.app/contracts/operations/event_assistance_checkpoint_work.schema.json",
-      "title": "EventAssistanceCheckpointWork",
+      "$id": "https://catch.app/contracts/operations/event_messaging_setup_review.schema.json",
+      "title": "EventMessagingSetupReview",
+      "description": "Read-only operator review of one event messaging runtime, sender and its two spending ceilings. This artifact grants no dispatch or spending authority.",
       "type": "object",
       "additionalProperties": false,
       "required": [
         "schemaVersion",
         "kind",
-        "scope",
-        "rosterId",
-        "rosterHash",
-        "request",
-        "requestedAt",
-        "checkpoint"
+        "context",
+        "routeId",
+        "senderId",
+        "purpose",
+        "observedAt",
+        "completedAt",
+        "grantsDispatchAuthority",
+        "runtime",
+        "sender",
+        "budgets"
       ],
       "properties": {
         "schemaVersion": {
+          "type": "integer",
           "const": 1
         },
         "kind": {
-          "const": "liveCheckpointReport"
-        },
-        "scope": {
-          "$ref": "../shared/event_assistance_checkpoint.schema.json#/definitions/ReadInput"
-        },
-        "rosterId": {
           "type": "string",
-          "pattern": "^departure-roster:[a-f0-9]{64}$"
+          "const": "recordedSetupReview"
         },
-        "rosterHash": {
-          "$ref": "common.schema.json#/definitions/sha256"
+        "context": {
+          "$ref": "../shared/event_assistance_guest.schema.json#/definitions/liveContext"
         },
-        "request": {
-          "$ref": "../shared/event_assistance_departure_roster.schema.json#/definitions/CheckpointRequest"
+        "routeId": {
+          "$ref": "#/definitions/routeId"
         },
-        "requestedAt": {
-          "type": "integer",
-          "minimum": 0,
-          "maximum": 9007199254740991
+        "senderId": {
+          "$ref": "#/definitions/id"
         },
-        "checkpoint": {
+        "purpose": {
+          "$ref": "#/definitions/purpose"
+        },
+        "observedAt": {
+          "$ref": "#/definitions/time"
+        },
+        "completedAt": {
+          "$ref": "#/definitions/time"
+        },
+        "grantsDispatchAuthority": {
+          "type": "boolean",
+          "const": false
+        },
+        "runtime": {
           "type": "object",
           "additionalProperties": false,
           "required": [
-            "dueAt",
-            "evaluatedAt",
-            "failures",
-            "observation"
+            "appliesToPurpose",
+            "status",
+            "revision",
+            "selected",
+            "sourceHash",
+            "eventEnd"
           ],
           "properties": {
-            "dueAt": {
-              "anyOf": [
-                {
-                  "type": "integer",
-                  "minimum": 0,
-                  "maximum": 9007199254740991
-                },
-                {
-                  "type": "null"
-                }
-              ]
+            "appliesToPurpose": {
+              "type": "boolean"
             },
-            "evaluatedAt": {
-              "anyOf": [
-                {
-                  "type": "integer",
-                  "minimum": 0,
-                  "maximum": 9007199254740991
-                },
-                {
-                  "type": "null"
-                }
-              ]
-            },
-            "failures": {
-              "type": "integer",
-              "minimum": 0,
-              "maximum": 5
-            },
-            "observation": {
-              "anyOf": [
-                {
-                  "oneOf": [
-                    {
-                      "type": "object",
-                      "additionalProperties": false,
-                      "required": [
-                        "kind",
-                        "request",
-                        "reportRevision",
-                        "sourceHash",
-                        "ownerValidUntil"
-                      ],
-                      "properties": {
-                        "kind": {
-                          "const": "observed"
-                        },
-                        "request": {
-                          "$ref": "../shared/event_assistance_checkpoint.schema.json#/definitions/RequestView"
-                        },
-                        "reportRevision": {
-                          "type": "integer",
-                          "minimum": 0,
-                          "maximum": 9007199254740991
-                        },
-                        "sourceHash": {
-                          "$ref": "common.schema.json#/definitions/sha256"
-                        },
-                        "ownerValidUntil": {
-                          "type": "integer",
-                          "minimum": 0,
-                          "maximum": 9007199254740991
-                        }
-                      }
-                    },
-                    {
-                      "type": "object",
-                      "additionalProperties": false,
-                      "required": [
-                        "kind",
-                        "reason"
-                      ],
-                      "properties": {
-                        "kind": {
-                          "const": "unavailable"
-                        },
-                        "reason": {
-                          "const": "factsUnavailable"
-                        }
-                      }
-                    }
-                  ]
-                },
-                {
-                  "type": "null"
-                }
-              ]
-            }
-          }
-        },
-        "reassignment": {
-          "$ref": "../shared/event_assistance_checkpoint.schema.json#/definitions/Reassignment"
-        },
-        "closeout": {
-          "$ref": "../shared/event_assistance_checkpoint.schema.json#/definitions/CloseoutChange"
-        }
-      }
-    },
-    {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "$id": "https://catch.app/contracts/shared/event_assistance_checkpoint.schema.json",
-      "title": "EventAssistanceCheckpointContracts",
-      "definitions": {
-        "ReadInput": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "context",
-            "groupId",
-            "checkpointId",
-            "progressRevision"
-          ],
-          "properties": {
-            "context": {
-              "$ref": "event_assistance_guest.schema.json#/definitions/liveContext"
-            },
-            "groupId": {
+            "status": {
               "type": "string",
-              "minLength": 1,
-              "maxLength": 160,
-              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-            },
-            "checkpointId": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 2000
-            },
-            "progressRevision": {
-              "type": "integer",
-              "minimum": 1,
-              "maximum": 9007199254740991
-            }
-          }
-        },
-        "WriteInput": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "command",
-            "expectedSourceHash"
-          ],
-          "properties": {
-            "command": {
-              "$ref": "event_assistance_common.schema.json#/definitions/RecordCheckpointCommand"
-            },
-            "expectedSourceHash": {
-              "type": "string",
-              "pattern": "^[a-f0-9]{64}$"
-            }
-          },
-          "allOf": [
-            {
-              "properties": {
-                "command": {
-                  "properties": {
-                    "context": {
-                      "properties": {
-                        "mode": {
-                          "const": "live"
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          ]
-        },
-        "Member": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "attendeeId",
-            "observation",
-            "visit"
-          ],
-          "properties": {
-            "attendeeId": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 160,
-              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-            },
-            "observation": {
               "enum": [
-                "accountedFor",
-                "unconfirmed"
+                "unconfigured",
+                "paused",
+                "sourceChanged",
+                "expired",
+                "eventClosed",
+                "configured"
               ]
             },
-            "visit": {
-              "oneOf": [
-                {
-                  "type": "object",
-                  "additionalProperties": false,
-                  "required": [
-                    "kind"
-                  ],
-                  "properties": {
-                    "kind": {
-                      "const": "current"
-                    }
-                  }
-                },
-                {
-                  "type": "object",
-                  "additionalProperties": false,
-                  "required": [
-                    "kind",
-                    "reason"
-                  ],
-                  "properties": {
-                    "kind": {
-                      "const": "unavailable"
-                    },
-                    "reason": {
-                      "enum": [
-                        "registrationMissing",
-                        "visitChanged",
-                        "notCheckedIn",
-                        "invalidSource"
-                      ]
-                    }
-                  }
-                }
-              ]
-            },
-            "disposition": {
-              "$ref": "#/definitions/Disposition"
-            },
-            "displayName": {
+            "revision": {
               "type": [
-                "string",
+                "integer",
                 "null"
               ],
-              "minLength": 1,
-              "maxLength": 120
-            }
-          }
-        },
-        "Report": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "schemaVersion",
-            "reportId",
-            "context",
-            "groupId",
-            "checkpointId",
-            "progressRevision",
-            "rosterId",
-            "rosterHash",
-            "revision",
-            "accountedFor",
-            "reportedBy",
-            "reportedAt",
-            "correctionReason",
-            "createdAt"
-          ],
-          "properties": {
-            "schemaVersion": {
-              "const": 1
-            },
-            "reportId": {
-              "type": "string",
-              "pattern": "^checkpoint:[a-f0-9]{64}$"
-            },
-            "context": {
-              "$ref": "event_assistance_guest.schema.json#/definitions/liveContext"
-            },
-            "groupId": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 160,
-              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-            },
-            "checkpointId": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 2000
-            },
-            "progressRevision": {
-              "type": "integer",
               "minimum": 1,
               "maximum": 9007199254740991
             },
-            "rosterId": {
-              "type": "string",
-              "pattern": "^departure-roster:[a-f0-9]{64}$"
-            },
-            "rosterHash": {
-              "type": "string",
-              "pattern": "^[a-f0-9]{64}$"
-            },
-            "revision": {
-              "type": "integer",
-              "minimum": 1,
-              "maximum": 9007199254740991
-            },
-            "accountedFor": {
-              "type": "array",
-              "items": {
-                "type": "string",
-                "minLength": 1,
-                "maxLength": 160,
-                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-              },
-              "uniqueItems": true,
-              "maxItems": 1000
-            },
-            "reportedBy": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 2000
-            },
-            "reportedAt": {
-              "type": "integer",
-              "minimum": 0,
-              "maximum": 9007199254740991
-            },
-            "correctionReason": {
-              "anyOf": [
-                {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 500,
-                  "pattern": "\\S"
-                },
-                {
-                  "type": "null"
-                }
-              ]
-            },
-            "createdAt": {
-              "type": "integer",
-              "minimum": 0,
-              "maximum": 9007199254740991
-            }
-          }
-        },
-        "View": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "context",
-            "groupId",
-            "checkpointId",
-            "progressRevision",
-            "serverTime",
-            "sourceHash",
-            "revision",
-            "report",
-            "availability",
-            "request"
-          ],
-          "properties": {
-            "context": {
-              "$ref": "event_assistance_guest.schema.json#/definitions/liveContext"
-            },
-            "groupId": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 160,
-              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-            },
-            "checkpointId": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 2000
-            },
-            "progressRevision": {
-              "type": "integer",
-              "minimum": 1,
-              "maximum": 9007199254740991
-            },
-            "serverTime": {
-              "type": "integer",
-              "minimum": 0,
-              "maximum": 9007199254740991
+            "selected": {
+              "type": "boolean"
             },
             "sourceHash": {
-              "type": "string",
-              "pattern": "^[a-f0-9]{64}$"
+              "$ref": "common.schema.json#/definitions/sha256"
             },
-            "revision": {
-              "type": "integer",
-              "minimum": 0,
-              "maximum": 9007199254740991
-            },
-            "report": {
-              "anyOf": [
-                {
-                  "$ref": "#/definitions/Report"
-                },
-                {
-                  "type": "null"
-                }
-              ]
-            },
-            "availability": {
-              "oneOf": [
-                {
-                  "type": "object",
-                  "additionalProperties": false,
-                  "required": [
-                    "kind",
-                    "rosterId",
-                    "label",
-                    "reportStatus",
-                    "members"
-                  ],
-                  "properties": {
-                    "kind": {
-                      "const": "ready"
-                    },
-                    "rosterId": {
-                      "type": "string",
-                      "pattern": "^departure-roster:[a-f0-9]{64}$"
-                    },
-                    "label": {
-                      "type": "string",
-                      "minLength": 1,
-                      "maxLength": 240
-                    },
-                    "reportStatus": {
-                      "enum": [
-                        "unreported",
-                        "partial",
-                        "complete"
-                      ]
-                    },
-                    "members": {
-                      "type": "array",
-                      "maxItems": 1000,
-                      "items": {
-                        "$ref": "#/definitions/Member"
-                      }
-                    }
-                  }
-                },
-                {
-                  "type": "object",
-                  "additionalProperties": false,
-                  "required": [
-                    "kind",
-                    "reason"
-                  ],
-                  "properties": {
-                    "kind": {
-                      "const": "unavailable"
-                    },
-                    "reason": {
-                      "enum": [
-                        "rosterNotRecorded",
-                        "destinationNotRecorded",
-                        "differentCheckpoint",
-                        "notCheckpoint",
-                        "setupChanged"
-                      ]
-                    }
-                  }
-                }
-              ]
-            },
-            "request": {
-              "anyOf": [
-                {
-                  "$ref": "#/definitions/RequestView"
-                },
-                {
-                  "type": "null"
-                }
-              ]
-            },
-            "assignment": {
-              "description": "Present in current responses; null when no durable checkpoint request exists. Independent of the report revision.",
-              "anyOf": [
-                {
-                  "$ref": "#/definitions/AssignmentView"
-                },
-                {
-                  "type": "null"
-                }
-              ]
-            },
-            "closeout": {
-              "anyOf": [
-                {
-                  "$ref": "#/definitions/CloseoutView"
-                },
-                {
-                  "type": "null"
-                }
-              ]
-            },
-            "reporterOptions": {
-              "description": "Current manager-only choices for this original checkpoint. Missing legacy values do not establish a choice list.",
-              "anyOf": [
-                {
-                  "$ref": "#/definitions/ReporterOptions"
-                },
-                {
-                  "type": "null"
-                }
-              ]
+            "eventEnd": {
+              "$ref": "#/definitions/time"
             }
           }
         },
-        "Receipt": {
-          "oneOf": [
+        "sender": {
+          "anyOf": [
             {
-              "$ref": "#/definitions/ReportReceipt"
+              "$ref": "#/definitions/sender"
             },
             {
-              "$ref": "#/definitions/AssignmentReceipt"
-            },
-            {
-              "$ref": "#/definitions/CloseoutReceipt"
+              "type": "null"
             }
           ]
         },
-        "Response": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "outcome",
-            "operationRevision",
-            "view"
-          ],
-          "properties": {
-            "outcome": {
-              "enum": [
-                "read",
-                "applied",
-                "replayed"
-              ]
-            },
-            "operationRevision": {
-              "anyOf": [
-                {
-                  "type": "integer",
-                  "minimum": 1,
-                  "maximum": 9007199254740991
-                },
-                {
-                  "type": "null"
-                }
-              ]
-            },
-            "view": {
-              "$ref": "#/definitions/View"
-            }
-          }
-        },
-        "RequestView": {
-          "oneOf": [
-            {
-              "type": "object",
-              "additionalProperties": false,
-              "required": [
-                "responsibleOperatorId",
-                "dueAt",
-                "state",
-                "ownerAvailability"
-              ],
-              "properties": {
-                "responsibleOperatorId": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 128,
-                  "pattern": "^[^/]+$"
-                },
-                "dueAt": {
-                  "type": "integer",
-                  "minimum": 0,
-                  "maximum": 9007199254740991
-                },
-                "state": {
-                  "enum": [
-                    "awaitingReport",
-                    "overdue",
-                    "discrepancy",
-                    "sourceUnavailable"
-                  ]
-                },
-                "ownerAvailability": {
-                  "enum": [
-                    "current",
-                    "needsReassignment"
-                  ]
-                }
-              }
-            },
-            {
-              "type": "object",
-              "additionalProperties": false,
-              "required": [
-                "responsibleOperatorId",
-                "dueAt",
-                "state",
-                "ownerAvailability"
-              ],
-              "properties": {
-                "responsibleOperatorId": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 128,
-                  "pattern": "^[^/]+$"
-                },
-                "dueAt": {
-                  "type": "integer",
-                  "minimum": 0,
-                  "maximum": 9007199254740991
-                },
-                "state": {
-                  "enum": [
-                    "complete",
-                    "closedOut"
-                  ]
-                },
-                "ownerAvailability": {
-                  "const": "notRequired"
-                }
-              }
-            }
-          ]
-        },
-        "Reassignment": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "revision",
-            "receiptId",
-            "responsibleOperatorId",
-            "previousResponsibleOperatorId",
-            "assignedBy",
-            "assignedAt",
-            "reason"
-          ],
-          "properties": {
-            "revision": {
-              "type": "integer",
-              "minimum": 1,
-              "maximum": 9007199254740991
-            },
-            "receiptId": {
-              "type": "string",
-              "pattern": "^checkpoint-reassignment:[a-f0-9]{64}$"
-            },
-            "responsibleOperatorId": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 128,
-              "pattern": "^[^/]+$"
-            },
-            "previousResponsibleOperatorId": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 128,
-              "pattern": "^[^/]+$"
-            },
-            "assignedBy": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 128,
-              "pattern": "^[^/]+$"
-            },
-            "assignedAt": {
-              "type": "integer",
-              "minimum": 0,
-              "maximum": 9007199254740991
-            },
-            "reason": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 500,
-              "pattern": "\\S"
-            }
-          }
-        },
-        "ReassignInput": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "command",
-            "expectedSourceHash"
-          ],
-          "properties": {
-            "command": {
-              "$ref": "event_assistance_common.schema.json#/definitions/ReassignCheckpointReporterCommand"
-            },
-            "expectedSourceHash": {
-              "type": "string",
-              "pattern": "^[a-f0-9]{64}$"
-            }
-          },
-          "allOf": [
-            {
-              "properties": {
-                "command": {
-                  "properties": {
-                    "context": {
-                      "properties": {
-                        "mode": {
-                          "const": "live"
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          ]
-        },
-        "AssignmentView": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "revision",
-            "sourceHash",
-            "change"
-          ],
-          "properties": {
-            "revision": {
-              "type": "integer",
-              "minimum": 0,
-              "maximum": 9007199254740991
-            },
-            "sourceHash": {
-              "type": "string",
-              "pattern": "^[a-f0-9]{64}$"
-            },
-            "change": {
-              "anyOf": [
-                {
-                  "$ref": "#/definitions/Reassignment"
-                },
-                {
-                  "type": "null"
-                }
-              ]
-            }
-          }
-        },
-        "AssignmentReceipt": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "receiptId",
-            "requestHash",
-            "scope",
-            "rosterHash",
-            "workItemRevision",
-            "assignment"
-          ],
-          "properties": {
-            "receiptId": {
-              "type": "string",
-              "pattern": "^checkpoint-reassignment:[a-f0-9]{64}$"
-            },
-            "requestHash": {
-              "type": "string",
-              "pattern": "^[a-f0-9]{64}$"
-            },
-            "scope": {
-              "$ref": "#/definitions/ReadInput"
-            },
-            "rosterHash": {
-              "type": "string",
-              "pattern": "^[a-f0-9]{64}$"
-            },
-            "workItemRevision": {
-              "type": "integer",
-              "minimum": 1,
-              "maximum": 9007199254740991
-            },
-            "assignment": {
-              "$ref": "#/definitions/Reassignment"
-            }
-          }
-        },
-        "ReportReceipt": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "receiptId",
-            "requestHash",
-            "report"
-          ],
-          "properties": {
-            "receiptId": {
-              "type": "string",
-              "pattern": "^checkpoint-action:[a-f0-9]{64}$"
-            },
-            "requestHash": {
-              "type": "string",
-              "pattern": "^[a-f0-9]{64}$"
-            },
-            "report": {
-              "$ref": "#/definitions/Report"
-            }
-          }
-        },
-        "Disposition": {
-          "description": "Visit-bound event accountability evidence. A resolved disposition never means arrival at this checkpoint.",
+        "budgets": {
           "oneOf": [
             {
               "type": "object",
@@ -8214,7 +2501,8 @@ const model = {
               ],
               "properties": {
                 "kind": {
-                  "const": "unresolved"
+                  "type": "string",
+                  "const": "senderUnavailable"
                 }
               }
             },
@@ -8223,20 +2511,223 @@ const model = {
               "additionalProperties": false,
               "required": [
                 "kind",
-                "disposition",
-                "revision",
-                "resolvedAt",
-                "resolvedBy",
-                "sourceHash"
+                "currency",
+                "sourceHash",
+                "event",
+                "senderDay"
               ],
               "properties": {
                 "kind": {
-                  "const": "resolved"
+                  "type": "string",
+                  "const": "reviewed"
                 },
-                "disposition": {
+                "currency": {
+                  "type": "string",
+                  "pattern": "^[A-Z]{3}$"
+                },
+                "sourceHash": {
+                  "$ref": "common.schema.json#/definitions/sha256"
+                },
+                "event": {
+                  "$ref": "#/definitions/budgetReview"
+                },
+                "senderDay": {
+                  "$ref": "#/definitions/budgetReview"
+                }
+              }
+            }
+          ]
+        }
+      },
+      "definitions": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "time": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "routeId": {
+          "type": "string",
+          "enum": [
+            "catchEventSms",
+            "catchEventRcs",
+            "organizerEventWhatsapp"
+          ]
+        },
+        "purpose": {
+          "type": "string",
+          "enum": [
+            "joiningUpdate",
+            "joiningInstructions",
+            "planChanged",
+            "eventCancelled",
+            "eventFinished",
+            "guestRequirement",
+            "assignmentChanged",
+            "participationCheck",
+            "followUp"
+          ]
+        },
+        "sender": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "routeId",
+            "senderId",
+            "displayName",
+            "displayAddress",
+            "availability",
+            "reviewHash"
+          ],
+          "properties": {
+            "routeId": {
+              "$ref": "#/definitions/routeId"
+            },
+            "senderId": {
+              "$ref": "#/definitions/id"
+            },
+            "displayName": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "displayAddress": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 2000
+            },
+            "availability": {
+              "type": "string",
+              "enum": [
+                "eligible",
+                "setupRequired",
+                "approvalExpired",
+                "templateUnavailable"
+              ]
+            },
+            "reviewHash": {
+              "$ref": "common.schema.json#/definitions/sha256"
+            }
+          }
+        },
+        "budgetScope": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "context"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "event"
+                },
+                "context": {
+                  "$ref": "../shared/event_assistance_guest.schema.json#/definitions/liveContext"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "day"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "senderDay"
+                },
+                "day": {
+                  "type": "string",
+                  "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                }
+              }
+            }
+          ]
+        },
+        "budgetReview": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "budgetId",
+                "scope",
+                "kind",
+                "reason"
+              ],
+              "properties": {
+                "budgetId": {
+                  "$ref": "#/definitions/id"
+                },
+                "scope": {
+                  "$ref": "#/definitions/budgetScope"
+                },
+                "kind": {
+                  "type": "string",
+                  "const": "unavailable"
+                },
+                "reason": {
+                  "type": "string",
                   "enum": [
-                    "returned",
-                    "departed"
+                    "missing",
+                    "invalid"
+                  ]
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "budgetId",
+                "scope",
+                "kind",
+                "issue",
+                "revision",
+                "approvalId",
+                "currency",
+                "limitMicros",
+                "chargedMicros",
+                "remainingMicros",
+                "startsAt",
+                "endsAt",
+                "reviewHash"
+              ],
+              "properties": {
+                "budgetId": {
+                  "$ref": "#/definitions/id"
+                },
+                "scope": {
+                  "$ref": "#/definitions/budgetScope"
+                },
+                "kind": {
+                  "type": "string",
+                  "const": "recorded"
+                },
+                "issue": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "enum": [
+                    "paused",
+                    "expired",
+                    "currencyChanged",
+                    "agentChanged",
+                    "exhausted",
+                    null
                   ]
                 },
                 "revision": {
@@ -8244,436 +2735,34 @@ const model = {
                   "minimum": 1,
                   "maximum": 9007199254740991
                 },
-                "resolvedAt": {
-                  "type": "integer",
-                  "minimum": 0,
-                  "maximum": 9007199254740991
+                "approvalId": {
+                  "$ref": "#/definitions/id"
                 },
-                "resolvedBy": {
+                "currency": {
                   "type": "string",
-                  "minLength": 1,
-                  "maxLength": 2000
+                  "pattern": "^[A-Z]{3}$"
                 },
-                "sourceHash": {
-                  "type": "string",
-                  "pattern": "^[a-f0-9]{64}$"
-                }
-              }
-            },
-            {
-              "type": "object",
-              "additionalProperties": false,
-              "required": [
-                "kind",
-                "reason"
-              ],
-              "properties": {
-                "kind": {
-                  "const": "unavailable"
+                "limitMicros": {
+                  "$ref": "#/definitions/time"
                 },
-                "reason": {
-                  "enum": [
-                    "registrationMissing",
-                    "visitChanged",
-                    "notCheckedIn",
-                    "invalidSource",
-                    "beforeDeparture"
-                  ]
+                "chargedMicros": {
+                  "$ref": "#/definitions/time"
+                },
+                "remainingMicros": {
+                  "$ref": "#/definitions/time"
+                },
+                "startsAt": {
+                  "$ref": "#/definitions/time"
+                },
+                "endsAt": {
+                  "$ref": "#/definitions/time"
+                },
+                "reviewHash": {
+                  "$ref": "common.schema.json#/definitions/sha256"
                 }
               }
             }
           ]
-        },
-        "CloseoutDisposition": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "kind",
-            "disposition",
-            "revision",
-            "resolvedAt",
-            "resolvedBy",
-            "sourceHash",
-            "attendeeId"
-          ],
-          "properties": {
-            "kind": {
-              "const": "resolved"
-            },
-            "disposition": {
-              "enum": [
-                "returned",
-                "departed"
-              ]
-            },
-            "revision": {
-              "type": "integer",
-              "minimum": 1,
-              "maximum": 9007199254740991
-            },
-            "resolvedAt": {
-              "type": "integer",
-              "minimum": 0,
-              "maximum": 9007199254740991
-            },
-            "resolvedBy": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 128,
-              "pattern": "^[^/]+$"
-            },
-            "sourceHash": {
-              "type": "string",
-              "pattern": "^[a-f0-9]{64}$"
-            },
-            "attendeeId": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 160,
-              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-            }
-          }
-        },
-        "CloseoutChange": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "revision",
-            "previousRevision",
-            "receiptId",
-            "changedBy",
-            "changedAt",
-            "reason",
-            "decision"
-          ],
-          "properties": {
-            "revision": {
-              "type": "integer",
-              "minimum": 1,
-              "maximum": 9007199254740991
-            },
-            "previousRevision": {
-              "type": "integer",
-              "minimum": 0,
-              "maximum": 9007199254740991
-            },
-            "receiptId": {
-              "type": "string",
-              "pattern": "^checkpoint-closeout:[a-f0-9]{64}$"
-            },
-            "changedBy": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 128,
-              "pattern": "^[^/]+$"
-            },
-            "changedAt": {
-              "type": "integer",
-              "minimum": 0,
-              "maximum": 9007199254740991
-            },
-            "reason": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 500,
-              "pattern": "\\S"
-            },
-            "decision": {
-              "oneOf": [
-                {
-                  "type": "object",
-                  "additionalProperties": false,
-                  "required": [
-                    "kind",
-                    "report",
-                    "dispositions"
-                  ],
-                  "properties": {
-                    "kind": {
-                      "const": "close"
-                    },
-                    "report": {
-                      "$ref": "#/definitions/Report"
-                    },
-                    "dispositions": {
-                      "type": "array",
-                      "maxItems": 1000,
-                      "items": {
-                        "$ref": "#/definitions/CloseoutDisposition"
-                      }
-                    }
-                  }
-                },
-                {
-                  "type": "object",
-                  "additionalProperties": false,
-                  "required": [
-                    "kind"
-                  ],
-                  "properties": {
-                    "kind": {
-                      "const": "reopen"
-                    }
-                  }
-                }
-              ]
-            }
-          }
-        },
-        "CloseoutView": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "revision",
-            "sourceHash",
-            "change",
-            "state",
-            "eligibility"
-          ],
-          "properties": {
-            "revision": {
-              "type": "integer",
-              "minimum": 0,
-              "maximum": 9007199254740991
-            },
-            "sourceHash": {
-              "type": "string",
-              "pattern": "^[a-f0-9]{64}$"
-            },
-            "change": {
-              "anyOf": [
-                {
-                  "$ref": "#/definitions/CloseoutChange"
-                },
-                {
-                  "type": "null"
-                }
-              ]
-            },
-            "state": {
-              "oneOf": [
-                {
-                  "type": "object",
-                  "additionalProperties": false,
-                  "required": [
-                    "kind"
-                  ],
-                  "properties": {
-                    "kind": {
-                      "enum": [
-                        "open",
-                        "reopened",
-                        "closedOut",
-                        "superseded"
-                      ]
-                    }
-                  }
-                },
-                {
-                  "type": "object",
-                  "additionalProperties": false,
-                  "required": [
-                    "kind",
-                    "reason"
-                  ],
-                  "properties": {
-                    "kind": {
-                      "const": "needsReview"
-                    },
-                    "reason": {
-                      "enum": [
-                        "sourceUnavailable",
-                        "reportChanged",
-                        "dispositionChanged"
-                      ]
-                    }
-                  }
-                }
-              ]
-            },
-            "eligibility": {
-              "oneOf": [
-                {
-                  "type": "object",
-                  "additionalProperties": false,
-                  "required": [
-                    "kind"
-                  ],
-                  "properties": {
-                    "kind": {
-                      "const": "ready"
-                    }
-                  }
-                },
-                {
-                  "type": "object",
-                  "additionalProperties": false,
-                  "required": [
-                    "kind",
-                    "reason",
-                    "attendeeIds"
-                  ],
-                  "properties": {
-                    "kind": {
-                      "const": "unavailable"
-                    },
-                    "reason": {
-                      "enum": [
-                        "sourceUnavailable",
-                        "reportMissing",
-                        "reportComplete",
-                        "unresolvedMembers",
-                        "alreadyClosed"
-                      ]
-                    },
-                    "attendeeIds": {
-                      "type": "array",
-                      "maxItems": 1000,
-                      "uniqueItems": true,
-                      "items": {
-                        "type": "string",
-                        "minLength": 1,
-                        "maxLength": 160,
-                        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-                      }
-                    }
-                  }
-                }
-              ]
-            }
-          }
-        },
-        "CloseoutInput": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "command",
-            "expectedSourceHash"
-          ],
-          "properties": {
-            "command": {
-              "$ref": "event_assistance_common.schema.json#/definitions/SetCheckpointCloseoutCommand"
-            },
-            "expectedSourceHash": {
-              "type": "string",
-              "pattern": "^[a-f0-9]{64}$"
-            }
-          },
-          "allOf": [
-            {
-              "properties": {
-                "command": {
-                  "properties": {
-                    "context": {
-                      "properties": {
-                        "mode": {
-                          "const": "live"
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          ]
-        },
-        "CloseoutReceipt": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "receiptId",
-            "requestHash",
-            "scope",
-            "rosterHash",
-            "workItemRevision",
-            "closeout"
-          ],
-          "properties": {
-            "receiptId": {
-              "type": "string",
-              "pattern": "^checkpoint-closeout:[a-f0-9]{64}$"
-            },
-            "requestHash": {
-              "type": "string",
-              "pattern": "^[a-f0-9]{64}$"
-            },
-            "scope": {
-              "$ref": "#/definitions/ReadInput"
-            },
-            "rosterHash": {
-              "type": "string",
-              "pattern": "^[a-f0-9]{64}$"
-            },
-            "workItemRevision": {
-              "type": "integer",
-              "minimum": 1,
-              "maximum": 9007199254740991
-            },
-            "closeout": {
-              "$ref": "#/definitions/CloseoutChange"
-            }
-          }
-        },
-        "ReporterOptions": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "actorUid",
-            "sourceHash",
-            "validUntil",
-            "reporters"
-          ],
-          "properties": {
-            "actorUid": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 128,
-              "pattern": "^[^/]+$"
-            },
-            "sourceHash": {
-              "type": "string",
-              "pattern": "^[a-f0-9]{64}$"
-            },
-            "validUntil": {
-              "type": "integer",
-              "minimum": 0,
-              "maximum": 9007199254740991
-            },
-            "reporters": {
-              "type": "array",
-              "maxItems": 92,
-              "items": {
-                "type": "object",
-                "additionalProperties": false,
-                "required": [
-                  "operatorId",
-                  "displayName",
-                  "validUntil"
-                ],
-                "properties": {
-                  "operatorId": {
-                    "type": "string",
-                    "minLength": 1,
-                    "maxLength": 128,
-                    "pattern": "^[^/]+$"
-                  },
-                  "displayName": {
-                    "type": [
-                      "string",
-                      "null"
-                    ],
-                    "minLength": 1,
-                    "maxLength": 120
-                  },
-                  "validUntil": {
-                    "type": "integer",
-                    "minimum": 0,
-                    "maximum": 9007199254740991
-                  }
-                }
-              }
-            }
-          }
         }
       }
     },
@@ -19432,6 +13521,6676 @@ const model = {
     },
     {
       "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_decide_club_claim_payload.schema.json",
+      "title": "AdminDecideClubClaimCallablePayload",
+      "description": "Callable payload accepted by adminDecideClubClaim.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requestId",
+        "decision"
+      ],
+      "properties": {
+        "requestId": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        },
+        "decision": {
+          "type": "string",
+          "enum": [
+            "approve",
+            "reject"
+          ]
+        },
+        "decisionReason": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 1000
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_decide_organizer_event_candidate_payload.schema.json",
+      "title": "AdminDecideOrganizerEventCandidateCallablePayload",
+      "description": "Callable payload accepted by adminDecideOrganizerEventCandidate. This records a manual admin review decision for a private external event candidate without importing the event.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "candidateId",
+        "decision",
+        "checklist",
+        "blockerResolutions",
+        "note"
+      ],
+      "properties": {
+        "candidateId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "decision": {
+          "type": "string",
+          "enum": [
+            "approve_for_import",
+            "hold",
+            "reject"
+          ]
+        },
+        "checklist": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "identityReviewed",
+            "sourceEventReviewed",
+            "timeReviewed",
+            "locationReviewed",
+            "dedupeReviewed",
+            "ownerSafeCopyReviewed",
+            "importPolicyAcknowledged"
+          ],
+          "properties": {
+            "identityReviewed": {
+              "type": "boolean"
+            },
+            "sourceEventReviewed": {
+              "type": "boolean"
+            },
+            "timeReviewed": {
+              "type": "boolean"
+            },
+            "locationReviewed": {
+              "type": "boolean"
+            },
+            "dedupeReviewed": {
+              "type": "boolean"
+            },
+            "ownerSafeCopyReviewed": {
+              "type": "boolean"
+            },
+            "importPolicyAcknowledged": {
+              "type": "boolean"
+            }
+          }
+        },
+        "blockerResolutions": {
+          "type": "array",
+          "maxItems": 6,
+          "items": {
+            "$ref": "../embedded/external_event_blocker_resolution.schema.json"
+          }
+        },
+        "note": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/embedded/external_event_blocker_resolution.schema.json",
+      "title": "ExternalEventBlockerResolution",
+      "description": "One explicit, event-scoped resolution or policy-backed waiver for a governed external-event import blocker.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "blockerCode",
+        "outcome",
+        "policyGapDecisionId",
+        "note"
+      ],
+      "properties": {
+        "blockerCode": {
+          "type": "string",
+          "enum": [
+            "missing_exact_coordinates",
+            "missing_end_time",
+            "missing_location_detail",
+            "requires_event_defaults_policy",
+            "requires_owner_safe_copy_review",
+            "duplicate_normalized_event_key"
+          ]
+        },
+        "outcome": {
+          "type": "string",
+          "enum": [
+            "resolved",
+            "waived"
+          ]
+        },
+        "policyGapDecisionId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "note": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "outcome": {
+                "const": "waived"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "policyGapDecisionId": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "outcome": {
+                "const": "resolved"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "policyGapDecisionId": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_decide_organizer_intake_payload.schema.json",
+      "title": "AdminDecideOrganizerIntakeCallablePayload",
+      "description": "Callable payload accepted by adminDecideOrganizerIntake. This records a manual admin review decision for a private organizer-intake candidate.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "entityId",
+        "decision",
+        "publishStatus",
+        "indexStatus",
+        "appVisibility",
+        "checklist",
+        "note"
+      ],
+      "properties": {
+        "entityId": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        },
+        "decision": {
+          "type": "string",
+          "enum": [
+            "approve_public",
+            "hold",
+            "suppress"
+          ]
+        },
+        "publishStatus": {
+          "type": "string",
+          "enum": [
+            "draft",
+            "published",
+            "suppressed"
+          ],
+          "description": "Explicit public-web publication switch. Approval does not imply publication."
+        },
+        "indexStatus": {
+          "type": "string",
+          "enum": [
+            "noindex",
+            "indexed"
+          ],
+          "description": "Explicit search-indexing switch. Indexed requires a published web page."
+        },
+        "appVisibility": {
+          "type": "string",
+          "enum": [
+            "hidden",
+            "discoverable"
+          ]
+        },
+        "checklist": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "identityReviewed",
+            "surfaceInventoryReviewed",
+            "ownerSafeCopyReviewed",
+            "marketScopeReviewed",
+            "mediaRightsReviewed",
+            "crawlDisabledReviewed"
+          ],
+          "properties": {
+            "identityReviewed": {
+              "type": "boolean"
+            },
+            "surfaceInventoryReviewed": {
+              "type": "boolean"
+            },
+            "ownerSafeCopyReviewed": {
+              "type": "boolean"
+            },
+            "marketScopeReviewed": {
+              "type": "boolean"
+            },
+            "mediaRightsReviewed": {
+              "type": "boolean"
+            },
+            "crawlDisabledReviewed": {
+              "type": "boolean"
+            },
+            "manualReportsReviewed": {
+              "type": "boolean",
+              "description": "True when the reviewer explicitly inspected manual reports that have no local raw artifact. Raw evidence remains outside Firestore; replay validation decides when this acknowledgement is required."
+            },
+            "claimTargetReviewed": {
+              "type": "boolean"
+            },
+            "takedownPathReviewed": {
+              "type": "boolean"
+            },
+            "impersonationReviewed": {
+              "type": "boolean"
+            },
+            "operatingStatusReviewed": {
+              "type": "boolean"
+            },
+            "eventAccuracyReviewed": {
+              "type": "boolean"
+            },
+            "unclaimedAffordancesReviewed": {
+              "type": "boolean"
+            }
+          }
+        },
+        "note": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_decide_organizer_policy_gap_payload.schema.json",
+      "title": "AdminDecideOrganizerPolicyGapCallablePayload",
+      "description": "Callable payload accepted by adminDecideOrganizerPolicyGap. This records a manual product/admin review decision for an organizer intake policy gap without enabling crawls, provider lookups, imports, defaults, or naming migrations.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "gapId",
+        "decision",
+        "requiredInputsReviewed",
+        "checklist",
+        "note"
+      ],
+      "properties": {
+        "gapId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "decision": {
+          "type": "string",
+          "enum": [
+            "accept",
+            "hold",
+            "reject"
+          ]
+        },
+        "requiredInputsReviewed": {
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          },
+          "uniqueItems": true
+        },
+        "checklist": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "requiredInputsReviewed",
+            "costAndSafetyReviewed",
+            "implementationOwnerReviewed",
+            "behaviorStillDisabledAcknowledged"
+          ],
+          "properties": {
+            "requiredInputsReviewed": {
+              "type": "boolean"
+            },
+            "costAndSafetyReviewed": {
+              "type": "boolean"
+            },
+            "implementationOwnerReviewed": {
+              "type": "boolean"
+            },
+            "behaviorStillDisabledAcknowledged": {
+              "type": "boolean"
+            }
+          }
+        },
+        "note": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_decide_safety_triage_item_payload.schema.json",
+      "title": "Admin Decide Safety Triage Item Callable Payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "targetPath",
+        "decision",
+        "note"
+      ],
+      "properties": {
+        "targetPath": {
+          "$ref": "#/definitions/targetPath"
+        },
+        "decision": {
+          "type": "string",
+          "enum": [
+            "review",
+            "dismiss"
+          ]
+        },
+        "note": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        }
+      },
+      "definitions": {
+        "targetPath": {
+          "type": "string",
+          "maxLength": 260,
+          "pattern": "^(reports|moderationFlags|eventSafetyReports|eventAssistanceCases)/[^/]+$"
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_get_access_application_details_payload.schema.json",
+      "title": "AdminGetAccessApplicationDetailsCallablePayload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "applicationUid"
+      ],
+      "properties": {
+        "applicationUid": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_get_admin_user_roles_payload.schema.json",
+      "title": "AdminGetAdminUserRolesCallablePayload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "targetUid"
+      ],
+      "properties": {
+        "targetUid": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_get_event_details_payload.schema.json",
+      "title": "AdminGetEventDetailsCallablePayload",
+      "description": "Callable payload accepted by adminGetEventDetails. This loads a canonical events/{eventId} document for the admin event publishing workspace.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "eventId"
+      ],
+      "properties": {
+        "eventId": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_get_event_intake_dashboard_payload.schema.json",
+      "title": "AdminGetEventIntakeDashboardCallablePayload",
+      "type": "object",
+      "additionalProperties": false
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_get_event_supply_readiness_payload.schema.json",
+      "title": "AdminGetEventSupplyReadinessCallablePayload",
+      "type": "object",
+      "additionalProperties": false
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_get_marketing_ops_dashboard_payload.schema.json",
+      "title": "AdminGetMarketingOpsDashboardCallablePayload",
+      "type": "object",
+      "additionalProperties": false
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_get_organizer_details_payload.schema.json",
+      "title": "AdminGetOrganizerDetailsCallablePayload",
+      "description": "Callable payload accepted by adminGetOrganizerDetails.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "organizerId"
+      ],
+      "properties": {
+        "organizerId": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_get_overview_payload.schema.json",
+      "title": "Admin Get Overview Callable Payload",
+      "type": "object",
+      "additionalProperties": false
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_get_safety_triage_details_payload.schema.json",
+      "title": "AdminGetSafetyTriageDetailsCallablePayload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "targetPath"
+      ],
+      "properties": {
+        "targetPath": {
+          "type": "string",
+          "pattern": "^(reports|moderationFlags|eventSafetyReports|eventAssistanceCases)/[A-Za-z0-9][A-Za-z0-9._:-]{0,179}$"
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_list_action_executions_payload.schema.json",
+      "title": "AdminListActionExecutionsCallablePayload",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "cursor": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 1000
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_list_admin_role_assignments_payload.schema.json",
+      "title": "AdminListAdminRoleAssignmentsCallablePayload",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "active",
+            "revoked",
+            "all",
+            null
+          ]
+        },
+        "limit": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1,
+          "maximum": 100
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_list_cross_paths_showcase_candidates_payload.schema.json",
+      "title": "AdminListCrossPathsShowcaseCandidatesCallablePayload",
+      "description": "Callable payload for a bounded, role-gated Cross Paths showcase review queue.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "uid": {
+          "anyOf": [
+            {
+              "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "status": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "all",
+            "eligible",
+            "needsReview",
+            "paused",
+            null
+          ]
+        },
+        "marketId": {
+          "anyOf": [
+            {
+              "$ref": "../shared/event_common.schema.json#/definitions/marketId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "cursor": {
+          "anyOf": [
+            {
+              "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 50
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_list_event_details_payload.schema.json",
+      "title": "AdminListEventDetailsCallablePayload",
+      "description": "Callable payload accepted by adminListEventDetails. This lists canonical events/{eventId} rows for the admin event publishing workspace.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "query": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 160
+        },
+        "clubId": {
+          "anyOf": [
+            {
+              "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "organizerId": {
+          "anyOf": [
+            {
+              "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "citySlug": {
+          "anyOf": [
+            {
+              "$ref": "../shared/event_common.schema.json#/definitions/marketId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "citySlugs": {
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "$ref": "../shared/event_common.schema.json#/definitions/marketId"
+              },
+              "minItems": 1,
+              "maxItems": 10,
+              "uniqueItems": true
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "activityKind": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "socialRun",
+            "running",
+            "walking",
+            "pickleball",
+            "padel",
+            "tennis",
+            "badminton",
+            "cycling",
+            "spinClass",
+            "yoga",
+            "strengthTraining",
+            "pubQuiz",
+            "barCrawl",
+            "dinner",
+            "singlesMixer",
+            "openActivity",
+            null
+          ]
+        },
+        "status": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "active",
+            "cancelled",
+            null
+          ]
+        },
+        "timeWindow": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "upcoming",
+            "past",
+            "all",
+            null
+          ],
+          "description": "Optional server-side startTime window used by admin event lists. Upcoming and past are evaluated against callable server time."
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_list_external_event_details_payload.schema.json",
+      "title": "AdminListExternalEventDetailsCallablePayload",
+      "description": "Callable payload accepted by adminListExternalEventDetails. This lists read-only externalEvents/{eventId} rows for the admin event supply workspace.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "query": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 160
+        },
+        "citySlug": {
+          "anyOf": [
+            {
+              "$ref": "../shared/event_common.schema.json#/definitions/citySlug"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "citySlugs": {
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "$ref": "../shared/event_common.schema.json#/definitions/citySlug"
+              },
+              "minItems": 1,
+              "maxItems": 10,
+              "uniqueItems": true
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "publicationStatus": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "draft",
+            "public",
+            "archived",
+            "removed",
+            null
+          ]
+        },
+        "status": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "active",
+            "cancelled",
+            null
+          ]
+        },
+        "timeWindow": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "upcoming",
+            "past",
+            "all",
+            null
+          ],
+          "description": "Optional server-side startTime window used by admin external event lists. Upcoming and past are evaluated against callable server time."
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_list_intake_operations_payload.schema.json",
+      "title": "AdminListIntakeOperationsCallablePayload",
+      "description": "Read-only filters for the durable Supply Intake operations inventory. This callable never requests or executes a run.",
+      "type": "object",
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "required": [
+              "humanReviewRequired"
+            ],
+            "properties": {
+              "humanReviewRequired": {
+                "const": true
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "primaryStage": {
+                "type": "null"
+              },
+              "entityKind": {
+                "type": "null"
+              },
+              "lifecycleStatus": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ],
+      "properties": {
+        "workflowId": {
+          "type": "string",
+          "enum": [
+            "supply-intake"
+          ]
+        },
+        "runId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "primaryStage": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "incoming",
+            "verify",
+            "resolve",
+            "ready",
+            null
+          ]
+        },
+        "entityKind": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "event",
+            "organizer",
+            "source_result",
+            "source_profile",
+            null
+          ]
+        },
+        "lifecycleStatus": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "queued",
+            "in_progress",
+            "waiting",
+            "ready",
+            "published",
+            "terminal",
+            null
+          ]
+        },
+        "runStatus": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "planned",
+            "queued",
+            "running",
+            "paused",
+            "completed",
+            "failed",
+            "cancelled",
+            null
+          ]
+        },
+        "humanReviewRequired": {
+          "type": "boolean",
+          "description": "When true, returns only work items carrying the canonical human_review_required task flag."
+        },
+        "runLimit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 25
+        },
+        "workItemLimit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200
+        },
+        "runCursor": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 1000
+        },
+        "workItemCursor": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 1000
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_list_organizer_details_payload.schema.json",
+      "title": "AdminListOrganizerDetailsCallablePayload",
+      "description": "Callable payload accepted by adminListOrganizerDetails. This lists canonical organizer profile rows from organizers/{organizerId} for the admin publishing workspace.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "query": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 160
+        },
+        "citySlug": {
+          "anyOf": [
+            {
+              "$ref": "../shared/event_common.schema.json#/definitions/marketId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "citySlugs": {
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "$ref": "../shared/event_common.schema.json#/definitions/marketId"
+              },
+              "minItems": 1,
+              "maxItems": 10,
+              "uniqueItems": true
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "publishStatus": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "draft",
+            "qa",
+            "published",
+            "suppressed",
+            "removed",
+            null
+          ]
+        },
+        "appVisibility": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "discoverable",
+            "hidden",
+            null
+          ]
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_publish_external_event_payload.schema.json",
+      "title": "AdminPublishExternalEventCallablePayload",
+      "description": "Callable payload accepted by adminPublishExternalEvent. This publishes one preflight-approved read-only externalEvents/{eventId} document from eventSupplyReadiness/current.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sourceActionId",
+        "targetPath",
+        "executionMode",
+        "idempotencyKey",
+        "reviewNote",
+        "checklist"
+      ],
+      "properties": {
+        "sourceActionId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "targetPath": {
+          "type": "string",
+          "pattern": "^externalEvents/[A-Za-z0-9_-]{1,180}$"
+        },
+        "executionMode": {
+          "type": "string",
+          "enum": [
+            "dry_run",
+            "apply"
+          ]
+        },
+        "idempotencyKey": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 180,
+          "pattern": "^[A-Za-z0-9:_-]+$"
+        },
+        "reviewNote": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "checklist": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "preflightActionReviewed",
+            "outboundLinksReviewed",
+            "noCatchBookingPaymentsWaitlist",
+            "ownerSafeCopyReviewed"
+          ],
+          "properties": {
+            "preflightActionReviewed": {
+              "type": "boolean"
+            },
+            "outboundLinksReviewed": {
+              "type": "boolean"
+            },
+            "noCatchBookingPaymentsWaitlist": {
+              "type": "boolean"
+            },
+            "ownerSafeCopyReviewed": {
+              "type": "boolean"
+            }
+          }
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_record_event_intake_review_decision_payload.schema.json",
+      "title": "AdminRecordEventIntakeReviewDecisionCallablePayload",
+      "description": "Callable payload accepted by adminRecordEventIntakeReviewDecision. This records a manual admin decision for private event-intake artifacts without publishing marketing content or creating canonical events.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "targetType",
+        "targetId",
+        "decision",
+        "checklist",
+        "note"
+      ],
+      "properties": {
+        "targetType": {
+          "type": "string",
+          "enum": [
+            "source_profile",
+            "query_template",
+            "run_plan",
+            "source_result",
+            "event_candidate"
+          ]
+        },
+        "targetId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "decision": {
+          "type": "string",
+          "enum": [
+            "approve",
+            "needs_changes",
+            "hold",
+            "reject"
+          ]
+        },
+        "runId": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 180
+        },
+        "note": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "edits": {
+          "type": "object",
+          "description": "Changed fields only. Each entry freezes the reviewed before and after values so extractor-learning and audit consumers can distinguish a correction from a whole-record resubmission.",
+          "maxProperties": 40,
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "before",
+              "after"
+            ],
+            "properties": {
+              "before": {},
+              "after": {}
+            }
+          }
+        },
+        "checklist": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "sourceReviewed",
+            "dateReviewed",
+            "venueReviewed",
+            "copyReviewed",
+            "rightsReviewed",
+            "noCatchHostingImplied"
+          ],
+          "properties": {
+            "sourceReviewed": {
+              "type": "boolean"
+            },
+            "dateReviewed": {
+              "type": "boolean"
+            },
+            "venueReviewed": {
+              "type": "boolean"
+            },
+            "copyReviewed": {
+              "type": "boolean"
+            },
+            "rightsReviewed": {
+              "type": "boolean"
+            },
+            "noCatchHostingImplied": {
+              "type": "boolean"
+            }
+          }
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_record_marketing_review_decision_payload.schema.json",
+      "title": "Admin Record Marketing Review Decision Callable Payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "targetType",
+        "targetId",
+        "decision",
+        "note"
+      ],
+      "properties": {
+        "targetType": {
+          "type": "string",
+          "enum": [
+            "source_profile",
+            "query_template",
+            "run_plan",
+            "source_result",
+            "event_candidate",
+            "recommendation_item",
+            "recommendation_set",
+            "content_draft"
+          ]
+        },
+        "targetId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "decision": {
+          "type": "string",
+          "enum": [
+            "approve",
+            "needs_changes",
+            "hold",
+            "reject",
+            "export_ready"
+          ]
+        },
+        "runId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "note": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "edits": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "checklist": {
+          "$ref": "#/definitions/checklist"
+        }
+      },
+      "definitions": {
+        "checklist": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "sourceReviewed": {
+              "type": "boolean"
+            },
+            "dateReviewed": {
+              "type": "boolean"
+            },
+            "venueReviewed": {
+              "type": "boolean"
+            },
+            "copyReviewed": {
+              "type": "boolean"
+            },
+            "rightsReviewed": {
+              "type": "boolean"
+            },
+            "noCatchHostingImplied": {
+              "type": "boolean"
+            }
+          }
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_record_organizer_curation_payload.schema.json",
+      "title": "AdminRecordOrganizerCurationCallablePayload",
+      "description": "Callable payload accepted by adminRecordOrganizerCuration. This records one durable low-volume manual organizer-intake curation operation in Firestore.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "operationType",
+        "reason"
+      ],
+      "properties": {
+        "operationId": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        },
+        "operationType": {
+          "type": "string",
+          "enum": [
+            "attach_surface",
+            "merge_entity",
+            "split_surface",
+            "suppress_entity",
+            "surface_decision"
+          ]
+        },
+        "entityId": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        },
+        "sourceEntityId": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        },
+        "targetEntityId": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        },
+        "surfaceId": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        },
+        "newEntityId": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        },
+        "sourceCandidateId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "decision": {
+          "type": "string",
+          "enum": [
+            "accept_primary",
+            "accept_secondary",
+            "reject_wrong_entity",
+            "mark_ambiguous",
+            "mark_historical"
+          ]
+        },
+        "surface": {
+          "$ref": "#/definitions/surface"
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        }
+      },
+      "definitions": {
+        "urlOrNull": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uri"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "surface": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "surfaceId",
+            "platform",
+            "surfaceKind",
+            "url",
+            "normalizedKey",
+            "role",
+            "status",
+            "confidence",
+            "crawl",
+            "evidenceRefs",
+            "notes"
+          ],
+          "properties": {
+            "surfaceId": {
+              "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+            },
+            "platform": {
+              "type": "string",
+              "enum": [
+                "bookMyShow",
+                "district",
+                "instagram",
+                "linkedin",
+                "luma",
+                "news",
+                "officialWebsite",
+                "partiful",
+                "sortMyScene",
+                "userReport",
+                "other"
+              ]
+            },
+            "surfaceKind": {
+              "type": "string",
+              "enum": [
+                "eventListing",
+                "eventCalendar",
+                "organizerProfile",
+                "personProfile",
+                "press",
+                "socialProfile",
+                "website",
+                "wrongEntity"
+              ]
+            },
+            "url": {
+              "$ref": "#/definitions/urlOrNull"
+            },
+            "normalizedKey": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 240
+            },
+            "role": {
+              "type": "string",
+              "enum": [
+                "primary",
+                "secondary",
+                "backup",
+                "historical",
+                "ambiguous",
+                "rejected"
+              ]
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "active",
+                "candidate",
+                "ambiguous",
+                "historical",
+                "rejected"
+              ]
+            },
+            "confidence": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "entityMatch",
+                "ownership",
+                "city"
+              ],
+              "properties": {
+                "entityMatch": {
+                  "type": "string",
+                  "enum": [
+                    "low",
+                    "medium",
+                    "high"
+                  ]
+                },
+                "ownership": {
+                  "type": "string",
+                  "enum": [
+                    "low",
+                    "medium",
+                    "high"
+                  ]
+                },
+                "city": {
+                  "type": "string",
+                  "enum": [
+                    "low",
+                    "medium",
+                    "high"
+                  ]
+                }
+              }
+            },
+            "crawl": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "eventDiscoveryStatus",
+                "policy",
+                "supportsEventExtraction"
+              ],
+              "properties": {
+                "eventDiscoveryStatus": {
+                  "type": "string",
+                  "enum": [
+                    "disabled",
+                    "candidate",
+                    "approved",
+                    "paused"
+                  ]
+                },
+                "policy": {
+                  "type": "string",
+                  "enum": [
+                    "manualOnly",
+                    "blocked",
+                    "apiPreferred"
+                  ]
+                },
+                "supportsEventExtraction": {
+                  "type": "boolean"
+                }
+              }
+            },
+            "evidenceRefs": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/evidenceRef"
+              }
+            },
+            "notes": {
+              "type": "string",
+              "maxLength": 500
+            }
+          }
+        },
+        "evidenceRef": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "ref",
+            "description"
+          ],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "hostDiscoveryRun",
+                "seedClub",
+                "userReportedSearchResult",
+                "manualNote"
+              ]
+            },
+            "ref": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 240
+            },
+            "description": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 400
+            }
+          }
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_resolve_organizer_event_location_payload.schema.json",
+      "title": "AdminResolveOrganizerEventLocationCallablePayload",
+      "description": "Callable payload accepted by adminResolveOrganizerEventLocation. This records reviewed coordinates for a private external event candidate without importing the event.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "candidateId",
+        "location",
+        "checklist",
+        "note"
+      ],
+      "properties": {
+        "candidateId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "location": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "name",
+            "latitude",
+            "longitude"
+          ],
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 240
+            },
+            "address": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 500
+            },
+            "placeId": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 1,
+              "maxLength": 256
+            },
+            "latitude": {
+              "$ref": "../shared/event_common.schema.json#/definitions/latitude"
+            },
+            "longitude": {
+              "$ref": "../shared/event_common.schema.json#/definitions/longitude"
+            },
+            "notes": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 1000
+            }
+          }
+        },
+        "checklist": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "sourceLocationReviewed",
+            "coordinatesReviewed",
+            "placeIdentityReviewed",
+            "importSafetyReviewed"
+          ],
+          "properties": {
+            "sourceLocationReviewed": {
+              "type": "boolean"
+            },
+            "coordinatesReviewed": {
+              "type": "boolean"
+            },
+            "placeIdentityReviewed": {
+              "type": "boolean"
+            },
+            "importSafetyReviewed": {
+              "type": "boolean"
+            }
+          }
+        },
+        "note": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_review_event_messaging_budget_payload.schema.json",
+      "title": "AdminReviewEventMessagingBudgetCallablePayload",
+      "description": "Exact Finance scope for a read-only event-messaging setup and current budget-decision review.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "organizerId",
+        "eventId",
+        "routeId",
+        "senderId",
+        "purpose"
+      ],
+      "properties": {
+        "organizerId": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        },
+        "eventId": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        },
+        "routeId": {
+          "$ref": "../operations/event_messaging_setup_review.schema.json#/definitions/routeId"
+        },
+        "senderId": {
+          "$ref": "../operations/event_messaging_setup_review.schema.json#/definitions/id"
+        },
+        "purpose": {
+          "$ref": "../operations/event_messaging_setup_review.schema.json#/definitions/purpose"
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_set_admin_user_roles_payload.schema.json",
+      "title": "Admin Set Admin User Roles Callable Payload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "targetUid",
+        "roles",
+        "note"
+      ],
+      "properties": {
+        "targetUid": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{3,128}$"
+        },
+        "roles": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/definitions/adminRole"
+          }
+        },
+        "note": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        }
+      },
+      "definitions": {
+        "adminRole": {
+          "type": "string",
+          "enum": [
+            "admin",
+            "adminOwner",
+            "safetyReviewer",
+            "support",
+            "finance",
+            "analyticsViewer"
+          ]
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_set_cross_paths_showcase_eligibility_payload.schema.json",
+      "title": "AdminSetCrossPathsShowcaseEligibilityCallablePayload",
+      "description": "Callable payload for an audited human Cross Paths showcase eligibility decision.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "uid",
+        "status",
+        "reviewChecklist",
+        "reviewNote"
+      ],
+      "properties": {
+        "uid": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "eligible",
+            "needsReview",
+            "paused"
+          ]
+        },
+        "reviewChecklist": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "primaryPortraitClear",
+            "profileRepresentsCurrentMember",
+            "showcasePolicyReviewed"
+          ],
+          "properties": {
+            "primaryPortraitClear": {
+              "type": "boolean"
+            },
+            "profileRepresentsCurrentMember": {
+              "type": "boolean"
+            },
+            "showcasePolicyReviewed": {
+              "type": "boolean"
+            }
+          }
+        },
+        "reviewNote": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_takedown_external_event_payload.schema.json",
+      "title": "AdminTakedownExternalEventCallablePayload",
+      "description": "Callable payload accepted by adminTakedownExternalEvent. Dry-run validates and receipts a reviewed takedown; apply removes the external event from discovery without deleting audit history.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "eventId",
+        "executionMode",
+        "idempotencyKey",
+        "reviewNote",
+        "checklist"
+      ],
+      "properties": {
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        },
+        "executionMode": {
+          "type": "string",
+          "enum": [
+            "dry_run",
+            "apply"
+          ]
+        },
+        "idempotencyKey": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 180,
+          "pattern": "^[A-Za-z0-9:_-]+$"
+        },
+        "reviewNote": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "checklist": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "sourceStatusReviewed",
+            "takedownAuthorityReviewed",
+            "downstreamVisibilityReviewed"
+          ],
+          "properties": {
+            "sourceStatusReviewed": {
+              "type": "boolean"
+            },
+            "takedownAuthorityReviewed": {
+              "type": "boolean"
+            },
+            "downstreamVisibilityReviewed": {
+              "type": "boolean"
+            }
+          }
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_update_event_details_payload.schema.json",
+      "title": "AdminUpdateEventDetailsCallablePayload",
+      "description": "Callable payload accepted by adminUpdateEventDetails. This edits low-risk app-facing canonical event fields through an audited admin callable.",
+      "x-callable-shape": "patch",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "eventId",
+        "fields"
+      ],
+      "properties": {
+        "eventId": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        },
+        "reviewNote": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 1000
+        },
+        "fields": {
+          "type": "object",
+          "additionalProperties": false,
+          "minProperties": 1,
+          "properties": {
+            "description": {
+              "type": "string",
+              "maxLength": 2000
+            },
+            "photoUrl": {
+              "$ref": "../shared/event_common.schema.json#/definitions/urlOrNull"
+            },
+            "distanceKm": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "pace": {
+              "$ref": "../shared/event_common.schema.json#/definitions/paceLevel"
+            },
+            "crossPathsDiscoveryEnabled": {
+              "type": "boolean"
+            },
+            "eventFormat": {
+              "$ref": "../shared/event_common.schema.json#/definitions/eventFormatSnapshot"
+            }
+          }
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_update_organizer_details_payload.schema.json",
+      "title": "AdminUpdateOrganizerDetailsCallablePayload",
+      "description": "Callable payload accepted by adminUpdateOrganizerDetails. This edits owner-safe organizer listing fields through an audited admin callable.",
+      "x-callable-shape": "patch",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "organizerId",
+        "fields"
+      ],
+      "properties": {
+        "organizerId": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        },
+        "fields": {
+          "type": "object",
+          "additionalProperties": false,
+          "minProperties": 1,
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "description": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "location": {
+              "$ref": "../shared/event_common.schema.json#/definitions/marketId"
+            },
+            "area": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "tags": {
+              "type": "array",
+              "maxItems": 20,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              }
+            },
+            "instagramHandle": {
+              "$ref": "../shared/event_common.schema.json#/definitions/contactString"
+            },
+            "phoneNumber": {
+              "$ref": "../shared/event_common.schema.json#/definitions/contactString"
+            },
+            "email": {
+              "$ref": "../shared/event_common.schema.json#/definitions/contactString"
+            },
+            "imageUrl": {
+              "$ref": "../shared/event_common.schema.json#/definitions/urlOrNull"
+            },
+            "profileImageUrl": {
+              "$ref": "../shared/event_common.schema.json#/definitions/urlOrNull"
+            },
+            "organizerType": {
+              "$ref": "../shared/event_common.schema.json#/definitions/organizerType"
+            },
+            "publicCategoryLabel": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 120
+            },
+            "entityKind": {
+              "type": "string",
+              "enum": [
+                "club",
+                "venue",
+                "eventOrganizer",
+                "creatorCommunity",
+                "brand"
+              ]
+            },
+            "entitySubtypes": {
+              "type": "array",
+              "maxItems": 20,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              }
+            },
+            "displayCategory": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 120
+            },
+            "cityName": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 120
+            },
+            "regionName": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 120
+            },
+            "countryCode": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "pattern": "^[A-Z]{2}$"
+            },
+            "countryName": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 120
+            },
+            "appVisibility": {
+              "type": "string",
+              "enum": [
+                "discoverable",
+                "hidden"
+              ]
+            },
+            "publicPage": {
+              "type": "object",
+              "additionalProperties": false,
+              "minProperties": 1,
+              "properties": {
+                "slug": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[a-z0-9-]+$"
+                },
+                "citySlug": {
+                  "$ref": "../shared/event_common.schema.json#/definitions/citySlug"
+                },
+                "canonicalPath": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 240
+                },
+                "publishStatus": {
+                  "type": "string",
+                  "enum": [
+                    "draft",
+                    "qa",
+                    "published",
+                    "suppressed",
+                    "removed"
+                  ]
+                },
+                "seoTitle": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 120
+                },
+                "seoDescription": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 320
+                }
+              }
+            },
+            "provenance": {
+              "type": "object",
+              "additionalProperties": false,
+              "minProperties": 1,
+              "properties": {
+                "sourceConfidence": {
+                  "type": "string",
+                  "enum": [
+                    "seedOnly",
+                    "low",
+                    "medium",
+                    "high",
+                    "ownerVerified"
+                  ]
+                },
+                "verificationStatus": {
+                  "type": "string",
+                  "enum": [
+                    "unverified",
+                    "sourceBacked",
+                    "ownerVerified"
+                  ]
+                }
+              }
+            },
+            "publicProfile": {
+              "type": "object",
+              "additionalProperties": false,
+              "minProperties": 1,
+              "properties": {
+                "headline": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 160
+                },
+                "summary": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 800
+                },
+                "sourceSummary": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 800
+                },
+                "formats": {
+                  "type": "array",
+                  "maxItems": 12,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 80
+                  }
+                },
+                "fitNotes": {
+                  "type": "array",
+                  "maxItems": 8,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 400
+                  }
+                },
+                "missingEvidence": {
+                  "type": "array",
+                  "maxItems": 12,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 200
+                  }
+                }
+              }
+            }
+          }
+        },
+        "reviewNote": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 1000
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/host_analytics_query_payload.schema.json",
+      "title": "HostAnalyticsQueryCallablePayload",
+      "description": "Callable payload accepted by getHostAnalytics and adminGetHostAnalytics.",
+      "x-callable-aliases": [
+        "getHostAnalytics",
+        "adminGetHostAnalytics"
+      ],
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "clubId": {
+          "anyOf": [
+            {
+              "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "organizerId": {
+          "anyOf": [
+            {
+              "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "eventId": {
+          "anyOf": [
+            {
+              "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "rangePreset": {
+          "type": "string",
+          "enum": [
+            "7d",
+            "30d",
+            "90d",
+            "12m",
+            "month",
+            "custom"
+          ]
+        },
+        "startDate": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "endDate": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "granularity": {
+          "type": "string",
+          "enum": [
+            "day",
+            "week",
+            "month"
+          ]
+        },
+        "timezone": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/user_analytics_query_payload.schema.json",
+      "title": "UserAnalyticsQueryCallablePayload",
+      "description": "Callable payload accepted by getUserAnalytics and adminGetUserAnalytics.",
+      "x-callable-aliases": [
+        "getUserAnalytics",
+        "adminGetUserAnalytics"
+      ],
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "userId": {
+          "anyOf": [
+            {
+              "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Admin-only user scope override. getUserAnalytics always scopes to the signed-in user."
+        },
+        "rangePreset": {
+          "type": "string",
+          "enum": [
+            "7d",
+            "30d",
+            "90d",
+            "month",
+            "custom"
+          ]
+        },
+        "startDate": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "endDate": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "granularity": {
+          "type": "string",
+          "enum": [
+            "day",
+            "week",
+            "month"
+          ]
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_list_club_claim_requests_payload.schema.json",
+      "title": "AdminListClubClaimRequestsCallablePayload",
+      "type": "object",
+      "additionalProperties": false
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_get_club_claim_request_details_payload.schema.json",
+      "title": "AdminGetClubClaimRequestDetailsCallablePayload",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requestId"
+      ],
+      "properties": {
+        "requestId": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_set_club_index_status_payload.schema.json",
+      "title": "AdminSetClubIndexStatusCallablePayload",
+      "description": "Callable payload accepted by adminSetClubIndexStatus.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "clubId",
+        "indexStatus",
+        "checklist"
+      ],
+      "properties": {
+        "clubId": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        },
+        "indexStatus": {
+          "type": "string",
+          "enum": [
+            "noindex",
+            "indexReady",
+            "indexed"
+          ]
+        },
+        "checklist": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "sourceEvidenceVerified",
+            "mediaRightsVerified",
+            "cadenceVerified",
+            "ownerContactVerified"
+          ],
+          "properties": {
+            "sourceEvidenceVerified": {
+              "type": "boolean"
+            },
+            "mediaRightsVerified": {
+              "type": "boolean"
+            },
+            "cadenceVerified": {
+              "type": "boolean"
+            },
+            "ownerContactVerified": {
+              "type": "boolean"
+            }
+          }
+        },
+        "reviewNote": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 1000
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callable_responses/admin_apply_event_messaging_budget_response.schema.json",
+      "title": "AdminApplyEventMessagingBudgetCallableResponse",
+      "description": "Result of staging an approved event-messaging budget decision as two paused ceilings. Staging grants no spending or dispatch authority and cannot activate a worker.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "applied",
+        "replayed",
+        "decisionId",
+        "decisionRevision",
+        "receiptId",
+        "receiptPath",
+        "routeId",
+        "eventBudget",
+        "senderDayBudget",
+        "effect",
+        "stagesSpendingCeilings",
+        "grantsSpendingAuthority",
+        "grantsDispatchAuthority",
+        "providerContacted",
+        "workerActivated"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1
+        },
+        "applied": {
+          "type": "boolean"
+        },
+        "replayed": {
+          "type": "boolean"
+        },
+        "decisionId": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        },
+        "decisionRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "receiptId": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        },
+        "receiptPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "routeId": {
+          "$ref": "../operations/event_messaging_setup_review.schema.json#/definitions/routeId"
+        },
+        "eventBudget": {
+          "$ref": "#/definitions/budgetResult"
+        },
+        "senderDayBudget": {
+          "$ref": "#/definitions/budgetResult"
+        },
+        "effect": {
+          "type": "string",
+          "const": "budgets_staged_paused_no_spending_or_dispatch_authority"
+        },
+        "stagesSpendingCeilings": {
+          "type": "boolean",
+          "const": true
+        },
+        "grantsSpendingAuthority": {
+          "type": "boolean",
+          "const": false
+        },
+        "grantsDispatchAuthority": {
+          "type": "boolean",
+          "const": false
+        },
+        "providerContacted": {
+          "type": "boolean",
+          "const": false
+        },
+        "workerActivated": {
+          "type": "boolean",
+          "const": false
+        }
+      },
+      "definitions": {
+        "budgetResult": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "budgetId",
+            "revision",
+            "path",
+            "status"
+          ],
+          "properties": {
+            "budgetId": {
+              "$ref": "../operations/event_messaging_setup_review.schema.json#/definitions/id"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "path": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500
+            },
+            "status": {
+              "type": "string",
+              "const": "paused"
+            }
+          }
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callable_responses/admin_assign_safety_triage_item_response.schema.json",
+      "title": "Admin Assign Safety Triage Item Callable Response",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "targetPath",
+        "assignment"
+      ],
+      "properties": {
+        "targetPath": {
+          "type": "string",
+          "maxLength": 260,
+          "pattern": "^(reports|moderationFlags|eventSafetyReports|eventAssistanceCases)/[^/]+$"
+        },
+        "assignment": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "ownerTeam",
+            "assigneeUid",
+            "queue",
+            "severity"
+          ],
+          "properties": {
+            "ownerTeam": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "assigneeUid": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9_-]{3,128}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "queue": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "severity": {
+              "type": "string",
+              "enum": [
+                "high",
+                "medium",
+                "watch"
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callable_responses/admin_create_marketing_content_draft_response.schema.json",
+      "title": "Admin Create Marketing Content Draft Callable Response",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "draft",
+        "bridge",
+        "dashboardPath"
+      ],
+      "properties": {
+        "draft": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": true
+        },
+        "bridge": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": true
+        },
+        "dashboardPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 260
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callable_responses/admin_create_organizer_draft_from_candidate_response.schema.json",
+      "title": "AdminCreateOrganizerDraftFromCandidateCallableResponse",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "organizerId",
+        "organizerPath",
+        "curationPath",
+        "created",
+        "appVisibility",
+        "ownershipState",
+        "claimState",
+        "publishStatus",
+        "indexStatus",
+        "crawlStatus"
+      ],
+      "properties": {
+        "organizerId": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 64
+        },
+        "organizerPath": {
+          "type": "string",
+          "pattern": "^organizers/[^/]+$"
+        },
+        "curationPath": {
+          "type": "string",
+          "pattern": "^organizerIntakeCurationDecisions/[^/]+$"
+        },
+        "created": {
+          "type": "boolean"
+        },
+        "appVisibility": {
+          "const": "hidden"
+        },
+        "ownershipState": {
+          "const": "programmatic"
+        },
+        "claimState": {
+          "const": "unclaimed"
+        },
+        "publishStatus": {
+          "const": "draft"
+        },
+        "indexStatus": {
+          "const": "noindex"
+        },
+        "crawlStatus": {
+          "const": "disabled"
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callable_responses/admin_decide_access_application_response.schema.json",
+      "title": "Admin Decide Access Application Callable Response",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "applicationUid",
+        "decision",
+        "status"
+      ],
+      "properties": {
+        "applicationUid": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{3,128}$"
+        },
+        "decision": {
+          "type": "string",
+          "enum": [
+            "approve",
+            "deny"
+          ]
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "approvedForProfile",
+            "notSelectedYet"
+          ]
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callable_responses/admin_decide_event_messaging_budget_response.schema.json",
+      "title": "AdminDecideEventMessagingBudgetCallableResponse",
+      "description": "Result of recording a finance review decision. The response explicitly grants no spending authority.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "applied",
+        "replayed",
+        "decisionId",
+        "revision",
+        "decisionStatus",
+        "decisionPath",
+        "effect",
+        "grantsSpendingAuthority"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1
+        },
+        "applied": {
+          "type": "boolean"
+        },
+        "replayed": {
+          "type": "boolean"
+        },
+        "decisionId": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "decisionStatus": {
+          "type": "string",
+          "enum": [
+            "approved",
+            "held",
+            "rejected"
+          ]
+        },
+        "decisionPath": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "effect": {
+          "type": "string",
+          "const": "decision_only_no_spending_authority"
+        },
+        "grantsSpendingAuthority": {
+          "type": "boolean",
+          "const": false
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callable_responses/admin_decide_safety_triage_item_response.schema.json",
+      "title": "Admin Decide Safety Triage Item Callable Response",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "targetPath",
+        "decision",
+        "status"
+      ],
+      "properties": {
+        "targetPath": {
+          "type": "string",
+          "maxLength": 260,
+          "pattern": "^(reports|moderationFlags|eventSafetyReports|eventAssistanceCases)/[^/]+$"
+        },
+        "decision": {
+          "type": "string",
+          "enum": [
+            "review",
+            "dismiss"
+          ]
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "reviewed",
+            "dismissed",
+            "resolved"
+          ]
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callable_responses/admin_get_overview_response.schema.json",
+      "title": "Admin Get Overview Callable Response",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "generatedAt",
+        "timezone",
+        "metrics",
+        "queues",
+        "dataQuality"
+      ],
+      "properties": {
+        "generatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "timezone": {
+          "const": "UTC"
+        },
+        "metrics": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/metric"
+          }
+        },
+        "queues": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "safetyReports",
+            "moderationFlags",
+            "eventSafetyReports",
+            "accessApplications",
+            "clubClaimRequests",
+            "clubIndexReviews",
+            "paymentIssues"
+          ],
+          "properties": {
+            "safetyReports": {
+              "$ref": "#/definitions/queue"
+            },
+            "moderationFlags": {
+              "$ref": "#/definitions/queue"
+            },
+            "eventSafetyReports": {
+              "$ref": "#/definitions/queue"
+            },
+            "accessApplications": {
+              "$ref": "#/definitions/queue"
+            },
+            "clubClaimRequests": {
+              "$ref": "#/definitions/queue"
+            },
+            "clubIndexReviews": {
+              "$ref": "#/definitions/queue"
+            },
+            "paymentIssues": {
+              "$ref": "#/definitions/queue"
+            }
+          }
+        },
+        "dataQuality": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/dataQuality"
+          }
+        }
+      },
+      "definitions": {
+        "metric": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "id",
+            "label",
+            "value"
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "label": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "value": {
+              "type": "number"
+            },
+            "unit": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            }
+          }
+        },
+        "queue": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/queueItem"
+          }
+        },
+        "queueItem": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "id",
+            "title",
+            "detail",
+            "status",
+            "createdAt",
+            "targetPath"
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "title": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 240
+            },
+            "detail": {
+              "type": "string",
+              "maxLength": 1000
+            },
+            "status": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "createdAt": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "targetPath": {
+              "type": "string",
+              "minLength": 3,
+              "maxLength": 260
+            }
+          }
+        },
+        "dataQuality": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "id",
+            "label",
+            "state",
+            "detail",
+            "owner",
+            "runbook",
+            "nextAction"
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "label": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "state": {
+              "type": "string",
+              "enum": [
+                "ok",
+                "warning",
+                "blocked"
+              ]
+            },
+            "detail": {
+              "type": "string",
+              "maxLength": 1000
+            },
+            "owner": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "runbook": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 260
+            },
+            "nextAction": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1000
+            }
+          }
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callable_responses/admin_list_action_executions_response.schema.json",
+      "title": "AdminListActionExecutionsCallableResponse",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "generatedAt",
+        "rows",
+        "nextCursor"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "generatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "rows": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "$ref": "#/definitions/execution"
+          }
+        },
+        "nextCursor": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 1000
+        }
+      },
+      "definitions": {
+        "execution": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "schemaVersion",
+            "executionId",
+            "actionId",
+            "callable",
+            "actorUid",
+            "actorRoles",
+            "status",
+            "requestHash",
+            "responseHash",
+            "target",
+            "errorCode",
+            "errorMessage",
+            "cliVersion",
+            "startedAt",
+            "finishedAt",
+            "updatedAt"
+          ],
+          "properties": {
+            "schemaVersion": {
+              "const": 1
+            },
+            "executionId": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+            },
+            "actionId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "callable": {
+              "type": "string",
+              "pattern": "^admin[A-Z][A-Za-z0-9]+$"
+            },
+            "actorUid": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "actorRoles": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "enum": [
+                  "admin",
+                  "adminOwner",
+                  "safetyReviewer",
+                  "support",
+                  "finance",
+                  "analyticsViewer"
+                ]
+              }
+            },
+            "status": {
+              "enum": [
+                "started",
+                "succeeded",
+                "failed",
+                "indeterminate"
+              ]
+            },
+            "requestHash": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "responseHash": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "target": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 500
+            },
+            "errorCode": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 120
+            },
+            "errorMessage": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 500
+            },
+            "cliVersion": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 80
+            },
+            "startedAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "finishedAt": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "date-time"
+            },
+            "updatedAt": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callable_responses/admin_list_cross_paths_showcase_candidates_response.schema.json",
+      "title": "AdminListCrossPathsShowcaseCandidatesCallableResponse",
+      "description": "Bounded admin-safe projection of public profiles and their server-only Cross Paths showcase review state.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "generatedAt",
+        "candidates",
+        "nextCursor"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1
+        },
+        "generatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "candidates": {
+          "type": "array",
+          "maxItems": 50,
+          "items": {
+            "$ref": "#/definitions/candidate"
+          }
+        },
+        "nextCursor": {
+          "anyOf": [
+            {
+              "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "definitions": {
+        "reasonCode": {
+          "type": "string",
+          "enum": [
+            "insufficient_photos",
+            "incomplete_prompts",
+            "missing_relationship_goal",
+            "broken_media",
+            "photo_moderation_pending",
+            "photo_moderation_rejected",
+            "public_profile_missing",
+            "profile_changed",
+            "reviewer_hold",
+            "manual_pause"
+          ]
+        },
+        "candidate": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "uid",
+            "name",
+            "age",
+            "gender",
+            "city",
+            "photoUrls",
+            "promptAnswers",
+            "relationshipGoal",
+            "automaticStatus",
+            "automaticReasonCodes",
+            "storedStatus",
+            "effectiveStatus",
+            "effectiveReasonCodes",
+            "profileFingerprint",
+            "reviewedByUid",
+            "reviewedAt",
+            "reviewNote"
+          ],
+          "properties": {
+            "uid": {
+              "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+            },
+            "name": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "age": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 18,
+              "maximum": 99
+            },
+            "gender": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 1,
+              "maxLength": 40
+            },
+            "city": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 80
+            },
+            "photoUrls": {
+              "type": "array",
+              "maxItems": 6,
+              "items": {
+                "type": "string",
+                "format": "uri",
+                "maxLength": 2048
+              }
+            },
+            "promptAnswers": {
+              "type": "array",
+              "maxItems": 3,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "prompt",
+                  "answer"
+                ],
+                "properties": {
+                  "prompt": {
+                    "type": "string",
+                    "maxLength": 140
+                  },
+                  "answer": {
+                    "type": "string",
+                    "maxLength": 300
+                  }
+                }
+              }
+            },
+            "relationshipGoal": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 80
+            },
+            "automaticStatus": {
+              "type": "string",
+              "enum": [
+                "ready",
+                "blocked"
+              ]
+            },
+            "automaticReasonCodes": {
+              "type": "array",
+              "maxItems": 7,
+              "uniqueItems": true,
+              "items": {
+                "$ref": "#/definitions/reasonCode"
+              }
+            },
+            "storedStatus": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "enum": [
+                "eligible",
+                "needsReview",
+                "paused",
+                null
+              ]
+            },
+            "effectiveStatus": {
+              "type": "string",
+              "enum": [
+                "eligible",
+                "needsReview",
+                "paused"
+              ]
+            },
+            "effectiveReasonCodes": {
+              "type": "array",
+              "maxItems": 12,
+              "uniqueItems": true,
+              "items": {
+                "$ref": "#/definitions/reasonCode"
+              }
+            },
+            "profileFingerprint": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "reviewedByUid": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 128
+            },
+            "reviewedAt": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "date-time"
+            },
+            "reviewNote": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 1000
+            }
+          }
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callable_responses/admin_list_intake_operations_response.schema.json",
+      "title": "AdminListIntakeOperationsCallableResponse",
+      "description": "Read-only persisted run and work-item projection for the Supply Intake Operations workspace.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "generatedAt",
+        "workflowId",
+        "executionMode",
+        "source",
+        "capabilities",
+        "summary",
+        "runs",
+        "workItems",
+        "organizerDraftLinks",
+        "nextRunCursor",
+        "nextWorkItemCursor"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1
+        },
+        "generatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "workflowId": {
+          "type": "string",
+          "const": "supply-intake"
+        },
+        "executionMode": {
+          "type": "string",
+          "const": "shadow"
+        },
+        "source": {
+          "type": "string",
+          "enum": [
+            "firestore",
+            "sample"
+          ]
+        },
+        "capabilities": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "requestRuns",
+            "networkFetches",
+            "modelCalls",
+            "publicWrites",
+            "ruleDeployment"
+          ],
+          "properties": {
+            "requestRuns": {
+              "type": "boolean",
+              "const": false
+            },
+            "networkFetches": {
+              "type": "boolean",
+              "const": false
+            },
+            "modelCalls": {
+              "type": "boolean",
+              "const": false
+            },
+            "publicWrites": {
+              "type": "boolean",
+              "const": false
+            },
+            "ruleDeployment": {
+              "type": "boolean",
+              "const": false
+            }
+          }
+        },
+        "summary": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "loadedRunCount",
+            "workItemCount",
+            "humanReviewCount",
+            "stages"
+          ],
+          "properties": {
+            "loadedRunCount": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "workItemCount": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "humanReviewCount": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "stages": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "incoming",
+                "verify",
+                "resolve",
+                "ready"
+              ],
+              "properties": {
+                "incoming": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "verify": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "resolve": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "ready": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            }
+          }
+        },
+        "runs": {
+          "type": "array",
+          "maxItems": 25,
+          "items": {
+            "$ref": "../operations/run.schema.json"
+          }
+        },
+        "workItems": {
+          "type": "array",
+          "maxItems": 200,
+          "items": {
+            "allOf": [
+              {
+                "$ref": "../operations/work_item.schema.json"
+              },
+              {
+                "properties": {
+                  "workflowId": {
+                    "const": "supply-intake"
+                  },
+                  "primaryStage": {
+                    "enum": [
+                      "incoming",
+                      "verify",
+                      "resolve",
+                      "ready"
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "organizerDraftLinks": {
+          "type": "array",
+          "maxItems": 200,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "workItemId",
+              "candidateId",
+              "organizerId",
+              "curationPath"
+            ],
+            "properties": {
+              "workItemId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
+              },
+              "candidateId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
+              },
+              "organizerId": {
+                "type": "string",
+                "minLength": 3,
+                "maxLength": 64,
+                "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+              },
+              "curationPath": {
+                "type": "string",
+                "pattern": "^organizerIntakeCurationDecisions/[A-Za-z0-9_-]+$",
+                "maxLength": 300
+              }
+            }
+          }
+        },
+        "nextRunCursor": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 1000
+        },
+        "nextWorkItemCursor": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 1000
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/operations/run.schema.json",
+      "title": "OperationRun",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "runId",
+        "workflowId",
+        "revision",
+        "mode",
+        "status",
+        "scope",
+        "rulesetVersion",
+        "policyVersion",
+        "inputHash",
+        "budgets",
+        "counters",
+        "checkpoint",
+        "createdAt",
+        "updatedAt",
+        "startedAt",
+        "finishedAt",
+        "failure",
+        "metadata"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1
+        },
+        "runId": {
+          "$ref": "common.schema.json#/definitions/id"
+        },
+        "workflowId": {
+          "$ref": "common.schema.json#/definitions/workflowId"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "mode": {
+          "type": "string",
+          "enum": [
+            "shadow",
+            "assisted",
+            "autonomous"
+          ]
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "planned",
+            "queued",
+            "running",
+            "paused",
+            "completed",
+            "failed",
+            "cancelled"
+          ]
+        },
+        "scope": {
+          "type": "object",
+          "additionalProperties": true,
+          "maxProperties": 40
+        },
+        "rulesetVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "policyVersion": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "inputHash": {
+          "$ref": "common.schema.json#/definitions/sha256"
+        },
+        "budgets": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "maxWorkItems",
+            "maxModelCalls",
+            "maxModelTokens",
+            "maxCostMicros",
+            "deadlineAt"
+          ],
+          "properties": {
+            "maxWorkItems": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 10000
+            },
+            "maxModelCalls": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "maxModelTokens": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "maxCostMicros": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "deadlineAt": {
+              "$ref": "common.schema.json#/definitions/nullableIsoDateTime"
+            }
+          }
+        },
+        "counters": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "discovered",
+            "processed",
+            "modelCalls",
+            "modelTokens",
+            "costMicros",
+            "escalated",
+            "published",
+            "failed"
+          ],
+          "properties": {
+            "discovered": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "processed": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "modelCalls": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "modelTokens": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "costMicros": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "escalated": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "published": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "failed": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "checkpoint": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "lastSequence",
+            "cursor"
+          ],
+          "properties": {
+            "lastSequence": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "cursor": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 1000
+            }
+          }
+        },
+        "createdAt": {
+          "$ref": "common.schema.json#/definitions/isoDateTime"
+        },
+        "updatedAt": {
+          "$ref": "common.schema.json#/definitions/isoDateTime"
+        },
+        "startedAt": {
+          "$ref": "common.schema.json#/definitions/nullableIsoDateTime"
+        },
+        "finishedAt": {
+          "$ref": "common.schema.json#/definitions/nullableIsoDateTime"
+        },
+        "failure": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/definitions/failure"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "metadata": {
+          "type": "object",
+          "additionalProperties": true,
+          "maxProperties": 40
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/operations/work_item.schema.json",
+      "title": "OperationWorkItem",
+      "description": "One exclusively staged unit of work. Task flags are orthogonal and may overlap.",
+      "type": "object",
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "normalizedPayload": {
+                "type": "object",
+                "required": [
+                  "kind"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "liveCheckpointReport"
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "workflowId": {
+                "const": "event-assistance"
+              },
+              "entityKind": {
+                "const": "checkpoint_report"
+              },
+              "normalizedPayload": {
+                "$ref": "event_assistance_checkpoint_work.schema.json"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "normalizedPayload": {
+                "type": "object",
+                "required": [
+                  "kind"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "operationalNoticeFanout"
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "workflowId": {
+                "const": "event-assistance"
+              },
+              "entityKind": {
+                "const": "notice_fanout"
+              },
+              "normalizedPayload": {
+                "$ref": "event_assistance_operational_notice_fanout.schema.json"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "normalizedPayload": {
+                "type": "object",
+                "required": [
+                  "kind"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "liveMessageDelivery"
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "workflowId": {
+                "const": "event-assistance"
+              },
+              "entityKind": {
+                "const": "message_delivery"
+              },
+              "normalizedPayload": {
+                "$ref": "event_assistance_delivery_work.schema.json"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "normalizedPayload": {
+                "type": "object",
+                "required": [
+                  "kind"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "liveRosterEnrollment"
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "workflowId": {
+                "const": "event-assistance"
+              },
+              "entityKind": {
+                "const": "runtime_roster"
+              },
+              "normalizedPayload": {
+                "$ref": "event_assistance_roster_work.schema.json"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "normalizedPayload": {
+                "type": "object",
+                "required": [
+                  "kind"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "liveSourceWake"
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "workflowId": {
+                "const": "event-assistance"
+              },
+              "entityKind": {
+                "const": "source_signal"
+              },
+              "normalizedPayload": {
+                "$ref": "event_assistance_source_work.schema.json"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "normalizedPayload": {
+                "type": "object",
+                "required": [
+                  "kind"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "liveLateJoin"
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "workflowId": {
+                "const": "event-assistance"
+              },
+              "entityKind": {
+                "const": "guest_episode"
+              },
+              "normalizedPayload": {
+                "$ref": "event_assistance_live_work.schema.json"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "lifecycleStatus": {
+                "const": "terminal"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "outcome": {
+                "type": "string",
+                "not": {
+                  "const": "published"
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "lifecycleStatus": {
+                "const": "published"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "outcome": {
+                "const": "published"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "lifecycleStatus": {
+                "enum": [
+                  "queued",
+                  "in_progress",
+                  "waiting",
+                  "ready"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "outcome": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "anyOf": [
+              {
+                "required": [
+                  "blockerCodes"
+                ],
+                "properties": {
+                  "blockerCodes": {
+                    "contains": {
+                      "const": "human_review_required"
+                    }
+                  }
+                }
+              },
+              {
+                "required": [
+                  "normalizedPayload"
+                ],
+                "properties": {
+                  "normalizedPayload": {
+                    "type": "object",
+                    "required": [
+                      "owner"
+                    ],
+                    "properties": {
+                      "owner": {
+                        "const": "human"
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          "then": {
+            "properties": {
+              "taskFlags": {
+                "contains": {
+                  "const": "human_review_required"
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "lifecycleStatus"
+            ],
+            "properties": {
+              "lifecycleStatus": {
+                "enum": [
+                  "published",
+                  "terminal"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "taskFlags": {
+                "not": {
+                  "contains": {
+                    "const": "human_review_required"
+                  }
+                }
+              },
+              "blockerCodes": {
+                "not": {
+                  "contains": {
+                    "const": "human_review_required"
+                  }
+                }
+              },
+              "normalizedPayload": {
+                "not": {
+                  "required": [
+                    "owner"
+                  ],
+                  "properties": {
+                    "owner": {
+                      "const": "human"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "normalizedPayload": {
+                "type": "object",
+                "required": [
+                  "intake"
+                ],
+                "properties": {
+                  "intake": {
+                    "type": "object",
+                    "required": [
+                      "recordType"
+                    ],
+                    "properties": {
+                      "recordType": {
+                        "const": "organizer_publication_packet"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "normalizedPayload": {
+                "properties": {
+                  "intake": {
+                    "$ref": "#/definitions/organizerPublicationPacketIntake"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "normalizedPayload": {
+                "type": "object",
+                "required": [
+                  "intake"
+                ],
+                "properties": {
+                  "intake": {
+                    "type": "object",
+                    "required": [
+                      "recordType"
+                    ],
+                    "properties": {
+                      "recordType": {
+                        "const": "supply_freshness_coverage"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "normalizedPayload": {
+                "properties": {
+                  "intake": {
+                    "$ref": "#/definitions/supplyFreshnessCoverageIntake"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "normalizedPayload": {
+                "type": "object",
+                "required": [
+                  "intake"
+                ],
+                "properties": {
+                  "intake": {
+                    "type": "object",
+                    "required": [
+                      "recordType"
+                    ],
+                    "properties": {
+                      "recordType": {
+                        "const": "orphan_event_candidate"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "entityKind": {
+                "const": "event"
+              },
+              "lifecycleStatus": {
+                "not": {
+                  "const": "published"
+                }
+              },
+              "blockerCodes": {
+                "contains": {
+                  "const": "organizer_not_in_inventory"
+                }
+              },
+              "normalizedPayload": {
+                "properties": {
+                  "intake": {
+                    "$ref": "#/definitions/orphanEventCandidateIntake"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "normalizedPayload": {
+                "type": "object",
+                "required": [
+                  "intake"
+                ],
+                "properties": {
+                  "intake": {
+                    "type": "object",
+                    "required": [
+                      "recordType"
+                    ],
+                    "properties": {
+                      "recordType": {
+                        "const": "event_candidate"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "entityKind": {
+                "const": "event"
+              },
+              "normalizedPayload": {
+                "properties": {
+                  "intake": {
+                    "$ref": "#/definitions/eventCandidateIntake"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "normalizedPayload": {
+                "type": "object",
+                "required": [
+                  "intake"
+                ],
+                "properties": {
+                  "intake": {
+                    "type": "object",
+                    "required": [
+                      "recordType"
+                    ],
+                    "properties": {
+                      "recordType": {
+                        "const": "event_source_result"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "entityKind": {
+                "const": "source_result"
+              },
+              "normalizedPayload": {
+                "properties": {
+                  "intake": {
+                    "$ref": "#/definitions/eventSourceResultIntake"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "normalizedPayload": {
+                "type": "object",
+                "required": [
+                  "intake"
+                ],
+                "properties": {
+                  "intake": {
+                    "type": "object",
+                    "required": [
+                      "recordType"
+                    ],
+                    "properties": {
+                      "recordType": {
+                        "const": "event_source_profile"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "entityKind": {
+                "const": "source_profile"
+              },
+              "normalizedPayload": {
+                "properties": {
+                  "intake": {
+                    "$ref": "#/definitions/eventSourceProfileIntake"
+                  }
+                }
+              }
+            }
+          }
+        }
+      ],
+      "definitions": {
+        "boundedString": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "boundedStringArray": {
+          "type": "array",
+          "maxItems": 40,
+          "items": {
+            "$ref": "#/definitions/boundedString"
+          }
+        },
+        "eventCandidateIntake": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "recordType",
+            "candidate"
+          ],
+          "properties": {
+            "recordType": {
+              "const": "event_candidate"
+            },
+            "candidate": {
+              "type": "object",
+              "additionalProperties": true,
+              "required": [
+                "id",
+                "title",
+                "startDate",
+                "sourceResultIds",
+                "reviewState",
+                "requiresVerification",
+                "warnings",
+                "blockerCodes",
+                "publicationEligibility"
+              ],
+              "properties": {
+                "id": {
+                  "$ref": "#/definitions/boundedString"
+                },
+                "title": {
+                  "$ref": "#/definitions/boundedString"
+                },
+                "startDate": {
+                  "type": "string",
+                  "maxLength": 40
+                },
+                "sourceResultIds": {
+                  "type": "array",
+                  "maxItems": 40,
+                  "items": {
+                    "$ref": "#/definitions/boundedString"
+                  }
+                },
+                "reviewState": {
+                  "$ref": "#/definitions/boundedString"
+                },
+                "requiresVerification": {
+                  "type": "boolean"
+                },
+                "warnings": {
+                  "$ref": "#/definitions/boundedStringArray"
+                },
+                "blockerCodes": {
+                  "$ref": "#/definitions/boundedStringArray"
+                },
+                "publicationEligibility": {
+                  "const": "review_gated"
+                }
+              }
+            }
+          }
+        },
+        "eventSourceResultIntake": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "recordType",
+            "result"
+          ],
+          "properties": {
+            "recordType": {
+              "const": "event_source_result"
+            },
+            "result": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "id",
+                "sourceProfileId",
+                "sourceLabel",
+                "queryTemplateId",
+                "resultType",
+                "title",
+                "url",
+                "snippet",
+                "observedAt",
+                "status",
+                "riskFlags",
+                "operatorNotes"
+              ],
+              "properties": {
+                "id": {
+                  "$ref": "#/definitions/boundedString"
+                },
+                "sourceProfileId": {
+                  "$ref": "#/definitions/boundedString"
+                },
+                "sourceLabel": {
+                  "$ref": "#/definitions/boundedString"
+                },
+                "queryTemplateId": {
+                  "$ref": "#/definitions/boundedString"
+                },
+                "resultType": {
+                  "$ref": "#/definitions/boundedString"
+                },
+                "title": {
+                  "$ref": "#/definitions/boundedString"
+                },
+                "url": {
+                  "type": "string",
+                  "maxLength": 2000
+                },
+                "snippet": {
+                  "type": "string",
+                  "maxLength": 1000
+                },
+                "observedAt": {
+                  "type": "string",
+                  "maxLength": 80
+                },
+                "status": {
+                  "$ref": "#/definitions/boundedString"
+                },
+                "riskFlags": {
+                  "$ref": "#/definitions/boundedStringArray"
+                },
+                "operatorNotes": {
+                  "type": "string",
+                  "maxLength": 1000
+                }
+              }
+            }
+          }
+        },
+        "eventSourceProfileIntake": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "recordType",
+            "profile"
+          ],
+          "properties": {
+            "recordType": {
+              "const": "event_source_profile"
+            },
+            "profile": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "id",
+                "label",
+                "type",
+                "status",
+                "cadence",
+                "riskLevel",
+                "allowedUse",
+                "items"
+              ],
+              "properties": {
+                "id": {
+                  "$ref": "#/definitions/boundedString"
+                },
+                "label": {
+                  "$ref": "#/definitions/boundedString"
+                },
+                "type": {
+                  "$ref": "#/definitions/boundedString"
+                },
+                "status": {
+                  "$ref": "#/definitions/boundedString"
+                },
+                "cadence": {
+                  "$ref": "#/definitions/boundedString"
+                },
+                "riskLevel": {
+                  "type": "string",
+                  "enum": [
+                    "low",
+                    "medium",
+                    "high"
+                  ]
+                },
+                "allowedUse": {
+                  "$ref": "#/definitions/boundedString"
+                },
+                "items": {
+                  "type": "array",
+                  "maxItems": 40,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "label",
+                      "url"
+                    ],
+                    "properties": {
+                      "label": {
+                        "$ref": "#/definitions/boundedString"
+                      },
+                      "url": {
+                        "type": "string",
+                        "maxLength": 2000
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "orphanEventCandidateIntake": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "recordType",
+            "candidate"
+          ],
+          "properties": {
+            "recordType": {
+              "const": "orphan_event_candidate"
+            },
+            "candidate": {
+              "type": "object",
+              "additionalProperties": true,
+              "required": [
+                "id",
+                "candidateId",
+                "publicationEligibility",
+                "blockerCodes",
+                "attribution"
+              ],
+              "properties": {
+                "id": {
+                  "$ref": "#/definitions/boundedString"
+                },
+                "candidateId": {
+                  "$ref": "#/definitions/boundedString"
+                },
+                "publicationEligibility": {
+                  "const": "blocked_orphan"
+                },
+                "blockerCodes": {
+                  "type": "array",
+                  "maxItems": 40,
+                  "contains": {
+                    "const": "organizer_not_in_inventory"
+                  },
+                  "items": {
+                    "$ref": "#/definitions/boundedString"
+                  }
+                },
+                "attribution": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "state",
+                    "organizerEvidence",
+                    "match"
+                  ],
+                  "properties": {
+                    "state": {
+                      "const": "orphan"
+                    },
+                    "organizerEvidence": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "name",
+                        "url"
+                      ],
+                      "properties": {
+                        "name": {
+                          "anyOf": [
+                            {
+                              "$ref": "#/definitions/boundedString"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "url": {
+                          "anyOf": [
+                            {
+                              "$ref": "#/definitions/boundedString"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    "match": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "decision",
+                        "policyId",
+                        "threshold",
+                        "rationale",
+                        "matchedEntityId",
+                        "score",
+                        "matchingSignals",
+                        "blockingKeys"
+                      ],
+                      "properties": {
+                        "decision": {
+                          "$ref": "#/definitions/boundedString"
+                        },
+                        "policyId": {
+                          "$ref": "#/definitions/boundedString"
+                        },
+                        "threshold": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
+                        },
+                        "rationale": {
+                          "$ref": "#/definitions/boundedString"
+                        },
+                        "matchedEntityId": {
+                          "type": "null"
+                        },
+                        "score": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
+                        },
+                        "matchingSignals": {
+                          "$ref": "#/definitions/boundedStringArray"
+                        },
+                        "blockingKeys": {
+                          "$ref": "#/definitions/boundedStringArray"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "supplyFreshnessCoverageIntake": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "recordType",
+            "coverage"
+          ],
+          "properties": {
+            "recordType": {
+              "const": "supply_freshness_coverage"
+            },
+            "coverage": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "schemaVersion",
+                "recordType",
+                "coverageId",
+                "runId",
+                "kind",
+                "scopeKey",
+                "runKey",
+                "market",
+                "sourceProfileId",
+                "entityId",
+                "surfaceId",
+                "schedulerStatus",
+                "surfacePolicy",
+                "fetchEnabled",
+                "completedAt",
+                "policyVersion",
+                "requestHash"
+              ],
+              "properties": {
+                "schemaVersion": {
+                  "type": "integer",
+                  "const": 1
+                },
+                "recordType": {
+                  "const": "supply_freshness_coverage"
+                },
+                "coverageId": {
+                  "$ref": "common.schema.json#/definitions/id"
+                },
+                "runId": {
+                  "$ref": "common.schema.json#/definitions/id"
+                },
+                "kind": {
+                  "type": "string",
+                  "enum": [
+                    "city_discovery_sweep",
+                    "candidate_verification",
+                    "known_organizer_event_refresh",
+                    "event_detail_prepublication"
+                  ]
+                },
+                "scopeKey": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 500
+                },
+                "runKey": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 500
+                },
+                "market": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 80
+                },
+                "sourceProfileId": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 160
+                },
+                "entityId": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 200
+                },
+                "surfaceId": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 200
+                },
+                "schedulerStatus": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 40
+                },
+                "surfacePolicy": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 80
+                },
+                "fetchEnabled": {
+                  "type": "boolean"
+                },
+                "completedAt": {
+                  "$ref": "common.schema.json#/definitions/isoDateTime"
+                },
+                "policyVersion": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120
+                },
+                "requestHash": {
+                  "$ref": "common.schema.json#/definitions/sha256"
+                }
+              }
+            }
+          }
+        },
+        "organizerPublicationPacketIntake": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "recordType",
+            "packet"
+          ],
+          "properties": {
+            "recordType": {
+              "const": "organizer_publication_packet"
+            },
+            "packet": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "packetId",
+                "entityId",
+                "canonicalHostId",
+                "displayName",
+                "status",
+                "priority",
+                "markets",
+                "blockers",
+                "dataBlockers",
+                "evidenceBlockers",
+                "approvalChecklist",
+                "evidenceSummary",
+                "publicPresence",
+                "adminDecision",
+                "nextActions"
+              ],
+              "properties": {
+                "packetId": {
+                  "$ref": "#/definitions/boundedString"
+                },
+                "entityId": {
+                  "$ref": "#/definitions/boundedString"
+                },
+                "canonicalHostId": {
+                  "$ref": "#/definitions/boundedString"
+                },
+                "displayName": {
+                  "$ref": "#/definitions/boundedString"
+                },
+                "status": {
+                  "$ref": "#/definitions/boundedString"
+                },
+                "priority": {
+                  "$ref": "#/definitions/boundedString"
+                },
+                "markets": {
+                  "type": "array",
+                  "maxItems": 8,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "slug",
+                      "displayName"
+                    ],
+                    "properties": {
+                      "slug": {
+                        "$ref": "#/definitions/boundedString"
+                      },
+                      "displayName": {
+                        "$ref": "#/definitions/boundedString"
+                      }
+                    }
+                  }
+                },
+                "blockers": {
+                  "$ref": "#/definitions/boundedStringArray"
+                },
+                "dataBlockers": {
+                  "$ref": "#/definitions/boundedStringArray"
+                },
+                "evidenceBlockers": {
+                  "$ref": "#/definitions/boundedStringArray"
+                },
+                "approvalChecklist": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "crawlDisabledReviewed",
+                    "identityReviewed",
+                    "marketScopeReviewed",
+                    "mediaRightsReviewed",
+                    "ownerSafeCopyReviewed",
+                    "surfaceInventoryReviewed"
+                  ],
+                  "properties": {
+                    "crawlDisabledReviewed": {
+                      "type": "boolean"
+                    },
+                    "identityReviewed": {
+                      "type": "boolean"
+                    },
+                    "marketScopeReviewed": {
+                      "type": "boolean"
+                    },
+                    "mediaRightsReviewed": {
+                      "type": "boolean"
+                    },
+                    "ownerSafeCopyReviewed": {
+                      "type": "boolean"
+                    },
+                    "surfaceInventoryReviewed": {
+                      "type": "boolean"
+                    }
+                  }
+                },
+                "evidenceSummary": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "records",
+                    "manualReportsWithoutArtifacts",
+                    "unresolvedLocalRefs",
+                    "missingSurfaceEvidence",
+                    "rawProviderArtifactRefs",
+                    "firestoreForbiddenArtifactRefs",
+                    "riskFlags"
+                  ],
+                  "properties": {
+                    "records": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "manualReportsWithoutArtifacts": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "unresolvedLocalRefs": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "missingSurfaceEvidence": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "rawProviderArtifactRefs": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "firestoreForbiddenArtifactRefs": {
+                      "type": "integer",
+                      "minimum": 0
+                    },
+                    "riskFlags": {
+                      "type": "array",
+                      "maxItems": 12,
+                      "items": {
+                        "$ref": "#/definitions/boundedString"
+                      }
+                    }
+                  }
+                },
+                "publicPresence": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "canonicalPath",
+                    "claimTargetPath",
+                    "publishStatus",
+                    "indexStatus",
+                    "appVisibility",
+                    "projectionStatus"
+                  ],
+                  "properties": {
+                    "canonicalPath": {
+                      "anyOf": [
+                        {
+                          "$ref": "#/definitions/boundedString"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "claimTargetPath": {
+                      "anyOf": [
+                        {
+                          "$ref": "#/definitions/boundedString"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "publishStatus": {
+                      "$ref": "#/definitions/boundedString"
+                    },
+                    "indexStatus": {
+                      "$ref": "#/definitions/boundedString"
+                    },
+                    "appVisibility": {
+                      "$ref": "#/definitions/boundedString"
+                    },
+                    "projectionStatus": {
+                      "$ref": "#/definitions/boundedString"
+                    }
+                  }
+                },
+                "adminDecision": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "allowedDecisions",
+                    "defaultAppVisibility",
+                    "currentDecision"
+                  ],
+                  "properties": {
+                    "allowedDecisions": {
+                      "$ref": "#/definitions/boundedStringArray"
+                    },
+                    "defaultAppVisibility": {
+                      "$ref": "#/definitions/boundedString"
+                    },
+                    "currentDecision": {
+                      "anyOf": [
+                        {
+                          "type": "null"
+                        },
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "decision",
+                            "publishStatus",
+                            "indexStatus",
+                            "decidedAt",
+                            "appVisibility"
+                          ],
+                          "properties": {
+                            "decision": {
+                              "$ref": "#/definitions/boundedString"
+                            },
+                            "publishStatus": {
+                              "$ref": "#/definitions/boundedString"
+                            },
+                            "indexStatus": {
+                              "$ref": "#/definitions/boundedString"
+                            },
+                            "decidedAt": {
+                              "$ref": "#/definitions/boundedString"
+                            },
+                            "appVisibility": {
+                              "$ref": "#/definitions/boundedString"
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                },
+                "nextActions": {
+                  "type": "array",
+                  "maxItems": 12,
+                  "items": {
+                    "$ref": "#/definitions/boundedString"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "workItemId",
+        "workflowId",
+        "runId",
+        "entityKind",
+        "externalKey",
+        "revision",
+        "candidateHash",
+        "primaryStage",
+        "lifecycleStatus",
+        "outcome",
+        "taskFlags",
+        "blockerCodes",
+        "warningCodes",
+        "priority",
+        "attemptCount",
+        "evidenceRefs",
+        "fieldProvenance",
+        "normalizedPayload",
+        "decisionId",
+        "publicationPlanId",
+        "createdAt",
+        "updatedAt",
+        "staleAt",
+        "expiresAt"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1
+        },
+        "workItemId": {
+          "$ref": "common.schema.json#/definitions/id"
+        },
+        "workflowId": {
+          "$ref": "common.schema.json#/definitions/workflowId"
+        },
+        "runId": {
+          "$ref": "common.schema.json#/definitions/id"
+        },
+        "entityKind": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80,
+          "pattern": "^[a-z][a-z0-9_]*$"
+        },
+        "externalKey": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 500
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "candidateHash": {
+          "$ref": "common.schema.json#/definitions/sha256"
+        },
+        "primaryStage": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80,
+          "pattern": "^[a-z][a-z0-9_]*$"
+        },
+        "lifecycleStatus": {
+          "type": "string",
+          "enum": [
+            "queued",
+            "in_progress",
+            "waiting",
+            "ready",
+            "published",
+            "terminal"
+          ]
+        },
+        "outcome": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 120,
+          "pattern": "^[a-z][a-z0-9_]*$"
+        },
+        "taskFlags": {
+          "type": "array",
+          "maxItems": 40,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "common.schema.json#/definitions/code"
+          }
+        },
+        "blockerCodes": {
+          "type": "array",
+          "maxItems": 40,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "common.schema.json#/definitions/code"
+          }
+        },
+        "warningCodes": {
+          "type": "array",
+          "maxItems": 40,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "common.schema.json#/definitions/code"
+          }
+        },
+        "priority": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000
+        },
+        "attemptCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "evidenceRefs": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "$ref": "common.schema.json#/definitions/evidenceRef"
+          }
+        },
+        "fieldProvenance": {
+          "type": "array",
+          "maxItems": 200,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "field",
+              "artifactId",
+              "contentHash",
+              "locator",
+              "extractedBy",
+              "extractorVersion",
+              "confidence"
+            ],
+            "properties": {
+              "field": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160
+              },
+              "artifactId": {
+                "$ref": "common.schema.json#/definitions/id"
+              },
+              "contentHash": {
+                "$ref": "common.schema.json#/definitions/sha256"
+              },
+              "locator": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 1000
+              },
+              "extractedBy": {
+                "type": "string",
+                "enum": [
+                  "deterministic",
+                  "model",
+                  "human"
+                ]
+              },
+              "extractorVersion": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160
+              },
+              "confidence": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "minimum": 0,
+                "maximum": 1
+              }
+            }
+          }
+        },
+        "normalizedPayload": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "decisionId": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/definitions/id"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "publicationPlanId": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/definitions/id"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "createdAt": {
+          "$ref": "common.schema.json#/definitions/isoDateTime"
+        },
+        "updatedAt": {
+          "$ref": "common.schema.json#/definitions/isoDateTime"
+        },
+        "staleAt": {
+          "$ref": "common.schema.json#/definitions/nullableIsoDateTime"
+        },
+        "expiresAt": {
+          "$ref": "common.schema.json#/definitions/nullableIsoDateTime"
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/operations/event_assistance_checkpoint_work.schema.json",
+      "title": "EventAssistanceCheckpointWork",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "kind",
+        "scope",
+        "rosterId",
+        "rosterHash",
+        "request",
+        "requestedAt",
+        "checkpoint"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": 1
+        },
+        "kind": {
+          "const": "liveCheckpointReport"
+        },
+        "scope": {
+          "$ref": "../shared/event_assistance_checkpoint.schema.json#/definitions/ReadInput"
+        },
+        "rosterId": {
+          "type": "string",
+          "pattern": "^departure-roster:[a-f0-9]{64}$"
+        },
+        "rosterHash": {
+          "$ref": "common.schema.json#/definitions/sha256"
+        },
+        "request": {
+          "$ref": "../shared/event_assistance_departure_roster.schema.json#/definitions/CheckpointRequest"
+        },
+        "requestedAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "checkpoint": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "dueAt",
+            "evaluatedAt",
+            "failures",
+            "observation"
+          ],
+          "properties": {
+            "dueAt": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "evaluatedAt": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "failures": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 5
+            },
+            "observation": {
+              "anyOf": [
+                {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "request",
+                        "reportRevision",
+                        "sourceHash",
+                        "ownerValidUntil"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "const": "observed"
+                        },
+                        "request": {
+                          "$ref": "../shared/event_assistance_checkpoint.schema.json#/definitions/RequestView"
+                        },
+                        "reportRevision": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 9007199254740991
+                        },
+                        "sourceHash": {
+                          "$ref": "common.schema.json#/definitions/sha256"
+                        },
+                        "ownerValidUntil": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 9007199254740991
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "reason"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "const": "unavailable"
+                        },
+                        "reason": {
+                          "const": "factsUnavailable"
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        "reassignment": {
+          "$ref": "../shared/event_assistance_checkpoint.schema.json#/definitions/Reassignment"
+        },
+        "closeout": {
+          "$ref": "../shared/event_assistance_checkpoint.schema.json#/definitions/CloseoutChange"
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/shared/event_assistance_checkpoint.schema.json",
+      "title": "EventAssistanceCheckpointContracts",
+      "definitions": {
+        "ReadInput": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "context",
+            "groupId",
+            "checkpointId",
+            "progressRevision"
+          ],
+          "properties": {
+            "context": {
+              "$ref": "event_assistance_guest.schema.json#/definitions/liveContext"
+            },
+            "groupId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "checkpointId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "progressRevision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            }
+          }
+        },
+        "WriteInput": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "command",
+            "expectedSourceHash"
+          ],
+          "properties": {
+            "command": {
+              "$ref": "event_assistance_common.schema.json#/definitions/RecordCheckpointCommand"
+            },
+            "expectedSourceHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          },
+          "allOf": [
+            {
+              "properties": {
+                "command": {
+                  "properties": {
+                    "context": {
+                      "properties": {
+                        "mode": {
+                          "const": "live"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "Member": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "attendeeId",
+            "observation",
+            "visit"
+          ],
+          "properties": {
+            "attendeeId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "observation": {
+              "enum": [
+                "accountedFor",
+                "unconfirmed"
+              ]
+            },
+            "visit": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "const": "current"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "reason"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "const": "unavailable"
+                    },
+                    "reason": {
+                      "enum": [
+                        "registrationMissing",
+                        "visitChanged",
+                        "notCheckedIn",
+                        "invalidSource"
+                      ]
+                    }
+                  }
+                }
+              ]
+            },
+            "disposition": {
+              "$ref": "#/definitions/Disposition"
+            },
+            "displayName": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 1,
+              "maxLength": 120
+            }
+          }
+        },
+        "Report": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "schemaVersion",
+            "reportId",
+            "context",
+            "groupId",
+            "checkpointId",
+            "progressRevision",
+            "rosterId",
+            "rosterHash",
+            "revision",
+            "accountedFor",
+            "reportedBy",
+            "reportedAt",
+            "correctionReason",
+            "createdAt"
+          ],
+          "properties": {
+            "schemaVersion": {
+              "const": 1
+            },
+            "reportId": {
+              "type": "string",
+              "pattern": "^checkpoint:[a-f0-9]{64}$"
+            },
+            "context": {
+              "$ref": "event_assistance_guest.schema.json#/definitions/liveContext"
+            },
+            "groupId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "checkpointId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "progressRevision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "rosterId": {
+              "type": "string",
+              "pattern": "^departure-roster:[a-f0-9]{64}$"
+            },
+            "rosterHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "accountedFor": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+              },
+              "uniqueItems": true,
+              "maxItems": 1000
+            },
+            "reportedBy": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "reportedAt": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "correctionReason": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 500,
+                  "pattern": "\\S"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "createdAt": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          }
+        },
+        "View": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "context",
+            "groupId",
+            "checkpointId",
+            "progressRevision",
+            "serverTime",
+            "sourceHash",
+            "revision",
+            "report",
+            "availability",
+            "request"
+          ],
+          "properties": {
+            "context": {
+              "$ref": "event_assistance_guest.schema.json#/definitions/liveContext"
+            },
+            "groupId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "checkpointId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "progressRevision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "serverTime": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "sourceHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "report": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/Report"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "availability": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "rosterId",
+                    "label",
+                    "reportStatus",
+                    "members"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "const": "ready"
+                    },
+                    "rosterId": {
+                      "type": "string",
+                      "pattern": "^departure-roster:[a-f0-9]{64}$"
+                    },
+                    "label": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 240
+                    },
+                    "reportStatus": {
+                      "enum": [
+                        "unreported",
+                        "partial",
+                        "complete"
+                      ]
+                    },
+                    "members": {
+                      "type": "array",
+                      "maxItems": 1000,
+                      "items": {
+                        "$ref": "#/definitions/Member"
+                      }
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "reason"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "const": "unavailable"
+                    },
+                    "reason": {
+                      "enum": [
+                        "rosterNotRecorded",
+                        "destinationNotRecorded",
+                        "differentCheckpoint",
+                        "notCheckpoint",
+                        "setupChanged"
+                      ]
+                    }
+                  }
+                }
+              ]
+            },
+            "request": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/RequestView"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "assignment": {
+              "description": "Present in current responses; null when no durable checkpoint request exists. Independent of the report revision.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/AssignmentView"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "closeout": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/CloseoutView"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "reporterOptions": {
+              "description": "Current manager-only choices for this original checkpoint. Missing legacy values do not establish a choice list.",
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/ReporterOptions"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        "Receipt": {
+          "oneOf": [
+            {
+              "$ref": "#/definitions/ReportReceipt"
+            },
+            {
+              "$ref": "#/definitions/AssignmentReceipt"
+            },
+            {
+              "$ref": "#/definitions/CloseoutReceipt"
+            }
+          ]
+        },
+        "Response": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "outcome",
+            "operationRevision",
+            "view"
+          ],
+          "properties": {
+            "outcome": {
+              "enum": [
+                "read",
+                "applied",
+                "replayed"
+              ]
+            },
+            "operationRevision": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "view": {
+              "$ref": "#/definitions/View"
+            }
+          }
+        },
+        "RequestView": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "responsibleOperatorId",
+                "dueAt",
+                "state",
+                "ownerAvailability"
+              ],
+              "properties": {
+                "responsibleOperatorId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128,
+                  "pattern": "^[^/]+$"
+                },
+                "dueAt": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "state": {
+                  "enum": [
+                    "awaitingReport",
+                    "overdue",
+                    "discrepancy",
+                    "sourceUnavailable"
+                  ]
+                },
+                "ownerAvailability": {
+                  "enum": [
+                    "current",
+                    "needsReassignment"
+                  ]
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "responsibleOperatorId",
+                "dueAt",
+                "state",
+                "ownerAvailability"
+              ],
+              "properties": {
+                "responsibleOperatorId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128,
+                  "pattern": "^[^/]+$"
+                },
+                "dueAt": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "state": {
+                  "enum": [
+                    "complete",
+                    "closedOut"
+                  ]
+                },
+                "ownerAvailability": {
+                  "const": "notRequired"
+                }
+              }
+            }
+          ]
+        },
+        "Reassignment": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "revision",
+            "receiptId",
+            "responsibleOperatorId",
+            "previousResponsibleOperatorId",
+            "assignedBy",
+            "assignedAt",
+            "reason"
+          ],
+          "properties": {
+            "revision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "receiptId": {
+              "type": "string",
+              "pattern": "^checkpoint-reassignment:[a-f0-9]{64}$"
+            },
+            "responsibleOperatorId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[^/]+$"
+            },
+            "previousResponsibleOperatorId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[^/]+$"
+            },
+            "assignedBy": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[^/]+$"
+            },
+            "assignedAt": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500,
+              "pattern": "\\S"
+            }
+          }
+        },
+        "ReassignInput": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "command",
+            "expectedSourceHash"
+          ],
+          "properties": {
+            "command": {
+              "$ref": "event_assistance_common.schema.json#/definitions/ReassignCheckpointReporterCommand"
+            },
+            "expectedSourceHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          },
+          "allOf": [
+            {
+              "properties": {
+                "command": {
+                  "properties": {
+                    "context": {
+                      "properties": {
+                        "mode": {
+                          "const": "live"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "AssignmentView": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "revision",
+            "sourceHash",
+            "change"
+          ],
+          "properties": {
+            "revision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "sourceHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "change": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/Reassignment"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        "AssignmentReceipt": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "receiptId",
+            "requestHash",
+            "scope",
+            "rosterHash",
+            "workItemRevision",
+            "assignment"
+          ],
+          "properties": {
+            "receiptId": {
+              "type": "string",
+              "pattern": "^checkpoint-reassignment:[a-f0-9]{64}$"
+            },
+            "requestHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "scope": {
+              "$ref": "#/definitions/ReadInput"
+            },
+            "rosterHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "workItemRevision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "assignment": {
+              "$ref": "#/definitions/Reassignment"
+            }
+          }
+        },
+        "ReportReceipt": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "receiptId",
+            "requestHash",
+            "report"
+          ],
+          "properties": {
+            "receiptId": {
+              "type": "string",
+              "pattern": "^checkpoint-action:[a-f0-9]{64}$"
+            },
+            "requestHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "report": {
+              "$ref": "#/definitions/Report"
+            }
+          }
+        },
+        "Disposition": {
+          "description": "Visit-bound event accountability evidence. A resolved disposition never means arrival at this checkpoint.",
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "unresolved"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "disposition",
+                "revision",
+                "resolvedAt",
+                "resolvedBy",
+                "sourceHash"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "resolved"
+                },
+                "disposition": {
+                  "enum": [
+                    "returned",
+                    "departed"
+                  ]
+                },
+                "revision": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                },
+                "resolvedAt": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "resolvedBy": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "sourceHash": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "reason"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "unavailable"
+                },
+                "reason": {
+                  "enum": [
+                    "registrationMissing",
+                    "visitChanged",
+                    "notCheckedIn",
+                    "invalidSource",
+                    "beforeDeparture"
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "CloseoutDisposition": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "disposition",
+            "revision",
+            "resolvedAt",
+            "resolvedBy",
+            "sourceHash",
+            "attendeeId"
+          ],
+          "properties": {
+            "kind": {
+              "const": "resolved"
+            },
+            "disposition": {
+              "enum": [
+                "returned",
+                "departed"
+              ]
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "resolvedAt": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "resolvedBy": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[^/]+$"
+            },
+            "sourceHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "attendeeId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          }
+        },
+        "CloseoutChange": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "revision",
+            "previousRevision",
+            "receiptId",
+            "changedBy",
+            "changedAt",
+            "reason",
+            "decision"
+          ],
+          "properties": {
+            "revision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "previousRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "receiptId": {
+              "type": "string",
+              "pattern": "^checkpoint-closeout:[a-f0-9]{64}$"
+            },
+            "changedBy": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[^/]+$"
+            },
+            "changedAt": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 500,
+              "pattern": "\\S"
+            },
+            "decision": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "report",
+                    "dispositions"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "const": "close"
+                    },
+                    "report": {
+                      "$ref": "#/definitions/Report"
+                    },
+                    "dispositions": {
+                      "type": "array",
+                      "maxItems": 1000,
+                      "items": {
+                        "$ref": "#/definitions/CloseoutDisposition"
+                      }
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "const": "reopen"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "CloseoutView": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "revision",
+            "sourceHash",
+            "change",
+            "state",
+            "eligibility"
+          ],
+          "properties": {
+            "revision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "sourceHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "change": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/CloseoutChange"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "state": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "enum": [
+                        "open",
+                        "reopened",
+                        "closedOut",
+                        "superseded"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "reason"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "const": "needsReview"
+                    },
+                    "reason": {
+                      "enum": [
+                        "sourceUnavailable",
+                        "reportChanged",
+                        "dispositionChanged"
+                      ]
+                    }
+                  }
+                }
+              ]
+            },
+            "eligibility": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "const": "ready"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "reason",
+                    "attendeeIds"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "const": "unavailable"
+                    },
+                    "reason": {
+                      "enum": [
+                        "sourceUnavailable",
+                        "reportMissing",
+                        "reportComplete",
+                        "unresolvedMembers",
+                        "alreadyClosed"
+                      ]
+                    },
+                    "attendeeIds": {
+                      "type": "array",
+                      "maxItems": 1000,
+                      "uniqueItems": true,
+                      "items": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 160,
+                        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "CloseoutInput": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "command",
+            "expectedSourceHash"
+          ],
+          "properties": {
+            "command": {
+              "$ref": "event_assistance_common.schema.json#/definitions/SetCheckpointCloseoutCommand"
+            },
+            "expectedSourceHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          },
+          "allOf": [
+            {
+              "properties": {
+                "command": {
+                  "properties": {
+                    "context": {
+                      "properties": {
+                        "mode": {
+                          "const": "live"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "CloseoutReceipt": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "receiptId",
+            "requestHash",
+            "scope",
+            "rosterHash",
+            "workItemRevision",
+            "closeout"
+          ],
+          "properties": {
+            "receiptId": {
+              "type": "string",
+              "pattern": "^checkpoint-closeout:[a-f0-9]{64}$"
+            },
+            "requestHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "scope": {
+              "$ref": "#/definitions/ReadInput"
+            },
+            "rosterHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "workItemRevision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "closeout": {
+              "$ref": "#/definitions/CloseoutChange"
+            }
+          }
+        },
+        "ReporterOptions": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "actorUid",
+            "sourceHash",
+            "validUntil",
+            "reporters"
+          ],
+          "properties": {
+            "actorUid": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[^/]+$"
+            },
+            "sourceHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "validUntil": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "reporters": {
+              "type": "array",
+              "maxItems": 92,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "operatorId",
+                  "displayName",
+                  "validUntil"
+                ],
+                "properties": {
+                  "operatorId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128,
+                    "pattern": "^[^/]+$"
+                  },
+                  "displayName": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "minLength": 1,
+                    "maxLength": 120
+                  },
+                  "validUntil": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
       "$id": "https://catch.app/contracts/operations/event_assistance_operational_notice_fanout.schema.json",
       "title": "EventAssistanceOperationalNoticeFanout",
       "description": "Private bounded attendee fanout for one trusted plan-change or post-event source. The work binds a reviewed policy revision and grants no provider authority by itself.",
@@ -22799,6 +23558,106 @@ const model = {
     },
     {
       "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callable_responses/admin_review_event_messaging_budget_response.schema.json",
+      "title": "AdminReviewEventMessagingBudgetCallableResponse",
+      "description": "Read-only Finance review of one current messaging setup and its current revision-fenced decision. The response grants no spending or dispatch authority.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "review",
+        "decision",
+        "grantsSpendingAuthority",
+        "grantsDispatchAuthority"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "integer",
+          "const": 1
+        },
+        "review": {
+          "$ref": "../operations/event_messaging_setup_review.schema.json"
+        },
+        "decision": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/decisionSummary"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "grantsSpendingAuthority": {
+          "type": "boolean",
+          "const": false
+        },
+        "grantsDispatchAuthority": {
+          "type": "boolean",
+          "const": false
+        }
+      },
+      "definitions": {
+        "decisionSummary": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "decisionId",
+            "revision",
+            "decisionStatus",
+            "decisionKind",
+            "reviewedByUid",
+            "note",
+            "effect",
+            "grantsSpendingAuthority"
+          ],
+          "properties": {
+            "decisionId": {
+              "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "decisionStatus": {
+              "type": "string",
+              "enum": [
+                "approved",
+                "held",
+                "rejected"
+              ]
+            },
+            "decisionKind": {
+              "type": "string",
+              "enum": [
+                "approve",
+                "hold",
+                "reject"
+              ]
+            },
+            "reviewedByUid": {
+              "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+            },
+            "note": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1000
+            },
+            "effect": {
+              "type": "string",
+              "const": "decision_only_no_spending_authority"
+            },
+            "grantsSpendingAuthority": {
+              "type": "boolean",
+              "const": false
+            }
+          }
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
       "$id": "https://catch.app/contracts/callable_responses/admin_set_admin_user_roles_response.schema.json",
       "title": "Admin Set Admin User Roles Callable Response",
       "type": "object",
@@ -23930,10 +24789,12 @@ const model = {
     }
   ],
   "requestSchemaIds": {
+    "adminApplyEventMessagingBudget": "https://catch.app/contracts/callables/admin_apply_event_messaging_budget_payload.schema.json",
     "adminAssignSafetyTriageItem": "https://catch.app/contracts/callables/admin_assign_safety_triage_item_payload.schema.json",
     "adminCreateMarketingContentDraft": "https://catch.app/contracts/callables/admin_create_marketing_content_draft_payload.schema.json",
     "adminCreateOrganizerDraftFromCandidate": "https://catch.app/contracts/callables/admin_create_organizer_draft_from_candidate_payload.schema.json",
     "adminDecideAccessApplication": "https://catch.app/contracts/callables/admin_decide_access_application_payload.schema.json",
+    "adminDecideEventMessagingBudget": "https://catch.app/contracts/callables/admin_decide_event_messaging_budget_payload.schema.json",
     "adminDecideOrganizerClaim": "https://catch.app/contracts/callables/admin_decide_club_claim_payload.schema.json",
     "adminDecideOrganizerEventCandidate": "https://catch.app/contracts/callables/admin_decide_organizer_event_candidate_payload.schema.json",
     "adminDecideOrganizerIntake": "https://catch.app/contracts/callables/admin_decide_organizer_intake_payload.schema.json",
@@ -23964,6 +24825,7 @@ const model = {
     "adminRecordMarketingReviewDecision": "https://catch.app/contracts/callables/admin_record_marketing_review_decision_payload.schema.json",
     "adminRecordOrganizerCuration": "https://catch.app/contracts/callables/admin_record_organizer_curation_payload.schema.json",
     "adminResolveOrganizerEventLocation": "https://catch.app/contracts/callables/admin_resolve_organizer_event_location_payload.schema.json",
+    "adminReviewEventMessagingBudget": "https://catch.app/contracts/callables/admin_review_event_messaging_budget_payload.schema.json",
     "adminSetAdminUserRoles": "https://catch.app/contracts/callables/admin_set_admin_user_roles_payload.schema.json",
     "adminSetCrossPathsShowcaseEligibility": "https://catch.app/contracts/callables/admin_set_cross_paths_showcase_eligibility_payload.schema.json",
     "adminSetOrganizerIndexStatus": "https://catch.app/contracts/callables/admin_set_club_index_status_payload.schema.json",
@@ -23972,10 +24834,12 @@ const model = {
     "adminUpdateOrganizerDetails": "https://catch.app/contracts/callables/admin_update_organizer_details_payload.schema.json"
   },
   "responseSchemaIds": {
+    "adminApplyEventMessagingBudget": "https://catch.app/contracts/callable_responses/admin_apply_event_messaging_budget_response.schema.json",
     "adminAssignSafetyTriageItem": "https://catch.app/contracts/callable_responses/admin_assign_safety_triage_item_response.schema.json",
     "adminCreateMarketingContentDraft": "https://catch.app/contracts/callable_responses/admin_create_marketing_content_draft_response.schema.json",
     "adminCreateOrganizerDraftFromCandidate": "https://catch.app/contracts/callable_responses/admin_create_organizer_draft_from_candidate_response.schema.json",
     "adminDecideAccessApplication": "https://catch.app/contracts/callable_responses/admin_decide_access_application_response.schema.json",
+    "adminDecideEventMessagingBudget": "https://catch.app/contracts/callable_responses/admin_decide_event_messaging_budget_response.schema.json",
     "adminDecideOrganizerClaim": "https://catch.app/contracts/admin_runtime/adminDecideOrganizerClaim_response.schema.json",
     "adminDecideOrganizerEventCandidate": "https://catch.app/contracts/admin_runtime/adminDecideOrganizerEventCandidate_response.schema.json",
     "adminDecideOrganizerIntake": "https://catch.app/contracts/admin_runtime/adminDecideOrganizerIntake_response.schema.json",
@@ -24006,6 +24870,7 @@ const model = {
     "adminRecordMarketingReviewDecision": "https://catch.app/contracts/callable_responses/admin_record_marketing_review_decision_response.schema.json",
     "adminRecordOrganizerCuration": "https://catch.app/contracts/admin_runtime/adminRecordOrganizerCuration_response.schema.json",
     "adminResolveOrganizerEventLocation": "https://catch.app/contracts/admin_runtime/adminResolveOrganizerEventLocation_response.schema.json",
+    "adminReviewEventMessagingBudget": "https://catch.app/contracts/callable_responses/admin_review_event_messaging_budget_response.schema.json",
     "adminSetAdminUserRoles": "https://catch.app/contracts/callable_responses/admin_set_admin_user_roles_response.schema.json",
     "adminSetCrossPathsShowcaseEligibility": "https://catch.app/contracts/callable_responses/admin_set_cross_paths_showcase_eligibility_response.schema.json",
     "adminSetOrganizerIndexStatus": "https://catch.app/contracts/admin_runtime/adminSetOrganizerIndexStatus_response.schema.json",
@@ -24014,10 +24879,12 @@ const model = {
     "adminUpdateOrganizerDetails": "https://catch.app/contracts/admin_runtime/adminUpdateOrganizerDetails_response.schema.json"
   },
   "strictRequests": [
+    "adminApplyEventMessagingBudget",
     "adminAssignSafetyTriageItem",
     "adminCreateMarketingContentDraft",
     "adminCreateOrganizerDraftFromCandidate",
     "adminDecideAccessApplication",
+    "adminDecideEventMessagingBudget",
     "adminDecideOrganizerClaim",
     "adminDecideOrganizerEventCandidate",
     "adminDecideOrganizerIntake",
@@ -24048,6 +24915,7 @@ const model = {
     "adminRecordMarketingReviewDecision",
     "adminRecordOrganizerCuration",
     "adminResolveOrganizerEventLocation",
+    "adminReviewEventMessagingBudget",
     "adminSetAdminUserRoles",
     "adminSetCrossPathsShowcaseEligibility",
     "adminSetOrganizerIndexStatus",
@@ -24056,10 +24924,12 @@ const model = {
     "adminUpdateOrganizerDetails"
   ],
   "strictResponses": [
+    "adminApplyEventMessagingBudget",
     "adminAssignSafetyTriageItem",
     "adminCreateMarketingContentDraft",
     "adminCreateOrganizerDraftFromCandidate",
     "adminDecideAccessApplication",
+    "adminDecideEventMessagingBudget",
     "adminDecideSafetyTriageItem",
     "adminGetHostAnalytics",
     "adminGetOverview",
@@ -24068,6 +24938,7 @@ const model = {
     "adminListCrossPathsShowcaseCandidates",
     "adminListIntakeOperations",
     "adminRecordMarketingReviewDecision",
+    "adminReviewEventMessagingBudget",
     "adminSetAdminUserRoles",
     "adminSetCrossPathsShowcaseEligibility"
   ]

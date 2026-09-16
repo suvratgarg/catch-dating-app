@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.133.0
+version: 1.134.0
 updated: 2026-09-16
 owner: recursive_audit_loop
 status: active
@@ -3609,7 +3609,11 @@ reservations, not billing receipts. Firestore clients, including admins, cannot
 read or write any of these six collections.
 
 `eventMessagingBudgetDecisions` is the server-only, revisioned finance review
-record for a proposed messaging ceiling. `adminDecideEventMessagingBudget`
+record for a proposed messaging ceiling. `adminReviewEventMessagingBudget`
+performs the bounded Finance read of one exact runtime, sender, channel budget
+pair and current deterministic decision. It returns no credential, private RCS
+agent id or guest roster and grants no spending or dispatch authority.
+`adminDecideEventMessagingBudget`
 reads the event runtime, selected sender and both channel budget scopes in the
 same transaction as the decision revision, then binds the result to the exact
 runtime, sender, budget-source and complete setup-review hashes. Admin Owner or

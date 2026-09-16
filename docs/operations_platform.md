@@ -1,6 +1,6 @@
 ---
 doc_id: operations_platform
-version: 1.30.0
+version: 1.31.0
 updated: 2026-09-16
 owner: operations_platform
 status: active
@@ -897,6 +897,14 @@ scopes and recorded ceilings while preserving the literal
 
 ### Event messaging budget decisions
 
+The React Finance workspace uses `adminReviewEventMessagingBudget` as its
+read-only entry boundary. Finance supplies one exact organizer, event, route,
+sender and purpose. The callable returns the validated setup review and the
+current deterministic decision summary, while withholding credentials, the
+private RCS agent id and guest data. The response fixes spending and dispatch
+authority to false. Finance-only users can use this workflow without receiving
+the separate Host Analytics role.
+
 `adminDecideEventMessagingBudget` gives Admin Owners and Finance reviewers a
 typed decision boundary after the read-only setup review. The callable records
 approve, hold or reject against one deterministic event, route, sender and
@@ -940,6 +948,12 @@ provider, write an outbox or dispatch record, configure the runtime, or enable
 a dispatch worker. A later live activation boundary must revalidate the staged
 receipt and change both ceilings together before spending can occur. Consent,
 current content, runtime, provider and dispatch gates remain independent.
+
+The Admin sequence uses progressive disclosure: exact scope review first,
+approve/hold/reject second, and paused staging only after a current approval.
+The client retains request ids across failed retries, echoes all reviewed hashes
+and revisions, and labels the resulting ceilings as paused. No control on this
+surface activates either ceiling.
 
 ## Adding Another Workflow
 

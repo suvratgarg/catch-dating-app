@@ -565,6 +565,34 @@ const schemaSpecs = [
     name: "EventMessagingSetupReview",
     source: "operations/event_messaging_setup_review.schema.json",
     typeOutput: "functions/src/shared/generated/eventMessagingSetupReview.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/eventMessagingSetupReview.ts",
+    ],
+  },
+  {
+    name: "AdminReviewEventMessagingBudgetCallablePayload",
+    source:
+      "callables/admin_review_event_messaging_budget_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "adminReviewEventMessagingBudgetCallablePayload.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/" +
+      "adminReviewEventMessagingBudgetCallablePayload.ts",
+    ],
+  },
+  {
+    name: "AdminReviewEventMessagingBudgetCallableResponse",
+    source:
+      "callable_responses/" +
+      "admin_review_event_messaging_budget_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "adminReviewEventMessagingBudgetCallableResponse.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/" +
+      "adminReviewEventMessagingBudgetCallableResponse.ts",
+    ],
   },
   {
     name: "AdminDecideEventMessagingBudgetCallablePayload",
@@ -573,6 +601,10 @@ const schemaSpecs = [
     typeOutput:
       "functions/src/shared/generated/" +
       "adminDecideEventMessagingBudgetCallablePayload.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/" +
+      "adminDecideEventMessagingBudgetCallablePayload.ts",
+    ],
   },
   {
     name: "AdminDecideEventMessagingBudgetCallableResponse",
@@ -582,6 +614,10 @@ const schemaSpecs = [
     typeOutput:
       "functions/src/shared/generated/" +
       "adminDecideEventMessagingBudgetCallableResponse.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/" +
+      "adminDecideEventMessagingBudgetCallableResponse.ts",
+    ],
   },
   {
     name: "EventMessagingBudgetDecisionDocument",
@@ -604,6 +640,10 @@ const schemaSpecs = [
     typeOutput:
       "functions/src/shared/generated/" +
       "adminApplyEventMessagingBudgetCallablePayload.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/" +
+      "adminApplyEventMessagingBudgetCallablePayload.ts",
+    ],
   },
   {
     name: "AdminApplyEventMessagingBudgetCallableResponse",
@@ -613,6 +653,10 @@ const schemaSpecs = [
     typeOutput:
       "functions/src/shared/generated/" +
       "adminApplyEventMessagingBudgetCallableResponse.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/" +
+      "adminApplyEventMessagingBudgetCallableResponse.ts",
+    ],
   },
   {
     name: "EventMessagingBudgetApplicationReceiptDocument",

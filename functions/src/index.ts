@@ -529,6 +529,9 @@ export {
   adminDecideEventMessagingBudget,
 } from "./admin/eventMessagingBudget";
 export {
+  adminReviewEventMessagingBudget,
+} from "./admin/eventMessagingBudgetReview";
+export {
   adminApplyEventMessagingBudget,
 } from "./admin/eventMessagingBudgetApplication";
 export {

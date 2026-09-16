@@ -121,6 +121,8 @@ import {
   eventAssistanceRcsConfigSchema,
   eventAssistanceSmsConfigSchema,
   eventMessagingSetupReviewSchema,
+  adminReviewEventMessagingBudgetCallablePayloadSchema,
+  adminReviewEventMessagingBudgetCallableResponseSchema,
   adminDecideEventMessagingBudgetCallablePayloadSchema,
   adminDecideEventMessagingBudgetCallableResponseSchema,
   eventMessagingBudgetDecisionDocumentSchema,
@@ -831,6 +833,8 @@ export const validateEventAssistanceSmsDispatchDocument = ajv.compile(eventAssis
 export const validateEventAssistanceRcsConfig = ajv.compile(eventAssistanceRcsConfigSchema);
 export const validateEventAssistanceSmsConfig = ajv.compile(eventAssistanceSmsConfigSchema);
 export const validateEventMessagingSetupReview = ajv.compile(eventMessagingSetupReviewSchema);
+export const validateAdminReviewEventMessagingBudgetCallablePayload = ajv.compile(adminReviewEventMessagingBudgetCallablePayloadSchema);
+export const validateAdminReviewEventMessagingBudgetCallableResponse = ajv.compile(adminReviewEventMessagingBudgetCallableResponseSchema);
 export const validateAdminDecideEventMessagingBudgetCallablePayload = ajv.compile(adminDecideEventMessagingBudgetCallablePayloadSchema);
 export const validateAdminDecideEventMessagingBudgetCallableResponse = ajv.compile(adminDecideEventMessagingBudgetCallableResponseSchema);
 export const validateEventMessagingBudgetDecisionDocument = ajv.compile(eventMessagingBudgetDecisionDocumentSchema);

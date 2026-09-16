@@ -38,6 +38,12 @@ export const adminQueryKeys = {
     overview: () => [...adminQueryKeys.all, "finance", "overview"] as const,
     hostAnalytics: () =>
       [...adminQueryKeys.all, "finance", "host-analytics", "30d", "week"] as const,
+    messagingBudgetReview: () =>
+      [...adminQueryKeys.all, "finance", "messaging-budget-review"] as const,
+    messagingBudgetDecision: () =>
+      [...adminQueryKeys.all, "finance", "messaging-budget-decision"] as const,
+    messagingBudgetStage: () =>
+      [...adminQueryKeys.all, "finance", "messaging-budget-stage"] as const,
   },
   growth: {
     overview: () => [...adminQueryKeys.all, "growth", "overview"] as const,

@@ -1,7 +1,7 @@
 // GENERATED FILE. Run: node tool/admin/generate_admin_action_catalog.mjs
 export const adminActionCatalog = {
   "schemaVersion": 1,
-  "catalogVersion": "1.3.0",
+  "catalogVersion": "1.4.0",
   "actions": [
     {
       "actionId": "overview.get",
@@ -147,6 +147,22 @@ export const adminActionCatalog = {
         "analyticsViewer"
       ],
       "summary": "Load the bounded analytics report for one exact user id.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "finance.review-event-messaging-budget",
+      "callable": "adminReviewEventMessagingBudget",
+      "workflowIds": [
+        "finance"
+      ],
+      "guiPath": "/finance",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "adminOwner",
+        "finance"
+      ],
+      "summary": "Review one exact messaging runtime, sender, budget scope, and current decision without loading credentials or granting authority.",
       "controlPlane": false
     },
     {
@@ -890,6 +906,7 @@ export const adminActionCatalog = {
       "actions": [
         "overview.get",
         "analytics.host",
+        "finance.review-event-messaging-budget",
         "finance.decide-event-messaging-budget",
         "finance.stage-event-messaging-budget"
       ],

@@ -123,6 +123,8 @@ export {validateEventAssistanceSmsDispatchDocument} from "./validators/eventAssi
 export {validateEventAssistanceRcsConfig} from "./validators/eventAssistanceRcsConfig";
 export {validateEventAssistanceSmsConfig} from "./validators/eventAssistanceSmsConfig";
 export {validateEventMessagingSetupReview} from "./validators/eventMessagingSetupReview";
+export {validateAdminReviewEventMessagingBudgetCallablePayload} from "./validators/adminReviewEventMessagingBudgetInput";
+export {validateAdminReviewEventMessagingBudgetCallableResponse} from "./validators/adminReviewEventMessagingBudgetOutput";
 export {validateAdminDecideEventMessagingBudgetCallablePayload} from "./validators/adminDecideEventMessagingBudgetInput";
 export {validateAdminDecideEventMessagingBudgetCallableResponse} from "./validators/adminDecideEventMessagingBudgetOutput";
 export {validateEventMessagingBudgetDecisionDocument} from "./validators/eventMessagingBudgetDecisionDocument";

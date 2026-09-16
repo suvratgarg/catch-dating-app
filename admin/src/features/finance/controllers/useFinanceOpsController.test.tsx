@@ -101,6 +101,21 @@ describe("useFinanceOpsController", () => {
     );
   });
 
+  it("keeps host analytics outside the Finance role boundary", async () => {
+    const {result} = renderHook(() => useFinanceOpsController({
+      adminRoles: ["finance"],
+      onError: vi.fn(),
+    }), {wrapper: createWrapper()});
+
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+    expect(mocks.loadFinanceOverview).toHaveBeenCalledOnce();
+    expect(mocks.loadFinanceHostAnalytics).not.toHaveBeenCalled();
+    expect(result.current.sources).toEqual(expect.arrayContaining([
+      expect.objectContaining({id: "hostAnalytics", status: "restricted"}),
+    ]));
+    expect(result.current.isUnavailable).toBe(false);
+  });
+
   it("omits malformed source records and reports their count", () => {
     const result = buildFinanceRows({
       overview: {

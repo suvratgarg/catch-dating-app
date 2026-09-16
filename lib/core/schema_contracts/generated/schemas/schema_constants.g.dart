@@ -48,6 +48,8 @@ export 'admin_record_marketing_review_decision_callable_payload.g.dart';
 export 'admin_record_marketing_review_decision_callable_response.g.dart';
 export 'admin_record_organizer_curation_callable_payload.g.dart';
 export 'admin_resolve_organizer_event_location_callable_payload.g.dart';
+export 'admin_review_event_messaging_budget_callable_payload.g.dart';
+export 'admin_review_event_messaging_budget_callable_response.g.dart';
 export 'admin_set_admin_user_roles_callable_payload.g.dart';
 export 'admin_set_admin_user_roles_callable_response.g.dart';
 export 'admin_set_club_index_status_callable_payload.g.dart';

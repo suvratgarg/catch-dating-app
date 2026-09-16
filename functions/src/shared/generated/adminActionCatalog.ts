@@ -82,6 +82,15 @@ export const ADMIN_ACTION_CATALOG = {
       "analyticsViewer"
     ]
   },
+  "finance.review-event-messaging-budget": {
+    "callable": "adminReviewEventMessagingBudget",
+    "controlPlane": false,
+    "kind": "read",
+    "roles": [
+      "adminOwner",
+      "finance"
+    ]
+  },
   "finance.decide-event-messaging-budget": {
     "callable": "adminDecideEventMessagingBudget",
     "controlPlane": false,

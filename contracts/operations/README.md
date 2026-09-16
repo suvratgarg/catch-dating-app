@@ -20,7 +20,10 @@ The contracts deliberately separate:
 review for one event messaging runtime, sender and its event and sender-day
 ceilings. Its literal `grantsDispatchAuthority: false` prevents the artifact
 from being mistaken for sender activation, spend approval or send permission.
-The separate callable and Firestore contracts for
+`adminReviewEventMessagingBudget` exposes that bounded review plus the current
+decision summary to the Finance workspace without exposing credentials, private
+RCS agent ids, guest rosters, spending authority or dispatch authority. The
+separate callable and Firestore contracts for
 `adminDecideEventMessagingBudget` bind a finance decision to that review's
 current runtime, sender and budget-source hashes. The resulting receipt has a
 literal `decision_only_no_spending_authority` effect; it cannot create a budget

@@ -42,6 +42,7 @@ export 'callables/admin_record_event_intake_review_decision_callable_request.g.d
 export 'callables/admin_record_marketing_review_decision_callable_request.g.dart';
 export 'callables/admin_record_organizer_curation_callable_request.g.dart';
 export 'callables/admin_resolve_organizer_event_location_callable_request.g.dart';
+export 'callables/admin_review_event_messaging_budget_callable_request.g.dart';
 export 'callables/admin_set_admin_user_roles_callable_request.g.dart';
 export 'callables/admin_set_club_index_status_callable_request.g.dart';
 export 'callables/admin_set_cross_paths_showcase_eligibility_callable_request.g.dart';

@@ -1,0 +1,53 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/admin_review_event_messaging_budget_response.schema.json",
+  "title": "AdminReviewEventMessagingBudgetCallableResponse",
+  "description": "Read-only Finance review of one current messaging setup and its current revision-fenced decision. The response grants no spending or dispatch authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "review",
+    "decision",
+    "grantsSpendingAuthority",
+    "grantsDispatchAuthority"
+  ],
+  "properties": {
+    "schemaVersion": {"type": "integer", "const": 1},
+    "review": {"$ref": "../operations/event_messaging_setup_review.schema.json"},
+    "decision": {
+      "anyOf": [
+        {"$ref": "#/definitions/decisionSummary"},
+        {"type": "null"}
+      ]
+    },
+    "grantsSpendingAuthority": {"type": "boolean", "const": false},
+    "grantsDispatchAuthority": {"type": "boolean", "const": false}
+  },
+  "definitions": {
+    "decisionSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "decisionId",
+        "revision",
+        "decisionStatus",
+        "decisionKind",
+        "reviewedByUid",
+        "note",
+        "effect",
+        "grantsSpendingAuthority"
+      ],
+      "properties": {
+        "decisionId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+        "revision": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+        "decisionStatus": {"type": "string", "enum": ["approved", "held", "rejected"]},
+        "decisionKind": {"type": "string", "enum": ["approve", "hold", "reject"]},
+        "reviewedByUid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+        "note": {"type": "string", "minLength": 1, "maxLength": 1000},
+        "effect": {"type": "string", "const": "decision_only_no_spending_authority"},
+        "grantsSpendingAuthority": {"type": "boolean", "const": false}
+      }
+    }
+  }
+}
