@@ -6998,7 +6998,63 @@ abstract final class CatchContractConstraints {
     path: 'controlEventRehearsalCallablePayload.action',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['markReady', 'start', 'pause', 'resume', 'advance', 'previous', 'advanceClock', 'complete', 'assistance', 'movement', 'staff', 'settings', 'requiredData', 'outcome', 'reveal'],
+    enumValues: <String>['markReady', 'start', 'pause', 'resume', 'advance', 'previous', 'advanceClock', 'complete', 'assistance', 'movement', 'staff', 'settings', 'requiredData', 'outcome', 'reveal', 'allocation'],
+  );
+
+  static const controlEventRehearsalCallablePayloadAllocationAttendeeIds = CatchContractFieldConstraints(
+    path: 'controlEventRehearsalCallablePayload.allocation.attendeeIds',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    minItems: 1,
+    maxItems: 50,
+    uniqueItems: true,
+  );
+
+  static const controlEventRehearsalCallablePayloadAllocationAttendeeIdsItems = CatchContractFieldConstraints(
+    path: 'controlEventRehearsalCallablePayload.allocation.attendeeIds.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const controlEventRehearsalCallablePayloadAllocationDecisionId = CatchContractFieldConstraints(
+    path: 'controlEventRehearsalCallablePayload.allocation.decisionId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const controlEventRehearsalCallablePayloadAllocationExpectedAllocationRevision = CatchContractFieldConstraints(
+    path: 'controlEventRehearsalCallablePayload.allocation.expectedAllocationRevision',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2147483647,
+  );
+
+  static const controlEventRehearsalCallablePayloadAllocationKind = CatchContractFieldConstraints(
+    path: 'controlEventRehearsalCallablePayload.allocation.kind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['propose', 'publish'],
+  );
+
+  static const controlEventRehearsalCallablePayloadAllocationProposalId = CatchContractFieldConstraints(
+    path: 'controlEventRehearsalCallablePayload.allocation.proposalId',
+    maxLength: 200,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const controlEventRehearsalCallablePayloadAllocationTargetUnitId = CatchContractFieldConstraints(
+    path: 'controlEventRehearsalCallablePayload.allocation.targetUnitId',
+    maxLength: 40,
+    valueTypes: <String>['string'],
+    pattern: '^table-[1-9][0-9]*\$',
   );
 
   static const controlEventRehearsalCallablePayloadAssistance = CatchContractFieldConstraints(
@@ -33433,6 +33489,142 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['expected', 'present', 'late', 'noShow', 'departed', 'returned', 'disconnected', 'walkIn', 'ambiguousClaim'],
   );
 
+  static const eventRehearsalBootstrapCallableResponseAllocationReviewAssignments = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.allocationReview.assignments',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 50,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseAllocationReviewAssignmentsItemsAttendeeId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.allocationReview.assignments.items.attendeeId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseAllocationReviewAssignmentsItemsUnitId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.allocationReview.assignments.items.unitId',
+    maxLength: 40,
+    valueTypes: <String>['string'],
+    pattern: '^table-[1-9][0-9]*\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseAllocationReviewProposals = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.allocationReview.proposals',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 100,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseAllocationReviewProposalsItemsAttendeeIds = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.allocationReview.proposals.items.attendeeIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    minItems: 1,
+    maxItems: 50,
+    uniqueItems: true,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseAllocationReviewProposalsItemsAttendeeIdsItems = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.allocationReview.proposals.items.attendeeIds.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseAllocationReviewProposalsItemsBaseRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.allocationReview.proposals.items.baseRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2147483647,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseAllocationReviewProposalsItemsDecisionId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.allocationReview.proposals.items.decisionId',
+    maxLength: 160,
+    minLength: 1,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseAllocationReviewProposalsItemsProposalId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.allocationReview.proposals.items.proposalId',
+    maxLength: 200,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseAllocationReviewProposalsItemsProposedAt = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.allocationReview.proposals.items.proposedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseAllocationReviewProposalsItemsPublishedAt = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.allocationReview.proposals.items.publishedAt',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseAllocationReviewProposalsItemsPublishedRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.allocationReview.proposals.items.publishedRevision',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 2147483647,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseAllocationReviewProposalsItemsStatus = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.allocationReview.proposals.items.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['pending', 'published', 'stale'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseAllocationReviewProposalsItemsTargetUnitId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.allocationReview.proposals.items.targetUnitId',
+    maxLength: 40,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^table-[1-9][0-9]*\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseAllocationReviewRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.allocationReview.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2147483647,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseAllocationReviewUnitIds = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.allocationReview.unitIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 50,
+    uniqueItems: true,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseAllocationReviewUnitIdsItems = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.allocationReview.unitIds.items',
+    maxLength: 40,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^table-[1-9][0-9]*\$',
+  );
+
   static const eventRehearsalBootstrapCallableResponseCanUseInternalFaults = CatchContractFieldConstraints(
     path: 'eventRehearsalBootstrapCallableResponse.canUseInternalFaults',
     required: true,
@@ -37939,6 +38131,131 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
     minimum: 2,
     maximum: 50,
+  );
+
+  static const eventRehearsalDocumentAllocationStateProposals = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.allocationState.proposals',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 100,
+  );
+
+  static const eventRehearsalDocumentAllocationStateProposalsItemsAttendeeIds = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.allocationState.proposals.items.attendeeIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    minItems: 1,
+    maxItems: 50,
+    uniqueItems: true,
+  );
+
+  static const eventRehearsalDocumentAllocationStateProposalsItemsAttendeeIdsItems = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.allocationState.proposals.items.attendeeIds.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalDocumentAllocationStateProposalsItemsBaseRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.allocationState.proposals.items.baseRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2147483647,
+  );
+
+  static const eventRehearsalDocumentAllocationStateProposalsItemsDecisionId = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.allocationState.proposals.items.decisionId',
+    maxLength: 160,
+    minLength: 1,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRehearsalDocumentAllocationStateProposalsItemsOperationId = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.allocationState.proposals.items.operationId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalDocumentAllocationStateProposalsItemsProposalId = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.allocationState.proposals.items.proposalId',
+    maxLength: 200,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRehearsalDocumentAllocationStateProposalsItemsProposedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.allocationState.proposals.items.proposedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventRehearsalDocumentAllocationStateProposalsItemsProposedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.allocationState.proposals.items.proposedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventRehearsalDocumentAllocationStateProposalsItemsProposedBy = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.allocationState.proposals.items.proposedBy',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalDocumentAllocationStateProposalsItemsPublishedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.allocationState.proposals.items.publishedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventRehearsalDocumentAllocationStateProposalsItemsPublishedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.allocationState.proposals.items.publishedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventRehearsalDocumentAllocationStateProposalsItemsPublishedRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.allocationState.proposals.items.publishedRevision',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 2147483647,
+  );
+
+  static const eventRehearsalDocumentAllocationStateProposalsItemsStatus = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.allocationState.proposals.items.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['pending', 'published', 'stale'],
+  );
+
+  static const eventRehearsalDocumentAllocationStateProposalsItemsTargetUnitId = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.allocationState.proposals.items.targetUnitId',
+    maxLength: 40,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^table-[1-9][0-9]*\$',
+  );
+
+  static const eventRehearsalDocumentAllocationStateRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.allocationState.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2147483647,
   );
 
   static const eventRehearsalDocumentAssistanceSettingsClockId = CatchContractFieldConstraints(
@@ -96357,6 +96674,13 @@ abstract final class CatchContractConstraints {
     'connectOrganizerLumaProviderCallablePayload.externalEventId': connectOrganizerLumaProviderCallablePayloadExternalEventId,
     'connectOrganizerLumaProviderCallablePayload.organizerId': connectOrganizerLumaProviderCallablePayloadOrganizerId,
     'controlEventRehearsalCallablePayload.action': controlEventRehearsalCallablePayloadAction,
+    'controlEventRehearsalCallablePayload.allocation.attendeeIds': controlEventRehearsalCallablePayloadAllocationAttendeeIds,
+    'controlEventRehearsalCallablePayload.allocation.attendeeIds.items': controlEventRehearsalCallablePayloadAllocationAttendeeIdsItems,
+    'controlEventRehearsalCallablePayload.allocation.decisionId': controlEventRehearsalCallablePayloadAllocationDecisionId,
+    'controlEventRehearsalCallablePayload.allocation.expectedAllocationRevision': controlEventRehearsalCallablePayloadAllocationExpectedAllocationRevision,
+    'controlEventRehearsalCallablePayload.allocation.kind': controlEventRehearsalCallablePayloadAllocationKind,
+    'controlEventRehearsalCallablePayload.allocation.proposalId': controlEventRehearsalCallablePayloadAllocationProposalId,
+    'controlEventRehearsalCallablePayload.allocation.targetUnitId': controlEventRehearsalCallablePayloadAllocationTargetUnitId,
     'controlEventRehearsalCallablePayload.assistance': controlEventRehearsalCallablePayloadAssistance,
     'controlEventRehearsalCallablePayload.clientActionId': controlEventRehearsalCallablePayloadClientActionId,
     'controlEventRehearsalCallablePayload.expectedRevision': controlEventRehearsalCallablePayloadExpectedRevision,
@@ -99905,6 +100229,23 @@ abstract final class CatchContractConstraints {
     'eventRehearsalBootstrapCallableResponse.actors.items.requiredData.requestRevision': eventRehearsalBootstrapCallableResponseActorsItemsRequiredDataRequestRevisionAtActorsPropertyItemsPropertyRequiredDataPropertyRequestRevision,
     'eventRehearsalBootstrapCallableResponse.actors.items.requiredData.sourceHash': eventRehearsalBootstrapCallableResponseActorsItemsRequiredDataSourceHash,
     'eventRehearsalBootstrapCallableResponse.actors.items.status': eventRehearsalBootstrapCallableResponseActorsItemsStatus,
+    'eventRehearsalBootstrapCallableResponse.allocationReview.assignments': eventRehearsalBootstrapCallableResponseAllocationReviewAssignments,
+    'eventRehearsalBootstrapCallableResponse.allocationReview.assignments.items.attendeeId': eventRehearsalBootstrapCallableResponseAllocationReviewAssignmentsItemsAttendeeId,
+    'eventRehearsalBootstrapCallableResponse.allocationReview.assignments.items.unitId': eventRehearsalBootstrapCallableResponseAllocationReviewAssignmentsItemsUnitId,
+    'eventRehearsalBootstrapCallableResponse.allocationReview.proposals': eventRehearsalBootstrapCallableResponseAllocationReviewProposals,
+    'eventRehearsalBootstrapCallableResponse.allocationReview.proposals.items.attendeeIds': eventRehearsalBootstrapCallableResponseAllocationReviewProposalsItemsAttendeeIds,
+    'eventRehearsalBootstrapCallableResponse.allocationReview.proposals.items.attendeeIds.items': eventRehearsalBootstrapCallableResponseAllocationReviewProposalsItemsAttendeeIdsItems,
+    'eventRehearsalBootstrapCallableResponse.allocationReview.proposals.items.baseRevision': eventRehearsalBootstrapCallableResponseAllocationReviewProposalsItemsBaseRevision,
+    'eventRehearsalBootstrapCallableResponse.allocationReview.proposals.items.decisionId': eventRehearsalBootstrapCallableResponseAllocationReviewProposalsItemsDecisionId,
+    'eventRehearsalBootstrapCallableResponse.allocationReview.proposals.items.proposalId': eventRehearsalBootstrapCallableResponseAllocationReviewProposalsItemsProposalId,
+    'eventRehearsalBootstrapCallableResponse.allocationReview.proposals.items.proposedAt': eventRehearsalBootstrapCallableResponseAllocationReviewProposalsItemsProposedAt,
+    'eventRehearsalBootstrapCallableResponse.allocationReview.proposals.items.publishedAt': eventRehearsalBootstrapCallableResponseAllocationReviewProposalsItemsPublishedAt,
+    'eventRehearsalBootstrapCallableResponse.allocationReview.proposals.items.publishedRevision': eventRehearsalBootstrapCallableResponseAllocationReviewProposalsItemsPublishedRevision,
+    'eventRehearsalBootstrapCallableResponse.allocationReview.proposals.items.status': eventRehearsalBootstrapCallableResponseAllocationReviewProposalsItemsStatus,
+    'eventRehearsalBootstrapCallableResponse.allocationReview.proposals.items.targetUnitId': eventRehearsalBootstrapCallableResponseAllocationReviewProposalsItemsTargetUnitId,
+    'eventRehearsalBootstrapCallableResponse.allocationReview.revision': eventRehearsalBootstrapCallableResponseAllocationReviewRevision,
+    'eventRehearsalBootstrapCallableResponse.allocationReview.unitIds': eventRehearsalBootstrapCallableResponseAllocationReviewUnitIds,
+    'eventRehearsalBootstrapCallableResponse.allocationReview.unitIds.items': eventRehearsalBootstrapCallableResponseAllocationReviewUnitIdsItems,
     'eventRehearsalBootstrapCallableResponse.canUseInternalFaults': eventRehearsalBootstrapCallableResponseCanUseInternalFaults,
     'eventRehearsalBootstrapCallableResponse.deliveryReviews.context': eventRehearsalBootstrapCallableResponseDeliveryReviewsContext,
     'eventRehearsalBootstrapCallableResponse.deliveryReviews.coverage': eventRehearsalBootstrapCallableResponseDeliveryReviewsCoverage,
@@ -100505,6 +100846,22 @@ abstract final class CatchContractConstraints {
     'eventRehearsalDocument.actionCount': eventRehearsalDocumentActionCount,
     'eventRehearsalDocument.activeStepIndex': eventRehearsalDocumentActiveStepIndex,
     'eventRehearsalDocument.actorCount': eventRehearsalDocumentActorCount,
+    'eventRehearsalDocument.allocationState.proposals': eventRehearsalDocumentAllocationStateProposals,
+    'eventRehearsalDocument.allocationState.proposals.items.attendeeIds': eventRehearsalDocumentAllocationStateProposalsItemsAttendeeIds,
+    'eventRehearsalDocument.allocationState.proposals.items.attendeeIds.items': eventRehearsalDocumentAllocationStateProposalsItemsAttendeeIdsItems,
+    'eventRehearsalDocument.allocationState.proposals.items.baseRevision': eventRehearsalDocumentAllocationStateProposalsItemsBaseRevision,
+    'eventRehearsalDocument.allocationState.proposals.items.decisionId': eventRehearsalDocumentAllocationStateProposalsItemsDecisionId,
+    'eventRehearsalDocument.allocationState.proposals.items.operationId': eventRehearsalDocumentAllocationStateProposalsItemsOperationId,
+    'eventRehearsalDocument.allocationState.proposals.items.proposalId': eventRehearsalDocumentAllocationStateProposalsItemsProposalId,
+    'eventRehearsalDocument.allocationState.proposals.items.proposedAt._nanoseconds': eventRehearsalDocumentAllocationStateProposalsItemsProposedAtNanoseconds,
+    'eventRehearsalDocument.allocationState.proposals.items.proposedAt._seconds': eventRehearsalDocumentAllocationStateProposalsItemsProposedAtSeconds,
+    'eventRehearsalDocument.allocationState.proposals.items.proposedBy': eventRehearsalDocumentAllocationStateProposalsItemsProposedBy,
+    'eventRehearsalDocument.allocationState.proposals.items.publishedAt._nanoseconds': eventRehearsalDocumentAllocationStateProposalsItemsPublishedAtNanoseconds,
+    'eventRehearsalDocument.allocationState.proposals.items.publishedAt._seconds': eventRehearsalDocumentAllocationStateProposalsItemsPublishedAtSeconds,
+    'eventRehearsalDocument.allocationState.proposals.items.publishedRevision': eventRehearsalDocumentAllocationStateProposalsItemsPublishedRevision,
+    'eventRehearsalDocument.allocationState.proposals.items.status': eventRehearsalDocumentAllocationStateProposalsItemsStatus,
+    'eventRehearsalDocument.allocationState.proposals.items.targetUnitId': eventRehearsalDocumentAllocationStateProposalsItemsTargetUnitId,
+    'eventRehearsalDocument.allocationState.revision': eventRehearsalDocumentAllocationStateRevision,
     'eventRehearsalDocument.assistanceSettings.clockId': eventRehearsalDocumentAssistanceSettingsClockId,
     'eventRehearsalDocument.assistanceSettings.preferences': eventRehearsalDocumentAssistanceSettingsPreferences,
     'eventRehearsalDocument.assistanceSettings.preferences.items.groupId': eventRehearsalDocumentAssistanceSettingsPreferencesItemsGroupId,

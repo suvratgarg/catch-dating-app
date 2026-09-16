@@ -50,6 +50,7 @@ const schemaControlEventRehearsalCallablePayloadSchema = <String, Object?>{
         'requiredData',
         'outcome',
         'reveal',
+        'allocation',
       ],
     },
     'minutes': <String, Object?>{
@@ -3223,6 +3224,112 @@ const schemaControlEventRehearsalCallablePayloadSchema = <String, Object?>{
         },
       },
     },
+    'allocation': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'kind',
+      ],
+      'properties': <String, Object?>{
+        'kind': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'propose',
+            'publish',
+          ],
+        },
+        'attendeeIds': <String, Object?>{
+          'type': 'array',
+          'minItems': 1,
+          'maxItems': 50,
+          'uniqueItems': true,
+          'items': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 180,
+          },
+        },
+        'targetUnitId': <String, Object?>{
+          'type': 'string',
+          'pattern': '^table-[1-9][0-9]*\$',
+          'maxLength': 40,
+        },
+        'expectedAllocationRevision': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 2147483647,
+        },
+        'proposalId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 200,
+          'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+        },
+        'decisionId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 160,
+          'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+        },
+      },
+      'allOf': <Object?>[
+        <String, Object?>{
+          'if': <String, Object?>{
+            'properties': <String, Object?>{
+              'kind': <String, Object?>{
+                'const': 'propose',
+              },
+            },
+          },
+          'then': <String, Object?>{
+            'required': <Object?>[
+              'attendeeIds',
+              'targetUnitId',
+              'expectedAllocationRevision',
+            ],
+            'not': <String, Object?>{
+              'anyOf': <Object?>[
+                <String, Object?>{
+                  'required': <Object?>[
+                    'proposalId',
+                  ],
+                },
+                <String, Object?>{
+                  'required': <Object?>[
+                    'decisionId',
+                  ],
+                },
+              ],
+            },
+          },
+          'else': <String, Object?>{
+            'required': <Object?>[
+              'proposalId',
+              'decisionId',
+            ],
+            'not': <String, Object?>{
+              'anyOf': <Object?>[
+                <String, Object?>{
+                  'required': <Object?>[
+                    'attendeeIds',
+                  ],
+                },
+                <String, Object?>{
+                  'required': <Object?>[
+                    'targetUnitId',
+                  ],
+                },
+                <String, Object?>{
+                  'required': <Object?>[
+                    'expectedAllocationRevision',
+                  ],
+                },
+              ],
+            },
+          },
+        },
+      ],
+    },
   },
   'allOf': <Object?>[
     <String, Object?>{
@@ -3273,6 +3380,11 @@ const schemaControlEventRehearsalCallablePayloadSchema = <String, Object?>{
             <String, Object?>{
               'required': <Object?>[
                 'reveal',
+              ],
+            },
+            <String, Object?>{
+              'required': <Object?>[
+                'allocation',
               ],
             },
           ],
@@ -3336,6 +3448,11 @@ const schemaControlEventRehearsalCallablePayloadSchema = <String, Object?>{
                 'reveal',
               ],
             },
+            <String, Object?>{
+              'required': <Object?>[
+                'allocation',
+              ],
+            },
           ],
         },
       },
@@ -3397,6 +3514,11 @@ const schemaControlEventRehearsalCallablePayloadSchema = <String, Object?>{
                 'reveal',
               ],
             },
+            <String, Object?>{
+              'required': <Object?>[
+                'allocation',
+              ],
+            },
           ],
         },
       },
@@ -3421,6 +3543,7 @@ const schemaControlEventRehearsalCallablePayloadSchema = <String, Object?>{
                 'requiredData',
                 'outcome',
                 'reveal',
+                'allocation',
               ],
             },
           },
@@ -3524,6 +3647,11 @@ const schemaControlEventRehearsalCallablePayloadSchema = <String, Object?>{
                 'reveal',
               ],
             },
+            <String, Object?>{
+              'required': <Object?>[
+                'allocation',
+              ],
+            },
           ],
         },
       },
@@ -3588,6 +3716,11 @@ const schemaControlEventRehearsalCallablePayloadSchema = <String, Object?>{
             <String, Object?>{
               'required': <Object?>[
                 'reveal',
+              ],
+            },
+            <String, Object?>{
+              'required': <Object?>[
+                'allocation',
               ],
             },
           ],
@@ -3656,6 +3789,11 @@ const schemaControlEventRehearsalCallablePayloadSchema = <String, Object?>{
                 'reveal',
               ],
             },
+            <String, Object?>{
+              'required': <Object?>[
+                'allocation',
+              ],
+            },
           ],
         },
       },
@@ -3722,6 +3860,11 @@ const schemaControlEventRehearsalCallablePayloadSchema = <String, Object?>{
                 'practiceOperatorId',
               ],
             },
+            <String, Object?>{
+              'required': <Object?>[
+                'allocation',
+              ],
+            },
           ],
         },
       },
@@ -3729,6 +3872,77 @@ const schemaControlEventRehearsalCallablePayloadSchema = <String, Object?>{
         'not': <String, Object?>{
           'required': <Object?>[
             'reveal',
+          ],
+        },
+      },
+    },
+    <String, Object?>{
+      'if': <String, Object?>{
+        'properties': <String, Object?>{
+          'action': <String, Object?>{
+            'const': 'allocation',
+          },
+        },
+      },
+      'then': <String, Object?>{
+        'required': <Object?>[
+          'allocation',
+          'expectedSetupRevision',
+        ],
+        'not': <String, Object?>{
+          'anyOf': <Object?>[
+            <String, Object?>{
+              'required': <Object?>[
+                'assistance',
+              ],
+            },
+            <String, Object?>{
+              'required': <Object?>[
+                'movement',
+              ],
+            },
+            <String, Object?>{
+              'required': <Object?>[
+                'staff',
+              ],
+            },
+            <String, Object?>{
+              'required': <Object?>[
+                'minutes',
+              ],
+            },
+            <String, Object?>{
+              'required': <Object?>[
+                'settings',
+              ],
+            },
+            <String, Object?>{
+              'required': <Object?>[
+                'requiredData',
+              ],
+            },
+            <String, Object?>{
+              'required': <Object?>[
+                'outcome',
+              ],
+            },
+            <String, Object?>{
+              'required': <Object?>[
+                'reveal',
+              ],
+            },
+            <String, Object?>{
+              'required': <Object?>[
+                'practiceOperatorId',
+              ],
+            },
+          ],
+        },
+      },
+      'else': <String, Object?>{
+        'not': <String, Object?>{
+          'required': <Object?>[
+            'allocation',
           ],
         },
       },

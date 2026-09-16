@@ -1687,5 +1687,157 @@ const schemaEventRehearsalDocumentSchema = <String, Object?>{
       },
       'x-catch-ownership': 'callable-owned',
     },
+    'allocationState': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'revision',
+        'proposals',
+      ],
+      'properties': <String, Object?>{
+        'revision': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 2147483647,
+        },
+        'proposals': <String, Object?>{
+          'type': 'array',
+          'maxItems': 100,
+          'items': <String, Object?>{
+            'type': 'object',
+            'additionalProperties': false,
+            'required': <Object?>[
+              'proposalId',
+              'attendeeIds',
+              'targetUnitId',
+              'baseRevision',
+              'status',
+              'decisionId',
+              'publishedRevision',
+              'proposedBy',
+              'operationId',
+              'proposedAt',
+              'publishedAt',
+            ],
+            'properties': <String, Object?>{
+              'proposalId': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 200,
+                'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+              },
+              'attendeeIds': <String, Object?>{
+                'type': 'array',
+                'minItems': 1,
+                'maxItems': 50,
+                'uniqueItems': true,
+                'items': <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 180,
+                },
+              },
+              'targetUnitId': <String, Object?>{
+                'type': 'string',
+                'pattern': '^table-[1-9][0-9]*\$',
+                'maxLength': 40,
+              },
+              'baseRevision': <String, Object?>{
+                'type': 'integer',
+                'minimum': 0,
+                'maximum': 2147483647,
+              },
+              'status': <String, Object?>{
+                'type': 'string',
+                'enum': <Object?>[
+                  'pending',
+                  'published',
+                  'stale',
+                ],
+              },
+              'decisionId': <String, Object?>{
+                'oneOf': <Object?>[
+                  <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 160,
+                    'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                  },
+                  <String, Object?>{
+                    'type': 'null',
+                  },
+                ],
+              },
+              'publishedRevision': <String, Object?>{
+                'type': <Object?>[
+                  'integer',
+                  'null',
+                ],
+                'minimum': 1,
+                'maximum': 2147483647,
+              },
+              'proposedBy': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 180,
+              },
+              'operationId': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 180,
+              },
+              'proposedAt': <String, Object?>{
+                'type': 'object',
+                'description': 'Serialized Firestore Timestamp fixture shape.',
+                'x-firestore-type': 'timestamp',
+                'additionalProperties': false,
+                'required': <Object?>[
+                  '_seconds',
+                  '_nanoseconds',
+                ],
+                'properties': <String, Object?>{
+                  '_seconds': <String, Object?>{
+                    'type': 'integer',
+                  },
+                  '_nanoseconds': <String, Object?>{
+                    'type': 'integer',
+                    'minimum': 0,
+                    'maximum': 999999999,
+                  },
+                },
+              },
+              'publishedAt': <String, Object?>{
+                'anyOf': <Object?>[
+                  <String, Object?>{
+                    'type': 'object',
+                    'description': 'Serialized Firestore Timestamp fixture shape.',
+                    'x-firestore-type': 'timestamp',
+                    'additionalProperties': false,
+                    'required': <Object?>[
+                      '_seconds',
+                      '_nanoseconds',
+                    ],
+                    'properties': <String, Object?>{
+                      '_seconds': <String, Object?>{
+                        'type': 'integer',
+                      },
+                      '_nanoseconds': <String, Object?>{
+                        'type': 'integer',
+                        'minimum': 0,
+                        'maximum': 999999999,
+                      },
+                    },
+                  },
+                  <String, Object?>{
+                    'type': 'null',
+                  },
+                ],
+              },
+            },
+          },
+        },
+      },
+      'x-catch-ownership': 'callable-owned',
+    },
   },
 };

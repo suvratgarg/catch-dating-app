@@ -64,6 +64,9 @@
     },
     "revealReview": {
       "$ref": "../shared/event_rehearsal_reveal.schema.json#/definitions/Review"
+    },
+    "allocationReview": {
+      "$ref": "../shared/event_rehearsal_allocation.schema.json#/definitions/Review"
     }
   },
   "definitions": {

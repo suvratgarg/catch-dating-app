@@ -2159,4 +2159,36 @@ export interface EventRehearsalBootstrapCallableResponse {
     startedAt: number | null;
     countdownSeconds: number;
   };
+  allocationReview?: {
+    revision: number;
+    /**
+     * @maxItems 50
+     */
+    unitIds: string[];
+    /**
+     * @maxItems 50
+     */
+    assignments: {
+      attendeeId: string;
+      unitId: string | null;
+    }[];
+    /**
+     * @maxItems 100
+     */
+    proposals: {
+      proposalId: string;
+      /**
+       * @minItems 1
+       * @maxItems 50
+       */
+      attendeeIds: string[];
+      targetUnitId: string;
+      baseRevision: number;
+      status: "pending" | "published" | "stale";
+      decisionId: string | null;
+      publishedRevision: number | null;
+      proposedAt: number;
+      publishedAt: number | null;
+    }[];
+  };
 }

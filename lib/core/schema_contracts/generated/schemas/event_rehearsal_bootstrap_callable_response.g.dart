@@ -9207,6 +9207,154 @@ const schemaEventRehearsalBootstrapCallableResponseSchema = <String, Object?>{
         },
       },
     },
+    'allocationReview': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'revision',
+        'unitIds',
+        'assignments',
+        'proposals',
+      ],
+      'properties': <String, Object?>{
+        'revision': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 2147483647,
+        },
+        'unitIds': <String, Object?>{
+          'type': 'array',
+          'maxItems': 50,
+          'uniqueItems': true,
+          'items': <String, Object?>{
+            'type': 'string',
+            'pattern': '^table-[1-9][0-9]*\$',
+            'maxLength': 40,
+          },
+        },
+        'assignments': <String, Object?>{
+          'type': 'array',
+          'maxItems': 50,
+          'items': <String, Object?>{
+            'type': 'object',
+            'additionalProperties': false,
+            'required': <Object?>[
+              'attendeeId',
+              'unitId',
+            ],
+            'properties': <String, Object?>{
+              'attendeeId': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 180,
+              },
+              'unitId': <String, Object?>{
+                'oneOf': <Object?>[
+                  <String, Object?>{
+                    'type': 'string',
+                    'pattern': '^table-[1-9][0-9]*\$',
+                    'maxLength': 40,
+                  },
+                  <String, Object?>{
+                    'type': 'null',
+                  },
+                ],
+              },
+            },
+          },
+        },
+        'proposals': <String, Object?>{
+          'type': 'array',
+          'maxItems': 100,
+          'items': <String, Object?>{
+            'type': 'object',
+            'additionalProperties': false,
+            'required': <Object?>[
+              'proposalId',
+              'attendeeIds',
+              'targetUnitId',
+              'baseRevision',
+              'status',
+              'decisionId',
+              'publishedRevision',
+              'proposedAt',
+              'publishedAt',
+            ],
+            'properties': <String, Object?>{
+              'proposalId': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 200,
+                'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+              },
+              'attendeeIds': <String, Object?>{
+                'type': 'array',
+                'minItems': 1,
+                'maxItems': 50,
+                'uniqueItems': true,
+                'items': <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 180,
+                },
+              },
+              'targetUnitId': <String, Object?>{
+                'type': 'string',
+                'pattern': '^table-[1-9][0-9]*\$',
+                'maxLength': 40,
+              },
+              'baseRevision': <String, Object?>{
+                'type': 'integer',
+                'minimum': 0,
+                'maximum': 2147483647,
+              },
+              'status': <String, Object?>{
+                'type': 'string',
+                'enum': <Object?>[
+                  'pending',
+                  'published',
+                  'stale',
+                ],
+              },
+              'decisionId': <String, Object?>{
+                'oneOf': <Object?>[
+                  <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 160,
+                    'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                  },
+                  <String, Object?>{
+                    'type': 'null',
+                  },
+                ],
+              },
+              'publishedRevision': <String, Object?>{
+                'type': <Object?>[
+                  'integer',
+                  'null',
+                ],
+                'minimum': 1,
+                'maximum': 2147483647,
+              },
+              'proposedAt': <String, Object?>{
+                'type': 'integer',
+                'minimum': 0,
+                'maximum': 9007199254740991,
+              },
+              'publishedAt': <String, Object?>{
+                'type': <Object?>[
+                  'integer',
+                  'null',
+                ],
+                'minimum': 0,
+                'maximum': 9007199254740991,
+              },
+            },
+          },
+        },
+      },
+    },
   },
   'definitions': <String, Object?>{
     'session': <String, Object?>{

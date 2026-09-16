@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.148.0
+version: 1.149.0
 updated: 2026-09-16
 owner: recursive_audit_loop
 status: active
@@ -2717,6 +2717,19 @@ synthetic roster to the existing reveal moment and reevaluates rehearsal
 assistance in the same parent transaction. Reset and setup changes clear the
 state. The Host projection exposes status, pending/published round, countdown
 start and reveal revision, with no live plan, match or attendee write.
+
+The rehearsal allocation adapter now executes both `proposeAllocation` and
+`publishAllocation` inside the synthetic room. A manager prepares one or more
+placement proposals against the reviewed allocation revision. Proposal creation
+does not move a guest. Publication names the reviewed proposal and a stable
+decision id, then revalidates the current synthetic roster, eligibility,
+four-person practice-unit capacity and keep-apart rules. One publication moves
+only its named practice guests, clears stale position confirmation, advances
+the allocation revision and invalidates competing proposals from the prior
+revision. The Host projection exposes current assignments and proposal status;
+the anonymous guest sees the existing assignment moment and resulting practice
+unit. Reset and setup changes clear this state. No live assignment draft,
+published assignment, attendee or event-success plan is touched.
 
 With the shared execution and SMS/WhatsApp/RCS boundaries in source, the next
 implementation sequence is:

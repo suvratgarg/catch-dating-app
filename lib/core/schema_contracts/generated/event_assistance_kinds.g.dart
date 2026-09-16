@@ -161,8 +161,6 @@ enum EventAssistanceCommandCoverage { none, partial, complete }
 enum EventAssistanceCommandCoverageVariant { joining, planChange, followUp }
 
 enum EventAssistanceMissingCapability {
-  rehearsalAllocationProposal,
-  rehearsalAllocationPublication,
   rehearsalProgrammeControl,
   rehearsalRosterReconciliation,
   eventPaymentCaseResolution,
@@ -1499,13 +1497,16 @@ const eventAssistanceCommandBindingCatalog =
       missingCapability: null,
     ),
     rehearsal: EventAssistanceModeBinding(
-      bindingType: EventAssistanceCommandBindingType.contractOnly,
-      coverage: EventAssistanceCommandCoverage.none,
+      bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      coverage: EventAssistanceCommandCoverage.complete,
       variantField: null,
       implementedVariants: <EventAssistanceCommandCoverageVariant>[],
       missingVariants: <EventAssistanceCommandCoverageVariant>[],
-      operations: <String>[],
-      missingCapability: EventAssistanceMissingCapability.rehearsalAllocationProposal,
+      operations: <String>[
+        'controlEventRehearsal',
+        'getEventRehearsalBootstrap',
+      ],
+      missingCapability: null,
     ),
   ),
   EventAssistanceCommandBindingDescriptor(
@@ -1522,13 +1523,17 @@ const eventAssistanceCommandBindingCatalog =
       missingCapability: null,
     ),
     rehearsal: EventAssistanceModeBinding(
-      bindingType: EventAssistanceCommandBindingType.contractOnly,
-      coverage: EventAssistanceCommandCoverage.none,
+      bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      coverage: EventAssistanceCommandCoverage.complete,
       variantField: null,
       implementedVariants: <EventAssistanceCommandCoverageVariant>[],
       missingVariants: <EventAssistanceCommandCoverageVariant>[],
-      operations: <String>[],
-      missingCapability: EventAssistanceMissingCapability.rehearsalAllocationPublication,
+      operations: <String>[
+        'controlEventRehearsal',
+        'getEventRehearsalBootstrap',
+        'getEventRehearsalGuestBootstrap',
+      ],
+      missingCapability: null,
     ),
   ),
   EventAssistanceCommandBindingDescriptor(

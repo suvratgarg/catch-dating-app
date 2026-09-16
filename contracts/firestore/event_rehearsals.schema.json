@@ -169,6 +169,10 @@
     "revealControl": {
       "$ref": "../shared/event_rehearsal_reveal.schema.json#/definitions/State",
       "x-catch-ownership": "callable-owned"
+    },
+    "allocationState": {
+      "$ref": "../shared/event_rehearsal_allocation.schema.json#/definitions/State",
+      "x-catch-ownership": "callable-owned"
     }
   }
 }

@@ -26,7 +26,8 @@ export type ControlEventRehearsalCallablePayload = {
     | "settings"
     | "requiredData"
     | "outcome"
-    | "reveal";
+    | "reveal"
+    | "allocation";
   minutes?: number;
   assistance?:
     | {
@@ -756,5 +757,8 @@ export type ControlEventRehearsalCallablePayload = {
     action: "startCountdown" | "cancelPending" | "publish";
     expectedLiveRevision: number;
     decisionId: string;
+  };
+  allocation?: {
+    [k: string]: unknown;
   };
 };

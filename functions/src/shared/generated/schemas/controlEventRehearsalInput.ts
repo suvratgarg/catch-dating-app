@@ -47,7 +47,8 @@ export const controlEventRehearsalCallablePayloadSchema: Record<string, unknown>
         "settings",
         "requiredData",
         "outcome",
-        "reveal"
+        "reveal",
+        "allocation"
       ]
     },
     "minutes": {
@@ -3220,6 +3221,112 @@ export const controlEventRehearsalCallablePayloadSchema: Record<string, unknown>
           "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
         }
       }
+    },
+    "allocation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "propose",
+            "publish"
+          ]
+        },
+        "attendeeIds": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 50,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          }
+        },
+        "targetUnitId": {
+          "type": "string",
+          "pattern": "^table-[1-9][0-9]*$",
+          "maxLength": 40
+        },
+        "expectedAllocationRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "proposalId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "decisionId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "propose"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "attendeeIds",
+              "targetUnitId",
+              "expectedAllocationRevision"
+            ],
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "proposalId"
+                  ]
+                },
+                {
+                  "required": [
+                    "decisionId"
+                  ]
+                }
+              ]
+            }
+          },
+          "else": {
+            "required": [
+              "proposalId",
+              "decisionId"
+            ],
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "attendeeIds"
+                  ]
+                },
+                {
+                  "required": [
+                    "targetUnitId"
+                  ]
+                },
+                {
+                  "required": [
+                    "expectedAllocationRevision"
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      ]
     }
   },
   "allOf": [
@@ -3271,6 +3378,11 @@ export const controlEventRehearsalCallablePayloadSchema: Record<string, unknown>
             {
               "required": [
                 "reveal"
+              ]
+            },
+            {
+              "required": [
+                "allocation"
               ]
             }
           ]
@@ -3333,6 +3445,11 @@ export const controlEventRehearsalCallablePayloadSchema: Record<string, unknown>
               "required": [
                 "reveal"
               ]
+            },
+            {
+              "required": [
+                "allocation"
+              ]
             }
           ]
         }
@@ -3394,6 +3511,11 @@ export const controlEventRehearsalCallablePayloadSchema: Record<string, unknown>
               "required": [
                 "reveal"
               ]
+            },
+            {
+              "required": [
+                "allocation"
+              ]
             }
           ]
         }
@@ -3418,7 +3540,8 @@ export const controlEventRehearsalCallablePayloadSchema: Record<string, unknown>
                 "settings",
                 "requiredData",
                 "outcome",
-                "reveal"
+                "reveal",
+                "allocation"
               ]
             }
           }
@@ -3521,6 +3644,11 @@ export const controlEventRehearsalCallablePayloadSchema: Record<string, unknown>
               "required": [
                 "reveal"
               ]
+            },
+            {
+              "required": [
+                "allocation"
+              ]
             }
           ]
         }
@@ -3586,6 +3714,11 @@ export const controlEventRehearsalCallablePayloadSchema: Record<string, unknown>
             {
               "required": [
                 "reveal"
+              ]
+            },
+            {
+              "required": [
+                "allocation"
               ]
             }
           ]
@@ -3653,6 +3786,11 @@ export const controlEventRehearsalCallablePayloadSchema: Record<string, unknown>
               "required": [
                 "reveal"
               ]
+            },
+            {
+              "required": [
+                "allocation"
+              ]
             }
           ]
         }
@@ -3719,6 +3857,11 @@ export const controlEventRehearsalCallablePayloadSchema: Record<string, unknown>
               "required": [
                 "practiceOperatorId"
               ]
+            },
+            {
+              "required": [
+                "allocation"
+              ]
             }
           ]
         }
@@ -3727,6 +3870,77 @@ export const controlEventRehearsalCallablePayloadSchema: Record<string, unknown>
         "not": {
           "required": [
             "reveal"
+          ]
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "action": {
+            "const": "allocation"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "allocation",
+          "expectedSetupRevision"
+        ],
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "assistance"
+              ]
+            },
+            {
+              "required": [
+                "movement"
+              ]
+            },
+            {
+              "required": [
+                "staff"
+              ]
+            },
+            {
+              "required": [
+                "minutes"
+              ]
+            },
+            {
+              "required": [
+                "settings"
+              ]
+            },
+            {
+              "required": [
+                "requiredData"
+              ]
+            },
+            {
+              "required": [
+                "outcome"
+              ]
+            },
+            {
+              "required": [
+                "reveal"
+              ]
+            },
+            {
+              "required": [
+                "practiceOperatorId"
+              ]
+            }
+          ]
+        }
+      },
+      "else": {
+        "not": {
+          "required": [
+            "allocation"
           ]
         }
       }

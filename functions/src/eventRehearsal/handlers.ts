@@ -141,6 +141,8 @@ import {practiceOutcomeReview, preparePracticeOutcome} from "./outcomes";
 import {eventSuccessPrimitivesFor} from "../eventSuccess/formatPrimitives";
 import {practiceRevealReview, preparePracticeReveal,
   settlePracticeReveal} from "./reveal";
+import {practiceAllocationReview, preparePracticeAllocation,
+  type PracticeAllocationCommand} from "./allocation";
 
 const sessions = "eventRehearsals";
 const actors = "eventRehearsalActors";
@@ -296,6 +298,7 @@ export async function updateEventRehearsalSetupHandler(
       assistanceSettings: admin.firestore.FieldValue.delete(),
       unitOutcomes: admin.firestore.FieldValue.delete(),
       revealControl: admin.firestore.FieldValue.delete(),
+      allocationState: admin.firestore.FieldValue.delete(),
       updatedAt: now,
     });
     for (const actorSnap of actorSnaps.docs) {
@@ -348,7 +351,7 @@ export async function controlEventRehearsalHandler(
   if (previous.exists) {
     requireAssistanceReceipt(previous, requestHash,
       ["assistance", "movement", "staff", "settings", "requiredData",
-        "outcome", "reveal"]
+        "outcome", "reveal", "allocation"]
         .includes(data.action));
     return hostProjection(db, data.sessionId,
       await requireHostSession(db, data.sessionId, uid), request,
@@ -368,7 +371,7 @@ export async function controlEventRehearsalHandler(
     if (actionSnap.exists) {
       requireAssistanceReceipt(actionSnap, requestHash,
         ["assistance", "movement", "staff", "settings", "requiredData",
-          "outcome", "reveal"]
+          "outcome", "reveal", "allocation"]
           .includes(data.action));
       return;
     }
@@ -400,6 +403,31 @@ export async function controlEventRehearsalHandler(
     }
     const roleAuthority = practiceRoleAuthority(data.sessionId, session,
       {organizer, actorUid: uid}, data.practiceOperatorId);
+    if (data.action === "allocation") {
+      const actorValues = actorSnaps.docs.map((doc) =>
+        requireDoc<EventRehearsalActorDocument>(doc,
+          "EventRehearsalActorDocument"));
+      const now = admin.firestore.Timestamp.now();
+      if (session.expiresAt.toMillis() <= now.toMillis()) {
+        throw new HttpsError("not-found", "This dress rehearsal has expired.");
+      }
+      const allocation = preparePracticeAllocation(data.sessionId, session,
+        actorValues, data.allocation as PracticeAllocationCommand, uid,
+        data.clientActionId, now);
+      for (const actor of allocation.actors) {
+        tx.set(db.collection(actors).doc(actorDocumentId(data.sessionId,
+          actor.actorId)), actor);
+      }
+      tx.update(sessionRef, {allocationState: allocation.state,
+        runtimeRevision: session.runtimeRevision + 1,
+        actionCount: session.actionCount + 1, updatedAt: now});
+      tx.create(actionRef, actionDocument({sessionId: data.sessionId,
+        clientActionId: data.clientActionId, actorUid: uid, actorId: null,
+        kind: "control", name: "allocation:" + data.allocation!.kind,
+        requestHash, runtimeRevision: session.runtimeRevision + 1,
+        virtualNow: session.virtualNow, createdAt: now}));
+      return;
+    }
     if (data.action === "reveal") {
       const actorValues = actorSnaps.docs.map((doc) =>
         requireDoc<EventRehearsalActorDocument>(doc,
@@ -911,6 +939,7 @@ export async function resetEventRehearsalHandler(
     assistanceSettings: admin.firestore.FieldValue.delete(),
     unitOutcomes: admin.firestore.FieldValue.delete(),
     revealControl: admin.firestore.FieldValue.delete(),
+    allocationState: admin.firestore.FieldValue.delete(),
     actionCount: 0,
     activeStepIndex: 0,
     virtualNow: now,
@@ -1563,6 +1592,7 @@ async function hostProjection(
       roleAuthority),
     outcomeReview: practiceOutcomeReview(session, actorValues),
     revealReview: practiceRevealReview(session),
+    allocationReview: practiceAllocationReview(session, actorValues),
     helpRequests,
     deliveryReviews,
     accountabilityReviews: practiceAccountabilityProjection(sessionId,
@@ -2001,7 +2031,7 @@ function actionDocument(
 function requireAssistanceGeneration(session: EventRehearsalDocument,
   data: ControlEventRehearsalCallablePayload): void {
   if (["assistance", "movement", "staff", "settings", "requiredData",
-    "outcome", "reveal"]
+    "outcome", "reveal", "allocation"]
     .includes(data.action) &&
       data.expectedSetupRevision !== session.setupRevision) {
     throw new HttpsError("aborted",

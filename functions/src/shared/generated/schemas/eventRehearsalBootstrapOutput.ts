@@ -9204,6 +9204,154 @@ export const eventRehearsalBootstrapCallableResponseSchema: Record<string, unkno
           "maximum": 300
         }
       }
+    },
+    "allocationReview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "revision",
+        "unitIds",
+        "assignments",
+        "proposals"
+      ],
+      "properties": {
+        "revision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "unitIds": {
+          "type": "array",
+          "maxItems": 50,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^table-[1-9][0-9]*$",
+            "maxLength": 40
+          }
+        },
+        "assignments": {
+          "type": "array",
+          "maxItems": 50,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "attendeeId",
+              "unitId"
+            ],
+            "properties": {
+              "attendeeId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "unitId": {
+                "oneOf": [
+                  {
+                    "type": "string",
+                    "pattern": "^table-[1-9][0-9]*$",
+                    "maxLength": 40
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "proposals": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "proposalId",
+              "attendeeIds",
+              "targetUnitId",
+              "baseRevision",
+              "status",
+              "decisionId",
+              "publishedRevision",
+              "proposedAt",
+              "publishedAt"
+            ],
+            "properties": {
+              "proposalId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+              },
+              "attendeeIds": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 50,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                }
+              },
+              "targetUnitId": {
+                "type": "string",
+                "pattern": "^table-[1-9][0-9]*$",
+                "maxLength": 40
+              },
+              "baseRevision": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 2147483647
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "pending",
+                  "published",
+                  "stale"
+                ]
+              },
+              "decisionId": {
+                "oneOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 160,
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "publishedRevision": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 1,
+                "maximum": 2147483647
+              },
+              "proposedAt": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "publishedAt": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 0,
+                "maximum": 9007199254740991
+              }
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {

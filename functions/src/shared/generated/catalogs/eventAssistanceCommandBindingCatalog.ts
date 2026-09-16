@@ -143,9 +143,12 @@ export const eventAssistanceCommandBindingCatalog = {
         "missingCapability": null
       },
       "rehearsal": {
-        "bindingType": "contractOnly",
-        "operations": [],
-        "missingCapability": "rehearsalAllocationProposal"
+        "bindingType": "domainAdapter",
+        "operations": [
+          "controlEventRehearsal",
+          "getEventRehearsalBootstrap"
+        ],
+        "missingCapability": null
       }
     },
     {
@@ -158,9 +161,13 @@ export const eventAssistanceCommandBindingCatalog = {
         "missingCapability": null
       },
       "rehearsal": {
-        "bindingType": "contractOnly",
-        "operations": [],
-        "missingCapability": "rehearsalAllocationPublication"
+        "bindingType": "domainAdapter",
+        "operations": [
+          "controlEventRehearsal",
+          "getEventRehearsalBootstrap",
+          "getEventRehearsalGuestBootstrap"
+        ],
+        "missingCapability": null
       }
     },
     {

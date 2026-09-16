@@ -1684,6 +1684,158 @@ export const eventRehearsalDocumentSchema: Record<string, unknown> = {
         }
       },
       "x-catch-ownership": "callable-owned"
+    },
+    "allocationState": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "revision",
+        "proposals"
+      ],
+      "properties": {
+        "revision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "proposals": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "proposalId",
+              "attendeeIds",
+              "targetUnitId",
+              "baseRevision",
+              "status",
+              "decisionId",
+              "publishedRevision",
+              "proposedBy",
+              "operationId",
+              "proposedAt",
+              "publishedAt"
+            ],
+            "properties": {
+              "proposalId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+              },
+              "attendeeIds": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 50,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                }
+              },
+              "targetUnitId": {
+                "type": "string",
+                "pattern": "^table-[1-9][0-9]*$",
+                "maxLength": 40
+              },
+              "baseRevision": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 2147483647
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "pending",
+                  "published",
+                  "stale"
+                ]
+              },
+              "decisionId": {
+                "oneOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 160,
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "publishedRevision": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 1,
+                "maximum": 2147483647
+              },
+              "proposedBy": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "operationId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "proposedAt": {
+                "type": "object",
+                "description": "Serialized Firestore Timestamp fixture shape.",
+                "x-firestore-type": "timestamp",
+                "additionalProperties": false,
+                "required": [
+                  "_seconds",
+                  "_nanoseconds"
+                ],
+                "properties": {
+                  "_seconds": {
+                    "type": "integer"
+                  },
+                  "_nanoseconds": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 999999999
+                  }
+                }
+              },
+              "publishedAt": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "description": "Serialized Firestore Timestamp fixture shape.",
+                    "x-firestore-type": "timestamp",
+                    "additionalProperties": false,
+                    "required": [
+                      "_seconds",
+                      "_nanoseconds"
+                    ],
+                    "properties": {
+                      "_seconds": {
+                        "type": "integer"
+                      },
+                      "_nanoseconds": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 999999999
+                      }
+                    }
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      "x-catch-ownership": "callable-owned"
     }
   }
 } as const;

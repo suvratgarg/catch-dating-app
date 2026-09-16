@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.127.0
+version: 1.128.0
 updated: 2026-09-16
 owner: recursive_audit_loop
 status: active
@@ -1243,6 +1243,20 @@ reevaluates synthetic automation atomically. `revealReview` omits the decision
 identity and converts the virtual timestamp to milliseconds. Reset and setup
 changes delete the state. No live event-success plan, publication or match is
 read or written.
+
+Optional `eventRehearsals.allocationState` stores the published synthetic
+allocation revision and at most 100 Host-only proposals. A proposal carries the
+canonical attendee ids, target unit and expected allocation revision plus its
+practice operation and virtual timestamp. Publication names that proposal and a
+stable decision id. It rechecks current roster membership, attendance
+eligibility, opt-out state, four-person synthetic unit capacity and bilateral
+keep-apart constraints before changing only the selected practice actors'
+`layoutUnitId`. Publishing advances the allocation revision, marks competing
+proposals from the prior revision stale, clears observed placement and moves the
+selected guests to the existing assignment moment. The Host review removes the
+proposer and operation identities while exposing current assignments and
+proposal status. Setup changes and reset delete the state. No live assignment,
+draft, event attendee or event-success plan is read or written.
 
 Movement controls carry their own closed group command with the parent setup and
 runtime revisions; action receipts use `actorId: null`. The departure freezes its

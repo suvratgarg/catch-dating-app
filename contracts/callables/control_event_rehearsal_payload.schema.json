@@ -60,6 +60,9 @@
     },
     "reveal": {
       "$ref": "../shared/event_rehearsal_reveal.schema.json#/definitions/Command"
+    },
+    "allocation": {
+      "$ref": "../shared/event_rehearsal_allocation.schema.json#/definitions/Command"
     }
   },
   "allOf": [
@@ -111,6 +114,11 @@
             {
               "required": [
                 "reveal"
+              ]
+            },
+            {
+              "required": [
+                "allocation"
               ]
             }
           ]
@@ -173,6 +181,11 @@
               "required": [
                 "reveal"
               ]
+            },
+            {
+              "required": [
+                "allocation"
+              ]
             }
           ]
         }
@@ -234,6 +247,11 @@
               "required": [
                 "reveal"
               ]
+            },
+            {
+              "required": [
+                "allocation"
+              ]
             }
           ]
         }
@@ -258,7 +276,8 @@
                 "settings",
                 "requiredData",
                 "outcome",
-                "reveal"
+                "reveal",
+                "allocation"
               ]
             }
           }
@@ -361,6 +380,11 @@
               "required": [
                 "reveal"
               ]
+            },
+            {
+              "required": [
+                "allocation"
+              ]
             }
           ]
         }
@@ -426,6 +450,11 @@
             {
               "required": [
                 "reveal"
+              ]
+            },
+            {
+              "required": [
+                "allocation"
               ]
             }
           ]
@@ -493,6 +522,11 @@
               "required": [
                 "reveal"
               ]
+            },
+            {
+              "required": [
+                "allocation"
+              ]
             }
           ]
         }
@@ -559,6 +593,11 @@
               "required": [
                 "practiceOperatorId"
               ]
+            },
+            {
+              "required": [
+                "allocation"
+              ]
             }
           ]
         }
@@ -567,6 +606,77 @@
         "not": {
           "required": [
             "reveal"
+          ]
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "action": {
+            "const": "allocation"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "allocation",
+          "expectedSetupRevision"
+        ],
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "assistance"
+              ]
+            },
+            {
+              "required": [
+                "movement"
+              ]
+            },
+            {
+              "required": [
+                "staff"
+              ]
+            },
+            {
+              "required": [
+                "minutes"
+              ]
+            },
+            {
+              "required": [
+                "settings"
+              ]
+            },
+            {
+              "required": [
+                "requiredData"
+              ]
+            },
+            {
+              "required": [
+                "outcome"
+              ]
+            },
+            {
+              "required": [
+                "reveal"
+              ]
+            },
+            {
+              "required": [
+                "practiceOperatorId"
+              ]
+            }
+          ]
+        }
+      },
+      "else": {
+        "not": {
+          "required": [
+            "allocation"
           ]
         }
       }

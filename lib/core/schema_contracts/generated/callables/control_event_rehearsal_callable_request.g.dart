@@ -22,6 +22,7 @@ final class ControlEventRehearsalCallableRequest {
     this.requiredData,
     this.outcome,
     this.reveal,
+    this.allocation,
   });
 
   final String sessionId;
@@ -38,6 +39,7 @@ final class ControlEventRehearsalCallableRequest {
   final Map<String, Object?>? requiredData;
   final Map<String, Object?>? outcome;
   final Map<String, Object?>? reveal;
+  final Map<String, Object?>? allocation;
 
   Map<String, Object?> toJson() => {
     'sessionId': sessionId,
@@ -54,5 +56,6 @@ final class ControlEventRehearsalCallableRequest {
     'requiredData': ?requiredData,
     'outcome': ?outcome,
     'reveal': ?reveal,
+    'allocation': ?allocation,
   };
 }

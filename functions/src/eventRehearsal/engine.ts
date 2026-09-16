@@ -176,6 +176,7 @@ export function resolveRehearsalControl(
   case "requiredData":
   case "outcome":
   case "reveal":
+  case "allocation":
     throw new Error("Domain commands require their rehearsal transaction.");
   case "markReady":
     assertStatus(session.status, ["draft", "ready"], action);

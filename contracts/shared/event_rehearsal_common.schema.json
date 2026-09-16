@@ -82,7 +82,8 @@
         "settings",
         "requiredData",
         "outcome",
-        "reveal"
+        "reveal",
+        "allocation"
       ]
     },
     "behavior": {
