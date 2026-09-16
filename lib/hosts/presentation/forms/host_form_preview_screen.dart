@@ -1,6 +1,5 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_renderer.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -33,34 +32,35 @@ class HostFormPreviewScreen extends ConsumerWidget {
             ? CatchTopBarEmphasis.divided
             : CatchTopBarEmphasis.plain,
       ),
-      body: CatchRouteBody.standardConstrained(
-        child: CatchAsyncBoundary<HostFormEditorState>(
-          value: state,
-          onRetry: () => ref
-              .read(
-                hostFormEditorControllerProvider(organizerId, formId).notifier,
-              )
-              .reload(),
-          initialLoadTimeout: null,
-          loadingBuilder: (_) => const CatchSkeleton.rows(count: 8),
-          errorBuilder: (_, error, _, onBoundaryRetry) =>
-              CatchLocalizedErrorState(
-                error,
-                context: AppErrorContext.forms,
-                onRetry: onBoundaryRetry,
+      body: CatchRouteBody.standardConstrainedSlivers(
+        slivers: [
+          CatchAsyncBoundary<HostFormEditorState>.sliver(
+            value: state,
+            onRetry: () => ref
+                .read(
+                  hostFormEditorControllerProvider(
+                    organizerId,
+                    formId,
+                  ).notifier,
+                )
+                .reload(),
+            initialLoadTimeout: null,
+            errorContext: AppErrorContext.forms,
+            builder: (context, value) => SliverToBoxAdapter(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    context.l10n.hostFormPreviewSubtitle,
+                    style: CatchTextStyles.supporting(context),
+                  ),
+                  gapH24,
+                  HostFormRenderer(definition: value.editor.definition),
+                ],
               ),
-          builder: (context, value) => Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(
-                context.l10n.hostFormPreviewSubtitle,
-                style: CatchTextStyles.supporting(context),
-              ),
-              gapH24,
-              HostFormRenderer(definition: value.editor.definition),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }

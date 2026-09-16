@@ -159,8 +159,9 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
             value: editor,
             onRetry: notifier.reload,
             initialLoadTimeout: null,
-            loadingBuilder: (_) =>
-                const CatchPageBody(child: CatchSkeleton.rows(count: 8)),
+            loadingBuilder: (_) => const CatchStateViewport.loading(
+              accountForBottomOverlay: false,
+            ),
             errorBuilder: (_, error, _, onBoundaryRetry) => CatchPageBody(
               child: CatchLocalizedErrorState(
                 error,
