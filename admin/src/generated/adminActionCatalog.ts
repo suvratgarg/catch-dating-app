@@ -890,7 +890,8 @@ export const adminActionCatalog = {
       "actions": [
         "overview.get",
         "analytics.host",
-        "finance.decide-event-messaging-budget"
+        "finance.decide-event-messaging-budget",
+        "finance.stage-event-messaging-budget"
       ],
       "blockedCapabilities": [
         "retry_payment",

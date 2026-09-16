@@ -588,7 +588,7 @@
     {"workflowId": "external-events", "label": "External events", "guiPath": "/events/external", "actions": ["external-events.list", "external-events.readiness", "external-events.publish", "external-events.takedown"]},
     {"workflowId": "users", "label": "Users", "guiPath": "/users", "actions": ["analytics.user"]},
     {"workflowId": "cross-paths-showcase", "label": "Cross Paths showcase", "guiPath": "/cross-paths", "actions": ["cross-paths-showcase.list", "cross-paths-showcase.set-eligibility"]},
-    {"workflowId": "finance", "label": "Finance", "guiPath": "/finance", "actions": ["overview.get", "analytics.host", "finance.decide-event-messaging-budget"], "blockedCapabilities": ["retry_payment", "refund", "payout_mutation", "settlement_mutation", "messaging_budget_activation"]},
+    {"workflowId": "finance", "label": "Finance", "guiPath": "/finance", "actions": ["overview.get", "analytics.host", "finance.decide-event-messaging-budget", "finance.stage-event-messaging-budget"], "blockedCapabilities": ["retry_payment", "refund", "payout_mutation", "settlement_mutation", "messaging_budget_activation"]},
     {"workflowId": "data-quality", "label": "Data quality", "guiPath": "/quality", "actions": ["overview.get", "analytics.host", "marketing.get", "event-intake.get", "external-events.readiness"]},
     {"workflowId": "admin-roles", "label": "Admin roles", "guiPath": "/admin-roles", "actions": ["admin-roles.list", "admin-roles.get", "admin-roles.set"]},
     {"workflowId": "agent-activity", "label": "Agent activity", "guiPath": "/operations", "actions": ["operations.list-executions"]}
