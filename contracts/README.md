@@ -101,7 +101,8 @@ Schema:
 - `embedded/`: reusable embedded object schemas such as prompt answers and
   `ProfilePhoto` storage metadata.
 - `catalogs/`: product catalogs referenced by schemas, including the canonical
-  person-field registry plus profile, photo-prompt, and presentation catalogs.
+  person-field registry plus profile, photo-prompt, presentation, Event
+  Assistance workflow, and command-binding catalogs.
 - `callables/`: callable Function request payload schemas.
 - `callable_responses/`: callable Function response payload schemas decoded by
   typed Flutter response objects.

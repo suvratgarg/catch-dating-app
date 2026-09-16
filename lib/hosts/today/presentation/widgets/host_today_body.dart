@@ -19,6 +19,7 @@ class HostTodayBody extends StatelessWidget {
     required this.onRetry,
     required this.onOpenEvent,
     required this.onOpenAttention,
+    required this.onCreateEvent,
     required this.onViewEvents,
     required this.onStartRehearsal,
   });
@@ -29,6 +30,7 @@ class HostTodayBody extends StatelessWidget {
   final VoidCallback onRetry;
   final ValueChanged<Event> onOpenEvent;
   final ValueChanged<HostAttentionItem> onOpenAttention;
+  final VoidCallback onCreateEvent;
   final VoidCallback onViewEvents;
   final VoidCallback onStartRehearsal;
 
@@ -50,6 +52,7 @@ class HostTodayBody extends StatelessWidget {
           HostTodayStatus.empty => SliverToBoxAdapter(
             child: CatchSection.content(
               child: HostTodayQuietState(
+                onCreateEvent: onCreateEvent,
                 onViewEvents: onViewEvents,
                 onStartRehearsal: onStartRehearsal,
               ),
@@ -100,10 +103,12 @@ class HostTodayHeader extends StatelessWidget {
 class HostTodayQuietState extends StatelessWidget {
   const HostTodayQuietState({
     super.key,
+    required this.onCreateEvent,
     required this.onViewEvents,
     required this.onStartRehearsal,
   });
 
+  final VoidCallback onCreateEvent;
   final VoidCallback onViewEvents;
   final VoidCallback onStartRehearsal;
 
@@ -137,6 +142,13 @@ class HostTodayQuietState extends StatelessWidget {
             spacing: CatchSpacing.s2,
             runSpacing: CatchSpacing.s2,
             children: [
+              CatchButton(
+                key: const ValueKey<String>('host-today-create-event'),
+                label: context.l10n.hostsHostEventsListLabelNewEvent,
+                leading: Icon(CatchIcons.addRounded, size: CatchIcon.sm),
+                size: CatchButtonSize.sm,
+                onPressed: onCreateEvent,
+              ),
               CatchButton(
                 key: const ValueKey<String>('host-today-view-events'),
                 label: context.l10n.hostTodayViewAllEvents,

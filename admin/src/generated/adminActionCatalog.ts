@@ -1,7 +1,7 @@
 // GENERATED FILE. Run: node tool/admin/generate_admin_action_catalog.mjs
 export const adminActionCatalog = {
   "schemaVersion": 1,
-  "catalogVersion": "1.1.0",
+  "catalogVersion": "1.4.0",
   "actions": [
     {
       "actionId": "overview.get",
@@ -147,6 +147,54 @@ export const adminActionCatalog = {
         "analyticsViewer"
       ],
       "summary": "Load the bounded analytics report for one exact user id.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "finance.review-event-messaging-budget",
+      "callable": "adminReviewEventMessagingBudget",
+      "workflowIds": [
+        "finance"
+      ],
+      "guiPath": "/finance",
+      "kind": "read",
+      "risk": "sensitive-read",
+      "roles": [
+        "adminOwner",
+        "finance"
+      ],
+      "summary": "Review one exact messaging runtime, sender, budget scope, and current decision without loading credentials or granting authority.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "finance.decide-event-messaging-budget",
+      "callable": "adminDecideEventMessagingBudget",
+      "workflowIds": [
+        "finance"
+      ],
+      "guiPath": "/finance",
+      "kind": "mutation",
+      "risk": "critical",
+      "roles": [
+        "adminOwner",
+        "finance"
+      ],
+      "summary": "Record a source-fenced event-messaging ceiling decision without creating or activating a spending budget.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "finance.stage-event-messaging-budget",
+      "callable": "adminApplyEventMessagingBudget",
+      "workflowIds": [
+        "finance"
+      ],
+      "guiPath": "/finance",
+      "kind": "mutation",
+      "risk": "critical",
+      "roles": [
+        "adminOwner",
+        "finance"
+      ],
+      "summary": "Stage one still-current approved messaging decision as two paused channel ceilings without granting spend, dispatch, or worker activation.",
       "controlPlane": false
     },
     {
@@ -857,13 +905,17 @@ export const adminActionCatalog = {
       "guiPath": "/finance",
       "actions": [
         "overview.get",
-        "analytics.host"
+        "analytics.host",
+        "finance.review-event-messaging-budget",
+        "finance.decide-event-messaging-budget",
+        "finance.stage-event-messaging-budget"
       ],
       "blockedCapabilities": [
         "retry_payment",
         "refund",
         "payout_mutation",
-        "settlement_mutation"
+        "settlement_mutation",
+        "messaging_budget_activation"
       ]
     },
     {

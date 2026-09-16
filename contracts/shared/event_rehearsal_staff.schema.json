@@ -1,0 +1,222 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/shared/event_rehearsal_staff.schema.json",
+  "title": "EventRehearsalStaff",
+  "description": "Synthetic group staff, explicit practice roles, and independently expiring duties. These identifiers are never real account grants.",
+  "definitions": {
+    "OperatorId": {
+      "type": "string",
+      "pattern": "^practice-staff:[A-Za-z0-9_-]{1,60}$"
+    },
+    "Operator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "operatorId",
+        "displayName",
+        "duties"
+      ],
+      "properties": {
+        "operatorId": {
+          "$ref": "#/definitions/OperatorId"
+        },
+        "displayName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "duties": {
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "$ref": "event_assistance_group_staff.schema.json#/definitions/Duty"
+          }
+        }
+      }
+    },
+    "State": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "clockId",
+        "revision",
+        "operators"
+      ],
+      "properties": {
+        "clockId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "operators": {
+          "type": "array",
+          "maxItems": 50,
+          "items": {
+            "$ref": "#/definitions/Operator"
+          }
+        }
+      }
+    },
+    "Command": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "operatorId",
+        "displayName",
+        "groupId",
+        "expectedRevision",
+        "expectedSourceHash",
+        "decision"
+      ],
+      "properties": {
+        "operatorId": {
+          "$ref": "#/definitions/OperatorId"
+        },
+        "displayName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "groupId": {
+          "$ref": "event_common.schema.json#/definitions/documentId"
+        },
+        "expectedRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "expectedSourceHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "decision": {
+          "$ref": "event_assistance_group_staff.schema.json#/definitions/WriteInput/properties/decision"
+        }
+      }
+    },
+    "Review": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "clockId",
+        "revision",
+        "sourceHash",
+        "hostUid",
+        "actorUid",
+        "practiceOperatorId",
+        "serverTime",
+        "canAssign",
+        "operators",
+        "groups"
+      ],
+      "properties": {
+        "clockId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "sourceHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "hostUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "actorUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "practiceOperatorId": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/OperatorId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "serverTime": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "canAssign": {
+          "type": "boolean"
+        },
+        "operators": {
+          "type": "array",
+          "maxItems": 50,
+          "items": {
+            "$ref": "#/definitions/Operator"
+          }
+        },
+        "groups": {
+          "type": "array",
+          "maxItems": 21,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "groupId",
+              "label",
+              "sourceHash",
+              "permissions",
+              "validUntil",
+              "availableDuties"
+            ],
+            "properties": {
+              "groupId": {
+                "$ref": "event_common.schema.json#/definitions/documentId"
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "sourceHash": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "permissions": {
+                "type": "array",
+                "maxItems": 5,
+                "uniqueItems": true,
+                "items": {
+                  "enum": [
+                    "readProgress",
+                    "confirmDeparture",
+                    "transferGroup",
+                    "recordCheckpoint",
+                    "resolveAccountability"
+                  ]
+                }
+              },
+              "validUntil": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "availableDuties": {
+                "$ref": "event_assistance_group_staff.schema.json#/definitions/View/properties/availableDuties"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

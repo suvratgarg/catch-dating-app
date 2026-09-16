@@ -3,7 +3,7 @@
   "version": 2,
   "generatedFrom": "design/features/host_home.feature.json",
   "generatedFor": "2026-09-04",
-  "sourceDigest": "sha256:13787bbf6315e63ec917bfa866066793317c3756af436b0fc8a75bf40d2192a6",
+  "sourceDigest": "sha256:46e17bff40eb59bcfbac1f3f2227c3b5ca700427ab3253529b15658693e93e70",
   "resolvedDigest": "sha256:87a2c5240486de8c51169f5403552178d2b922277eb9535b41c1c613b08f5d4b",
   "feature": {
     "id": "feature.host_home",
@@ -83,6 +83,12 @@
             "language": "dart",
             "file": "lib/hosts/events/presentation/host_events_screen.dart",
             "symbol": "HostEventsRouteScaffold"
+          },
+          {
+            "id": "event_entry_flow",
+            "language": "dart",
+            "file": "lib/hosts/events/presentation/host_event_entry_flow.dart",
+            "symbol": "runHostEventEntryFlow"
           },
           {
             "id": "events_list",
@@ -373,7 +379,7 @@
         },
         {
           "id": "create_event",
-          "owner": "workspace",
+          "owner": "event_entry_flow",
           "codeValue": "_openCreateEvent",
           "cardinality": "unbounded",
           "scopeKeys": [
@@ -390,12 +396,12 @@
               }
             }
           ],
-          "description": "Opens Host Event Create with the selected organizer id and organizer snapshot.",
+          "description": "After the event-entry choice, opens Host Event Create with the selected organizer and its booking mode.",
           "implementationStatus": "implemented"
         },
         {
           "id": "repeat_event",
-          "owner": "workspace",
+          "owner": "event_entry_flow",
           "codeValue": "_openRepeatEvent",
           "cardinality": "unbounded",
           "scopeKeys": [
@@ -413,7 +419,7 @@
               }
             }
           ],
-          "description": "Opens Host Event Create with a policy-gated repeat prefill from the latest eligible event.",
+          "description": "After the event-entry choice, opens Host Event Create with a policy-gated repeat prefill from the latest eligible event.",
           "implementationStatus": "implemented"
         },
         {

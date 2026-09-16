@@ -1,6 +1,13 @@
 import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_activity_profile.dart';
 
+final class EventSuccessOutcomeUnit {
+  const EventSuccessOutcomeUnit({required this.id, required this.label});
+
+  final String id;
+  final String label;
+}
+
 final class EventSuccessStandings {
   const EventSuccessStandings({
     required this.id,

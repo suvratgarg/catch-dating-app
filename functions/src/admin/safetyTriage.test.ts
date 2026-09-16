@@ -226,6 +226,8 @@ test("parseSafetyTarget allowlists safety queue document paths", () => {
     "moderationFlag");
   assert.deepEqual(parseSafetyTarget("eventSafetyReports/event-1_user-1")
     .kind, "eventSafetyReport");
+  assert.deepEqual(parseSafetyTarget(restrictedCasePath()).kind,
+    "eventAssistanceCase");
   assert.throws(
     () => parseSafetyTarget("users/user-1"),
     (error) =>
@@ -457,6 +459,31 @@ test(
 );
 
 test(
+  "adminGetSafetyTriageDetailsHandler returns live restricted request details",
+  async () => {
+    const firestore = new FakeFirestore({
+      [restrictedCasePath()]: restrictedCase(),
+    });
+
+    const result = await adminGetSafetyTriageDetailsHandler(
+      request({targetPath: restrictedCasePath()}),
+      deps(firestore)
+    );
+
+    assert.equal(result.item.kind, "eventAssistanceCase");
+    assert.equal(result.item.eventId, "event-1");
+    assert.equal(result.item.clubId, "organizer-1");
+    assert.equal(result.item.assignment.ownerTeam, "Event safety");
+    assert.equal(result.item.assignment.severity, "high");
+    assert.equal(result.item.contextId, "response:guest-1");
+    assert.equal(result.item.createdAt, "2026-05-28T20:26:39.000Z");
+    assert.ok(result.item.outcomeGuidance.some((item) =>
+      item.id === "resolve_live_event_request"
+    ));
+  }
+);
+
+test(
   "adminGetSafetyTriageDetailsHandler blocks unsupported roles",
   async () => {
     await assert.rejects(
@@ -591,6 +618,70 @@ test(
 );
 
 test(
+  "adminDecideSafetyTriageItemHandler resolves a restricted event request",
+  async () => {
+    const firestore = new FakeFirestore({
+      [restrictedCasePath()]: restrictedCase(),
+    });
+
+    const result = await adminDecideSafetyTriageItemHandler(
+      request({
+        targetPath: restrictedCasePath(),
+        decision: "review",
+        note: "Reviewed the live request and confirmed the handoff.",
+      }),
+      deps(firestore)
+    );
+
+    assert.deepEqual(result, {
+      targetPath: restrictedCasePath(),
+      decision: "review",
+      status: "resolved",
+    });
+    const saved = firestore.get(restrictedCasePath())!;
+    assert.equal(saved.status, "resolved");
+    assert.equal(saved.assigneeUid, undefined);
+    assert.deepEqual(saved.handling, {
+      revision: 1,
+      assigneeUid: null,
+      updatedAt: 1_780_488_000_000,
+      resolution: {
+        outcome: "resolved",
+        actorUid: "admin-1",
+        at: 1_780_488_000_000,
+      },
+    });
+  }
+);
+
+test(
+  "adminDecideSafetyTriageItemHandler rejects organizer-owned help cases",
+  async () => {
+    const practical = {
+      ...restrictedCase(),
+      category: "eventLogistics",
+      owner: "eventLead",
+    };
+    const firestore = new FakeFirestore({
+      [restrictedCasePath()]: practical,
+    });
+
+    await assert.rejects(
+      () => adminDecideSafetyTriageItemHandler(
+        request({
+          targetPath: restrictedCasePath(),
+          decision: "review",
+          note: "The event lead owns this request.",
+        }),
+        deps(firestore)
+      ),
+      (error) =>
+        error instanceof HttpsError && error.code === "failed-precondition"
+    );
+  }
+);
+
+test(
   "adminDecideSafetyTriageItemHandler rejects closed safety items",
   async () => {
     const firestore = new FakeFirestore({
@@ -701,6 +792,34 @@ test("adminAssignSafetyTriageItemHandler clears an assignment", async () => {
 });
 
 test(
+  "adminAssignSafetyTriageItemHandler updates restricted case handling",
+  async () => {
+    const firestore = new FakeFirestore({
+      [restrictedCasePath()]: restrictedCase(),
+    });
+
+    const result = await adminAssignSafetyTriageItemHandler(
+      request({
+        targetPath: restrictedCasePath(),
+        assigneeUid: "reviewer_1",
+        note: "Taking the live event request.",
+      }),
+      deps(firestore)
+    );
+
+    assert.equal(result.assignment.assigneeUid, "reviewer_1");
+    const saved = firestore.get(restrictedCasePath())!;
+    assert.equal(saved.assigneeUid, undefined);
+    assert.deepEqual(saved.handling, {
+      revision: 1,
+      assigneeUid: "reviewer_1",
+      updatedAt: 1_780_488_000_000,
+      resolution: null,
+    });
+  }
+);
+
+test(
   "adminAssignSafetyTriageItemHandler rejects closed safety items",
   async () => {
     const firestore = new FakeFirestore({
@@ -775,6 +894,39 @@ function deps(
       action: string
     ) => {
       rateLimitActions.push(action);
+    },
+  };
+}
+
+function restrictedCasePath(): string {
+  return `eventAssistanceCases/case:${"a".repeat(64)}`;
+}
+
+function restrictedCase(): FakeData {
+  return {
+    schemaVersion: 1,
+    caseId: `case:${"a".repeat(64)}`,
+    guestId: `guest:${"b".repeat(64)}`,
+    context: {
+      mode: "live",
+      eventId: "event-1",
+      organizerId: "organizer-1",
+    },
+    attendeeId: "attendee-1",
+    episodeId: "episode:guest-1",
+    responseId: "response:guest-1",
+    messageId: `outbox:${"c".repeat(64)}`,
+    status: "open",
+    receivedAt: 1_779_999_999_000,
+    category: "comfortSafety",
+    owner: "authorizedSafetyOperator",
+    sourceGeneration: "d".repeat(64),
+    attendeeGeneration: "e".repeat(64),
+    handling: {
+      revision: 0,
+      assigneeUid: null,
+      updatedAt: 1_780_000_000_000,
+      resolution: null,
     },
   };
 }

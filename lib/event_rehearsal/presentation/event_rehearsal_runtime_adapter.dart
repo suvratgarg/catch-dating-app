@@ -2,13 +2,19 @@ import 'dart:math' as math;
 
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
+import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_accountability.dart';
+import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_operations.dart';
+import 'package:catch_dating_app/event_success/domain/event_assistance_accountability.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_activity_profile.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_assignment.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_layout.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_playbooks.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_presence.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_standings.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_structure.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/domain/event_attendee.dart';
 import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
@@ -24,6 +30,9 @@ final class EventRehearsalRuntimeProjection {
     required this.presence,
     required this.layout,
     required this.assignments,
+    required this.outcomeUnits,
+    this.standings,
+    this.accountabilityAttendees = const [],
   });
 
   final Event event;
@@ -33,6 +42,9 @@ final class EventRehearsalRuntimeProjection {
   final EventSuccessPresenceSummary presence;
   final EventSuccessLayout layout;
   final List<EventSuccessAssignment> assignments;
+  final List<EventSuccessOutcomeUnit> outcomeUnits;
+  final EventSuccessStandings? standings;
+  final List<EventAttendee> accountabilityAttendees;
 }
 
 EventRehearsalRuntimeProjection buildEventRehearsalRuntimeProjection(
@@ -52,6 +64,8 @@ EventRehearsalRuntimeProjection buildEventRehearsalRuntimeProjection(
       .expand(_eventSuccessModuleIds)
       .toSet()
       .toList(growable: false);
+  final outcomeKind =
+      rehearsal.outcomeReview?.kind ?? session.setup.effectiveUnitOutcome;
   final event = Event(
     id: eventId,
     synthetic: true,
@@ -65,6 +79,7 @@ EventRehearsalRuntimeProjection buildEventRehearsalRuntimeProjection(
       interactionModel: EventInteractionModel.seatedTable,
       defaultPlaybookId: 'algorithmic_mixer_reveal',
       defaultModuleIds: selectedModuleIds,
+      eventSuccessPrimitives: {'unitOutcome': outcomeKind.name},
       activityDetails: {
         if (movementSimulation?.routePlan != null)
           'routePlan': movementSimulation!.routePlan!.toJson(),
@@ -80,6 +95,7 @@ EventRehearsalRuntimeProjection buildEventRehearsalRuntimeProjection(
     checkedInCount: rehearsal.actors.where(_isCheckedIn).length,
   );
   final basePlan = EventSuccessPlan.defaultForEvent(event, now: virtualNow);
+  final reveal = rehearsal.revealReview;
   final plan = basePlan.copyWith(
     selectedModuleIds: selectedModuleIds,
     targetAttendeeCount: math.max(1, session.actorCount),
@@ -88,11 +104,24 @@ EventRehearsalRuntimeProjection buildEventRehearsalRuntimeProjection(
       unitSize: 4,
       unitCount: tableCount,
       rotationIntervalMinutes: 12,
+      revealCountdownSeconds:
+          reveal?.countdownSeconds ??
+          basePlan.structureConfig.revealCountdownSeconds,
     ),
     hostGoal: session.setup.hostGoal,
     attendeePrompt: session.setup.attendeePrompt,
     activeStepIndex: session.activeStepIndex,
     liveControlRevision: session.runtimeRevision,
+    publishedRevealRoundIndex: reveal?.publishedRound ?? -1,
+    activeRevealRoundIndex:
+        reveal?.pendingRound ?? math.max(0, reveal?.publishedRound ?? 0),
+    revealStatus: switch (reveal?.status) {
+      RehearsalRevealStatus.countingDown =>
+        EventSuccessRevealStatus.countingDown,
+      RehearsalRevealStatus.revealed => EventSuccessRevealStatus.revealed,
+      RehearsalRevealStatus.idle || null => EventSuccessRevealStatus.idle,
+    },
+    revealStartedAt: reveal?.startedAt,
     status: switch (session.status) {
       EventRehearsalStatus.draft ||
       EventRehearsalStatus.ready => EventSuccessPlanStatus.setup,
@@ -170,12 +199,13 @@ EventRehearsalRuntimeProjection buildEventRehearsalRuntimeProjection(
     ),
     entries: [
       for (final actor in rehearsal.actors)
-        EventSuccessPresenceEntry(
-          uid: actor.actorId,
-          displayName: actor.displayName,
-          state: _presenceState(actor.status),
-          heartbeatAtMillis: virtualNowMillis,
-        ),
+        if (actor.connectionState == EventRehearsalConnectionState.connected)
+          EventSuccessPresenceEntry(
+            uid: actor.actorId,
+            displayName: actor.displayName,
+            state: _presenceState(actor.status),
+            heartbeatAtMillis: virtualNowMillis,
+          ),
     ],
     lateArrivals: [
       for (final actor in rehearsal.actors)
@@ -187,6 +217,27 @@ EventRehearsalRuntimeProjection buildEventRehearsalRuntimeProjection(
           ),
     ],
   );
+  final outcomeUnitLabels = {
+    for (final unit in layout.units) unit.id: unit.label,
+  };
+  final outcomeUnits = switch (outcomeKind) {
+    RehearsalOutcomeKind.score || RehearsalOutcomeKind.rank => [
+      for (final unitId in rehearsal.outcomeReview?.unitIds ?? const <String>[])
+        EventSuccessOutcomeUnit(
+          id: unitId,
+          label: outcomeUnitLabels[unitId] ?? unitId,
+        ),
+    ],
+    RehearsalOutcomeKind.none ||
+    RehearsalOutcomeKind.completion => const <EventSuccessOutcomeUnit>[],
+  };
+  final standings = _standingsFor(
+    review: rehearsal.outcomeReview,
+    eventId: eventId,
+    clubId: session.organizerId,
+    unitLabels: outcomeUnitLabels,
+    now: virtualNow,
+  );
 
   return EventRehearsalRuntimeProjection(
     event: event,
@@ -196,6 +247,137 @@ EventRehearsalRuntimeProjection buildEventRehearsalRuntimeProjection(
     presence: presence,
     layout: layout,
     assignments: assignments,
+    outcomeUnits: outcomeUnits,
+    standings: standings,
+    accountabilityAttendees: [
+      for (final row
+          in rehearsal.accountabilityReviews?.rows ??
+              const <RehearsalAccountabilityRow>[])
+        if (row.evidence.checkedInAtMillis case final int checkedIn)
+          EventAttendee(
+            id: row.actorId,
+            eventId: eventId,
+            clubId: session.organizerId,
+            organizerId: session.organizerId,
+            displayName: rehearsal.actors
+                .firstWhere((actor) => actor.actorId == row.actorId)
+                .displayName,
+            searchName: rehearsal.actors
+                .firstWhere((actor) => actor.actorId == row.actorId)
+                .displayName
+                .toLowerCase(),
+            source: EventAttendeeSource.hostManual,
+            status: EventAttendeeStatus.checkedIn,
+            createdAt: DateTime.fromMillisecondsSinceEpoch(checkedIn),
+            updatedAt: virtualNow,
+            checkedInAt: DateTime.fromMillisecondsSinceEpoch(checkedIn),
+            accountabilityResolution: switch (row.evidence.disposition) {
+              AssistanceVisitDisposition.returned =>
+                EventSuccessAccountabilityResolution.returned,
+              AssistanceVisitDisposition.departed =>
+                EventSuccessAccountabilityResolution.departed,
+              AssistanceVisitDisposition.unresolved => null,
+            },
+            accountabilityResolvedForCheckInAt:
+                DateTime.fromMillisecondsSinceEpoch(checkedIn),
+          ),
+    ],
+  );
+}
+
+EventSuccessStandings? _standingsFor({
+  required RehearsalOutcomeReview? review,
+  required String eventId,
+  required String clubId,
+  required Map<String, String> unitLabels,
+  required DateTime now,
+}) {
+  if (review == null ||
+      review.kind != RehearsalOutcomeKind.score &&
+          review.kind != RehearsalOutcomeKind.rank) {
+    return null;
+  }
+  final recordsByRound = <int, Map<String, RehearsalOutcomeRecord>>{};
+  for (final record in review.records) {
+    recordsByRound.putIfAbsent(record.round, () => {})[record.unitId] = record;
+  }
+  final cumulativeScores = <String, num>{};
+  final roundsRecorded = <String, int>{};
+  final rounds = <EventSuccessStandingRound>[];
+  for (var roundIndex = 0; roundIndex <= 10000; roundIndex++) {
+    final records = recordsByRound[roundIndex];
+    if (records == null ||
+        review.unitIds.any((unitId) => !records.containsKey(unitId))) {
+      break;
+    }
+    final entries = <EventSuccessStandingEntry>[];
+    for (final unitId in review.unitIds) {
+      final record = records[unitId]!;
+      roundsRecorded[unitId] = (roundsRecorded[unitId] ?? 0) + 1;
+      final value = switch (record.outcome) {
+        RehearsalScoreOutcome(:final score) =>
+          cumulativeScores[unitId] = (cumulativeScores[unitId] ?? 0) + score,
+        RehearsalRankOutcome(:final rank) => rank,
+        _ => throw const FormatException(
+          'Practice standings contain an incompatible outcome.',
+        ),
+      };
+      entries.add(
+        EventSuccessStandingEntry(
+          unitId: unitId,
+          unitLabel: unitLabels[unitId] ?? unitId,
+          position: 0,
+          value: value,
+          roundsRecorded: roundsRecorded[unitId]!,
+        ),
+      );
+    }
+    entries.sort((left, right) {
+      final valueOrder = review.kind == RehearsalOutcomeKind.score
+          ? right.value.compareTo(left.value)
+          : left.value.compareTo(right.value);
+      return valueOrder != 0 ? valueOrder : left.unitId.compareTo(right.unitId);
+    });
+    rounds.add(
+      EventSuccessStandingRound(
+        roundIndex: roundIndex,
+        entries: [
+          for (final indexed in entries.indexed)
+            EventSuccessStandingEntry(
+              unitId: indexed.$2.unitId,
+              unitLabel: indexed.$2.unitLabel,
+              position: indexed.$1 + 1,
+              value: indexed.$2.value,
+              roundsRecorded: indexed.$2.roundsRecorded,
+            ),
+        ],
+      ),
+    );
+  }
+  final recordedTimes = review.records.map((record) => record.recordedAt);
+  final createdAt = recordedTimes.isEmpty
+      ? now
+      : recordedTimes.reduce(
+          (left, right) => left.isBefore(right) ? left : right,
+        );
+  final updatedAt = recordedTimes.isEmpty
+      ? now
+      : recordedTimes.reduce(
+          (left, right) => left.isAfter(right) ? left : right,
+        );
+  return EventSuccessStandings(
+    id: 'rehearsal-standings-$eventId',
+    eventId: eventId,
+    clubId: clubId,
+    unitOutcome: review.kind == RehearsalOutcomeKind.score
+        ? EventSuccessUnitOutcome.score
+        : EventSuccessUnitOutcome.rank,
+    revision: review.revision,
+    latestRoundIndex: rounds.isEmpty ? -1 : rounds.last.roundIndex,
+    rounds: List.unmodifiable(rounds),
+    entries: rounds.isEmpty ? const [] : rounds.last.entries,
+    createdAt: createdAt,
+    updatedAt: updatedAt,
   );
 }
 
@@ -238,8 +420,7 @@ bool _isPlaceable(EventRehearsalActor actor) => switch (actor.status) {
 
 EventSuccessPresenceState _presenceState(EventRehearsalActorStatus status) =>
     switch (status) {
-      EventRehearsalActorStatus.departed ||
-      EventRehearsalActorStatus.disconnected =>
+      EventRehearsalActorStatus.departed =>
         EventSuccessPresenceState.likelyDeparted,
       EventRehearsalActorStatus.present ||
       EventRehearsalActorStatus.late ||

@@ -1,3 +1,13 @@
+import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_accountability.dart';
+import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_assistance_automation.dart';
+import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_assistance_view.dart';
+import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_delivery_reviews.dart';
+import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_help_requests.dart';
+import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_membership.dart';
+import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_movement.dart';
+import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_operations.dart';
+import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_settings.dart';
+import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_staff.dart';
 import 'package:catch_dating_app/events/domain/event_itinerary.dart';
 import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 
@@ -34,6 +44,8 @@ enum EventRehearsalActorStatus {
   walkIn,
   ambiguousClaim,
 }
+
+enum EventRehearsalConnectionState { connected, disconnected }
 
 enum EventRehearsalGuestMoment {
   welcome,
@@ -111,6 +123,7 @@ class EventRehearsalSetup {
     required this.hostGoal,
     required this.attendeePrompt,
     required this.modules,
+    this.unitOutcome,
     this.movementSimulation,
   });
 
@@ -124,6 +137,11 @@ class EventRehearsalSetup {
         modules: _stringList(map['moduleIds'])
             .map((value) => EventRehearsalModule.values.byName(value))
             .toList(growable: false),
+        unitOutcome: map['unitOutcome'] == null
+            ? null
+            : RehearsalOutcomeKind.values.byName(
+                _requiredString(map, 'unitOutcome'),
+              ),
         movementSimulation: map['movementSimulation'] == null
             ? null
             : EventRehearsalMovementSimulation.fromMap(
@@ -137,7 +155,19 @@ class EventRehearsalSetup {
   final String hostGoal;
   final String attendeePrompt;
   final List<EventRehearsalModule> modules;
+  final RehearsalOutcomeKind? unitOutcome;
   final EventRehearsalMovementSimulation? movementSimulation;
+
+  /// Resolves legacy rehearsals using the same fallback as the backend.
+  RehearsalOutcomeKind get effectiveUnitOutcome =>
+      unitOutcome ??
+      (modules.any(
+            (module) =>
+                module == EventRehearsalModule.pods ||
+                module == EventRehearsalModule.rotations,
+          )
+          ? RehearsalOutcomeKind.completion
+          : RehearsalOutcomeKind.none);
 
   Map<String, Object?> toJson() => {
     'title': title,
@@ -146,6 +176,7 @@ class EventRehearsalSetup {
     'hostGoal': hostGoal,
     'attendeePrompt': attendeePrompt,
     'moduleIds': modules.map((module) => module.name).toList(growable: false),
+    if (unitOutcome != null) 'unitOutcome': unitOutcome!.name,
     if (movementSimulation != null)
       'movementSimulation': movementSimulation!.toJson(),
   };
@@ -157,6 +188,7 @@ class EventRehearsalSetup {
     String? hostGoal,
     String? attendeePrompt,
     List<EventRehearsalModule>? modules,
+    RehearsalOutcomeKind? unitOutcome,
     EventRehearsalMovementSimulation? movementSimulation,
   }) => EventRehearsalSetup(
     title: title ?? this.title,
@@ -165,6 +197,7 @@ class EventRehearsalSetup {
     hostGoal: hostGoal ?? this.hostGoal,
     attendeePrompt: attendeePrompt ?? this.attendeePrompt,
     modules: modules ?? this.modules,
+    unitOutcome: unitOutcome ?? this.unitOutcome,
     movementSimulation: movementSimulation ?? this.movementSimulation,
   );
 }
@@ -249,6 +282,7 @@ class EventRehearsalSession {
     required this.runtimeRevision,
     required this.activeStepIndex,
     required this.virtualNow,
+    this.virtualStartedAt,
     required this.fault,
     required this.expiresAt,
   });
@@ -273,6 +307,11 @@ class EventRehearsalSession {
     virtualNow: DateTime.fromMillisecondsSinceEpoch(
       _requiredInt(map, 'virtualNowMillis'),
     ),
+    virtualStartedAt: map['virtualStartedAtMillis'] == null
+        ? null
+        : DateTime.fromMillisecondsSinceEpoch(
+            _requiredInt(map, 'virtualStartedAtMillis'),
+          ),
     fault: EventRehearsalFault.values.byName(_requiredString(map, 'faultId')),
     expiresAt: DateTime.fromMillisecondsSinceEpoch(
       _requiredInt(map, 'expiresAtMillis'),
@@ -292,6 +331,8 @@ class EventRehearsalSession {
   final int runtimeRevision;
   final int activeStepIndex;
   final DateTime virtualNow;
+  // Older servers cannot provide a trustworthy remaining practice window.
+  final DateTime? virtualStartedAt;
   final EventRehearsalFault fault;
   final DateTime expiresAt;
 
@@ -317,31 +358,75 @@ class EventRehearsalActor {
     required this.promptCompleted,
     this.layoutUnitId,
     this.confirmedLayoutUnitId,
+    this._connectionState,
+    this.assistance,
+    this.assistanceMessage,
+    this.assistanceDelivery,
+    this.assistanceAutomation,
+    this.requiredData,
   });
 
-  factory EventRehearsalActor.fromMap(Map<Object?, Object?> map) =>
-      EventRehearsalActor(
-        actorId: _requiredString(map, 'actorId'),
-        displayName: _requiredString(map, 'displayName'),
-        persona: _requiredString(map, 'persona'),
-        status: EventRehearsalActorStatus.values.byName(
-          _requiredString(map, 'status'),
-        ),
-        guestMoment: EventRehearsalGuestMoment.values.byName(
-          _requiredString(map, 'guestMoment'),
-        ),
-        optedOut: _requiredBool(map, 'optedOut'),
-        keepApartActorIds: _stringList(map['keepApartActorIds']),
-        helpRequested: _requiredBool(map, 'helpRequested'),
-        promptCompleted: _requiredBool(map, 'promptCompleted'),
-        layoutUnitId: map['layoutUnitId'] as String?,
-        confirmedLayoutUnitId: map['confirmedLayoutUnitId'] as String?,
+  factory EventRehearsalActor.fromMap(Map<Object?, Object?> map) {
+    final assistance = map['assistance'] == null
+        ? null
+        : RehearsalAssistanceState.fromJson(map['assistance']);
+    final message = map['assistanceMessage'] == null
+        ? null
+        : RehearsalJoiningInstruction.fromJson(map['assistanceMessage']);
+    final delivery = map['assistanceDelivery'] == null
+        ? null
+        : RehearsalDeliveryView.fromJson(map['assistanceDelivery']);
+    if (assistance?.latestMessageId != message?.messageId ||
+        (message == null) != (delivery == null)) {
+      throw const FormatException(
+        'Inconsistent rehearsal instruction projection.',
       );
+    }
+    return EventRehearsalActor(
+      actorId: _requiredString(map, 'actorId'),
+      displayName: _requiredString(map, 'displayName'),
+      persona: _requiredString(map, 'persona'),
+      status: EventRehearsalActorStatus.values.byName(
+        _requiredString(map, 'status'),
+      ),
+      connectionState: map.containsKey('connectionState')
+          ? EventRehearsalConnectionState.values.byName(
+              _requiredString(map, 'connectionState'),
+            )
+          : null,
+      guestMoment: EventRehearsalGuestMoment.values.byName(
+        _requiredString(map, 'guestMoment'),
+      ),
+      optedOut: _requiredBool(map, 'optedOut'),
+      keepApartActorIds: _stringList(map['keepApartActorIds']),
+      helpRequested: _requiredBool(map, 'helpRequested'),
+      promptCompleted: _requiredBool(map, 'promptCompleted'),
+      layoutUnitId: map['layoutUnitId'] as String?,
+      confirmedLayoutUnitId: map['confirmedLayoutUnitId'] as String?,
+      assistance: assistance,
+      assistanceMessage: message,
+      assistanceDelivery: delivery,
+      assistanceAutomation: map['assistanceAutomation'] == null
+          ? null
+          : RehearsalAssistanceAutomation.fromJson(map['assistanceAutomation']),
+      requiredData: RehearsalRequiredDataReview.fromHostJson(
+        map['requiredData'],
+      ),
+    );
+  }
 
   final String actorId;
   final String displayName;
   final String persona;
   final EventRehearsalActorStatus status;
+  final EventRehearsalConnectionState? _connectionState;
+
+  /// Older disconnected records have no recoverable attendance history.
+  EventRehearsalConnectionState get connectionState =>
+      _connectionState ??
+      (status == EventRehearsalActorStatus.disconnected
+          ? EventRehearsalConnectionState.disconnected
+          : EventRehearsalConnectionState.connected);
   final EventRehearsalGuestMoment guestMoment;
   final bool optedOut;
   final List<String> keepApartActorIds;
@@ -349,6 +434,11 @@ class EventRehearsalActor {
   final bool promptCompleted;
   final String? layoutUnitId;
   final String? confirmedLayoutUnitId;
+  final RehearsalAssistanceState? assistance;
+  final RehearsalJoiningInstruction? assistanceMessage;
+  final RehearsalDeliveryView? assistanceDelivery;
+  final RehearsalAssistanceAutomation? assistanceAutomation;
+  final RehearsalRequiredDataReview? requiredData;
 }
 
 class EventRehearsalActionRecord {
@@ -388,18 +478,123 @@ class EventRehearsalBootstrap {
     required this.actions,
     required this.guestUrl,
     required this.canUseInternalFaults,
+    this.helpRequests,
+    this.deliveryReviews,
+    this.accountabilityReviews,
+    this.membershipReviews,
+    this.movementReview,
+    this.staffReview,
+    this.settingsReview,
+    this.outcomeReview,
+    this.revealReview,
+    this.allocationReview,
+    this.rosterReview,
   });
 
   factory EventRehearsalBootstrap.fromCallableData(Object? data) {
     final map = _requiredMap(data, 'event rehearsal bootstrap');
+    final session = EventRehearsalSession.fromMap(
+      _requiredMap(map['session'], 'session'),
+    );
+    final actors = _mapList(
+      map['actors'],
+      'actors',
+    ).map(EventRehearsalActor.fromMap).toList(growable: false);
+    final staff = !map.containsKey('staffReview')
+        ? null
+        : RehearsalStaffReview.fromJson(map['staffReview'], session: session);
+    final membership = !map.containsKey('membershipReviews')
+        ? null
+        : RehearsalMembershipReviews.fromJson(
+            map['membershipReviews'],
+            session: session,
+            actors: actors,
+            staffReview: staff,
+          );
+    final movement = !map.containsKey('movementReview')
+        ? null
+        : RehearsalMovementReview.fromBootstrapJson(
+            map['movementReview'],
+            session: session,
+            actors: actors,
+          );
+    if (staff != null && movement != null) {
+      staff.requireSameRole(movement.staffReview);
+      if (staff.sourceHash != movement.staffReview!.sourceHash ||
+          staff.revision != movement.staffReview!.revision) {
+        throw const FormatException(
+          'Practice group and staff reviews changed.',
+        );
+      }
+    }
+    final outcome = !map.containsKey('outcomeReview')
+        ? null
+        : RehearsalOutcomeReview.fromJson(
+            map['outcomeReview'],
+            expectedUnitIds: actors
+                .map((actor) => actor.layoutUnitId)
+                .nonNulls
+                .toSet(),
+          );
+    if (outcome != null && outcome.kind != session.setup.effectiveUnitOutcome) {
+      throw const FormatException(
+        'Practice outcome review changed the configured format.',
+      );
+    }
     return EventRehearsalBootstrap(
-      session: EventRehearsalSession.fromMap(
-        _requiredMap(map['session'], 'session'),
-      ),
-      actors: _mapList(
-        map['actors'],
-        'actors',
-      ).map(EventRehearsalActor.fromMap).toList(growable: false),
+      session: session,
+      actors: actors,
+      staffReview: staff,
+      settingsReview: !map.containsKey('settingsReview')
+          ? null
+          : RehearsalSettingsReview.fromJson(
+              map['settingsReview'],
+              session: session,
+              staff: staff,
+            ),
+      outcomeReview: outcome,
+      revealReview: !map.containsKey('revealReview')
+          ? null
+          : RehearsalRevealReview.fromJson(map['revealReview']),
+      allocationReview: !map.containsKey('allocationReview')
+          ? null
+          : RehearsalAllocationReview.fromJson(
+              map['allocationReview'],
+              actorAssignments: {
+                for (final actor in actors) actor.actorId: actor.layoutUnitId,
+              },
+            ),
+      rosterReview: !map.containsKey('rosterReview')
+          ? null
+          : RehearsalRosterReview.fromJson(
+              map['rosterReview'],
+              actorIds: actors.map((actor) => actor.actorId).toSet(),
+            ),
+      movementReview: movement,
+      membershipReviews: membership,
+      accountabilityReviews: !map.containsKey('accountabilityReviews')
+          ? null
+          : RehearsalAccountabilityReviews.fromJson(
+              map['accountabilityReviews'],
+              session: session,
+              actors: actors,
+              staffReview: staff,
+              membershipReviews: membership,
+            ),
+      deliveryReviews: map['deliveryReviews'] == null
+          ? null
+          : RehearsalDeliveryReviews.fromJson(
+              map['deliveryReviews'],
+              session: session,
+              actors: actors,
+            ),
+      helpRequests: map['helpRequests'] == null
+          ? null
+          : RehearsalHelpRequests.fromJson(
+              map['helpRequests'],
+              session: session,
+              actors: actors,
+            ),
       actions: _mapList(
         map['actions'],
         'actions',
@@ -414,6 +609,17 @@ class EventRehearsalBootstrap {
   final List<EventRehearsalActionRecord> actions;
   final String guestUrl;
   final bool canUseInternalFaults;
+  final RehearsalHelpRequests? helpRequests;
+  final RehearsalDeliveryReviews? deliveryReviews;
+  final RehearsalAccountabilityReviews? accountabilityReviews;
+  final RehearsalMembershipReviews? membershipReviews;
+  final RehearsalMovementReview? movementReview;
+  final RehearsalStaffReview? staffReview;
+  final RehearsalSettingsReview? settingsReview;
+  final RehearsalOutcomeReview? outcomeReview;
+  final RehearsalRevealReview? revealReview;
+  final RehearsalAllocationReview? allocationReview;
+  final RehearsalRosterReview? rosterReview;
 
   int get presentCount => actors
       .where(
@@ -427,6 +633,8 @@ class EventRehearsalBootstrap {
   int get unresolvedCount => actors
       .where(
         (actor) =>
+            actor.connectionState ==
+                EventRehearsalConnectionState.disconnected ||
             actor.status == EventRehearsalActorStatus.disconnected ||
             actor.status == EventRehearsalActorStatus.ambiguousClaim,
       )
@@ -483,8 +691,12 @@ String _requiredString(Map<Object?, Object?> map, String key) {
 
 int _requiredInt(Map<Object?, Object?> map, String key) {
   final value = map[key];
-  if (value is int) return value;
-  if (value is num) return value.toInt();
+  if (value is num &&
+      value.isFinite &&
+      value.abs() <= 9007199254740991 &&
+      value == value.truncateToDouble()) {
+    return value.toInt();
+  }
   throw FormatException('$key must be an integer.');
 }
 

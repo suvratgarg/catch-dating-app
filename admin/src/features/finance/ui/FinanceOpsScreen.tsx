@@ -42,6 +42,11 @@ import {
   type FinanceSourceId,
   useFinanceOpsController,
 } from "../controllers/useFinanceOpsController";
+import {
+  type MessagingBudgetController,
+  useMessagingBudgetController,
+} from "../controllers/useMessagingBudgetController";
+import {renderMessagingBudgetPanel} from "./messagingBudgetPanel";
 
 const kindOptions: Array<{label: string; value: FinanceIssueKind}> = [
   {label: "All issues", value: "all"},
@@ -51,24 +56,34 @@ const kindOptions: Array<{label: string; value: FinanceIssueKind}> = [
 ];
 
 export function FinanceOpsScreen({
+  adminRoles,
   onBackToList,
   onError,
+  onNotice,
   onSelectIssueId,
   selectedIssueId = null,
 }: {
+  adminRoles: string[];
   onBackToList?: () => void;
   onError: (message: string | null) => void;
+  onNotice: (message: string | null) => void;
   onSelectIssueId?: (issueId: string) => void;
   selectedIssueId?: string | null;
 }) {
   const controller = useFinanceOpsController({
+    adminRoles,
     onError,
     onSelectIssueId,
     selectedIssueId,
   });
+  const messagingBudgetController = useMessagingBudgetController({
+    onError,
+    onNotice,
+  });
   return (
     <FinanceOpsWorkspace
       controller={controller}
+      messagingBudgetController={messagingBudgetController}
       onBackToList={onBackToList}
     />
   );
@@ -76,9 +91,11 @@ export function FinanceOpsScreen({
 
 export function FinanceOpsWorkspace({
   controller,
+  messagingBudgetController,
   onBackToList,
 }: {
   controller: FinanceOpsController;
+  messagingBudgetController?: MessagingBudgetController;
   onBackToList?: () => void;
 }) {
   if (controller.selectedIssueId) {
@@ -92,6 +109,8 @@ export function FinanceOpsWorkspace({
   return (
     <AdminWorkbenchStack>
       <FinanceSourceAlerts controller={controller} />
+      {messagingBudgetController ?
+        renderMessagingBudgetPanel(messagingBudgetController) : null}
       <AdminMetricGrid ariaLabel="Finance state">
         <AdminMetricCard
           caption="Current capped overview preview"

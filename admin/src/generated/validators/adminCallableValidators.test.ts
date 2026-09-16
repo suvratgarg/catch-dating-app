@@ -9,7 +9,7 @@ import {sampleOverview} from "../../shared/api/sampleData";
 
 describe("generated admin callable validators", () => {
   it("covers every callable used by adminApi", () => {
-    expect(adminCallableValidationCoverage.callables).toHaveLength(40);
+    expect(adminCallableValidationCoverage.callables).toHaveLength(43);
     expect(adminCallableValidationCoverage.strictRequests).toContain(
       "adminGetHostAnalytics"
     );
@@ -28,9 +28,12 @@ describe("generated admin callable validators", () => {
         "adminListOrganizerClaimRequests",
         "adminSetOrganizerIndexStatus",
         "adminSetCrossPathsShowcaseEligibility",
+        "adminReviewEventMessagingBudget",
+        "adminDecideEventMessagingBudget",
+        "adminApplyEventMessagingBudget",
       ])
     );
-    expect(adminCallableValidationCoverage.strictResponses).toHaveLength(14);
+    expect(adminCallableValidationCoverage.strictResponses).toHaveLength(17);
     expect(adminCallableValidationCoverage.strictResponses).toEqual(
       expect.arrayContaining([
         "adminGetOverview",
@@ -43,6 +46,9 @@ describe("generated admin callable validators", () => {
         "adminCreateOrganizerDraftFromCandidate",
         "adminListCrossPathsShowcaseCandidates",
         "adminSetCrossPathsShowcaseEligibility",
+        "adminReviewEventMessagingBudget",
+        "adminDecideEventMessagingBudget",
+        "adminApplyEventMessagingBudget",
       ])
     );
   });
@@ -90,9 +96,9 @@ describe("generated admin callable validators", () => {
       note: "Assigned for review.",
     }],
     ["safety decision", "adminDecideSafetyTriageItem", {
-      targetPath: "moderationFlags/flag-1",
-      decision: "dismiss",
-      note: "No policy violation found.",
+      targetPath: "eventAssistanceCases/case:restricted-1",
+      decision: "review",
+      note: "The safety handoff was resolved.",
     }],
     ["marketing draft", "adminCreateMarketingContentDraft", {
       draftType: "event_highlights",
@@ -169,9 +175,9 @@ describe("generated admin callable validators", () => {
         },
       }],
       ["adminDecideSafetyTriageItem", {
-        targetPath: "moderationFlags/flag-1",
-        decision: "dismiss",
-        status: "dismissed",
+        targetPath: "eventAssistanceCases/case:restricted-1",
+        decision: "review",
+        status: "resolved",
       }],
       ["adminCreateMarketingContentDraft", {
         draft: {id: "draft-1"},

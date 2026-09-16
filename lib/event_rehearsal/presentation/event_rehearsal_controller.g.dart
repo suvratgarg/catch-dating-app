@@ -42,7 +42,7 @@ final class EventRehearsalControllerProvider
 }
 
 String _$eventRehearsalControllerHash() =>
-    r'09f32e8e3ab36dd2b082cfcee0e310641858bbb8';
+    r'693b12f29224580595066429d8d6625012a30afc';
 
 abstract class _$EventRehearsalController extends $Notifier<void> {
   void build();

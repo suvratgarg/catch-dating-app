@@ -230,6 +230,7 @@ class _EventRehearsalSetupSectionState
         modules: EventRehearsalModule.values
             .where(_modules.contains)
             .toList(growable: false),
+        unitOutcome: widget.session.setup.unitOutcome,
         movementSimulation: widget.session.setup.movementSimulation,
       ),
       _scenario,

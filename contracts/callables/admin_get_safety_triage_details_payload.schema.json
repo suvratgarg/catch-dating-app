@@ -8,7 +8,7 @@
   "properties": {
     "targetPath": {
       "type": "string",
-      "pattern": "^(reports|moderationFlags|eventSafetyReports)/[A-Za-z0-9_-]{1,180}$"
+      "pattern": "^(reports|moderationFlags|eventSafetyReports|eventAssistanceCases)/[A-Za-z0-9][A-Za-z0-9._:-]{0,179}$"
     }
   }
 }

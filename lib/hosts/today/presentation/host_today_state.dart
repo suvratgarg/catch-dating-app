@@ -85,6 +85,26 @@ class HostTodayAttentionData {
         primaryActionLabel: l10n.hostTodayAttentionOpenLive,
         icon: CatchIcons.eventLive,
       ),
+      HostAttentionKind.eventAssistanceCaseReview => HostTodayAttentionData(
+        item: item,
+        title: l10n.eventAssistanceHelpTitle,
+        body: l10n.hostTodayAttentionHelpBody(
+          count: count,
+          eventName: eventName,
+        ),
+        primaryActionLabel: l10n.eventAssistanceHelpReview,
+        icon: CatchIcons.helpOutlineRounded,
+      ),
+      HostAttentionKind.eventAssistanceDeliveryReview => HostTodayAttentionData(
+        item: item,
+        title: l10n.eventAssistanceDeliveryTitle,
+        body: l10n.hostTodayAttentionDeliveryBody(
+          count: count,
+          eventName: eventName,
+        ),
+        primaryActionLabel: l10n.eventAssistanceDeliveryReview,
+        icon: CatchIcons.sendRounded,
+      ),
       HostAttentionKind.eventWaitlistReview => HostTodayAttentionData(
         item: item,
         title: l10n.hostsHostHomeScreenStateTitleReviewWaitlist,

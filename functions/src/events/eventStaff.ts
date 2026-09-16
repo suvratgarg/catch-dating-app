@@ -6,6 +6,7 @@ import {appCheckCallableOptionsWithLimits} from
   "../shared/callableOptions";
 import {
   eventStaffGrantId,
+  eventOperatorExpiryMillis,
   eventOperatorPermissions,
   requireEventOperatorPermission,
 } from "../shared/eventOperatorAuthority";
@@ -100,7 +101,8 @@ export async function getEventOperatorAccessHandler(
     actorRole: access.role,
     permissions: access.role === "manager" ?
       eventOperatorPermissions : access.grant!.permissions,
-    grantExpiresAtMillis: access.grant?.expiresAt.toMillis() ?? null,
+    grantExpiresAtMillis: access.grant ?
+      eventOperatorExpiryMillis(access.grant) : null,
   };
 }
 
@@ -162,6 +164,12 @@ export async function grantEventStaffHandler(
     eventStaffGrantId(data.eventId, authUser.uid)
   );
   await db.runTransaction(async (tx) => {
+    const fresh = await requireEventManager(db, data.eventId, actorUid, tx);
+    if ((fresh.event.organizerId ?? fresh.event.clubId) !== organizerId ||
+        isEventOrganizerManager(fresh.organizer, fresh.event, authUser.uid)) {
+      throw new HttpsError("aborted", "Event staff authority changed.");
+    }
+    const now = deps.now();
     const [currentSnap, activeStaffSnap] = await Promise.all([
       tx.get(ref),
       tx.get(db.collection("eventStaffGrants")
@@ -179,22 +187,35 @@ export async function grantEventStaffHandler(
         "This event already has the maximum number of staff grants."
       );
     }
+    const committedAt = deps.now();
+    if (data.expiresAtMillis <= committedAt.toMillis() ||
+        data.expiresAtMillis >
+          committedAt.toMillis() + maxGrantDurationMillis) {
+      throw new HttpsError("failed-precondition",
+        "Staff access window changed.");
+    }
+    const groupDuties = current?.status === "active" ?
+      current.groupDuties ?? [] : [];
     const document: EventStaffGrantDocument = {
       organizerId,
       eventId: data.eventId,
       uid: authUser.uid,
       displayName: eventStaffDisplayName(authUser),
       phoneLastFour: phone.value!.slice(-4),
-      role: "checkInOperator",
+      role: groupDuties.length ? "eventOperator" : "checkInOperator",
+      groupDuties,
+      operatorExpiresAt: admin.firestore.Timestamp.fromMillis(
+        data.expiresAtMillis),
       permissions: eventOperatorPermissions,
       status: "active",
       createdBy: current?.createdBy ?? actorUid,
-      createdAt: current?.createdAt ?? now,
-      expiresAt: admin.firestore.Timestamp.fromMillis(data.expiresAtMillis),
+      createdAt: current?.createdAt ?? committedAt,
+      expiresAt: admin.firestore.Timestamp.fromMillis(Math.max(
+        data.expiresAtMillis, ...groupDuties.map((d) => d.expiresAtMillis))),
       revokedBy: null,
       revokedAt: null,
-      updatedAt: now,
-      revision: Math.max((current?.revision ?? 0) + 1, now.toMillis()),
+      updatedAt: committedAt,
+      revision: Math.max((current?.revision ?? 0) + 1, committedAt.toMillis()),
     };
     tx.set(ref, document);
   });
@@ -219,6 +240,7 @@ export async function revokeEventStaffHandler(
   );
   const now = deps.now();
   await db.runTransaction(async (tx) => {
+    await requireEventManager(db, data.eventId, actorUid, tx);
     const snap = await tx.get(ref);
     const grant = snap.data() as EventStaffGrantDocument | undefined;
     if (!grant || grant.eventId !== data.eventId) {
@@ -274,7 +296,7 @@ export function eventStaffDisplayName(
   return user.displayName?.trim() || "Event staff";
 }
 
-async function resolveStaffAuthUser(
+export async function resolveStaffAuthUser(
   getUserByPhoneNumber: EventStaffDeps["getUserByPhoneNumber"],
   phoneNumber: string
 ): Promise<admin.auth.UserRecord> {
@@ -302,17 +324,20 @@ function authErrorCode(error: unknown): string | null {
 async function requireEventManager(
   db: FirebaseFirestore.Firestore,
   eventId: string,
-  actorUid: string
+  actorUid: string,
+  transaction?: FirebaseFirestore.Transaction
 ): Promise<{
   event: EventDocument;
   organizer: EventOrganizerDocument;
 }> {
-  const eventSnap = await db.collection("events").doc(eventId).get();
+  const eventRef = db.collection("events").doc(eventId);
+  const eventSnap = transaction ? await transaction.get(eventRef) :
+    await eventRef.get();
   if (!eventSnap.exists) throw new HttpsError("not-found", "Event not found.");
   const event = requireDoc<EventDocument>(eventSnap, "EventDocument");
-  const organizer = requireEventOrganizer(
-    await eventOrganizerRef(db, event).get(), event
-  );
+  const organizerRef = eventOrganizerRef(db, event);
+  const organizer = requireEventOrganizer(transaction ?
+    await transaction.get(organizerRef) : await organizerRef.get(), event);
   if (!isEventOrganizerManager(organizer, event, actorUid)) {
     throw new HttpsError(
       "permission-denied",

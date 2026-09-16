@@ -31,12 +31,31 @@ const outputs = new Map([
 const checkOnly = process.argv.includes("--check");
 const selfTest = process.argv.includes("--self-test");
 const catalog = JSON.parse(fs.readFileSync(sourcePath, "utf8"));
+validateCatalog(catalog);
 
 if (selfTest) {
   const changed = structuredClone(catalog);
   changed.actions[0].summary = "simulated drift";
   if (renderAdmin(changed) === renderAdmin(catalog)) {
     throw new Error("Admin action catalog self-test did not detect drift.");
+  }
+  const brokenLinks = structuredClone(catalog);
+  const linkedAction = brokenLinks.actions.find((action) =>
+    action.workflowIds.length > 0
+  );
+  const linkedWorkflow = brokenLinks.workflows.find((workflow) =>
+    workflow.workflowId === linkedAction.workflowIds[0]
+  );
+  linkedWorkflow.actions = linkedWorkflow.actions.filter((actionId) =>
+    actionId !== linkedAction.actionId
+  );
+  try {
+    validateCatalog(brokenLinks);
+    throw new Error(
+      "Admin action catalog self-test accepted a missing workflow link."
+    );
+  } catch (error) {
+    if (!String(error).includes("does not list action")) throw error;
   }
   console.log("Admin action catalog generator self-test detected drift.");
   process.exit(0);
@@ -101,4 +120,51 @@ function renderFunctions(value) {
 
 function header() {
   return "// GENERATED FILE. Run: node tool/admin/generate_admin_action_catalog.mjs\n";
+}
+
+function validateCatalog(value) {
+  const actions = new Map();
+  for (const action of value.actions) {
+    if (actions.has(action.actionId)) {
+      throw new Error(`Duplicate admin action id: ${action.actionId}`);
+    }
+    actions.set(action.actionId, action);
+  }
+  const workflows = new Map();
+  for (const workflow of value.workflows) {
+    if (workflows.has(workflow.workflowId)) {
+      throw new Error(`Duplicate admin workflow id: ${workflow.workflowId}`);
+    }
+    workflows.set(workflow.workflowId, workflow);
+  }
+  for (const action of value.actions) {
+    for (const workflowId of action.workflowIds) {
+      const workflow = workflows.get(workflowId);
+      if (!workflow) {
+        throw new Error(
+          `Admin action ${action.actionId} names unknown workflow ${workflowId}.`
+        );
+      }
+      if (!workflow.actions.includes(action.actionId)) {
+        throw new Error(
+          `Admin workflow ${workflowId} does not list action ${action.actionId}.`
+        );
+      }
+    }
+  }
+  for (const workflow of value.workflows) {
+    for (const actionId of workflow.actions) {
+      const action = actions.get(actionId);
+      if (!action) {
+        throw new Error(
+          `Admin workflow ${workflow.workflowId} names unknown action ${actionId}.`
+        );
+      }
+      if (!action.workflowIds.includes(workflow.workflowId)) {
+        throw new Error(
+          `Admin action ${actionId} does not list workflow ${workflow.workflowId}.`
+        );
+      }
+    }
+  }
 }

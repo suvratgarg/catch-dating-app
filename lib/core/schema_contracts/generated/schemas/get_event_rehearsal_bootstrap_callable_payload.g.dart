@@ -24,5 +24,9 @@ const schemaGetEventRehearsalBootstrapCallablePayloadSchema = <String, Object?>{
       'minLength': 1,
       'maxLength': 180,
     },
+    'practiceOperatorId': <String, Object?>{
+      'type': 'string',
+      'pattern': '^practice-staff:[A-Za-z0-9_-]{1,60}\$',
+    },
   },
 };

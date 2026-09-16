@@ -2,6 +2,7 @@ import {onCall, CallableRequest} from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {requireAdmin} from "./adminAuth";
+import type {AdminRoleClaim} from "./adminAuth";
 import {writeAdminAuditLog} from "./adminAudit";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import type {AdminGetOverviewCallableResponse} from
@@ -12,6 +13,13 @@ import {
 import {validateCallableWithAjv} from "../shared/validation";
 
 const authScanPageSize = 1000;
+const restrictedEventAssistanceReadRoles: ReadonlySet<AdminRoleClaim> =
+  new Set([
+    "admin",
+    "adminOwner",
+    "safetyReviewer",
+    "support",
+  ]);
 
 export interface AdminOverviewMetric {
   id: string;
@@ -148,6 +156,7 @@ export async function adminGetOverviewHandler(
     openReports,
     pendingModerationFlags,
     openEventSafetyReports,
+    restrictedEventAssistance,
     pendingAccessApplications,
     pendingClubClaimRequests,
     indexReviewPages,
@@ -177,6 +186,7 @@ export async function adminGetOverviewHandler(
     countCollection(
       db.collection("eventSafetyReports").where("status", "==", "open")
     ),
+    loadRestrictedEventAssistanceOverview(db, adminContext.roles),
     countCollection(
       db.collection("accessApplications").where("status", "==", "pending")
     ),
@@ -258,8 +268,8 @@ export async function adminGetOverviewHandler(
       ),
       metric(
         "eventSafetyReports",
-        "Event safety reports",
-        openEventSafetyReports
+        "Event safety cases",
+        openEventSafetyReports + restrictedEventAssistance.count
       ),
       metric(
         "pendingApplications",
@@ -286,7 +296,10 @@ export async function adminGetOverviewHandler(
     queues: {
       safetyReports,
       moderationFlags,
-      eventSafetyReports,
+      eventSafetyReports: [
+        ...restrictedEventAssistance.items,
+        ...eventSafetyReports,
+      ].slice(0, 5),
       accessApplications,
       clubClaimRequests,
       clubIndexReviews,
@@ -330,6 +343,33 @@ export async function adminGetOverviewHandler(
       },
     ],
   };
+}
+
+/**
+ * Loads restricted event requests only for roles authorized to read safety
+ * details. Other overview roles do not query the restricted collection.
+ * @param {FirebaseFirestore.Firestore} db Firestore instance.
+ * @param {readonly AdminRoleClaim[]} roles Caller role claims.
+ * @return {Promise<object>} Authorized restricted count and queue rows.
+ */
+export async function loadRestrictedEventAssistanceOverview(
+  db: FirebaseFirestore.Firestore,
+  roles: readonly AdminRoleClaim[]
+): Promise<{count: number; items: AdminQueueItem[]}> {
+  if (!roles.some((role) => restrictedEventAssistanceReadRoles.has(role))) {
+    return {count: 0, items: []};
+  }
+
+  const [count, items] = await Promise.all([
+    countCollection(
+      db.collection("eventAssistanceCases")
+        .where("context.mode", "==", "live")
+        .where("owner", "==", "authorizedSafetyOperator")
+        .where("status", "==", "open")
+    ),
+    listRestrictedEventAssistanceCases(db),
+  ]);
+  return {count, items};
 }
 
 export const adminGetOverview = onCall(appCheckCallableOptions, (request) =>
@@ -391,6 +431,24 @@ async function listQueueItems(
   return snapshot.docs.map((doc) =>
     normalizeQueueItem(kind, `${collection}/${doc.id}`, doc.data())
   );
+}
+
+/** Lists live restricted guest requests for the authorized safety queue. */
+async function listRestrictedEventAssistanceCases(
+  db: FirebaseFirestore.Firestore
+): Promise<AdminQueueItem[]> {
+  const snapshot = await db.collection("eventAssistanceCases")
+    .where("context.mode", "==", "live")
+    .where("owner", "==", "authorizedSafetyOperator")
+    .where("status", "==", "open")
+    .orderBy("receivedAt", "desc")
+    .limit(5)
+    .get();
+  return snapshot.docs.map((doc) => normalizeQueueItem(
+    "eventAssistanceCase",
+    `eventAssistanceCases/${doc.id}`,
+    doc.data()
+  ));
 }
 
 /**
@@ -487,6 +545,20 @@ export function normalizeQueueItem(
       ].join(" - "),
       status,
       createdAt,
+      targetPath,
+    };
+  }
+  if (kind === "eventAssistanceCase") {
+    const context = objectValue(data.context);
+    return {
+      id: targetPath,
+      title: "Live event safety request",
+      detail: [
+        `event ${stringValue(context?.eventId) ?? "unknown"}`,
+        `attendee ${stringValue(data.attendeeId) ?? "unknown"}`,
+      ].join(" - "),
+      status,
+      createdAt: isoFromTimestamp(data.receivedAt),
       targetPath,
     };
   }
@@ -592,6 +664,9 @@ function metric(
  */
 function isoFromTimestamp(value: unknown): string | null {
   if (!value) return null;
+  if (Number.isSafeInteger(value) && (value as number) >= 0) {
+    return new Date(value as number).toISOString();
+  }
   if (value instanceof Date) return value.toISOString();
   if (
     typeof value === "object" &&

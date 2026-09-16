@@ -1,0 +1,196 @@
+{
+  "initial": {
+    "context": {
+      "mode": "live",
+      "organizerId": "o-00000000-0000-0000-0000-000000000123",
+      "eventId": "e-00000000-0000-0000-0000-000000000123"
+    },
+    "serverTime": 1788782400000,
+    "coverage": "page",
+    "status": "open",
+    "managerOptions": {
+      "actorUid": "host-1",
+      "managers": [
+        {
+          "uid": "host-1",
+          "displayName": "Sam"
+        },
+        {
+          "uid": "host-2",
+          "displayName": "Priya"
+        }
+      ]
+    },
+    "cases": [
+      {
+        "caseId": "case:dca4f95e3c0a905ed2b83e3e12af34cabc050cb87d5492797bf5004b9efd8d74",
+        "displayName": "Alex Morgan",
+        "sourceHash": "4322f7a0ddb415c4dc23aedd26c4567f035e2702e310354bcc7dc57a2dadb7d3",
+        "category": "eventLogistics",
+        "receivedAt": 1788782400000,
+        "availability": "current",
+        "revision": 0,
+        "attendeeId": "a-00000000-0000-0000-0000-000000000123",
+        "assignment": {
+          "kind": "unassigned"
+        },
+        "status": "open",
+        "resolution": null,
+        "canChange": true
+      }
+    ],
+    "nextCursor": null
+  },
+  "transfer": {
+    "context": {
+      "mode": "live",
+      "organizerId": "o-00000000-0000-0000-0000-000000000123",
+      "eventId": "e-00000000-0000-0000-0000-000000000123"
+    },
+    "serverTime": 1788782400000,
+    "operationRevision": 1,
+    "view": {
+      "caseId": "case:dca4f95e3c0a905ed2b83e3e12af34cabc050cb87d5492797bf5004b9efd8d74",
+      "displayName": "Alex Morgan",
+      "sourceHash": "f09d87b58a5163fcdb9dff2a0972c3cbc991e371a04c9221d68ddcb2f680ff46",
+      "category": "eventLogistics",
+      "receivedAt": 1788782400000,
+      "availability": "current",
+      "revision": 1,
+      "attendeeId": "a-00000000-0000-0000-0000-000000000123",
+      "assignment": {
+        "kind": "assigned",
+        "uid": "host-2",
+        "authority": "current"
+      },
+      "status": "open",
+      "resolution": null,
+      "canChange": true
+    },
+    "outcome": "applied"
+  },
+  "assigned": {
+    "context": {
+      "mode": "live",
+      "organizerId": "o-00000000-0000-0000-0000-000000000123",
+      "eventId": "e-00000000-0000-0000-0000-000000000123"
+    },
+    "serverTime": 1788782400000,
+    "coverage": "page",
+    "status": "open",
+    "managerOptions": {
+      "actorUid": "host-1",
+      "managers": [
+        {
+          "uid": "host-1",
+          "displayName": "Sam"
+        },
+        {
+          "uid": "host-2",
+          "displayName": "Priya"
+        }
+      ]
+    },
+    "cases": [
+      {
+        "caseId": "case:dca4f95e3c0a905ed2b83e3e12af34cabc050cb87d5492797bf5004b9efd8d74",
+        "displayName": "Alex Morgan",
+        "sourceHash": "f09d87b58a5163fcdb9dff2a0972c3cbc991e371a04c9221d68ddcb2f680ff46",
+        "category": "eventLogistics",
+        "receivedAt": 1788782400000,
+        "availability": "current",
+        "revision": 1,
+        "attendeeId": "a-00000000-0000-0000-0000-000000000123",
+        "assignment": {
+          "kind": "assigned",
+          "uid": "host-2",
+          "authority": "current"
+        },
+        "status": "open",
+        "resolution": null,
+        "canChange": true
+      }
+    ],
+    "nextCursor": null
+  },
+  "resolved": {
+    "context": {
+      "mode": "live",
+      "organizerId": "o-00000000-0000-0000-0000-000000000123",
+      "eventId": "e-00000000-0000-0000-0000-000000000123"
+    },
+    "serverTime": 1788782400000,
+    "operationRevision": 2,
+    "view": {
+      "caseId": "case:dca4f95e3c0a905ed2b83e3e12af34cabc050cb87d5492797bf5004b9efd8d74",
+      "displayName": "Alex Morgan",
+      "sourceHash": "94ebe0c9f9a2f596433b653cc2d55bbf733b7fd64d425176091e8235b28371ee",
+      "category": "eventLogistics",
+      "receivedAt": 1788782400000,
+      "availability": "current",
+      "revision": 2,
+      "attendeeId": "a-00000000-0000-0000-0000-000000000123",
+      "assignment": {
+        "kind": "assigned",
+        "uid": "host-2",
+        "authority": "current"
+      },
+      "status": "resolved",
+      "resolution": {
+        "outcome": "resolved",
+        "actorUid": "host-1",
+        "at": 1788782400000
+      },
+      "canChange": false
+    },
+    "outcome": "applied"
+  },
+  "handled": {
+    "context": {
+      "mode": "live",
+      "organizerId": "o-00000000-0000-0000-0000-000000000123",
+      "eventId": "e-00000000-0000-0000-0000-000000000123"
+    },
+    "serverTime": 1788782400000,
+    "coverage": "page",
+    "status": "resolved",
+    "managerOptions": {
+      "actorUid": "host-1",
+      "managers": [
+        {
+          "uid": "host-1",
+          "displayName": "Sam"
+        },
+        {
+          "uid": "host-2",
+          "displayName": "Priya"
+        }
+      ]
+    },
+    "cases": [
+      {
+        "caseId": "case:dca4f95e3c0a905ed2b83e3e12af34cabc050cb87d5492797bf5004b9efd8d74",
+        "displayName": "Alex Morgan",
+        "sourceHash": "94ebe0c9f9a2f596433b653cc2d55bbf733b7fd64d425176091e8235b28371ee",
+        "category": "eventLogistics",
+        "receivedAt": 1788782400000,
+        "availability": "current",
+        "revision": 2,
+        "attendeeId": "a-00000000-0000-0000-0000-000000000123",
+        "assignment": {
+          "kind": "assigned",
+          "uid": "host-2",
+          "authority": "current"
+        },
+        "status": "resolved",
+        "resolution": {
+          "outcome": "resolved",
+          "actorUid": "host-1",
+          "at": 1788782400000
+        },
+        "canChange": false
+      }
+    ],
+    "nextCursor": null
+  }
+}

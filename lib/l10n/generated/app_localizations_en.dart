@@ -6531,6 +6531,34 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostTodayAttentionOpenLive => 'Open live controls';
 
   @override
+  String hostTodayAttentionHelpBody({
+    required int count,
+    required Object eventName,
+  }) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count guests need help at $eventName.',
+      one: 'One guest needs help at $eventName.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String hostTodayAttentionDeliveryBody({
+    required int count,
+    required Object eventName,
+  }) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count guest updates need delivery review for $eventName.',
+      one: 'One guest update needs delivery review for $eventName.',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String hostTodayAttentionWaitlistBody({
     required Object count,
     required Object eventName,
@@ -17690,6 +17718,1916 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsCreateEventCreateAction => 'Create event';
+
+  @override
+  String get hostEventRehearsalStaffTitle => 'Practice team';
+
+  @override
+  String get hostEventRehearsalStaffBody =>
+      'Try running the event with a lead, pacer or sweep. These are fictional staff, with access only to their assigned groups.';
+
+  @override
+  String get hostEventRehearsalStaffAdd => 'Add practice staff';
+
+  @override
+  String hostEventRehearsalStaffDefaultName({required int number}) {
+    return 'Practice staff $number';
+  }
+
+  @override
+  String get hostEventRehearsalStaffName => 'Name';
+
+  @override
+  String get hostEventRehearsalStaffGroup => 'Group';
+
+  @override
+  String get hostEventRehearsalStaffDuty => 'Duty';
+
+  @override
+  String get hostEventRehearsalStaffExpiry => 'Access ends';
+
+  @override
+  String hostEventRehearsalStaffUntil({required String time}) {
+    return 'Until $time on the practice clock';
+  }
+
+  @override
+  String get hostEventRehearsalStaffNoDuty => 'No group duties';
+
+  @override
+  String get hostEventRehearsalStaffFormerGroup => 'Former group';
+
+  @override
+  String get hostEventRehearsalStaffEdit => 'Edit duty';
+
+  @override
+  String get hostEventRehearsalStaffRemove => 'Remove duty';
+
+  @override
+  String get hostEventRehearsalStaffSave => 'Save practice staff';
+
+  @override
+  String get hostEventRehearsalStaffSaved => 'Practice team updated';
+
+  @override
+  String get hostEventRehearsalStaffRetry => 'Check this save again';
+
+  @override
+  String get hostEventRehearsalStaffPending =>
+      'The result is not confirmed yet. Check the same save before making another change.';
+
+  @override
+  String get hostEventRehearsalStaffRefresh => 'Reload practice team';
+
+  @override
+  String get hostEventRehearsalStaffReviewChanged =>
+      'This run has changed. Reload the team before editing.';
+
+  @override
+  String get hostEventRehearsalStaffExpired => 'Access ended';
+
+  @override
+  String get hostEventRehearsalStaffReadOnly =>
+      'Staff can be added or reassigned while this rehearsal is active. Saved duties can still be removed.';
+
+  @override
+  String get hostEventRehearsalStaffEndOfEvent => 'End of event';
+
+  @override
+  String hostEventRehearsalStaffMinutes({required int minutes}) {
+    return 'In $minutes minutes';
+  }
+
+  @override
+  String get eventAssistanceDutyLead => 'Group lead';
+
+  @override
+  String get eventAssistanceDutyPacer => 'Pacer';
+
+  @override
+  String get eventAssistanceDutySweep => 'Sweep';
+
+  @override
+  String get eventAssistanceDutyLeadBody =>
+      'Lead departures, hand guests over to another group, record checkpoints and account for guests.';
+
+  @override
+  String get eventAssistanceDutyPacerBody =>
+      'Lead this pace group, hand guests over to another group, record checkpoints and account for guests.';
+
+  @override
+  String get eventAssistanceDutySweepBody =>
+      'Record checkpoints and account for guests in this group.';
+
+  @override
+  String get eventAssistanceVisitBody =>
+      'Has this guest returned or left the event? Leave them unmarked if you haven’t confirmed.';
+
+  @override
+  String get eventAssistanceVisitCurrent => 'Recorded status';
+
+  @override
+  String get eventAssistanceVisitMarkReturned => 'Mark returned';
+
+  @override
+  String get eventAssistanceVisitMarkDeparted => 'Mark left the event';
+
+  @override
+  String get eventAssistanceVisitMarkUnresolved => 'Leave unmarked';
+
+  @override
+  String get eventAssistanceVisitSaving => 'Saving this observation…';
+
+  @override
+  String get eventAssistanceVisitUnconfirmed =>
+      'The save is not confirmed. Retry the same observation before making another change.';
+
+  @override
+  String get eventAssistanceVisitReviewAgain =>
+      'The visit or your access has changed. Reload and review the current status.';
+
+  @override
+  String get eventAssistanceVisitSaved =>
+      'Save confirmed. The current recorded status is shown above.';
+
+  @override
+  String get eventAssistanceVisitReadOnly =>
+      'Your current role cannot update this guest’s visit.';
+
+  @override
+  String eventAssistanceVisitPendingChoice({required String status}) {
+    return 'Awaiting confirmation: $status';
+  }
+
+  @override
+  String get eventAssistanceVisitRetry => 'Retry this observation';
+
+  @override
+  String get eventAssistanceVisitReload => 'Reload visit';
+
+  @override
+  String get eventAssistanceVisitDone => 'Done';
+
+  @override
+  String get eventAssistanceVisitReview => 'Review visit';
+
+  @override
+  String get eventAssistanceVisitNotApplicable =>
+      'This event does not use a return sweep.';
+
+  @override
+  String get eventAssistanceVisitNotCheckedIn =>
+      'This guest is not currently checked in.';
+
+  @override
+  String get eventAssistanceVisitNoDeparture =>
+      'Record the group’s departure before reviewing this checkpoint.';
+
+  @override
+  String get eventAssistanceVisitNotOnDeparture =>
+      'This guest was not in the recorded departure group.';
+
+  @override
+  String get eventAssistanceVisitChanged =>
+      'This visit has changed. Close this review and open the guest again.';
+
+  @override
+  String get eventAssistanceVisitSetupChanged =>
+      'The event setup has changed since this departure.';
+
+  @override
+  String get eventAssistanceVisitDifferentCheckpoint =>
+      'This review is for a different checkpoint.';
+
+  @override
+  String get eventAssistanceVisitNoDestination =>
+      'This departure has no recorded destination.';
+
+  @override
+  String get eventAssistanceVisitNotCheckpoint =>
+      'The recorded destination is not a checkpoint.';
+
+  @override
+  String get eventAssistanceVisitNoVisit =>
+      'This practice guest has no recorded visit yet.';
+
+  @override
+  String get hostEventRehearsalAssistanceRole => 'Assistance role';
+
+  @override
+  String get hostEventRehearsalAssistanceRoleBody =>
+      'Practise guest and group help with this person’s permissions. You still control the rehearsal as Host.';
+
+  @override
+  String get hostEventRehearsalHostRole => 'Host';
+
+  @override
+  String get hostEventRehearsalUnavailableRole => 'Unavailable staff role';
+
+  @override
+  String hostEventRehearsalAssistanceAs({required String name}) {
+    return 'Synthetic guests · Assistance as $name';
+  }
+
+  @override
+  String get eventAssistanceVisitCheckpointContext =>
+      'This records the event visit. Use the checkpoint report to confirm arrival there.';
+
+  @override
+  String get eventAssistanceGroupReview => 'Review group';
+
+  @override
+  String get eventAssistanceGroupBody =>
+      'Manage who is responsible for this guest in a pace group.';
+
+  @override
+  String get eventAssistanceGroupCurrent => 'Current group';
+
+  @override
+  String get eventAssistanceGroupNone => 'No accepted group';
+
+  @override
+  String get eventAssistanceGroupPrevious =>
+      'The previous group assignment needs review.';
+
+  @override
+  String get eventAssistanceGroupPlace => 'Assign to a group';
+
+  @override
+  String get eventAssistanceGroupPropose => 'Hand over to another group';
+
+  @override
+  String get eventAssistanceGroupAccept => 'Accept into this group';
+
+  @override
+  String get eventAssistanceGroupReject => 'Decline handover';
+
+  @override
+  String get eventAssistanceGroupCancel => 'Cancel handover';
+
+  @override
+  String get eventAssistanceGroupLeave => 'Remove from group';
+
+  @override
+  String get eventAssistanceGroupChoose => 'Group';
+
+  @override
+  String get eventAssistanceGroupReceiver => 'Receiving host';
+
+  @override
+  String get eventAssistanceGroupDeadline => 'Accept by';
+
+  @override
+  String get eventAssistanceGroupProposeBody =>
+      'The receiving host must accept before the guest’s group changes. This does not send a message.';
+
+  @override
+  String get eventAssistanceGroupPlaceBody =>
+      'You will take responsibility for this guest in the selected group.';
+
+  @override
+  String get eventAssistanceGroupAcceptBody =>
+      'You will take responsibility for this guest in the requested group.';
+
+  @override
+  String get eventAssistanceGroupRejectBody =>
+      'Decline this request without accepting responsibility for the guest.';
+
+  @override
+  String get eventAssistanceGroupCancelBody => 'Cancel this handover request.';
+
+  @override
+  String get eventAssistanceGroupLeaveBody =>
+      'This removes group responsibility. Their event attendance stays unchanged.';
+
+  @override
+  String eventAssistanceGroupPending({required String group}) {
+    return 'Waiting for acceptance into $group.';
+  }
+
+  @override
+  String get eventAssistanceGroupExpired =>
+      'The handover request expired. The group assignment is unchanged.';
+
+  @override
+  String get eventAssistanceGroupChanged =>
+      'Refresh the group details before continuing.';
+
+  @override
+  String get eventAssistanceGroupClosedAccepted =>
+      'The receiving host accepted the handover.';
+
+  @override
+  String get eventAssistanceGroupClosedRejected =>
+      'The receiving host declined the handover.';
+
+  @override
+  String get eventAssistanceGroupClosedCancelled =>
+      'The handover was cancelled.';
+
+  @override
+  String get eventAssistanceGroupNoActions =>
+      'No group actions are available for this guest under your current access.';
+
+  @override
+  String get eventAssistanceGroupNoReceivers =>
+      'Receiving hosts are unavailable in this review. Refresh the group details to try again.';
+
+  @override
+  String get eventAssistanceGroupSaving => 'Saving this group action…';
+
+  @override
+  String get eventAssistanceGroupUnconfirmed =>
+      'This action has not been confirmed. Retry the same action before making another change.';
+
+  @override
+  String get eventAssistanceGroupSaved => 'Group action confirmed.';
+
+  @override
+  String get eventAssistanceGroupRetry => 'Retry this group action';
+
+  @override
+  String get eventAssistanceGroupRefresh => 'Refresh group details';
+
+  @override
+  String get eventAssistanceGroupConfirm => 'Confirm group action';
+
+  @override
+  String get eventAssistanceGroupChooseAgain => 'Choose another action';
+
+  @override
+  String get eventAssistanceGroupYou => 'You';
+
+  @override
+  String get eventAssistanceGroupUnnamedHost => 'Organizer host';
+
+  @override
+  String get eventAssistanceGroupUnknown => 'Previous group';
+
+  @override
+  String eventAssistanceGroupSelected({required String action}) {
+    return 'Selected action: $action';
+  }
+
+  @override
+  String get eventAssistanceGroupNotApplicable =>
+      'Group handovers apply to events with configured pace groups.';
+
+  @override
+  String get eventAssistanceGroupRosterTitle => 'Pace groups';
+
+  @override
+  String get eventAssistanceGroupRosterBody =>
+      'Review a guest’s group or hand over responsibility to another host.';
+
+  @override
+  String get eventAssistanceGroupNoGuests =>
+      'No guests are available to review.';
+
+  @override
+  String get eventAssistanceGroupGuest => 'Guest';
+
+  @override
+  String eventAssistanceGroupReceiverValue({required String name}) {
+    return 'Receiving host: $name';
+  }
+
+  @override
+  String get eventAssistanceGroupMissingName =>
+      'Some hosts have no name on file and can’t be selected.';
+
+  @override
+  String get eventAssistanceDepartureTitle => 'Record departure';
+
+  @override
+  String get eventAssistanceDepartureBody =>
+      'Confirm after your group starts moving. This updates your confirmed destination; sending guest directions is a separate action.';
+
+  @override
+  String get eventAssistanceDepartureCurrent => 'Last confirmed destination';
+
+  @override
+  String get eventAssistanceDepartureUnrecorded => 'No departure recorded yet';
+
+  @override
+  String get eventAssistanceDepartureSourceChanged =>
+      'The event setup changed. Review the destination again.';
+
+  @override
+  String get eventAssistanceDepartureDestination => 'Where are you heading?';
+
+  @override
+  String get eventAssistanceDepartureRecordRoster => 'Record who is leaving';
+
+  @override
+  String get eventAssistanceDepartureRosterBody =>
+      'Select only people you saw leave with this group. Their current check-in and group are checked before saving.';
+
+  @override
+  String eventAssistanceDepartureSelected({required int count}) {
+    return '$count people selected';
+  }
+
+  @override
+  String get eventAssistanceDepartureSearch => 'Find a guest';
+
+  @override
+  String get eventAssistanceDepartureNoGuests => 'No matching guests';
+
+  @override
+  String get eventAssistanceDeparturePreviousPeople => 'Previous people';
+
+  @override
+  String get eventAssistanceDepartureNextPeople => 'Next people';
+
+  @override
+  String get eventAssistanceDepartureNobody =>
+      'An empty selection records that nobody left with you.';
+
+  @override
+  String get eventAssistanceDepartureRequestCheckpoint =>
+      'Request a checkpoint report';
+
+  @override
+  String get eventAssistanceDepartureReportMyself =>
+      'I will check this roster at the next stop.';
+
+  @override
+  String get eventAssistanceDepartureDeadline => 'Report by';
+
+  @override
+  String get eventAssistanceDepartureConfirm => 'Confirm departure';
+
+  @override
+  String get eventAssistanceDepartureUnavailable =>
+      'Departure is unavailable. Check that the event is live, a destination is configured, and you have a current group duty.';
+
+  @override
+  String get eventAssistanceDepartureReviewing =>
+      'Checking the selected roster…';
+
+  @override
+  String get eventAssistanceDepartureSaving => 'Recording departure…';
+
+  @override
+  String get eventAssistanceDepartureUnknown =>
+      'The result is unconfirmed. Retry to check this same departure.';
+
+  @override
+  String get eventAssistanceDepartureChanged =>
+      'The review changed. Reload before making a new departure decision.';
+
+  @override
+  String get eventAssistanceDepartureSaved => 'Departure recorded';
+
+  @override
+  String get eventAssistanceDepartureRosterSkipped =>
+      'Departure roster was not recorded';
+
+  @override
+  String eventAssistanceDepartureReportAt({required String time}) {
+    return 'You will report by $time';
+  }
+
+  @override
+  String get eventAssistanceDepartureRetry => 'Retry this departure';
+
+  @override
+  String get eventAssistanceDepartureReload => 'Reload departure details';
+
+  @override
+  String get eventAssistanceDepartureOtherPending =>
+      'Resolve the original group action before recording another departure.';
+
+  @override
+  String get eventAssistanceMovementTitle => 'Group movement';
+
+  @override
+  String get eventAssistanceMovementBody =>
+      'Record where your group is heading and who is travelling with you.';
+
+  @override
+  String get eventAssistanceMovementGroup => 'Group';
+
+  @override
+  String get eventAssistanceMovementEveryone => 'Everyone';
+
+  @override
+  String get eventAssistanceCheckpointTitle => 'Checkpoint arrivals';
+
+  @override
+  String eventAssistanceCheckpointDeparture({required int number}) {
+    return 'From departure $number';
+  }
+
+  @override
+  String get eventAssistanceCheckpointBody =>
+      'Select guests you have seen at this checkpoint. Other guests stay unconfirmed. Event check-in is unchanged.';
+
+  @override
+  String eventAssistanceCheckpointSelected({
+    required int count,
+    required int total,
+  }) {
+    return '$count of $total guests observed';
+  }
+
+  @override
+  String get eventAssistanceCheckpointUnknownGuest =>
+      'Guest record unavailable';
+
+  @override
+  String get eventAssistanceCheckpointUnknownGuestBody =>
+      'Kept in this departure roster. Reload before changing this observation.';
+
+  @override
+  String get eventAssistanceCheckpointVisitChanged =>
+      'The guest’s event visit changed. Earlier observations remain in this report.';
+
+  @override
+  String get eventAssistanceCheckpointEarlierObservation =>
+      'Observed in an earlier report';
+
+  @override
+  String get eventAssistanceCheckpointNotObserved =>
+      'Arrival not yet confirmed';
+
+  @override
+  String get eventAssistanceCheckpointEmptyRoster =>
+      'This departure explicitly recorded an empty roster. You can save an empty checkpoint report.';
+
+  @override
+  String get eventAssistanceCheckpointCorrection => 'Reason for correction';
+
+  @override
+  String get eventAssistanceCheckpointCorrectionBody =>
+      'Explain why you are removing an earlier arrival observation.';
+
+  @override
+  String get eventAssistanceCheckpointNoRoster =>
+      'No guest roster was recorded for this departure.';
+
+  @override
+  String get eventAssistanceCheckpointNoDestination =>
+      'No checkpoint destination was recorded for this departure.';
+
+  @override
+  String get eventAssistanceCheckpointNotApplicable =>
+      'This destination does not have a checkpoint report.';
+
+  @override
+  String get eventAssistanceCheckpointSetupChanged =>
+      'The event setup changed. This original departure can no longer accept new arrival observations.';
+
+  @override
+  String get eventAssistanceCheckpointSaving => 'Saving the checkpoint report…';
+
+  @override
+  String get eventAssistanceCheckpointUnconfirmed =>
+      'The save is unconfirmed. Retry this same report to check the result.';
+
+  @override
+  String get eventAssistanceCheckpointChanged =>
+      'The report or your access changed. Reload before making a new observation.';
+
+  @override
+  String get eventAssistanceCheckpointSaved =>
+      'Checkpoint report saved. The latest recorded observations are shown above.';
+
+  @override
+  String get eventAssistanceCheckpointReadOnly =>
+      'This review does not allow arrival reporting.';
+
+  @override
+  String get eventAssistanceCheckpointSave => 'Save checkpoint report';
+
+  @override
+  String get eventAssistanceCheckpointRetry => 'Retry this report';
+
+  @override
+  String get eventAssistanceCheckpointReload => 'Reload checkpoint';
+
+  @override
+  String eventAssistanceCheckpointDue({required String deadline}) {
+    return 'Report requested by $deadline';
+  }
+
+  @override
+  String eventAssistanceCheckpointOverdue({required String deadline}) {
+    return 'Report overdue · requested by $deadline';
+  }
+
+  @override
+  String get eventAssistanceCheckpointDiscrepancy =>
+      'The saved report still has unconfirmed guests.';
+
+  @override
+  String get eventAssistanceCheckpointComplete =>
+      'Every guest on this departure roster has an arrival observation.';
+
+  @override
+  String get eventAssistanceCheckpointClosedOut =>
+      'This reporting request was closed. Closure does not add arrival observations.';
+
+  @override
+  String get eventAssistanceHistoryTitle => 'Departure rosters & checkpoints';
+
+  @override
+  String get eventAssistanceHistoryBody =>
+      'Open a recorded departure to review arrivals at its checkpoint. Reports describe that departure, even after the group moves again.';
+
+  @override
+  String get eventAssistanceHistoryEmpty =>
+      'No recorded departure rosters on this page.';
+
+  @override
+  String get eventAssistanceHistoryEarlierSetup =>
+      'Destination from an earlier setup';
+
+  @override
+  String eventAssistanceHistoryDepartureAt({
+    required int number,
+    required String date,
+    required String time,
+  }) {
+    return 'Departure $number · $date, $time';
+  }
+
+  @override
+  String eventAssistanceHistoryRosterSize({required int count}) {
+    return '$count guests recorded as leaving';
+  }
+
+  @override
+  String get eventAssistanceHistoryNoReport =>
+      'Checkpoint report not yet recorded';
+
+  @override
+  String eventAssistanceHistoryObserved({
+    required int count,
+    required int total,
+  }) {
+    return 'Last report: $count of $total guests observed';
+  }
+
+  @override
+  String get eventAssistanceHistoryNoCheckpoint =>
+      'No checkpoint report for this destination';
+
+  @override
+  String get eventAssistanceHistoryEarlier => 'Earlier departures';
+
+  @override
+  String get eventAssistanceHistoryNewer => 'Newer departures';
+
+  @override
+  String get eventAssistanceHistoryReload => 'Reload history';
+
+  @override
+  String get eventAssistanceCheckpointSelectedObservation =>
+      'Selected for this report';
+
+  @override
+  String get eventAssistanceCheckpointRemovingObservation =>
+      'Removing an earlier observation';
+
+  @override
+  String get eventAssistanceCheckpointRequestTitle => 'Checkpoint request';
+
+  @override
+  String get eventAssistanceCheckpointRequestManage =>
+      'Review checkpoint request';
+
+  @override
+  String get eventAssistanceCheckpointRequestBody =>
+      'Close this request after every unconfirmed guest has a recorded outcome. Arrival observations stay unchanged.';
+
+  @override
+  String get eventAssistanceCheckpointRequestMissing =>
+      'No checkpoint report was requested for this departure.';
+
+  @override
+  String get eventAssistanceCheckpointRequestUnknown =>
+      'Reload to check whether this request can be closed.';
+
+  @override
+  String get eventAssistanceCheckpointRequestReady =>
+      'All unconfirmed guests have been recorded as returned or departed.';
+
+  @override
+  String get eventAssistanceCheckpointRequestReportFirst =>
+      'Save an arrival report before reviewing closeout.';
+
+  @override
+  String get eventAssistanceCheckpointRequestResolveFirst =>
+      'Some unconfirmed guests still need an outcome. Review their visit status before closing this request.';
+
+  @override
+  String get eventAssistanceCheckpointRequestReason =>
+      'Reason for this decision';
+
+  @override
+  String get eventAssistanceCheckpointRequestClose =>
+      'Close checkpoint request';
+
+  @override
+  String get eventAssistanceCheckpointRequestReopen =>
+      'Reopen checkpoint request';
+
+  @override
+  String get eventAssistanceCheckpointRequestAuthority =>
+      'Only an organizer or the responsible reporter with current group access can close or reopen this request.';
+
+  @override
+  String get eventAssistanceCheckpointRequestSaving =>
+      'Saving your checkpoint decision…';
+
+  @override
+  String get eventAssistanceCheckpointRequestUnconfirmed =>
+      'The outcome is not confirmed. Retry this same decision to check its result.';
+
+  @override
+  String get eventAssistanceCheckpointRequestSaved =>
+      'Your decision was saved. The latest request status is shown above.';
+
+  @override
+  String get eventAssistanceCheckpointRequestReassign =>
+      'Change responsible reporter';
+
+  @override
+  String get eventAssistanceCheckpointRequestRetry =>
+      'Retry checkpoint decision';
+
+  @override
+  String get eventAssistanceCheckpointVisitsTitle =>
+      'Arrival still unconfirmed';
+
+  @override
+  String get eventAssistanceCheckpointVisitsBody =>
+      'Review a guest to record whether they returned or left the event.';
+
+  @override
+  String get eventAssistanceCheckpointVisitUnknown =>
+      'Visit outcome is unavailable. Reload to review.';
+
+  @override
+  String get eventAssistanceCheckpointVisitBeforeDeparture =>
+      'The recorded outcome predates this departure. Review their status again.';
+
+  @override
+  String get eventAssistanceCheckpointVisitReview => 'Review guest status';
+
+  @override
+  String get eventAssistanceCheckpointReporterBody =>
+      'Choose someone with access to this group through the original reporting deadline. The deadline stays the same.';
+
+  @override
+  String get eventAssistanceCheckpointReporterLabel => 'Reporter';
+
+  @override
+  String get eventAssistanceCheckpointReporterEmpty =>
+      'No other eligible reporter is available. Review group duties before changing this request.';
+
+  @override
+  String get eventAssistanceCheckpointReporterUnnamed =>
+      'Some eligible hosts have no display name. Add their name before selecting them.';
+
+  @override
+  String get eventAssistanceCheckpointReporterUnknown =>
+      'Reporter details unavailable';
+
+  @override
+  String eventAssistanceCheckpointReporterCurrent({required String name}) {
+    return 'Responsible reporter: $name';
+  }
+
+  @override
+  String get eventAssistanceCheckpointReporterCancel =>
+      'Cancel reporter change';
+
+  @override
+  String get eventAssistanceCheckpointReporterSave => 'Save reporter change';
+
+  @override
+  String get eventAssistanceHelpTitle => 'Guest help';
+
+  @override
+  String get eventAssistanceHelpBody =>
+      'Review practical requests and decide who will follow up.';
+
+  @override
+  String get eventAssistanceHelpOpen => 'Open';
+
+  @override
+  String get eventAssistanceHelpHandled => 'Handled';
+
+  @override
+  String get eventAssistanceHelpEmptyOpen => 'No open requests on this page.';
+
+  @override
+  String get eventAssistanceHelpEmptyHandled =>
+      'No handled requests on this page.';
+
+  @override
+  String get eventAssistanceHelpReview => 'Review requests';
+
+  @override
+  String get eventAssistanceHelpPageBody =>
+      'This is one page of requests. Reload to check for updates.';
+
+  @override
+  String get eventAssistanceHelpPrevious => 'Previous page';
+
+  @override
+  String get eventAssistanceHelpNext => 'Next page';
+
+  @override
+  String get eventAssistanceHelpReload => 'Reload requests';
+
+  @override
+  String get eventAssistanceHelpUnknownGuest => 'Guest details unavailable';
+
+  @override
+  String get eventAssistanceHelpLogistics => 'Event logistics';
+
+  @override
+  String get eventAssistanceHelpAccessibility => 'Accessibility help';
+
+  @override
+  String get eventAssistanceHelpOther => 'Other practical help';
+
+  @override
+  String get eventAssistanceHelpUnassigned => 'No host assigned';
+
+  @override
+  String get eventAssistanceHelpUnknownHost =>
+      'Assigned host details unavailable';
+
+  @override
+  String get eventAssistanceHelpOwnerRemoved => 'Needs a new host';
+
+  @override
+  String get eventAssistanceHelpResolved => 'Resolved';
+
+  @override
+  String get eventAssistanceHelpDeclined => 'Declined';
+
+  @override
+  String get eventAssistanceHelpSourceChanged =>
+      'The guest record has changed. This request is read-only.';
+
+  @override
+  String get eventAssistanceHelpLegacy =>
+      'This older request needs a source review before it can be handled.';
+
+  @override
+  String get eventAssistanceHelpTake => 'I’ll handle this';
+
+  @override
+  String get eventAssistanceHelpTransfer => 'Assign to a host';
+
+  @override
+  String get eventAssistanceHelpResolve => 'Mark resolved';
+
+  @override
+  String get eventAssistanceHelpDecline => 'Decline request';
+
+  @override
+  String get eventAssistanceHelpTakeBody =>
+      'Record yourself as responsible for following up with this guest.';
+
+  @override
+  String get eventAssistanceHelpTransferBody =>
+      'Choose an existing host to follow up with this guest.';
+
+  @override
+  String get eventAssistanceHelpResolveBody =>
+      'Confirm that this guest’s request has been handled.';
+
+  @override
+  String get eventAssistanceHelpDeclineBody =>
+      'Record that this request cannot be fulfilled.';
+
+  @override
+  String get eventAssistanceHelpHost => 'Responsible host';
+
+  @override
+  String get eventAssistanceHelpNoHosts => 'Reload to review available hosts.';
+
+  @override
+  String get eventAssistanceHelpUnnamedHosts =>
+      'Hosts need a distinct display name to appear here.';
+
+  @override
+  String get eventAssistanceHelpConfirm => 'Save decision';
+
+  @override
+  String get eventAssistanceHelpChooseAgain => 'Choose another action';
+
+  @override
+  String get eventAssistanceHelpSaving => 'Saving this decision…';
+
+  @override
+  String get eventAssistanceHelpUnconfirmed =>
+      'The save has not been confirmed. Retry the same decision to find out whether it was saved.';
+
+  @override
+  String get eventAssistanceHelpChanged =>
+      'The request or your access changed. Reload before making a new decision.';
+
+  @override
+  String get eventAssistanceHelpSaved => 'Decision saved.';
+
+  @override
+  String get eventAssistanceHelpPending => 'Confirmation needed';
+
+  @override
+  String get eventAssistanceHelpPendingBody =>
+      'Review this earlier decision to confirm its outcome.';
+
+  @override
+  String get eventAssistanceHelpMissing =>
+      'This request is no longer on the current page. Reload the queue to review its latest state.';
+
+  @override
+  String get eventAssistanceHelpPracticeUnknown =>
+      'Some older practice help flags do not have a reviewable request.';
+
+  @override
+  String get eventAssistanceHelpPracticeHost =>
+      'Switch to the host role to handle practical help requests.';
+
+  @override
+  String eventAssistanceHelpAssigned({required String name}) {
+    return 'Responsible: $name';
+  }
+
+  @override
+  String eventAssistanceHelpReceived({
+    required String date,
+    required String time,
+  }) {
+    return 'Requested $date at $time';
+  }
+
+  @override
+  String eventAssistanceHelpSelected({required String action}) {
+    return 'Decision: $action';
+  }
+
+  @override
+  String get eventAssistanceHelpReadOnly => 'Review only';
+
+  @override
+  String get eventAssistanceHelpRetry => 'Retry this decision';
+
+  @override
+  String eventAssistanceHelpTransferValue({required String name}) {
+    return 'Assign to $name';
+  }
+
+  @override
+  String get eventAssistanceDeliveryStatusNotSubmitted => 'Not yet sent';
+
+  @override
+  String get eventAssistanceDeliveryStatusReserved => 'Preparing to send';
+
+  @override
+  String get eventAssistanceDeliveryStatusUnknown => 'Delivery unconfirmed';
+
+  @override
+  String get eventAssistanceDeliveryStatusAccepted => 'Accepted by provider';
+
+  @override
+  String get eventAssistanceDeliveryStatusDelivered => 'Delivered';
+
+  @override
+  String get eventAssistanceDeliveryStatusRead => 'Read';
+
+  @override
+  String get eventAssistanceDeliveryStatusFailed => 'Delivery failed';
+
+  @override
+  String get eventAssistanceDeliveryStatusNotDispatched => 'Not sent';
+
+  @override
+  String get eventAssistanceDeliveryStatusRevoked => 'Message revoked';
+
+  @override
+  String get eventAssistanceDeliveryStatusConflictingEvidence =>
+      'Delivery reports disagree';
+
+  @override
+  String get eventAssistanceDeliveryPurposeJoiningUpdate => 'Joining update';
+
+  @override
+  String get eventAssistanceDeliveryPurposeJoiningInstructions =>
+      'Joining instructions';
+
+  @override
+  String get eventAssistanceDeliveryPurposePlanChanged => 'Plan changed';
+
+  @override
+  String get eventAssistanceDeliveryPurposeGuestRequirement =>
+      'Guest requirement';
+
+  @override
+  String get eventAssistanceDeliveryPurposeAssignmentChanged =>
+      'Assignment changed';
+
+  @override
+  String get eventAssistanceDeliveryPurposeParticipationCheck =>
+      'Participation check';
+
+  @override
+  String get eventAssistanceDeliveryPurposeEventCancelled => 'Event cancelled';
+
+  @override
+  String get eventAssistanceDeliveryPurposeEventFinished => 'Event finished';
+
+  @override
+  String get eventAssistanceDeliveryPurposeFollowUp => 'Follow-up';
+
+  @override
+  String get eventAssistanceDeliveryReviewReasonNoEligibleRoute =>
+      'No messaging channel is available for this guest.';
+
+  @override
+  String get eventAssistanceDeliveryReviewReasonAttemptLimit =>
+      'The automatic attempt limit was reached.';
+
+  @override
+  String get eventAssistanceDeliveryReviewReasonPolicyRejected =>
+      'The messaging policy needs review.';
+
+  @override
+  String get eventAssistanceDeliveryReviewReasonRecipientNeedsReview =>
+      'The recipient details need review.';
+
+  @override
+  String get eventAssistanceDeliveryReviewReasonProviderOwnsFallback =>
+      'The provider is managing fallback. Delivery is still unconfirmed.';
+
+  @override
+  String get eventAssistanceDeliveryReviewReasonConflictingDeliveryEvidence =>
+      'The provider reports disagree. Check with the guest before following up.';
+
+  @override
+  String get eventAssistanceDeliveryReviewReasonProviderPending =>
+      'Waiting for the provider to confirm delivery.';
+
+  @override
+  String get eventAssistanceDeliveryReviewReasonWorkerUnavailable =>
+      'The sending service is unavailable.';
+
+  @override
+  String get eventAssistanceDeliveryReviewReasonRecoveryLimit =>
+      'Automatic recovery reached its limit.';
+
+  @override
+  String get eventAssistanceDeliveryReviewReasonEventFactsStale =>
+      'The event details need a fresh review.';
+
+  @override
+  String get eventAssistanceDeliveryReviewReasonRouteFactsStale =>
+      'The messaging channel needs a fresh review.';
+
+  @override
+  String get eventAssistanceDeliveryRetryReasonRetryBackoff =>
+      'Another automatic attempt is scheduled.';
+
+  @override
+  String get eventAssistanceDeliveryRetryReasonEventFactsStale =>
+      'The event details need a fresh review.';
+
+  @override
+  String get eventAssistanceDeliveryRetryReasonRouteFactsStale =>
+      'The messaging channel needs a fresh review.';
+
+  @override
+  String get eventAssistanceDeliveryRetryReasonWorkerUnavailable =>
+      'The sending service is unavailable.';
+
+  @override
+  String get eventAssistanceDeliveryStopReasonDelivered =>
+      'Delivery confirmed.';
+
+  @override
+  String get eventAssistanceDeliveryStopReasonResponded =>
+      'The guest responded.';
+
+  @override
+  String get eventAssistanceDeliveryStopReasonCancelled =>
+      'This message was cancelled.';
+
+  @override
+  String get eventAssistanceDeliveryStopReasonSuperseded =>
+      'A newer message replaced this one.';
+
+  @override
+  String get eventAssistanceDeliveryStopReasonExpired =>
+      'The response window ended.';
+
+  @override
+  String get eventAssistanceDeliveryStopReasonEventClosed =>
+      'The event is closed.';
+
+  @override
+  String get eventAssistanceDeliveryStopReasonPermissionRevoked =>
+      'Messaging permission was withdrawn.';
+
+  @override
+  String get eventAssistanceDeliveryStopReasonGuestPresent =>
+      'The guest has checked in.';
+
+  @override
+  String get eventAssistanceDeliveryStopReasonGuestDeclined =>
+      'The guest is not coming.';
+
+  @override
+  String get eventAssistanceDeliveryStopReasonNotAdmitted =>
+      'The guest is not admitted to this event.';
+
+  @override
+  String get eventAssistanceDeliveryStopReasonHostStopped =>
+      'A host stopped automatic follow-up.';
+
+  @override
+  String get eventAssistanceDeliveryStopReasonParticipationInactive =>
+      'The guest is no longer participating.';
+
+  @override
+  String get eventAssistanceDeliveryTitle => 'Message delivery';
+
+  @override
+  String get eventAssistanceDeliveryBody =>
+      'Review recorded messages and take over follow-up when a guest needs a host.';
+
+  @override
+  String get eventAssistanceDeliveryReview => 'Review messages';
+
+  @override
+  String get eventAssistanceDeliveryPending => 'Handoff needs confirmation';
+
+  @override
+  String get eventAssistanceDeliveryPendingBody =>
+      'A handoff may have been saved. Confirm it before making another decision.';
+
+  @override
+  String get eventAssistanceDeliveryUnknownGuest => 'Guest details unavailable';
+
+  @override
+  String get eventAssistanceDeliveryPageBody =>
+      'These are the messages on this page. Other pages may contain more.';
+
+  @override
+  String get eventAssistanceDeliveryPracticeBody =>
+      'Current messages for practice guests. Earlier messages may have been replaced.';
+
+  @override
+  String get eventAssistanceDeliveryEmpty => 'No messages on this page.';
+
+  @override
+  String get eventAssistanceDeliveryMissing =>
+      'This message is not on the current page. Reload the list to review its latest details.';
+
+  @override
+  String get eventAssistanceDeliveryReload => 'Reload messages';
+
+  @override
+  String get eventAssistanceDeliveryPrevious => 'Previous page';
+
+  @override
+  String get eventAssistanceDeliveryNext => 'Next page';
+
+  @override
+  String get eventAssistanceDeliveryTakeOver => 'I’ll handle follow-up';
+
+  @override
+  String get eventAssistanceDeliveryTakeOverBody =>
+      'You’ll take responsibility for following up with this guest. Future automatic attempts for this message will stop. A send already in progress may still arrive.';
+
+  @override
+  String get eventAssistanceDeliveryRetry => 'Confirm this handoff';
+
+  @override
+  String get eventAssistanceDeliveryRetryBody =>
+      'Confirmation was interrupted. Checking the same handoff will not send another message.';
+
+  @override
+  String get eventAssistanceDeliverySaved => 'Handoff confirmed';
+
+  @override
+  String get eventAssistanceDeliverySavedBody =>
+      'Your handoff was recorded. Delivery reports, guest replies and host responsibility can still change.';
+
+  @override
+  String get eventAssistanceDeliveryRefresh =>
+      'Review the latest message before taking over.';
+
+  @override
+  String get eventAssistanceDeliverySourceChanged =>
+      'The original guest record changed. Guest details and actions are unavailable.';
+
+  @override
+  String get eventAssistanceDeliveryAutomatic => 'No host has taken over';
+
+  @override
+  String get eventAssistanceDeliveryMine => 'You’re handling follow-up';
+
+  @override
+  String get eventAssistanceDeliveryAnotherHost =>
+      'Another host is handling follow-up';
+
+  @override
+  String get eventAssistanceDeliveryRevokedOwner =>
+      'The previous host no longer has access';
+
+  @override
+  String get eventAssistanceDeliveryEvidence => 'Delivery status';
+
+  @override
+  String get eventAssistanceDeliveryCoordination => 'Automatic follow-up';
+
+  @override
+  String get eventAssistanceDeliveryHandling => 'Host responsibility';
+
+  @override
+  String get eventAssistanceDeliveryAttempts => 'Channel history';
+
+  @override
+  String get eventAssistanceDeliveryUntracked =>
+      'No automatic follow-up schedule is recorded.';
+
+  @override
+  String get eventAssistanceDeliveryQueued => 'A follow-up check is queued.';
+
+  @override
+  String get eventAssistanceDeliveryAwaitingReceipt =>
+      'Waiting for delivery confirmation.';
+
+  @override
+  String get eventAssistanceDeliveryAcceptedBody =>
+      'The provider accepted this message. Delivery has not been confirmed.';
+
+  @override
+  String get eventAssistanceDeliveryUnknownBody =>
+      'The message may have arrived. Delivery has not been confirmed.';
+
+  @override
+  String get eventAssistanceDeliveryRevokedBody =>
+      'The provider revoked this message. That does not prove the guest never received it.';
+
+  @override
+  String get eventAssistanceDeliveryDone => 'Done';
+
+  @override
+  String get eventAssistanceDeliveryPracticeHost =>
+      'Switch to Host to take responsibility for follow-up.';
+
+  @override
+  String get eventAssistanceDeliveryManualStopped =>
+      'Automatic attempts are stopped for this message.';
+
+  @override
+  String get eventAssistanceDeliveryPracticeSending =>
+      'Message sending is simulated in this rehearsal.';
+
+  @override
+  String get eventAssistanceLateJoinTitle => 'Late arrival help';
+
+  @override
+  String get eventAssistanceLateJoinBody =>
+      'Choose how guests can catch up when they miss the start or the group moves on.';
+
+  @override
+  String get eventAssistanceLateJoinMode => 'How should Catch help?';
+
+  @override
+  String get eventAssistanceLateJoinInherit => 'Use event rules';
+
+  @override
+  String get eventAssistanceLateJoinOff => 'Off';
+
+  @override
+  String get eventAssistanceLateJoinObserve => 'Monitor only';
+
+  @override
+  String get eventAssistanceLateJoinPrepare => 'Prepare for review';
+
+  @override
+  String get eventAssistanceLateJoinAutomatic => 'Send automatically';
+
+  @override
+  String get eventAssistanceLateJoinInheritBody =>
+      'Follow the event’s rules. Saving removes this group’s override.';
+
+  @override
+  String get eventAssistanceLateJoinOffBody =>
+      'Turn off future late arrival help. Customized rules are kept for later.';
+
+  @override
+  String get eventAssistanceLateJoinObserveBody =>
+      'Allow Catch to identify joining needs without preparing or sending messages.';
+
+  @override
+  String get eventAssistanceLateJoinPrepareBody =>
+      'Allow Catch to prepare guidance for a host to review.';
+
+  @override
+  String get eventAssistanceLateJoinAutomaticBody =>
+      'Allow Catch to send joining updates within the rules below.';
+
+  @override
+  String get eventAssistanceLateJoinDeliveryRequired =>
+      'Saving rules does not turn on messaging. Sender setup and guest permission are also required.';
+
+  @override
+  String get eventAssistanceLateJoinUnconfigured => 'Not configured';
+
+  @override
+  String get eventAssistanceLateJoinConfigured => 'Rules saved';
+
+  @override
+  String get eventAssistanceLateJoinDisabled => 'Turned off';
+
+  @override
+  String get eventAssistanceLateJoinSourceChanged =>
+      'Event setup changed. Review these rules.';
+
+  @override
+  String get eventAssistanceLateJoinEventOrigin => 'Applies to the whole event';
+
+  @override
+  String get eventAssistanceLateJoinInheritedOrigin => 'Uses the event’s rules';
+
+  @override
+  String get eventAssistanceLateJoinGroupOrigin =>
+      'Overrides event rules for this group';
+
+  @override
+  String get eventAssistanceLateJoinCustomize => 'Customize rules';
+
+  @override
+  String get eventAssistanceLateJoinRestore => 'Restore suggested rules';
+
+  @override
+  String get eventAssistanceLateJoinWhere => 'Where can guests join?';
+
+  @override
+  String get eventAssistanceLateJoinConfirmed =>
+      'Follow confirmed group progress';
+
+  @override
+  String get eventAssistanceLateJoinConfirmedBody =>
+      'Use the group’s latest confirmed destination. A scheduled stop alone does not move the group.';
+
+  @override
+  String get eventAssistanceLateJoinItinerary => 'Itinerary stops';
+
+  @override
+  String get eventAssistanceLateJoinCheckpoints => 'Route checkpoints';
+
+  @override
+  String get eventAssistanceLateJoinPoints => 'Allowed joining points';
+
+  @override
+  String get eventAssistanceLateJoinEntry => 'Late entry at this place';
+
+  @override
+  String get eventAssistanceLateJoinEntryAllowed => 'Allowed';
+
+  @override
+  String get eventAssistanceLateJoinEntryHost => 'Host decides';
+
+  @override
+  String get eventAssistanceLateJoinEntryClosed => 'Closed';
+
+  @override
+  String get eventAssistanceLateJoinWindow => 'Joining window';
+
+  @override
+  String get eventAssistanceLateJoinEventEnd => 'Until the event ends';
+
+  @override
+  String get eventAssistanceLateJoinCustomTime => 'Choose a cutoff';
+
+  @override
+  String get eventAssistanceLateJoinCutoff => 'Joining cutoff';
+
+  @override
+  String get eventAssistanceLateJoinMaximum => 'Updates per guest';
+
+  @override
+  String get eventAssistanceLateJoinMaximumBody =>
+      'The maximum while a guest is trying to join. Zero keeps guidance available without sending updates.';
+
+  @override
+  String get eventAssistanceLateJoinGap => 'Minimum minutes between updates';
+
+  @override
+  String get eventAssistanceLateJoinGapBody =>
+      'Send another update only when joining guidance changes, after this minimum gap.';
+
+  @override
+  String get eventAssistanceLateJoinUnanswered => 'If a guest doesn’t reply';
+
+  @override
+  String get eventAssistanceLateJoinKeepUnknown => 'Keep arrival unknown';
+
+  @override
+  String get eventAssistanceLateJoinHostReview => 'Ask a host to review';
+
+  @override
+  String get eventAssistanceLateJoinUnansweredBody =>
+      'No response never marks someone absent. Host review also needs a response deadline in messaging setup.';
+
+  @override
+  String get eventAssistanceLateJoinSetupUnknown =>
+      'Reload to get current joining options. You can still turn help off.';
+
+  @override
+  String get eventAssistanceLateJoinMissingRules =>
+      'No suggested rules are available. Reload to try again.';
+
+  @override
+  String get eventAssistanceLateJoinDestinationChanged =>
+      'Some joining points are no longer in this event. Choose from the updated list.';
+
+  @override
+  String get eventAssistanceLateJoinInvalidCutoff =>
+      'Choose a time after now and no later than the event ends.';
+
+  @override
+  String get eventAssistanceLateJoinSave => 'Save rules';
+
+  @override
+  String get eventAssistanceLateJoinDone => 'Done';
+
+  @override
+  String get eventAssistanceLateJoinReload => 'Reload rules';
+
+  @override
+  String get eventAssistanceLateJoinRetry => 'Check save result';
+
+  @override
+  String get eventAssistanceLateJoinRetryBody =>
+      'The save result is unknown. Check the original save before making another change.';
+
+  @override
+  String get eventAssistanceLateJoinRefreshBody =>
+      'These rules need a fresh review before another save.';
+
+  @override
+  String get eventAssistanceLateJoinSavedBody =>
+      'Your current saved rules are shown below.';
+
+  @override
+  String get eventAssistanceLateJoinDecrease => 'Decrease limit';
+
+  @override
+  String get eventAssistanceLateJoinIncrease => 'Increase limit';
+
+  @override
+  String get eventAssistanceLateJoinChooseScope => 'Rules for';
+
+  @override
+  String get eventAssistanceLateJoinEveryone => 'Whole event';
+
+  @override
+  String get eventAssistanceLateJoinPending => 'A save needs confirmation';
+
+  @override
+  String get eventAssistanceLateJoinEntryBody =>
+      'Set joining guidance, message limits and group overrides.';
+
+  @override
+  String get eventAssistanceLateJoinSettings => 'Assistance settings';
+
+  @override
+  String get eventAssistanceLateJoinGroupOverrides => 'Group overrides';
+
+  @override
+  String get eventAssistanceLateJoinPreviousGroup => 'Previous group';
+
+  @override
+  String get eventAssistanceLateJoinHideRules => 'Hide customization';
+
+  @override
+  String eventAssistanceLateJoinDestinationSummary({required String places}) {
+    return 'Joining points: $places';
+  }
+
+  @override
+  String eventAssistanceLateJoinCutoffSummary({required String time}) {
+    return 'Joining until $time';
+  }
+
+  @override
+  String eventAssistanceLateJoinLimitSummary({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Up to $count updates per guest',
+      one: 'Up to 1 update per guest',
+      zero: 'No message updates',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String eventAssistanceLateJoinGapSummary({required int minutes}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      minutes,
+      locale: localeName,
+      other: 'At least $minutes minutes between updates',
+      one: 'At least 1 minute between updates',
+      zero: 'No minimum gap',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get eventAssistanceRuntimeTitle => 'Automatic guest updates';
+
+  @override
+  String get eventAssistanceRuntimeEntryBody =>
+      'Choose messaging channels, fallback order and when updates stop.';
+
+  @override
+  String get eventAssistanceRuntimeBody =>
+      'Use these channels for late-arrival help. Each guest still needs permission for that channel, and delivery depends on sender setup and available budget.';
+
+  @override
+  String get eventAssistanceRuntimeUnconfigured => 'Not configured';
+
+  @override
+  String get eventAssistanceRuntimePaused => 'Paused';
+
+  @override
+  String get eventAssistanceRuntimeChanged => 'Event changed — review settings';
+
+  @override
+  String get eventAssistanceRuntimeExpired => 'Update window ended';
+
+  @override
+  String get eventAssistanceRuntimeClosed => 'Event closed';
+
+  @override
+  String get eventAssistanceRuntimeConfigured => 'Configured for this event';
+
+  @override
+  String get eventAssistanceRuntimeSaved =>
+      'Settings saved. This does not confirm enrollment or message delivery. Check guest help and delivery status during the event.';
+
+  @override
+  String get eventAssistanceRuntimePauseSaved =>
+      'Automation paused. Messages already accepted by a messaging provider may still arrive.';
+
+  @override
+  String get eventAssistanceRuntimePending => 'Confirm your previous update';
+
+  @override
+  String get eventAssistanceRuntimeRetryBody =>
+      'We did not receive a confirmed result. Retry the same update before making another change.';
+
+  @override
+  String get eventAssistanceRuntimeReloadBody =>
+      'Reload the current event and sender setup before changing these settings.';
+
+  @override
+  String get eventAssistanceRuntimeChannels => 'Messaging order';
+
+  @override
+  String get eventAssistanceRuntimeChannelBody =>
+      'Try the first eligible channel. Fallback uses a later channel only when the delivery rules permit another attempt.';
+
+  @override
+  String get eventAssistanceRuntimeFirst => 'First choice';
+
+  @override
+  String get eventAssistanceRuntimeSecond => 'First fallback';
+
+  @override
+  String get eventAssistanceRuntimeThird => 'Second fallback';
+
+  @override
+  String get eventAssistanceRuntimeNone => 'No channel';
+
+  @override
+  String get eventAssistanceRuntimeSms => 'SMS';
+
+  @override
+  String get eventAssistanceRuntimeRcs => 'RCS';
+
+  @override
+  String get eventAssistanceRuntimeWhatsapp => 'WhatsApp';
+
+  @override
+  String get eventAssistanceRuntimeSenderMissing =>
+      'The saved sender is unavailable. Choose a reviewed sender to save a new configuration.';
+
+  @override
+  String get eventAssistanceRuntimeNoSenders =>
+      'No eligible sender is available in these choices. Load more if available, or finish sender setup before configuring updates.';
+
+  @override
+  String get eventAssistanceRuntimeNeedsSetup => 'Sender setup required';
+
+  @override
+  String get eventAssistanceRuntimeApprovalExpired => 'Sender approval expired';
+
+  @override
+  String get eventAssistanceRuntimeTemplateMissing =>
+      'Joining message approval required';
+
+  @override
+  String get eventAssistanceRuntimeMoreSms => 'More SMS senders';
+
+  @override
+  String get eventAssistanceRuntimeMoreRcs => 'More RCS senders';
+
+  @override
+  String get eventAssistanceRuntimeMoreWhatsapp => 'More WhatsApp senders';
+
+  @override
+  String get eventAssistanceRuntimeCustomize => 'Customize timing and retries';
+
+  @override
+  String get eventAssistanceRuntimeHide => 'Hide timing and retries';
+
+  @override
+  String get eventAssistanceRuntimeUntil => 'Stop updates at';
+
+  @override
+  String get eventAssistanceRuntimeUseEventEnd => 'Use event end';
+
+  @override
+  String get eventAssistanceRuntimeDeadline => 'Review unanswered guests at';
+
+  @override
+  String get eventAssistanceRuntimeNoDeadline => 'No response deadline';
+
+  @override
+  String get eventAssistanceRuntimeSetDeadline => 'Set a response deadline';
+
+  @override
+  String get eventAssistanceRuntimeDeadlineBody =>
+      'A deadline can surface unanswered guests for host review when your late-arrival rules call for it. It never marks them absent.';
+
+  @override
+  String get eventAssistanceRuntimeAttempts => 'Attempts per update';
+
+  @override
+  String get eventAssistanceRuntimeAttemptsBody =>
+      'Maximum attempts across all selected channels for one guest update.';
+
+  @override
+  String get eventAssistanceRuntimePerChannel => 'Attempts per channel';
+
+  @override
+  String get eventAssistanceRuntimeGap => 'Seconds between retries';
+
+  @override
+  String get eventAssistanceRuntimeGapBody =>
+      'Wait this long before another permitted delivery attempt.';
+
+  @override
+  String get eventAssistanceRuntimePause => 'Pause automatic updates';
+
+  @override
+  String get eventAssistanceRuntimeSave => 'Save update settings';
+
+  @override
+  String get eventAssistanceRuntimeIssueChannels =>
+      'Choose at least one messaging channel.';
+
+  @override
+  String get eventAssistanceRuntimeIssueExpiry =>
+      'Choose a future stop time within this event.';
+
+  @override
+  String get eventAssistanceRuntimeIssueDeadline =>
+      'Choose a future response deadline at or before the stop time.';
+
+  @override
+  String get eventAssistanceRuntimeRetainedChoices =>
+      'Existing later-joining choices are preserved when you change these settings.';
+
+  @override
+  String get eventAssistanceRuntimeSaving => 'Saving settings';
+
+  @override
+  String get hostEventRehearsalUpdatesBody =>
+      'Choose how to deliver practice updates. After saving, choose a late-arrival rule for everyone or a group.';
+
+  @override
+  String get hostEventRehearsalUpdatesEntry =>
+      'Choose simulated channels, fallback and delivery outcomes.';
+
+  @override
+  String get hostEventRehearsalUpdatesChannels =>
+      'Channels are simulated; no real messages are sent. Fallback follows the same delivery rules as a live event.';
+
+  @override
+  String get hostEventRehearsalUpdatesScript => 'Practice delivery outcomes';
+
+  @override
+  String get hostEventRehearsalUpdatesScriptBody =>
+      'Each guest uses this sequence for their delivery attempts. An uncertain attempt waits for reconciliation; it does not trigger fallback. After the sequence ends, further attempts wait for review.';
+
+  @override
+  String hostEventRehearsalUpdatesAttempt({required int number}) {
+    return 'Attempt $number';
+  }
+
+  @override
+  String get hostEventRehearsalUpdatesUsed => 'Already used in this run';
+
+  @override
+  String get hostEventRehearsalUpdatesAddOutcome => 'Add an outcome';
+
+  @override
+  String get hostEventRehearsalUpdatesRemoveOutcome => 'Remove last outcome';
+
+  @override
+  String get hostEventRehearsalUpdatesIssue =>
+      'Review the channels, response deadline and practice outcomes before saving. Outcomes already used and saved joining choices must still match this run.';
+
+  @override
+  String get hostEventRehearsalUpdatesSaved =>
+      'Saved. The settings shown below are the current settings for this rehearsal.';
+
+  @override
+  String get hostEventRehearsalUpdatesDelivered => 'Delivered';
+
+  @override
+  String get hostEventRehearsalUpdatesRead => 'Read by guest';
+
+  @override
+  String get hostEventRehearsalUpdatesAccepted => 'Accepted, delivery pending';
+
+  @override
+  String get hostEventRehearsalUpdatesRevoked => 'Message revoked';
+
+  @override
+  String get hostEventRehearsalUpdatesTechnical => 'Technical failure';
+
+  @override
+  String get hostEventRehearsalUpdatesPolicy => 'Blocked by channel policy';
+
+  @override
+  String get hostEventRehearsalUpdatesSuppressed => 'Guest opted out';
+
+  @override
+  String get hostEventRehearsalUpdatesInvalidRecipient => 'Invalid recipient';
+
+  @override
+  String get hostEventRehearsalUpdatesTimeout => 'Unknown: request timed out';
+
+  @override
+  String get hostEventRehearsalUpdatesConnectionLost =>
+      'Unknown: connection lost';
+
+  @override
+  String get hostEventRehearsalUpdatesInterrupted =>
+      'Unknown: delivery interrupted';
+
+  @override
+  String get eventMessagesTitle => 'Event messages';
+
+  @override
+  String get eventMessagesEntryBody =>
+      'Choose SMS, WhatsApp and RCS updates for this event.';
+
+  @override
+  String get eventMessagesIntro =>
+      'Choose the updates you want for this event. Each channel is optional and has its own permission.';
+
+  @override
+  String get eventMessagesSms => 'SMS';
+
+  @override
+  String get eventMessagesWhatsapp => 'WhatsApp';
+
+  @override
+  String get eventMessagesRcs => 'RCS';
+
+  @override
+  String get eventMessagesNotSet => 'Permission not given';
+
+  @override
+  String get eventMessagesEnabled => 'Messages are on';
+
+  @override
+  String get eventMessagesDisabled => 'Messages are off';
+
+  @override
+  String get eventMessagesExpired => 'Permission has expired';
+
+  @override
+  String eventMessagesPhoneEnding({required String digits}) {
+    return 'Phone ending in $digits';
+  }
+
+  @override
+  String eventMessagesUntil({required String date, required String time}) {
+    return 'Permission expires $date at $time';
+  }
+
+  @override
+  String get eventMessagesEarlierSender =>
+      'This sender is no longer selected for this event. You can turn off an existing permission.';
+
+  @override
+  String get eventMessagesVerifyPhone =>
+      'A matching verified phone is required to allow messages. You can still turn off an existing permission.';
+
+  @override
+  String get eventMessagesNotAdmitted =>
+      'You need a confirmed place at this event to allow messages.';
+
+  @override
+  String get eventMessagesEventClosed =>
+      'This event is closed for new message permissions.';
+
+  @override
+  String get eventMessagesSenderUnavailable =>
+      'This sender is not available for new permissions right now.';
+
+  @override
+  String get eventMessagesSubscriptionUnavailable =>
+      'This RCS sender cannot accept a new permission right now.';
+
+  @override
+  String get eventMessagesSaving => 'Saving your choice…';
+
+  @override
+  String get eventMessagesUncertain =>
+      'We could not confirm your choice. Retry to check the same request.';
+
+  @override
+  String get eventMessagesReviewChanged =>
+      'Reload the current permission before making another change.';
+
+  @override
+  String get eventMessagesSaved => 'Your choice is saved.';
+
+  @override
+  String get eventMessagesChanged =>
+      'Your permission changed elsewhere. The current choice is shown.';
+
+  @override
+  String eventMessagesAllow({required String channel}) {
+    return 'Allow $channel updates';
+  }
+
+  @override
+  String eventMessagesTurnOff({required String channel}) {
+    return 'Turn off $channel updates';
+  }
+
+  @override
+  String get eventMessagesRetry => 'Check my previous choice';
+
+  @override
+  String get eventMessagesRefresh => 'Reload';
+
+  @override
+  String get eventMessagesLoading => 'Checking availability…';
+
+  @override
+  String get eventMessagesUnavailable =>
+      'No message option is available for this event.';
+
+  @override
+  String get eventMessagesLoadFailed => 'Could not load your permission';
+
+  @override
+  String get eventMessagesPending => 'Confirm your previous choice';
+
+  @override
+  String get eventMessagesCurrentSender => 'View current event sender';
+
+  @override
+  String get eventMessagesOtherSenders => 'Review other senders';
+
+  @override
+  String get eventMessagesPreviousPermission => 'Previous permission';
+
+  @override
+  String get eventMessagesNextPermission => 'Next permission';
+
+  @override
+  String get eventMessagesMorePermissions => 'Find more permissions';
+
+  @override
+  String get eventMessagesUnlinked =>
+      'Your account is not linked to a guest record for this event yet. Ask the host for help, then reload.';
+
+  @override
+  String get eventMessagesAmbiguous =>
+      'More than one guest record is linked to your account. Ask the host to resolve the duplicate, then reload.';
 
   @override
   String hostTodayTaskCountPartial({required int count}) {

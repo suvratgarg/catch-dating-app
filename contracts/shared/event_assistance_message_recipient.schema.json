@@ -1,0 +1,63 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/shared/event_assistance_message_recipient.schema.json",
+  "title": "EventMessageRecipientBinding",
+  "description": "Private event-service recipient provenance. Legacy records without this binding retain strict roster-phone matching. A private verified phone is never copied to the Host roster.",
+  "definitions": {
+    "RecipientBinding": {
+      "type": "object",
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "subjectUid",
+            "sourceGeneration"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "rosterPhone"
+            },
+            "subjectUid": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "sourceGeneration": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "subjectUid",
+            "sourceGeneration"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "privateVerifiedPhone"
+            },
+            "subjectUid": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "sourceGeneration": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

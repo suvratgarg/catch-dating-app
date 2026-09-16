@@ -1,5 +1,7 @@
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
+import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_operations.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_runtime_adapter.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_activity_profile.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
 import 'package:catch_dating_app/events/domain/event_itinerary.dart';
 import 'package:catch_dating_app/events/domain/route_event_plan.dart';
@@ -153,7 +155,8 @@ void main() {
           'durationMinutes': 90,
           'hostGoal': 'Learn the runtime',
           'attendeePrompt': 'Meet someone new',
-          'moduleIds': ['arrival', 'rotations'],
+          'moduleIds': ['arrival', 'rotations', 'reveal'],
+          'unitOutcome': 'score',
         },
         'setupRevision': 1,
         'runtimeRevision': 4,
@@ -186,8 +189,45 @@ void main() {
           'keepApartActorIds': <String>[],
           'helpRequested': false,
           'promptCompleted': false,
+          'layoutUnitId': 'table-1',
         },
       ],
+      'outcomeReview': {
+        'unitOutcome': 'score',
+        'revision': 3,
+        'unitIds': ['table-1', 'table-2'],
+        'records': [
+          {
+            'unitId': 'table-1',
+            'round': 0,
+            'outcome': {'kind': 'score', 'score': 7},
+            'stateRevision': 1,
+            'recordedAt': 90000,
+          },
+          {
+            'unitId': 'table-2',
+            'round': 0,
+            'outcome': {'kind': 'score', 'score': 9},
+            'stateRevision': 2,
+            'recordedAt': 91000,
+          },
+          {
+            'unitId': 'table-1',
+            'round': 1,
+            'outcome': {'kind': 'score', 'score': 2},
+            'stateRevision': 3,
+            'recordedAt': 92000,
+          },
+        ],
+      },
+      'revealReview': {
+        'revision': 1,
+        'status': 'countingDown',
+        'publishedRound': -1,
+        'pendingRound': 0,
+        'startedAt': 100000,
+        'countdownSeconds': 15,
+      },
       'actions': <Map<String, Object?>>[],
       'guestUrl': 'https://catchdates.com/rehearse/public-runtime',
       'canUseInternalFaults': true,
@@ -202,6 +242,18 @@ void main() {
     expect(runtime.event.synthetic, isTrue);
     expect(runtime.plan.status, EventSuccessPlanStatus.live);
     expect(runtime.plan.liveControlRevision, 4);
+    expect(runtime.plan.revealStatus, EventSuccessRevealStatus.countingDown);
+    expect(runtime.plan.activeRevealRoundIndex, 0);
+    expect(runtime.plan.structureConfig.revealCountdownSeconds, 15);
+    expect(runtime.plan.revealStartedAt?.millisecondsSinceEpoch, 100000);
+    expect(
+      EventSuccessActivityProfile.forFormat(
+        runtime.event.eventFormat,
+      ).unitOutcome,
+      EventSuccessUnitOutcome.score,
+    );
+    expect(rehearsal.session.setup.unitOutcome, RehearsalOutcomeKind.score);
+    expect(rehearsal.session.setup.toJson()['unitOutcome'], 'score');
     expect(runtime.roster.checkedInIds, ['actor-present', 'actor-late']);
     expect(runtime.layout.units, hasLength(2));
     expect(runtime.assignments, hasLength(2));
@@ -209,5 +261,14 @@ void main() {
     expect(runtime.assignments.first.layoutUnitId, 'table-2');
     expect(runtime.assignments.last.confirmedLayoutUnitId, isNull);
     expect(runtime.presence.lateArrivals.single.uid, 'actor-late');
+    expect(runtime.outcomeUnits.map((unit) => (unit.id, unit.label)), [
+      ('table-1', 'Table 1'),
+      ('table-2', 'Table 2'),
+    ]);
+    expect(runtime.standings?.revision, 3);
+    expect(runtime.standings?.latestRoundIndex, 0);
+    expect(runtime.standings?.rounds, hasLength(1));
+    expect(runtime.standings?.entries.first.unitId, 'table-2');
+    expect(runtime.standings?.entries.first.value, 9);
   });
 }

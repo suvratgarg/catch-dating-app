@@ -63,6 +63,8 @@ export const organizerAttentionItemDocumentSchema: Record<string, unknown> = {
       "type": "string",
       "enum": [
         "eventLiveOperations",
+        "eventAssistanceCaseReview",
+        "eventAssistanceDeliveryReview",
         "eventWaitlistReview",
         "eventJoinRequestReview",
         "applicationReview",
@@ -103,6 +105,8 @@ export const organizerAttentionItemDocumentSchema: Record<string, unknown> = {
         "organizerFormAutomationRuns",
         "hostPaymentAccounts",
         "hostAttendanceOutbox",
+        "eventAssistanceCases",
+        "operationWorkItems",
         "eventSuccessPlans",
         "eventRehearsals",
         "eventStaffGrants",

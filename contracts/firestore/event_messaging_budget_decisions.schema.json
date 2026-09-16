@@ -1,0 +1,103 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_messaging_budget_decisions.schema.json",
+  "title": "EventMessagingBudgetDecisionDocument",
+  "description": "Latest finance review decision for one event, route, sender, and purpose. This record grants no spending authority and is not a dispatch budget.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventMessagingBudgetDecisions",
+  "x-firestore-path": "eventMessagingBudgetDecisions/{decisionId}",
+  "x-document-id-field": "decisionId",
+  "x-owner": "adminDecideEventMessagingBudget callable",
+  "required": [
+    "schemaVersion",
+    "decisionId",
+    "revision",
+    "requestId",
+    "requestHash",
+    "context",
+    "routeId",
+    "senderId",
+    "purpose",
+    "decision",
+    "decisionStatus",
+    "reviewEvidence",
+    "reviewedByUid",
+    "note",
+    "createdAt",
+    "updatedAt",
+    "effect",
+    "grantsSpendingAuthority"
+  ],
+  "properties": {
+    "schemaVersion": {"type": "integer", "const": 1},
+    "decisionId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "revision": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+    "requestId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "requestHash": {"$ref": "../operations/common.schema.json#/definitions/sha256"},
+    "context": {"$ref": "../shared/event_assistance_guest.schema.json#/definitions/liveContext"},
+    "routeId": {"$ref": "../operations/event_messaging_setup_review.schema.json#/definitions/routeId"},
+    "senderId": {"$ref": "../operations/event_messaging_setup_review.schema.json#/definitions/id"},
+    "purpose": {"$ref": "../operations/event_messaging_setup_review.schema.json#/definitions/purpose"},
+    "decision": {"$ref": "../callables/admin_decide_event_messaging_budget_payload.schema.json#/definitions/decision"},
+    "decisionStatus": {"type": "string", "enum": ["approved", "held", "rejected"]},
+    "reviewEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "observedAt",
+        "completedAt",
+        "eventEnd",
+        "runtimeSourceHash",
+        "senderReviewHash",
+        "budgetSourceHash",
+        "setupReviewHash",
+        "eventBudget",
+        "senderDayBudget"
+      ],
+      "properties": {
+        "observedAt": {"$ref": "../operations/event_messaging_setup_review.schema.json#/definitions/time"},
+        "completedAt": {"$ref": "../operations/event_messaging_setup_review.schema.json#/definitions/time"},
+        "eventEnd": {"$ref": "../operations/event_messaging_setup_review.schema.json#/definitions/time"},
+        "runtimeSourceHash": {"$ref": "../operations/common.schema.json#/definitions/sha256"},
+        "senderReviewHash": {"$ref": "../operations/common.schema.json#/definitions/sha256"},
+        "budgetSourceHash": {"$ref": "../operations/common.schema.json#/definitions/sha256"},
+        "setupReviewHash": {"$ref": "../operations/common.schema.json#/definitions/sha256"},
+        "eventBudget": {"$ref": "#/definitions/budgetEvidence"},
+        "senderDayBudget": {"$ref": "#/definitions/budgetEvidence"}
+      }
+    },
+    "reviewedByUid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "note": {"type": "string", "minLength": 1, "maxLength": 1000},
+    "createdAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+    "updatedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+    "effect": {"type": "string", "const": "decision_only_no_spending_authority"},
+    "grantsSpendingAuthority": {"type": "boolean", "const": false}
+  },
+  "definitions": {
+    "budgetEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["budgetId", "revision", "reviewHash", "chargedMicros"],
+      "properties": {
+        "budgetId": {"$ref": "../operations/event_messaging_setup_review.schema.json#/definitions/id"},
+        "revision": {
+          "type": ["integer", "null"],
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "reviewHash": {
+          "anyOf": [
+            {"$ref": "../operations/common.schema.json#/definitions/sha256"},
+            {"type": "null"}
+          ]
+        },
+        "chargedMicros": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      }
+    }
+  }
+}

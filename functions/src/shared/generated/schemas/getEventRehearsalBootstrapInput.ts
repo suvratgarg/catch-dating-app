@@ -21,6 +21,10 @@ export const getEventRehearsalBootstrapCallablePayloadSchema: Record<string, unk
       "type": "string",
       "minLength": 1,
       "maxLength": 180
+    },
+    "practiceOperatorId": {
+      "type": "string",
+      "pattern": "^practice-staff:[A-Za-z0-9_-]{1,60}$"
     }
   }
 } as const;

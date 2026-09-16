@@ -4,6 +4,8 @@ import * as admin from "firebase-admin";
 import {CallableRequest, HttpsError} from "firebase-functions/v2/https";
 import {eventAttendeeId} from "../events/eventAttendees";
 import {eventVenueSessionRedemptionId} from "../events/venueSessions";
+import {requiredDataRequestId} from
+  "./operations/runtimeRequiredDataStore";
 import {
   approveEventRuntimeClaimHandler,
   checkInEventRuntimeHandler,
@@ -278,6 +280,20 @@ function participant(overrides: FakeData = {}): FakeData {
   };
 }
 
+function dataRequest(fieldIds: string[], overrides: FakeData = {}): FakeData {
+  const context = {mode: "live" as const, eventId: "event-1",
+    organizerId: "organizer-1"};
+  const requestId = requiredDataRequestId(context, "attendee-1");
+  return {schemaVersion: 1, requestId, eventId: "event-1",
+    organizerId: "organizer-1", attendeeId: "attendee-1", uid: "runner-1",
+    revision: 1, profileRevision: 0, sourceHash: "a".repeat(64),
+    operationId: "request-one", fieldIds, completedFieldIds: [],
+    status: "pending", requestedBy: "systemWithinPolicy",
+    requestedAt: timestamp("2026-08-11T09:55:00.000Z"),
+    expiresAt: timestamp("2026-08-11T13:00:00.000Z"), completedAt: null,
+    updatedAt: timestamp("2026-08-11T09:55:00.000Z"), ...overrides};
+}
+
 function request(
   uid: string | null,
   data: FakeData,
@@ -385,6 +401,8 @@ test("runtime entry requires one variable-bound pre-event payload", () => {
 });
 
 test("bootstrap returns bounded event and own state", async () => {
+  const requestId = requiredDataRequestId({mode: "live", eventId: "event-1",
+    organizerId: "organizer-1"}, "attendee-1");
   const h = harness({
     "events/event-1": event({checkedInCount: 18}),
     "eventRuntimeParticipants/event-1_runner-1": participant(),
@@ -392,6 +410,7 @@ test("bootstrap returns bounded event and own state", async () => {
       linkedUid: "runner-1",
       status: "checkedIn",
     }),
+    [`eventRuntimeDataRequests/${requestId}`]: dataRequest(["gender"]),
   });
   const result = await getEventRuntimeBootstrapHandler(request(
     "runner-1",
@@ -417,10 +436,20 @@ test("bootstrap returns bounded event and own state", async () => {
     optionalFieldIds: [],
     questionnaireConfig: null,
   });
+  assert.equal(result.participant?.eventAttendeeId, "attendee-1");
   assert.equal(result.participant?.attendanceStatus, "checkedIn");
   assert.equal(result.participant?.eventId, "event-1");
   assert.equal(result.participant?.clubId, "organizer-1");
   assert.equal(result.participant?.organizerId, "organizer-1");
+  assert.deepEqual(result.participant?.requiredDataRequest, {
+    revision: 1,
+    fieldIds: ["gender"],
+    completedFieldIds: [],
+    status: "pending",
+    requestedAtMillis: Date.parse("2026-08-11T09:55:00.000Z"),
+    expiresAtMillis: Date.parse("2026-08-11T13:00:00.000Z"),
+    completedAtMillis: null,
+  });
   assert.equal((result.event as FakeData).organizerId, undefined);
 });
 
@@ -593,6 +622,8 @@ test("unmatched numbers obey deny and Host approval policies", async () => {
 
 test("profile submission requires sensitive consent and seeds only a draft",
   async () => {
+    const requestId = requiredDataRequestId({mode: "live",
+      eventId: "event-1", organizerId: "organizer-1"}, "attendee-1");
     const runtimeParticipant = participant({
       accessStatus: "needsInput",
       requiredFieldIds: ["displayName", "gender", "interestedInGenders"],
@@ -609,6 +640,9 @@ test("profile submission requires sensitive consent and seeds only a draft",
       "eventSuccessPlans/event-1": {
         selectedModuleIds: ["first_hello_check_in"],
       },
+      [`eventRuntimeDataRequests/${requestId}`]: dataRequest([
+        "gender", "interestedInGenders",
+      ]),
     };
     const h = harness(initial);
     const payload = {
@@ -643,6 +677,15 @@ test("profile submission requires sensitive consent and seeds only a draft",
     assert.deepEqual(h.firestore.get(
       "eventSuccessCompatibilityResponses/event-1_runner-1"
     )?.answerIds, ["event_energy_easy_conversation"]);
+    const savedParticipant = h.firestore.get(
+      "eventRuntimeParticipants/event-1_runner-1");
+    assert.equal(savedParticipant?.profileRevision, 1);
+    const completedRequest = h.firestore.get(
+      `eventRuntimeDataRequests/${requestId}`);
+    assert.equal(completedRequest?.status, "completed");
+    assert.deepEqual(completedRequest?.completedFieldIds,
+      ["gender", "interestedInGenders"]);
+    assert.ok(completedRequest?.completedAt);
   });
 
 test("profile submission rejects a neighboring format payload", async () => {

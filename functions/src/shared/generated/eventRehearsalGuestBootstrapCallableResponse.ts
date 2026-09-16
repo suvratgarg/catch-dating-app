@@ -145,6 +145,7 @@ export interface EventRehearsalGuestBootstrapCallableResponse {
       | "disconnected"
       | "walkIn"
       | "ambiguousClaim";
+    connectionState?: "connected" | "disconnected";
     guestMoment:
       | "welcome"
       | "checkIn"
@@ -158,5 +159,129 @@ export interface EventRehearsalGuestBootstrapCallableResponse {
     optedOut: boolean;
     helpRequested: boolean;
     promptCompleted: boolean;
+    assistance?: {
+      intention:
+        | {
+            kind: "unknown";
+          }
+        | {
+            kind: "onMyWay";
+            claimedEta: number | null;
+          }
+        | {
+            kind: "joinLater";
+            target:
+              | {
+                  kind: "fixedPlace";
+                  placeId: string;
+                  lateEntry: "allowed" | "hostDecision" | "closed";
+                }
+              | {
+                  kind: "itineraryStop";
+                  itineraryId: string;
+                  stopId: string;
+                }
+              | {
+                  kind: "groupCheckpoint";
+                  routeId: string;
+                  groupId: string;
+                  checkpointId: string;
+                };
+          }
+        | {
+            kind: "notComing";
+          };
+      latestMessageId: string | null;
+    };
+    assistanceMessage?: {
+      messageId: string;
+      intentId: string;
+      intentRevision: number;
+      text: string;
+      /**
+       * @maxItems 20
+       */
+      choices: {
+        choiceId: string;
+        label: string;
+      }[];
+      lifecycle: "active" | "cancelled" | "superseded" | "responded";
+      expiresAt: number;
+      canRespond: boolean;
+      responseChoiceId: string | null;
+    } | null;
+    requiredData?: {
+      sourceHash: string;
+      profileRevision: number;
+      requestRevision: number;
+      /**
+       * @maxItems 10
+       */
+      availableFieldIds: (
+        | "displayName"
+        | "gender"
+        | "interestedInGenders"
+        | "relationshipGoal"
+        | "dateOfBirth"
+        | "paceBand"
+        | "skillBand"
+        | "dietaryAndSeatingNotes"
+        | "questionnaireAnswerIds"
+        | "teamName"
+      )[];
+      /**
+       * @maxItems 10
+       */
+      completedFieldIds: (
+        | "displayName"
+        | "gender"
+        | "interestedInGenders"
+        | "relationshipGoal"
+        | "dateOfBirth"
+        | "paceBand"
+        | "skillBand"
+        | "dietaryAndSeatingNotes"
+        | "questionnaireAnswerIds"
+        | "teamName"
+      )[];
+      request: {
+        revision: number;
+        /**
+         * @minItems 1
+         * @maxItems 10
+         */
+        fieldIds: (
+          | "displayName"
+          | "gender"
+          | "interestedInGenders"
+          | "relationshipGoal"
+          | "dateOfBirth"
+          | "paceBand"
+          | "skillBand"
+          | "dietaryAndSeatingNotes"
+          | "questionnaireAnswerIds"
+          | "teamName"
+        )[];
+        /**
+         * @maxItems 10
+         */
+        completedFieldIds: (
+          | "displayName"
+          | "gender"
+          | "interestedInGenders"
+          | "relationshipGoal"
+          | "dateOfBirth"
+          | "paceBand"
+          | "skillBand"
+          | "dietaryAndSeatingNotes"
+          | "questionnaireAnswerIds"
+          | "teamName"
+        )[];
+        status: "pending" | "completed" | "expired";
+        requestedAt: number;
+        expiresAt: number;
+        completedAt: number | null;
+      } | null;
+    };
   };
 }

@@ -57,6 +57,57 @@ final class EventRehearsalRepositoryProvider
 String _$eventRehearsalRepositoryHash() =>
     r'a608e90cbb94f9a54644dfde311244510359a7e7';
 
+@ProviderFor(eventRehearsalAssistanceCommands)
+final eventRehearsalAssistanceCommandsProvider =
+    EventRehearsalAssistanceCommandsProvider._();
+
+final class EventRehearsalAssistanceCommandsProvider
+    extends
+        $FunctionalProvider<
+          EventRehearsalAssistanceCommands,
+          EventRehearsalAssistanceCommands,
+          EventRehearsalAssistanceCommands
+        >
+    with $Provider<EventRehearsalAssistanceCommands> {
+  EventRehearsalAssistanceCommandsProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'eventRehearsalAssistanceCommandsProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$eventRehearsalAssistanceCommandsHash();
+
+  @$internal
+  @override
+  $ProviderElement<EventRehearsalAssistanceCommands> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  EventRehearsalAssistanceCommands create(Ref ref) {
+    return eventRehearsalAssistanceCommands(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(EventRehearsalAssistanceCommands value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<EventRehearsalAssistanceCommands>(
+        value,
+      ),
+    );
+  }
+}
+
+String _$eventRehearsalAssistanceCommandsHash() =>
+    r'c33cac2bcfa1ab3d38f0fb32719295c4fb68a3c8';
+
 @ProviderFor(eventRehearsal)
 final eventRehearsalProvider = EventRehearsalFamily._();
 

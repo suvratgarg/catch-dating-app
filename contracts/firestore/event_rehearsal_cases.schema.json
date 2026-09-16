@@ -1,0 +1,11 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_rehearsal_cases.schema.json",
+  "title": "EventRehearsalCaseDocument",
+  "description": "Synthetic practical help requests, retained until rehearsal reset or expiry. No live guest or safety case is written.",
+  "$ref": "../shared/event_rehearsal_assistance.schema.json#/definitions/helpCase",
+  "x-firestore-collection": "eventRehearsalCases",
+  "x-firestore-path": "eventRehearsalCases/{caseId}",
+  "x-document-id-field": "caseId",
+  "x-owner": "event rehearsal callables"
+}

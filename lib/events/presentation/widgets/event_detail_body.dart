@@ -60,6 +60,7 @@ class EventDetailBody extends StatelessWidget {
     this.crossPathsConsentState =
         const CrossPathsEventConsentSectionState.hidden(),
     this.onCrossPathsConsentChanged,
+    this.messagePreferencesSection,
   });
 
   final Event event;
@@ -96,6 +97,7 @@ class EventDetailBody extends StatelessWidget {
   final bool enableMapNetworkTiles;
   final CrossPathsEventConsentSectionState crossPathsConsentState;
   final ValueChanged<bool>? onCrossPathsConsentChanged;
+  final Widget? messagePreferencesSection;
 
   @override
   Widget build(BuildContext context) {
@@ -177,6 +179,7 @@ class EventDetailBody extends StatelessWidget {
               state: crossPathsConsentState,
               onChanged: onCrossPathsConsentChanged,
             ),
+            ?messagePreferencesSection,
             EventDetailHostsSection(
               event: event,
               state: hostState,

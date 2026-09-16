@@ -9,11 +9,14 @@
 final class GetEventRehearsalBootstrapCallableRequest {
   const GetEventRehearsalBootstrapCallableRequest({
     required this.sessionId,
+    this.practiceOperatorId,
   });
 
   final String sessionId;
+  final String? practiceOperatorId;
 
   Map<String, Object?> toJson() => {
     'sessionId': sessionId,
+    'practiceOperatorId': ?practiceOperatorId,
   };
 }

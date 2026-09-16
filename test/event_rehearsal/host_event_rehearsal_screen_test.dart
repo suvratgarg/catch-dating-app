@@ -3,10 +3,13 @@ import 'dart:async';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/event_rehearsal/data/event_rehearsal_repository.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
+import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_operations.dart';
+import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_runtime_operation_controller.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/host_event_rehearsal_screen.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/host_event_rehearsal_start_screen.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_link_and_run.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_simulator.dart';
+import 'package:catch_dating_app/event_success/event_success.dart';
 import 'package:catch_dating_app/events/domain/event_itinerary.dart';
 import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -148,6 +151,47 @@ void main() {
     expect(find.text('Meet the group at Courtyard stop.'), findsOneWidget);
     expect(find.text('Live guest phone'), findsOneWidget);
     expect(find.textContaining('anonymous synthetic guest'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('score rehearsal reuses the live outcome and reveal actions', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(430, 1400);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+    final rehearsal = _scoreBootstrap();
+    await tester.pumpWidget(
+      _app(
+        const HostEventRehearsalScreen(
+          clubId: 'club-1',
+          sessionId: 'session-1',
+        ),
+        overrides: [
+          eventRehearsalProvider(
+            'session-1',
+          ).overrideWith((ref) => Stream.value(rehearsal)),
+          eventRehearsalRuntimeOperationControllerProvider(
+            'session-1',
+          ).overrideWithValue(const RehearsalRuntimeOperationState()),
+        ],
+      ),
+    );
+    await tester.pump();
+    await tester.pump();
+
+    final workspace = tester.widget<EventSuccessHostWorkspacePageBody>(
+      find.byType(EventSuccessHostWorkspacePageBody),
+    );
+    expect(workspace.outcomeUnits?.map((unit) => unit.id), [
+      'table-1',
+      'table-2',
+    ]);
+    expect(workspace.standings?.latestRoundIndex, -1);
+    expect(workspace.onRecordOutcomes, isNotNull);
+    expect(workspace.onStartRevealCountdown, isNotNull);
+    expect(workspace.onRevealRound, isNotNull);
     expect(tester.takeException(), isNull);
   });
 
@@ -395,3 +439,73 @@ EventRehearsalBootstrap _bootstrap({
   guestUrl: 'https://catchdates.com/rehearse/practice-1',
   canUseInternalFaults: true,
 );
+
+EventRehearsalBootstrap _scoreBootstrap() {
+  final base = _bootstrap();
+  final setup = base.session.setup.copyWith(
+    modules: [EventRehearsalModule.pods, EventRehearsalModule.reveal],
+    unitOutcome: RehearsalOutcomeKind.score,
+  );
+  return EventRehearsalBootstrap(
+    session: EventRehearsalSession(
+      id: base.session.id,
+      organizerId: base.session.organizerId,
+      sourceEventId: base.session.sourceEventId,
+      scenario: base.session.scenario,
+      seed: base.session.seed,
+      actorCount: base.session.actorCount,
+      actionCount: base.session.actionCount,
+      status: base.session.status,
+      setup: setup,
+      setupRevision: base.session.setupRevision,
+      runtimeRevision: base.session.runtimeRevision,
+      activeStepIndex: base.session.activeStepIndex,
+      virtualNow: base.session.virtualNow,
+      fault: base.session.fault,
+      expiresAt: base.session.expiresAt,
+    ),
+    actors: const [
+      EventRehearsalActor(
+        actorId: 'actor-01',
+        displayName: 'Maya Shah',
+        persona: 'practice',
+        status: EventRehearsalActorStatus.present,
+        guestMoment: EventRehearsalGuestMoment.assignment,
+        optedOut: false,
+        keepApartActorIds: [],
+        helpRequested: false,
+        promptCompleted: true,
+        layoutUnitId: 'table-1',
+      ),
+      EventRehearsalActor(
+        actorId: 'actor-02',
+        displayName: 'Jordan Lee',
+        persona: 'practice',
+        status: EventRehearsalActorStatus.present,
+        guestMoment: EventRehearsalGuestMoment.assignment,
+        optedOut: false,
+        keepApartActorIds: [],
+        helpRequested: false,
+        promptCompleted: true,
+        layoutUnitId: 'table-2',
+      ),
+    ],
+    actions: base.actions,
+    guestUrl: base.guestUrl,
+    canUseInternalFaults: base.canUseInternalFaults,
+    outcomeReview: const RehearsalOutcomeReview(
+      kind: RehearsalOutcomeKind.score,
+      revision: 0,
+      unitIds: ['table-1', 'table-2'],
+      records: [],
+    ),
+    revealReview: const RehearsalRevealReview(
+      revision: 0,
+      status: RehearsalRevealStatus.idle,
+      publishedRound: -1,
+      pendingRound: null,
+      startedAt: null,
+      countdownSeconds: 10,
+    ),
+  );
+}

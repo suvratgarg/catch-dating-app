@@ -9,9 +9,12 @@ enum CommunicationRouteId {
   catchChat,
   catchEventAnnouncement,
   organizerFollowerUpdate,
+  catchEventSms,
+  catchEventRcs,
+  organizerEventWhatsapp,
 }
 
-enum CommunicationTransport { catchApp, whatsapp }
+enum CommunicationTransport { catchApp, whatsapp, sms, rcs }
 
 enum CommunicationSenderIdentity {
   hostPersonalDevice,
@@ -26,6 +29,7 @@ enum CommunicationDeliveryMode {
   eventAnnouncement,
   followerUpdate,
   platformMessage,
+  eventService,
 }
 
 enum CommunicationConsentScope {
@@ -162,6 +166,45 @@ const communicationRouteCatalog =
             supportsReplies: false,
             supportsScheduling: false,
           ),
+      CommunicationRouteId.catchEventSms: CommunicationRouteCapability(
+        id: CommunicationRouteId.catchEventSms,
+        transport: CommunicationTransport.sms,
+        adapterKey: 'event_service_sms',
+        senderIdentity: CommunicationSenderIdentity.catchPlatform,
+        deliveryMode: CommunicationDeliveryMode.eventService,
+        audienceScope: CommunicationAudienceScope.eventRoster,
+        consentScope: CommunicationConsentScope.eventService,
+        observability: CommunicationObservability.providerReceipts,
+        requiresHostFinalSend: false,
+        supportsReplies: false,
+        supportsScheduling: false,
+      ),
+      CommunicationRouteId.catchEventRcs: CommunicationRouteCapability(
+        id: CommunicationRouteId.catchEventRcs,
+        transport: CommunicationTransport.rcs,
+        adapterKey: 'event_service_rcs',
+        senderIdentity: CommunicationSenderIdentity.catchPlatform,
+        deliveryMode: CommunicationDeliveryMode.eventService,
+        audienceScope: CommunicationAudienceScope.eventRoster,
+        consentScope: CommunicationConsentScope.eventService,
+        observability: CommunicationObservability.providerReceipts,
+        requiresHostFinalSend: false,
+        supportsReplies: true,
+        supportsScheduling: false,
+      ),
+      CommunicationRouteId.organizerEventWhatsapp: CommunicationRouteCapability(
+        id: CommunicationRouteId.organizerEventWhatsapp,
+        transport: CommunicationTransport.whatsapp,
+        adapterKey: 'meta_whatsapp_business',
+        senderIdentity: CommunicationSenderIdentity.organizerManaged,
+        deliveryMode: CommunicationDeliveryMode.eventService,
+        audienceScope: CommunicationAudienceScope.eventRoster,
+        consentScope: CommunicationConsentScope.eventService,
+        observability: CommunicationObservability.providerReceipts,
+        requiresHostFinalSend: false,
+        supportsReplies: true,
+        supportsScheduling: false,
+      ),
     };
 
 CommunicationRouteCapability communicationRouteCapability(

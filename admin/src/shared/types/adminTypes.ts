@@ -19,7 +19,8 @@ export type AdminOverviewResponse = AdminGetOverviewCallableResponse;
 export type AdminSafetyTriageKind =
   | "report"
   | "moderationFlag"
-  | "eventSafetyReport";
+  | "eventSafetyReport"
+  | "eventAssistanceCase";
 
 export interface AdminGetSafetyTriageDetailsPayload {
   targetPath: string;

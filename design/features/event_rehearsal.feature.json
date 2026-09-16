@@ -227,7 +227,7 @@
       "runtime": "react_marketing",
       "authority": {"registry": "marketing_routes", "id": "event_rehearsal"},
       "actionScope": {
-        "included": "Redeeming one deterministic anonymous browser slot, retrying an unavailable practice link, and submitting bounded guest arrival, opt-out, help, and prompt-completion actions.",
+        "included": "Redeeming one deterministic anonymous browser slot, retrying an unavailable practice link, and submitting bounded guest arrival, opt-out, help, prompt-completion, assistance-reply, and synthetic required-data actions.",
         "excluded": [
           "Authentication, OTP, production attendee claims, bookings, messages, payments, and matching are intentionally absent.",
           "Background virtual-clock polling and session-slot persistence are lifecycle effects rather than visible guest actions."
@@ -260,7 +260,13 @@
           "live-moment": ["website/src/features/eventRehearsal/EventRehearsalPage.test.tsx", "website/src/features/eventRehearsal/useEventRehearsalController.test.tsx"],
           "fault": ["website/src/features/eventRehearsal/EventRehearsalPage.test.tsx"],
           "complete": ["website/src/features/eventRehearsal/EventRehearsalPage.test.tsx"],
-          "unavailable": ["website/src/features/eventRehearsal/EventRehearsalPage.test.tsx"]
+          "unavailable": ["website/src/features/eventRehearsal/EventRehearsalPage.test.tsx"],
+          "joining-instruction": ["website/src/features/eventRehearsal/EventRehearsalPage.test.tsx"],
+          "reply-saved": ["website/src/features/eventRehearsal/EventRehearsalPage.test.tsx"],
+          "reply-uncertain": ["website/src/features/eventRehearsal/EventRehearsalPage.test.tsx"],
+          "reply-closed": ["website/src/features/eventRehearsal/EventRehearsalPage.test.tsx"],
+          "required-data-request": ["website/src/features/eventRehearsal/EventRehearsalPage.test.tsx", "website/src/features/eventRehearsal/useEventRehearsalController.test.tsx"],
+          "required-data-closed": ["website/src/features/eventRehearsal/EventRehearsalPage.test.tsx"]
         }
       },
       "dimensions": {
@@ -276,7 +282,7 @@
           "codeValue": "refresh",
           "cardinality": "unbounded",
           "scopeKeys": ["publicRehearsalId", "loadGeneration"],
-          "outcomes": [{"kind": "surface_state", "stateIds": ["loading", "welcome", "live-moment", "fault", "complete", "unavailable"]}],
+          "outcomes": [{"kind": "surface_state", "stateIds": ["loading", "welcome", "live-moment", "fault", "complete", "unavailable", "joining-instruction", "reply-saved", "reply-uncertain", "reply-closed", "required-data-request", "required-data-closed"]}],
           "description": "Retries a guest projection after expiry, link rotation, or a simulated connection failure."
         },
         {
@@ -285,11 +291,20 @@
           "codeValue": "submit",
           "cardinality": "domain_bounded",
           "scopeKeys": ["publicRehearsalId", "slotToken", "clientActionId"],
-          "outcomes": [{"kind": "surface_state", "stateIds": ["welcome", "live-moment", "fault", "complete"]}],
+          "outcomes": [{"kind": "surface_state", "stateIds": ["welcome", "live-moment", "fault", "complete", "joining-instruction", "reply-saved", "reply-uncertain", "reply-closed"]}],
           "description": "Updates only the browser slot's synthetic actor and returns the next guest-safe projection."
+        },
+        {
+          "id": "submit_synthetic_required_data",
+          "owner": "guest_controller",
+          "codeValue": "submitRequiredData",
+          "cardinality": "domain_bounded",
+          "scopeKeys": ["publicRehearsalId", "slotToken", "clientActionId", "requestRevision"],
+          "outcomes": [{"kind": "surface_state", "stateIds": ["required-data-request", "required-data-closed", "live-moment"]}],
+          "description": "Marks only current requested field identities complete with synthetic answers, fenced by the displayed profile and request revisions."
         }
       ],
-      "stateIds": ["loading", "welcome", "live-moment", "fault", "complete", "unavailable"],
+      "stateIds": ["loading", "welcome", "live-moment", "fault", "complete", "unavailable", "joining-instruction", "reply-saved", "reply-uncertain", "reply-closed", "required-data-request", "required-data-closed"],
       "scenarioDefaults": {"dimensions": {}, "actionCases": [{"id": "no_actions"}]},
       "scenarioOverrides": {
         "loading": {
@@ -302,6 +317,30 @@
         "live-moment": {
           "dimensions": {"lifecycle": "live"},
           "actionCases": [{"id": "bounded_guest_controls", "enabledActions": ["submit_synthetic_guest_action"]}]
+        },
+        "joining-instruction": {
+          "dimensions": {"lifecycle": "live"},
+          "actionCases": [{"id": "reply_choices", "enabledActions": ["submit_synthetic_guest_action"]}]
+        },
+        "reply-saved": {
+          "dimensions": {"lifecycle": "live", "mutation": "success"},
+          "actionCases": [{"id": "read_only_saved_reply"}]
+        },
+        "reply-uncertain": {
+          "dimensions": {"lifecycle": "live", "mutation": "failed"},
+          "actionCases": [{"id": "retry_same_reply", "enabledActions": ["retry_guest_projection", "submit_synthetic_guest_action"]}]
+        },
+        "reply-closed": {
+          "dimensions": {"lifecycle": "live"},
+          "actionCases": [{"id": "refresh_closed_reply", "enabledActions": ["retry_guest_projection"]}]
+        },
+        "required-data-request": {
+          "dimensions": {"lifecycle": "live"},
+          "actionCases": [{"id": "submit_sample_fields", "enabledActions": ["submit_synthetic_required_data", "retry_guest_projection"]}]
+        },
+        "required-data-closed": {
+          "dimensions": {"lifecycle": "live", "mutation": "success"},
+          "actionCases": [{"id": "read_only_sample_fields", "enabledActions": ["retry_guest_projection"]}]
         },
         "fault": {
           "dimensions": {"lifecycle": "live", "fault": "active"},

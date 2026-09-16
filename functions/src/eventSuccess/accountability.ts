@@ -23,6 +23,15 @@ import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import {eventSuccessPrimitivesFor} from "./formatPrimitives";
 
 export type EventSuccessAccountabilityResolution = "returned" | "departed";
+type CheckInTimestamp = FirebaseFirestore.Timestamp |
+  {_seconds: number; _nanoseconds: number} | null;
+type AccountabilityVisit = Pick<EventAttendeeDocument, "status"> & {
+  checkedInAt: CheckInTimestamp;
+};
+type AccountabilityResult = AccountabilityVisit &
+  Pick<EventAttendeeDocument, "accountabilityResolution"> & {
+    accountabilityResolvedForCheckInAt?: CheckInTimestamp;
+  };
 
 interface EventSuccessAccountabilityDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -42,13 +51,11 @@ const defaultDeps: EventSuccessAccountabilityDeps = {
 
 /** Returns a resolution only when it belongs to the current attendee visit. */
 export function currentAccountabilityResolution(
-  attendee: Pick<EventAttendeeDocument,
-    "status" | "checkedInAt" | "accountabilityResolution" |
-    "accountabilityResolvedForCheckInAt">
+  attendee: AccountabilityResult
 ): EventSuccessAccountabilityResolution | null {
   if (attendee.status !== "checkedIn") return null;
-  const checkedInAt = timestampMillis(attendee.checkedInAt);
-  const resolvedFor = timestampMillis(
+  const checkedInAt = timestampIdentity(attendee.checkedInAt);
+  const resolvedFor = timestampIdentity(
     attendee.accountabilityResolvedForCheckInAt
   );
   if (checkedInAt === null || checkedInAt !== resolvedFor) return null;
@@ -59,9 +66,7 @@ export function currentAccountabilityResolution(
 
 /** Counts checked-in operational attendees without requiring a Catch UID. */
 export function unresolvedAccountabilityCount(
-  attendees: Array<Pick<EventAttendeeDocument,
-    "status" | "checkedInAt" | "accountabilityResolution" |
-    "accountabilityResolvedForCheckInAt">>
+  attendees: AccountabilityResult[]
 ): number {
   return attendees.filter((attendee) =>
     attendee.status === "checkedIn" &&
@@ -71,9 +76,10 @@ export function unresolvedAccountabilityCount(
 
 /** Rejects sweep writes unless the operational attendee is checked in now. */
 export function requireCurrentAccountabilityCheckIn(
-  attendee: Pick<EventAttendeeDocument, "status" | "checkedInAt">
+  attendee: AccountabilityVisit
 ): void {
-  if (attendee.status !== "checkedIn" || attendee.checkedInAt === null) {
+  if (attendee.status !== "checkedIn" ||
+      timestampIdentity(attendee.checkedInAt) === null) {
     throw new HttpsError(
       "failed-precondition",
       "Only a currently checked-in attendee can be resolved."
@@ -175,24 +181,34 @@ function writeResolution(params: {
   ];
   now: FirebaseFirestore.FieldValue;
 }): void {
-  if (params.resolution === "unresolved") {
-    params.transaction.update(params.attendeeRef, {
-      accountabilityResolution: admin.firestore.FieldValue.delete(),
-      accountabilityResolvedForCheckInAt:
-        admin.firestore.FieldValue.delete(),
-      accountabilityResolvedAt: admin.firestore.FieldValue.delete(),
-      accountabilityResolvedBy: admin.firestore.FieldValue.delete(),
-      updatedAt: params.now,
-    });
-    return;
+  params.transaction.update(params.attendeeRef,
+    accountabilityResolutionFields(params.attendee, params.resolution,
+      params.hostUid, params.now));
+}
+
+/** Both command surfaces write the same visit-bound result and revision. */
+export function accountabilityResolutionFields(
+  attendee: AccountabilityVisit &
+    Pick<EventAttendeeDocument, "accountabilityRevision">,
+  resolution: "returned" | "departed" | "unresolved", actorUid: string,
+  now: FirebaseFirestore.FieldValue | FirebaseFirestore.Timestamp
+) {
+  requireCurrentAccountabilityCheckIn(attendee);
+  const revision = attendee.accountabilityRevision ?? 0;
+  if (!Number.isSafeInteger(revision) || revision < 0 ||
+      revision >= Number.MAX_SAFE_INTEGER) {
+    throw new HttpsError("failed-precondition",
+      "The accountability revision is unavailable.");
   }
-  params.transaction.update(params.attendeeRef, {
-    accountabilityResolution: params.resolution,
-    accountabilityResolvedForCheckInAt: params.attendee.checkedInAt,
-    accountabilityResolvedAt: params.now,
-    accountabilityResolvedBy: params.hostUid,
-    updatedAt: params.now,
-  });
+  const clear = resolution === "unresolved";
+  return {
+    accountabilityRevision: revision + 1,
+    accountabilityResolution: resolution === "unresolved" ? null : resolution,
+    accountabilityResolvedForCheckInAt: clear ? null : attendee.checkedInAt,
+    accountabilityResolvedAt: clear ? null : now,
+    accountabilityResolvedBy: clear ? null : actorUid,
+    updatedAt: now,
+  };
 }
 
 async function requireEventManager(
@@ -217,15 +233,13 @@ async function requireEventManager(
   return event;
 }
 
-function timestampMillis(value: unknown): number | null {
-  if (
-    value !== null &&
-    typeof value === "object" &&
-    "toMillis" in value &&
-    typeof value.toMillis === "function"
-  ) {
-    const millis = value.toMillis();
-    return Number.isFinite(millis) && millis >= 0 ? millis : null;
-  }
-  return null;
+function timestampIdentity(value: unknown): string | null {
+  if (!value || typeof value !== "object") return null;
+  const stamp = value as {seconds?: number; nanoseconds?: number;
+    _seconds?: number; _nanoseconds?: number};
+  const seconds = stamp.seconds ?? stamp._seconds;
+  const nanos = stamp.nanoseconds ?? stamp._nanoseconds;
+  return Number.isSafeInteger(seconds) && seconds! >= 0 &&
+    Number.isInteger(nanos) && nanos! >= 0 && nanos! < 1_000_000_000 ?
+    seconds + ":" + nanos : null;
 }

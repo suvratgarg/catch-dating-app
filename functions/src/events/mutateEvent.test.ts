@@ -9,6 +9,8 @@ import {
   updateEventHandler,
 } from "./mutateEvent";
 import type {FcmParams} from "../shared/notifications";
+import {EVENT_PLAN_CHANGES, eventPlanChangeSourceId} from
+  "./planChangeRecords";
 
 type FakeData = Record<string, unknown>;
 
@@ -1179,6 +1181,12 @@ test("updateEventHandler updates only host-editable event fields", async () => {
   assert.equal(updated?.photoUrl, "https://img.example/events/event-1.jpg");
   assert.equal(updated?.description, "Updated route.");
   assert.equal(updated?.capacityLimit, 12);
+  assert.equal(updated?.planChangeRevision, 1);
+  const source = h.firestore.get(`${EVENT_PLAN_CHANGES}/` +
+    eventPlanChangeSourceId("event-1", 1));
+  assert.deepEqual(source?.changedFields, ["schedule", "meetingLocation"]);
+  assert.equal(source?.meetingPoint, "Joggers Park");
+  assert.equal(source?.revision, 1);
 });
 
 test("updateEventHandler cleans removed event media after commit", async () => {
@@ -1311,6 +1319,12 @@ test("updateEventHandler notifies participants for location changes",
       eventId: "event-1",
       organizerId: "club-1",
     }]);
+    const eventDoc = h.firestore.get("events/event-1");
+    assert.equal(eventDoc?.planChangeRevision, 1);
+    const source = h.firestore.get(`${EVENT_PLAN_CHANGES}/` +
+      eventPlanChangeSourceId("event-1", 1));
+    assert.deepEqual(source?.changedFields, ["meetingLocation"]);
+    assert.equal(source?.meetingPoint, "Joggers Park");
   }
 );
 
@@ -1380,8 +1394,37 @@ test("updateEventHandler skips participant notifications for copy-only edits",
       undefined
     );
     assert.deepEqual(h.notifications, []);
+    assert.equal(
+      h.firestore.get("events/event-1")?.planChangeRevision,
+      undefined
+    );
+    assert.equal(
+      h.firestore.get(`${EVENT_PLAN_CHANGES}/` +
+        eventPlanChangeSourceId("event-1", 1)),
+      undefined
+    );
   }
 );
+
+test("updateEventHandler advances immutable plan change revisions",
+  async () => {
+    const h = harness({
+      "organizers/club-1": club(),
+      "events/event-1": event({planChangeRevision: 4}),
+    });
+
+    await updateEventHandler(request("host-1", {
+      eventId: "event-1",
+      fields: {meetingPoint: "Joggers Park"},
+    }), h.deps);
+
+    const eventDoc = h.firestore.get("events/event-1");
+    const source = h.firestore.get(`${EVENT_PLAN_CHANGES}/` +
+      eventPlanChangeSourceId("event-1", 5));
+    assert.equal(eventDoc?.planChangeRevision, 5);
+    assert.equal(source?.revision, 5);
+    assert.equal(source?.createdBy, "host-1");
+  });
 
 test("cancelEventHandler marks the event cancelled and notifies participants",
   async () => {

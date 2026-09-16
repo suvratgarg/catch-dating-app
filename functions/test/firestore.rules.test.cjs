@@ -1491,6 +1491,30 @@ describe("firestore.rules", () => {
         "event-1_runner-1",
       ), eventRuntimeParticipant()));
 
+      for (const collectionName of [
+        "eventRuntimeDataRequests",
+        "eventRuntimeDataRequestReceipts",
+      ]) {
+        await seed([collectionName, "runtime-data-1"], {
+          eventId: "event-1",
+          organizerId: "club-1",
+          attendeeId: "attendee-1",
+          uid: "runner-1",
+        });
+        for (const uid of ["runner-1", "host-1"]) {
+          await assertFails(getDoc(doc(
+            authedDb(uid), collectionName, "runtime-data-1",
+          )));
+          await assertFails(setDoc(doc(
+            authedDb(uid), collectionName, "runtime-data-2",
+          ), {eventId: "event-1", uid}));
+        }
+        await assertFails(getDocs(query(
+          collection(authedDb("runner-1"), collectionName),
+          where("eventId", "==", "event-1"),
+        )));
+      }
+
       await assertSucceeds(getDoc(doc(
         authedDb("host-1"),
         "eventRuntimeClaimRequests",
@@ -4336,6 +4360,66 @@ describe("firestore.rules", () => {
       );
     });
 
+    it("keeps event-service messages private to trusted workers", async () => {
+      for (const collectionName of ["eventAssistanceMessages",
+        "eventAssistanceOperationalNoticeQuotas",
+        "eventAssistanceOperationalNoticePublications",
+        "eventAssistanceSettings", "eventAssistanceSettingReceipts",
+        "eventAssistanceRuntimeConfigs", "eventAssistanceRuntimeConfigReceipts",
+        "eventAssistanceParticipationReceipts", "eventAssistanceStaffReceipts",
+        "eventAssistanceAccountabilityReceipts",
+        "eventAssistanceMemberships", "eventAssistanceMembershipReceipts",
+        "eventAssistanceGroupProgress", "eventAssistanceProgressReceipts",
+        "eventAssistanceDepartureRosters",
+        "eventAssistanceCheckpoints", "eventAssistanceCheckpointReceipts",
+        "eventAssistanceGuests", "eventAssistanceThreads",
+        "eventAssistanceGuestGrants", "eventAssistanceCases",
+        "eventAssistanceCaseReceipts", "eventAssistanceDeliveryRepairs",
+        "eventAssistanceRcsCallbacks", "eventAssistanceRcsCallbackIdentities",
+        "eventAssistanceRcsSubscriptions",
+        "eventAssistanceRcsBudgets", "eventAssistanceRcsDispatches",
+        "eventAssistanceRcsCallbackReceipts",
+        "eventAssistanceRcsSenders", "eventAssistanceRcsPermissions",
+        "eventAssistanceRcsConsentReceipts", "eventAssistanceRcsWithdrawalGrants",
+        "eventAssistanceSmsSenders", "eventAssistanceSmsPermissions",
+        "eventAssistanceSmsBudgets", "eventAssistanceSmsDispatches",
+        "eventAssistanceSmsConsentReceipts",
+        "eventAssistanceSmsWithdrawalGrants",
+        "eventAssistanceWhatsappWithdrawalGrants",
+        "eventAssistanceWhatsappReplyBindings",
+        "eventAssistanceWhatsappPolicies",
+        "eventAssistanceWhatsappBudgets",
+        "eventAssistanceWhatsappDispatches",
+        "organizerWhatsappEndpointStops",
+
+        "eventAssistanceWhatsappPermissions",
+        "eventAssistanceWhatsappConsentReceipts"]) {
+        await seed([collectionName, "record-1"], {schemaVersion: 1});
+        for (const client of [testEnv.unauthenticatedContext().firestore(),
+          authedDb("host-1"), authedDb("admin-1", {admin: true})]) {
+          const reference = doc(client, collectionName, "record-1");
+          await assertFails(getDoc(reference));
+          await assertFails(setDoc(reference, {schemaVersion: 1}));
+          await assertFails(deleteDoc(reference));
+        }
+      }
+    });
+
+    it("keeps attendance closeout decisions callable-only", async () => {
+      for (const collectionName of ["eventAttendanceDispositions",
+        "eventAttendanceDispositionReceipts"]) {
+        await seed([collectionName, "record-1"], {revision: 1});
+        for (const client of [testEnv.unauthenticatedContext().firestore(),
+          authedDb("host-1"), authedDb("guest-1"),
+          authedDb("admin-1", {admin: true})]) {
+          const reference = doc(client, collectionName, "record-1");
+          await assertFails(getDoc(reference));
+          await assertFails(setDoc(reference, {revision: 2}));
+          await assertFails(deleteDoc(reference));
+        }
+      }
+    });
+
     it("keeps durable operations records server-owned", async () => {
       const collections = [
         "operationRuns",
@@ -4347,6 +4431,9 @@ describe("firestore.rules", () => {
         "operationRuleProposals",
         "operationRuleEvaluations",
         "adminActionExecutions",
+        "eventMessagingBudgetDecisions",
+        "eventMessagingBudgetDecisionReceipts",
+        "eventMessagingBudgetApplicationReceipts",
       ];
       for (const collectionName of collections) {
         await seed([collectionName, "record-1"], {schemaVersion: 1});
@@ -4366,6 +4453,10 @@ describe("firestore.rules", () => {
         "eventRehearsalActors",
         "eventRehearsalActions",
         "eventRehearsalGuestViews",
+        "eventRehearsalMessages",
+        "eventRehearsalMovements",
+        "eventRehearsalRouteDecisions",
+        "eventRehearsalCases",
       ];
       for (const collectionName of collections) {
         await seed([collectionName, "practice-1"], {sessionId: "practice-1"});

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-09-15",
+  "updated": "2026-09-16",
   "ciImpact": {
     "mandatoryCheckIds": [
       "docs:metadata",
@@ -6582,6 +6582,33 @@
           "replay rejects tampered items with matching metadata",
           "rejects inventory above its frozen work budget",
           "rejects a changed artifact for an imported immutable run"
+        ]
+      }
+    },
+    {
+      "id": "operations:review-event-messaging",
+      "category": "operations",
+      "path": "functions/scripts/operations/review-event-messaging.cjs",
+      "command": "npm --prefix functions run operations:review-event-messaging --",
+      "safety": "remote-readonly",
+      "status": "active",
+      "role": "operator",
+      "rules": [
+        "OPERATIONS-PLATFORM-001"
+      ],
+      "description": "Reads one explicit environment, project, event, organizer, channel, sender and purpose through the production setup readers, then prints a schema-validated, credential-free runtime, sender and budget review that grants no dispatch authority.",
+      "checks": [
+        "node --check functions/scripts/operations/review-event-messaging.cjs",
+        "npm --prefix functions run build",
+        "(cd functions && node --test lib/eventSuccess/operations/messageSetupReview.test.js)",
+        "node --test functions/test/operations-review-event-messaging.test.cjs"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "functions/src/eventSuccess/operations/messageSetupReview.test.ts",
+        "contains": [
+          "foreign or invalid WhatsApp provisioning cannot reveal its budgets",
+          "read failures and a billing-day rollover require another complete review"
         ]
       }
     },

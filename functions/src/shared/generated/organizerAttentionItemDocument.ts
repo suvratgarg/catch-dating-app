@@ -11,6 +11,8 @@ export interface OrganizerAttentionItemDocument {
   organizerId: string;
   kind:
     | "eventLiveOperations"
+    | "eventAssistanceCaseReview"
+    | "eventAssistanceDeliveryReview"
     | "eventWaitlistReview"
     | "eventJoinRequestReview"
     | "applicationReview"
@@ -34,6 +36,8 @@ export interface OrganizerAttentionItemDocument {
     | "organizerFormAutomationRuns"
     | "hostPaymentAccounts"
     | "hostAttendanceOutbox"
+    | "eventAssistanceCases"
+    | "operationWorkItems"
     | "eventSuccessPlans"
     | "eventRehearsals"
     | "eventStaffGrants"

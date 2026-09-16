@@ -8,6 +8,39 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('action rows expose caller-owned selection', (tester) async {
+    var taps = 0;
+    await tester.pumpWidget(
+      _wrap(
+        CatchSection.containedRows(
+          children: [
+            CatchField.action(
+              key: const ValueKey('selected-action'),
+              copy: catchFieldCopy(AppLocalizationsEn()),
+              title: 'Alex Morgan',
+              states: const {WidgetState.selected},
+              onTap: () => taps++,
+            ),
+          ],
+        ),
+      ),
+    );
+
+    final field = find.byKey(const ValueKey('selected-action'));
+    expect(
+      find.descendant(
+        of: field,
+        matching: find.byWidgetPredicate(
+          (widget) => widget is Semantics && widget.properties.selected == true,
+        ),
+      ),
+      findsOneWidget,
+    );
+    expect(find.byIcon(CatchIcons.chevronRightRounded), findsNothing);
+    await tester.tap(field);
+    expect(taps, 1);
+  });
+
   testWidgets('field action labels follow caller copy and saving state', (
     tester,
   ) async {
