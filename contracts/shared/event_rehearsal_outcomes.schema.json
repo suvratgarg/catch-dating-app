@@ -1,0 +1,156 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/shared/event_rehearsal_outcomes.schema.json",
+  "title": "Event rehearsal unit outcome definitions",
+  "description": "Revisioned synthetic unit outcomes for dress rehearsal. This state never updates live standings.",
+  "definitions": {
+    "Outcome": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "completed"],
+          "properties": {
+            "kind": {"type": "string", "const": "completion"},
+            "completed": {"type": "boolean"}
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "score"],
+          "properties": {
+            "kind": {"type": "string", "const": "score"},
+            "score": {
+              "type": "number",
+              "minimum": -9007199254740991,
+              "maximum": 9007199254740991
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "rank"],
+          "properties": {
+            "kind": {"type": "string", "const": "rank"},
+            "rank": {
+              "type": "number",
+              "minimum": -9007199254740991,
+              "maximum": 9007199254740991
+            }
+          }
+        }
+      ]
+    },
+    "Record": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "unitId",
+        "round",
+        "outcome",
+        "stateRevision",
+        "operationId",
+        "recordedBy",
+        "recordedAt"
+      ],
+      "properties": {
+        "unitId": {"type": "string", "minLength": 1, "maxLength": 2000},
+        "round": {"type": "integer", "minimum": 0, "maximum": 10000},
+        "outcome": {"$ref": "#/definitions/Outcome"},
+        "stateRevision": {"type": "integer", "minimum": 1, "maximum": 2147483647},
+        "operationId": {"$ref": "event_common.schema.json#/definitions/documentId"},
+        "recordedBy": {"$ref": "event_common.schema.json#/definitions/documentId"},
+        "recordedAt": {"$ref": "event_common.schema.json#/definitions/timestamp"}
+      }
+    },
+    "State": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "unitOutcome",
+        "revision",
+        "records"
+      ],
+      "properties": {
+        "unitOutcome": {
+          "type": "string",
+          "enum": ["completion", "score", "rank"]
+        },
+        "revision": {"type": "integer", "minimum": 0, "maximum": 2147483647},
+        "records": {
+          "type": "array",
+          "maxItems": 500,
+          "items": {"$ref": "#/definitions/Record"}
+        }
+      }
+    },
+    "RecordView": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "unitId",
+        "round",
+        "outcome",
+        "stateRevision",
+        "recordedAt"
+      ],
+      "properties": {
+        "unitId": {"type": "string", "minLength": 1, "maxLength": 2000},
+        "round": {"type": "integer", "minimum": 0, "maximum": 10000},
+        "outcome": {"$ref": "#/definitions/Outcome"},
+        "stateRevision": {"type": "integer", "minimum": 1, "maximum": 2147483647},
+        "recordedAt": {"type": "integer", "minimum": 0, "maximum": 9007199254740991}
+      }
+    },
+    "Review": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "unitOutcome",
+        "revision",
+        "unitIds",
+        "records"
+      ],
+      "properties": {
+        "unitOutcome": {
+          "type": "string",
+          "enum": ["none", "completion", "score", "rank"]
+        },
+        "revision": {"type": "integer", "minimum": 0, "maximum": 2147483647},
+        "unitIds": {
+          "type": "array",
+          "maxItems": 50,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1, "maxLength": 2000}
+        },
+        "records": {
+          "type": "array",
+          "maxItems": 500,
+          "items": {"$ref": "#/definitions/RecordView"}
+        }
+      }
+    },
+    "Command": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "unitId",
+        "round",
+        "outcome",
+        "expectedOutcomeRevision"
+      ],
+      "properties": {
+        "unitId": {"type": "string", "minLength": 1, "maxLength": 2000},
+        "round": {"type": "integer", "minimum": 0, "maximum": 10000},
+        "outcome": {"$ref": "#/definitions/Outcome"},
+        "expectedOutcomeRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      }
+    }
+  }
+}

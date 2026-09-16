@@ -24,6 +24,10 @@ import {
   validateAdminDecideSafetyTriageItemCallablePayload,
 } from
   "../shared/generated/validators/adminDecideSafetyTriageItemInput";
+import {validateEventAssistanceCaseDocument} from
+  "../shared/generated/validators/eventAssistanceCaseDocument";
+import type {EventAssistanceCaseDocument} from
+  "../shared/generated/eventAssistanceCaseDocument";
 import {validateCallableWithAjv} from "../shared/validation";
 
 const safetyDetailRoles = [
@@ -37,7 +41,8 @@ const safetyDecisionRoles = ["admin", "adminOwner", "safetyReviewer"] as const;
 export type AdminSafetyTriageKind =
   | "report"
   | "moderationFlag"
-  | "eventSafetyReport";
+  | "eventSafetyReport"
+  | "eventAssistanceCase";
 
 export interface AdminGetSafetyTriageDetailsPayload {
   targetPath: string;
@@ -142,7 +147,8 @@ export type AdminAssignSafetyTriageItemResponse =
   AdminAssignSafetyTriageItemCallableResponse;
 
 interface SafetyTarget {
-  collection: "reports" | "moderationFlags" | "eventSafetyReports";
+  collection: "reports" | "moderationFlags" | "eventSafetyReports" |
+    "eventAssistanceCases";
   docId: string;
   kind: AdminSafetyTriageKind;
   targetPath: string;
@@ -229,7 +235,6 @@ export async function adminDecideSafetyTriageItemHandler(
   );
   const payload = normalizeSafetyDecisionPayload(request.data);
   const target = parseSafetyTarget(payload.targetPath);
-  const nextStatus = statusForDecision(payload.decision);
   const db = deps.firestore();
   await deps.checkRateLimit?.(
     db,
@@ -245,10 +250,15 @@ export async function adminDecideSafetyTriageItemHandler(
     }
     const before = snapshot.data() ?? {};
     assertSafetyItemEditable(target, before);
+    const nextStatus = statusForDecision(target, payload.decision);
     tx.update(docRef, buildSafetyDecisionPatch(
       target,
+      before,
+      payload.decision,
       nextStatus,
-      deps.serverTimestamp()
+      adminContext.uid,
+      deps.serverTimestamp(),
+      deps.now()
     ));
     setAdminAuditLogInTransaction(tx, db, adminContext, {
       action: "adminDecideSafetyTriageItem",
@@ -270,7 +280,7 @@ export async function adminDecideSafetyTriageItemHandler(
   return {
     targetPath: target.targetPath,
     decision: payload.decision,
-    status: nextStatus,
+    status: statusForDecision(target, payload.decision),
   };
 }
 
@@ -308,12 +318,15 @@ export async function adminAssignSafetyTriageItemHandler(
     const before = snapshot.data() ?? {};
     assertSafetyItemEditable(target, before);
     const patch = buildSafetyAssignmentPatch(
+      target,
+      before,
       payload,
       adminContext.uid,
-      deps.serverTimestamp()
+      deps.serverTimestamp(),
+      deps.now()
     );
     tx.update(docRef, patch);
-    const after = {...before, assigneeUid: payload.assigneeUid};
+    const after = applySafetyPatch(before, patch);
     assignment = assignmentFor(target, after, severityFor(target, after));
     setAdminAuditLogInTransaction(tx, db, adminContext, {
       action: "adminAssignSafetyTriageItem",
@@ -322,7 +335,11 @@ export async function adminAssignSafetyTriageItemHandler(
       before: {
         kind: target.kind,
         status: stringValue(before.status) ?? "unknown",
-        assigneeUid: stringValue(before.assigneeUid),
+        assigneeUid: assignmentFor(
+          target,
+          before,
+          severityFor(target, before)
+        ).assigneeUid,
       },
       after: {
         assigneeUid: payload.assigneeUid,
@@ -435,11 +452,13 @@ export function normalizeSafetyAssignmentPayload(
 /**
  * Returns the durable status for a safety triage decision.
  * @param {AdminSafetyTriageDecision} decision Admin decision.
- * @return {"reviewed" | "dismissed"} Document status.
+ * @return {"reviewed" | "dismissed" | "resolved"} Document status.
  */
 function statusForDecision(
+  target: SafetyTarget,
   decision: AdminSafetyTriageDecision
-): "reviewed" | "dismissed" {
+): "reviewed" | "dismissed" | "resolved" {
+  if (target.kind === "eventAssistanceCase") return "resolved";
   return decision === "review" ? "reviewed" : "dismissed";
 }
 
@@ -452,30 +471,57 @@ function assertSafetyItemEditable(
   target: SafetyTarget,
   data: FirebaseFirestore.DocumentData
 ) {
+  if (target.kind === "eventAssistanceCase") {
+    const restricted = requireRestrictedCase(target, data);
+    if (restricted.status !== "open" ||
+        restricted.handling.resolution !== null) {
+      throw closedSafetyItem();
+    }
+    return;
+  }
   const status = stringValue(data.status);
   const expectedStatus = target.collection === "moderationFlags" ?
     "pending" :
     "open";
   if (status !== expectedStatus) {
-    throw new HttpsError(
-      "failed-precondition",
-      "Only open safety items can be reviewed or dismissed."
-    );
+    throw closedSafetyItem();
   }
 }
 
 /**
  * Builds the schema-safe Firestore decision patch.
  * @param {SafetyTarget} target Parsed target.
- * @param {"reviewed" | "dismissed"} status Next status.
+ * @param {FirebaseFirestore.DocumentData} data Current source document.
+ * @param {AdminSafetyTriageDecision} decision Reviewed outcome.
+ * @param {"reviewed" | "dismissed" | "resolved"} status Next status.
+ * @param {string} reviewerUid Acting safety reviewer.
  * @param {FirebaseFirestore.FieldValue} timestamp Server timestamp.
+ * @param {Date} now Trusted application clock.
  * @return {Record<string, unknown>} Firestore patch.
  */
 function buildSafetyDecisionPatch(
   target: SafetyTarget,
-  status: "reviewed" | "dismissed",
-  timestamp: FirebaseFirestore.FieldValue
+  data: FirebaseFirestore.DocumentData,
+  decision: AdminSafetyTriageDecision,
+  status: "reviewed" | "dismissed" | "resolved",
+  reviewerUid: string,
+  timestamp: FirebaseFirestore.FieldValue,
+  now: Date
 ): Record<string, unknown> {
+  if (target.kind === "eventAssistanceCase") {
+    const restricted = requireRestrictedCase(target, data);
+    const at = eventAssistanceClock(now, restricted);
+    return {status: "resolved", handling: {
+      ...restricted.handling,
+      revision: restricted.handling.revision + 1,
+      updatedAt: at,
+      resolution: {
+        outcome: decision === "review" ? "resolved" : "declined",
+        actorUid: reviewerUid,
+        at,
+      },
+    }};
+  }
   if (target.collection === "moderationFlags") {
     return {status, reviewedAt: timestamp};
   }
@@ -493,10 +539,23 @@ function buildSafetyDecisionPatch(
  * @return {Record<string, unknown>} Firestore patch.
  */
 function buildSafetyAssignmentPatch(
+  target: SafetyTarget,
+  data: FirebaseFirestore.DocumentData,
   payload: AdminAssignSafetyTriageItemPayload,
   reviewerUid: string,
-  timestamp: FirebaseFirestore.FieldValue
+  timestamp: FirebaseFirestore.FieldValue,
+  now: Date
 ): Record<string, unknown> {
+  if (target.kind === "eventAssistanceCase") {
+    const restricted = requireRestrictedCase(target, data);
+    const at = eventAssistanceClock(now, restricted);
+    return {handling: {
+      ...restricted.handling,
+      revision: restricted.handling.revision + 1,
+      assigneeUid: payload.assigneeUid,
+      updatedAt: at,
+    }};
+  }
   return {
     assigneeUid: payload.assigneeUid,
     assignmentUpdatedAt: timestamp,
@@ -523,6 +582,9 @@ export function parseSafetyTarget(targetPath: string): SafetyTarget {
   if (collection === "eventSafetyReports") {
     return {collection, docId, kind: "eventSafetyReport", targetPath};
   }
+  if (collection === "eventAssistanceCases") {
+    return {collection, docId, kind: "eventAssistanceCase", targetPath};
+  }
   throw new HttpsError("invalid-argument", "Unsupported safety target path.");
 }
 
@@ -540,6 +602,9 @@ export function normalizeSafetyDetail(
   if (target.kind === "report") return normalizeReportDetail(target, data, now);
   if (target.kind === "moderationFlag") {
     return normalizeModerationDetail(target, data, now);
+  }
+  if (target.kind === "eventAssistanceCase") {
+    return normalizeEventAssistanceCaseDetail(target, data, now);
   }
   return normalizeEventSafetyDetail(target, data, now);
 }
@@ -681,6 +746,58 @@ function normalizeEventSafetyDetail(
       "Open the event, host, and feedback context before resolving.",
       "Route attendance or payment issues to their owning workflow.",
       "Use an audited event safety mutation before changing report status.",
+    ],
+  });
+}
+
+function normalizeEventAssistanceCaseDetail(
+  target: SafetyTarget,
+  data: FirebaseFirestore.DocumentData,
+  now: Date
+): AdminSafetyTriageDetails {
+  const restricted = requireRestrictedCase(target, data);
+  const context = restricted.context;
+  return baseDetail(target, {
+    ...restricted,
+    createdAt: new Date(restricted.receivedAt),
+    updatedAt: new Date(restricted.handling.updatedAt),
+  }, {
+    now,
+    title: "Live event safety request",
+    summary: [
+      `event ${context.eventId}`,
+      `attendee ${restricted.attendeeId}`,
+    ].join(" - "),
+    primaryUserId: null,
+    secondaryUserId: null,
+    eventId: context.eventId,
+    clubId: context.organizerId,
+    source: "event_assistance_guest_response",
+    contextId: restricted.responseId,
+    fields: [
+      field("Event", context.eventId),
+      field("Organizer", context.organizerId),
+      field("Attendee", restricted.attendeeId),
+      field("Category", restricted.category),
+      field("Message", restricted.messageId),
+      field("Guest response", restricted.responseId),
+      field("Assigned reviewer", restricted.handling.assigneeUid),
+    ],
+    evidence: [
+      evidence("Event", context.eventId,
+        `events/${context.eventId}`, false),
+      evidence("Organizer", context.organizerId,
+        `organizers/${context.organizerId}`, false),
+      evidence("Attendee", restricted.attendeeId,
+        `eventAttendees/${restricted.attendeeId}`, true),
+      evidence("Message", restricted.messageId,
+        `eventAssistanceMessages/${restricted.messageId}`, true),
+    ],
+    nextActions: [
+      "Review the live event, attendee, message, and guest response context.",
+      "Coordinate immediate operational support with the event lead when " +
+        "needed.",
+      "Record the reviewed or declined outcome in this restricted queue item.",
     ],
   });
 }
@@ -902,6 +1019,17 @@ function buildOutcomeGuidance(
       actionStatus: "manual",
     });
   }
+  if (item.kind === "eventAssistanceCase") {
+    guidance.push({
+      id: "resolve_live_event_request",
+      label: "Close the live safety handoff",
+      detail:
+        "Record whether the request was handled or declined after reviewing " +
+        "the event and attendee context.",
+      severity: "critical",
+      actionStatus: "available",
+    });
+  }
   if (!item.contextId) {
     guidance.push({
       id: "request_more_context",
@@ -931,9 +1059,11 @@ function assignmentFor(
   data: FirebaseFirestore.DocumentData,
   severity: AdminSafetyTriageSeverity
 ): AdminSafetyTriageAssignment {
+  const handling = isRecord(data.handling) ? data.handling : null;
   return {
     ownerTeam: ownerTeamFor(target, data),
     assigneeUid:
+      stringValue(handling?.assigneeUid) ??
       stringValue(data.assigneeUid) ??
       stringValue(data.assignedToUid) ??
       stringValue(data.reviewerUid),
@@ -946,7 +1076,8 @@ function ownerTeamFor(
   target: SafetyTarget,
   data: FirebaseFirestore.DocumentData
 ): string {
-  if (target.kind === "eventSafetyReport") return "Event safety";
+  if (target.kind === "eventSafetyReport" ||
+      target.kind === "eventAssistanceCase") return "Event safety";
   if (target.kind === "moderationFlag") return "Moderation";
   const source = stringValue(data.source)?.toLowerCase() ?? "";
   if (source.includes("chat") || source.includes("match")) {
@@ -959,7 +1090,8 @@ function severityFor(
   target: SafetyTarget,
   data: FirebaseFirestore.DocumentData
 ): AdminSafetyTriageSeverity {
-  if (target.kind === "eventSafetyReport") return "high";
+  if (target.kind === "eventSafetyReport" ||
+      target.kind === "eventAssistanceCase") return "high";
   const haystack = [
     stringValue(data.reasonCode),
     stringValue(data.flagType),
@@ -981,6 +1113,52 @@ function severityFor(
     return "medium";
   }
   return "watch";
+}
+
+type RestrictedCase = Extract<EventAssistanceCaseDocument, {
+  owner: "authorizedSafetyOperator";
+  handling: unknown;
+}>;
+
+function requireRestrictedCase(
+  target: SafetyTarget,
+  data: FirebaseFirestore.DocumentData
+): RestrictedCase {
+  if (target.kind !== "eventAssistanceCase" ||
+      !validateEventAssistanceCaseDocument(data) ||
+      data.caseId !== target.docId ||
+      data.context.mode !== "live" ||
+      data.owner !== "authorizedSafetyOperator" ||
+      data.category !== "comfortSafety" ||
+      !("handling" in data)) {
+    throw new HttpsError("failed-precondition",
+      "This restricted event request has no current safety-owned state.");
+  }
+  return data as RestrictedCase;
+}
+
+function eventAssistanceClock(now: Date, restricted: RestrictedCase): number {
+  const at = now.getTime();
+  if (!Number.isSafeInteger(at) || at < restricted.receivedAt ||
+      at < restricted.handling.updatedAt) {
+    throw new HttpsError("failed-precondition",
+      "The restricted event request has a newer source revision.");
+  }
+  return at;
+}
+
+function applySafetyPatch(
+  current: FirebaseFirestore.DocumentData,
+  patch: Record<string, unknown>
+): FirebaseFirestore.DocumentData {
+  return {...current, ...patch};
+}
+
+function closedSafetyItem(): HttpsError {
+  return new HttpsError(
+    "failed-precondition",
+    "Only open safety items can be reviewed or dismissed."
+  );
 }
 
 function slaFor(

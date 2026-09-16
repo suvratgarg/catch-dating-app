@@ -1761,6 +1761,34 @@ export const eventDocumentSchema: Record<string, unknown> = {
       "minLength": 1,
       "maxLength": 80,
       "description": "Internal demo-operations command name used for cleanup and diagnostics."
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Latest backend event mutation timestamp when supplied by its owner, including attendance aggregate updates. Legacy events may omit it.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "planChangeRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2147483647,
+      "x-catch-ownership": "callable-owned",
+      "description": "Monotonic revision for immutable attendee-relevant plan change records. Missing legacy values read as zero."
     }
   }
 } as const;

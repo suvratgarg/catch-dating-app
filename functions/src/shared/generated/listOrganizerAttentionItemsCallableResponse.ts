@@ -17,6 +17,8 @@ export interface ListOrganizerAttentionItemsCallableResponse {
     attentionId: string;
     kind:
       | "eventLiveOperations"
+      | "eventAssistanceCaseReview"
+      | "eventAssistanceDeliveryReview"
       | "eventWaitlistReview"
       | "eventJoinRequestReview"
       | "applicationReview"
@@ -46,6 +48,8 @@ export interface ListOrganizerAttentionItemsCallableResponse {
       | "organizerFormAutomationRuns"
       | "hostPaymentAccounts"
       | "hostAttendanceOutbox"
+      | "eventAssistanceCases"
+      | "operationWorkItems"
       | "eventSuccessPlans"
       | "eventRehearsals"
       | "eventStaffGrants"
@@ -98,12 +102,14 @@ export interface ListOrganizerAttentionItemsCallableResponse {
     expiresAtMillis: number | null;
   }[];
   /**
-   * @minItems 15
-   * @maxItems 15
+   * @minItems 17
+   * @maxItems 17
    */
   coverage: {
     kind:
       | "eventLiveOperations"
+      | "eventAssistanceCaseReview"
+      | "eventAssistanceDeliveryReview"
       | "eventWaitlistReview"
       | "eventJoinRequestReview"
       | "applicationReview"

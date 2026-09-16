@@ -127,6 +127,12 @@ const schemaEventRuntimeParticipantDocumentSchema = <String, Object?>{
         ],
       },
     },
+    'profileRevision': <String, Object?>{
+      'description': 'Monotonic accepted runtime-profile submission revision. Legacy documents omit it and read as zero.',
+      'type': 'integer',
+      'minimum': 0,
+      'maximum': 9007199254740991,
+    },
     'runtimeProfile': <String, Object?>{
       'type': 'object',
       'additionalProperties': false,

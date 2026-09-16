@@ -25,6 +25,14 @@ export const eventRehearsalCopy = {
     role === "host" ? "Synthetic Host" : "Synthetic route operator",
   promptTitle: "Your practice prompt",
   actionsTitle: "Try the guest controls",
+  joiningTitle: "Your joining instructions",
+  joiningBody: "Tell the Host your plan. This reply does not check you in.",
+  replyPending: "Saving your reply…",
+  replySaved: (label: string) => `Reply saved: ${label}`,
+  replyClosed: "Replies to this instruction are closed. Refresh for the latest update.",
+  replyUncertain: "We could not confirm your reply. Refresh or retry the same response.",
+  replyStale: "Reconnect and refresh before choosing a response.",
+  refresh: "Refresh practice room",
   actionsBody:
     "Every action changes only this synthetic guest and appears on the Host practice screen.",
   checkedIn: "Check in",
@@ -35,7 +43,7 @@ export const eventRehearsalCopy = {
   completePrompt: "Mark prompt complete",
   actionPending: "Updating practice room…",
   actionSuccess: "The Host practice screen has your update.",
-  refreshNotice: "Waiting for the Host to advance the virtual event.",
+  refreshNotice: "Your practice room may have changed. Refresh to continue.",
   waitingTitle: "Waiting for the Host",
   waitingBody:
     "Keep this practice phone open. Guest controls appear when the Host starts the virtual event.",
@@ -45,6 +53,8 @@ export const eventRehearsalCopy = {
   optedOutNotice: "This synthetic guest is opted out of social activities.",
   helpRequestedNotice: "The Host practice screen shows a help request.",
   promptCompletedNotice: "The practice prompt is complete.",
+  disconnectedNotice:
+    "Connection loss is being simulated. Connection status does not confirm whether this guest is at the event.",
   statusLabels: {
     expected: "Expected",
     present: "Present",

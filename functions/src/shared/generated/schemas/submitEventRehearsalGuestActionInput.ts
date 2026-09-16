@@ -36,8 +36,136 @@ export const submitEventRehearsalGuestActionCallablePayloadSchema: Record<string
         "optOut",
         "optIn",
         "askForHelp",
-        "completePrompt"
+        "completePrompt",
+        "submitRequiredData",
+        "respondToAssistance"
       ]
+    },
+    "messageId": {
+      "type": "string",
+      "pattern": "^outbox:[a-f0-9]{64}$"
+    },
+    "intentRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000000
+    },
+    "choiceId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160
+    },
+    "requiredData": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "fieldIds",
+        "expectedProfileRevision",
+        "expectedRequestRevision",
+        "expectedSourceHash"
+      ],
+      "properties": {
+        "fieldIds": {
+          "type": "array",
+          "uniqueItems": true,
+          "minItems": 1,
+          "maxItems": 10,
+          "items": {
+            "type": "string",
+            "enum": [
+              "displayName",
+              "gender",
+              "interestedInGenders",
+              "relationshipGoal",
+              "dateOfBirth",
+              "paceBand",
+              "skillBand",
+              "dietaryAndSeatingNotes",
+              "questionnaireAnswerIds",
+              "teamName"
+            ]
+          }
+        },
+        "expectedProfileRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "expectedRequestRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "expectedSourceHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
     }
-  }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "action": {
+            "const": "respondToAssistance"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "messageId",
+          "intentRevision",
+          "choiceId"
+        ],
+        "not": {
+          "required": [
+            "requiredData"
+          ]
+        }
+      },
+      "else": {
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "messageId"
+              ]
+            },
+            {
+              "required": [
+                "intentRevision"
+              ]
+            },
+            {
+              "required": [
+                "choiceId"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "action": {
+            "const": "submitRequiredData"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "requiredData"
+        ]
+      },
+      "else": {
+        "not": {
+          "required": [
+            "requiredData"
+          ]
+        }
+      }
+    }
+  ]
 } as const;

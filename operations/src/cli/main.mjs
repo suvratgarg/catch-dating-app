@@ -302,7 +302,7 @@ async function createPlan(workflow, flags, now, store) {
   const market = flags.market ?? "mumbai";
   const planningContext =
     typeof workflow.planningContext === "function" ?
-      await workflow.planningContext({store, market}) :
+      await workflow.planningContext({store, market, inputPath: flags.input}) :
       {};
   return workflow.createPlan({
     market,

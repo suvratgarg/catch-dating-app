@@ -1,1 +1,575 @@
-{"$schema":"http://json-schema.org/draft-07/schema#","$id":"https://catch.app/contracts/callables/control_event_rehearsal_payload.schema.json","title":"ControlEventRehearsalCallablePayload","description":"Revision-fenced Host lifecycle or virtual-clock control.","type":"object","additionalProperties":false,"required":["sessionId","expectedRevision","clientActionId","action"],"properties":{"sessionId":{"$ref":"../shared/event_common.schema.json#/definitions/documentId"},"expectedRevision":{"type":"integer","minimum":0,"maximum":2147483647},"clientActionId":{"type":"string","pattern":"^[A-Za-z0-9_-]{8,120}$"},"action":{"$ref":"../shared/event_rehearsal_common.schema.json#/definitions/controlAction"},"minutes":{"type":"integer","minimum":1,"maximum":120}}}
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/control_event_rehearsal_payload.schema.json",
+  "title": "ControlEventRehearsalCallablePayload",
+  "description": "Host lifecycle or virtual-clock control. Assistance additionally requires the reviewed setup generation so a reset cannot reuse an old runtime revision.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "sessionId",
+    "expectedRevision",
+    "clientActionId",
+    "action"
+  ],
+  "properties": {
+    "sessionId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2147483647
+    },
+    "clientActionId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{8,120}$"
+    },
+    "action": {
+      "$ref": "../shared/event_rehearsal_common.schema.json#/definitions/controlAction"
+    },
+    "minutes": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 120
+    },
+    "assistance": {
+      "$ref": "../shared/event_rehearsal_assistance.schema.json#/definitions/command"
+    },
+    "expectedSetupRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2147483647
+    },
+    "movement": {
+      "$ref": "../shared/event_rehearsal_movement.schema.json#/definitions/Command"
+    },
+    "staff": {
+      "$ref": "../shared/event_rehearsal_staff.schema.json#/definitions/Command"
+    },
+    "practiceOperatorId": {
+      "$ref": "../shared/event_rehearsal_staff.schema.json#/definitions/OperatorId"
+    },
+    "settings": {
+      "$ref": "../shared/event_rehearsal_settings.schema.json#/definitions/Command"
+    },
+    "requiredData": {
+      "$ref": "../shared/event_rehearsal_required_data.schema.json#/definitions/HostCommand"
+    },
+    "outcome": {
+      "$ref": "../shared/event_rehearsal_outcomes.schema.json#/definitions/Command"
+    },
+    "reveal": {
+      "$ref": "../shared/event_rehearsal_reveal.schema.json#/definitions/Command"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "action": {
+            "const": "assistance"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "assistance",
+          "expectedSetupRevision"
+        ],
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "movement"
+              ]
+            },
+            {
+              "required": [
+                "staff"
+              ]
+            },
+            {
+              "required": [
+                "minutes"
+              ]
+            },
+            {
+              "required": [
+                "settings"
+              ]
+            },
+            {
+              "required": [
+                "requiredData"
+              ]
+            },
+            {
+              "required": [
+                "outcome"
+              ]
+            },
+            {
+              "required": [
+                "reveal"
+              ]
+            }
+          ]
+        }
+      },
+      "else": {
+        "not": {
+          "required": [
+            "assistance"
+          ]
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "action": {
+            "const": "movement"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "movement",
+          "expectedSetupRevision"
+        ],
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "assistance"
+              ]
+            },
+            {
+              "required": [
+                "staff"
+              ]
+            },
+            {
+              "required": [
+                "minutes"
+              ]
+            },
+            {
+              "required": [
+                "settings"
+              ]
+            },
+            {
+              "required": [
+                "requiredData"
+              ]
+            },
+            {
+              "required": [
+                "outcome"
+              ]
+            },
+            {
+              "required": [
+                "reveal"
+              ]
+            }
+          ]
+        }
+      },
+      "else": {
+        "not": {
+          "required": [
+            "movement"
+          ]
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "action": {
+            "const": "staff"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "staff",
+          "expectedSetupRevision"
+        ],
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "assistance"
+              ]
+            },
+            {
+              "required": [
+                "movement"
+              ]
+            },
+            {
+              "required": [
+                "minutes"
+              ]
+            },
+            {
+              "required": [
+                "settings"
+              ]
+            },
+            {
+              "required": [
+                "requiredData"
+              ]
+            },
+            {
+              "required": [
+                "outcome"
+              ]
+            },
+            {
+              "required": [
+                "reveal"
+              ]
+            }
+          ]
+        }
+      },
+      "else": {
+        "not": {
+          "required": [
+            "staff"
+          ]
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "action": {
+            "not": {
+              "enum": [
+                "assistance",
+                "movement",
+                "staff",
+                "settings",
+                "requiredData",
+                "outcome",
+                "reveal"
+              ]
+            }
+          }
+        }
+      },
+      "then": {
+        "not": {
+          "required": [
+            "expectedSetupRevision"
+          ]
+        }
+      }
+    },
+    {
+      "if": {
+        "required": [
+          "practiceOperatorId"
+        ]
+      },
+      "then": {
+        "anyOf": [
+          {
+            "properties": {
+              "action": {
+                "const": "movement"
+              }
+            }
+          },
+          {
+            "properties": {
+              "action": {
+                "const": "assistance"
+              },
+              "assistance": {
+                "properties": {
+                  "kind": {
+                    "enum": [
+                      "transferGroup",
+                      "resolveAccountability"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "action": {
+            "const": "settings"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "settings",
+          "expectedSetupRevision"
+        ],
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "assistance"
+              ]
+            },
+            {
+              "required": [
+                "movement"
+              ]
+            },
+            {
+              "required": [
+                "staff"
+              ]
+            },
+            {
+              "required": [
+                "minutes"
+              ]
+            },
+            {
+              "required": [
+                "practiceOperatorId"
+              ]
+            },
+            {
+              "required": [
+                "requiredData"
+              ]
+            },
+            {
+              "required": [
+                "outcome"
+              ]
+            },
+            {
+              "required": [
+                "reveal"
+              ]
+            }
+          ]
+        }
+      },
+      "else": {
+        "not": {
+          "required": [
+            "settings"
+          ]
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "action": {
+            "const": "requiredData"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "requiredData",
+          "expectedSetupRevision"
+        ],
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "assistance"
+              ]
+            },
+            {
+              "required": [
+                "movement"
+              ]
+            },
+            {
+              "required": [
+                "staff"
+              ]
+            },
+            {
+              "required": [
+                "minutes"
+              ]
+            },
+            {
+              "required": [
+                "settings"
+              ]
+            },
+            {
+              "required": [
+                "practiceOperatorId"
+              ]
+            },
+            {
+              "required": [
+                "outcome"
+              ]
+            },
+            {
+              "required": [
+                "reveal"
+              ]
+            }
+          ]
+        }
+      },
+      "else": {
+        "not": {
+          "required": [
+            "requiredData"
+          ]
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "action": {
+            "const": "outcome"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "outcome",
+          "expectedSetupRevision"
+        ],
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "assistance"
+              ]
+            },
+            {
+              "required": [
+                "movement"
+              ]
+            },
+            {
+              "required": [
+                "staff"
+              ]
+            },
+            {
+              "required": [
+                "minutes"
+              ]
+            },
+            {
+              "required": [
+                "settings"
+              ]
+            },
+            {
+              "required": [
+                "requiredData"
+              ]
+            },
+            {
+              "required": [
+                "practiceOperatorId"
+              ]
+            },
+            {
+              "required": [
+                "reveal"
+              ]
+            }
+          ]
+        }
+      },
+      "else": {
+        "not": {
+          "required": [
+            "outcome"
+          ]
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "action": {
+            "const": "reveal"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "reveal",
+          "expectedSetupRevision"
+        ],
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "assistance"
+              ]
+            },
+            {
+              "required": [
+                "movement"
+              ]
+            },
+            {
+              "required": [
+                "staff"
+              ]
+            },
+            {
+              "required": [
+                "minutes"
+              ]
+            },
+            {
+              "required": [
+                "settings"
+              ]
+            },
+            {
+              "required": [
+                "requiredData"
+              ]
+            },
+            {
+              "required": [
+                "outcome"
+              ]
+            },
+            {
+              "required": [
+                "practiceOperatorId"
+              ]
+            }
+          ]
+        }
+      },
+      "else": {
+        "not": {
+          "required": [
+            "reveal"
+          ]
+        }
+      }
+    }
+  ]
+}

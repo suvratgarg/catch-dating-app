@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/event_rehearsal.feature.json",
   "generatedFor": "2026-08-19",
-  "sourceDigest": "sha256:88e9f47505f58b7d44075ab377990a0100f96ce1ba505bcdeb9dc4fc6940ce0a",
-  "resolvedDigest": "sha256:eb773ceea1a21d9107d275905abf42de62e0cb8ebc056091a4c2b32e2c8ccd6b",
+  "sourceDigest": "sha256:ff79b83a09572f041c3bb293d765a6cb23491ea5570342692f556360b2e9d95e",
+  "resolvedDigest": "sha256:409d80ad03132ab1035c5d33a84cd3f692f7ead562dbbe6d909f5b79de6f1afe",
   "feature": {
     "id": "feature.event_rehearsal",
     "name": "Event Dress Rehearsal",
@@ -14,9 +14,9 @@
   },
   "coverage": {
     "surfaces": 2,
-    "states": 14,
-    "scenarios": 14,
-    "actionCases": 14,
+    "states": 18,
+    "scenarios": 18,
+    "actionCases": 18,
     "actions": 13,
     "captures": 0,
     "previews": 2,
@@ -912,13 +912,25 @@
           ],
           "unavailable": [
             "website/src/features/eventRehearsal/EventRehearsalPage.test.tsx"
+          ],
+          "joining-instruction": [
+            "website/src/features/eventRehearsal/EventRehearsalPage.test.tsx"
+          ],
+          "reply-saved": [
+            "website/src/features/eventRehearsal/EventRehearsalPage.test.tsx"
+          ],
+          "reply-uncertain": [
+            "website/src/features/eventRehearsal/EventRehearsalPage.test.tsx"
+          ],
+          "reply-closed": [
+            "website/src/features/eventRehearsal/EventRehearsalPage.test.tsx"
           ]
         }
       },
       "coverage": {
-        "states": 6,
-        "scenarios": 6,
-        "actionCases": 6,
+        "states": 10,
+        "scenarios": 10,
+        "actionCases": 10,
         "actions": 2,
         "captures": 0,
         "previews": 2,
@@ -978,7 +990,11 @@
                 "live-moment",
                 "fault",
                 "complete",
-                "unavailable"
+                "unavailable",
+                "joining-instruction",
+                "reply-saved",
+                "reply-uncertain",
+                "reply-closed"
               ]
             }
           ],
@@ -1002,7 +1018,11 @@
                 "welcome",
                 "live-moment",
                 "fault",
-                "complete"
+                "complete",
+                "joining-instruction",
+                "reply-saved",
+                "reply-uncertain",
+                "reply-closed"
               ]
             }
           ],
@@ -1259,6 +1279,172 @@
               }
             }
           ]
+        },
+        {
+          "id": "joining-instruction",
+          "stateId": "joining-instruction",
+          "kind": "route_state",
+          "status": "previewed",
+          "dimensions": {
+            "projection": "ready",
+            "fault": "none",
+            "lifecycle": "live",
+            "mutation": "idle"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "event_rehearsal_preview/EventRehearsalPreviewShell",
+              "route_event_rehearsal/EventRehearsalLive"
+            ],
+            "tests": [
+              "website/src/features/eventRehearsal/EventRehearsalPage.test.tsx"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "reply_choices",
+              "dimensions": {
+                "projection": "ready",
+                "fault": "none",
+                "lifecycle": "live",
+                "mutation": "idle"
+              },
+              "actions": {
+                "enabled": [
+                  "submit_synthetic_guest_action"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_guest_projection"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "reply-saved",
+          "stateId": "reply-saved",
+          "kind": "route_state",
+          "status": "previewed",
+          "dimensions": {
+            "projection": "ready",
+            "fault": "none",
+            "lifecycle": "live",
+            "mutation": "success"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "event_rehearsal_preview/EventRehearsalPreviewShell",
+              "route_event_rehearsal/EventRehearsalLive"
+            ],
+            "tests": [
+              "website/src/features/eventRehearsal/EventRehearsalPage.test.tsx"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "read_only_saved_reply",
+              "dimensions": {
+                "projection": "ready",
+                "fault": "none",
+                "lifecycle": "live",
+                "mutation": "success"
+              },
+              "actions": {
+                "enabled": [],
+                "disabled": [],
+                "notAllowed": [
+                  "retry_guest_projection",
+                  "submit_synthetic_guest_action"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": "reply-uncertain",
+          "stateId": "reply-uncertain",
+          "kind": "route_state",
+          "status": "previewed",
+          "dimensions": {
+            "projection": "ready",
+            "fault": "none",
+            "lifecycle": "live",
+            "mutation": "failed"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "event_rehearsal_preview/EventRehearsalPreviewShell",
+              "route_event_rehearsal/EventRehearsalLive"
+            ],
+            "tests": [
+              "website/src/features/eventRehearsal/EventRehearsalPage.test.tsx"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "retry_same_reply",
+              "dimensions": {
+                "projection": "ready",
+                "fault": "none",
+                "lifecycle": "live",
+                "mutation": "failed"
+              },
+              "actions": {
+                "enabled": [
+                  "retry_guest_projection",
+                  "submit_synthetic_guest_action"
+                ],
+                "disabled": [],
+                "notAllowed": []
+              }
+            }
+          ]
+        },
+        {
+          "id": "reply-closed",
+          "stateId": "reply-closed",
+          "kind": "route_state",
+          "status": "previewed",
+          "dimensions": {
+            "projection": "ready",
+            "fault": "none",
+            "lifecycle": "live",
+            "mutation": "idle"
+          },
+          "evidence": {
+            "captureIds": [],
+            "previewIds": [
+              "event_rehearsal_preview/EventRehearsalPreviewShell",
+              "route_event_rehearsal/EventRehearsalLive"
+            ],
+            "tests": [
+              "website/src/features/eventRehearsal/EventRehearsalPage.test.tsx"
+            ]
+          },
+          "actionCases": [
+            {
+              "id": "refresh_closed_reply",
+              "dimensions": {
+                "projection": "ready",
+                "fault": "none",
+                "lifecycle": "live",
+                "mutation": "idle"
+              },
+              "actions": {
+                "enabled": [
+                  "retry_guest_projection"
+                ],
+                "disabled": [],
+                "notAllowed": [
+                  "submit_synthetic_guest_action"
+                ]
+              }
+            }
+          ]
         }
       ],
       "resolved": {
@@ -1280,7 +1466,11 @@
               "states": [
                 "live-moment",
                 "fault",
-                "complete"
+                "complete",
+                "joining-instruction",
+                "reply-saved",
+                "reply-uncertain",
+                "reply-closed"
               ]
             }
           },
@@ -1299,7 +1489,11 @@
                 "live-moment",
                 "fault",
                 "complete",
-                "unavailable"
+                "unavailable",
+                "joining-instruction",
+                "reply-saved",
+                "reply-uncertain",
+                "reply-closed"
               ]
             }
           },

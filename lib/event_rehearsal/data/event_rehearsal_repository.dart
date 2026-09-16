@@ -4,6 +4,12 @@ import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
+import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_assistance_command.dart';
+import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_movement.dart';
+import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_movement_command.dart';
+import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_settings_change.dart';
+import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_staff.dart';
+import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_staff_change.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -41,6 +47,55 @@ class EventRehearsalRepository {
     ).toJson(),
     action: 'load an event dress rehearsal',
     parse: EventRehearsalBootstrap.fromCallableData,
+  );
+
+  Future<EventRehearsalBootstrap> fetchPracticeRole({
+    required String sessionId,
+    required String practiceOperatorId,
+    required String hostUid,
+  }) => _call(
+    name: 'getEventRehearsalBootstrap',
+    payload: GetEventRehearsalBootstrapCallableRequest(
+      sessionId: sessionId,
+      practiceOperatorId: rehearsalOperatorId(practiceOperatorId),
+    ).toJson(),
+    action: 'review a practice staff role',
+    parse: (data) {
+      final result = EventRehearsalBootstrap.fromCallableData(data);
+      if (result.session.id != sessionId ||
+          result.staffReview?.hostUid != hostUid ||
+          result.staffReview?.practiceOperatorId != practiceOperatorId) {
+        throw const FormatException(
+          'Practice review returned a different role.',
+        );
+      }
+      return result;
+    },
+  );
+
+  Future<EventRehearsalBootstrap> applyStaff(RehearsalStaffChange change) =>
+      _call(
+        name: 'controlEventRehearsal',
+        payload: change.toJson(),
+        action: 'configure practice staff',
+        parse: (data) {
+          final result = EventRehearsalBootstrap.fromCallableData(data);
+          change.requireResult(result);
+          return result;
+        },
+      );
+
+  Future<EventRehearsalBootstrap> applySettings(
+    RehearsalSettingsChange change,
+  ) => _call(
+    name: 'controlEventRehearsal',
+    payload: change.toJson(),
+    action: 'configure practice updates',
+    parse: (data) {
+      final result = EventRehearsalBootstrap.fromCallableData(data);
+      change.requireResult(result);
+      return result;
+    },
   );
 
   Stream<EventRehearsalBootstrap> watch(String sessionId) async* {
@@ -84,6 +139,55 @@ class EventRehearsalRepository {
     ).toJson(),
     action: 'control an event rehearsal',
     parse: EventRehearsalBootstrap.fromCallableData,
+  );
+
+  /// Reuse the reviewed command unchanged after an uncertain network result.
+  Future<EventRehearsalBootstrap> applyAssistance(
+    RehearsalAssistanceChange change,
+  ) => _call(
+    name: 'controlEventRehearsal',
+    payload: change.toJson(),
+    action: 'simulate event rehearsal assistance',
+    parse: (data) {
+      final result = EventRehearsalBootstrap.fromCallableData(data);
+      change.requireResult(result);
+      return result;
+    },
+  );
+
+  Future<RehearsalMovementReview> fetchMovement({
+    required EventRehearsalBootstrap snapshot,
+    required RehearsalMovementSelection selection,
+    required String actorUid,
+  }) => _call(
+    name: 'getEventRehearsalMovement',
+    payload: GetEventRehearsalMovementCallableRequest(
+      sessionId: selection.scope.sessionId,
+      expectedSetupRevision: selection.scope.setupRevision,
+      scope: selection.toJson(),
+      practiceOperatorId: selection.practiceOperatorId,
+    ).toJson(),
+    action: 'review rehearsal group movement',
+    parse: (data) => RehearsalMovementReview.fromJson(
+      data,
+      session: snapshot.session,
+      actors: snapshot.actors,
+      selection: selection,
+      expectedActorUid: actorUid,
+    ),
+  );
+
+  Future<EventRehearsalBootstrap> applyMovement(
+    RehearsalMovementChange change,
+  ) => _call(
+    name: 'controlEventRehearsal',
+    payload: change.toJson(),
+    action: 'rehearse group departure or checkpoint reporting',
+    parse: (data) {
+      final result = EventRehearsalBootstrap.fromCallableData(data);
+      change.requireResult(result);
+      return result;
+    },
   );
 
   Future<EventRehearsalBootstrap> inject({
@@ -204,10 +308,26 @@ class EventRehearsalRepository {
   );
 }
 
+/// Typed mutation seam used by the assistance editor.
+final class EventRehearsalAssistanceCommands {
+  const EventRehearsalAssistanceCommands(this._repository);
+
+  final EventRehearsalRepository _repository;
+
+  Future<EventRehearsalBootstrap> apply(RehearsalAssistanceChange change) =>
+      _repository.applyAssistance(change);
+}
+
 // keepalive: One callable client owns the isolated rehearsal domain.
 @Riverpod(keepAlive: true)
 EventRehearsalRepository eventRehearsalRepository(Ref ref) =>
     EventRehearsalRepository(ref.watch(firebaseFunctionsProvider));
+
+@riverpod
+EventRehearsalAssistanceCommands eventRehearsalAssistanceCommands(Ref ref) =>
+    EventRehearsalAssistanceCommands(
+      ref.watch(eventRehearsalRepositoryProvider),
+    );
 
 @riverpod
 Stream<EventRehearsalBootstrap> eventRehearsal(Ref ref, String sessionId) =>

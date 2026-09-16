@@ -1,0 +1,306 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/operations/event_assistance_source_work.schema.json",
+  "title": "EventAssistanceSourceWork",
+  "description": "Private bounded source-change fanout using Operations work items. Waking work grants no domain or provider authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "kind",
+    "signalId",
+    "source",
+    "scope",
+    "expiresAt",
+    "checkpoint"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1,
+      "type": "integer"
+    },
+    "kind": {
+      "const": "liveSourceWake",
+      "type": "string"
+    },
+    "signalId": {
+      "$ref": "common.schema.json#/definitions/id"
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "eventId",
+        "collection",
+        "documentId",
+        "occurredAt"
+      ],
+      "properties": {
+        "eventId": {
+          "$ref": "common.schema.json#/definitions/id"
+        },
+        "collection": {
+          "type": "string",
+          "enum": [
+            "events",
+            "eventAttendees",
+            "eventSuccessPlans",
+            "eventAssistanceGuests",
+            "eventAssistanceSettings",
+            "eventAssistanceGroupProgress",
+            "eventAssistanceMemberships",
+            "eventAssistanceMessages",
+            "eventAssistanceRuntimeConfigs",
+            "eventAssistanceSmsPermissions",
+            "eventAssistanceWhatsappPermissions",
+            "eventAssistanceSmsSenders",
+            "eventAssistanceSmsBudgets",
+            "organizerSenderConnections",
+            "eventAssistanceWhatsappPolicies",
+            "organizerMessageTemplates",
+            "eventAssistanceWhatsappBudgets",
+            "organizerWhatsappEndpointStops",
+            "organizerContactChannelStates",
+            "eventStaffGrants",
+            "eventAssistanceRcsPermissions",
+            "eventAssistanceRcsSenders",
+            "eventAssistanceRcsBudgets",
+            "eventAssistanceRcsSubscriptions"
+          ]
+        },
+        "documentId": {
+          "$ref": "common.schema.json#/definitions/id"
+        },
+        "occurredAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      }
+    },
+    "scope": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "context",
+            "attendeeId"
+          ],
+          "properties": {
+            "context": {
+              "$ref": "../shared/event_assistance_guest.schema.json#/definitions/liveContext"
+            },
+            "attendeeId": {
+              "anyOf": [
+                {
+                  "$ref": "common.schema.json#/definitions/id"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Refresh only existing checkpoint requests whose immutable departure roster contains this attendee. Never enroll guests or dispatch messages.",
+          "required": [
+            "kind",
+            "context",
+            "attendeeId"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "checkpointMember"
+            },
+            "context": {
+              "$ref": "../shared/event_assistance_guest.schema.json#/definitions/liveContext"
+            },
+            "attendeeId": {
+              "$ref": "common.schema.json#/definitions/id"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "routeId",
+            "senderId"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "sender"
+            },
+            "routeId": {
+              "type": "string",
+              "enum": [
+                "catchEventSms",
+                "organizerEventWhatsapp",
+                "catchEventRcs"
+              ]
+            },
+            "senderId": {
+              "$ref": "common.schema.json#/definitions/id"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "organizerId",
+            "recipientEndpointId"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "whatsappEndpoint"
+            },
+            "organizerId": {
+              "$ref": "common.schema.json#/definitions/id"
+            },
+            "recipientEndpointId": {
+              "type": "string",
+              "pattern": "^whatsapp:[a-f0-9]{64}$"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "subscriptionId"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "rcsSubscription"
+            },
+            "subscriptionId": {
+              "type": "string",
+              "pattern": "^rcs-subscription:[a-f0-9]{64}$"
+            }
+          }
+        }
+      ]
+    },
+    "expiresAt": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "checkpoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "phase",
+        "cursor",
+        "visited",
+        "dueAt",
+        "failures",
+        "retries"
+      ],
+      "properties": {
+        "phase": {
+          "type": "string",
+          "enum": [
+            "scan",
+            "retry",
+            "complete",
+            "review",
+            "expired"
+          ]
+        },
+        "cursor": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/definitions/id"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "visited": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "dueAt": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "failures": {
+          "type": "array",
+          "maxItems": 100,
+          "items": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "workItemId",
+                  "reason"
+                ],
+                "properties": {
+                  "workItemId": {
+                    "$ref": "common.schema.json#/definitions/id"
+                  },
+                  "reason": {
+                    "type": "string",
+                    "enum": [
+                      "busy",
+                      "unavailable"
+                    ]
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "targetKey",
+                  "reason"
+                ],
+                "properties": {
+                  "targetKey": {
+                    "$ref": "common.schema.json#/definitions/id"
+                  },
+                  "reason": {
+                    "type": "string",
+                    "enum": [
+                      "busy",
+                      "unavailable"
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "retries": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 5
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/set_event_assistance_setting_payload.schema.json",
+  "title": "SetEventAssistanceSettingCallablePayload",
+  "$ref": "../shared/event_assistance_settings.schema.json#/definitions/WriteInput"
+}

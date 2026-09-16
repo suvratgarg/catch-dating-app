@@ -423,6 +423,12 @@ export const eventAttendeeDocumentSchema: Record<string, unknown> = {
         }
       ]
     },
+    "accountabilityRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "description": "Monotonic revision shared by all accountability writers. Missing legacy values read as zero."
+    },
     "attendanceRevision": {
       "type": "integer",
       "minimum": 0,

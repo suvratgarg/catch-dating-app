@@ -104,6 +104,15 @@ export const updateEventRehearsalSetupCallablePayloadSchema: Record<string, unkn
             ]
           }
         },
+        "unitOutcome": {
+          "type": "string",
+          "enum": [
+            "none",
+            "completion",
+            "score",
+            "rank"
+          ]
+        },
         "movementSimulation": {
           "type": "object",
           "additionalProperties": false,

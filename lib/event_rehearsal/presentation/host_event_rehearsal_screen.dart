@@ -7,10 +7,19 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.da
 import 'package:catch_dating_app/event_rehearsal/data/event_rehearsal_repository.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_controller.dart';
+import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_practice_role_controller.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_runtime_adapter.dart';
+import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_delivery_section.dart';
+import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_groups_section.dart';
+import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_help_section.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_link_and_run.dart';
+import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_movement_section.dart';
+import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_practice_role_section.dart';
+import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_settings_section.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_setup_section.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_simulator.dart';
+import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_staff_section.dart';
+import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_sweep_section.dart';
 import 'package:catch_dating_app/event_success/event_success.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/route_contract.dart';
@@ -22,6 +31,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 part 'host_event_rehearsal_coach_task.dart';
+part 'host_event_rehearsal_screen_actions.dart';
 
 class HostEventRehearsalScreen extends ConsumerStatefulWidget {
   const HostEventRehearsalScreen({
@@ -39,7 +49,8 @@ class HostEventRehearsalScreen extends ConsumerStatefulWidget {
 }
 
 class _HostEventRehearsalScreenState
-    extends ConsumerState<HostEventRehearsalScreen> {
+    extends ConsumerState<HostEventRehearsalScreen>
+    with _HostEventRehearsalScreenActions {
   var _coachCollapsed = false;
   var _coachTextScaleInitialized = false;
   String? _lastCoachTaskKey;
@@ -58,6 +69,15 @@ class _HostEventRehearsalScreenState
   Widget build(BuildContext context) {
     final rehearsalAsync = ref.watch(eventRehearsalProvider(widget.sessionId));
     final rehearsalState = catchAsyncStateFromAsyncValue(rehearsalAsync);
+    final staff = rehearsalState.value?.staffReview;
+    final selectedRole = staff == null
+        ? null
+        : ref.watch(
+            eventRehearsalPracticeRoleControllerProvider((
+              sessionId: widget.sessionId,
+              clockId: staff.clockId,
+            )),
+          );
     final setupMutation = ref.watch(EventRehearsalController.setupMutation);
     final controlMutation = ref.watch(EventRehearsalController.controlMutation);
     final behaviorMutation = ref.watch(
@@ -106,7 +126,13 @@ class _HostEventRehearsalScreenState
           CatchBannerStatus(
             id: 'rehearsal.${rehearsal.session.id}',
             label: context.l10n.hostEventRehearsalBadge,
-            message: context.l10n.hostEventRehearsalSyntheticGuests,
+            message: selectedRole == null
+                ? context.l10n.hostEventRehearsalSyntheticGuests
+                : context.l10n.hostEventRehearsalAssistanceAs(
+                    name:
+                        staff?.operators[selectedRole]?.displayName ??
+                        context.l10n.hostEventRehearsalUnavailableRole,
+                  ),
             icon: CatchIcons.groupsOutlined,
             color: CatchTokens.of(context).danger,
             actions: [
@@ -198,6 +224,57 @@ class _HostEventRehearsalScreenState
                       assignments: runtime.assignments,
                       assignmentParticipantProfiles: runtime.profiles,
                       presenceSummary: runtime.presence,
+                      accountabilityAttendees: runtime.accountabilityAttendees,
+                      accountabilityMode:
+                          rehearsal.session.setup.modules.contains(
+                            EventRehearsalModule.accountability,
+                          )
+                          ? EventSuccessAccountability.sweep
+                          : EventSuccessAccountability.none,
+                      assistanceSettingsSection:
+                          rehearsal.settingsReview != null &&
+                              selectedRole == null
+                          ? EventRehearsalSettingsSection(
+                              sessionId: rehearsal.session.id,
+                              review: rehearsal.settingsReview!,
+                            )
+                          : null,
+                      movementSection:
+                          rehearsal.movementReview?.groups.isNotEmpty == true &&
+                              (rehearsal
+                                      .session
+                                      .setup
+                                      .movementSimulation
+                                      ?.itinerary
+                                      .any((stop) => stop.location != null) ??
+                                  false)
+                          ? EventRehearsalMovementSection(
+                              rehearsal: rehearsal,
+                              practiceOperatorId: selectedRole,
+                            )
+                          : null,
+                      membershipSection:
+                          (rehearsal.membershipReviews?.rows.any(
+                                (row) => row.facts.groups.isNotEmpty,
+                              ) ??
+                              false)
+                          ? EventRehearsalGroupsSection(
+                              rehearsal: rehearsal,
+                              practiceOperatorId: selectedRole,
+                            )
+                          : null,
+                      deliverySection: EventRehearsalDeliverySection(
+                        sessionId: rehearsal.session.id,
+                        practiceOperatorId: selectedRole,
+                      ),
+                      helpSection: EventRehearsalHelpSection(
+                        sessionId: rehearsal.session.id,
+                        practiceOperatorId: selectedRole,
+                      ),
+                      accountabilitySection: EventRehearsalSweepSection(
+                        rehearsal: rehearsal,
+                        practiceOperatorId: selectedRole,
+                      ),
                       initialTab: switch (rehearsal.session.status) {
                         EventRehearsalStatus.draft ||
                         EventRehearsalStatus.ready => EventSuccessHostTab.setup,
@@ -331,6 +408,17 @@ class _HostEventRehearsalScreenState
                   _saveSetup(rehearsal.session, setup, scenario, actorCount),
             ),
             gapH20,
+            if (rehearsal.staffReview != null) ...[
+              EventRehearsalPracticeRoleSection(
+                scope: (
+                  sessionId: rehearsal.session.id,
+                  clockId: rehearsal.staffReview!.clockId,
+                ),
+              ),
+              gapH20,
+              EventRehearsalStaffSection(sessionId: rehearsal.session.id),
+              gapH20,
+            ],
             EventRehearsalGuestLinkSection(
               guestUrl: rehearsal.guestUrl,
               isLoading: busy,
@@ -471,183 +559,6 @@ class _HostEventRehearsalScreenState
             .get(eventRehearsalControllerProvider.notifier)
             .inject(session: session, fault: fault),
       );
-    } on Object {
-      // The mutation listener owns user-visible action failure.
-    }
-  }
-
-  Future<List<EventSuccessSpatialDestination>> _previewSpatial(
-    EventRehearsalRuntimeProjection runtime,
-    EventRehearsalBootstrap rehearsal,
-    EventSuccessAssignment assignment,
-  ) async {
-    final actor = rehearsal.actors
-        .where((candidate) => candidate.actorId == assignment.uid)
-        .firstOrNull;
-    final assignmentsByUnit = <String, List<EventSuccessAssignment>>{};
-    for (final candidate in runtime.assignments) {
-      final unitId = candidate.layoutUnitId;
-      if (unitId == null || candidate.uid == assignment.uid) continue;
-      assignmentsByUnit.putIfAbsent(unitId, () => []).add(candidate);
-    }
-    return [
-      for (final unit in runtime.layout.units)
-        if (unit.id != assignment.layoutUnitId)
-          () {
-            final occupants = assignmentsByUnit[unit.id] ?? const [];
-            final full = occupants.length >= unit.capacity;
-            final conflicts =
-                actor != null &&
-                occupants.any(
-                  (occupant) => actor.keepApartActorIds.contains(occupant.uid),
-                );
-            return EventSuccessSpatialDestination(
-              unitId: unit.id,
-              valid: !full && !conflicts,
-              reason: full
-                  ? EventSuccessSpatialDestinationReason.capacity
-                  : conflicts
-                  ? EventSuccessSpatialDestinationReason.safetyKeepApart
-                  : null,
-              recommendedScope: actor?.status == EventRehearsalActorStatus.late
-                  ? EventSuccessSpatialScope.thisRound
-                  : EventSuccessSpatialScope.pinned,
-            );
-          }(),
-    ];
-  }
-
-  Future<void> _controlSpatial(
-    EventRehearsalSession session,
-    String actorId,
-    EventRehearsalSpatialAction action, {
-    String? destinationUnitId,
-    EventRehearsalSpatialScope? scope,
-  }) async {
-    try {
-      await EventRehearsalController.spatialMutation.run(
-        ref,
-        (tx) => tx
-            .get(eventRehearsalControllerProvider.notifier)
-            .controlSpatial(
-              session: session,
-              actorId: actorId,
-              action: action,
-              destinationUnitId: destinationUnitId,
-              scope: scope,
-            ),
-      );
-    } on Object {
-      // The mutation listener owns user-visible action failure.
-    }
-  }
-
-  Future<void> _copyGuestLink(String guestUrl) async {
-    try {
-      await EventRehearsalController.shareMutation.run(
-        ref,
-        (tx) => tx
-            .get(eventRehearsalControllerProvider.notifier)
-            .copyGuestLink(guestUrl),
-      );
-      if (mounted) {
-        showCatchSnackBar(context, context.l10n.hostEventRehearsalLinkCopied);
-      }
-    } on Object {
-      // The mutation listener owns user-visible action failure.
-    }
-  }
-
-  Future<void> _shareGuestLink(String guestUrl) async {
-    try {
-      await EventRehearsalController.shareMutation.run(
-        ref,
-        (tx) => tx
-            .get(eventRehearsalControllerProvider.notifier)
-            .shareGuestLink(guestUrl),
-      );
-    } on Object {
-      // The mutation listener owns user-visible action failure.
-    }
-  }
-
-  Future<void> _rotateGuestLink() async {
-    final confirmed = await showCatchConfirmDialog(
-      copy: catchDialogCopy(context.l10n),
-      context: context,
-      title: context.l10n.hostEventRehearsalRotateLink,
-      message: context.l10n.hostEventRehearsalRotateLinkBody,
-      confirmLabel: context.l10n.hostEventRehearsalRotateLink,
-    );
-    if (confirmed != true || !mounted) return;
-    try {
-      await EventRehearsalController.guestLinkMutation.run(
-        ref,
-        (tx) => tx
-            .get(eventRehearsalControllerProvider.notifier)
-            .rotateGuestLink(widget.sessionId),
-      );
-    } on Object {
-      // The mutation listener owns user-visible action failure.
-    }
-  }
-
-  Future<void> _reset() async {
-    final confirmed = await showCatchConfirmDialog(
-      copy: catchDialogCopy(context.l10n),
-      context: context,
-      title: context.l10n.hostEventRehearsalReset,
-      message: context.l10n.hostEventRehearsalResetBody,
-      confirmLabel: context.l10n.hostEventRehearsalReset,
-    );
-    if (confirmed != true || !mounted) return;
-    try {
-      await EventRehearsalController.resetMutation.run(
-        ref,
-        (tx) => tx
-            .get(eventRehearsalControllerProvider.notifier)
-            .reset(widget.sessionId),
-      );
-    } on Object {
-      // The mutation listener owns user-visible action failure.
-    }
-  }
-
-  Future<void> _fork() async {
-    try {
-      final created = await EventRehearsalController.forkMutation.run(
-        ref,
-        (tx) => tx
-            .get(eventRehearsalControllerProvider.notifier)
-            .fork(widget.sessionId),
-      );
-      if (!mounted) return;
-      context.goNamed(
-        Routes.hostEventRehearsalScreen.name,
-        pathParameters: {
-          'clubId': widget.clubId,
-          'sessionId': created.sessionId,
-        },
-      );
-    } on Object {
-      // The mutation listener owns user-visible action failure.
-    }
-  }
-
-  Future<void> _export() async {
-    try {
-      await EventRehearsalController.exportMutation.run(
-        ref,
-        (tx) => tx
-            .get(eventRehearsalControllerProvider.notifier)
-            .exportReproduction(widget.sessionId),
-      );
-      if (mounted) {
-        showCatchSnackBar(
-          context,
-          context.l10n.hostEventRehearsalReproductionCopied,
-        );
-      }
     } on Object {
       // The mutation listener owns user-visible action failure.
     }

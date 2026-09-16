@@ -2,6 +2,8 @@ import 'dart:math' as math;
 
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
+import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_accountability.dart';
+import 'package:catch_dating_app/event_success/domain/event_assistance_accountability.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_assignment.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_layout.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
@@ -9,6 +11,7 @@ import 'package:catch_dating_app/event_success/domain/event_success_playbooks.da
 import 'package:catch_dating_app/event_success/domain/event_success_presence.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_structure.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/domain/event_attendee.dart';
 import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
@@ -24,6 +27,7 @@ final class EventRehearsalRuntimeProjection {
     required this.presence,
     required this.layout,
     required this.assignments,
+    this.accountabilityAttendees = const [],
   });
 
   final Event event;
@@ -33,6 +37,7 @@ final class EventRehearsalRuntimeProjection {
   final EventSuccessPresenceSummary presence;
   final EventSuccessLayout layout;
   final List<EventSuccessAssignment> assignments;
+  final List<EventAttendee> accountabilityAttendees;
 }
 
 EventRehearsalRuntimeProjection buildEventRehearsalRuntimeProjection(
@@ -170,12 +175,13 @@ EventRehearsalRuntimeProjection buildEventRehearsalRuntimeProjection(
     ),
     entries: [
       for (final actor in rehearsal.actors)
-        EventSuccessPresenceEntry(
-          uid: actor.actorId,
-          displayName: actor.displayName,
-          state: _presenceState(actor.status),
-          heartbeatAtMillis: virtualNowMillis,
-        ),
+        if (actor.connectionState == EventRehearsalConnectionState.connected)
+          EventSuccessPresenceEntry(
+            uid: actor.actorId,
+            displayName: actor.displayName,
+            state: _presenceState(actor.status),
+            heartbeatAtMillis: virtualNowMillis,
+          ),
     ],
     lateArrivals: [
       for (final actor in rehearsal.actors)
@@ -196,6 +202,39 @@ EventRehearsalRuntimeProjection buildEventRehearsalRuntimeProjection(
     presence: presence,
     layout: layout,
     assignments: assignments,
+    accountabilityAttendees: [
+      for (final row
+          in rehearsal.accountabilityReviews?.rows ??
+              const <RehearsalAccountabilityRow>[])
+        if (row.evidence.checkedInAtMillis case final int checkedIn)
+          EventAttendee(
+            id: row.actorId,
+            eventId: eventId,
+            clubId: session.organizerId,
+            organizerId: session.organizerId,
+            displayName: rehearsal.actors
+                .firstWhere((actor) => actor.actorId == row.actorId)
+                .displayName,
+            searchName: rehearsal.actors
+                .firstWhere((actor) => actor.actorId == row.actorId)
+                .displayName
+                .toLowerCase(),
+            source: EventAttendeeSource.hostManual,
+            status: EventAttendeeStatus.checkedIn,
+            createdAt: DateTime.fromMillisecondsSinceEpoch(checkedIn),
+            updatedAt: virtualNow,
+            checkedInAt: DateTime.fromMillisecondsSinceEpoch(checkedIn),
+            accountabilityResolution: switch (row.evidence.disposition) {
+              AssistanceVisitDisposition.returned =>
+                EventSuccessAccountabilityResolution.returned,
+              AssistanceVisitDisposition.departed =>
+                EventSuccessAccountabilityResolution.departed,
+              AssistanceVisitDisposition.unresolved => null,
+            },
+            accountabilityResolvedForCheckInAt:
+                DateTime.fromMillisecondsSinceEpoch(checkedIn),
+          ),
+    ],
   );
 }
 
@@ -238,8 +277,7 @@ bool _isPlaceable(EventRehearsalActor actor) => switch (actor.status) {
 
 EventSuccessPresenceState _presenceState(EventRehearsalActorStatus status) =>
     switch (status) {
-      EventRehearsalActorStatus.departed ||
-      EventRehearsalActorStatus.disconnected =>
+      EventRehearsalActorStatus.departed =>
         EventSuccessPresenceState.likelyDeparted,
       EventRehearsalActorStatus.present ||
       EventRehearsalActorStatus.late ||

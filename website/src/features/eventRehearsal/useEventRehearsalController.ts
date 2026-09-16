@@ -1,92 +1,159 @@
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
-import {useCallback, useEffect, useMemo, useState} from "react";
-import {eventRehearsalCopy} from "../../content/eventRehearsal";
+import {useEffect, useRef, useState} from "react";
+import {eventRehearsalCopy as copy} from "../../content/eventRehearsal";
 import {
-  getEventRehearsalGuestBootstrap,
-  submitEventRehearsalGuestAction,
-  type EventRehearsalGuestAction,
-  type EventRehearsalGuestBootstrap,
+  getEventRehearsalGuestBootstrap, submitEventRehearsalGuestAction,
+  type EventRehearsalGuestAction, type EventRehearsalGuestBootstrap,
 } from "../../firebase";
+import type {SubmitEventRehearsalGuestActionCallablePayload as WireAction} from
+  "../../shared/contracts/generated/submitEventRehearsalGuestActionCallablePayload";
 import {websiteQueryKeys} from "../../shared/query/queryKeys";
-import {eventRehearsalGuestActionClientId} from "./eventRehearsalModel";
+import {availableEventRehearsalGuestActions, canReplyToRehearsal,
+  reconcileRehearsalProjection,
+  type RehearsalReply, type RehearsalReplyState} from "./eventRehearsalModel";
 
 const clientStoragePrefix = "catch:event-rehearsal:client:";
 const slotStoragePrefix = "catch:event-rehearsal:slot:";
+type Submission = Pick<WireAction,
+  "publicRehearsalId" | "slotToken" | "clientActionId"> & (
+    {action: EventRehearsalGuestAction} |
+    ({action: "respondToAssistance"} & RehearsalReply));
 
+// The route remounts this controller for each public link. Private query data
+// belongs to this mounted phone; cancelled reads cannot undo a confirmed reply.
 export function useEventRehearsalController(publicRehearsalId: string) {
-  const queryClient = useQueryClient();
-  const clientInstanceId = useMemo(
-    () => storedClientInstanceId(publicRehearsalId),
-    [publicRehearsalId]
-  );
-  const [slotToken, setSlotToken] = useState<string | null>(() =>
-    readSessionValue(`${slotStoragePrefix}${publicRehearsalId}`)
-  );
-  const queryKey = websiteQueryKeys.eventRehearsal.guest(publicRehearsalId);
-  const guestQuery = useQuery({
-    enabled: publicRehearsalId.length > 0,
-    queryKey,
-    queryFn: () => getEventRehearsalGuestBootstrap({
-      publicRehearsalId,
-      clientInstanceId,
-      viewerToken: null,
-      slotToken,
-    }),
-    refetchInterval: (query) =>
-      query.state.data?.session.faultId === "lowBandwidth" ? 5_000 : 1_200,
-    retry: 3,
-  });
-
+  const client = useQueryClient();
+  const [instanceId] = useState(() => crypto.randomUUID());
+  const [clientInstanceId] = useState(() => storedClientInstanceId(publicRehearsalId));
+  const [initialSlot] = useState(() => readSessionValue(`${slotStoragePrefix}${publicRehearsalId}`));
+  const slotToken = useRef(initialSlot);
+  const queryKey = [...websiteQueryKeys.eventRehearsal.guest(publicRehearsalId), instanceId];
+  const pending = useRef<Submission | null>(null);
+  const locked = useRef(false);
+  const mounted = useRef(true);
+  const [sending, setSending] = useState(false);
+  const [notice, setNotice] = useState("");
+  const freshUntil = useRef(0);
+  const [, tick] = useState(0);
   useEffect(() => {
-    const nextSlotToken = guestQuery.data?.slotToken;
-    if (!nextSlotToken || nextSlotToken === slotToken) return;
-    writeSessionValue(`${slotStoragePrefix}${publicRehearsalId}`, nextSlotToken);
-    setSlotToken(nextSlotToken);
-  }, [guestQuery.data?.slotToken, publicRehearsalId, slotToken]);
-
-  const actionMutation = useMutation({
-    mutationKey: websiteQueryKeys.eventRehearsal.action(publicRehearsalId),
-    mutationFn: async (action: EventRehearsalGuestAction) => {
-      const activeSlot = guestQuery.data?.slotToken ?? slotToken;
-      if (!activeSlot) throw new Error("missing rehearsal guest slot");
-      return submitEventRehearsalGuestAction({
-        publicRehearsalId,
-        slotToken: activeSlot,
-        clientActionId: eventRehearsalGuestActionClientId(
-          clientInstanceId,
-          Date.now() * 1_000
-        ),
-        action,
+    mounted.current = true;
+    return () => { mounted.current = false; };
+  }, []);
+  const query = useQuery({
+    enabled: publicRehearsalId.length > 0 && !sending,
+    queryKey, retry: false, gcTime: 0, staleTime: 1_000,
+    queryFn: async ({signal}) => {
+      const started = performance.now();
+      const value = await getEventRehearsalGuestBootstrap({
+        publicRehearsalId, clientInstanceId, viewerToken: null,
+        slotToken: slotToken.current,
       });
+      signal.throwIfAborted();
+      freshUntil.current = started + 15_000;
+      return reconcileRehearsalProjection(
+        client.getQueryData<EventRehearsalGuestBootstrap>(queryKey), value);
     },
-    onSuccess: (bootstrap) => {
-      queryClient.setQueryData<EventRehearsalGuestBootstrap>(queryKey, bootstrap);
+    refetchInterval: (state) =>
+      state.state.data?.session.faultId === "lowBandwidth" ? 5_000 : 1_200,
+    refetchIntervalInBackground: false,
+    refetchOnWindowFocus: "always", refetchOnReconnect: "always",
+  });
+  useEffect(() => {
+    if (!query.data || performance.now() >= freshUntil.current) return;
+    const timer = setTimeout(() => tick((value) => value + 1),
+      Math.max(0, freshUntil.current - performance.now()));
+    return () => clearTimeout(timer);
+  }, [query.data, query.dataUpdatedAt]);
+  useEffect(() => {
+    const next = query.data?.slotToken;
+    if (!next || next === slotToken.current) return;
+    slotToken.current = next;
+    writeSessionValue(`${slotStoragePrefix}${publicRehearsalId}`, next);
+  }, [query.data?.slotToken, publicRehearsalId]);
+
+  const mutation = useMutation({
+    mutationKey: [...websiteQueryKeys.eventRehearsal.action(publicRehearsalId), instanceId],
+    retry: false, gcTime: 0,
+    // Retain the bearer only in the pending ref, never in mutation variables.
+    mutationFn: async (_action: string) => {
+      const input = pending.current;
+      if (!input) throw new Error("Missing practice action");
+      await client.cancelQueries({queryKey});
+      const started = performance.now();
+      return {value: await submitEventRehearsalGuestAction(input), started};
+    },
+    onSuccess: ({value, started}) => {
+      if (!mounted.current) return;
+      freshUntil.current = started + 15_000;
+      client.setQueryData<EventRehearsalGuestBootstrap>(queryKey, value);
+      setNotice(pending.current?.action === "respondToAssistance" ? "" : copy.actionSuccess);
+      pending.current = null;
+    },
+    onError: () => {
+      if (mounted.current) setNotice(pending.current?.action === "respondToAssistance"
+        ? copy.replyUncertain : copy.unavailableBody);
+    },
+    onSettled: () => {
+      locked.current = false;
+      if (mounted.current) setSending(false);
     },
   });
 
-  const submit = useCallback((action: EventRehearsalGuestAction) => {
-    if (!actionMutation.isPending) actionMutation.mutate(action);
-  }, [actionMutation]);
+  const displayed = query.data;
+  const instruction = displayed?.actor.assistanceMessage;
+  const unresolved = pending.current?.action === "respondToAssistance" &&
+    pending.current.slotToken === displayed?.slotToken &&
+    pending.current.messageId === instruction?.messageId &&
+    pending.current.intentRevision === instruction?.intentRevision &&
+    !instruction?.responseChoiceId && displayed &&
+    canReplyToRehearsal(displayed) ? pending.current : null;
+  const isFresh = () => !query.isError && performance.now() < freshUntil.current;
 
-  const message = actionMutation.isError
-    ? eventRehearsalCopy.unavailableBody
-    : actionMutation.isSuccess
-      ? eventRehearsalCopy.actionSuccess
-      : guestQuery.isError && guestQuery.data
-        ? eventRehearsalCopy.refreshNotice
-        : "";
-
+  function send(input: Submission) {
+    pending.current = input;
+    locked.current = true;
+    setSending(true);
+    setNotice("");
+    mutation.mutate(input.action);
+  }
+  function submit(action: EventRehearsalGuestAction) {
+    const current = client.getQueryData<EventRehearsalGuestBootstrap>(queryKey);
+    if (locked.current || unresolved || !isFresh() || !current ||
+        current !== displayed || !availableEventRehearsalGuestActions(current).includes(action)) return;
+    const previous = pending.current;
+    send(previous?.action === action && previous.slotToken === current.slotToken
+      ? previous : {publicRehearsalId, slotToken: current.slotToken,
+        clientActionId: `guest_${crypto.randomUUID()}`, action});
+  }
+  function reply(input: RehearsalReply) {
+    const current = client.getQueryData<EventRehearsalGuestBootstrap>(queryKey);
+    const message = current?.actor.assistanceMessage;
+    if (locked.current || !isFresh() || !current || current !== displayed ||
+        !message || message.messageId !== input.messageId ||
+        message.intentRevision !== input.intentRevision ||
+        !message.choices.some((choice) => choice.choiceId === input.choiceId)) return;
+    if (unresolved && unresolved.choiceId !== input.choiceId) return;
+    if (!unresolved && !canReplyToRehearsal(current)) return;
+    send(unresolved ?? {...input, publicRehearsalId, slotToken: current.slotToken,
+      clientActionId: `guest_${crypto.randomUUID()}`, action: "respondToAssistance"});
+  }
+  const replyState: RehearsalReplyState = {
+    fresh: isFresh(),
+    pendingChoice: sending && pending.current?.action === "respondToAssistance"
+      ? pending.current.choiceId : null,
+    retryChoice: unresolved?.choiceId ?? null,
+    notice: unresolved && !sending ? notice : "",
+  };
   return {
-    bootstrap: guestQuery.data ?? null,
-    isLoading: guestQuery.isPending,
-    isUnavailable: guestQuery.isError && !guestQuery.data,
-    pending: actionMutation.isPending,
-    refresh: guestQuery.refetch,
-    status: {
-      message,
-      tone: actionMutation.isError ? "is-error" as const : "" as const,
-    },
-    submit,
+    bootstrap: displayed ?? null,
+    isLoading: query.isPending,
+    isUnavailable: query.isError && !displayed,
+    pending: sending,
+    refresh: () => { if (!locked.current) void query.refetch(); },
+    status: {message: pending.current?.action === "respondToAssistance" ? "" :
+      query.isError ? copy.refreshNotice : notice,
+      tone: mutation.isError ? "is-error" as const : "" as const},
+    submit, reply, replyState,
   };
 }
 
@@ -94,25 +161,15 @@ function storedClientInstanceId(publicRehearsalId: string): string {
   const key = `${clientStoragePrefix}${publicRehearsalId}`;
   const existing = readSessionValue(key);
   if (existing) return existing;
-  const created = typeof crypto !== "undefined" && crypto.randomUUID
-    ? crypto.randomUUID()
-    : `web_${Date.now().toString(36)}_${Math.random().toString(36).slice(2)}`;
+  const created = crypto.randomUUID();
   writeSessionValue(key, created);
   return created;
 }
-
 function readSessionValue(key: string): string | null {
-  try {
-    return window.sessionStorage.getItem(key);
-  } catch {
-    return null;
-  }
+  try { return window.sessionStorage.getItem(key); } catch { return null; }
 }
-
 function writeSessionValue(key: string, value: string): void {
-  try {
-    window.sessionStorage.setItem(key, value);
-  } catch {
+  try { window.sessionStorage.setItem(key, value); } catch {
     // A private browser can still use the in-memory slot for this page load.
   }
 }

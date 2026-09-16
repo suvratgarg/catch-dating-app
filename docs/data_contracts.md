@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.44.0
-updated: 2026-09-08
+version: 1.127.0
+updated: 2026-09-16
 owner: recursive_audit_loop
 status: active
 ---
@@ -48,6 +48,506 @@ Read this before changing:
 Do not hand-edit generated outputs. Change the contract source, run the schema
 generator, and commit the generated diff.
 
+### Rehearsal Assistance Generation
+
+`event_rehearsal_membership.schema.json` adds optional callable-owned actor
+`participation` and `groupMembership` state and a private `membershipReviews`
+bootstrap. The rehearsal `transferGroup` command references the canonical live
+payload and accepted/transfer shapes while retaining synthetic clock and episode
+identity. Membership has one accepted group and one optional handover; proposal
+does not replace acceptance. Physical attendance and table placement remain
+separate. The parent action receipt, setup/runtime generation, participation and
+membership revisions, current manager authority, selected source hash and virtual
+deadline fence each mutation. New actors initialize participation explicitly;
+legacy actors do not fabricate it. Reset removes the actor state. No new live
+collection, guest response field or direct client-write permission is introduced.
+
+The native rehearsal membership controller owns one pending decision per
+synthetic actor and clock generation, with account-specific mutation state.
+It exposes only the reviewed actions and receiving Hosts, then freezes the
+selected command through submission, uncertain outcomes, closure and refresh.
+First submissions require the current membership row and its authenticated
+reviewer; retries preserve the original generation, source, revisions and action
+id. Parsed responses still require the matching parent receipt and membership
+result. A later replay preserves subsequent membership and participation.
+Definitive conflicts require a fresh review; rate limits retain an already
+uncertain command. Sign-out, account changes and authentication errors revoke
+pending UI state, including while its sheet is closed.
+
+`controlEventRehearsal` requires `expectedSetupRevision` for assistance and movement commands,
+alongside the runtime revision and immutable client action id. Reset increments
+the setup revision and reuses runtime revisions from zero. The handler checks
+the reviewed generation before replaying a receipt and again inside the
+transaction, preventing an old pending instruction from publishing into the
+new run. Other existing lifecycle controls retain their previous payload;
+this additional required field applies to assistance and movement. Native typed
+commands serialize the reviewed generation and also verify it in the result.
+
+Host rehearsal bootstrap also exposes the stored `virtualStartedAtMillis`.
+Native practice instruction assembly uses that anchor plus the configured
+duration to bound expiry; advancing the virtual clock cannot extend the event
+window. Older Host responses without the anchor remain readable, but cannot
+assemble a new instruction until a current bootstrap supplies it. The guest
+bootstrap shape is unchanged.
+
+`eventRehearsalActors.assistanceAutomation` is optional, callable-owned and
+private to Host bootstrap. It stores the clock generation, enabled/paused state,
+explicit plan, bounded simulated-outcome script, cursor and typed policy/delivery
+evaluation. Guest projections omit the recipe. Automation commands use the
+existing assistance generation/revision/request fences. Current-time evaluation
+shares the parent actor transaction; failed or duplicate transitions cannot
+consume another script item or create another attempt. Reset removes recipes
+by rebuilding the synthetic roster. These additions have no live sender or
+provider binding.
+
+Native rehearsal readers preserve this optional automation value with a strict
+plan parser, immutable one-to-six-item outcome script and bounded cursor.
+Policy evaluations reuse the shared late-join decision union; delivery
+evaluations have closed variants and reasons. Missing automation remains null,
+and uncertain or accepted delivery evidence retains its reconciliation state.
+Native configure/pause/resume commands use the existing assistance payload and
+receipt checks. Configuration freezes the reviewed plan and script, including
+through an uncertain exact retry; no schema or live provider change is required
+for these native bindings.
+
+Rehearsal plans optionally include the closed `TemplateSetting` union as
+`setting`. Presence preserves observe/prepare/execute/disabled behavior through
+callable commands, stored actor/message plans and Host bootstrap. Absence keeps
+legacy execution and serialization unchanged; explicit null and a supplied
+runtime policy version are rejected. Native typed plans and publication drafts
+retain the same union. Restricted modes never create a guest instruction or
+consume the simulated delivery script. Clients with the older closed plan parser
+must be updated before explicit modes are written; this extension needs a
+coordinated API/app rollout. Guest bootstrap and real sender authority do not
+change.
+
+`event_rehearsal_settings.schema.json` adds optional callable-owned session
+`assistanceSettings` and Host-only `settingsReview`. The bounded state contains a
+clock ID, optional simulated runtime and up to 41 group preferences. A closed
+`settings` control command configures delivery, pauses it, or saves a late-join
+rule. It excludes actor commands, clock minutes and synthetic operator identity,
+and requires both setup and runtime review fences plus a source hash. The same
+transaction owns its parent receipt and synthetic actor/message changes.
+
+Event-enrolled actor automation has optional `origin: eventSettings`; absence
+continues to mean an explicit per-guest recipe. Configuration cannot rewrite any
+consumed outcome prefix. `configurationUnavailable` is a closed delivery-review
+reason. Native readers preserve these additions, parse the rehearsal-only
+context and complete group coverage, retain absent versus empty later choices,
+and independently check each typed settings receipt. Shared presentation keeps
+real location data when supplied and represents named practice targets without
+coordinates. Update the API and native readers together before returning the
+new actor origin/reason. No guest bootstrap, live permission or provider schema
+is changed. The native controls and state-owner composition remain pending.
+
+Native joining configuration consumes a current, account-bound movement review.
+It reuses the reviewed destination IDs and copy. Defaults permit the whole
+configured itinerary or pace-group checkpoint set; explicit policies can narrow
+that set and retain entry rules, response deadlines, message caps, cooldowns,
+route order and simulated outcomes. Configuration before a saved departure has
+an awaiting-departure preview and cannot publish directions. A confirmed target
+outside the policy is a distinct held preview. The legacy plan's configured
+copy and confirmation flag are never movement authority: the callable resolves
+actual saved progress. Fixed-place entry rules may restrict confirmed guidance
+without changing the recorded departure. Policy cutoff stays separate from the
+event-end guidance expiry. Selection and first submission require a current
+movement page; uncertain retries retain the selected command under the existing
+assistance editor lifecycle.
+
+`eventRehearsalCases` is a callable-only collection with correlated open and
+settled handling, reusing the live practical-request handling definitions.
+Case identity includes the rehearsal clock, synthetic actor and originating
+guest action or message response. Creation and resolution share existing parent
+rehearsal transactions and action receipts. The Host-only bounded request view
+preserves the current clock, reviewed source hash and assignment authority;
+old untracked help flags remain explicit. Guest projections omit these records.
+Native readers reject foreign clocks/actors and inconsistent resolution state;
+only a reviewed open rehearsal case can form its typed handling command.
+Rehearsal reset and expiry remove these cases, independently of live cases.
+
+Delivery review rows optionally include the current guest's display name (1–120
+characters). The live projection verifies the attendee generation before exposing
+it; source-changed rows require null. Rehearsal binds it to the synthetic actor.
+The review hash includes the displayed name, so renaming requires a fresh review
+for a new takeover while immutable receipt replay remains available. Native
+readers preserve older omission as unknown and reject a named stale source.
+
+Rehearsal Host bootstrap optionally adds `deliveryReviews`, with a rehearsal-only
+context, explicit current-actor-message coverage, at most 50 rows and untracked
+coordination. It reuses the live delivery-review shape without adding guest-visible
+fields. The typed `repairDelivery` payload preserves the common action union,
+but only manual handoff is executable or offered. Reviewed message revision and
+hash accompany existing parent setup/runtime/action fences. Private
+`eventRehearsalMessages.handoff` uses virtual time and the parent operation id;
+the wrapped record is constrained to rehearsal context and still rejects the
+live outbox handoff marker. Parent receipts, action capacity, reset and expiry
+remain the existing owners; no additional collection or live dispatch authority
+is introduced.
+
+The optional, callable-owned `eventRehearsalActors.visit` separates physical
+visits from connection state, placement and response intention. Observed arrival
+and departure transitions advance an attendance revision; check-in uses virtual
+time, and crossed scenario cues retain their individual scheduled times.
+Rejoining starts a distinct visit even without advancing the virtual clock.
+Legacy actors without visit evidence remain unavailable until an explicit
+physical observation; a connection change cannot supply that evidence.
+
+Host bootstrap optionally adds bounded `accountabilityReviews`. The typed
+`resolveAccountability` assistance command reuses the common payload and live
+resolution reducer, with a reviewed source hash plus existing setup/runtime and
+action-receipt fences. Returned/departed outcomes bind to the exact visit revision
+and check-in; reopening clears the outcome. Historical proof cannot resolve a
+later visit. Host identity is stored only as the private resolution audit actor,
+not a synthetic participant identity. Guest responses omit visit and review data.
+Completion permits follow-up within the action cap; reset clears visits and
+invalidates earlier commands. Native reviews now validate bounded coverage,
+clock/episode identity and availability, and construct commands only from a
+current actionable row. The per-guest controller preserves uncertain requests
+across refresh and closure; exact retries retain later visits and corrections.
+Host screen mounting remains integration work.
+
+`event_rehearsal_movement.schema.json` owns the bounded group movement review.
+`selected` explicitly carries the reviewed departure, including older fixed-place
+records; `progress.current` remains the latest departure independently of history
+selection. A checkpoint repeats the selected record's departure and report, and
+its source hash fences new observations. Native readers validate these identities,
+the original roster denominator, complete candidate coverage and virtual clock.
+An omitted roster is distinct from an explicitly empty roster and from a report.
+
+Native `confirmDeparture` and `recordCheckpoint` controls use `action: movement`
+without an actor target. They share the live checkpoint observation and correction
+rules while retaining rehearsal-only persistence and receipts. One group/generation
+controller owns an unresolved command across sheet closure, history selection and
+refresh. Network ambiguity preserves the exact request; a definitive conflict
+requires a new review. Deliberate snapshot and movement reads must agree on runtime
+revision, and auth transitions revoke both private reviews and pending requests.
+Backend-produced fixtures are checked in both Functions and Flutter tests.
+
+Rehearsal also supports `reassignCheckpointReporter` and `setCheckpointCloseout`
+through the same movement action, with native commands using the live decision
+vocabulary and the existing group pending-request controller. Optional record
+`assignment` and `closeout` changes have independent revisions and parent action
+identities. They preserve the original departure, deadline and arrival report.
+Legacy records remain readable; private checkpoint reviews explicitly distinguish
+missing legacy metadata from a departure with no reporting request. Native readers
+validate stored decisions, original-roster coverage and derived review states;
+command receipts also preserve the reviewed actor, reason and evidence.
+
+Live and rehearsal share closeout eligibility and decision rules. Closing requires
+an explicit partial report and a current, post-departure visit disposition for each
+unconfirmed original member. It never creates an arrival observation. Changed
+reports or dispositions restore review; a complete report supersedes closeout.
+Reopening retains the saved evidence. Current organizer managers can reassign a
+request to a current manager or a synthetic reporter whose duty covers the
+original deadline. Reassignment does not extend that deadline or grant access. All changes use the existing bounded rehearsal transaction,
+action receipt and reset/expiry cleanup; no live Operations work or notification
+is created. Native screen mounting remains open.
+
+`event_rehearsal_staff.schema.json` now owns up to 50 synthetic operators, each
+with at most 20 independently expiring group duties in the private session.
+`controlEventRehearsal` with `action: staff` assigns or removes a reviewed duty;
+the parent runtime revision, setup generation, action cap and receipt fence the
+change. Reset, fork and setup replacement do not inherit practice staff.
+
+Host bootstrap and movement reads accept an explicit `practiceOperatorId`;
+scoped movement, membership and accountability commands bind that identity in
+their request receipt. The real caller must remain an organizer manager.
+Synthetic identities never create accounts, invitations or `eventStaffGrants`,
+and cannot authorize access to any live event or rehearsal endpoint. The Host
+retains lifecycle, clock, messaging and staff-configuration control.
+
+Live and practice share the duty permission map and assignment window.
+Leads/pacers can confirm departures and transfer guests; sweeps can read, report
+checkpoints and resolve accountability. Group staff can take reporting
+responsibility themselves; only the Host may name another reporter. Live and
+practice enforce this through the same selection rule. Only the named, currently authorized
+receiver accepts a handoff. Accepted membership determines subgroup visit scope;
+proposals do not transfer authority. A reporter needs duty coverage beyond the
+original deadline; removal, virtual expiry and changed group sources withhold
+permission without rewriting arrival evidence or original responsibility.
+
+`staffReview` separates the real Host, practiced operator, stored duties and
+current per-group permissions. Role-specific accountability rows and commands
+carry the actual group scope. Native readers validate the staff clock, Host and
+practice identities, roster coverage, duty expiry and current permissions against
+backend-produced fixtures. Group commands retain the selected role through reads,
+confirmation and exact retries. Handover acceptance changes the guest's group
+scope; a sweep cannot depart, transfer guests or reassign a checkpoint reporter.
+
+`RehearsalStaffChange` reuses live assignment/removal decisions, freezes the parent
+and staff revisions, checks the practice window, and verifies the saved duty,
+other operators and parent receipt. Later replay preserves subsequent removal.
+The repository supports explicit role reads and typed staff writes. Native staff
+configuration/role-selection controllers and screen mounting remain integration
+work. Other rehearsal controls still default to organizer management authority.
+
+### Explicit Attendance Closeout
+
+The event document accepts an optional, callable-owned `updatedAt` timestamp.
+The absolute Host attendance writer already updates it with the event checked-in
+aggregate. Older events may omit it; a real-emulator check-in regression validates
+the resulting event and attendee documents before reading closeout again.
+
+`event_attendance_disposition.schema.json` defines live-only reads, the typed
+`recordNoShow` command payload, response projection, annotation and receipt.
+The command distinguishes recording evidence from a clear reason. Its expected
+physical-attendance revision and expected disposition revision are independent.
+`eventAttendanceDispositions` and `eventAttendanceDispositionReceipts` are
+callable-only; their owner validates current organizer authority and canonical
+roster/event/plan/guest evidence in the same transaction as the decision.
+Source hashes preserve timestamp precision and source generations; they cannot
+be reused after attendance, relevant identity, closure or cited guest evidence
+changes. Exact receipts preserve the original operation revision separately
+from current projected disposition. Old decisions are hidden for replacement
+identities or explicitly superseded for changed facts. These documents do not
+replace `eventAttendees`, infer attendance, update event totals or alter report
+aggregates. Native readers preserve each disposition/closure/evidence variant
+and reject cross-field contradictions as well as schema-invalid values. They
+use generated request DTOs, retain the reviewed source and revisions for exact
+retries, and distinguish an operation's receipt revision from the latest view.
+No schema or generated contract change is needed for this native binding.
+The same shared schema now defines `getEventAttendanceReport` and its closed
+attendance classification/count projection. The current unified Host roster
+is read in a single SDK read-only snapshot with the same per-guest validation
+and decision policy. Imported or unlinked rows are included. Empty roster,
+unresolved review reasons, explicit recording evidence and non-admission are
+preserved; counts and compact member ids cover all canonical rows together.
+Overflow beyond 1,000 rows or malformed source evidence fails the request.
+The aggregate cannot submit a decision or update legacy scorecard caches.
+Native report parsing checks exact field sets, closed variants, unique members,
+coverage and each count against the member classifications. It shares the
+individual closeout closure parser and exposes immutable per-guest scopes,
+without turning report evidence labels into mutation authority. The repository
+uses the generated live request; unavailable, unauthorized, oversized and
+malformed reads remain errors. Account-scoped providers discard prior reports
+on reload or auth change. Successful individual decisions invalidate only the
+matching event/account aggregate and fetch fresh totals.
+Roster and report UI integration remain separate work.
+
+### Event Assistance Transaction Boundary
+
+The exhaustive workflow catalog and the separate
+`event_assistance_command_bindings.json` catalog distinguish command type
+coverage from executable coverage. Every command has one live and one rehearsal
+binding classified as direct command, domain adapter, internal coordinator or
+contract-only. Coverage is derived as complete or none unless a binding records
+an explicit partial partition of one command payload discriminator. Partial
+coverage names every implemented and missing variant plus the missing
+capability. Contract validation checks that partition against the command
+schema. Generated TypeScript and Dart expose the same mode-specific relation.
+
+Event Assistance routes read/write SDK transactions through
+`runAssistanceTransaction`. Explicit read-only snapshots keep the SDK read-only
+path and cannot acquire write authority.
+The adapter normalizes only the exact closed-transaction read failure into the
+SDK's existing bounded ABORTED retry path. It does not wrap commit failures or
+retry provider sends, and it preserves other domain and transport errors. Request
+receipts still own recovery when a commit outcome is uncertain. The source check
+in `transactionCallback.test.ts` rejects direct production read/write SDK
+transaction calls outside this adapter; test fixtures remain independent. This applies consistently
+to settings, group handovers, guest actions, outbox claims and callback consumers.
+
+### Event Assistance Practical Requests
+
+Guest responses create `eventAssistanceCases` with distinct practical and
+restricted-safety ownership. New records bind their roster/event generations
+and contain a revisioned handling state. The schema preserves historical
+records without those fields as an explicit legacy variant; the Host reader
+cannot invent their missing source binding or authorize their mutation.
+
+`listEventAssistanceCases` provides a manager-only, bounded page of practical
+requests, with stale identity redaction and no event-wide completeness claim.
+Optional current-source guest names and manager choice snapshots are shared with
+rehearsal help projections. Source-changed and legacy rows can expose only a null
+name. Manager options bind the caller and contain at most 42 distinct canonical
+managers; every assignment rechecks current authority. Native parsers reject duplicate/missing-caller
+choices and a rehearsal name that differs from its actor. Guest-name changes alter
+the reviewed source hash, independently of the immutable retry binding.
+`resolveEventAssistanceCase` owns resolution, decline and manager handoff. The
+canonical command includes the expected case revision; its callable also
+requires the reviewed source hash. `eventAssistanceCaseReceipts` records exact
+request hashes, source binding, actor, outcome and committed revision for
+transactional retry safety. Both collections deny direct client access.
+Comfort/safety requests remain excluded from the organizer queue. For Admin
+roles authorized to read safety detail, the safety overview reads their
+`authorizedSafetyOperator` rows into the event safety queue; finance and
+analytics overview roles do not query those records.
+`adminDecideSafetyTriageItem` closes the nested revisioned
+handling state as resolved or declined. `adminAssignSafetyTriageItem` changes
+only that nested safety assignment. Both mutations validate the complete case,
+preserve its event/attendee/message binding and write an Admin audit record;
+they do not perform an account, content, payment or event mutation.
+See `docs/event_success.md` for lifecycle and integration boundaries.
+
+### Event Assistance Delivery Review
+
+`event_assistance_delivery_review.schema.json` owns the closed Host delivery
+page, reviewed repair input, ownership projection and immutable repair receipt.
+Both callables require organizer management access. List coverage is page-local;
+delivery evidence and coordinator completion remain independent. Missing or
+replaced guest sources redact attendee identity and prohibit new commands.
+
+`repairEventAssistanceDelivery` currently supports only the typed command's
+`manualHandoff` action. Its expected message revision and complete review hash
+fence changed evidence and source state. It atomically adds optional server-owned
+`handoff` evidence to the existing outbox and creates a private
+`eventAssistanceDeliveryRepairs` receipt. Legacy messages need no migration.
+Rehearsal records cannot carry live handoff evidence. Exact retries retain their
+original operation revision while returning the current projection. The handoff
+stops new dispatch authority without closing replies or inventing nondelivery.
+Receipt lookup/finality and verified retry remain unimplemented integrations.
+
+### Event Assistance RCS Configuration
+
+`contracts/operations/event_assistance_rcs_config.schema.json` references the
+canonical Google RBM sender shape in `event_assistance_rcs.schema.json`.
+Generated TypeScript validators and Dart schema metadata share its agent,
+region, credential-version, purpose, approval, quote and queue-limit fields.
+The messaging provider union permits `googleRbm` only for `catchEventRcs`.
+The sender display name is now required and `eventAssistanceRcsSenders`
+references the same canonical configuration as a private Firestore collection.
+No public provisioning endpoint or live sender is created by this contract.
+It grants no recipient, spending or dispatch authority. See
+`docs/event_success.md` for rendering and integration boundaries.
+
+`event_assistance_rcs_consent.schema.json` owns independent RCS permission,
+exact consent receipts and preference views. The two App-Check-protected
+`getEventRcsPreference` / `setEventRcsPreference` callables require the roster's
+linked UID; a grant additionally verifies its signed phone claim. The reviewed
+hash binds sender identity, event name and captured window, subject and phone,
+attendee and Firestore source generations, and latest STOP. Caller-selected
+provider IDs, phone numbers or evidence timestamps are rejected.
+
+The `list_event_rcs_preferences` request/response contracts expose bounded,
+participant-only sender discovery. Requests name only event, attendee and a
+nullable permission cursor; identity comes from Firebase Auth. Responses retain
+configured sender selection separately from previous sender IDs and pagination.
+The configured sender uses the canonical runtime source binding, including
+paused configurations. Historical discovery uses a composite index over live
+context, attendee, subject UID and document ID; source/phone mismatches are
+filtered after a bounded read. It never supplies consent or sender readiness.
+The existing reviewed preference callables remain the only grant/write path.
+
+The `list_event_whatsapp_preferences` request/response contracts provide the
+corresponding bounded discovery for `organizerEventWhatsapp`. They use a distinct
+`wa-permission` cursor and index prior verified subject evidence via
+`evidence.subjectUid`; an initial revocation without that evidence is excluded.
+The shared source reader checks current participant ownership and the saved
+runtime binding before either channel's private history query. Channel-specific
+permission decoders retain their own consent and identity rules. These read
+contracts add no grant, connection, provider or financial authority.
+
+Private `eventAssistanceRcsPermissions` and `eventAssistanceRcsConsentReceipts`
+commit together. Granted and revoked records are a closed union; a grant
+requires explicit evidence and a matching immutable receipt, while initial
+withdrawal has null evidence. Exact request retries cannot reverse later
+decisions. Withdrawal preserves the original binding after phone, source or
+sender changes. Consent expires at the captured event end plus 24 hours, with
+the current event window rechecked by the shared transactional permission
+reader. STOP review hashes exclude START and unrelated observation revisions;
+a new STOP requires fresh review. No SMS/WhatsApp permission is reused or
+mutated. Direct client collection access remains denied.
+
+RCS permission records require a derived `subscriptionId` matching the canonical
+agent plus phone hash. The whole record remains covered by its immutable consent
+receipt. A composite index over `subscriptionId`, `expiresAt` and document ID
+supports bounded conversation STOP discovery without storing raw phones in work
+payloads or scanning every recipient of an agent. Do not retrofit an indexed
+field onto a previously receipted grant: changing that record invalidates its
+proof. These pre-activation contracts require state verification and fresh
+review for any older records before live activation; no data backfill or consent
+migration is performed by this source change.
+
+The same canonical contract now owns `WithdrawalGrant`, `WithdrawalView` and a
+closed `messageLink` revoke-only receipt variant with a null actor. Private
+`eventAssistanceRcsWithdrawalGrants` binds the original source generations,
+subject, endpoint and agent. Transactional preparation verifies the persisted
+guest grant and exact permission/receipt before staging immutable issuance. The
+App-Check-protected bearer callables `getEventRcsWithdrawal` / `withdrawEventRcs`
+expose only recorded preference and lifetime; revision checks and immutable
+receipts fence old requests. Withdrawal works after instructions expire without
+restoring read/reply access, and does not depend on current event/roster/sender
+records. Retain its referenced guest grant through the independent withdrawal
+lifetime. The RCS dispatch store now stages this binding with the outbox claim
+and two approved budget charges. The guest update page now reads and withdraws
+RCS independently from SMS and WhatsApp, even when instructions are unavailable.
+Its shared controller validates the closed response before caching, scopes each
+channel and credential separately, and preserves an uncertain request for exact
+retry. Bearer controls cannot opt in. Verified guest opt-in controls and live
+activation remain open.
+
+The RCS canonical contract also owns `Budget`, `CapabilityObservation` and
+`Dispatch`. Private `eventAssistanceRcsBudgets` binds each approved event or UTC
+sender-day limit to an agent and currency. Both pessimistic charges commit with
+one outbox claim. `eventAssistanceRcsDispatches` stores the corresponding
+before/after budget revisions and charges, original scope, permission and
+capability hashes, deterministic provider message ID, frozen body hash and
+absolute delivery expiry. No phone, bearer secret or message body is persisted
+in that record. Capability is an in-memory, at-most-60-second observation tied
+to the exact sender and consent; its snapshot is retained in dispatch evidence.
+It grants no spending or message permission. The shared channel selector can
+use RCS through the production factory for an explicit sender when its default-off
+flag is enabled. The credential loader validates an exact sender/agent/region
+secret envelope and uses the Google OAuth library with the RCS messaging scope.
+The HTTP export resolves independent, pinned webhook endpoint bindings and
+commits verified callbacks to the durable inbox. These secret formats and
+configuration flags are owned in `docs/event_success.md`; they create no new
+client-visible contract or consent. Deployment, authenticated ingress activation
+and approved provisioning remain required for live use.
+
+### Event Assistance RCS Callback Evidence
+
+`contracts/shared/event_assistance_rcs_callbacks.schema.json` owns the closed
+delivery, expiry, suggestion, subscription and unstructured-message observation
+union. Firestore schemas reference its callback, identity and consumer receipt
+records;
+generated TypeScript validators and Dart metadata share those exact shapes.
+Authenticated ingress owns both server-only collections, with all direct client
+reads and writes denied:
+
+- `eventAssistanceRcsCallbacks/{callbackId}` stores immutable normalized evidence.
+  The ID hashes the scoped receipt key and signed payload hash, so conflicting
+  payloads retain separate records without storing the raw provider payload.
+- `eventAssistanceRcsCallbackIdentities/{receiptKey}` binds the first callback and
+  storage time to the agent, endpoint, event family and provider event identity.
+  Its nullable conflict time prevents later consumers from using contradictory
+  evidence as an ordinary delivery or guest response.
+
+The inbox writes both records transactionally and preserves first-receipt times
+on exact duplicates. Consumers must read the identity in their effect transaction;
+acceptance grants no delivery, guest or permission effect. Evidence excludes raw
+phone numbers, message text, file URLs, locations, signatures and tokens. Missing
+provider time remains null. No automatic retention deletion is configured until
+pending-consumer and retry requirements have an implemented lifecycle. See
+`docs/event_success.md` for consumer behavior and remaining activation work.
+
+`eventAssistanceRcsCallbackReceipts/{callbackId}` is a third private collection.
+Its closed outcome (delivery, reply, ignored or rejected) binds the complete
+immutable callback hash and processing time. The inbox conflict identity, outbox
+transition, typed guest action and receipt share one transaction; failed commits
+leave no partial effect and exact retries return the saved outcome. Missing or
+conflicted inbox evidence cannot create a consumer receipt or domain effect.
+
+Dispatch records now include immutable intent and attempt-scope hashes plus a
+nullable native reply binding. It freezes only rendered choice indices/IDs, the
+guest revision, episode, attendee/event source generations, subject UID and reply
+expiry. Reply expiry is independent of provider queue TTL. An authenticated tap
+can prove delivery after queue expiry, but its domain action still requires the
+current guest identity, instructions and event window. Original replies remain
+usable after outbound opt-out without restoring any message permission.
+
+`event_assistance_rcs_subscriptions.schema.json` adds the server-only
+`eventAssistanceRcsSubscriptions/{subscriptionId}` projection, keyed by agent
+and hashed endpoint across events. It retains independent latest stop and
+subscribe-request callback references and their first storage times. At least
+one observation is required; neither state grants event consent. The inbox
+commits the projection with its callback and identity, including a restriction
+from a conflicting signed STOP. Exact retries can repair missing older
+projections without moving observation times or overwriting newer evidence.
+Readers verify both shape and original callback binding transactionally.
+No direct client access or automatic retention deletion is enabled. Event
+permission, dispatch, SMS and WhatsApp records are not mutated by this owner.
+
 ### Host Today Attention Contract
 
 `contracts/catalogs/host_attention_policies.json` is the exhaustive policy
@@ -84,9 +584,15 @@ callable must never label a truncated scan exhaustive. The response also
 contains one coverage row per catalog kind so clients and tests can distinguish
 complete server coverage, required local merging, shortcuts, and missing truth.
 
-The source-ready server kinds are live-event operations, ordinary waitlist
-review, manual join-request review, application review, provider-sync failure,
-form-automation failure, and payout setup. Attendance retry/conflict work is
+The source-ready server kinds are live-event operations, open practical guest-
+help review, delivery work that explicitly requires host review, ordinary
+waitlist review, manual join-request review, application review, provider-sync
+failure, form-automation failure, and payout setup.
+Practical help is aggregated per active event from event-lead-owned cases;
+safety-owned cases remain inside their restricted operator boundary. Delivery
+review is aggregated only from validated `liveMessageDelivery` Operations work
+whose checkpoint and human-review projection agree; message status alone cannot
+create a task. Attendance retry/conflict work is
 merged from the local Host outbox. Flutter consumes the callable through
 `HostAttentionRepository`, parses the closed item and coverage vocabularies
 into typed domain values, verifies the requested organizer, and rejects any
@@ -104,24 +610,573 @@ domains add explicit workflow state. In particular, null optional setup, zero
 staff grants, an unread message, a submitted generic form, or aggregate counts
 are not sufficient evidence of a mandatory task.
 
+### Event Assistance Group Membership Contract
+
+`eventAssistanceMemberships/{membershipId}` holds at most one accepted group
+and one current handover per event/attendee. It binds event/roster creation
+generations, authored attendee generation, participation episode and revision.
+Accepted membership and proposed destination separately bind saved group source.
+Attendance, social allocation, physical placement and participation remain owned
+by their existing records. Membership never modifies those facts.
+
+The canonical `transferGroup` command has correlated place/propose/accept/reject/
+cancel/leave decisions. Place is an initial manager acknowledgement of
+responsibility; propose can name a current receiving operator for either initial
+assignment or transfer. Acceptance belongs to that exact operator with current
+scope authority. It changes membership and resolves the proposal together.
+Cancellation, rejection and expiry preserve the prior group. Direct placement
+cannot bypass a pending assignment. Transfer deadlines cannot exceed 30 minutes
+or the event end. Sweeps have scoped reads but no transfer authority.
+
+`eventAssistanceMembershipReceipts` atomically preserves the actor, canonical
+command, request hash, source generation, episode and resulting revision. Current
+manager/scoped operator authority and reviewed source/revision/episode fences are
+checked in each transaction. Reads and retries never recreate an earlier effect.
+The membership store uses the shared bounded transaction callback adapter for
+closed-transaction read failures. Commit uncertainty is not translated or
+blindly retried; immutable request receipts remain the replay authority.
+Changed event/roster generations, guest re-entry and changed group setup require
+fresh review. Membership checks also gate group-specific joining instructions at
+publication, guest interactions and SMS/WhatsApp dispatch. Both collections deny
+all direct client access. Host controls, bulk/queue projections, responsibility
+reassignment, rehearsal adapters and terminal retention remain integration work.
+
+### Event Assistance Participation Contract
+
+`eventAssistanceGuests` owns explicit participation independently of its reported
+joining intention. `participation` is a correlated state: active and departed
+require a null return point; temporaryBreak may carry a currently saved itinerary
+unit reference. The record also binds the exact Firestore creation generations
+of its event and roster row. Source replacement withholds the old state and
+requires a new reviewed episode. Reads expose only participation, source/revision
+fences, check-in status and return choices; they contain no contact information
+or reported joining intention.
+
+`eventAssistanceParticipationReceipts/{receiptId}` is a server-only immutable
+command receipt. Its identity binds event/guest/operation; its request hash
+includes the authenticated actor. State and receipt commit together. Exact
+retries return the original revision plus current state; changed reuse, source
+replacement and stale commands fail. No direct client access or TTL is enabled.
+Retention must cover executable commands and outstanding guest capabilities.
+
+The get/set participation callables require Auth, App Check, rate limiting and
+current organizer-manager or linked-attendee authority. Set consumes the canonical
+`setParticipation` command with episode and revision fences and a reviewed source
+hash. Admission must be registered/checked-in and the event must remain open.
+Re-entry starts a fresh episode; other state changes preserve it. The command
+never checks someone in, allocates them, changes consent or infers that they have
+returned. All messaging boundaries suppress affected activity prompts while
+retaining independently eligible essential and post-event updates.
+
+### Event Assistance Settings Contract
+
+`eventAssistanceSettings/{settingId}` stores a typed preference for one live
+event, group scope and workflow kind. The ID hashes those three identities.
+The whole-event default uses `event:whole`; configured pace-group IDs may own
+an override. `inherit`, explicit disablement and a correlated configured
+template are distinct wire states. Templates bind configuration to workflow
+kind without requiring a guest episode during setup; runtime policy binding
+supplies the concrete subject and the server-owned implementation version.
+
+`eventAssistanceSettingReceipts/{receiptId}` stores immutable request hashes
+and original committed revisions. Actor identity participates in the request
+hash; context/group/workflow/request identity determines the receipt ID. Both
+records commit together. Exact replay returns its original operation revision
+and the latest projected settings. Changed request reuse or an outdated
+revision/source hash fails. Neither collection has client access or a TTL;
+terminal retention must be decided before activation.
+
+The two settings callables require Auth, App Check, rate limiting and current
+organizer-manager authority. They expose settings, source hashes and a bounded `setup` containing the
+reviewed event end and named joining destinations with locations, without roster
+details. Setup comes from the same event/group source; changes to timing or
+locations invalidate the old editing basis. It does not assert current movement,
+provider readiness or permission to send. New clients tolerate an older response
+without setup as unavailable configuration choices. Older closed-response clients
+need a coordinated API/client rollout or reload before receiving the added field. A projection cannot claim current configuration after a
+structural source change, while explicit disablement remains suppressive.
+Current participation, capability/readiness, consent and execution authority
+must still be resolved by their owning runtime boundaries. Saving an automatic
+preference does not itself send a message or enable a production worker.
+
+The internal late-join source reader uses the same settings inheritance and
+source checks as the callables. It joins one canonical guest episode and its
+accepted group with current progress without writing records or creating a
+parallel projection collection. Its partial typed result excludes delivery
+eligibility and message history. Those facts must be supplied explicitly from
+the same scoped snapshot before canonical evaluation; the reader alone cannot
+produce send authority. It is not exposed to clients and adds no new Firestore
+access rules. The live evaluator now obtains those remaining facts through
+shared consent/suppression readers and a bounded query of the existing private
+outbox. Sender choices and policy-required response deadlines remain trusted
+workflow inputs; they are not inferred from an arbitrary connected account.
+
+The episode-history query includes all lateJoin occurrences and lifecycle states
+for the exact live organizer/event/attendee/episode. Its six-field composite index
+is declared in `firestore.indexes.json`. A maximum of 201 reads detects overflow
+beyond the supported complete 200-row history. Reserved or potentially submitted
+intents count once even across channel fallback, cancellation or supersession;
+queued-only and proven-unsent records do not count. Conflicting evidence, ambiguous
+latest material and overflow withhold evaluation. No new projection collection,
+client access or cleanup policy is introduced. Active episode history must remain
+available for policy caps and cooldowns. Final dispatch rechecks exact message
+material, credentials and spending separately from preparation eligibility.
+The atomic publisher below now consumes these facts. Durable worker scheduling
+is wired in source and remains dormant; terminal retention remains integration
+work.
+
+Automatic lateJoin message intents now include an optional strict `automation`
+binding in the canonical messaging schema: policy version, setting identity and
+revision, group, ordered sender routes and nullable explicit response deadline.
+The trusted automatic publisher always emits it; existing explicit publications do
+not acquire automation authority by omitting it. Wire validation plus runtime
+cross-field checks reject mismatched routes, duplicate route ids, non-live contexts
+and a different workflow. Generated Functions/Dart schemas and private Firestore
+message types carry the same contract.
+
+The automatic publisher joins source evaluation and message/thread writes in one
+transaction. Its semantic identity excludes only creation time, so later retries
+reuse the original immutable record while changed content creates a distinct intent.
+Final automatic dispatch re-evaluates current policy and exact setting/group/sender
+bindings. Episode history excludes only the exact stored intent being dispatched,
+after full identity/content/conflict validation; other lifecycle states remain in
+the complete query. This prevents a reservation from consuming its own logical slot
+twice and preserves the shared cap across replaced instructions. Instruction refresh
+and permission to send remain separate. No new collection, client rule, credential
+read or provider submission is introduced by publication.
+
+The runtime configuration read optionally returns a closed `senderSetup`
+projection with bounded, channel-specific pagination and safe named sender
+choices. The read request accepts typed `senderCursors`; each response advances
+by scanned document identity and also includes current saved selections. A
+configure command can include one `senderReviews` hash per selected route. The
+server revalidates current provisioning and exact supplied hashes in the same
+transaction before saving runtime permission and roster work. Pause and exact
+receipt replay do not require sender readiness. No new collection, secret access,
+consent grant or provider submission is introduced. New native parsers accept an
+older response without discovery as unknown; older closed response clients need
+a coordinated API/app rollout or reload before receiving the additional field.
+The optional hashes retain request compatibility, while new reviewed native
+changes bind displayed sender identity explicitly.
+
+The strict `event_assistance_roster_work.schema.json` payload adds resumable
+roster enrollment to the existing Operations collections. It binds the source
+identity, organizer/event scope and saved runtime revision, with a bounded
+cursor, retry list and explicit stop reason. `work_item.schema.json` binds this
+payload to the Event Assistance workflow and `runtime_roster` entity kind.
+Current runtime permission and each canonical registration are re-read before
+guest enrollment or rebinding; payload snapshots never grant authority. No new
+collection or client access rule is introduced. The authoritative execution
+limits and lifecycle are documented in
+[Operations](operations_platform.md#resumable-roster-enrollment).
+Runtime configuration commits its roster run/item with the configuration and
+request receipt. Configuration triggers reuse that revision's logical source
+identity, while registration/re-entry sources retain their CloudEvent identity.
+
+The strict `event_assistance_delivery_work.schema.json` payload binds an
+automatic message to the Event Assistance `message_delivery` entity in existing
+Operations collections. Phase-specific schema constraints distinguish queued,
+retry, receipt wait, review and completed checkpoints. Runtime validation checks
+the entire run/item projection, frozen intent/thread/scope, message revision/hash
+and timestamp bounds. The publisher creates the message, thread and delivery
+run/item in one transaction. A raw outbox row or unbound legacy intent cannot
+create scheduled send authority. No new client-readable collection is added.
+[Operations](operations_platform.md#durable-message-delivery-work) owns execution
+limits, recovery and receipts; [Event Success](event_success.md#durable-message-delivery-coordination)
+owns signing-key configuration and the channel bridge. Private grant/dispatch
+records retain their existing hashes and bindings; credentials are never copied
+into delivery-work payloads.
+
+`event_assistance_source_work.schema.json` also accepts event-specific SMS and
+WhatsApp permission and scoped staff sources. Its bounded cursor/failure set can
+reference canonical guest, delivery or checkpoint work ids; scope and immutable record validation
+remain mandatory before each wake. Source payloads retain identifiers rather
+than consent contents or recipient endpoints. Delivery wake action receipts bind
+the signal hash and target, deduplicate source replay, and preserve terminal
+work, recovery caps and unresolved provider submissions.
+
+The closed `checkpointMember` scope binds one attendee to a live organizer/event
+and accepts only the matching `eventAttendees` source document. Check-in,
+registration generation and canonical accountability corrections emit this
+scope separately from ordinary guest work. Pure dispositions never enroll a
+guest or select delivery work. Its cursors and failures accept checkpoint work
+ids only. Discovery reads bounded existing requests in the exact event and
+verifies their immutable roster hashes before checking original membership;
+missing or corrupt evidence remains retryable work, not an unaffected result.
+The signal contains no disposition, attendance assertion or provider authority.
+
+`event_assistance_checkpoint_work.schema.json` binds the `checkpoint_report`
+Operations entity to an immutable departure request, full roster hash and exact
+checkpoint scope. Departure confirmation atomically creates the run/item when a
+request is supplied and rechecks caller/owner expiry, deadline and event end after
+those additional reads. Legacy departures create no inferred request work.
+The worker stores typed observed/unavailable facts and a finite next due time,
+with five scheduled retries for unreadable sources. Completed observations have
+no due time, but remain nonterminal so corrected reports can reopen the same
+request. The current lease fences run/item/action-receipt commits; source wake
+receipts bind signal and target and deduplicate old deliveries. There are no new
+collections, client grants, contact fields, provider effects or automatic
+attendance mutations. Terminal retention remains unimplemented.
+
+The optional checkpoint-work `closeout` is a separately revisioned close/reopen
+decision, excluded from the immutable departure basis. The closed command
+accepts only expected revisions, source hash, decision and reason; server-owned
+proof binds the full partial report and the exact post-departure dispositions
+for its unconfirmed original members. `eventAssistanceCheckpointReceipts`
+contains the complete change, request hash, scope, roster hash and work revision.
+The atomic Operations action receipt hashes that entire domain receipt, so
+historical proof remains verifiable after later work revisions. Reads check
+scope, actor, time, revision, original roster coverage and both receipts.
+`closedOut` is distinct from a complete arrival report and remains nonterminal
+so corrected facts or explicit reopening can restore review. The optional
+callable closeout view keeps legacy responses valid. No new collection, client
+grant, provider effect or attendance writer is introduced.
+
+Source scopes also distinguish sender discovery and organizer/WhatsApp endpoint
+discovery from event fanout. Readiness failures use `targetKey`, a stable
+expiry/document-id query tuple; event fanout keeps `workItemId`. Runtime parsing
+rejects a failure or cursor from the wrong scope kind. The two private query
+indexes bind runtime route selections to configuration expiry, and organizer/
+endpoint permissions to permission expiry. Lookup snapshots only locate child
+event/guest wake jobs; current runtime, consent and delivery records remain the
+authority. Existing event-source work records remain valid under the additive
+schema. No new collection or client access rule is introduced.
+
+### Event Assistance Group Progress Contract
+
+`eventAssistanceGroupProgress/{progressId}` is the current explicitly confirmed
+destination for one live event/group. Its ID hashes the canonical execution
+context and group. The whole-event scope is `event:whole`; saved pace-group IDs
+use the source route's IDs. The document pins a monotonic revision, destination,
+source hash, confirming manager, command identity and server confirmation time.
+The source hash binds the event and plan creation generations, schedule,
+meeting place, itinerary and route configuration. It excludes routine live
+step changes and attendance counters. A setup change marks the projection
+`sourceChanged` and withholds derived current guidance without rewriting history.
+Each projected destination includes an opaque `alternativeId` derived from the
+typed target. A route-recovery write may add `routeDecisionId` to the current
+progress document; older departure records remain valid without it.
+
+`eventAssistanceProgressReceipts/{receiptId}` records the request hash, original
+committed revision and time. Departure receipt IDs bind context, group and
+operation ID; route-recovery receipt IDs additionally bind the command kind.
+actor identity is included in the request hash. Progress and receipt commit
+together. Route receipts retain their command kind and decision ID; those
+fields remain optional for existing departure receipts. Exact replay returns
+the original operation revision plus the latest
+view, including after a later departure; changed reuse fails. These records
+have no TTL: command deduplication must survive the executable event lifetime,
+and terminal retention/cleanup must be defined before activation.
+
+`getEventAssistanceGroupProgress`, `confirmEventAssistanceDeparture` and
+`changeEventAssistanceRoute` are Auth/App-Check-protected and rate-limited.
+Canonical organizer management is
+checked inside the transaction that reads event/plan/source state and writes
+the result. The read response exposes only saved destination choices and
+progress, without roster data. Confirmation requires matching source and
+progress revisions, a current destination, an open event and a live runtime.
+Route recovery requires a current manager, an existing confirmed departure, a
+different opaque alternative and an explicit decision ID. It updates operating
+progress without modifying the event setup.
+The collections deny all direct client reads and writes. This boundary records
+a physical fact and does not authorize provider I/O or guest attendance changes.
+
+`eventAssistanceDepartureRosters/{rosterId}` stores an immutable explicitly
+selected departure roster. Its ID hashes execution context, group and committed
+progress revision. New records also pin the confirmed destination; older records
+without it cannot establish which checkpoint was reached. Each member pins the
+registration creation generations,
+exact check-in plus attendance revision, optional current participation episode
+and accepted membership hash for a pace group. It contains no contact fields.
+The optional `departureRosterId` on progress references only that departure;
+absence denotes an unrecorded roster, while a recorded empty roster is explicit.
+An optional `checkpointRequest` pins `responsibleOperatorId` and `dueAt` to this
+departure and its checkpoint destination. The departure command explicitly supplies
+both; legacy records infer neither. Current managers can name an authorized reporter,
+while staff who can confirm departure may name only themselves. It rechecks deadline,
+event end, caller expiry and the reporter's current authority after all reads.
+Reporter access must extend beyond the deadline, which is limited to seven days from
+confirmation and four hours after event end. No staff permission is created.
+
+`getEventAssistanceDepartureRoster` reviews caller-selected attendee IDs under
+current scoped read authority. The optional departure command selection carries
+these IDs and a reviewed source hash. The write revalidates every selected row
+and creates progress, command receipt and roster atomically. Selection is bounded
+to 1,000 unique IDs with batched transactional reads; the `members` field is
+exempted from indexing. No client can read or write the roster collection.
+It has no TTL: checkpoint reconciliation and the retention policy must preserve
+the original departure evidence before any terminal cleanup is introduced.
+
+`listEventAssistanceDepartureRosters` discovers recorded rosters for one current
+group under scoped read authority. Its read-only transaction queries the canonical
+progress identity in descending departure revision, with a fixed ten-row page and
+one validated overflow witness. The exclusive `beforeRevision` cursor cannot hide
+a later departure or duplicate a row across older pages. Each row exposes original
+departure time, roster size, source availability and saved checkpoint report counts.
+It exposes no guest identities, contact fields or inferred current obligations; the
+original requested deadline is historical, and report detail must reload current
+owner, closeout and visit evidence. Source changes retain history while withholding
+a current destination label. Access is checked before the query and expiry is
+rechecked after report reads. Invalid roster/report identity, hashes, ordering or
+revision bounds fail the page. Removed groups remain unavailable under the current
+group-duty boundary; this read does not widen staff authority.
+
+`eventAssistanceCheckpoints/{reportId}` records the current checkpoint report for
+an execution context, group, departure revision and checkpoint ID. The typed
+command and reviewed source hash bind that immutable departure roster, checkpoint
+revision and current visit eligibility. The report stores the roster content hash,
+accounted-for attendee IDs, submitting actor/time and correction reason. Missing
+members stay in the denominator; guest replies and current memberships are not
+physical checkpoint evidence. Any removal from an earlier report requires a reason.
+The member projection optionally includes `displayName`, verified against the
+original registration's source and attendee generations before returning it. A
+missing, malformed or replacement record returns null; its original roster member
+and prior observations remain intact. Same-registration attendance changes do not
+hide the name. Name changes enter the reviewed observation hash. Legacy responses
+without names remain parseable and cannot invent a named UI identity.
+
+`eventAssistanceCheckpointReceipts/{receiptId}` atomically preserves the authenticated
+request hash and full original report. Its ID binds context, group and operation ID.
+Reusing an ID with different content fails; an exact retry returns the original
+revision and latest view. Reports for earlier legs remain independent of subsequent
+progress. The two Auth/App-Check/rate-limited callables require a current scoped
+checkpoint duty or organizer management and recheck expiry after transaction reads.
+They do not require automatic assistance or an open runtime to settle outstanding
+reports. New observations still require the same physical visit and source setup.
+The checkpoint read view also projects the optional request's waiting, overdue,
+discrepancy, complete or source-unavailable state and current owner availability.
+Time and owner availability do not alter the report's reviewed evidence hash.
+Complete original observations survive later source changes; partial corrections
+reopen the request. These are projections of immutable request facts and current
+observations, not a second durable workflow or an automatic arrival inference.
+Operations request scheduling now consumes those facts under its own lease.
+The optional Operations payload `reassignment` carries the effective reporter and
+an independent monotonic assignment revision. The original request basis stays
+unchanged. `eventAssistanceCheckpointReceipts` is a closed union of original report
+receipts and assignment receipts, whose `checkpoint-reassignment:` identity binds
+context, group and operation ID. Assignment evidence pins scope, roster hash,
+previous/new reporter, manager, reason, server time and resulting work revision.
+Its companion Operations receipt binds that same authenticated request and exact
+work item. A missing or mismatched receipt cannot establish a current assignment.
+The `reassignCheckpointReporter` command uses an independently reviewed assignment
+hash/revision and a new operation ID; background evaluations cannot make that
+review stale, while changed physical evidence or ownership can. The original
+report evidence hash excludes ownership. The current response adds an optional
+`assignment` projection for wire compatibility; current servers emit null when
+there is no durable request. Exact retries return the original assignment revision
+and current report/owner view, even after later changes. Reassignment changes no
+permissions or deadline and checks the new reporter's scoped authority again after
+lease/work preparation. Disposition-based closeout and staff notification delivery
+remain integration work; this contract does not authorize provider sends.
+
+Live checkpoint reads and rehearsal checkpoint projections optionally expose
+`reporterOptions`. This shared shape binds manager ID, assignment hash and review
+expiry separately from candidate authority expiry. At most 92 candidates contain
+only ID, nullable display name and authority deadline. Each authority deadline must
+be strictly later than the original request deadline and read clock. Current
+servers use null when reassignment is unavailable; legacy omission grants no
+selection authority. The existing reassignment command and atomic receipts remain
+the write boundary, with fresh scoped authority checks. Rehearsal mirrors current
+original-group duties and the virtual deadline without contacting live staff.
+
+Both collections deny direct client access and have no TTL. The report's
+`accountedFor` and receipt's `report` fields are excluded from indexes. Limits match
+the departure contract's 1,000 members, with bounded transactional reads. Terminal
+retention and reconciliation must preserve the original observations before cleanup.
+
+Live joining updates must match the canonical guidance derived from current
+confirmed progress. Publication, guest-link issuance, guest views/actions and
+both channel dispatch paths read that source within their owning transaction.
+The destination determines the group scope; guest group-membership authority
+is a separate pending fact-reader concern. Material, source identity and
+validity must still match, and the message cannot invent a future progress
+revision. An identical reconfirmation may advance progress without invalidating
+unchanged instructions. A stale source returns no current guest instructions
+and stops a pending send; a transient database error remains retryable. The
+publisher must supply fresh source-derived guidance before an existing link
+can show a changed destination. No additional guidance collection or schema
+was introduced.
+
+### Event Service Outbox Contract
+
+`eventAssistanceOperationalNoticeQuotas/{quotaId}` and
+`eventAssistanceOperationalNoticePublications/{publicationId}` are server-only
+records used by the typed plan-change and post-event follow-up publisher. A
+quota binds live context, attendee identity, roster generations and workflow;
+its count and revision advance together. A publication receipt binds one exact
+domain source revision to its message, thread, semantic content hash and quota
+ordinal. The receipt and quota commit atomically with the message and delivery
+work, so an interrupted publication consumes no slot and a retry cannot create
+a duplicate. A host policy edit does not reset the count. A deleted and
+recreated roster row has new generation evidence and therefore cannot inherit
+the prior row's quota or publication receipts.
+
+Both collections deny all direct client access and have no TTL. They record
+publication authority and idempotency only; they do not prove provider
+submission or delivery.
+
+The plan-change and post-event follow-up policy configurations own an explicit
+ordered delivery selection: one sender per SMS, RCS or WhatsApp route and the
+bounded retry policy. An execution-authorized setting is accepted only while
+every selected sender is currently eligible for that message purpose. The
+publisher derives its message and automation bindings from the saved selection;
+it does not accept routes or retry limits from a worker. Final dispatch compares
+all three frozen views—the automation routes, permitted route identifiers and
+delivery policy—with the current setting before any provider call.
+
+`eventPlanChanges/{sourceId}` is an immutable server-only record created in the
+same transaction as an attendee-relevant `updateEvent` mutation. The event owns
+a monotonic `planChangeRevision`; the record captures the changed fact kinds,
+current destination summary, event window, author and validity bound. The
+reader accepts only the latest event revision and only a registered or checked-
+in attendee whose roster row existed when that revision committed. New guests
+cannot inherit an old notice.
+
+The post-event source reader uses the terminal `eventSuccessPlans/{eventId}`
+status, its fenced live-control revision and completion timestamp. It applies
+only to checked-in attendees, begins no earlier than the scheduled event end
+and expires with the existing 24-hour service window. Both readers derive copy
+and response choices from typed source facts; no caller supplies message text.
+Durable audience enrollment and bounded per-guest fanout remain the missing
+automatic coordinator before these two variants are live-complete.
+
+`eventAssistanceMessages/{messageId}` is server-only delivery state owned by
+trusted Event Assistance workers. Its canonical Firestore schema embeds the
+portable message intent and delivery-attempt contracts. The id hashes execution
+context, intent identity and revision; the immutable intent holds one guest
+episode and bounded choices. Delivery attempts and guest response identities
+also bind the execution context. Recipient endpoints are opaque references;
+provider credentials and guest bearer grants remain outside this record.
+
+Firestore transactions arbitrate immutable enqueue, attempt reservation,
+one-time live dispatch claiming, closure and normalized receipt merging. The
+history is capped at six attempts. Reservation and claiming use the same
+transaction to read current event/guest/permission facts through the trusted
+reader port. A claim commits an uncertain attempt before yielding permission
+for provider I/O. Duplicate claims do not return that permission, and delayed
+receipts remain reconcilable after closure. Contradictory delivery evidence is
+sticky and blocks further dispatch pending an owned resolution.
+
+A reservation still in `reserved` at its authorization deadline can be recorded
+as `notDispatched/reservationExpired` by the next reservation transaction.
+Release and claim contend on the same outbox document: a committed `unknown`
+or accepted attempt can never be released by the clock. A worker with adapter
+proof that permit expiry prevented all provider I/O records the separate
+`notDispatched/permitExpired` reason. The older `expired` reason continues to
+stop the logical message; it is not retroactively treated as retry evidence.
+
+Both new reasons permit fresh evaluation after exponential backoff, provided
+the event, guest, instruction and consent still require and allow outreach.
+A replacement has a new attempt id and ordinal, and the old sender/permission
+snapshot remains unchanged. Unsent attempts count against the total history
+ceiling but not a channel's submission allowance. A reservation's reconciliation
+hint is capped at its authorization deadline. No budget is charged for an
+unclaimed reservation; spending already reserved by a claim remains charged
+until separate financial reconciliation. Any later provider receipt that
+contradicts an unsent record preserves a conflict and blocks pending dispatch.
+
+No browser or mobile client can read or write this collection directly, even
+with an admin claim. Guest responses use the separate scoped grant and atomic
+mutation boundary described below; this outbox does not grant full runtime
+access or turn self-reported intention into attendance. Scheduling, provider
+activation and terminal cleanup remain delivery work. RCS permission readers
+are implemented in the shared authority boundary.
+The collection currently has no TTL; executable or reconcilable deduplication state
+must not be deleted merely because the message's instruction has expired.
+
+### Event Service Native Reply Contract
+
+`eventAssistanceWhatsappReplyBindings/{attemptId}` is an immutable, server-only
+choice mapping committed with a claimed live outbox attempt. Its schema pins
+intent and attempt hashes, original sender/account/phone, recipient endpoint,
+roster generation, guest episode and revision, response kind and offered choice
+IDs. It contains no phone number, credential or guest webpage secret. The
+correlation ID alone grants no action authority.
+
+`WhatsappReplyStore.consumeQueued` reads signature-verified evidence from the
+existing private `organizerMessagingWebhookEvents` queue. Exact sender,
+recipient and original provider message correlation precede the shared
+`applyGuestChoice` transaction. Unknown delivery correlation yields a waiting
+result; expired, replaced or mismatched authority cannot execute a choice.
+The webpage and provider consumer share response deduplication and case/intent
+writes. Neither can change attendance, assignment or registration.
+
+`onEventAssistanceWhatsappEventCreated` now invokes delivery and native reply
+consumers from the authenticated queue. The optional `assistanceProcessing`
+checkpoint is independent of campaign/Inbox processing fields. It binds the
+immutable queue evidence and ingress receipt to a content hash, validates their
+identity and scope, and records only bounded processing outcomes. A waiting
+reply throws for the trigger's bounded retry policy; expired or permanently
+rejected choices terminate. A failed checkpoint after an applied guest effect
+replays the idempotent consumer, and an older waiting result cannot overwrite
+terminal completion. Unrelated webhook traffic is ignored. No provider I/O
+runs in this processor. These bindings have no TTL yet; activation requires
+retention aligned with the outbox's reconciliation window.
+
+Approved template snapshots now retain optional `parameterFormat`,
+index-aligned `buttonLabels` and `buttonUrls`, and a `contentHash` of provider
+identity, category, parameter format and complete raw components (including
+body/footer/buttons). They retain the existing parameter bindings and
+button kinds. Older documents still validate; native quick-reply sending
+requires complete labels and a known format when variables are present. The
+Meta adapter binds every quick-reply slot to an exact expected label and unique
+payload, preserves parameter text, and emits names for named header/body
+parameters. This metadata does not establish event-service consent or map a
+label to a domain action; the trusted dispatch composition owns that mapping.
+
+`eventAssistanceWhatsappPolicies/{senderId}` is a server-only reviewed policy
+for one organizer connection and provider account/phone. Its strict schema
+binds each supported message purpose to a template document, stable snapshot
+hash, complete variable sources, exact native action/label/slot mappings,
+maximum template age, recipient-prefix quote and bounded activation window.
+Native action selectors distinguish joining intent, acknowledgement and all
+four help categories. The template-purpose unions for SMS, WhatsApp and message
+intents are checked for exact equality by TypeScript.
+
+`renderEventWhatsapp` requires current matching metadata, a scoped guest grant,
+exact instruction content and a complete webpage response path even when only
+a subset of choices fits native buttons. Dynamic URL buttons accept only the
+Catch event-update base and its grant suffix. Variables cannot be silently
+trimmed or truncated; prepared-content hashes fence native payload numbering.
+The snapshot hash includes provider content evidence and send metadata while
+excluding sync timestamps. It detects edits observed by synchronization, not
+provider-side changes after that read. Activation must enforce the reviewed
+editing and synchronization policy. This record does not create consent,
+debit spending or authorize dispatch; provisioning and composition with those
+transactional resources remain required. Guest URL secrets stay in worker
+memory, outside the policy and outbox.
+
+`OrganizerTokenStore.accessBound` requires a numbered version in the configured
+vault and the exact organizer/connection envelope. It rejects raw migration
+tokens, mismatched scope and unknown envelope fields. Provider transport
+rejects redirects, bounds response reads, redacts transport/provider errors and
+checks a supplied deadline immediately before I/O. Once I/O starts, an uncertain
+response cannot prove non-delivery. Optional callback data is correlation only;
+its echo and status semantics require verification against the configured
+provider account/version before Event Assistance activates it.
+
 ### Event Dress Rehearsal Isolation Contract
 
-Event rehearsal is a separate bounded domain with four callable-owned,
+Event rehearsal is a separate bounded domain with eight callable-owned,
 server-only collections:
 
 | Collection | Purpose | Limits and authority |
 |---|---|---|
 | `eventRehearsals/{sessionId}` | Frozen source snapshot, editable pre-start setup, scenario/seed, virtual clock, lifecycle and revisions | Organizer manager reads through Host callables only; 24-hour expiry; at most five active sessions per owner |
-| `eventRehearsalActors/{sessionId_actorId}` | Deterministically generated synthetic people, status, guest moment, Room placement/confirmation, opt-out/help/prompt flags and keep-apart ids | At most 50 actors; no UID, phone, email, booking, payment, match, chat, or production attendee id |
+| `eventRehearsalActors/{sessionId_actorId}` | Deterministically generated synthetic people, visit-bound accountability, attendance/status, independent connection state, guest moment, Room placement/confirmation, opt-out/help/prompt flags, keep-apart ids and synthetic required-data completion | At most 50 actors; required-data state stores canonical field identifiers, revisions and virtual-time prompt status without profile values. No participant UID, phone, email, booking, payment, match, chat, or production attendee id. A resolving Host UID is private audit evidence only. |
 | `eventRehearsalActions/{sessionId_actionKey}` | Idempotent Host/guest controls and deterministic replay history | At most 500 actions; a stable hash of session plus client action id deduplicates delivery |
 | `eventRehearsalGuestViews/{sessionId_slotId}` | One browser-instance-to-actor lease with hashed bearer token state | Created only by the public guest bootstrap callable; link rotation invalidates prior slots |
+| `eventRehearsalMessages/{messageDocumentId}` | Typed practice plan, joining instruction, simulated delivery evidence and response | Created only by a counted Host action; at most 200 messages per actor and run; no live sender binding or production outbox reference |
+| `eventRehearsalCases/{caseDocumentId}` | Clock-scoped practical requests and their reviewed handling | Callable-owned synthetic cases; guest projections omit handling and authority evidence |
+| `eventRehearsalMovements/{movementId}` | Clock/group/revision-bound immutable departure and separately revised checkpoint report | At most one departure per counted Host action, 500 per session, 50 selected synthetic visits; manager-only read pages contain at most 25 departures |
+| `eventRehearsalRouteDecisions/{decisionDocumentId}` | Immutable source-fenced route override layered on a recorded synthetic departure | Manager-only typed command; advances the shared progress revision without changing the departure roster, checkpoint, itinerary or route setup |
 
 The schemas under `contracts/firestore/event_rehearsal_*.schema.json` and
 `contracts/callables/*event_rehearsal*.schema.json` are authoritative.
 Functions may read `events/{sourceEventId}` exactly once during creation to
 copy a bounded title, location, duration, and supported playbook shape after
 verifying organizer authority. No rehearsal handler may write a production
-collection. Firestore rules deny every direct client read and write to the four
+collection. Firestore rules deny every direct client read and write to these
 collections; App-Check-protected callables own all Host access.
 
 Host writes carry the expected setup or runtime revision. Mutating controls and
@@ -136,9 +1191,98 @@ motion/low-bandwidth faults require internal/admin authorization; behavioral
 scenarios remain available to an ordinary organizer manager.
 
 The public guest response contains only a practice banner, safe session fields,
-one synthetic actor, and a slot token. `clientInstanceId` stabilizes retries in
-one browser; the server derives and stores only deterministic hashes. It never
+one synthetic actor, its optional sanitized joining instruction, and a slot
+token. `clientInstanceId` stabilizes retries in one browser; the server derives
+and stores only deterministic hashes. It never
 uses Firebase Auth, OTP, attendee claims, or a production roster.
+
+Practice assistance commands and new guest-action receipts bind the request
+contents to their idempotency key. A changed retry is rejected; replay of a new
+guest receipt still requires the current slot token. The guest response and
+its intention/help effect commit atomically, without changing attendance.
+Actor assistance state stores only intention and the latest practice message
+id; counters and cooldown derive from complete message history. The composite
+history query includes session, actor and clock generation. Reset invalidates
+that generation and deletes messages; cleanup drains bounded batches so older
+remnants cannot survive a page limit. The Host projection additionally exposes
+simulated attempts; the guest projection excludes delivery internals.
+
+Optional `eventRehearsalActors.requiredData` stores a synthetic profile revision,
+the canonical completed field identifiers, a request revision and the current
+prompt. Its source hash binds the rehearsal clock/setup generation, actor,
+modules and completion state. Host requests require that reviewed hash and both
+revisions, may name only missing canonical fields and must expire within the
+virtual event window. Guest submissions require the current hash and revisions,
+can complete the prompt in parts and advance the synthetic profile revision.
+Projections convert Firestore timestamps to virtual UTC milliseconds and mark a
+pending prompt expired without mutating history. Reset regenerates the initial
+display-name-only state. No profile value, Consumer profile, runtime participant
+or onboarding draft is read or written.
+
+Optional `eventRehearsals.unitOutcomes` stores only the rehearsal format's
+non-`none` unit-outcome primitive, one global revision and at most 500 synthetic
+unit/round records. Each record retains its operation id, resolving Host uid and
+virtual rehearsal timestamp as private audit evidence. The control payload
+carries one current unit id, round, typed completion/score/rank value and the
+reviewed outcome revision. New rounds are contiguous and require every current
+unit in the prior round; corrections replace one record, rank values are unique
+within a round and bounded by the current unit count. `outcomeReview` removes
+Host identity and operation ids while projecting milliseconds, current unit ids
+and the revision. Source-event setup freezes the live format primitive; setup
+changes and reset delete prior outcome state. This rehearsal state cannot write
+the live `eventSuccessUnitOutcomes` or `eventSuccessStandings` collections.
+
+Optional `eventRehearsals.revealControl` stores a rehearsal-only revision,
+idle/counting/revealed status, published and pending round, virtual countdown
+start, bounded countdown duration and the last decision identity. Its Host
+command mirrors the canonical `controlReveal` actions and expected live revision
+without accepting a practice operator. Virtual-clock advancement settles an
+elapsed countdown without incrementing the reveal revision; the parent control
+transaction persists that settlement, advances the existing reveal moment and
+reevaluates synthetic automation atomically. `revealReview` omits the decision
+identity and converts the virtual timestamp to milliseconds. Reset and setup
+changes delete the state. No live event-success plan, publication or match is
+read or written.
+
+Movement controls carry their own closed group command with the parent setup and
+runtime revisions; action receipts use `actorId: null`. The departure freezes its
+source hash, destination, explicit roster selection and optional current-manager
+reporting request. Checkpoint corrections change only the report and bind the
+immutable departure hash plus original visit evidence. Read queries bind session,
+clock and group, order by progress revision, and use a 26-record lookahead for
+25-result pages. An explicitly selected older revision does not become current
+progress. Reset and expiry delete movement children with the other practice state.
+
+The movement command's `resolveAccountability` arm additionally pins checkpoint,
+original departure revision, attendee and expected accountability revision. Its
+source hash comes from that checkpoint's optional `accountabilityReviews`, with one
+row per original member. Missing legacy rows do not grant capability. The review
+verifies the original physical visit and current authority for the original group,
+including after membership transfer. A fresh visit or replacement actor is explicitly
+unavailable. The transaction reuses the visit-disposition reducer, writes only that
+actor plus the parent session/action receipt, and leaves movement, report, membership
+and attendance unchanged. The same group pending owner preserves exact retries;
+replay returns current outcome evidence without reapplying the original decision.
+
+
+`eventRehearsalMessages.movementBinding` contains the confirmed group ID,
+progress revision and source hash, all bound into message identity. It is optional
+only for historical reads; new publication derives it from saved movement. The
+legacy plan confirmation/copy fields are not movement authority. Current source
+and accepted membership fence delivery, guest instructions and responses. A latest
+record query per selected group is bounded at one; projection rechecks the session
+generation/runtime revision before using it. Pending departures feed automation
+inside their parent transaction, so no intermediate unconfirmed send is possible.
+Native configuration still needs to present this source-derived recipe explicitly.
+
+A rehearsal membership's optional `assignmentRevision` records the last placement,
+accepted transfer or removal; proposal-only decisions preserve it. Group-checkpoint
+messages have a server-derived `membershipBinding` containing that revision, the
+participation episode, group ID and source hash. The proof is bound into message
+identity. Missing legacy proof or changed acceptance prevents instructions,
+delivery and reply effects while preserving historical receipts. Guest projections
+never expose this private proof. Exact response retries cannot reapply old effects.
+
 
 ### Event Success Moment Presentation Contract
 
@@ -864,6 +2008,19 @@ module needs them. Saving the answers as a later Catch onboarding prefill is a
 separate explicit consent. A prefill remains private and must never overwrite a
 completed Consumer profile or create a public projection.
 
+`eventRuntimeDataRequests/{requestId}` is the server-only current source for a
+typed `requestRequiredData` instruction. The internal coordinator accepts only
+the canonical runtime field enum, fields derived from the current event format
+and selected modules, and fields still missing from the event-scoped profile.
+The command is fenced by the profile revision, current request revision and a
+hash of the event, attendee and profile facts. Its deadline cannot outlive the
+event. `eventRuntimeDataRequestReceipts/{receiptId}` makes an exact operation
+retry idempotent and rejects reuse with changed content. Both collections deny
+all client access. The participant-write trigger creates the typed command for
+current missing required fields, runtime bootstrap returns the bounded request,
+and accepted profile submission reconciles it to completion. This completes the
+live source binding without granting Host authority or activating a deployment.
+
 ### Organizer Communication Preferences And CRM
 
 `organizerCommunicationPreferences/{organizerId_uid}` is a server-only,
@@ -1334,12 +2491,35 @@ reconciler. It does not invent orders, refunds, revenue, referral coverage or
 webhook freshness that Luma has not supplied.
 
 `eventStaffGrants/{eventId_uid}` grants a bounded subset of `viewRoster`,
-`setAttendance`, and `reviewRuntimeClaims` for one event. It records organizer,
+`setAttendance`, `reviewRuntimeClaims` and `publishLiveLocation` for one event.
+It records organizer,
 grantor, role, issue/expiry/revocation and revision; grants expire within 14
 days and are capped at 50 active rows per event. Firestore direct access is
 denied. Staff operate through callables and the restricted Host operator route,
 which never grants CRM, campaign, import, provider, event-edit or organizer-wide
 authority. Organizer managers continue to work without a grant.
+
+The same staff document optionally carries `groupDuties`: a lead, pacer or
+sweep duty for each saved group, with its own expiry and reviewed source hash.
+`operatorExpiresAt` independently limits the event-wide permissions. Legacy
+check-in grants without this field use their original expiry; explicit null
+means no event-wide access. The top-level expiry is the latest duty/base expiry
+for staff discovery and the existing 50-active-staff cap. Extending a group duty
+cannot extend or restore expired check-in access, and revoking the staff row
+revokes every duty. Group-only staff have no event-wide permissions.
+
+`getEventAssistanceGroupStaff` and `setEventAssistanceGroupStaff` are manager-only
+callables. They authorize before resolving a phone to an existing Auth account,
+then re-read manager authority in the transaction. Changes require the reviewed
+UID, source hash and staff revision. `eventAssistanceStaffReceipts` makes exact
+retries return the original operation revision and latest state. Duties are
+limited to 20 groups per person, at most 14 days and the event's staff window.
+Event creation generation and saved group configuration bind authority; ordinary
+attendance/progress updates do not revoke it. Managers can remove obsolete
+group duties. Direct staff/receipt reads and writes remain denied. These grants
+authorize scoped progress and membership reads, lead/pacer departures and
+acknowledged transfers. Checkpoint/accountability commands and staff UI remain
+integration work.
 
 The Host attendance outbox is local client state, not Firestore authority. It
 contains no names, phones or emails: only account/event/attendee ids, absolute
@@ -2004,3 +3184,440 @@ source identity, original occurrence time, due time and fenced lease fields.
 Message actions pin a draft campaign revision and generated campaigns carry
 server-only `automationOrigin`; client campaign upserts cannot forge or remove it.
 The backend operation catalog owns execution, retry and signed-webhook semantics.
+
+### Event Service WhatsApp Consent Contract
+
+`eventAssistanceWhatsappPermissions` binds the event, attendee creation
+generation, verified subject and recipient endpoint to an explicit organizer
+sender. Its immutable `eventAssistanceWhatsappConsentReceipts` prove the exact
+copy version, displayed sender hash and complete resulting permission hash.
+Future-event announcement consent remains separate and is never read as an
+Event Assistance grant. The receipt union distinguishes verified-participant
+decisions from revocation-only message-link decisions with a null actor UID.
+Authenticated endpoint STOP evidence also suppresses the saved preference.
+
+The App-Check-protected `getEventWhatsappPreference` and
+`setEventWhatsappPreference` callables require the roster's linked UID. Scope
+includes the exact sender ID; most-recently-updated connection selection cannot
+silently switch consent. Grants additionally require the matching signed phone
+claim, an admitted participant, eligible event, reviewed sender policy and
+current verified sender identity. The client submits only scope, decision,
+expected revision, request ID, copy version and the previously displayed sender
+hash, current nullable STOP-record hash and required grant `reviewHash` from
+the read response. The review hash binds organizer/event/attendee/subject,
+authored and SDK source generations, event title, consent expiry, full recipient
+number, selected sender identity, STOP evidence and consent copy. A changed
+verified number needs fresh review even if its last four digits match. Event
+replacement or changed consent terms also invalidate an unseen grant. An unseen
+STOP cannot be reversed by an older in-flight enable request. Provider
+identities, recipient number, consent copy and evidence times
+come from trusted server data. The response exposes the sender display name and
+business number, masked recipient number and preference state; no provider
+account IDs or credentials are exposed.
+
+Credential rotation, health-sync revisions, ordinary clock advancement and
+check-in do not invalidate otherwise unchanged reviewed terms; grant-time
+eligibility is still checked. Credential rotation and health-sync revisions
+preserve permission. A changed
+provider account or sending phone requires fresh consent. Display-name updates
+do not erase a saved grant, but a new grant must match the newly displayed
+identity. Consent expires no later than 24 hours after the event end captured
+at grant time; dispatch must also recheck the current event window. Sender
+readiness is independent of a recorded enabled preference.
+
+Permission and receipt commit in one transaction. Exact replays return current
+state before grant review validation and never reapply an old grant. Revision
+conflicts cannot reverse a later withdrawal. The shared
+preference transaction adapter maps only the exact closed-transaction callback
+RPC error into the SDK's bounded ABORTED retry path. It does not catch commit
+uncertainty or reclassify other validation errors. SMS preference and link
+withdrawal use this same boundary; paired withdrawal reads are batched. A first
+opt-out creates a revoked tombstone without invented grant evidence. Withdrawal
+preserves the old recipient/sender evidence even after either changes, requires
+the current permission revision but no grant review hash, and
+paused, deleted or malformed sender provisioning cannot obstruct it. These
+authenticated APIs still require a current authorized event/roster identity;
+the independent message-link withdrawal APIs below require neither. Client
+access to permission and receipt collections is denied, including with an admin
+claim. The required view/grant review hash requires coordinated API and web
+bundle rollout; existing tabs must reload the updated client. Native preference
+UI and sender activation remain separate delivery work.
+
+`eventAssistanceWhatsappWithdrawalGrants/{linkId}` commits with the dispatch
+claim, debits and native reply binding. It pins the original event, attendee
+generation, verified subject, recipient endpoint and provider account/phone to
+the immutable guest grant hash. A changed identity or longer consent lifetime
+requires a new link for dispatch; an existing link cannot silently acquire that
+authority. The grant exposes no secret or recipient phone number.
+
+`getEventWhatsappWithdrawal` and `withdrawEventWhatsapp` are App-Check-protected,
+network- and credential-rate-limited bearer callables. They return only the
+permission state, revision and validity. Withdrawal has the original consent
+lifetime and needs no current event, roster, sender or instruction availability.
+An expired instruction never regains read/reply authority. Revoked links and
+replacement recipients, subjects or provider identities cannot act. Withdrawal
+writes a revocation-only immutable receipt and permission revision atomically;
+replaying an old request returns the current state without undoing later consent.
+A new stop requires the currently displayed revision. It leaves SMS permission,
+registration, check-in and organizer announcement preferences untouched. Retain
+the guest grant, withdrawal grant and request receipts through this lifetime.
+
+### Event Service WhatsApp Dispatch Contract
+
+`WhatsappDispatchStore` reads event/guest authority, the explicit sender and its
+reviewed policy, the original verified recipient, exact consent receipt,
+endpoint STOP evidence, CRM pauses/provider blocks, template and scoped guest
+link. These facts are read in the same transaction as the outbox claim. The
+single-route outbox refuses mixed-route intents; `readFacts` exposes this
+channel to the shared composer without silently skipping other channels.
+The shared message gate caps all event-service routes at 24 hours after the
+current event end, including after a schedule change shortens a previously
+granted consent window.
+
+`eventAssistanceWhatsappBudgets` supplies independently approved event and UTC
+sender-day ceilings. Budget identity includes currency. Missing, paused, stale,
+wrong-scope or exhausted authority withholds the claim. Both conservative cost
+debits, `eventAssistanceWhatsappDispatches` material evidence and any native
+reply binding commit with the outbox's single unknown attempt. Failure rolls
+all of them back. A second outbox still contends on the same spending records.
+Unknown/accepted delivery does not release spending or authorize another send.
+These records store hashes and scoped references, not credentials, recipient
+phone numbers, message text or guest URL secrets. Native payloads are returned
+only to the trusted caller. No TTL is applied before reconciliation is defined.
+
+`organizerWhatsappEndpointStops` records the latest authenticated text STOP per
+organizer and endpoint independently of CRM contact resolution. It commits with
+the signed webhook's receipt and queue item, after transactionally rechecking
+an unambiguous provider account/phone connection. Native labels cannot become
+STOP commands. Duplicate or older events cannot advance the stop time; absent
+or future provider timestamps are conservatively capped at receipt time.
+The event preference view reports a stopped grant as disabled. A fresh explicit
+grant must acknowledge the current STOP hash and occur later than that stop.
+Dispatch requires that later grant and its immutable receipt. Credentials and
+sender changes cannot evade an organizer-wide endpoint stop.
+
+CRM admin/provider suppression remains independent. Announcement preference
+withdrawal does not revoke separately granted event-service permission. Legacy
+CRM inbound-STOP suppression without endpoint evidence stays blocked until
+reconciled; the new ledger cannot retroactively prove old consent ordering.
+A STOP committed after a dispatch claim prevents later claims but cannot undo
+provider I/O already authorized or started.
+
+`EventWhatsappWorker` loads the pinned sender credential before reserving,
+claims the exact rendered material and sends once through the Meta adapter
+outside the transaction. Submission acceptance is recorded independently from
+delivery. A lost response or receipt commit cannot trigger another send. Only
+the adapter's proof that permit expiry prevented all I/O can mark an attempt
+unsent. HTTP errors and uncertain outcomes retain their conservative debit and
+reconciliation hold. The worker requires an explicit provider and is not wired
+to a callable, scheduler or live Operations executor.
+
+The worker sends versioned callback correlation containing the attempt and
+rendered payload hashes, never credentials, phone numbers or guest secrets.
+`WhatsappDeliveryStore` reads the private signed queue and its ingress receipt;
+it correlates exact organizer, sender, WABA, phone, recipient endpoint, immutable
+dispatch and outbox attempt. Provider timestamps have a five-minute clock-skew
+tolerance relative to dispatch and ingestion, not a delivery SLA. The consumer
+can recover a lost submission ID from `sent`, `delivered` or `read` evidence.
+It merges late/duplicate receipts without regressing delivery, even after event
+closure or sender removal; unexpected delivery after an unsent record preserves
+a conflict. It does not execute guest choices or grant fallback permission.
+
+`normalizeWhatsappDeliveryStatus` maps only complete signed `failed` status
+evidence after that correlation. Technical recovery requires every code to be
+`131016` (temporary service failure) or `130429` (throughput limit).
+Explicit restrictions (`368`, `130497`, `131031`, `131047`, `131048`, `131049`)
+become `policy`; `131050` becomes `suppressed`. A restriction takes precedence
+over technical or unknown codes. These classifications stop automatic retries
+without rewriting consent or converting a marketing opt-out to an event-service
+withdrawal. Unknown codes, `131026`, mixed technical/unknown evidence and failed
+statuses without usable codes remain unconfirmed. The first-code field must
+agree with the complete list. See the reviewed
+[Meta error-code reference](https://developers.facebook.com/documentation/business-messaging/whatsapp/support/error-codes/)
+and its [failed status payload](https://www.postman.com/meta/whatsapp-business-platform/request/ocsmpai/status-message-failed).
+
+A normalized failure receipt binds its evidence hash to the attempt, immutable
+provider event ID and ingress payload hash. Shared outbox merging preserves
+conflicting success/restriction evidence and prevents duplicate state changes.
+Technical failure permits the existing delivery evaluator to reconsider an
+independently authorized route after backoff; it does not send or refund a
+provider debit. A later conflict before the SMS claim withholds that claim.
+It cannot recall provider I/O already claimed. The configured Meta API version's
+callback echo and terminal-failure behavior still require controlled account
+verification before activation. No provider is activated by these changes.
+
+The signed queue's optional `providerErrorEvidence` is a closed union:
+`none`, `codes` with one to ten integer codes, or `unusable`. Ingress
+preserves code order and duplicates, excludes diagnostic text, and marks the
+whole list unusable when any entry is malformed or the bound is exceeded.
+The nullable legacy `providerErrorCode` is only the first code of a complete
+list. Missing legacy evidence remains readable but cannot establish an
+error-free Event Assistance delivery. Positive status plus any error evidence
+cannot establish delivery or recovery and retains the spending debit; later
+complete signed evidence may resolve an unknown attempt. Unconfirmed outcomes
+checkpoint without hot retries. Receipt processing itself has no send authority.
+
+### Event Assistance Accountability Contract
+
+`event_assistance_accountability.schema.json` owns the scoped read, typed
+command envelope, response and immutable command receipt. The command names
+the assistance episode or explicitly binds its absence; the canonical check-in
+and attendance revision independently bind the physical visit. The adapter
+uses existing `eventAttendees.accountability*` fields rather than a second
+accountability state. All sweep writers advance `accountabilityRevision`,
+including clearing. Legacy missing revisions read as zero; overflow fails.
+
+`eventAssistanceAccountabilityReceipts` is server-only. A receipt binds the
+actor/request hash, source/attendee generations, visit hash, episode or absence,
+applied revision and disposition. It commits with the attendee write. Exact
+replay returns the applied operation revision and current view; it never
+reapplies an old disposition. Current scoped authority remains necessary on
+replay; staff also require current accepted membership for a subgroup. Completion/cancellation do not imply a person
+returned. No messaging or participation state is created by this command.
+Receipt retention and Host/rehearsal adapters remain subsequent work.
+
+The optional `checkpoint` on read/write scope and response supplies an exact
+checkpoint ID and positive departure revision. The receipt additionally freezes
+the original roster ID/hash. This branch resolves an original departure member
+without requiring event-wide sweep configuration. The absence of this scope
+retains existing sweep applicability. Source/read hashes include the frozen
+checkpoint evidence; missing or changed receipt scope cannot replay as an event
+sweep or another departure. Current registration generations and the departure's
+exact check-in/attendance revision must match. The server distinguishes missing
+roster, nonmembership, wrong destination, changed visit and changed setup.
+Managers retain original-departure review after accepted group transfers; former
+group staff do not retain authority over the transferred guest's global result.
+All reads now establish scoped permission before fetching attendee or departure
+evidence, and writes recheck expiry after the final receipt read. The callback
+uses the existing bounded Firestore SDK transaction adapter.
+
+Checkpoint members expose an optional closed `disposition` union: unresolved,
+resolved evidence, or unavailable evidence with a reason. Current servers emit
+it for every roster member. A resolved value binds the canonical disposition,
+positive accountability revision, actor and exact timestamp in a source hash;
+the display timestamp is milliseconds. Evidence before departure, after server
+time, or from another visit is unavailable. Reported intentions are never used.
+Accountability evidence is separate from arrival observations and their review
+hash. Request closeout and wake handling for these facts remain subsequent work.
+
+### Event Assistance Channel Selection Contract
+
+`EventMessageWorker` uses one immutable intent and one bounded outbox history
+for all permitted channels. It composes the SMS, WhatsApp and RCS workers;
+it is a trusted port, not a callable, scheduler or registered live executor.
+Only explicitly permitted routes can prepare credentials. Each channel loads
+its pinned secret before reservation; a changed sender snapshot makes that
+prepared channel ineligible. The production factory now supplies the RCS worker
+for an explicit sender when its default-off enablement flag is set. Missing
+workers or credentials remain unavailable; enablement grants no send authority.
+A malformed source or inconsistent channel gate fails the whole evaluation.
+
+Every route's event gate, consent, suppression, template, recipient and spending
+facts are read in the same transaction as reservation, and again at claim.
+Channels must agree on the shared event gate and expose exactly their own route.
+The shared policy preserves the intent's route order, tries an eligible untried
+route before retrying a confirmed failed route, and retains retry backoff and
+attempt ceilings. Only the selected channel prepares material, debits its two
+budgets and claims the single provider attempt. The channel-specific stores
+reject mixed-route reservation so callers cannot accidentally omit competing
+channel authority.
+
+A preflight unavailable channel can give way to another independently permitted
+and consented route. After submission, unknown or accepted outcomes hold all
+fallback even if the original sender, credential or consent later disappears.
+Only trusted confirmed technical non-delivery can permit fallback. Policy,
+suppression and invalid-recipient rejections require resolution; conflicting
+delivery evidence stops a pending fallback claim. Raw Meta failed statuses still
+lack a reviewed finality mapping and therefore do not unlock this path. This
+composition does not imply provider activation or guaranteed delivery.
+
+An existing unsent reservation keeps its original channel, sender and permission
+snapshot. On authorization expiry the outbox records it as unsent; recovery uses
+a new bounded attempt and fresh authority, never repurposes the old id. Durable
+reconciliation and live Operations integration have their own boundaries above;
+their source wiring does not establish deployed scheduling or activation.
+
+### Event Assistance SMS Delivery Contract
+
+The canonical `event_assistance_sms.schema.json` vocabulary supplies private
+sender, permission, budget and dispatch documents. `eventAssistanceSmsSenders`
+records explicit use-case/header approval, the exact numbered credential
+reference, approved template parts and a bounded INR rate quote. It contains
+no provider password. Missing, inactive, paused or expired configuration never
+implies readiness.
+
+`eventAssistanceSmsPermissions` binds Catch event-service SMS to an event,
+attendee creation generation, verified subject, phone endpoint and sender.
+The exact consent-copy version, receipt, timestamps, expiry and withdrawal
+state are required. Organizer marketing preference records are not permission
+for this route. The App-Check-protected preference callables require the roster's
+linked Firebase UID. A grant additionally requires the signed phone claim to
+match the roster phone and an admitted guest in an eligible event. Client input
+contains event/attendee scope, optional sender ID, decision, copy version,
+expected revision, expected review hash and request ID. Sender approval, number
+and evidence timestamps come from the server. An omitted sender ID retains
+`catch-event-sms`; every response explicitly names the resolved sender ID. The required `reviewHash` in each view binds
+the verified recipient, exact SDK source generations, event title/window,
+current permission and receipt, consent copy and effective availability. New
+decisions must echo it as `expectedReviewHash`; changes return current state
+as a conflict even at the same permission revision. Ordinary time passage and
+registered-to-checked-in progress preserve an otherwise identical review.
+Revocation can proceed after fresh review without a ready sender or current
+phone claim. The required hash must roll out with the web client; old tabs
+must reload. Missing or malformed hashes fail callable validation.
+
+`eventAssistanceSmsConsentReceipts` records each exact decision atomically with
+its permission revision. Grant receipts pin the displayed copy hash and the
+hash of the complete resulting permission; dispatch requires that matching
+receipt. Receipt timestamps record when the signed phone claim was checked,
+not when a new OTP was sent. Revision conflicts return current state; replaying
+an earlier grant cannot reverse a later withdrawal. An exact receipt replay is
+resolved before checking the current review hash and never repeats the write;
+changing the hash while reusing its request ID is not an exact replay.
+An initial opt-out writes a revoked tombstone with no fabricated consent
+evidence. Changed attendee creation stamps invalidate existing consent.
+Responses reveal only the participant's masked number,
+status, availability and consent text; there is no client collection access.
+Sender approval and activation remain separate trusted provisioning steps.
+
+Event-service SMS, WhatsApp and RCS permission documents may now carry the
+closed shared `recipientBinding` from
+`contracts/shared/event_assistance_message_recipient.schema.json`. New grants
+record `rosterPhone` or `privateVerifiedPhone`, the linked UID and exact source
+generation. Absence on a legacy permission means the original strict roster-phone
+match, never private enrollment. A supported signed Auth phone may be reviewed
+privately only when the canonical roster phone is absent. Reads do not persist
+it; only explicit channel consent writes the private permission and its exact
+receipt. An active private grant retains its reviewed phone until withdrawal,
+including when Auth no longer supplies that number. Expired or stopped grants,
+and grants for a replaced sender identity, permit fresh review of a changed
+signed number with that number's own STOP state. Withdrawal preserves the
+original recipient and may return `notSet` for a corrected current recipient.
+
+The same binding is frozen into WhatsApp native-reply records and RCS dispatch
+reply bindings. Planning, final dispatch, saved-sender discovery and callback
+consumption compare the source generation, linked UID and recipient origin.
+Permission collections remain inaccessible to browser/mobile clients and Hosts;
+the operational roster remains unchanged. Deploy the updated shared readers and
+writers together before enabling enrollment: older strict readers will reject
+new records with the additional field. These source contracts do not activate a
+provider or establish production delivery.
+
+`getEventAssistanceParticipantContext` resolves only the authenticated caller's
+operational attendee identity for one event. A read-only transaction reads the
+event and at most two rows matching both event ID and server-owned `linkedUid`.
+No match returns `unlinked`; two matches return `ambiguous` without candidate
+IDs. A single match is re-read and validated against canonical event/attendee
+source facts before returning its scope and a source-generation hash. Cancelled
+rows remain in this identity check so existing preferences can still be reviewed;
+a booking ID, name, phone guess or status ordering cannot choose a different row.
+The response exposes neither contact information nor roster contents. It creates
+no link, consent, attendance record or provider permission. The event/linked-UID
+index must be deployed with this callable. Native strict readers and an explicit,
+account-bound refresh owner reject foreign identities and stale responses,
+including sign-out followed by re-entry with the same UID.
+
+Native `EventSmsPreferenceView` and `EventSmsPreferenceChange` model the closed
+review and explicit grant/revoke payloads without Firebase types. The read uses
+the generated callable DTO; the nested write decision is an immutable authored
+adapter whose output is checked against the canonical generated schema. Native
+response parsing rejects foreign scopes, unknown/private fields, unsupported
+consent versions and contradictory preference/expiry state. The repository
+preserves unavailable, permission and malformed-response failures. The
+controller binds actions to the displayed review and uninterrupted account,
+keeps uncertain writes frozen and displays current replay/conflict state.
+The native Event messages sheet mounts the shared per-channel sender controller
+through verified attendee identity. Deployed enrollment remains unverified.
+
+`listEventSmsPreferences` selects the saved `catchEventSms` runtime route and
+returns participant-owned historical sender IDs from the private permission
+collection. The composite index binds live mode, organizer, event, attendee,
+consent subject UID and document-ID order. Each page scans at most 51 rows and
+returns at most 50; its opaque permission cursor remains valid after that row
+is deleted. Generation, linked UID and recipient provenance must still match.
+Revoked prior grants remain visible, while never-granted tombstones do not.
+Discovery neither grants consent nor proves sender activation. Native and web
+use the configured sender for new consent and expose earlier senders only for
+withdrawal. Non-default sender receipts include sender ID in their key; legacy
+default-sender receipt keys and exact omitted-sender payload hashes are preserved.
+The new response field, generated outputs and strict client readers require a
+coordinated rollout with this callable and index.
+
+`eventAssistanceSmsBudgets` bounds both event spend and sender-day spend in
+Asia/Kolkata. A trusted worker atomically charges both ceilings with the
+outbox claim. `eventAssistanceSmsDispatches` keeps one immutable attempt debit,
+rendered-material hash and sender/template/permission/quote references. It
+also binds the original sender mask and the hash of a random 192-bit reporting
+credential. Only the worker receives the plaintext credential, submitted in
+Gupshup's `extra` field; decoded delivery reports must prove this credential
+and match the dispatch scope before updating the private outbox. The credential
+does not authorize a send, opt-in or budget release. Retain the immutable
+dispatch and outbox through the provider reconciliation window, independently
+of guest-link or event expiry. Cleanup remains unimplemented.
+The dispatch stores neither message content, reporting credential nor the guest
+URL secret. Conservative debits
+remain charged across uncertain outcomes and provider rejections until an
+explicit reconciliation implementation accounts for them. They are spending
+reservations, not billing receipts. Firestore clients, including admins, cannot
+read or write any of these six collections.
+
+The dormant `eventAssistanceSmsDeliveryWebhook` accepts a bounded, strictly
+decoded GET report and delegates credential/scope validation to the reporting
+store. Duplicate parameters, bodies, unknown fields and partial string matches
+are rejected before database access. The HTTP response exposes no internal
+identifiers or report contents, waits for completed processing, and returns a
+retryable service error on infrastructure failure. Delivery reporting grants
+no write authority over attendance, consent or budgets. The handler logs no
+request material or thrown error, but GET callback secrets also require verified
+platform request-log redaction/exclusion before activation. No new persisted
+document or client grant is introduced; existing outbox evidence owns duplicate
+and contradictory delivery reports.
+
+`eventAssistanceSmsWithdrawalGrants` is created in the same transaction as a
+live SMS dispatch claim. It binds the original guest-link hash to one permission,
+attendee generation, subject, sender and phone endpoint. Its separate lifetime
+ends with the permission captured at dispatch. An expired instruction does not
+expire this narrowly scoped ability to withdraw; it grants no event read/reply
+access. A revoked guest grant invalidates both uses. Reusing a link for a new
+recipient or a longer consent lifetime requires a fresh grant before dispatch.
+
+`getEventAssistanceSmsWithdrawal` and `withdrawEventAssistanceSms` require that
+bearer capability, App Check and network/credential rate limits. They need no
+current event, roster or sender status, so cancellation cannot obstruct opt-out.
+They expose only text status, revision and validity, with no name, phone or event
+identifier. Changing the permission's attendee generation, subject or endpoint
+invalidates the old capability. Only an explicit mutation withdraws permission;
+link reads and previews never do. Its immutable consent receipt uses
+`source: messageLink`, the link id and `actorUid: null`; authenticated preference
+receipts use `source: verifiedParticipant` and their verified UID. A bearer
+receipt can never grant consent. Replayed withdrawals return current state,
+including later verified opt-in, and stale revisions require a new explicit
+choice. Retention must keep the guest grant, withdrawal binding and deduplication
+receipts through this capability's lifetime and provider reconciliation window.
+
+### Event Assistance Guest Response Contract
+
+`eventAssistanceGuests` stores the event/attendee binding, exact roster creation
+generation, explicit participation, episode and revisioned reported intent.
+Firestore event/roster creation generations also fence source replacement.
+It deliberately
+does not extend or mutate the admission/attendance projection. Replacing an
+episode invalidates all earlier grants. `eventAssistanceThreads` stores one
+current message head per guest episode, workflow kind and occurrence; separate
+workflow conversations cannot overwrite each other.
+
+`eventAssistanceGuestGrants` contains only the hashed bearer secret and its
+thread/guest/episode scope, signing key id, issue/expiry times and optional
+revocation. Grants live for at most 24 hours, bounded by the event end when it
+is still upcoming. The raw secret is regenerated only for the trusted worker;
+it is never stored in the outbox or returned by the public read endpoint.
+
+Guest response acceptance checks the current thread head and intent revision;
+joining intent additionally fences the participation revision. The response,
+message closure and any intention/help-case effect commit in one transaction.
+The response remains in the message for retry deduplication. `eventAssistanceCases`
+correlates a help request with the accepted response; comfort/safety categories
+are assigned only to the restricted safety owner, other categories to the event
+lead. No SDK client, including an administrator, can access any of these four
+collections directly. Host projections and case-resolution commands require
+separate authorized boundaries before this feature can be enabled.

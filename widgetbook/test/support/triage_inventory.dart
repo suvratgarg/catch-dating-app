@@ -187,6 +187,43 @@ Map<String, Expression> _arguments(ArgumentList? arguments) => {
     arg.name.label.name: arg.expression,
 };
 
+String? _constantString(
+  Expression? expression,
+  String file, [
+  Set<String>? resolving,
+]) {
+  if (expression == null) return null;
+  if (expression case StringLiteral(:final stringValue)) return stringValue;
+  if (expression case SimpleIdentifier(:final name)) {
+    resolving ??= <String>{};
+    if (!resolving.add(name)) {
+      throw StateError('Cyclic string constant $name in $file');
+    }
+    final declaration = _members(file)[name];
+    if (declaration case VariableDeclaration(:final initializer)) {
+      return _constantString(initializer, file, resolving);
+    }
+  }
+  return null;
+}
+
+String? _annotationString(
+  Map<String, Expression> arguments,
+  String key,
+  String file, {
+  bool required = false,
+}) {
+  final expression = arguments[key];
+  if (expression == null && !required) return null;
+  final value = _constantString(expression, file);
+  if (value == null) {
+    throw StateError(
+      'Widgetbook annotation $key in $file must be a static string.',
+    );
+  }
+  return value;
+}
+
 class _GeneratedCases extends RecursiveAstVisitor<void> {
   final cases = <Map<String, Object?>>[];
 
@@ -304,9 +341,9 @@ Map<String, Object?> _readWidgetbookInventory() {
             file,
           ).lineInfo.getLocation(annotation.offset).lineNumber,
           'builder': function.name.lexeme,
-          'name': (args['name'] as StringLiteral).stringValue,
+          'name': _annotationString(args, 'name', file, required: true),
           'type': type,
-          'path': (args['path'] as StringLiteral?)?.stringValue,
+          'path': _annotationString(args, 'path', file),
           'typeFile': _visible(file)[type],
           ..._reach(file, function.name.lexeme),
         });

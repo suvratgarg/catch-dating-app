@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_activity_profile.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_assignment.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_exclusion_ledger.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_layout.dart';
@@ -51,6 +52,13 @@ class EventSuccessHostWorkspacePageBody extends StatefulWidget {
     this.presenceSummary,
     this.presenceError,
     this.accountabilityAttendees = const [],
+    this.accountabilitySection,
+    this.membershipSection,
+    this.helpSection,
+    this.deliverySection,
+    this.assistanceSettingsSection,
+    this.movementSection,
+    this.accountabilityMode,
     this.accountabilityError,
     this.loadingAccountability = false,
     this.resolvingAccountability = false,
@@ -125,6 +133,13 @@ class EventSuccessHostWorkspacePageBody extends StatefulWidget {
   final EventSuccessPresenceSummary? presenceSummary;
   final Object? presenceError;
   final List<EventAttendee> accountabilityAttendees;
+  final Widget? accountabilitySection;
+  final Widget? membershipSection;
+  final Widget? helpSection;
+  final Widget? deliverySection;
+  final Widget? assistanceSettingsSection;
+  final Widget? movementSection;
+  final EventSuccessAccountability? accountabilityMode;
   final Object? accountabilityError;
   final bool loadingAccountability;
   final bool resolvingAccountability;
@@ -221,6 +236,7 @@ class _EventSuccessHostWorkspacePageBodyState
   Widget build(BuildContext context) {
     final body = switch (_selectedTab) {
       EventSuccessHostTab.setup => EventSuccessHostSetupPageBody(
+        assistanceSettingsSection: widget.assistanceSettingsSection,
         event: widget.event,
         plan: widget.plan,
         planIsPersisted: widget.planIsPersisted,
@@ -252,6 +268,12 @@ class _EventSuccessHostWorkspacePageBodyState
         presenceSummary: widget.presenceSummary,
         presenceError: widget.presenceError,
         accountabilityAttendees: widget.accountabilityAttendees,
+        accountabilitySection: widget.accountabilitySection,
+        membershipSection: widget.membershipSection,
+        helpSection: widget.helpSection,
+        deliverySection: widget.deliverySection,
+        movementSection: widget.movementSection,
+        accountabilityMode: widget.accountabilityMode,
         accountabilityError: widget.accountabilityError,
         loadingAccountability: widget.loadingAccountability,
         resolvingAccountability: widget.resolvingAccountability,
@@ -314,6 +336,8 @@ class _EventSuccessHostWorkspacePageBodyState
         embedded: widget.embedded,
       ),
       EventSuccessHostTab.report => EventSuccessHostReportPageBody(
+        helpSection: widget.helpSection,
+        deliverySection: widget.deliverySection,
         event: widget.event,
         plan: widget.plan,
         planIsPersisted: widget.planIsPersisted,

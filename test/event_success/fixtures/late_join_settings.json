@@ -1,0 +1,603 @@
+{
+  "initial": {
+    "outcome": "read",
+    "operationRevision": null,
+    "view": {
+      "context": {
+        "mode": "live",
+        "organizerId": "o-00000000-0000-0000-0000-000000000457",
+        "eventId": "e-00000000-0000-0000-0000-000000000457"
+      },
+      "groupId": "event:whole",
+      "workflowKind": "lateJoin",
+      "serverTime": 1789482600000,
+      "sourceHash": "8b29ead29f42d5e6d65ae7a1995ad9c1aea2ef5fe6ef909f55929f7d397c71b8",
+      "ownRevision": 0,
+      "own": null,
+      "origin": "none",
+      "status": "unconfigured",
+      "effective": null,
+      "suggested": {
+        "kind": "lateJoin",
+        "version": 1,
+        "setting": {
+          "kind": "enabled",
+          "authority": "prepare"
+        },
+        "config": {
+          "destination": {
+            "kind": "confirmedGroupProgress"
+          },
+          "cutoff": {
+            "kind": "eventEnd"
+          },
+          "maxMessagesPerEpisode": 3,
+          "minimumMinutesBetweenMessages": 10,
+          "updateOn": "materialGuidanceChange",
+          "unanswered": "keepUnknownUntilCutoff"
+        }
+      },
+      "setup": {
+        "eventEnd": 1789486200000,
+        "destinations": [
+          {
+            "alternativeId": "alternative:c268b4766d189d31d01cedbb2236bda8bf6e40027f12260f73ac32b668d7bb4f",
+            "target": {
+              "kind": "fixedPlace",
+              "placeId": "meeting",
+              "lateEntry": "allowed"
+            },
+            "label": "Race Course Road gate",
+            "location": {
+              "name": "Race Course Road gate",
+              "address": "Race Course Road, Indore",
+              "placeId": "race-course-road-gate",
+              "latitude": 22.7196,
+              "longitude": 75.8577,
+              "notes": "Meet near the main gate."
+            }
+          },
+          {
+            "alternativeId": "alternative:0fa209758ead29b062d8662d5a904e2d40da0d0732cd5ee0a24873fb9695febe",
+            "target": {
+              "kind": "itineraryStop",
+              "itineraryId": "e-00000000-0000-0000-0000-000000000457:itinerary",
+              "stopId": "one"
+            },
+            "label": "Stop one",
+            "location": {
+              "name": "stop one",
+              "latitude": 22.7,
+              "longitude": 75.8
+            }
+          },
+          {
+            "alternativeId": "alternative:e8f2c1fea3fa2c83d2741293284b00c7b71a2abc59009ca4bf10d496e6d7ed48",
+            "target": {
+              "kind": "itineraryStop",
+              "itineraryId": "e-00000000-0000-0000-0000-000000000457:itinerary",
+              "stopId": "two"
+            },
+            "label": "Stop two",
+            "location": {
+              "name": "stop two",
+              "latitude": 22.71,
+              "longitude": 75.8
+            }
+          }
+        ]
+      }
+    }
+  },
+  "customInput": {
+    "context": {
+      "mode": "live",
+      "organizerId": "o-00000000-0000-0000-0000-000000000457",
+      "eventId": "e-00000000-0000-0000-0000-000000000457"
+    },
+    "groupId": "event:whole",
+    "workflowKind": "lateJoin",
+    "requestId": "save",
+    "expectedRevision": 0,
+    "expectedSourceHash": "8b29ead29f42d5e6d65ae7a1995ad9c1aea2ef5fe6ef909f55929f7d397c71b8",
+    "preference": {
+      "kind": "configured",
+      "template": {
+        "kind": "lateJoin",
+        "version": 1,
+        "setting": {
+          "kind": "enabled",
+          "authority": "prepare"
+        },
+        "config": {
+          "destination": {
+            "kind": "itineraryStop",
+            "itineraryId": "e-00000000-0000-0000-0000-000000000457:itinerary",
+            "permittedStopIds": [
+              "two"
+            ]
+          },
+          "cutoff": {
+            "kind": "time",
+            "at": 1789484400000
+          },
+          "maxMessagesPerEpisode": 3,
+          "minimumMinutesBetweenMessages": 10,
+          "updateOn": "materialGuidanceChange",
+          "unanswered": "keepUnknownUntilCutoff"
+        }
+      }
+    }
+  },
+  "custom": {
+    "outcome": "applied",
+    "operationRevision": 1,
+    "view": {
+      "context": {
+        "mode": "live",
+        "organizerId": "o-00000000-0000-0000-0000-000000000457",
+        "eventId": "e-00000000-0000-0000-0000-000000000457"
+      },
+      "groupId": "event:whole",
+      "workflowKind": "lateJoin",
+      "serverTime": 1789482600000,
+      "sourceHash": "8b29ead29f42d5e6d65ae7a1995ad9c1aea2ef5fe6ef909f55929f7d397c71b8",
+      "ownRevision": 1,
+      "own": {
+        "schemaVersion": 1,
+        "settingId": "setting:54b2c8a1b95c00abe0ee237e43c14bafedf1516f83b55dc4f53e2fc3d269e407",
+        "context": {
+          "mode": "live",
+          "organizerId": "o-00000000-0000-0000-0000-000000000457",
+          "eventId": "e-00000000-0000-0000-0000-000000000457"
+        },
+        "groupId": "event:whole",
+        "workflowKind": "lateJoin",
+        "revision": 1,
+        "preference": {
+          "kind": "configured",
+          "template": {
+            "kind": "lateJoin",
+            "version": 1,
+            "setting": {
+              "kind": "enabled",
+              "authority": "prepare"
+            },
+            "config": {
+              "destination": {
+                "kind": "itineraryStop",
+                "itineraryId": "e-00000000-0000-0000-0000-000000000457:itinerary",
+                "permittedStopIds": [
+                  "two"
+                ]
+              },
+              "cutoff": {
+                "kind": "time",
+                "at": 1789484400000
+              },
+              "maxMessagesPerEpisode": 3,
+              "minimumMinutesBetweenMessages": 10,
+              "updateOn": "materialGuidanceChange",
+              "unanswered": "keepUnknownUntilCutoff"
+            }
+          }
+        },
+        "sourceHash": "8b29ead29f42d5e6d65ae7a1995ad9c1aea2ef5fe6ef909f55929f7d397c71b8",
+        "updatedBy": "host-1",
+        "createdAt": 1789482600000,
+        "updatedAt": 1789482600000
+      },
+      "origin": "event",
+      "status": "configured",
+      "effective": {
+        "kind": "lateJoin",
+        "version": 1,
+        "setting": {
+          "kind": "enabled",
+          "authority": "prepare"
+        },
+        "config": {
+          "destination": {
+            "kind": "itineraryStop",
+            "itineraryId": "e-00000000-0000-0000-0000-000000000457:itinerary",
+            "permittedStopIds": [
+              "two"
+            ]
+          },
+          "cutoff": {
+            "kind": "time",
+            "at": 1789484400000
+          },
+          "maxMessagesPerEpisode": 3,
+          "minimumMinutesBetweenMessages": 10,
+          "updateOn": "materialGuidanceChange",
+          "unanswered": "keepUnknownUntilCutoff"
+        }
+      },
+      "suggested": {
+        "kind": "lateJoin",
+        "version": 1,
+        "setting": {
+          "kind": "enabled",
+          "authority": "prepare"
+        },
+        "config": {
+          "destination": {
+            "kind": "confirmedGroupProgress"
+          },
+          "cutoff": {
+            "kind": "eventEnd"
+          },
+          "maxMessagesPerEpisode": 3,
+          "minimumMinutesBetweenMessages": 10,
+          "updateOn": "materialGuidanceChange",
+          "unanswered": "keepUnknownUntilCutoff"
+        }
+      },
+      "setup": {
+        "eventEnd": 1789486200000,
+        "destinations": [
+          {
+            "alternativeId": "alternative:c268b4766d189d31d01cedbb2236bda8bf6e40027f12260f73ac32b668d7bb4f",
+            "target": {
+              "kind": "fixedPlace",
+              "placeId": "meeting",
+              "lateEntry": "allowed"
+            },
+            "label": "Race Course Road gate",
+            "location": {
+              "name": "Race Course Road gate",
+              "address": "Race Course Road, Indore",
+              "placeId": "race-course-road-gate",
+              "latitude": 22.7196,
+              "longitude": 75.8577,
+              "notes": "Meet near the main gate."
+            }
+          },
+          {
+            "alternativeId": "alternative:0fa209758ead29b062d8662d5a904e2d40da0d0732cd5ee0a24873fb9695febe",
+            "target": {
+              "kind": "itineraryStop",
+              "itineraryId": "e-00000000-0000-0000-0000-000000000457:itinerary",
+              "stopId": "one"
+            },
+            "label": "Stop one",
+            "location": {
+              "name": "stop one",
+              "latitude": 22.7,
+              "longitude": 75.8
+            }
+          },
+          {
+            "alternativeId": "alternative:e8f2c1fea3fa2c83d2741293284b00c7b71a2abc59009ca4bf10d496e6d7ed48",
+            "target": {
+              "kind": "itineraryStop",
+              "itineraryId": "e-00000000-0000-0000-0000-000000000457:itinerary",
+              "stopId": "two"
+            },
+            "label": "Stop two",
+            "location": {
+              "name": "stop two",
+              "latitude": 22.71,
+              "longitude": 75.8
+            }
+          }
+        ]
+      }
+    }
+  },
+  "disabled": {
+    "outcome": "applied",
+    "operationRevision": 2,
+    "view": {
+      "context": {
+        "mode": "live",
+        "organizerId": "o-00000000-0000-0000-0000-000000000457",
+        "eventId": "e-00000000-0000-0000-0000-000000000457"
+      },
+      "groupId": "event:whole",
+      "workflowKind": "lateJoin",
+      "serverTime": 1789482600000,
+      "sourceHash": "8b29ead29f42d5e6d65ae7a1995ad9c1aea2ef5fe6ef909f55929f7d397c71b8",
+      "ownRevision": 2,
+      "own": {
+        "schemaVersion": 1,
+        "settingId": "setting:54b2c8a1b95c00abe0ee237e43c14bafedf1516f83b55dc4f53e2fc3d269e407",
+        "context": {
+          "mode": "live",
+          "organizerId": "o-00000000-0000-0000-0000-000000000457",
+          "eventId": "e-00000000-0000-0000-0000-000000000457"
+        },
+        "groupId": "event:whole",
+        "workflowKind": "lateJoin",
+        "revision": 2,
+        "preference": {
+          "kind": "configured",
+          "template": {
+            "kind": "lateJoin",
+            "version": 1,
+            "setting": {
+              "kind": "disabled",
+              "reason": "hostChoice"
+            },
+            "config": {
+              "destination": {
+                "kind": "itineraryStop",
+                "itineraryId": "e-00000000-0000-0000-0000-000000000457:itinerary",
+                "permittedStopIds": [
+                  "two"
+                ]
+              },
+              "cutoff": {
+                "kind": "time",
+                "at": 1789484400000
+              },
+              "maxMessagesPerEpisode": 3,
+              "minimumMinutesBetweenMessages": 10,
+              "updateOn": "materialGuidanceChange",
+              "unanswered": "keepUnknownUntilCutoff"
+            }
+          }
+        },
+        "sourceHash": "8b29ead29f42d5e6d65ae7a1995ad9c1aea2ef5fe6ef909f55929f7d397c71b8",
+        "updatedBy": "host-1",
+        "createdAt": 1789482600000,
+        "updatedAt": 1789482600000
+      },
+      "origin": "event",
+      "status": "disabled",
+      "effective": {
+        "kind": "lateJoin",
+        "version": 1,
+        "setting": {
+          "kind": "disabled",
+          "reason": "hostChoice"
+        },
+        "config": {
+          "destination": {
+            "kind": "itineraryStop",
+            "itineraryId": "e-00000000-0000-0000-0000-000000000457:itinerary",
+            "permittedStopIds": [
+              "two"
+            ]
+          },
+          "cutoff": {
+            "kind": "time",
+            "at": 1789484400000
+          },
+          "maxMessagesPerEpisode": 3,
+          "minimumMinutesBetweenMessages": 10,
+          "updateOn": "materialGuidanceChange",
+          "unanswered": "keepUnknownUntilCutoff"
+        }
+      },
+      "suggested": {
+        "kind": "lateJoin",
+        "version": 1,
+        "setting": {
+          "kind": "enabled",
+          "authority": "prepare"
+        },
+        "config": {
+          "destination": {
+            "kind": "confirmedGroupProgress"
+          },
+          "cutoff": {
+            "kind": "eventEnd"
+          },
+          "maxMessagesPerEpisode": 3,
+          "minimumMinutesBetweenMessages": 10,
+          "updateOn": "materialGuidanceChange",
+          "unanswered": "keepUnknownUntilCutoff"
+        }
+      },
+      "setup": {
+        "eventEnd": 1789486200000,
+        "destinations": [
+          {
+            "alternativeId": "alternative:c268b4766d189d31d01cedbb2236bda8bf6e40027f12260f73ac32b668d7bb4f",
+            "target": {
+              "kind": "fixedPlace",
+              "placeId": "meeting",
+              "lateEntry": "allowed"
+            },
+            "label": "Race Course Road gate",
+            "location": {
+              "name": "Race Course Road gate",
+              "address": "Race Course Road, Indore",
+              "placeId": "race-course-road-gate",
+              "latitude": 22.7196,
+              "longitude": 75.8577,
+              "notes": "Meet near the main gate."
+            }
+          },
+          {
+            "alternativeId": "alternative:0fa209758ead29b062d8662d5a904e2d40da0d0732cd5ee0a24873fb9695febe",
+            "target": {
+              "kind": "itineraryStop",
+              "itineraryId": "e-00000000-0000-0000-0000-000000000457:itinerary",
+              "stopId": "one"
+            },
+            "label": "Stop one",
+            "location": {
+              "name": "stop one",
+              "latitude": 22.7,
+              "longitude": 75.8
+            }
+          },
+          {
+            "alternativeId": "alternative:e8f2c1fea3fa2c83d2741293284b00c7b71a2abc59009ca4bf10d496e6d7ed48",
+            "target": {
+              "kind": "itineraryStop",
+              "itineraryId": "e-00000000-0000-0000-0000-000000000457:itinerary",
+              "stopId": "two"
+            },
+            "label": "Stop two",
+            "location": {
+              "name": "stop two",
+              "latitude": 22.71,
+              "longitude": 75.8
+            }
+          }
+        ]
+      }
+    }
+  },
+  "replayed": {
+    "outcome": "replayed",
+    "operationRevision": 1,
+    "view": {
+      "context": {
+        "mode": "live",
+        "organizerId": "o-00000000-0000-0000-0000-000000000457",
+        "eventId": "e-00000000-0000-0000-0000-000000000457"
+      },
+      "groupId": "event:whole",
+      "workflowKind": "lateJoin",
+      "serverTime": 1789482600000,
+      "sourceHash": "8b29ead29f42d5e6d65ae7a1995ad9c1aea2ef5fe6ef909f55929f7d397c71b8",
+      "ownRevision": 2,
+      "own": {
+        "schemaVersion": 1,
+        "settingId": "setting:54b2c8a1b95c00abe0ee237e43c14bafedf1516f83b55dc4f53e2fc3d269e407",
+        "context": {
+          "mode": "live",
+          "organizerId": "o-00000000-0000-0000-0000-000000000457",
+          "eventId": "e-00000000-0000-0000-0000-000000000457"
+        },
+        "groupId": "event:whole",
+        "workflowKind": "lateJoin",
+        "revision": 2,
+        "preference": {
+          "kind": "configured",
+          "template": {
+            "kind": "lateJoin",
+            "version": 1,
+            "setting": {
+              "kind": "disabled",
+              "reason": "hostChoice"
+            },
+            "config": {
+              "destination": {
+                "kind": "itineraryStop",
+                "itineraryId": "e-00000000-0000-0000-0000-000000000457:itinerary",
+                "permittedStopIds": [
+                  "two"
+                ]
+              },
+              "cutoff": {
+                "kind": "time",
+                "at": 1789484400000
+              },
+              "maxMessagesPerEpisode": 3,
+              "minimumMinutesBetweenMessages": 10,
+              "updateOn": "materialGuidanceChange",
+              "unanswered": "keepUnknownUntilCutoff"
+            }
+          }
+        },
+        "sourceHash": "8b29ead29f42d5e6d65ae7a1995ad9c1aea2ef5fe6ef909f55929f7d397c71b8",
+        "updatedBy": "host-1",
+        "createdAt": 1789482600000,
+        "updatedAt": 1789482600000
+      },
+      "origin": "event",
+      "status": "disabled",
+      "effective": {
+        "kind": "lateJoin",
+        "version": 1,
+        "setting": {
+          "kind": "disabled",
+          "reason": "hostChoice"
+        },
+        "config": {
+          "destination": {
+            "kind": "itineraryStop",
+            "itineraryId": "e-00000000-0000-0000-0000-000000000457:itinerary",
+            "permittedStopIds": [
+              "two"
+            ]
+          },
+          "cutoff": {
+            "kind": "time",
+            "at": 1789484400000
+          },
+          "maxMessagesPerEpisode": 3,
+          "minimumMinutesBetweenMessages": 10,
+          "updateOn": "materialGuidanceChange",
+          "unanswered": "keepUnknownUntilCutoff"
+        }
+      },
+      "suggested": {
+        "kind": "lateJoin",
+        "version": 1,
+        "setting": {
+          "kind": "enabled",
+          "authority": "prepare"
+        },
+        "config": {
+          "destination": {
+            "kind": "confirmedGroupProgress"
+          },
+          "cutoff": {
+            "kind": "eventEnd"
+          },
+          "maxMessagesPerEpisode": 3,
+          "minimumMinutesBetweenMessages": 10,
+          "updateOn": "materialGuidanceChange",
+          "unanswered": "keepUnknownUntilCutoff"
+        }
+      },
+      "setup": {
+        "eventEnd": 1789486200000,
+        "destinations": [
+          {
+            "alternativeId": "alternative:c268b4766d189d31d01cedbb2236bda8bf6e40027f12260f73ac32b668d7bb4f",
+            "target": {
+              "kind": "fixedPlace",
+              "placeId": "meeting",
+              "lateEntry": "allowed"
+            },
+            "label": "Race Course Road gate",
+            "location": {
+              "name": "Race Course Road gate",
+              "address": "Race Course Road, Indore",
+              "placeId": "race-course-road-gate",
+              "latitude": 22.7196,
+              "longitude": 75.8577,
+              "notes": "Meet near the main gate."
+            }
+          },
+          {
+            "alternativeId": "alternative:0fa209758ead29b062d8662d5a904e2d40da0d0732cd5ee0a24873fb9695febe",
+            "target": {
+              "kind": "itineraryStop",
+              "itineraryId": "e-00000000-0000-0000-0000-000000000457:itinerary",
+              "stopId": "one"
+            },
+            "label": "Stop one",
+            "location": {
+              "name": "stop one",
+              "latitude": 22.7,
+              "longitude": 75.8
+            }
+          },
+          {
+            "alternativeId": "alternative:e8f2c1fea3fa2c83d2741293284b00c7b71a2abc59009ca4bf10d496e6d7ed48",
+            "target": {
+              "kind": "itineraryStop",
+              "itineraryId": "e-00000000-0000-0000-0000-000000000457:itinerary",
+              "stopId": "two"
+            },
+            "label": "Stop two",
+            "location": {
+              "name": "stop two",
+              "latitude": 22.71,
+              "longitude": 75.8
+            }
+          }
+        ]
+      }
+    }
+  }
+}

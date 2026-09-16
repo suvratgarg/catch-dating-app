@@ -20,13 +20,19 @@ import {
   EventRuntimeRouteMap,
   FormStatus,
 } from "../../shared/ui/primitives";
-import {availableEventRehearsalGuestActions} from "./eventRehearsalModel";
+import {availableEventRehearsalGuestActions, canReplyToRehearsal,
+  type RehearsalReply, type RehearsalReplyState} from "./eventRehearsalModel";
 import {useEventRehearsalController} from "./useEventRehearsalController";
 
 export function EventRehearsalPage() {
   const {publicRehearsalId = ""} = useParams<{
     publicRehearsalId: string;
   }>();
+  return <EventRehearsalGuest key={publicRehearsalId}
+    publicRehearsalId={publicRehearsalId} />;
+}
+
+function EventRehearsalGuest({publicRehearsalId}: {publicRehearsalId: string}) {
   const controller = useEventRehearsalController(publicRehearsalId);
 
   if (controller.isLoading) {
@@ -69,6 +75,9 @@ export function EventRehearsalPage() {
     <EventRehearsalPreview
       bootstrap={controller.bootstrap}
       onAction={controller.submit}
+      onReply={controller.reply}
+      onRefresh={controller.refresh}
+      replyState={controller.replyState}
       pending={controller.pending}
       status={controller.status}
     />
@@ -78,11 +87,17 @@ export function EventRehearsalPage() {
 export function EventRehearsalPreview({
   bootstrap,
   onAction,
+  onReply,
+  onRefresh,
+  replyState = {fresh: true, pendingChoice: null, retryChoice: null, notice: ""},
   pending,
   status,
 }: {
   bootstrap: EventRehearsalGuestBootstrap;
   onAction: (action: EventRehearsalGuestAction) => void;
+  onReply: (reply: RehearsalReply) => void;
+  onRefresh: () => void;
+  replyState?: RehearsalReplyState;
   pending: boolean;
   status: {message: string; tone: "" | "is-error"};
 }) {
@@ -128,6 +143,12 @@ export function EventRehearsalPreview({
           </p>
         </EventRuntimeLiveHeader>
 
+        {bootstrap.actor.assistanceMessage ? (
+          <EventRehearsalJoiningInstruction bootstrap={bootstrap}
+            pending={pending} state={replyState} onReply={onReply}
+            onRefresh={onRefresh} />
+        ) : null}
+
         <EventRuntimeModule title={eventRehearsalCopy.momentTitles[moment]}>
           <p>{eventRehearsalCopy.momentBodies[moment]}</p>
         </EventRuntimeModule>
@@ -156,7 +177,7 @@ export function EventRehearsalPreview({
             <EventRuntimeActionGrid>
               {actions.map((action) => (
                 <Button
-                  disabled={pending}
+                  disabled={pending || !replyState.fresh || replyState.retryChoice !== null}
                   key={action}
                   loading={pending}
                   loadingLabel={eventRehearsalCopy.actionPending}
@@ -169,10 +190,19 @@ export function EventRehearsalPreview({
               ))}
             </EventRuntimeActionGrid>
             <FormStatus status={status} />
+            {!replyState.fresh && !bootstrap.actor.assistanceMessage ? (
+              <Button type="button" variant="ghost" disabled={pending} onClick={onRefresh}>
+                {eventRehearsalCopy.refresh}
+              </Button>
+            ) : null}
           </EventRuntimeModule>
         )}
 
         <EventRuntimeNoticeStack>
+          {(bootstrap.actor.connectionState ??
+            (bootstrap.actor.status === "disconnected" ? "disconnected" : "connected")) === "disconnected"
+            ? <p>{eventRehearsalCopy.disconnectedNotice}</p>
+            : null}
           {faultNotice ? <p>{faultNotice}</p> : null}
           {bootstrap.actor.optedOut
             ? <p>{eventRehearsalCopy.optedOutNotice}</p>
@@ -186,6 +216,47 @@ export function EventRehearsalPreview({
         </EventRuntimeNoticeStack>
       </EventRuntimeLive>
     </EventRuntimeFrame>
+  );
+}
+
+function EventRehearsalJoiningInstruction({bootstrap, pending, state, onReply, onRefresh}: {
+  bootstrap: EventRehearsalGuestBootstrap;
+  pending: boolean;
+  state: RehearsalReplyState;
+  onReply: (reply: RehearsalReply) => void;
+  onRefresh: () => void;
+}) {
+  const message = bootstrap.actor.assistanceMessage!;
+  const saved = message.choices.find((choice) => choice.choiceId === message.responseChoiceId);
+  const canRespond = canReplyToRehearsal(bootstrap);
+  return (
+    <EventRuntimeModule title={eventRehearsalCopy.joiningTitle} accent="coral">
+      <p>{message.text}</p>
+      {saved ? <p role="status">{eventRehearsalCopy.replySaved(saved.label)}</p> :
+        canRespond ? <>
+          <p>{eventRehearsalCopy.joiningBody}</p>
+          <EventRuntimeActionGrid>
+            {message.choices.map((choice) => (
+              <Button key={choice.choiceId} type="button" variant="ghost"
+                disabled={pending || !state.fresh ||
+                  (state.retryChoice !== null && state.retryChoice !== choice.choiceId)}
+                loading={state.pendingChoice === choice.choiceId}
+                loadingLabel={eventRehearsalCopy.replyPending}
+                onClick={() => onReply({messageId: message.messageId,
+                  intentRevision: message.intentRevision, choiceId: choice.choiceId})}>
+                {choice.label}
+              </Button>
+            ))}
+          </EventRuntimeActionGrid>
+        </> : <p role="status">{eventRehearsalCopy.replyClosed}</p>}
+      {!state.fresh ? <p role="status">{eventRehearsalCopy.replyStale}</p> : null}
+      {state.notice ? <FormStatus status={{message: state.notice, tone: "is-error"}} /> : null}
+      {!state.fresh || state.notice || (!canRespond && !saved) ? (
+        <Button type="button" variant="ghost" disabled={pending} onClick={onRefresh}>
+          {eventRehearsalCopy.refresh}
+        </Button>
+      ) : null}
+    </EventRuntimeModule>
   );
 }
 

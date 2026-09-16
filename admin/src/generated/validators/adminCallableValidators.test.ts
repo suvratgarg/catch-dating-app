@@ -90,9 +90,9 @@ describe("generated admin callable validators", () => {
       note: "Assigned for review.",
     }],
     ["safety decision", "adminDecideSafetyTriageItem", {
-      targetPath: "moderationFlags/flag-1",
-      decision: "dismiss",
-      note: "No policy violation found.",
+      targetPath: "eventAssistanceCases/case:restricted-1",
+      decision: "review",
+      note: "The safety handoff was resolved.",
     }],
     ["marketing draft", "adminCreateMarketingContentDraft", {
       draftType: "event_highlights",
@@ -169,9 +169,9 @@ describe("generated admin callable validators", () => {
         },
       }],
       ["adminDecideSafetyTriageItem", {
-        targetPath: "moderationFlags/flag-1",
-        decision: "dismiss",
-        status: "dismissed",
+        targetPath: "eventAssistanceCases/case:restricted-1",
+        decision: "review",
+        status: "resolved",
       }],
       ["adminCreateMarketingContentDraft", {
         draft: {id: "draft-1"},

@@ -15,6 +15,12 @@ import 'package:catch_dating_app/event_success/domain/event_success_standings.da
 import 'package:catch_dating_app/event_success/domain/event_success_structure.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_wingman_request.dart';
 import 'package:catch_dating_app/event_success/presentation/assignments/event_success_assignment_profiles.dart';
+import 'package:catch_dating_app/event_success/presentation/event_assistance_live_delivery_section.dart';
+import 'package:catch_dating_app/event_success/presentation/event_assistance_live_groups_section.dart';
+import 'package:catch_dating_app/event_success/presentation/event_assistance_live_help_section.dart';
+import 'package:catch_dating_app/event_success/presentation/event_assistance_live_movement_section.dart';
+import 'package:catch_dating_app/event_success/presentation/event_assistance_live_settings_section.dart';
+import 'package:catch_dating_app/event_success/presentation/event_assistance_live_sweep_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_controller.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_host_fixture_actions.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_host_screen_state.dart';
@@ -29,6 +35,7 @@ import 'package:catch_dating_app/events/data/event_participation_repository.dart
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_attendee.dart';
 import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
+import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -183,11 +190,16 @@ class _EventSuccessHostSectionState
     final presenceSummaryState = catchAsyncStateFromAsyncValue(
       presenceSummaryAsync,
     );
+    final hasPaceGroups =
+        event.eventFormat.routePlan?.groupStrategy ==
+            RouteGroupStrategy.paceGroups &&
+        (event.eventFormat.routePlan?.paceGroups.isNotEmpty ?? false);
     final shouldLoadOperationalAttendees =
         shouldLoadAssignments &&
         (eventSuccessProfile.accountability ==
                 EventSuccessAccountability.sweep ||
-            unitOutcome == EventSuccessUnitOutcome.score);
+            unitOutcome == EventSuccessUnitOutcome.score ||
+            hasPaceGroups);
     final AsyncValue<List<EventAttendee>> accountabilityAttendeesAsync =
         shouldLoadOperationalAttendees
         ? ref.watch(watchEventAttendeesProvider(event.id))
@@ -408,6 +420,30 @@ class _EventSuccessHostSectionState
           ? presenceSummaryState.error
           : null,
       accountabilityAttendees: accountabilityAttendeesState.value ?? const [],
+      movementSection: event.itinerary.any((stop) => stop.location != null)
+          ? EventAssistanceLiveMovementSection(event: event)
+          : null,
+      membershipSection: hasPaceGroups
+          ? EventAssistanceLiveGroupsSection(
+              event: event,
+              attendees: accountabilityAttendeesAsync,
+            )
+          : null,
+      assistanceSettingsSection: EventAssistanceLiveSettingsSection(
+        event: event,
+      ),
+      deliverySection: EventAssistanceLiveDeliverySection(
+        organizerId: event.clubId,
+        eventId: event.id,
+      ),
+      helpSection: EventAssistanceLiveHelpSection(
+        organizerId: event.clubId,
+        eventId: event.id,
+      ),
+      accountabilitySection: EventAssistanceLiveSweepSection(
+        event: event,
+        attendees: accountabilityAttendeesAsync,
+      ),
       accountabilityError: accountabilityAttendeesState.hasError
           ? accountabilityAttendeesState.error
           : accountabilityResolutionMutation.hasError

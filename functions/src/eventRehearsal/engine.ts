@@ -1,3 +1,6 @@
+import {advancePracticeVisit, initialPracticeVisit} from "./visitState";
+import {advancePracticeParticipation, initialPracticeParticipation} from
+  "./participation";
 import type {
   EventRehearsalActorDocument,
   EventRehearsalDocument,
@@ -10,6 +13,7 @@ import type {InjectEventRehearsalBehaviorCallablePayload} from
   "../shared/generated/injectEventRehearsalBehaviorCallablePayload";
 import type {SubmitEventRehearsalGuestActionCallablePayload} from
   "../shared/generated/submitEventRehearsalGuestActionCallablePayload";
+import {initialPracticeRequiredData} from "./requiredData";
 
 export const REHEARSAL_MAX_ACTORS = 50;
 export const REHEARSAL_MAX_ACTIONS = 500;
@@ -138,11 +142,16 @@ export function buildRehearsalActors(
       displayName: count === 1 ? baseName : `${baseName} ${count}`,
       persona: personas[(index + seed) % personas.length] ?? "regular",
       status: "expected",
+      visit: initialPracticeVisit(),
+      participation: initialPracticeParticipation(),
+      connectionState: "connected",
       guestMoment: "welcome",
       optedOut: false,
       keepApartActorIds: [],
       helpRequested: false,
+      untrackedHelpRequested: false,
       promptCompleted: false,
+      requiredData: initialPracticeRequiredData(),
       layoutUnitId: `table-${Math.floor(index / 4) + 1}`,
       confirmedLayoutUnitId: null,
       lastActionAt: null,
@@ -160,6 +169,14 @@ export function resolveRehearsalControl(
 ): RehearsalControlResult {
   const currentMillis = session.virtualNow.toMillis();
   switch (action) {
+  case "settings":
+  case "staff":
+  case "movement":
+  case "assistance":
+  case "requiredData":
+  case "outcome":
+  case "reveal":
+    throw new Error("Domain commands require their rehearsal transaction.");
   case "markReady":
     assertStatus(session.status, ["draft", "ready"], action);
     return result("ready", session.activeStepIndex, currentMillis);
@@ -208,13 +225,56 @@ export function cuesBetween(
   scenarioId: EventRehearsalDocument["scenarioId"],
   startMillis: number,
   fromMillis: number,
-  toMillis: number
+  toMillis: number,
+  actorCount: number
 ): ScenarioCue[] {
+  if (!Number.isInteger(actorCount) || actorCount < 2 ||
+      actorCount > REHEARSAL_MAX_ACTORS) {
+    throw new Error("Rehearsal scenarios need 2–50 practice guests.");
+  }
+  // Resolve the whole scenario before filtering time. Paired cues must keep
+  // the same guest even when the clock crosses them in separate requests.
+  const cues = scenarioCues[scenarioId];
+  const roles = [...new Set(cues.map((cue) => cue.actorIndex))];
+  const occupied = new Set(roles.filter((index) => index < actorCount));
+  const assignments = new Map<number, number>();
+  for (const role of roles) {
+    let index = role;
+    if (index >= actorCount) {
+      index = 0;
+      while (occupied.has(index)) index++;
+      if (index >= actorCount) {
+        throw new Error("Rehearsal scenario needs more distinct guests.");
+      }
+    }
+    occupied.add(index);
+    assignments.set(role, index);
+  }
   const fromMinute = Math.floor((fromMillis - startMillis) / 60000);
   const toMinute = Math.floor((toMillis - startMillis) / 60000);
-  return scenarioCues[scenarioId].filter(
+  return cues.filter(
     (cue) => cue.atMinute > fromMinute && cue.atMinute <= toMinute
-  );
+  ).map((cue) => ({...cue, actorIndex: assignments.get(cue.actorIndex)!}));
+}
+
+/** Apply every crossed cue in time order, retaining earlier state changes. */
+export function applyRehearsalCues(
+  actors: EventRehearsalActorDocument[],
+  cues: ScenarioCue[],
+  now: FirebaseFirestore.Timestamp,
+  virtualStartedAtMillis?: number
+): EventRehearsalActorDocument[] {
+  const next = [...actors];
+  const actorIds = actors.map((actor) => actor.actorId);
+  for (const cue of [...cues].sort((a, b) => a.atMinute - b.atMinute)) {
+    const actor = next[cue.actorIndex];
+    if (!actor) throw new Error("Rehearsal scenario guest is unavailable.");
+    next[cue.actorIndex] = applyRehearsalBehavior(
+      actor, cue.behavior, actorIds, now,
+      virtualStartedAtMillis === undefined ? now.toMillis() :
+        virtualStartedAtMillis + cue.atMinute * 60000);
+  }
+  return next;
 }
 
 /** Applies a synthetic behavior to an actor while retaining safety state. */
@@ -222,7 +282,8 @@ export function applyRehearsalBehavior(
   actor: EventRehearsalActorDocument,
   behavior: Behavior,
   otherActorIds: string[],
-  now: FirebaseFirestore.Timestamp
+  now: FirebaseFirestore.Timestamp,
+  virtualNowMillis = now.toMillis()
 ): EventRehearsalActorDocument {
   const patch: Partial<EventRehearsalActorDocument> = {};
   switch (behavior) {
@@ -269,13 +330,15 @@ export function applyRehearsalBehavior(
     break;
   }
   case "disconnect":
-    patch.status = "disconnected";
+    patch.connectionState = "disconnected";
     break;
   case "reconnect":
-    patch.status = actor.status === "disconnected" ? "present" : actor.status;
+    patch.connectionState = "connected";
     break;
   }
-  return {...actor, ...patch, lastActionAt: now, updatedAt: now};
+  return advancePracticeParticipation(actor, advancePracticeVisit(actor,
+    {...actor, ...patch, lastActionAt: now, updatedAt: now}, virtualNowMillis,
+    ["arrive", "arriveLate", "return", "resolveClaim"].includes(behavior)));
 }
 
 /** Applies a bounded Room move without escaping the synthetic actor domain. */
@@ -328,12 +391,17 @@ export function actorAtMoment(
 export function applyRehearsalGuestAction(
   actor: EventRehearsalActorDocument,
   action: GuestAction,
-  now: FirebaseFirestore.Timestamp
+  now: FirebaseFirestore.Timestamp,
+  virtualNowMillis = now.toMillis()
 ): EventRehearsalActorDocument {
   switch (action) {
+  case "respondToAssistance":
+    throw new Error("Assistance replies require their rehearsal transaction.");
+  case "submitRequiredData":
+    throw new Error("Profile submissions require their rehearsal transaction.");
   case "checkIn":
   case "confirmArrival":
-    return applyRehearsalBehavior(actor, "arrive", [], now);
+    return applyRehearsalBehavior(actor, "arrive", [], now, virtualNowMillis);
   case "optOut":
     return applyRehearsalBehavior(actor, "optOut", [], now);
   case "optIn":
@@ -391,7 +459,14 @@ export function statusAfterBehavior(behavior: Behavior): ActorStatus | null {
     walkIn: "walkIn",
     ambiguousClaim: "ambiguousClaim",
     resolveClaim: "present",
-    disconnect: "disconnected",
   };
   return statuses[behavior] ?? null;
+}
+
+/** Reconnect cannot restore attendance lost by legacy disconnection records. */
+export function rehearsalActorConnectionState(
+  actor: Pick<EventRehearsalActorDocument, "status" | "connectionState">
+): "connected" | "disconnected" {
+  return actor.connectionState ??
+    (actor.status === "disconnected" ? "disconnected" : "connected");
 }

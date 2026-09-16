@@ -134,11 +134,11 @@ export function verifyMetaWebhookSignature(params: {
   signatureHeader: string | undefined;
   appSecret: string;
 }): boolean {
-  if (!params.signatureHeader?.startsWith("sha256=") ||
+  if (!/^sha256=[a-f0-9]{64}$/.test(params.signatureHeader ?? "") ||
       params.appSecret.length === 0) return false;
   const expected = `sha256=${crypto.createHmac("sha256", params.appSecret)
     .update(params.rawBody).digest("hex")}`;
-  const actual = params.signatureHeader;
+  const actual = params.signatureHeader!;
   return actual.length === expected.length && crypto.timingSafeEqual(
     Buffer.from(actual), Buffer.from(expected)
   );

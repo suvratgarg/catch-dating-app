@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "version": 11,
-  "updated": "2026-08-19",
+  "version": 13,
+  "updated": "2026-09-09",
   "owner": "web_surface_architecture",
   "statuses": {
     "required": "A behavior test must exist and import the target hook.",
@@ -152,6 +152,36 @@
     {
       "source": "website/src/features/waitlist/useWaitlistFormController.ts",
       "test": "website/src/features/waitlist/useWaitlistFormController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "website/src/features/eventAssistance/useEventAssistanceController.ts",
+      "test": "website/src/features/eventAssistance/useEventAssistanceController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "website/src/features/eventMessaging/useEventSmsPreferenceController.ts",
+      "test": "website/src/features/eventMessaging/useEventSmsPreferenceController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "website/src/features/eventMessaging/useEventMessageWithdrawalController.ts",
+      "test": "website/src/features/eventMessaging/useEventMessageWithdrawalController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "website/src/features/eventMessaging/useEventRcsPreferencesController.ts",
+      "test": "website/src/features/eventMessaging/useEventRcsPreferencesController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "website/src/features/eventMessaging/useSenderPreferencesController.ts",
+      "test": "website/src/features/eventMessaging/useEventWhatsappPreferencesController.test.tsx",
+      "status": "required"
+    },
+    {
+      "source": "website/src/features/eventMessaging/useEventWhatsappPreferencesController.ts",
+      "test": "website/src/features/eventMessaging/useEventWhatsappPreferencesController.test.tsx",
       "status": "required"
     }
   ]

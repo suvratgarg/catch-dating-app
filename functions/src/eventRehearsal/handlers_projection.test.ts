@@ -137,12 +137,15 @@ test(
       activeStepIndex: 1,
       virtualNow: admin.firestore.Timestamp.fromMillis(60 * 60000),
       virtualStartedAt: admin.firestore.Timestamp.fromMillis(0),
+      setupRevision: 0,
       runtimeRevision: 2,
       faultId: "none",
     } as unknown as EventRehearsalDocument, {
+      sessionId: "session-1",
       actorId: "actor-1",
       displayName: "Rhea",
       status: "late",
+      connectionState: "disconnected",
       guestMoment: "checkIn",
       optedOut: false,
       helpRequested: false,
@@ -161,5 +164,7 @@ test(
     );
     assert.equal("organizerId" in projection.session, false);
     assert.equal("operatorUid" in projection.session, false);
+    assert.equal(projection.actor.status, "late");
+    assert.equal(projection.actor.connectionState, "disconnected");
   }
 );

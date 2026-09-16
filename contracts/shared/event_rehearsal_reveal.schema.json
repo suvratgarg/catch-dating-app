@@ -1,0 +1,108 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/shared/event_rehearsal_reveal.schema.json",
+  "title": "Event rehearsal reveal control definitions",
+  "description": "Revisioned virtual reveal countdown and publication state for dress rehearsal only.",
+  "definitions": {
+    "DecisionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "State": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "revision",
+        "status",
+        "publishedRound",
+        "pendingRound",
+        "startedAt",
+        "countdownSeconds",
+        "lastDecisionId",
+        "lastAction"
+      ],
+      "properties": {
+        "revision": {"type": "integer", "minimum": 0, "maximum": 2147483647},
+        "status": {
+          "type": "string",
+          "enum": ["idle", "countingDown", "revealed"]
+        },
+        "publishedRound": {"type": "integer", "minimum": -1, "maximum": 100},
+        "pendingRound": {
+          "type": ["integer", "null"],
+          "minimum": 0,
+          "maximum": 100
+        },
+        "startedAt": {
+          "$ref": "event_common.schema.json#/definitions/nullableTimestamp"
+        },
+        "countdownSeconds": {"type": "integer", "minimum": 1, "maximum": 300},
+        "lastDecisionId": {
+          "oneOf": [
+            {"$ref": "#/definitions/DecisionId"},
+            {"type": "null"}
+          ]
+        },
+        "lastAction": {
+          "oneOf": [
+            {
+              "type": "string",
+              "enum": ["startCountdown", "cancelPending", "publish"]
+            },
+            {"type": "null"}
+          ]
+        }
+      }
+    },
+    "Review": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "revision",
+        "status",
+        "publishedRound",
+        "pendingRound",
+        "startedAt",
+        "countdownSeconds"
+      ],
+      "properties": {
+        "revision": {"type": "integer", "minimum": 0, "maximum": 2147483647},
+        "status": {
+          "type": "string",
+          "enum": ["idle", "countingDown", "revealed"]
+        },
+        "publishedRound": {"type": "integer", "minimum": -1, "maximum": 100},
+        "pendingRound": {
+          "type": ["integer", "null"],
+          "minimum": 0,
+          "maximum": 100
+        },
+        "startedAt": {
+          "type": ["integer", "null"],
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "countdownSeconds": {"type": "integer", "minimum": 1, "maximum": 300}
+      }
+    },
+    "Command": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["action", "expectedLiveRevision", "decisionId"],
+      "properties": {
+        "action": {
+          "type": "string",
+          "enum": ["startCountdown", "cancelPending", "publish"]
+        },
+        "expectedLiveRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "decisionId": {"$ref": "#/definitions/DecisionId"}
+      }
+    }
+  }
+}

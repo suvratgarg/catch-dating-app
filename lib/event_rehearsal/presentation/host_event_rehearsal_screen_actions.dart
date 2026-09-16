@@ -1,0 +1,181 @@
+part of 'host_event_rehearsal_screen.dart';
+
+mixin _HostEventRehearsalScreenActions
+    on ConsumerState<HostEventRehearsalScreen> {
+  Future<List<EventSuccessSpatialDestination>> _previewSpatial(
+    EventRehearsalRuntimeProjection runtime,
+    EventRehearsalBootstrap rehearsal,
+    EventSuccessAssignment assignment,
+  ) async {
+    final actor = rehearsal.actors
+        .where((candidate) => candidate.actorId == assignment.uid)
+        .firstOrNull;
+    final assignmentsByUnit = <String, List<EventSuccessAssignment>>{};
+    for (final candidate in runtime.assignments) {
+      final unitId = candidate.layoutUnitId;
+      if (unitId == null || candidate.uid == assignment.uid) continue;
+      assignmentsByUnit.putIfAbsent(unitId, () => []).add(candidate);
+    }
+    return [
+      for (final unit in runtime.layout.units)
+        if (unit.id != assignment.layoutUnitId)
+          () {
+            final occupants = assignmentsByUnit[unit.id] ?? const [];
+            final full = occupants.length >= unit.capacity;
+            final conflicts =
+                actor != null &&
+                occupants.any(
+                  (occupant) => actor.keepApartActorIds.contains(occupant.uid),
+                );
+            return EventSuccessSpatialDestination(
+              unitId: unit.id,
+              valid: !full && !conflicts,
+              reason: full
+                  ? EventSuccessSpatialDestinationReason.capacity
+                  : conflicts
+                  ? EventSuccessSpatialDestinationReason.safetyKeepApart
+                  : null,
+              recommendedScope: actor?.status == EventRehearsalActorStatus.late
+                  ? EventSuccessSpatialScope.thisRound
+                  : EventSuccessSpatialScope.pinned,
+            );
+          }(),
+    ];
+  }
+
+  Future<void> _controlSpatial(
+    EventRehearsalSession session,
+    String actorId,
+    EventRehearsalSpatialAction action, {
+    String? destinationUnitId,
+    EventRehearsalSpatialScope? scope,
+  }) async {
+    try {
+      await EventRehearsalController.spatialMutation.run(
+        ref,
+        (tx) => tx
+            .get(eventRehearsalControllerProvider.notifier)
+            .controlSpatial(
+              session: session,
+              actorId: actorId,
+              action: action,
+              destinationUnitId: destinationUnitId,
+              scope: scope,
+            ),
+      );
+    } on Object {
+      // The mutation listener owns user-visible action failure.
+    }
+  }
+
+  Future<void> _copyGuestLink(String guestUrl) async {
+    try {
+      await EventRehearsalController.shareMutation.run(
+        ref,
+        (tx) => tx
+            .get(eventRehearsalControllerProvider.notifier)
+            .copyGuestLink(guestUrl),
+      );
+      if (mounted) {
+        showCatchSnackBar(context, context.l10n.hostEventRehearsalLinkCopied);
+      }
+    } on Object {
+      // The mutation listener owns user-visible action failure.
+    }
+  }
+
+  Future<void> _shareGuestLink(String guestUrl) async {
+    try {
+      await EventRehearsalController.shareMutation.run(
+        ref,
+        (tx) => tx
+            .get(eventRehearsalControllerProvider.notifier)
+            .shareGuestLink(guestUrl),
+      );
+    } on Object {
+      // The mutation listener owns user-visible action failure.
+    }
+  }
+
+  Future<void> _rotateGuestLink() async {
+    final confirmed = await showCatchConfirmDialog(
+      copy: catchDialogCopy(context.l10n),
+      context: context,
+      title: context.l10n.hostEventRehearsalRotateLink,
+      message: context.l10n.hostEventRehearsalRotateLinkBody,
+      confirmLabel: context.l10n.hostEventRehearsalRotateLink,
+    );
+    if (confirmed != true || !mounted) return;
+    try {
+      await EventRehearsalController.guestLinkMutation.run(
+        ref,
+        (tx) => tx
+            .get(eventRehearsalControllerProvider.notifier)
+            .rotateGuestLink(widget.sessionId),
+      );
+    } on Object {
+      // The mutation listener owns user-visible action failure.
+    }
+  }
+
+  Future<void> _reset() async {
+    final confirmed = await showCatchConfirmDialog(
+      copy: catchDialogCopy(context.l10n),
+      context: context,
+      title: context.l10n.hostEventRehearsalReset,
+      message: context.l10n.hostEventRehearsalResetBody,
+      confirmLabel: context.l10n.hostEventRehearsalReset,
+    );
+    if (confirmed != true || !mounted) return;
+    try {
+      await EventRehearsalController.resetMutation.run(
+        ref,
+        (tx) => tx
+            .get(eventRehearsalControllerProvider.notifier)
+            .reset(widget.sessionId),
+      );
+    } on Object {
+      // The mutation listener owns user-visible action failure.
+    }
+  }
+
+  Future<void> _fork() async {
+    try {
+      final created = await EventRehearsalController.forkMutation.run(
+        ref,
+        (tx) => tx
+            .get(eventRehearsalControllerProvider.notifier)
+            .fork(widget.sessionId),
+      );
+      if (!mounted) return;
+      context.goNamed(
+        Routes.hostEventRehearsalScreen.name,
+        pathParameters: {
+          'clubId': widget.clubId,
+          'sessionId': created.sessionId,
+        },
+      );
+    } on Object {
+      // The mutation listener owns user-visible action failure.
+    }
+  }
+
+  Future<void> _export() async {
+    try {
+      await EventRehearsalController.exportMutation.run(
+        ref,
+        (tx) => tx
+            .get(eventRehearsalControllerProvider.notifier)
+            .exportReproduction(widget.sessionId),
+      );
+      if (mounted) {
+        showCatchSnackBar(
+          context,
+          context.l10n.hostEventRehearsalReproductionCopied,
+        );
+      }
+    } on Object {
+      // The mutation listener owns user-visible action failure.
+    }
+  }
+}

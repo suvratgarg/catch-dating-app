@@ -1,0 +1,6 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/operations/event_assistance_message_intent.schema.json",
+  "title": "EventAssistanceMessageIntent",
+  "$ref": "../shared/event_assistance_messaging.schema.json#/definitions/MessageIntent"
+}
