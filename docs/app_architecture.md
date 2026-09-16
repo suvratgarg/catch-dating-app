@@ -1454,8 +1454,9 @@ inset body for the loaded full-width section body. The
 screens and Consumer presentation surfaces, as well as root-title style
 overrides. It reports remaining legacy Host recipe calls for migration; those
 calls are existing debt, not an approved pattern for new screens. Its exact
-per-file legacy allowances must decrease when a call site is migrated. A new
-recipe fails in any file, even if another migration keeps the total unchanged.
+per-file legacy allowances for generic rows and repeated cards, boxes, or
+chips must decrease when a call site is migrated. A new recipe fails in any
+file, even if another migration keeps the total unchanged.
 
 Both primitives apply `InitialLoadPolicy.standard` (12 seconds) to the first
 user-visible resolution and to blocking retries that have no credible data.

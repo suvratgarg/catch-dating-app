@@ -22,12 +22,12 @@ import 'package:skeletonizer/skeletonizer.dart';
 /// - [CatchSkeleton.custom] — freeform child with shimmer overlay
 ///
 /// - [CatchSkeleton.content] — derive the shape from a real composition
-/// - [CatchSkeleton.cards] — repeated cards
+/// - [CatchSkeleton.cards] — legacy repeated cards
 /// - [CatchSkeleton.rows], [CatchSkeleton.mediaRows], [CatchSkeleton.iconRows]
 ///   — legacy generic row recipes; new call sites are rejected by the loading
 ///     composition lint and existing callers are being migrated
-/// - [CatchSkeleton.boxes] — equal-width control placeholders
-/// - [CatchSkeleton.chips] — wrapping chip placeholders
+/// - [CatchSkeleton.boxes] — legacy equal-width control placeholders
+/// - [CatchSkeleton.chips] — legacy wrapping chip placeholders
 ///
 /// All constructors use the shared Skeletonizer effect and Catch-themed colors.
 /// Reduce Motion keeps the placeholders static; temporary labels and controls

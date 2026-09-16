@@ -18,8 +18,19 @@ class HostTeamHostedClubsSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final sectionChildren = switch (state) {
-      HostTeamHostedClubsLoading() => const <Widget>[
-        CatchSkeleton.iconRows(count: 2, divided: true),
+      HostTeamHostedClubsLoading() => <Widget>[
+        for (var index = 0; index < 2; index++)
+          CatchFieldLanes.single(
+            child: CatchSkeleton.content(
+              child: CatchField.nav(
+                copy: catchFieldCopy(context.l10n),
+                title: 'Loading host role',
+                valueText: 'Loading club',
+                icon: CatchIcons.groupOutlined,
+                onTap: () {},
+              ),
+            ),
+          ),
       ],
       HostTeamHostedClubsError(:final error) => <Widget>[
         CatchLocalizedErrorState(

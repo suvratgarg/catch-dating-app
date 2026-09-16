@@ -180,7 +180,18 @@ class _HostApplicationsScreenState
                 initialLoadTimeout: null,
                 loadingBuilder: (_) => ListView(
                   padding: EdgeInsets.zero,
-                  children: const [CatchSkeleton.rows(count: 6)],
+                  children: [
+                    CatchSection.containedLoadingRows(
+                      layouts: List.filled(
+                        6,
+                        const CatchPersonLayout.placeholder(
+                          hasSupportingText: true,
+                          hasContext: true,
+                          hasBadge: true,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
                 errorBuilder: (_, error, _, onBoundaryRetry) =>
                     CatchLocalizedErrorState(

@@ -95,7 +95,15 @@ class HostFormOverviewSectionList extends ConsumerWidget {
             value: ref.watch(hostFormResponsesControllerProvider(request)),
             onRetry: () =>
                 ref.invalidate(hostFormResponsesControllerProvider(request)),
-            loadingBuilder: (_) => const CatchSkeleton.rows(count: 1),
+            loadingBuilder: (_) => CatchSection.containedLoadingRows(
+              title: context.l10n.hostAudienceLatestResponse,
+              layouts: const [
+                CatchPersonLayout.placeholder(
+                  hasSupportingText: true,
+                  hasContext: true,
+                ),
+              ],
+            ),
             errorBuilder: (_, error, _, onBoundaryRetry) =>
                 CatchLocalizedErrorState(
                   error,

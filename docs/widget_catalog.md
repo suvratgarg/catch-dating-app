@@ -682,7 +682,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>ExploreList</code> | <code>lib/explore/presentation/widgets/explore_list.dart:13</code> | — | — | No class documentation or registry summary. |
 | <code>ExploreListEmptyState</code> | <code>lib/explore/presentation/widgets/explore_list.dart:91</code> | — | — | No class documentation or registry summary. |
 | <code>ExploreScreenEmptyState</code> | <code>lib/explore/presentation/widgets/explore_screen_empty_state.dart:7</code> | — | — | No class documentation or registry summary. |
-| <code>RecommendCard</code> | <code>lib/explore/presentation/widgets/recommend_card.dart:18</code> | — | — | Explore recommendation card. |
+| <code>RecommendCard</code> | <code>lib/explore/presentation/widgets/recommend_card.dart:19</code> | — | — | Explore recommendation card. |
 | <code>Recommendations</code> | <code>lib/explore/presentation/widgets/recommendations.dart:8</code> | — | — | No class documentation or registry summary. |
 | <code>UpdateRequiredContent</code> | <code>lib/force_update/presentation/update_required_screen.dart:55</code> | — | — | Provider-free full-screen update prompt rendered by [UpdateRequiredScreen]. |
 | <code>HostEventEntrySheet</code> | <code>lib/hosts/events/presentation/host_event_entry_sheet.dart:23</code> | — | — | No class documentation or registry summary. |

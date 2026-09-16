@@ -6,6 +6,7 @@ import 'package:catch_dating_app/events/shared/event_price_copy.dart';
 import 'package:catch_dating_app/explore/domain/explore_event_recommendation.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -22,7 +23,25 @@ class RecommendCard extends StatelessWidget {
     this.clubName,
     this.reasonLabel,
     this.width,
-  });
+  }) : _loading = false;
+
+  RecommendCard.loading({super.key, this.width})
+    : event = Event(
+        id: 'loading',
+        clubId: 'loading',
+        name: 'Loading recommendation',
+        startTime: DateTime.now().add(const Duration(days: 1)),
+        endTime: DateTime.now().add(const Duration(days: 1, hours: 2)),
+        meetingPoint: 'Loading location',
+        distanceKm: 0,
+        pace: PaceLevel.easy,
+        capacityLimit: 0,
+        description: '',
+        priceInPaise: 0,
+      ),
+      clubName = 'Loading organizer',
+      reasonLabel = 'Loading reason',
+      _loading = true;
 
   factory RecommendCard.fromRecommendation({
     Key? key,
@@ -56,6 +75,7 @@ class RecommendCard extends StatelessWidget {
   final String? clubName;
   final String? reasonLabel;
   final double? width;
+  final bool _loading;
 
   @override
   Widget build(BuildContext context) {
@@ -77,8 +97,10 @@ class RecommendCard extends StatelessWidget {
       ),
     );
 
-    if (cardWidth == null) return card;
-    return SizedBox(width: cardWidth, child: card);
+    final rendered = cardWidth == null
+        ? card
+        : SizedBox(width: cardWidth, child: card);
+    return _loading ? CatchSkeleton.content(child: rendered) : rendered;
   }
 
   String _buildSubtitle() {
