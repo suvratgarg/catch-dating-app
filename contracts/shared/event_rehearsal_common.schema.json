@@ -83,7 +83,8 @@
         "requiredData",
         "outcome",
         "reveal",
-        "allocation"
+        "allocation",
+        "roster"
       ]
     },
     "behavior": {

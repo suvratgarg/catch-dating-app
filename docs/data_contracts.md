@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.128.0
+version: 1.129.0
 updated: 2026-09-16
 owner: recursive_audit_loop
 status: active
@@ -1257,6 +1257,18 @@ selected guests to the existing assignment moment. The Host review removes the
 proposer and operation identities while exposing current assignments and
 proposal status. Setup changes and reset delete the state. No live assignment,
 draft, event attendee or event-success plan is read or written.
+
+Optional `eventRehearsals.rosterReconciliation` is the committed synthetic
+roster source for one setup generation. Creation, setup changes and reset build
+one imported row for every deterministic actor; the roster/capacity scenario
+also retains one duplicate and one failed row, while ambiguous-claim scenarios
+retain one unresolved ambiguous row. The manager command names the exact source
+id and setup-bound source revision. Reconciliation marks that source reviewed,
+advances its own revision and records private operation/Host evidence without
+changing actors or reclassifying unresolved rows. `rosterReview` exposes every
+row and bounded outcome counts, omitting Host and operation identities. Legacy
+sessions without a committed source fail closed until reset. No live import,
+attendee or event roster is read or written.
 
 Movement controls carry their own closed group command with the parent setup and
 runtime revisions; action receipts use `actorId: null`. The departure freezes its

@@ -430,9 +430,12 @@ export const eventAssistanceCommandBindingCatalog = {
         "missingCapability": null
       },
       "rehearsal": {
-        "bindingType": "contractOnly",
-        "operations": [],
-        "missingCapability": "rehearsalRosterReconciliation"
+        "bindingType": "domainAdapter",
+        "operations": [
+          "controlEventRehearsal",
+          "getEventRehearsalBootstrap"
+        ],
+        "missingCapability": null
       }
     },
     {

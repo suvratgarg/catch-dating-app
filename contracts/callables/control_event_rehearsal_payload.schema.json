@@ -63,6 +63,9 @@
     },
     "allocation": {
       "$ref": "../shared/event_rehearsal_allocation.schema.json#/definitions/Command"
+    },
+    "roster": {
+      "$ref": "../shared/event_rehearsal_roster_reconciliation.schema.json#/definitions/Command"
     }
   },
   "allOf": [
@@ -119,6 +122,11 @@
             {
               "required": [
                 "allocation"
+              ]
+            },
+            {
+              "required": [
+                "roster"
               ]
             }
           ]
@@ -186,6 +194,11 @@
               "required": [
                 "allocation"
               ]
+            },
+            {
+              "required": [
+                "roster"
+              ]
             }
           ]
         }
@@ -252,6 +265,11 @@
               "required": [
                 "allocation"
               ]
+            },
+            {
+              "required": [
+                "roster"
+              ]
             }
           ]
         }
@@ -277,7 +295,8 @@
                 "requiredData",
                 "outcome",
                 "reveal",
-                "allocation"
+                "allocation",
+                "roster"
               ]
             }
           }
@@ -385,6 +404,11 @@
               "required": [
                 "allocation"
               ]
+            },
+            {
+              "required": [
+                "roster"
+              ]
             }
           ]
         }
@@ -455,6 +479,11 @@
             {
               "required": [
                 "allocation"
+              ]
+            },
+            {
+              "required": [
+                "roster"
               ]
             }
           ]
@@ -527,6 +556,11 @@
               "required": [
                 "allocation"
               ]
+            },
+            {
+              "required": [
+                "roster"
+              ]
             }
           ]
         }
@@ -597,6 +631,11 @@
             {
               "required": [
                 "allocation"
+              ]
+            },
+            {
+              "required": [
+                "roster"
               ]
             }
           ]
@@ -669,6 +708,11 @@
               "required": [
                 "practiceOperatorId"
               ]
+            },
+            {
+              "required": [
+                "roster"
+              ]
             }
           ]
         }
@@ -677,6 +721,82 @@
         "not": {
           "required": [
             "allocation"
+          ]
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "action": {
+            "const": "roster"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "roster",
+          "expectedSetupRevision"
+        ],
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "assistance"
+              ]
+            },
+            {
+              "required": [
+                "movement"
+              ]
+            },
+            {
+              "required": [
+                "staff"
+              ]
+            },
+            {
+              "required": [
+                "minutes"
+              ]
+            },
+            {
+              "required": [
+                "settings"
+              ]
+            },
+            {
+              "required": [
+                "requiredData"
+              ]
+            },
+            {
+              "required": [
+                "outcome"
+              ]
+            },
+            {
+              "required": [
+                "reveal"
+              ]
+            },
+            {
+              "required": [
+                "allocation"
+              ]
+            },
+            {
+              "required": [
+                "practiceOperatorId"
+              ]
+            }
+          ]
+        }
+      },
+      "else": {
+        "not": {
+          "required": [
+            "roster"
           ]
         }
       }

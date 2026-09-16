@@ -1836,6 +1836,140 @@ export const eventRehearsalDocumentSchema: Record<string, unknown> = {
         }
       },
       "x-catch-ownership": "callable-owned"
+    },
+    "rosterReconciliation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sourceId",
+        "sourceRevision",
+        "rows",
+        "status",
+        "reconciliationRevision",
+        "lastOperationId",
+        "reconciledBy",
+        "reconciledAt"
+      ],
+      "properties": {
+        "sourceId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "sourceRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "rows": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 52,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "rowId",
+              "outcome",
+              "actorId"
+            ],
+            "properties": {
+              "rowId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+              },
+              "outcome": {
+                "type": "string",
+                "enum": [
+                  "imported",
+                  "duplicate",
+                  "ambiguous",
+                  "failed"
+                ]
+              },
+              "actorId": {
+                "oneOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "pending",
+            "reconciled"
+          ]
+        },
+        "reconciliationRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "lastOperationId": {
+          "oneOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reconciledBy": {
+          "oneOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reconciledAt": {
+          "anyOf": [
+            {
+              "type": "object",
+              "description": "Serialized Firestore Timestamp fixture shape.",
+              "x-firestore-type": "timestamp",
+              "additionalProperties": false,
+              "required": [
+                "_seconds",
+                "_nanoseconds"
+              ],
+              "properties": {
+                "_seconds": {
+                  "type": "integer"
+                },
+                "_nanoseconds": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 999999999
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "x-catch-ownership": "callable-owned"
     }
   }
 } as const;

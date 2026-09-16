@@ -6998,7 +6998,7 @@ abstract final class CatchContractConstraints {
     path: 'controlEventRehearsalCallablePayload.action',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['markReady', 'start', 'pause', 'resume', 'advance', 'previous', 'advanceClock', 'complete', 'assistance', 'movement', 'staff', 'settings', 'requiredData', 'outcome', 'reveal', 'allocation'],
+    enumValues: <String>['markReady', 'start', 'pause', 'resume', 'advance', 'previous', 'advanceClock', 'complete', 'assistance', 'movement', 'staff', 'settings', 'requiredData', 'outcome', 'reveal', 'allocation', 'roster'],
   );
 
   static const controlEventRehearsalCallablePayloadAllocationAttendeeIds = CatchContractFieldConstraints(
@@ -7234,6 +7234,23 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
     minimum: 0,
     maximum: 9007199254740991,
+  );
+
+  static const controlEventRehearsalCallablePayloadRosterSourceId = CatchContractFieldConstraints(
+    path: 'controlEventRehearsalCallablePayload.roster.sourceId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const controlEventRehearsalCallablePayloadRosterSourceRevision = CatchContractFieldConstraints(
+    path: 'controlEventRehearsalCallablePayload.roster.sourceRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2147483647,
   );
 
   static const controlEventRehearsalCallablePayloadSessionId = CatchContractFieldConstraints(
@@ -36735,6 +36752,109 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['idle', 'countingDown', 'revealed'],
   );
 
+  static const eventRehearsalBootstrapCallableResponseRosterReviewAmbiguousCount = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.rosterReview.ambiguousCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseRosterReviewDuplicateCount = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.rosterReview.duplicateCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseRosterReviewFailedCount = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.rosterReview.failedCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseRosterReviewImportedCount = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.rosterReview.importedCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 50,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseRosterReviewReconciledAt = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.rosterReview.reconciledAt',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseRosterReviewReconciliationRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.rosterReview.reconciliationRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2147483647,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseRosterReviewRows = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.rosterReview.rows',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 2,
+    maxItems: 52,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseRosterReviewRowsItemsActorId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.rosterReview.rows.items.actorId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseRosterReviewRowsItemsOutcome = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.rosterReview.rows.items.outcome',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['imported', 'duplicate', 'ambiguous', 'failed'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseRosterReviewRowsItemsRowId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.rosterReview.rows.items.rowId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseRosterReviewSourceId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.rosterReview.sourceId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseRosterReviewSourceRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.rosterReview.sourceRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2147483647,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseRosterReviewStatus = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.rosterReview.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['pending', 'reconciled'],
+  );
+
   static const eventRehearsalBootstrapCallableResponseSessionActionCount = CatchContractFieldConstraints(
     path: 'eventRehearsalBootstrapCallableResponse.session.actionCount',
     required: true,
@@ -38675,6 +38795,98 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     enumValues: <String>['idle', 'countingDown', 'revealed'],
+  );
+
+  static const eventRehearsalDocumentRosterReconciliationLastOperationId = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.rosterReconciliation.lastOperationId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalDocumentRosterReconciliationReconciledAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.rosterReconciliation.reconciledAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventRehearsalDocumentRosterReconciliationReconciledAtSeconds = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.rosterReconciliation.reconciledAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventRehearsalDocumentRosterReconciliationReconciledBy = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.rosterReconciliation.reconciledBy',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalDocumentRosterReconciliationReconciliationRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.rosterReconciliation.reconciliationRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2147483647,
+  );
+
+  static const eventRehearsalDocumentRosterReconciliationRows = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.rosterReconciliation.rows',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 2,
+    maxItems: 52,
+  );
+
+  static const eventRehearsalDocumentRosterReconciliationRowsItemsActorId = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.rosterReconciliation.rows.items.actorId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalDocumentRosterReconciliationRowsItemsOutcome = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.rosterReconciliation.rows.items.outcome',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['imported', 'duplicate', 'ambiguous', 'failed'],
+  );
+
+  static const eventRehearsalDocumentRosterReconciliationRowsItemsRowId = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.rosterReconciliation.rows.items.rowId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRehearsalDocumentRosterReconciliationSourceId = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.rosterReconciliation.sourceId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRehearsalDocumentRosterReconciliationSourceRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.rosterReconciliation.sourceRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2147483647,
+  );
+
+  static const eventRehearsalDocumentRosterReconciliationStatus = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.rosterReconciliation.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['pending', 'reconciled'],
   );
 
   static const eventRehearsalDocumentRuntimeRevision = CatchContractFieldConstraints(
@@ -96705,6 +96917,8 @@ abstract final class CatchContractConstraints {
     'controlEventRehearsalCallablePayload.reveal.action': controlEventRehearsalCallablePayloadRevealAction,
     'controlEventRehearsalCallablePayload.reveal.decisionId': controlEventRehearsalCallablePayloadRevealDecisionId,
     'controlEventRehearsalCallablePayload.reveal.expectedLiveRevision': controlEventRehearsalCallablePayloadRevealExpectedLiveRevision,
+    'controlEventRehearsalCallablePayload.roster.sourceId': controlEventRehearsalCallablePayloadRosterSourceId,
+    'controlEventRehearsalCallablePayload.roster.sourceRevision': controlEventRehearsalCallablePayloadRosterSourceRevision,
     'controlEventRehearsalCallablePayload.sessionId': controlEventRehearsalCallablePayloadSessionId,
     'controlEventRehearsalCallablePayload.settings': controlEventRehearsalCallablePayloadSettings,
     'controlEventRehearsalCallablePayload.staff.decision.duty': controlEventRehearsalCallablePayloadStaffDecisionDuty,
@@ -100654,6 +100868,19 @@ abstract final class CatchContractConstraints {
     'eventRehearsalBootstrapCallableResponse.revealReview.revision': eventRehearsalBootstrapCallableResponseRevealReviewRevision,
     'eventRehearsalBootstrapCallableResponse.revealReview.startedAt': eventRehearsalBootstrapCallableResponseRevealReviewStartedAt,
     'eventRehearsalBootstrapCallableResponse.revealReview.status': eventRehearsalBootstrapCallableResponseRevealReviewStatus,
+    'eventRehearsalBootstrapCallableResponse.rosterReview.ambiguousCount': eventRehearsalBootstrapCallableResponseRosterReviewAmbiguousCount,
+    'eventRehearsalBootstrapCallableResponse.rosterReview.duplicateCount': eventRehearsalBootstrapCallableResponseRosterReviewDuplicateCount,
+    'eventRehearsalBootstrapCallableResponse.rosterReview.failedCount': eventRehearsalBootstrapCallableResponseRosterReviewFailedCount,
+    'eventRehearsalBootstrapCallableResponse.rosterReview.importedCount': eventRehearsalBootstrapCallableResponseRosterReviewImportedCount,
+    'eventRehearsalBootstrapCallableResponse.rosterReview.reconciledAt': eventRehearsalBootstrapCallableResponseRosterReviewReconciledAt,
+    'eventRehearsalBootstrapCallableResponse.rosterReview.reconciliationRevision': eventRehearsalBootstrapCallableResponseRosterReviewReconciliationRevision,
+    'eventRehearsalBootstrapCallableResponse.rosterReview.rows': eventRehearsalBootstrapCallableResponseRosterReviewRows,
+    'eventRehearsalBootstrapCallableResponse.rosterReview.rows.items.actorId': eventRehearsalBootstrapCallableResponseRosterReviewRowsItemsActorId,
+    'eventRehearsalBootstrapCallableResponse.rosterReview.rows.items.outcome': eventRehearsalBootstrapCallableResponseRosterReviewRowsItemsOutcome,
+    'eventRehearsalBootstrapCallableResponse.rosterReview.rows.items.rowId': eventRehearsalBootstrapCallableResponseRosterReviewRowsItemsRowId,
+    'eventRehearsalBootstrapCallableResponse.rosterReview.sourceId': eventRehearsalBootstrapCallableResponseRosterReviewSourceId,
+    'eventRehearsalBootstrapCallableResponse.rosterReview.sourceRevision': eventRehearsalBootstrapCallableResponseRosterReviewSourceRevision,
+    'eventRehearsalBootstrapCallableResponse.rosterReview.status': eventRehearsalBootstrapCallableResponseRosterReviewStatus,
     'eventRehearsalBootstrapCallableResponse.session.actionCount': eventRehearsalBootstrapCallableResponseSessionActionCount,
     'eventRehearsalBootstrapCallableResponse.session.activeStepIndex': eventRehearsalBootstrapCallableResponseSessionActiveStepIndex,
     'eventRehearsalBootstrapCallableResponse.session.actorCount': eventRehearsalBootstrapCallableResponseSessionActorCount,
@@ -100920,6 +101147,18 @@ abstract final class CatchContractConstraints {
     'eventRehearsalDocument.revealControl.startedAt._nanoseconds': eventRehearsalDocumentRevealControlStartedAtNanoseconds,
     'eventRehearsalDocument.revealControl.startedAt._seconds': eventRehearsalDocumentRevealControlStartedAtSeconds,
     'eventRehearsalDocument.revealControl.status': eventRehearsalDocumentRevealControlStatus,
+    'eventRehearsalDocument.rosterReconciliation.lastOperationId': eventRehearsalDocumentRosterReconciliationLastOperationId,
+    'eventRehearsalDocument.rosterReconciliation.reconciledAt._nanoseconds': eventRehearsalDocumentRosterReconciliationReconciledAtNanoseconds,
+    'eventRehearsalDocument.rosterReconciliation.reconciledAt._seconds': eventRehearsalDocumentRosterReconciliationReconciledAtSeconds,
+    'eventRehearsalDocument.rosterReconciliation.reconciledBy': eventRehearsalDocumentRosterReconciliationReconciledBy,
+    'eventRehearsalDocument.rosterReconciliation.reconciliationRevision': eventRehearsalDocumentRosterReconciliationReconciliationRevision,
+    'eventRehearsalDocument.rosterReconciliation.rows': eventRehearsalDocumentRosterReconciliationRows,
+    'eventRehearsalDocument.rosterReconciliation.rows.items.actorId': eventRehearsalDocumentRosterReconciliationRowsItemsActorId,
+    'eventRehearsalDocument.rosterReconciliation.rows.items.outcome': eventRehearsalDocumentRosterReconciliationRowsItemsOutcome,
+    'eventRehearsalDocument.rosterReconciliation.rows.items.rowId': eventRehearsalDocumentRosterReconciliationRowsItemsRowId,
+    'eventRehearsalDocument.rosterReconciliation.sourceId': eventRehearsalDocumentRosterReconciliationSourceId,
+    'eventRehearsalDocument.rosterReconciliation.sourceRevision': eventRehearsalDocumentRosterReconciliationSourceRevision,
+    'eventRehearsalDocument.rosterReconciliation.status': eventRehearsalDocumentRosterReconciliationStatus,
     'eventRehearsalDocument.runtimeRevision': eventRehearsalDocumentRuntimeRevision,
     'eventRehearsalDocument.scenarioId': eventRehearsalDocumentScenarioId,
     'eventRehearsalDocument.seed': eventRehearsalDocumentSeed,

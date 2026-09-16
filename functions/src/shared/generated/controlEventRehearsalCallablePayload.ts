@@ -27,7 +27,8 @@ export type ControlEventRehearsalCallablePayload = {
     | "requiredData"
     | "outcome"
     | "reveal"
-    | "allocation";
+    | "allocation"
+    | "roster";
   minutes?: number;
   assistance?:
     | {
@@ -760,5 +761,9 @@ export type ControlEventRehearsalCallablePayload = {
   };
   allocation?: {
     [k: string]: unknown;
+  };
+  roster?: {
+    sourceId: string;
+    sourceRevision: number;
   };
 };

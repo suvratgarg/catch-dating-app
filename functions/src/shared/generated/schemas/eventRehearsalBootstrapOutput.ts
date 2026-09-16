@@ -9352,6 +9352,118 @@ export const eventRehearsalBootstrapCallableResponseSchema: Record<string, unkno
           }
         }
       }
+    },
+    "rosterReview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sourceId",
+        "sourceRevision",
+        "status",
+        "reconciliationRevision",
+        "reconciledAt",
+        "importedCount",
+        "duplicateCount",
+        "ambiguousCount",
+        "failedCount",
+        "rows"
+      ],
+      "properties": {
+        "sourceId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "sourceRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "pending",
+            "reconciled"
+          ]
+        },
+        "reconciliationRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "reconciledAt": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "importedCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 50
+        },
+        "duplicateCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "ambiguousCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "failedCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "rows": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 52,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "rowId",
+              "outcome",
+              "actorId"
+            ],
+            "properties": {
+              "rowId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+              },
+              "outcome": {
+                "type": "string",
+                "enum": [
+                  "imported",
+                  "duplicate",
+                  "ambiguous",
+                  "failed"
+                ]
+              },
+              "actorId": {
+                "oneOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {

@@ -162,7 +162,6 @@ enum EventAssistanceCommandCoverageVariant { joining, planChange, followUp }
 
 enum EventAssistanceMissingCapability {
   rehearsalProgrammeControl,
-  rehearsalRosterReconciliation,
   eventPaymentCaseResolution,
   rehearsalFinanceReconciliation,
   rehearsalUnitProgressControl,
@@ -1912,13 +1911,16 @@ const eventAssistanceCommandBindingCatalog =
       missingCapability: null,
     ),
     rehearsal: EventAssistanceModeBinding(
-      bindingType: EventAssistanceCommandBindingType.contractOnly,
-      coverage: EventAssistanceCommandCoverage.none,
+      bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      coverage: EventAssistanceCommandCoverage.complete,
       variantField: null,
       implementedVariants: <EventAssistanceCommandCoverageVariant>[],
       missingVariants: <EventAssistanceCommandCoverageVariant>[],
-      operations: <String>[],
-      missingCapability: EventAssistanceMissingCapability.rehearsalRosterReconciliation,
+      operations: <String>[
+        'controlEventRehearsal',
+        'getEventRehearsalBootstrap',
+      ],
+      missingCapability: null,
     ),
   ),
   EventAssistanceCommandBindingDescriptor(

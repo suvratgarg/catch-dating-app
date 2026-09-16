@@ -154,6 +154,14 @@ test("rehearsal required data binds both Host and guest boundaries", () => {
   assert.equal(binding.missingCapability, null);
 });
 
+test("rehearsal roster reconciliation binds control and review", () => {
+  const binding = commandBinding("reconcileRoster", "rehearsal");
+  assert.equal(binding.bindingType, "domainAdapter");
+  assert.deepEqual(binding.operations,
+    ["controlEventRehearsal", "getEventRehearsalBootstrap"]);
+  assert.equal(binding.missingCapability, null);
+});
+
 test("rehearsal outcomes bind the Host control and review boundaries", () => {
   const binding = commandBinding("recordOutcome", "rehearsal");
   assert.equal(binding.bindingType, "domainAdapter");

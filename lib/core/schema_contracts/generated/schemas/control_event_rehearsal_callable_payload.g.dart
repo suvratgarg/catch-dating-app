@@ -51,6 +51,7 @@ const schemaControlEventRehearsalCallablePayloadSchema = <String, Object?>{
         'outcome',
         'reveal',
         'allocation',
+        'roster',
       ],
     },
     'minutes': <String, Object?>{
@@ -3330,6 +3331,27 @@ const schemaControlEventRehearsalCallablePayloadSchema = <String, Object?>{
         },
       ],
     },
+    'roster': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'sourceId',
+        'sourceRevision',
+      ],
+      'properties': <String, Object?>{
+        'sourceId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 160,
+          'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+        },
+        'sourceRevision': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 2147483647,
+        },
+      },
+    },
   },
   'allOf': <Object?>[
     <String, Object?>{
@@ -3385,6 +3407,11 @@ const schemaControlEventRehearsalCallablePayloadSchema = <String, Object?>{
             <String, Object?>{
               'required': <Object?>[
                 'allocation',
+              ],
+            },
+            <String, Object?>{
+              'required': <Object?>[
+                'roster',
               ],
             },
           ],
@@ -3453,6 +3480,11 @@ const schemaControlEventRehearsalCallablePayloadSchema = <String, Object?>{
                 'allocation',
               ],
             },
+            <String, Object?>{
+              'required': <Object?>[
+                'roster',
+              ],
+            },
           ],
         },
       },
@@ -3519,6 +3551,11 @@ const schemaControlEventRehearsalCallablePayloadSchema = <String, Object?>{
                 'allocation',
               ],
             },
+            <String, Object?>{
+              'required': <Object?>[
+                'roster',
+              ],
+            },
           ],
         },
       },
@@ -3544,6 +3581,7 @@ const schemaControlEventRehearsalCallablePayloadSchema = <String, Object?>{
                 'outcome',
                 'reveal',
                 'allocation',
+                'roster',
               ],
             },
           },
@@ -3652,6 +3690,11 @@ const schemaControlEventRehearsalCallablePayloadSchema = <String, Object?>{
                 'allocation',
               ],
             },
+            <String, Object?>{
+              'required': <Object?>[
+                'roster',
+              ],
+            },
           ],
         },
       },
@@ -3721,6 +3764,11 @@ const schemaControlEventRehearsalCallablePayloadSchema = <String, Object?>{
             <String, Object?>{
               'required': <Object?>[
                 'allocation',
+              ],
+            },
+            <String, Object?>{
+              'required': <Object?>[
+                'roster',
               ],
             },
           ],
@@ -3794,6 +3842,11 @@ const schemaControlEventRehearsalCallablePayloadSchema = <String, Object?>{
                 'allocation',
               ],
             },
+            <String, Object?>{
+              'required': <Object?>[
+                'roster',
+              ],
+            },
           ],
         },
       },
@@ -3863,6 +3916,11 @@ const schemaControlEventRehearsalCallablePayloadSchema = <String, Object?>{
             <String, Object?>{
               'required': <Object?>[
                 'allocation',
+              ],
+            },
+            <String, Object?>{
+              'required': <Object?>[
+                'roster',
               ],
             },
           ],
@@ -3936,6 +3994,11 @@ const schemaControlEventRehearsalCallablePayloadSchema = <String, Object?>{
                 'practiceOperatorId',
               ],
             },
+            <String, Object?>{
+              'required': <Object?>[
+                'roster',
+              ],
+            },
           ],
         },
       },
@@ -3943,6 +4006,82 @@ const schemaControlEventRehearsalCallablePayloadSchema = <String, Object?>{
         'not': <String, Object?>{
           'required': <Object?>[
             'allocation',
+          ],
+        },
+      },
+    },
+    <String, Object?>{
+      'if': <String, Object?>{
+        'properties': <String, Object?>{
+          'action': <String, Object?>{
+            'const': 'roster',
+          },
+        },
+      },
+      'then': <String, Object?>{
+        'required': <Object?>[
+          'roster',
+          'expectedSetupRevision',
+        ],
+        'not': <String, Object?>{
+          'anyOf': <Object?>[
+            <String, Object?>{
+              'required': <Object?>[
+                'assistance',
+              ],
+            },
+            <String, Object?>{
+              'required': <Object?>[
+                'movement',
+              ],
+            },
+            <String, Object?>{
+              'required': <Object?>[
+                'staff',
+              ],
+            },
+            <String, Object?>{
+              'required': <Object?>[
+                'minutes',
+              ],
+            },
+            <String, Object?>{
+              'required': <Object?>[
+                'settings',
+              ],
+            },
+            <String, Object?>{
+              'required': <Object?>[
+                'requiredData',
+              ],
+            },
+            <String, Object?>{
+              'required': <Object?>[
+                'outcome',
+              ],
+            },
+            <String, Object?>{
+              'required': <Object?>[
+                'reveal',
+              ],
+            },
+            <String, Object?>{
+              'required': <Object?>[
+                'allocation',
+              ],
+            },
+            <String, Object?>{
+              'required': <Object?>[
+                'practiceOperatorId',
+              ],
+            },
+          ],
+        },
+      },
+      'else': <String, Object?>{
+        'not': <String, Object?>{
+          'required': <Object?>[
+            'roster',
           ],
         },
       },

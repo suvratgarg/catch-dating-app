@@ -8894,6 +8894,24 @@ export interface EventRehearsalDocument {
       publishedAt: FirebaseFirestore.Timestamp | null;
     }[];
   };
+  rosterReconciliation?: {
+    sourceId: string;
+    sourceRevision: number;
+    /**
+     * @minItems 2
+     * @maxItems 52
+     */
+    rows: {
+      rowId: string;
+      outcome: "imported" | "duplicate" | "ambiguous" | "failed";
+      actorId: string | null;
+    }[];
+    status: "pending" | "reconciled";
+    reconciliationRevision: number;
+    lastOperationId: string | null;
+    reconciledBy: string | null;
+    reconciledAt: FirebaseFirestore.Timestamp | null;
+  };
 }
 
 /**

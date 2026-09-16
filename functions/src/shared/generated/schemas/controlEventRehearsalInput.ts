@@ -48,7 +48,8 @@ export const controlEventRehearsalCallablePayloadSchema: Record<string, unknown>
         "requiredData",
         "outcome",
         "reveal",
-        "allocation"
+        "allocation",
+        "roster"
       ]
     },
     "minutes": {
@@ -3327,6 +3328,27 @@ export const controlEventRehearsalCallablePayloadSchema: Record<string, unknown>
           }
         }
       ]
+    },
+    "roster": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sourceId",
+        "sourceRevision"
+      ],
+      "properties": {
+        "sourceId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "sourceRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        }
+      }
     }
   },
   "allOf": [
@@ -3383,6 +3405,11 @@ export const controlEventRehearsalCallablePayloadSchema: Record<string, unknown>
             {
               "required": [
                 "allocation"
+              ]
+            },
+            {
+              "required": [
+                "roster"
               ]
             }
           ]
@@ -3450,6 +3477,11 @@ export const controlEventRehearsalCallablePayloadSchema: Record<string, unknown>
               "required": [
                 "allocation"
               ]
+            },
+            {
+              "required": [
+                "roster"
+              ]
             }
           ]
         }
@@ -3516,6 +3548,11 @@ export const controlEventRehearsalCallablePayloadSchema: Record<string, unknown>
               "required": [
                 "allocation"
               ]
+            },
+            {
+              "required": [
+                "roster"
+              ]
             }
           ]
         }
@@ -3541,7 +3578,8 @@ export const controlEventRehearsalCallablePayloadSchema: Record<string, unknown>
                 "requiredData",
                 "outcome",
                 "reveal",
-                "allocation"
+                "allocation",
+                "roster"
               ]
             }
           }
@@ -3649,6 +3687,11 @@ export const controlEventRehearsalCallablePayloadSchema: Record<string, unknown>
               "required": [
                 "allocation"
               ]
+            },
+            {
+              "required": [
+                "roster"
+              ]
             }
           ]
         }
@@ -3719,6 +3762,11 @@ export const controlEventRehearsalCallablePayloadSchema: Record<string, unknown>
             {
               "required": [
                 "allocation"
+              ]
+            },
+            {
+              "required": [
+                "roster"
               ]
             }
           ]
@@ -3791,6 +3839,11 @@ export const controlEventRehearsalCallablePayloadSchema: Record<string, unknown>
               "required": [
                 "allocation"
               ]
+            },
+            {
+              "required": [
+                "roster"
+              ]
             }
           ]
         }
@@ -3861,6 +3914,11 @@ export const controlEventRehearsalCallablePayloadSchema: Record<string, unknown>
             {
               "required": [
                 "allocation"
+              ]
+            },
+            {
+              "required": [
+                "roster"
               ]
             }
           ]
@@ -3933,6 +3991,11 @@ export const controlEventRehearsalCallablePayloadSchema: Record<string, unknown>
               "required": [
                 "practiceOperatorId"
               ]
+            },
+            {
+              "required": [
+                "roster"
+              ]
             }
           ]
         }
@@ -3941,6 +4004,82 @@ export const controlEventRehearsalCallablePayloadSchema: Record<string, unknown>
         "not": {
           "required": [
             "allocation"
+          ]
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "action": {
+            "const": "roster"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "roster",
+          "expectedSetupRevision"
+        ],
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "assistance"
+              ]
+            },
+            {
+              "required": [
+                "movement"
+              ]
+            },
+            {
+              "required": [
+                "staff"
+              ]
+            },
+            {
+              "required": [
+                "minutes"
+              ]
+            },
+            {
+              "required": [
+                "settings"
+              ]
+            },
+            {
+              "required": [
+                "requiredData"
+              ]
+            },
+            {
+              "required": [
+                "outcome"
+              ]
+            },
+            {
+              "required": [
+                "reveal"
+              ]
+            },
+            {
+              "required": [
+                "allocation"
+              ]
+            },
+            {
+              "required": [
+                "practiceOperatorId"
+              ]
+            }
+          ]
+        }
+      },
+      "else": {
+        "not": {
+          "required": [
+            "roster"
           ]
         }
       }

@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.149.0
+version: 1.150.0
 updated: 2026-09-16
 owner: recursive_audit_loop
 status: active
@@ -2730,6 +2730,16 @@ revision. The Host projection exposes current assignments and proposal status;
 the anonymous guest sees the existing assignment moment and resulting practice
 unit. Reset and setup changes clear this state. No live assignment draft,
 published assignment, attendee or event-success plan is touched.
+
+The rehearsal `reconcileRoster` adapter now operates on an explicit committed
+synthetic source for the current setup generation. Every generated practice
+actor has an imported source row. Relevant scenarios also retain bounded
+duplicate, failed or ambiguous rows so the Host can account for imperfect input
+without the system claiming it resolved those rows. The command fences the
+reviewed source id and revision, marks that source reconciled and exposes every
+row and outcome count. Setup changes and reset rebuild the source at the next
+generation. The adapter does not add, delete or relabel practice actors and
+never reads or writes a live import, attendee or event roster.
 
 With the shared execution and SMS/WhatsApp/RCS boundaries in source, the next
 implementation sequence is:

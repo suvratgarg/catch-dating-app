@@ -1839,5 +1839,139 @@ const schemaEventRehearsalDocumentSchema = <String, Object?>{
       },
       'x-catch-ownership': 'callable-owned',
     },
+    'rosterReconciliation': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'sourceId',
+        'sourceRevision',
+        'rows',
+        'status',
+        'reconciliationRevision',
+        'lastOperationId',
+        'reconciledBy',
+        'reconciledAt',
+      ],
+      'properties': <String, Object?>{
+        'sourceId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 160,
+          'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+        },
+        'sourceRevision': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 2147483647,
+        },
+        'rows': <String, Object?>{
+          'type': 'array',
+          'minItems': 2,
+          'maxItems': 52,
+          'items': <String, Object?>{
+            'type': 'object',
+            'additionalProperties': false,
+            'required': <Object?>[
+              'rowId',
+              'outcome',
+              'actorId',
+            ],
+            'properties': <String, Object?>{
+              'rowId': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 160,
+                'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+              },
+              'outcome': <String, Object?>{
+                'type': 'string',
+                'enum': <Object?>[
+                  'imported',
+                  'duplicate',
+                  'ambiguous',
+                  'failed',
+                ],
+              },
+              'actorId': <String, Object?>{
+                'oneOf': <Object?>[
+                  <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 180,
+                  },
+                  <String, Object?>{
+                    'type': 'null',
+                  },
+                ],
+              },
+            },
+          },
+        },
+        'status': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'pending',
+            'reconciled',
+          ],
+        },
+        'reconciliationRevision': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 2147483647,
+        },
+        'lastOperationId': <String, Object?>{
+          'oneOf': <Object?>[
+            <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
+            },
+            <String, Object?>{
+              'type': 'null',
+            },
+          ],
+        },
+        'reconciledBy': <String, Object?>{
+          'oneOf': <Object?>[
+            <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
+            },
+            <String, Object?>{
+              'type': 'null',
+            },
+          ],
+        },
+        'reconciledAt': <String, Object?>{
+          'anyOf': <Object?>[
+            <String, Object?>{
+              'type': 'object',
+              'description': 'Serialized Firestore Timestamp fixture shape.',
+              'x-firestore-type': 'timestamp',
+              'additionalProperties': false,
+              'required': <Object?>[
+                '_seconds',
+                '_nanoseconds',
+              ],
+              'properties': <String, Object?>{
+                '_seconds': <String, Object?>{
+                  'type': 'integer',
+                },
+                '_nanoseconds': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 0,
+                  'maximum': 999999999,
+                },
+              },
+            },
+            <String, Object?>{
+              'type': 'null',
+            },
+          ],
+        },
+      },
+      'x-catch-ownership': 'callable-owned',
+    },
   },
 };

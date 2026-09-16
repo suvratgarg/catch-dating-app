@@ -67,6 +67,9 @@
     },
     "allocationReview": {
       "$ref": "../shared/event_rehearsal_allocation.schema.json#/definitions/Review"
+    },
+    "rosterReview": {
+      "$ref": "../shared/event_rehearsal_roster_reconciliation.schema.json#/definitions/Review"
     }
   },
   "definitions": {

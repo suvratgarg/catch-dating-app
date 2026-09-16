@@ -120196,6 +120196,140 @@ export const eventRehearsalDocumentSchema = {
         }
       },
       "x-catch-ownership": "callable-owned"
+    },
+    "rosterReconciliation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sourceId",
+        "sourceRevision",
+        "rows",
+        "status",
+        "reconciliationRevision",
+        "lastOperationId",
+        "reconciledBy",
+        "reconciledAt"
+      ],
+      "properties": {
+        "sourceId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "sourceRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "rows": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 52,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "rowId",
+              "outcome",
+              "actorId"
+            ],
+            "properties": {
+              "rowId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+              },
+              "outcome": {
+                "type": "string",
+                "enum": [
+                  "imported",
+                  "duplicate",
+                  "ambiguous",
+                  "failed"
+                ]
+              },
+              "actorId": {
+                "oneOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "pending",
+            "reconciled"
+          ]
+        },
+        "reconciliationRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "lastOperationId": {
+          "oneOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reconciledBy": {
+          "oneOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reconciledAt": {
+          "anyOf": [
+            {
+              "type": "object",
+              "description": "Serialized Firestore Timestamp fixture shape.",
+              "x-firestore-type": "timestamp",
+              "additionalProperties": false,
+              "required": [
+                "_seconds",
+                "_nanoseconds"
+              ],
+              "properties": {
+                "_seconds": {
+                  "type": "integer"
+                },
+                "_nanoseconds": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 999999999
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "x-catch-ownership": "callable-owned"
     }
   }
 };
@@ -167978,6 +168112,118 @@ export const eventRehearsalBootstrapCallableResponseSchema = {
           }
         }
       }
+    },
+    "rosterReview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sourceId",
+        "sourceRevision",
+        "status",
+        "reconciliationRevision",
+        "reconciledAt",
+        "importedCount",
+        "duplicateCount",
+        "ambiguousCount",
+        "failedCount",
+        "rows"
+      ],
+      "properties": {
+        "sourceId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "sourceRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "pending",
+            "reconciled"
+          ]
+        },
+        "reconciliationRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "reconciledAt": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "importedCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 50
+        },
+        "duplicateCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "ambiguousCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "failedCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "rows": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 52,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "rowId",
+              "outcome",
+              "actorId"
+            ],
+            "properties": {
+              "rowId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+              },
+              "outcome": {
+                "type": "string",
+                "enum": [
+                  "imported",
+                  "duplicate",
+                  "ambiguous",
+                  "failed"
+                ]
+              },
+              "actorId": {
+                "oneOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -170954,7 +171200,8 @@ export const controlEventRehearsalCallablePayloadSchema = {
         "requiredData",
         "outcome",
         "reveal",
-        "allocation"
+        "allocation",
+        "roster"
       ]
     },
     "minutes": {
@@ -174233,6 +174480,27 @@ export const controlEventRehearsalCallablePayloadSchema = {
           }
         }
       ]
+    },
+    "roster": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sourceId",
+        "sourceRevision"
+      ],
+      "properties": {
+        "sourceId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "sourceRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        }
+      }
     }
   },
   "allOf": [
@@ -174289,6 +174557,11 @@ export const controlEventRehearsalCallablePayloadSchema = {
             {
               "required": [
                 "allocation"
+              ]
+            },
+            {
+              "required": [
+                "roster"
               ]
             }
           ]
@@ -174356,6 +174629,11 @@ export const controlEventRehearsalCallablePayloadSchema = {
               "required": [
                 "allocation"
               ]
+            },
+            {
+              "required": [
+                "roster"
+              ]
             }
           ]
         }
@@ -174422,6 +174700,11 @@ export const controlEventRehearsalCallablePayloadSchema = {
               "required": [
                 "allocation"
               ]
+            },
+            {
+              "required": [
+                "roster"
+              ]
             }
           ]
         }
@@ -174447,7 +174730,8 @@ export const controlEventRehearsalCallablePayloadSchema = {
                 "requiredData",
                 "outcome",
                 "reveal",
-                "allocation"
+                "allocation",
+                "roster"
               ]
             }
           }
@@ -174555,6 +174839,11 @@ export const controlEventRehearsalCallablePayloadSchema = {
               "required": [
                 "allocation"
               ]
+            },
+            {
+              "required": [
+                "roster"
+              ]
             }
           ]
         }
@@ -174625,6 +174914,11 @@ export const controlEventRehearsalCallablePayloadSchema = {
             {
               "required": [
                 "allocation"
+              ]
+            },
+            {
+              "required": [
+                "roster"
               ]
             }
           ]
@@ -174697,6 +174991,11 @@ export const controlEventRehearsalCallablePayloadSchema = {
               "required": [
                 "allocation"
               ]
+            },
+            {
+              "required": [
+                "roster"
+              ]
             }
           ]
         }
@@ -174767,6 +175066,11 @@ export const controlEventRehearsalCallablePayloadSchema = {
             {
               "required": [
                 "allocation"
+              ]
+            },
+            {
+              "required": [
+                "roster"
               ]
             }
           ]
@@ -174839,6 +175143,11 @@ export const controlEventRehearsalCallablePayloadSchema = {
               "required": [
                 "practiceOperatorId"
               ]
+            },
+            {
+              "required": [
+                "roster"
+              ]
             }
           ]
         }
@@ -174847,6 +175156,82 @@ export const controlEventRehearsalCallablePayloadSchema = {
         "not": {
           "required": [
             "allocation"
+          ]
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "action": {
+            "const": "roster"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "roster",
+          "expectedSetupRevision"
+        ],
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "assistance"
+              ]
+            },
+            {
+              "required": [
+                "movement"
+              ]
+            },
+            {
+              "required": [
+                "staff"
+              ]
+            },
+            {
+              "required": [
+                "minutes"
+              ]
+            },
+            {
+              "required": [
+                "settings"
+              ]
+            },
+            {
+              "required": [
+                "requiredData"
+              ]
+            },
+            {
+              "required": [
+                "outcome"
+              ]
+            },
+            {
+              "required": [
+                "reveal"
+              ]
+            },
+            {
+              "required": [
+                "allocation"
+              ]
+            },
+            {
+              "required": [
+                "practiceOperatorId"
+              ]
+            }
+          ]
+        }
+      },
+      "else": {
+        "not": {
+          "required": [
+            "roster"
           ]
         }
       }
@@ -212009,9 +212394,12 @@ export const eventAssistanceCommandBindingCatalog = {
         "missingCapability": null
       },
       "rehearsal": {
-        "bindingType": "contractOnly",
-        "operations": [],
-        "missingCapability": "rehearsalRosterReconciliation"
+        "bindingType": "domainAdapter",
+        "operations": [
+          "controlEventRehearsal",
+          "getEventRehearsalBootstrap"
+        ],
+        "missingCapability": null
       }
     },
     {

@@ -2191,4 +2191,24 @@ export interface EventRehearsalBootstrapCallableResponse {
       publishedAt: number | null;
     }[];
   };
+  rosterReview?: {
+    sourceId: string;
+    sourceRevision: number;
+    status: "pending" | "reconciled";
+    reconciliationRevision: number;
+    reconciledAt: number | null;
+    importedCount: number;
+    duplicateCount: number;
+    ambiguousCount: number;
+    failedCount: number;
+    /**
+     * @minItems 2
+     * @maxItems 52
+     */
+    rows: {
+      rowId: string;
+      outcome: "imported" | "duplicate" | "ambiguous" | "failed";
+      actorId: string | null;
+    }[];
+  };
 }

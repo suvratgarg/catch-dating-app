@@ -9355,6 +9355,118 @@ const schemaEventRehearsalBootstrapCallableResponseSchema = <String, Object?>{
         },
       },
     },
+    'rosterReview': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'sourceId',
+        'sourceRevision',
+        'status',
+        'reconciliationRevision',
+        'reconciledAt',
+        'importedCount',
+        'duplicateCount',
+        'ambiguousCount',
+        'failedCount',
+        'rows',
+      ],
+      'properties': <String, Object?>{
+        'sourceId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 160,
+          'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+        },
+        'sourceRevision': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 2147483647,
+        },
+        'status': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'pending',
+            'reconciled',
+          ],
+        },
+        'reconciliationRevision': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 2147483647,
+        },
+        'reconciledAt': <String, Object?>{
+          'type': <Object?>[
+            'integer',
+            'null',
+          ],
+          'minimum': 0,
+          'maximum': 9007199254740991,
+        },
+        'importedCount': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 50,
+        },
+        'duplicateCount': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 1,
+        },
+        'ambiguousCount': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 1,
+        },
+        'failedCount': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 1,
+        },
+        'rows': <String, Object?>{
+          'type': 'array',
+          'minItems': 2,
+          'maxItems': 52,
+          'items': <String, Object?>{
+            'type': 'object',
+            'additionalProperties': false,
+            'required': <Object?>[
+              'rowId',
+              'outcome',
+              'actorId',
+            ],
+            'properties': <String, Object?>{
+              'rowId': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 160,
+                'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+              },
+              'outcome': <String, Object?>{
+                'type': 'string',
+                'enum': <Object?>[
+                  'imported',
+                  'duplicate',
+                  'ambiguous',
+                  'failed',
+                ],
+              },
+              'actorId': <String, Object?>{
+                'oneOf': <Object?>[
+                  <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 180,
+                  },
+                  <String, Object?>{
+                    'type': 'null',
+                  },
+                ],
+              },
+            },
+          },
+        },
+      },
+    },
   },
   'definitions': <String, Object?>{
     'session': <String, Object?>{

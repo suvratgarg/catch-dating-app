@@ -143,6 +143,8 @@ import {practiceRevealReview, preparePracticeReveal,
   settlePracticeReveal} from "./reveal";
 import {practiceAllocationReview, preparePracticeAllocation,
   type PracticeAllocationCommand} from "./allocation";
+import {buildPracticeRosterSource, practiceRosterReview,
+  preparePracticeRosterReconciliation} from "./rosterReconciliation";
 
 const sessions = "eventRehearsals";
 const actors = "eventRehearsalActors";
@@ -299,6 +301,8 @@ export async function updateEventRehearsalSetupHandler(
       unitOutcomes: admin.firestore.FieldValue.delete(),
       revealControl: admin.firestore.FieldValue.delete(),
       allocationState: admin.firestore.FieldValue.delete(),
+      rosterReconciliation: buildPracticeRosterSource(data.sessionId,
+        session.setupRevision + 1, data.scenarioId, nextActors),
       updatedAt: now,
     });
     for (const actorSnap of actorSnaps.docs) {
@@ -351,7 +355,7 @@ export async function controlEventRehearsalHandler(
   if (previous.exists) {
     requireAssistanceReceipt(previous, requestHash,
       ["assistance", "movement", "staff", "settings", "requiredData",
-        "outcome", "reveal", "allocation"]
+        "outcome", "reveal", "allocation", "roster"]
         .includes(data.action));
     return hostProjection(db, data.sessionId,
       await requireHostSession(db, data.sessionId, uid), request,
@@ -371,7 +375,7 @@ export async function controlEventRehearsalHandler(
     if (actionSnap.exists) {
       requireAssistanceReceipt(actionSnap, requestHash,
         ["assistance", "movement", "staff", "settings", "requiredData",
-          "outcome", "reveal", "allocation"]
+          "outcome", "reveal", "allocation", "roster"]
           .includes(data.action));
       return;
     }
@@ -397,6 +401,23 @@ export async function controlEventRehearsalHandler(
         clientActionId: data.clientActionId, actorUid: uid, actorId: null,
         kind: "control", name: "staff:" + data.staff!.decision.kind,
         requestHash,
+        runtimeRevision: session.runtimeRevision + 1,
+        virtualNow: session.virtualNow, createdAt: now}));
+      return;
+    }
+    if (data.action === "roster") {
+      const roster = preparePracticeRosterReconciliation(session,
+        data.roster!, uid, data.clientActionId);
+      const now = admin.firestore.Timestamp.now();
+      if (session.expiresAt.toMillis() <= now.toMillis()) {
+        throw new HttpsError("not-found", "This dress rehearsal has expired.");
+      }
+      tx.update(sessionRef, {rosterReconciliation: roster.state,
+        runtimeRevision: session.runtimeRevision + 1,
+        actionCount: session.actionCount + 1, updatedAt: now});
+      tx.create(actionRef, actionDocument({sessionId: data.sessionId,
+        clientActionId: data.clientActionId, actorUid: uid, actorId: null,
+        kind: "control", name: "roster:reconcile", requestHash,
         runtimeRevision: session.runtimeRevision + 1,
         virtualNow: session.virtualNow, createdAt: now}));
       return;
@@ -930,6 +951,12 @@ export async function resetEventRehearsalHandler(
   }
   await deleteSessionChildren(db, data.sessionId);
   const now = admin.firestore.Timestamp.now();
+  const nextActors = buildRehearsalActors(
+    data.sessionId,
+    session.actorCount,
+    data.seed ?? session.seed,
+    now
+  );
   await db.collection(sessions).doc(data.sessionId).update({
     seed: data.seed ?? session.seed,
     status: "draft",
@@ -940,6 +967,8 @@ export async function resetEventRehearsalHandler(
     unitOutcomes: admin.firestore.FieldValue.delete(),
     revealControl: admin.firestore.FieldValue.delete(),
     allocationState: admin.firestore.FieldValue.delete(),
+    rosterReconciliation: buildPracticeRosterSource(data.sessionId,
+      session.setupRevision + 1, session.scenarioId, nextActors),
     actionCount: 0,
     activeStepIndex: 0,
     virtualNow: now,
@@ -955,12 +984,7 @@ export async function resetEventRehearsalHandler(
   await writeActors(
     db,
     data.sessionId,
-    buildRehearsalActors(
-      data.sessionId,
-      session.actorCount,
-      data.seed ?? session.seed,
-      now
-    )
+    nextActors
   );
   return hostProjection(
     db,
@@ -1311,6 +1335,12 @@ async function createSession(
   const source = data.sourceEventId ?
     await sourceSetup(db, data.organizerId, data.sourceEventId) : null;
   const setup = overrides.setup ?? source?.setup ?? sampleSetup();
+  const syntheticActors = buildRehearsalActors(
+    sessionId,
+    data.actorCount,
+    data.seed,
+    now
+  );
   const session: EventRehearsalDocument = {
     organizerId: data.organizerId,
     clubId: source?.clubId ?? data.organizerId,
@@ -1339,13 +1369,9 @@ async function createSession(
       now.toMillis() + REHEARSAL_RETENTION_MILLIS
     ),
     completedAt: null,
+    rosterReconciliation: buildPracticeRosterSource(sessionId, 0,
+      data.scenarioId, syntheticActors),
   };
-  const syntheticActors = buildRehearsalActors(
-    sessionId,
-    data.actorCount,
-    data.seed,
-    now
-  );
   const batch = db.batch();
   batch.create(db.collection(sessions).doc(sessionId), session);
   for (const actor of syntheticActors) {
@@ -1593,6 +1619,9 @@ async function hostProjection(
     outcomeReview: practiceOutcomeReview(session, actorValues),
     revealReview: practiceRevealReview(session),
     allocationReview: practiceAllocationReview(session, actorValues),
+    ...(session.rosterReconciliation ? {
+      rosterReview: practiceRosterReview(session),
+    } : {}),
     helpRequests,
     deliveryReviews,
     accountabilityReviews: practiceAccountabilityProjection(sessionId,
@@ -2031,7 +2060,7 @@ function actionDocument(
 function requireAssistanceGeneration(session: EventRehearsalDocument,
   data: ControlEventRehearsalCallablePayload): void {
   if (["assistance", "movement", "staff", "settings", "requiredData",
-    "outcome", "reveal", "allocation"]
+    "outcome", "reveal", "allocation", "roster"]
     .includes(data.action) &&
       data.expectedSetupRevision !== session.setupRevision) {
     throw new HttpsError("aborted",

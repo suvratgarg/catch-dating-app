@@ -173,6 +173,10 @@
     "allocationState": {
       "$ref": "../shared/event_rehearsal_allocation.schema.json#/definitions/State",
       "x-catch-ownership": "callable-owned"
+    },
+    "rosterReconciliation": {
+      "$ref": "../shared/event_rehearsal_roster_reconciliation.schema.json#/definitions/State",
+      "x-catch-ownership": "callable-owned"
     }
   }
 }
