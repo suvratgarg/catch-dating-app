@@ -182,7 +182,9 @@ enum EventAssistanceMissingCapability {
   rehearsalFinanceReconciliation,
   liveUnitProgressControl,
   rehearsalUnitProgressControl,
+  liveScopedRuleOverride,
   rehearsalOverrideControl,
+  liveScopedLocationSharing,
   rehearsalLocationSharing,
   rehearsalRestrictedCaseRouting,
   rehearsalRestrictedCaseResolution,
@@ -2095,16 +2097,13 @@ const eventAssistanceCommandBindingCatalog =
   EventAssistanceCommandBindingDescriptor(
     commandKind: EventAssistanceCommandKind.applyOverride,
     live: EventAssistanceModeBinding(
-      bindingType: EventAssistanceCommandBindingType.domainAdapter,
-      coverage: EventAssistanceCommandCoverage.complete,
+      bindingType: EventAssistanceCommandBindingType.contractOnly,
+      coverage: EventAssistanceCommandCoverage.none,
       variantField: null,
       implementedVariants: <EventAssistanceCommandCoverageVariant>[],
       missingVariants: <EventAssistanceCommandCoverageVariant>[],
-      operations: <String>[
-        'overrideEventSuccessGroups',
-        'overrideEventSuccessRotations',
-      ],
-      missingCapability: null,
+      operations: <String>[],
+      missingCapability: EventAssistanceMissingCapability.liveScopedRuleOverride,
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.contractOnly,
@@ -2119,15 +2118,13 @@ const eventAssistanceCommandBindingCatalog =
   EventAssistanceCommandBindingDescriptor(
     commandKind: EventAssistanceCommandKind.setLocationSharing,
     live: EventAssistanceModeBinding(
-      bindingType: EventAssistanceCommandBindingType.domainAdapter,
-      coverage: EventAssistanceCommandCoverage.complete,
+      bindingType: EventAssistanceCommandBindingType.contractOnly,
+      coverage: EventAssistanceCommandCoverage.none,
       variantField: null,
       implementedVariants: <EventAssistanceCommandCoverageVariant>[],
       missingVariants: <EventAssistanceCommandCoverageVariant>[],
-      operations: <String>[
-        'publishEventLivePosition',
-      ],
-      missingCapability: null,
+      operations: <String>[],
+      missingCapability: EventAssistanceMissingCapability.liveScopedLocationSharing,
     ),
     rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.contractOnly,

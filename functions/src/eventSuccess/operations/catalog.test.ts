@@ -108,6 +108,8 @@ test("unimplemented live commands name their missing capability", () => {
     changeProgramme: "liveProgrammeControl",
     reconcileFinance: "eventPaymentCaseResolution",
     controlUnitProgress: "liveUnitProgressControl",
+    applyOverride: "liveScopedRuleOverride",
+    setLocationSharing: "liveScopedLocationSharing",
   });
 });
 
@@ -116,6 +118,15 @@ test("live guide-step control does not claim per-unit progress", () => {
   assert.equal(binding.bindingType, "contractOnly");
   assert.deepEqual(binding.operations, []);
   assert.equal(commandCoverage("controlUnitProgress", "live"), "none");
+});
+
+test("adjacent live controls do not claim scoped override commands", () => {
+  for (const kind of ["applyOverride", "setLocationSharing"] as const) {
+    const binding = commandBinding(kind, "live");
+    assert.equal(binding.bindingType, "contractOnly");
+    assert.deepEqual(binding.operations, []);
+    assert.equal(commandCoverage(kind, "live"), "none");
+  }
 });
 
 test("direct live bindings only name command-consuming callables", () => {
@@ -364,7 +375,13 @@ test("action plans preserve every implementation status", () => {
 
   assert.equal(byKind.venueReadiness.implementationStatus, "external");
   assert.equal(byKind.rosterReadiness.implementationStatus, "complete");
-  assert.equal(byKind.requiredGuestData.implementationStatus, "complete");
+  assert.equal(byKind.requiredGuestData.implementationStatus, "partial");
+  assert.equal(
+    byKind.requiredGuestData.commands.find((command) =>
+      command.kind === "applyOverride"
+    )?.missingCapability,
+    "liveScopedRuleOverride"
+  );
   assert.equal(
     byKind.financialReconciliation.implementationStatus,
     "unavailable"

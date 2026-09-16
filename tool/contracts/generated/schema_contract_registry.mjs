@@ -216446,12 +216446,9 @@ export const eventAssistanceCommandBindingCatalog = {
     {
       "commandKind": "applyOverride",
       "live": {
-        "bindingType": "domainAdapter",
-        "operations": [
-          "overrideEventSuccessGroups",
-          "overrideEventSuccessRotations"
-        ],
-        "missingCapability": null
+        "bindingType": "contractOnly",
+        "operations": [],
+        "missingCapability": "liveScopedRuleOverride"
       },
       "rehearsal": {
         "bindingType": "contractOnly",
@@ -216462,11 +216459,9 @@ export const eventAssistanceCommandBindingCatalog = {
     {
       "commandKind": "setLocationSharing",
       "live": {
-        "bindingType": "domainAdapter",
-        "operations": [
-          "publishEventLivePosition"
-        ],
-        "missingCapability": null
+        "bindingType": "contractOnly",
+        "operations": [],
+        "missingCapability": "liveScopedLocationSharing"
       },
       "rehearsal": {
         "bindingType": "contractOnly",

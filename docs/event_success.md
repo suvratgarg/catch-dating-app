@@ -2777,6 +2777,10 @@ It also cannot execute `controlUnitProgress`: that command names a unit and a
 revision-fenced `ready`/`active`/`paused`/`completed` transition, while the live
 callable has no per-unit progress state. The live unit-progress binding is
 therefore contract-only until its owning operation exists.
+The group and rotation assignment override callables do not apply an expiring
+scoped rule waiver, and foreground position publishing does not execute the
+scoped `setLocationSharing` command. Those live bindings remain contract-only
+even though their narrower assignment and position controls are available.
 
 With the shared execution and SMS/WhatsApp/RCS boundaries in source, the next
 implementation sequence is:
