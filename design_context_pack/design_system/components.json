@@ -70,9 +70,13 @@
         "plain",
         "horizontal",
         "rows",
+        "loadingRows",
         "containedRows",
+        "containedLoadingRows",
         "content",
-        "sliverRows"
+        "sliverRows",
+        "sliverLoadingRows",
+        "controls"
       ],
       "slots": [
         "title",
@@ -4392,6 +4396,8 @@
           ],
           "CatchSection.loadingRows": [
             "title",
+            "count",
+            "trailing",
             "layouts",
             "navigable"
           ],
@@ -4404,6 +4410,13 @@
             "count",
             "trailing",
             "children"
+          ],
+          "CatchSection.containedLoadingRows": [
+            "title",
+            "count",
+            "trailing",
+            "layouts",
+            "navigable"
           ],
           "CatchSection.formRows": [
             "title",
@@ -4426,6 +4439,9 @@
             "indexForKeyBuilder"
           ],
           "CatchSection.sliverLoadingRows": [
+            "title",
+            "count",
+            "trailing",
             "itemCount",
             "layoutBuilder",
             "navigable"
@@ -5169,6 +5185,7 @@
           "CatchSection.loadingRows",
           "CatchSection.controls",
           "CatchSection.containedRows",
+          "CatchSection.containedLoadingRows",
           "CatchSection.sliverRows",
           "CatchSection.sliverLoadingRows",
           "CatchSection.content",

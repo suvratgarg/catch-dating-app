@@ -1437,8 +1437,9 @@ When the loaded detail, form, card, or collection composition is known, render
 that same composition with representative branch data inside
 `CatchSkeleton.content`. `CatchSkeleton.content` suppresses pointer input and
 placeholder semantics while the real layout supplies shape and reflow.
-Ordinary row collections use `CatchSection.loadingRows` or
-`CatchSection.sliverLoadingRows` with the eventual `CatchFieldLayout` anatomy;
+Ordinary row collections use `CatchSection.loadingRows`,
+`CatchSection.sliverLoadingRows`, or `CatchSection.containedLoadingRows` to
+match the loaded Section perimeter with the eventual `CatchFieldLayout` anatomy;
 the Section and Field still own gutters, dividers, interaction shape, and
 disclosure slots. A loading branch may estimate count, but it must not invent a
 second row tree or enclosing card. Leaf `CatchSkeleton.box/text/circle` shapes
@@ -1452,7 +1453,9 @@ inset body for the loaded full-width section body. The
 `design:loading-composition` check rejects legacy row recipes on migrated Host
 screens and Consumer presentation surfaces, as well as root-title style
 overrides. It reports remaining legacy Host recipe calls for migration; those
-calls are existing debt, not an approved pattern for new screens.
+calls are existing debt, not an approved pattern for new screens. Its exact
+per-file legacy allowances must decrease when a call site is migrated. A new
+recipe fails in any file, even if another migration keeps the total unchanged.
 
 Both primitives apply `InitialLoadPolicy.standard` (12 seconds) to the first
 user-visible resolution and to blocking retries that have no credible data.

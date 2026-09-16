@@ -528,8 +528,14 @@ class _HostFormsLibraryPage extends ConsumerWidget
           onRetry: () =>
               ref.invalidate(hostFormsDirectoryControllerProvider(request)),
           initialLoadTimeout: null,
-          loadingBuilder: (_) =>
-              const SliverToBoxAdapter(child: CatchSkeleton.rows(count: 6)),
+          loadingBuilder: (_) => CatchSection.sliverLoadingRows(
+            itemCount: 6,
+            layoutBuilder: (_, _) => CatchRecordLayout.placeholder(
+              icon: CatchIcons.descriptionOutlined,
+              hasMetadata: true,
+              factCount: 1,
+            ),
+          ),
           errorBuilder: (_, error, _, onBoundaryRetry) =>
               CatchLocalizedSliverErrorState(
                 error,

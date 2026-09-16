@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_inbox.feature.json",
   "generatedFor": "2026-09-15",
   "sourceDigest": "sha256:f6ebec2b713559acad7bf8242e0e322f99e841611f52c83604a99b5e2fef2518",
-  "resolvedDigest": "sha256:403372278954432ea734720eff494a3c1fff9239121fda3ad9536e86513635c4",
+  "resolvedDigest": "sha256:dd5b3a87bd06b73b0f2a88bf0875793066de560166e3e13583c06750b684dc24",
   "feature": {
     "id": "feature.host_inbox",
     "name": "Host Inbox",
@@ -4833,8 +4833,12 @@
                 "CatchSection.plain",
                 "CatchSection.horizontal",
                 "CatchSection.rows",
+                "CatchSection.loadingRows",
+                "CatchSection.controls",
                 "CatchSection.containedRows",
+                "CatchSection.containedLoadingRows",
                 "CatchSection.sliverRows",
+                "CatchSection.sliverLoadingRows",
                 "CatchSection.content",
                 "CatchSection.formRows"
               ]

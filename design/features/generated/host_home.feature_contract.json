@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_home.feature.json",
   "generatedFor": "2026-09-04",
   "sourceDigest": "sha256:13787bbf6315e63ec917bfa866066793317c3756af436b0fc8a75bf40d2192a6",
-  "resolvedDigest": "sha256:87a2c5240486de8c51169f5403552178d2b922277eb9535b41c1c613b08f5d4b",
+  "resolvedDigest": "sha256:8c965a8351ea71040d32e4ad7871d8942320bd4b1879e21110db53a151e04bcd",
   "feature": {
     "id": "feature.host_home",
     "name": "Host Today and Events",
@@ -1988,8 +1988,12 @@
                 "CatchSection.plain",
                 "CatchSection.horizontal",
                 "CatchSection.rows",
+                "CatchSection.loadingRows",
+                "CatchSection.controls",
                 "CatchSection.containedRows",
+                "CatchSection.containedLoadingRows",
                 "CatchSection.sliverRows",
+                "CatchSection.sliverLoadingRows",
                 "CatchSection.content",
                 "CatchSection.formRows"
               ]

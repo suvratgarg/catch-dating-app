@@ -16,13 +16,12 @@ class HostTodayEventSection extends StatelessWidget {
     this.taskCountIsComplete = true,
     required this.onPressed,
     this.contained = true,
-  });
+  }) : _loading = false;
 
   /// Reserve the same event card and metric slots used by loaded content.
   /// The representative values are never exposed to input or accessibility.
-  static Widget loading({required DateTime now}) => CatchSkeleton.content(
-    child: HostTodayEventSection(
-      event: Event(
+  HostTodayEventSection.loading({super.key, required this.now})
+    : event = Event(
         id: 'loading',
         clubId: 'loading',
         name: 'Upcoming event name',
@@ -35,11 +34,13 @@ class HostTodayEventSection extends StatelessWidget {
         description: '',
         priceInPaise: 0,
       ),
-      now: now,
-      taskCount: 0,
-      onPressed: () {},
-    ),
-  );
+      taskCount = 0,
+      taskCountIsComplete = true,
+      onPressed = _ignoreLoadingActivation,
+      contained = true,
+      _loading = true;
+
+  static void _ignoreLoadingActivation() {}
 
   final Event event;
   final DateTime now;
@@ -47,6 +48,7 @@ class HostTodayEventSection extends StatelessWidget {
   final bool taskCountIsComplete;
   final VoidCallback onPressed;
   final bool contained;
+  final bool _loading;
 
   @override
   Widget build(BuildContext context) {
@@ -120,15 +122,17 @@ class HostTodayEventSection extends StatelessWidget {
         ),
       ],
     );
-    if (!contained) return content;
-    return CatchSurface(
-      borderColor: t.line,
-      backgroundColor: t.surface,
-      borderRadius: BorderRadius.circular(CatchRadius.md),
-      clipBehavior: Clip.antiAlias,
-      padding: CatchInsets.contentRelaxed,
-      child: content,
-    );
+    final rendered = !contained
+        ? content
+        : CatchSurface(
+            borderColor: t.line,
+            backgroundColor: t.surface,
+            borderRadius: BorderRadius.circular(CatchRadius.md),
+            clipBehavior: Clip.antiAlias,
+            padding: CatchInsets.contentRelaxed,
+            child: content,
+          );
+    return _loading ? CatchSkeleton.content(child: rendered) : rendered;
   }
 }
 

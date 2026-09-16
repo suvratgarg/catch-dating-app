@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_customers.feature.json",
   "generatedFor": "2026-09-03",
   "sourceDigest": "sha256:ef2ae59e811119e576bb73983ea0504ee5389eb3037618c08f53cc919fa017dd",
-  "resolvedDigest": "sha256:2055ef6b8b1e30a9eda29ff748ef77d0026426b02b00706288c0e8ec20a749de",
+  "resolvedDigest": "sha256:3d54b6265f7fe1e0523fd4739b30b0bc1e396f9c5aa567247a40622a651a5ad6",
   "feature": {
     "id": "feature.host_customers",
     "name": "Host Audience CRM",
@@ -6236,8 +6236,12 @@
                 "CatchSection.plain",
                 "CatchSection.horizontal",
                 "CatchSection.rows",
+                "CatchSection.loadingRows",
+                "CatchSection.controls",
                 "CatchSection.containedRows",
+                "CatchSection.containedLoadingRows",
                 "CatchSection.sliverRows",
+                "CatchSection.sliverLoadingRows",
                 "CatchSection.content",
                 "CatchSection.formRows"
               ]

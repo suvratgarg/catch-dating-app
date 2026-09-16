@@ -6,6 +6,7 @@ import 'dart:async';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:catch_ui/src/components/catch_field_activity_notification.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
@@ -236,6 +237,7 @@ final class CatchField<T> extends StatefulWidget
   ///
   /// Use through a loading Section, which applies the skeleton effect while
   /// retaining the real row gutter, divider, and interaction-plane geometry.
+  @internal
   const CatchField.loading({
     super.key,
     required CatchFieldLayout content,

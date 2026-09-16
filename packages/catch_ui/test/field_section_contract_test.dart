@@ -268,6 +268,33 @@ void main() {
     );
   });
 
+  testWidgets('contained loading rows preserve the rounded perimeter', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      host(
+        CatchSection.containedLoadingRows(
+          title: 'Members',
+          layouts: const [
+            CatchPersonLayout.placeholder(),
+            CatchPersonLayout.placeholder(),
+          ],
+        ),
+      ),
+    );
+    await tester.pump();
+    final clip = find.byKey(CatchSectionSurface.rowGroupClipKey);
+    expect(clip, findsOneWidget);
+    expect(tester.getRect(clip).left, 20);
+    expect(tester.getRect(clip).right, 370);
+    expect(
+      tester.widget<ClipRRect>(clip).borderRadius,
+      isNot(BorderRadius.zero),
+    );
+    expect(find.byType(CatchSkeleton), findsNWidgets(2));
+    expect(find.bySemanticsLabel('Loading person'), findsNothing);
+  });
+
   testWidgets('Field keeps secondary targets separate and disables both', (
     tester,
   ) async {
@@ -367,12 +394,14 @@ void main() {
         slivers: [
           if (loading)
             CatchSection.sliverLoadingRows(
+              title: 'People',
               itemCount: 2,
               layoutBuilder: (_, _) =>
                   const CatchPersonLayout.placeholder(hasSupportingText: true),
             )
           else
             CatchSection.sliverRows(
+              title: 'People',
               itemCount: 2,
               itemBuilder: (_, index) => CatchField.navigate(
                 content: CatchPersonLayout(
@@ -388,15 +417,21 @@ void main() {
     await tester.pumpWidget(screen(loading: false));
     await tester.pumpAndSettle();
     final loaded = tester.getRect(find.byType(CatchField).first);
-    final loadedRule = tester.getRect(find.byType(CatchDivider).first);
+    final loadedHeaderRule = tester.getRect(find.byType(CatchDivider).first);
+    final loadedRule = tester.getRect(find.byType(CatchDivider).last);
     await tester.pumpWidget(screen(loading: true));
     await tester.pump(const Duration(milliseconds: 50));
     final placeholder = tester.getRect(find.byType(CatchField).first);
-    final placeholderRule = tester.getRect(find.byType(CatchDivider).first);
+    final placeholderHeaderRule = tester.getRect(
+      find.byType(CatchDivider).first,
+    );
+    final placeholderRule = tester.getRect(find.byType(CatchDivider).last);
     expect(placeholder.left, loaded.left);
     expect(placeholder.right, loaded.right);
     expect(placeholderRule.left, loadedRule.left);
     expect(placeholderRule.right, loadedRule.right);
+    expect(placeholderHeaderRule.left, loadedHeaderRule.left);
+    expect(placeholderHeaderRule.right, loadedHeaderRule.right);
     expect(find.byType(CatchSurface), findsNothing);
     expect(find.byType(CatchSkeleton), findsNWidgets(2));
     expect(find.bySemanticsLabel('Loading person'), findsNothing);

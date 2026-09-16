@@ -467,48 +467,8 @@ class HostCustomersSummary extends StatelessWidget {
   final HostCustomerSegmentCount? newCustomerCount;
 
   @override
-  Widget build(BuildContext context) => CatchAsyncBoundary<HostCrmSummary>(
-    value: summary,
-    onRetry: onRetry,
-    initialLoadTimeout: null,
-    loadingBuilder: (_) => CatchSkeleton.content(
-      child: _HostCustomersSummaryBody(
-        selectedFilter: selectedFilter,
-        onFilterSelected: onFilterSelected,
-        newCustomerCount: newCustomerCount,
-      ),
-    ),
-    errorBuilder: (_, error, _, onBoundaryRetry) => CatchLocalizedErrorState(
-      error,
-      context: AppErrorContext.customers,
-      mode: CatchErrorStateMode.compact,
-      onRetry: onBoundaryRetry,
-    ),
-    builder: (context, value) => _HostCustomersSummaryBody(
-      summary: value,
-      selectedFilter: selectedFilter,
-      onFilterSelected: onFilterSelected,
-      newCustomerCount: newCustomerCount,
-    ),
-  );
-}
-
-class _HostCustomersSummaryBody extends StatelessWidget {
-  const _HostCustomersSummaryBody({
-    required this.selectedFilter,
-    required this.onFilterSelected,
-    this.summary,
-    this.newCustomerCount,
-  });
-
-  final HostCrmSummary? summary;
-  final HostCustomerFilter? selectedFilter;
-  final ValueChanged<HostCustomerFilter> onFilterSelected;
-  final HostCustomerSegmentCount? newCustomerCount;
-
-  @override
   Widget build(BuildContext context) {
-    final value = summary;
+    final value = catchAsyncStateFromAsyncValue(summary).value;
     String countLabel(int count) =>
         value?.truncated == true ? '$count+' : '$count';
     final newCount = newCustomerCount;
@@ -533,7 +493,7 @@ class _HostCustomersSummaryBody extends StatelessWidget {
         label: context.l10n.hostsHostEventManageScreenStateLabelNew,
       ),
     ];
-    return CatchChoiceInput<HostCustomerFilter>.segmented(
+    final control = CatchChoiceInput<HostCustomerFilter>.segmented(
       selected: selectedFilter,
       variant: CatchChoiceInputVariant.summary,
       contractExemption: 'Organizer directory lenses are local view state.',
@@ -547,6 +507,19 @@ class _HostCustomersSummaryBody extends StatelessWidget {
                 : '${stat.label}  ${stat.value}',
           ),
       ],
+    );
+    return CatchAsyncBoundary<HostCrmSummary>(
+      value: summary,
+      onRetry: onRetry,
+      initialLoadTimeout: null,
+      loadingBuilder: (_) => CatchSkeleton.content(child: control),
+      errorBuilder: (_, error, _, onBoundaryRetry) => CatchLocalizedErrorState(
+        error,
+        context: AppErrorContext.customers,
+        mode: CatchErrorStateMode.compact,
+        onRetry: onBoundaryRetry,
+      ),
+      builder: (context, _) => control,
     );
   }
 }

@@ -9,9 +9,9 @@ import 'package:skeletonizer/skeletonizer.dart';
 
 /// Skeleton loading placeholders with a shimmer animation.
 ///
-/// Use these instead of `CatchLoadingIndicator` when the content shape is
-/// known — skeletons feel faster than spinners and reduce layout shift when
-/// data arrives.
+/// For a known composition, use [CatchSkeleton.content] on its real widget or
+/// a Section loading constructor that accepts the eventual Field layout.
+/// Leaf shapes below are for content without a renderable layout yet.
 ///
 /// **Named constructors:**
 /// - [CatchSkeleton.card] — rounded rectangle matching `CatchSurface` shape
@@ -24,7 +24,8 @@ import 'package:skeletonizer/skeletonizer.dart';
 /// - [CatchSkeleton.content] — derive the shape from a real composition
 /// - [CatchSkeleton.cards] — repeated cards
 /// - [CatchSkeleton.rows], [CatchSkeleton.mediaRows], [CatchSkeleton.iconRows]
-///   — repeated content rows
+///   — legacy generic row recipes; new call sites are rejected by the loading
+///     composition lint and existing callers are being migrated
 /// - [CatchSkeleton.boxes] — equal-width control placeholders
 /// - [CatchSkeleton.chips] — wrapping chip placeholders
 ///

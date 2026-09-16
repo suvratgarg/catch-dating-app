@@ -130,7 +130,20 @@ class HostSavedAudienceOverview extends ConsumerWidget {
               value: members,
               initialLoadTimeout: null,
               onRetry: () => ref.invalidate(provider),
-              loadingBuilder: (_) => const CatchSkeleton.rows(count: 4),
+              loadingBuilder: (_) => CatchSection.containedLoadingRows(
+                title: context.l10n.hostSavedAudienceMembers,
+                trailing: CatchButton.text(
+                  key: const ValueKey('host-saved-audience-refresh-preview'),
+                  label: context.l10n.hostSavedAudiencePreview,
+                  onPressed: () => ref.invalidate(provider),
+                ),
+                layouts: const [
+                  CatchPersonLayout.placeholder(),
+                  CatchPersonLayout.placeholder(),
+                  CatchPersonLayout.placeholder(),
+                  CatchPersonLayout.placeholder(),
+                ],
+              ),
               errorBuilder: (_, error, _, onBoundaryRetry) =>
                   CatchLocalizedErrorState(
                     error,
