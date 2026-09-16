@@ -4,6 +4,7 @@ import 'package:catch_dating_app/events/domain/event_meeting_location.dart';
 
 /// A named option from verified event setup, never an observation of movement.
 typedef AssistanceJoiningOption = ({
+  String alternativeId,
   AssistanceJoiningTarget target,
   String label,
   EventMeetingLocation location,
@@ -13,7 +14,13 @@ AssistanceJoiningOption parseAssistanceJoiningOption(
   Object? value, {
   required String expectedGroupId,
 }) {
-  final item = assistanceObject(value, {'target', 'label', 'location'});
+  final item = assistanceObject(value, {
+    'alternativeId',
+    'target',
+    'label',
+    'location',
+  });
+  final alternativeId = assistanceAlternativeId(item['alternativeId']);
   final target = AssistanceJoiningTarget.fromJson(item['target']);
   if (target case AssistanceGroupCheckpoint(
     :final groupId,
@@ -21,6 +28,7 @@ AssistanceJoiningOption parseAssistanceJoiningOption(
     throw const FormatException('Joining option belongs to another group.');
   }
   return (
+    alternativeId: alternativeId,
     target: target,
     label: assistanceText(item['label'], 240),
     location: _location(item['location']),

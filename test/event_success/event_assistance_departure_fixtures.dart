@@ -83,6 +83,7 @@ Map<String, Object?> departureResponse({
             },
       'destinations': [
         {
+          'alternativeId': 'alternative:${'f' * 64}',
           'target': target.toJson(),
           'label': 'Second stop',
           'location': {

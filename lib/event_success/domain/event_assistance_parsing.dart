@@ -29,6 +29,14 @@ String assistanceHash(Object? value) {
   throw const FormatException('Invalid assistance source hash.');
 }
 
+String assistanceAlternativeId(Object? value) {
+  if (value is String &&
+      RegExp(r'^alternative:[a-f0-9]{64}$').hasMatch(value)) {
+    return value;
+  }
+  throw const FormatException('Invalid route alternative identity.');
+}
+
 int assistanceInteger(Object? value) {
   if (value is num &&
       value.isFinite &&

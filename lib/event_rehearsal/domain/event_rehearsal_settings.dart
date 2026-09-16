@@ -83,13 +83,10 @@ final class RehearsalSettingsGroup {
             'label',
             'text',
           });
-          if (!RegExp(
-            r'^alternative:[a-f0-9]{64}$',
-          ).hasMatch(assistanceText(d['alternativeId'], 77))) {
-            throw const FormatException('Invalid practice route alternative.');
-          }
+          final alternativeId = assistanceAlternativeId(d['alternativeId']);
           assistanceText(d['text']);
           return (
+            alternativeId: alternativeId,
             target: AssistanceJoiningTarget.fromJson(d['target']),
             label: assistanceText(d['label'], 240),
           );

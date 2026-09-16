@@ -9,6 +9,7 @@ final class LateJoinSettingSetup {
   final int eventEnd;
   final List<
     ({
+      String alternativeId,
       AssistanceJoiningTarget target,
       String label,
       EventMeetingLocation? location,
@@ -20,11 +21,15 @@ final class LateJoinSettingSetup {
   factory LateJoinSettingSetup.fromOptions({
     required int eventEnd,
     required String groupId,
-    required List<({AssistanceJoiningTarget target, String label})>
+    required List<
+      ({String alternativeId, AssistanceJoiningTarget target, String label})
+    >
     destinations,
   }) {
     assistanceInteger(eventEnd);
     if (destinations.length > 41 ||
+        destinations.map((d) => d.alternativeId).toSet().length !=
+            destinations.length ||
         destinations.map((d) => d.target).toSet().length !=
             destinations.length ||
         destinations.any(
@@ -39,6 +44,7 @@ final class LateJoinSettingSetup {
       List.unmodifiable(
         destinations.map(
           (d) => (
+            alternativeId: assistanceAlternativeId(d.alternativeId),
             target: AssistanceJoiningTarget.fromJson(d.target.toJson()),
             label: assistanceText(d.label, 240),
             location: null,
@@ -70,7 +76,12 @@ final class LateJoinSettingSetup {
       assistanceInteger(map['eventEnd']),
       List.unmodifiable(
         options.map(
-          (d) => (target: d.target, label: d.label, location: d.location),
+          (d) => (
+            alternativeId: d.alternativeId,
+            target: d.target,
+            label: d.label,
+            location: d.location,
+          ),
         ),
       ),
     );

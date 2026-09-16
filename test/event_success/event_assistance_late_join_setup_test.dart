@@ -47,6 +47,7 @@ void main() {
       expect(setup.eventEnd, view.serverTime + 3600000);
       final options = setup.destinations;
       expect(options, hasLength(3));
+      expect(options.first.alternativeId, startsWith('alternative:'));
       expect(options.first.target, isA<AssistanceFixedPlace>());
       expect(
         options
@@ -120,6 +121,8 @@ void main() {
         (v) => _setup(v)['senderId'] = 'not-setup',
         (v) => _setup(v)['destinations'] = List.filled(42, _options(v).first),
         (v) => _options(v).add(_options(v).first),
+        (v) => _map(_options(v).first)['alternativeId'] = 'invalid',
+        (v) => _map(_options(v).first).remove('alternativeId'),
         (v) => _map(_options(v).first)['phone'] = '+15555550100',
         (v) => _map(_options(v).first)['label'] = '',
         (v) => _map(_map(_options(v).first)['location'])['latitude'] = 91,

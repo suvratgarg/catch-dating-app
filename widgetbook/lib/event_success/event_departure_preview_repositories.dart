@@ -95,6 +95,7 @@ class DeparturePreviewLiveRepository
           'destinations': [
             for (final d in sample.destinations)
               {
+                'alternativeId': d.alternativeId,
                 'target': d.target.toJson(),
                 'label': d.label,
                 'location': {
