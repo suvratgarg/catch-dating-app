@@ -34,8 +34,9 @@ proposed names or pre-migration findings are historical, not remaining work.
 The menu/accordion/autocomplete follow-up and release remain separate.
 
 The implementation lives on `codex/host-screen-composition-20260916`.
-The pilot intake additions to form copy and submitted-response gating are
-preserved; its independent backend work is not part of this migration.
+The pilot intake submitted-response gating is preserved; its independent
+backend work is not part of this migration. Unused pilot copy without a
+production caller is left to that feature's implementation.
 
 ### Implemented architecture
 

@@ -176,7 +176,8 @@ class _CatchRowSectionState extends State<CatchRowSection> {
                       context,
                       CatchFieldTokens.standard,
                     ),
-                    child: const CatchDivider.fieldRow(),
+                    // Section already positions the line at the text lane.
+                    child: const CatchDivider.fieldRow(indent: 0),
                   ),
                 ),
               ),

@@ -4315,13 +4315,6 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.inbox.host_inbox_screen"
   },
-  "hostsHostInboxScreenMessagePersonalQuestionsAppearHere": "Personal questions appear here. Broadcast audience size is based on the event roster, not this thread list.",
-  "@hostsHostInboxScreenMessagePersonalQuestionsAppearHere": {
-    "description": "Product copy used by lib/hosts/presentation/inbox/host_inbox_screen.dart (message).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.inbox.host_inbox_screen"
-  },
   "hostsHostPaymentAccountCardTitleSetUpPayouts": "Set up payouts",
   "@hostsHostPaymentAccountCardTitleSetUpPayouts": {
     "description": "Product copy used by lib/hosts/presentation/payments/host_payment_account_card.dart (title).",
@@ -7293,13 +7286,6 @@
   "hostsHostInboxScreenTitleNoGeneralInquiries": "No general inquiries",
   "@hostsHostInboxScreenTitleNoGeneralInquiries": {
     "description": "Product copy used by lib/hosts/presentation/inbox/host_inbox_screen.dart (title).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.inbox.host_inbox_screen"
-  },
-  "hostsHostInboxScreenMessageQuestionsThatAreNot": "Questions that are not tied to one event will appear here.",
-  "@hostsHostInboxScreenMessageQuestionsThatAreNot": {
-    "description": "Product copy used by lib/hosts/presentation/inbox/host_inbox_screen.dart (message).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.inbox.host_inbox_screen"
@@ -11735,20 +11721,6 @@
     "x-owner": "product",
     "x-surface": "hosts.events.presentation.host_event_entry_sheet"
   },
-  "hostsHostEventsListTextLive": "LIVE",
-  "@hostsHostEventsListTextLive": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_events_list.dart (Text).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_events_list"
-  },
-  "hostsHostEventsListTextToday": "TODAY",
-  "@hostsHostEventsListTextToday": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_events_list.dart (Text).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_events_list"
-  },
   "hostEventsUpcomingTab": "Upcoming",
   "@hostEventsUpcomingTab": {
     "description": "Peer view containing live and upcoming events.",
@@ -12039,13 +12011,6 @@
   "hostsHostTodayLabelGoing": "expected",
   "@hostsHostTodayLabelGoing": {
     "description": "Expected guest count label in the Host Today current-event focus.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.today"
-  },
-  "hostsHostTodayLabelWaiting": "checked in",
-  "@hostsHostTodayLabelWaiting": {
-    "description": "Checked-in guest count label in the Host Today current-event focus.",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.today"
@@ -21743,8 +21708,6 @@
   "@hostSendsFollowerDeliveryStatus": {"description": "User-facing delivery state for an organizer follower update.", "placeholders": {"status": {"type": "String"}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.inbox"},
   "hostInboxWhatsappChannel": "WhatsApp Business · Organizer number",
   "@hostInboxWhatsappChannel": {"description": "Channel facet label for retained WhatsApp threads.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.inbox"},
-  "hostInboxCatchChatPreview": "Catch chat · Organizer · {details}",
-  "@hostInboxCatchChatPreview": {"description": "Explicit channel/sender prefix for a Catch inquiry row.", "placeholders": {"details": {"type": "String"}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.inbox"},
   "hostInboxAnnouncementDisclosure": "Recipients see a durable Activity update and may receive a push notification. This does not create a chat thread.",
   "@hostInboxAnnouncementDisclosure": {"description": "Delivery disclosure in the event announcement composer.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.inbox"},
   "hostInboxWhatsappReply": "Reply",
@@ -24026,8 +23989,6 @@
   "@hostAudienceFormLastResponse": {"description": "Latest submitted response activity on a form record.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms", "placeholders": {"time": {"type": "String"}}},
   "hostAudienceFormRecordStatus": "{status} · {count, plural, =0{No responses} =1{1 response} other{{count} responses}}",
   "@hostAudienceFormRecordStatus": {"description": "Form record lifecycle and submitted response count.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms", "placeholders": {"status": {"type": "String"}, "count": {"type": "int"}}},
-  "hostAudienceAllResponses": "All responses",
-  "@hostAudienceAllResponses": {"description": "Summary view for every form submission.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
   "hostAudienceAllForms": "All forms",
   "@hostAudienceAllForms": {"description": "Response directory without a form filter.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
   "hostAudienceSelectedForm": "Selected form",
@@ -24282,32 +24243,6 @@
     "x-owner": "product",
     "x-surface": "event_create"
   },
-  "hostFormPersonField": "Use this answer as",
-  "@hostFormPersonField": {
-    "description": "Person-field mapping in the Host form builder.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.forms"
-  },
-  "hostFormPersonFieldHelp": "Identify contact and profile answers for review. Other answers stay with this response.",
-  "@hostFormPersonFieldHelp": {
-    "description": "Person-field mapping in the Host form builder.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.forms"
-  },
-  "hostFormPersonFieldName": "{field, select, givenName{First name} familyName{Last name} displayName{Full name} dateOfBirth{Date of birth} age{Age} gender{Gender} phoneNumber{Phone number} email{Email} instagramHandle{Instagram} linkedinUrl{LinkedIn} profilePhoto{Profile photo} city{City} heightCm{Height in centimetres} occupation{Occupation} company{Company} education{Education} languages{Languages} relationshipGoal{Relationship goal} interestedInGenders{Gender preference} drinking{Drinking} smoking{Smoking} religion{Religion} workout{Exercise} diet{Diet} children{Children} other{Response only}}",
-  "@hostFormPersonFieldName": {
-    "description": "Person-field mapping in the Host form builder.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.forms",
-    "placeholders": {
-      "field": {
-        "type": "String"
-      }
-    }
-  },
   "hostTodayTaskCountPartial": "{count}+",
   "@hostTodayTaskCountPartial": {
     "description": "Lower bound for known tasks when some attention sources are incomplete.",
@@ -24544,20 +24479,6 @@
         "type": "String"
       }
     }
-  },
-  "hostInboxGeneralStatus": "General inquiry",
-  "@hostInboxGeneralStatus": {
-    "description": "Person-based Host messaging interface copy.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.inbox"
-  },
-  "hostInboxInquiryStatus": "Inquiry",
-  "@hostInboxInquiryStatus": {
-    "description": "Person-based Host messaging interface copy.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.inbox"
   },
   "hostInboxBookedStatus": "Booked",
   "@hostInboxBookedStatus": {

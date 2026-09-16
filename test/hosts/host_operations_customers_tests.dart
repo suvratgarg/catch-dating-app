@@ -361,7 +361,7 @@ void _registerHostOperationsCustomersTests() {
     );
     expect(tester.getRect(overlay), bounds);
     await gesture.up();
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
   });
 
   testWidgets('incomplete customer history is honest and can be rechecked', (

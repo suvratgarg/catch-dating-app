@@ -200,8 +200,11 @@ void main() {
       await tester.pumpAndSettle();
       final rules = find.byType(CatchDivider);
       expect(rules, findsNWidgets(2));
-      final header = tester.getRect(rules.at(0));
-      final sibling = tester.getRect(rules.at(1));
+      Rect paintedRule(int index) => tester.getRect(
+        find.descendant(of: rules.at(index), matching: find.byType(ColoredBox)),
+      );
+      final header = paintedRule(0);
+      final sibling = paintedRule(1);
       final title = tester.getRect(find.text('one'));
       expect(header.left, 20);
       expect(header.right, 370);

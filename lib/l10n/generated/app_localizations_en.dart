@@ -2134,10 +2134,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'prospective attendees';
 
   @override
-  String get hostsHostInboxScreenMessagePersonalQuestionsAppearHere =>
-      'Personal questions appear here. Broadcast audience size is based on the event roster, not this thread list.';
-
-  @override
   String get hostsHostPaymentAccountCardTitleSetUpPayouts => 'Set up payouts';
 
   @override
@@ -3661,10 +3657,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hostsHostInboxScreenTitleNoGeneralInquiries =>
       'No general inquiries';
-
-  @override
-  String get hostsHostInboxScreenMessageQuestionsThatAreNot =>
-      'Questions that are not tied to one event will appear here.';
 
   @override
   String get hostsHostPaymentAccountCardTitlePayouts => 'Payouts';
@@ -6367,12 +6359,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Import CSV or XLSX; ticketing stays on your existing platform.';
 
   @override
-  String get hostsHostEventsListTextLive => 'LIVE';
-
-  @override
-  String get hostsHostEventsListTextToday => 'TODAY';
-
-  @override
   String get hostEventsUpcomingTab => 'Upcoming';
 
   @override
@@ -6520,9 +6506,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsHostTodayLabelGoing => 'expected';
-
-  @override
-  String get hostsHostTodayLabelWaiting => 'checked in';
 
   @override
   String get hostsHostTodayLabelNeedsYou => 'things to finish';
@@ -13592,11 +13575,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostInboxWhatsappChannel => 'WhatsApp Business · Organizer number';
 
   @override
-  String hostInboxCatchChatPreview({required String details}) {
-    return 'Catch chat · Organizer · $details';
-  }
-
-  @override
   String get hostInboxAnnouncementDisclosure =>
       'Recipients see a durable Activity update and may receive a push notification. This does not create a chat thread.';
 
@@ -17405,9 +17383,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get hostAudienceAllResponses => 'All responses';
-
-  @override
   String get hostAudienceAllForms => 'All forms';
 
   @override
@@ -17717,46 +17692,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsCreateEventCreateAction => 'Create event';
 
   @override
-  String get hostFormPersonField => 'Use this answer as';
-
-  @override
-  String get hostFormPersonFieldHelp =>
-      'Identify contact and profile answers for review. Other answers stay with this response.';
-
-  @override
-  String hostFormPersonFieldName({required String field}) {
-    String _temp0 = intl.Intl.selectLogic(field, {
-      'givenName': 'First name',
-      'familyName': 'Last name',
-      'displayName': 'Full name',
-      'dateOfBirth': 'Date of birth',
-      'age': 'Age',
-      'gender': 'Gender',
-      'phoneNumber': 'Phone number',
-      'email': 'Email',
-      'instagramHandle': 'Instagram',
-      'linkedinUrl': 'LinkedIn',
-      'profilePhoto': 'Profile photo',
-      'city': 'City',
-      'heightCm': 'Height in centimetres',
-      'occupation': 'Occupation',
-      'company': 'Company',
-      'education': 'Education',
-      'languages': 'Languages',
-      'relationshipGoal': 'Relationship goal',
-      'interestedInGenders': 'Gender preference',
-      'drinking': 'Drinking',
-      'smoking': 'Smoking',
-      'religion': 'Religion',
-      'workout': 'Exercise',
-      'diet': 'Diet',
-      'children': 'Children',
-      'other': 'Response only',
-    });
-    return '$_temp0';
-  }
-
-  @override
   String hostTodayTaskCountPartial({required int count}) {
     return '$count+';
   }
@@ -17862,12 +17797,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String hostInboxMessageVia({required String channel}) {
     return 'Message via $channel';
   }
-
-  @override
-  String get hostInboxGeneralStatus => 'General inquiry';
-
-  @override
-  String get hostInboxInquiryStatus => 'Inquiry';
 
   @override
   String get hostInboxBookedStatus => 'Booked';

@@ -55,7 +55,7 @@ void main() {
     },
   );
 
-  testWidgets('responsive layout selects interaction policy by composition', (
+  testWidgets('responsive layout preserves full bleed within each pane', (
     tester,
   ) async {
     Widget subject(double width) => MaterialApp(
@@ -96,8 +96,8 @@ void main() {
     expect(find.text('secondary:fullBleed'), findsOneWidget);
 
     await tester.pumpWidget(subject(660));
-    expect(find.text('primary:roundedTile'), findsOneWidget);
-    expect(find.text('secondary:roundedTile'), findsOneWidget);
+    expect(find.text('primary:fullBleed'), findsOneWidget);
+    expect(find.text('secondary:fullBleed'), findsOneWidget);
   });
 
   testWidgets('centered composition remains one capped lane on wide pages', (

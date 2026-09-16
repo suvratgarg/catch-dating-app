@@ -1,14 +1,12 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/chats/chats.dart';
 import 'package:catch_dating_app/chats/data/conversation_repository.dart';
-import 'package:catch_dating_app/chats/domain/chat_message.dart';
-import 'package:catch_dating_app/chats/presentation/chat_controller.dart';
-import 'package:catch_dating_app/chats/presentation/widgets/chat_input_bar.dart';
-import 'package:catch_dating_app/chats/presentation/widgets/message_bubble.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
+import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_whatsapp_thread.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_conversation_history_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_people.dart';
@@ -187,11 +185,17 @@ class _HostPersonConversationPageBodyState
               _atLatest &&
               catchAsyncStateFromAsyncValue(ref.read(uidProvider)).value ==
                   uid) {
+            final errorLogger = ref.read(errorLoggerProvider);
             unawaited(
               ref
                   .read(hostPersonConversationControllerProvider)
                   .markRead(source.matchId, uid)
-                  .catchError((Object _) {
+                  .catchError((Object error, StackTrace stackTrace) {
+                    errorLogger.logError(
+                      error,
+                      stackTrace,
+                      reason: 'Could not mark the visible conversation read',
+                    );
                     if (mounted) {
                       setState(() {
                         _readFailures.add(source.matchId);

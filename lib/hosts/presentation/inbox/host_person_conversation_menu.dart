@@ -1,6 +1,4 @@
-import 'package:catch_dating_app/chats/domain/chat_message.dart';
-import 'package:catch_dating_app/chats/presentation/chat_controller.dart';
-import 'package:catch_dating_app/chats/presentation/widgets/chat_share_card.dart';
+import 'package:catch_dating_app/chats/chats.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';

@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.dart';
+import 'package:catch_dating_app/chats/chats.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_whatsapp_thread.dart';

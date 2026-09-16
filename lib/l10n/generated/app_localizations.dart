@@ -3728,12 +3728,6 @@ abstract class AppLocalizations {
   /// **'prospective attendees'**
   String get hostsHostInboxScreenTitleProspectiveAttendees;
 
-  /// Product copy used by lib/hosts/presentation/inbox/host_inbox_screen.dart (message).
-  ///
-  /// In en, this message translates to:
-  /// **'Personal questions appear here. Broadcast audience size is based on the event roster, not this thread list.'**
-  String get hostsHostInboxScreenMessagePersonalQuestionsAppearHere;
-
   /// Product copy used by lib/hosts/presentation/payments/host_payment_account_card.dart (title).
   ///
   /// In en, this message translates to:
@@ -6394,12 +6388,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No general inquiries'**
   String get hostsHostInboxScreenTitleNoGeneralInquiries;
-
-  /// Product copy used by lib/hosts/presentation/inbox/host_inbox_screen.dart (message).
-  ///
-  /// In en, this message translates to:
-  /// **'Questions that are not tied to one event will appear here.'**
-  String get hostsHostInboxScreenMessageQuestionsThatAreNot;
 
   /// Product copy used by lib/hosts/presentation/payments/host_payment_account_card.dart (title).
   ///
@@ -10144,18 +10132,6 @@ abstract class AppLocalizations {
   /// **'Import CSV or XLSX; ticketing stays on your existing platform.'**
   String get hostsHostEventEntrySheetBodyImportCsvOrXlsx;
 
-  /// Product copy used by lib/hosts/presentation/host_operations/host_events_list.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'LIVE'**
-  String get hostsHostEventsListTextLive;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_events_list.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'TODAY'**
-  String get hostsHostEventsListTextToday;
-
   /// Peer view containing live and upcoming events.
   ///
   /// In en, this message translates to:
@@ -10383,12 +10359,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'expected'**
   String get hostsHostTodayLabelGoing;
-
-  /// Checked-in guest count label in the Host Today current-event focus.
-  ///
-  /// In en, this message translates to:
-  /// **'checked in'**
-  String get hostsHostTodayLabelWaiting;
 
   /// Open task count label in the Host Today current-event focus.
   ///
@@ -21218,12 +21188,6 @@ abstract class AppLocalizations {
   /// **'WhatsApp Business · Organizer number'**
   String get hostInboxWhatsappChannel;
 
-  /// Explicit channel/sender prefix for a Catch inquiry row.
-  ///
-  /// In en, this message translates to:
-  /// **'Catch chat · Organizer · {details}'**
-  String hostInboxCatchChatPreview({required String details});
-
   /// Delivery disclosure in the event announcement composer.
   ///
   /// In en, this message translates to:
@@ -27513,12 +27477,6 @@ abstract class AppLocalizations {
     required int count,
   });
 
-  /// Summary view for every form submission.
-  ///
-  /// In en, this message translates to:
-  /// **'All responses'**
-  String get hostAudienceAllResponses;
-
   /// Response directory without a form filter.
   ///
   /// In en, this message translates to:
@@ -28044,24 +28002,6 @@ abstract class AppLocalizations {
   /// **'Create event'**
   String get hostsCreateEventCreateAction;
 
-  /// Person-field mapping in the Host form builder.
-  ///
-  /// In en, this message translates to:
-  /// **'Use this answer as'**
-  String get hostFormPersonField;
-
-  /// Person-field mapping in the Host form builder.
-  ///
-  /// In en, this message translates to:
-  /// **'Identify contact and profile answers for review. Other answers stay with this response.'**
-  String get hostFormPersonFieldHelp;
-
-  /// Person-field mapping in the Host form builder.
-  ///
-  /// In en, this message translates to:
-  /// **'{field, select, givenName{First name} familyName{Last name} displayName{Full name} dateOfBirth{Date of birth} age{Age} gender{Gender} phoneNumber{Phone number} email{Email} instagramHandle{Instagram} linkedinUrl{LinkedIn} profilePhoto{Profile photo} city{City} heightCm{Height in centimetres} occupation{Occupation} company{Company} education{Education} languages{Languages} relationshipGoal{Relationship goal} interestedInGenders{Gender preference} drinking{Drinking} smoking{Smoking} religion{Religion} workout{Exercise} diet{Diet} children{Children} other{Response only}}'**
-  String hostFormPersonFieldName({required String field});
-
   /// Lower bound for known tasks when some attention sources are incomplete.
   ///
   /// In en, this message translates to:
@@ -28229,18 +28169,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Message via {channel}'**
   String hostInboxMessageVia({required String channel});
-
-  /// Person-based Host messaging interface copy.
-  ///
-  /// In en, this message translates to:
-  /// **'General inquiry'**
-  String get hostInboxGeneralStatus;
-
-  /// Person-based Host messaging interface copy.
-  ///
-  /// In en, this message translates to:
-  /// **'Inquiry'**
-  String get hostInboxInquiryStatus;
 
   /// Person-based Host messaging interface copy.
   ///

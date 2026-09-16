@@ -2363,7 +2363,8 @@ or implementation technique cannot justify a second shared implementation.
   Skeleton, Indicator, TopBar, Header, HeaderTitle, Scaffold, PageBody,
   ScrollView, TabBar, TabScaffold, Poster, Polaroid, Ticket, Gap, Inset,
   Divider, Avatar, Photo, Cover, Stepper, StepFlow, Accordion, Drawer,
-  Overlay, Viewport, Menu, Surface, Input, Text, Image, Scope, AsyncBoundary.
+  Overlay, Viewport, Layout, Action, Menu, Surface, Input, Text, Image, Scope,
+  AsyncBoundary.
 - **Role selection.** Classify the public responsibility, not a child it
   happens to render. Menu owns commands/choices; Surface owns token-backed
   paint and containment; Input owns editing mechanics; Text owns display-only
