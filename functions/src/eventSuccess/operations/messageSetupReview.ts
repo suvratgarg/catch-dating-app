@@ -1,5 +1,9 @@
 import type {Firestore, Transaction} from "firebase-admin/firestore";
 import {operationContentHash} from "../../operations/durableActions";
+import type {EventMessagingSetupReview} from
+  "../../shared/generated/eventMessagingSetupReview";
+import {validateEventMessagingSetupReview} from
+  "../../shared/generated/validators/eventMessagingSetupReview";
 import {parseSmsConfig} from "./smsProtocol";
 import {parseSmsBudget, smsBudgetId, smsBudgetScopes} from "./smsDispatchStore";
 import {smsCollections} from "./smsPermissionRecords";
@@ -11,63 +15,23 @@ import {WHATSAPP_POLICIES} from "./whatsappTemplate";
 import {whatsappConsentSender} from "./whatsappConsentSender";
 import {parseWhatsappBudget, whatsappBudgetId, whatsappBudgetScopes,
   WHATSAPP_BUDGETS} from "./whatsappSpend";
-import {readMessageSenderChoice, MessageSenderChoice} from
+import {readMessageSenderChoice} from
   "./runtimeSenderSetup";
-import type {MessagePurpose} from "./messageContactability";
 import {parseRuntimeConfig, runtimeConfigId, runtimeConfigSource,
   runtimeConfigStatus, RUNTIME_CONFIGS, RuntimeContext} from
   "./runtimeConfigRecords";
 import {requireDocumentId} from "./guestRecords";
 
-type Route = MessageSenderChoice["routeId"];
 type Budget = ReturnType<typeof parseSmsBudget | typeof parseRcsBudget |
   typeof parseWhatsappBudget>;
 type BudgetScope = Budget["scope"];
-type BudgetIssue = "missing" | "invalid" | "paused" |
-  "expired" | "currencyChanged" | "agentChanged" | "exhausted";
-
-export type MessageBudgetReview = {
-  budgetId: string;
-  scope: BudgetScope;
-} & ({kind: "unavailable"; reason: "missing" | "invalid"} | {
-  kind: "recorded";
-  issue: Exclude<BudgetIssue, "missing" | "invalid"> | null;
-  revision: number;
-  approvalId: string;
-  currency: string;
-  limitMicros: number;
-  chargedMicros: number;
-  remainingMicros: number;
-  startsAt: number;
-  endsAt: number;
-  reviewHash: string;
-});
-
-export interface MessageSetupScope {
-  context: RuntimeContext;
-  routeId: Route;
-  senderId: string;
-  purpose: MessagePurpose;
-}
-
-export interface MessageSetupReview extends MessageSetupScope {
-  kind: "recordedSetupReview";
-  observedAt: number;
-  completedAt: number;
-  /** Configured records are not provider approval or guest send authority. */
-  grantsDispatchAuthority: false;
-  runtime: {
-    appliesToPurpose: boolean;
-    status: ReturnType<typeof runtimeConfigStatus>;
-    revision: number | null;
-    selected: boolean;
-    sourceHash: string;
-  };
-  sender: MessageSenderChoice | null;
-  budgets: {kind: "senderUnavailable"} |
-    {kind: "reviewed"; event: MessageBudgetReview;
-      senderDay: MessageBudgetReview};
-}
+export type MessageBudgetReview = Extract<
+  EventMessagingSetupReview["budgets"],
+  {kind: "reviewed"}
+>["event"];
+export type MessageSetupScope = Pick<EventMessagingSetupReview,
+  "context" | "routeId" | "senderId" | "purpose">;
+export type MessageSetupReview = EventMessagingSetupReview;
 
 /** Exact operator reads without credentials, roster access or writes. */
 export async function reviewEventMessageSetup(db: Firestore,
@@ -109,7 +73,8 @@ export async function reviewEventMessageSetup(db: Firestore,
     if (budgetSource && operationContentHash(budgetSource.scopes(input.context,
       completedAt)) !== operationContentHash(budgetSource.scopes(input.context,
       now))) throw new Error("Message setup review crossed a billing day");
-    return {kind: "recordedSetupReview", ...input, observedAt: now, completedAt,
+    const review: MessageSetupReview = {schemaVersion: 1,
+      kind: "recordedSetupReview", ...input, observedAt: now, completedAt,
       grantsDispatchAuthority: false,
       runtime: {appliesToPurpose: input.purpose === "joiningUpdate",
         status: runtimeConfigStatus(record, source, now),
@@ -119,6 +84,10 @@ export async function reviewEventMessageSetup(db: Firestore,
             r.routeId === input.routeId &&
             r.senderId === input.senderId) ?? false)},
       sender, budgets};
+    if (!validateEventMessagingSetupReview(review)) {
+      throw new Error("Invalid event messaging setup review");
+    }
+    return review;
   }, {readOnly: true});
 }
 

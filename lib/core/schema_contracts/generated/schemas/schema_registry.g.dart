@@ -602,6 +602,11 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
     schema: schemaEventAssistanceSmsConfigSchema,
   ),
   SchemaContractDefinition(
+    name: 'EventMessagingSetupReview',
+    source: 'operations/event_messaging_setup_review.schema.json',
+    schema: schemaEventMessagingSetupReviewSchema,
+  ),
+  SchemaContractDefinition(
     name: 'EventAssistanceGuestDocument',
     source: 'firestore/event_assistance_guests.schema.json',
     schema: schemaEventAssistanceGuestDocumentSchema,
@@ -3526,6 +3531,7 @@ const schemaContractsByName = <String, Map<String, Object?>>{
   'EventAssistanceSmsDispatchDocument': schemaEventAssistanceSmsDispatchDocumentSchema,
   'EventAssistanceRcsConfig': schemaEventAssistanceRcsConfigSchema,
   'EventAssistanceSmsConfig': schemaEventAssistanceSmsConfigSchema,
+  'EventMessagingSetupReview': schemaEventMessagingSetupReviewSchema,
   'EventAssistanceGuestDocument': schemaEventAssistanceGuestDocumentSchema,
   'EventAssistanceThreadDocument': schemaEventAssistanceThreadDocumentSchema,
   'EventAssistanceGuestGrantDocument': schemaEventAssistanceGuestGrantDocumentSchema,
@@ -4207,6 +4213,7 @@ const schemaContractsBySource = <String, Map<String, Object?>>{
   'firestore/event_assistance_sms_dispatches.schema.json': schemaEventAssistanceSmsDispatchDocumentSchema,
   'operations/event_assistance_rcs_config.schema.json': schemaEventAssistanceRcsConfigSchema,
   'operations/event_assistance_sms_config.schema.json': schemaEventAssistanceSmsConfigSchema,
+  'operations/event_messaging_setup_review.schema.json': schemaEventMessagingSetupReviewSchema,
   'firestore/event_assistance_guests.schema.json': schemaEventAssistanceGuestDocumentSchema,
   'firestore/event_assistance_threads.schema.json': schemaEventAssistanceThreadDocumentSchema,
   'firestore/event_assistance_guest_grants.schema.json': schemaEventAssistanceGuestGrantDocumentSchema,

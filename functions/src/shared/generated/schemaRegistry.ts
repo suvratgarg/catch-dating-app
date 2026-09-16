@@ -122,6 +122,7 @@ export {eventAssistanceSmsBudgetDocumentSchema} from "./schemas/eventAssistanceS
 export {eventAssistanceSmsDispatchDocumentSchema} from "./schemas/eventAssistanceSmsDispatchDocument";
 export {eventAssistanceRcsConfigSchema} from "./schemas/eventAssistanceRcsConfig";
 export {eventAssistanceSmsConfigSchema} from "./schemas/eventAssistanceSmsConfig";
+export {eventMessagingSetupReviewSchema} from "./schemas/eventMessagingSetupReview";
 export {eventAssistanceGuestDocumentSchema} from "./schemas/eventAssistanceGuestDocument";
 export {eventAssistanceThreadDocumentSchema} from "./schemas/eventAssistanceThreadDocument";
 export {eventAssistanceGuestGrantDocumentSchema} from "./schemas/eventAssistanceGuestGrantDocument";

@@ -7,6 +7,8 @@ import {rcsHarness} from "./rcsDispatchTestHarness";
 import {start} from "./whatsappTestHarness";
 import {reviewEventMessageSetup, MessageSetupScope} from "./messageSetupReview";
 import {EventAssistanceRuntimeConfigStore} from "./runtimeConfigStore";
+import {validateEventMessagingSetupReview} from
+  "../../shared/generated/validators/eventMessagingSetupReview";
 
 type Harness = Awaited<ReturnType<typeof rcsHarness>>;
 const routes = ["catchEventSms", "catchEventRcs", "organizerEventWhatsapp"] as
@@ -36,6 +38,12 @@ for (const route of routes) {
       () => start);
     assert.deepEqual(h.fake.entries(), before);
     assert.equal(h.requests.length, 0);
+    assert.equal(result.schemaVersion, 1);
+    assert.equal(validateEventMessagingSetupReview(result), true);
+    assert.equal(validateEventMessagingSetupReview({
+      ...result,
+      grantsDispatchAuthority: true,
+    }), false);
     assert.equal(result.grantsDispatchAuthority, false);
     assert.equal(result.purpose, "joiningUpdate");
     assert.equal(result.runtime.appliesToPurpose, true);

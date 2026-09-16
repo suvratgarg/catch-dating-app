@@ -562,6 +562,11 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/eventAssistanceSmsConfig.ts",
   },
   {
+    name: "EventMessagingSetupReview",
+    source: "operations/event_messaging_setup_review.schema.json",
+    typeOutput: "functions/src/shared/generated/eventMessagingSetupReview.ts",
+  },
+  {
     "name": "EventAssistanceGuestDocument",
     "source": "firestore/event_assistance_guests.schema.json",
     "typeOutput": "functions/src/shared/generated/eventAssistanceGuestDocument.ts"

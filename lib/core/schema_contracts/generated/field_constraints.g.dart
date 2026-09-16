@@ -29127,6 +29127,439 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
+  static const eventMessagingSetupReviewBudgetsEventApprovalId = CatchContractFieldConstraints(
+    path: 'eventMessagingSetupReview.budgets.event.approvalId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventMessagingSetupReviewBudgetsEventBudgetId = CatchContractFieldConstraints(
+    path: 'eventMessagingSetupReview.budgets.event.budgetId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventMessagingSetupReviewBudgetsEventChargedMicros = CatchContractFieldConstraints(
+    path: 'eventMessagingSetupReview.budgets.event.chargedMicros',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventMessagingSetupReviewBudgetsEventCurrency = CatchContractFieldConstraints(
+    path: 'eventMessagingSetupReview.budgets.event.currency',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Z]{3}\$',
+  );
+
+  static const eventMessagingSetupReviewBudgetsEventEndsAt = CatchContractFieldConstraints(
+    path: 'eventMessagingSetupReview.budgets.event.endsAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventMessagingSetupReviewBudgetsEventIssue = CatchContractFieldConstraints(
+    path: 'eventMessagingSetupReview.budgets.event.issue',
+    valueTypes: <String>['string'],
+    enumValues: <String>['paused', 'expired', 'currencyChanged', 'agentChanged', 'exhausted'],
+  );
+
+  static const eventMessagingSetupReviewBudgetsEventKind = CatchContractFieldConstraints(
+    path: 'eventMessagingSetupReview.budgets.event.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventMessagingSetupReviewBudgetsEventLimitMicros = CatchContractFieldConstraints(
+    path: 'eventMessagingSetupReview.budgets.event.limitMicros',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventMessagingSetupReviewBudgetsEventReason = CatchContractFieldConstraints(
+    path: 'eventMessagingSetupReview.budgets.event.reason',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['missing', 'invalid'],
+  );
+
+  static const eventMessagingSetupReviewBudgetsEventRemainingMicros = CatchContractFieldConstraints(
+    path: 'eventMessagingSetupReview.budgets.event.remainingMicros',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventMessagingSetupReviewBudgetsEventReviewHash = CatchContractFieldConstraints(
+    path: 'eventMessagingSetupReview.budgets.event.reviewHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventMessagingSetupReviewBudgetsEventRevision = CatchContractFieldConstraints(
+    path: 'eventMessagingSetupReview.budgets.event.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventMessagingSetupReviewBudgetsEventScopeContextEventId = CatchContractFieldConstraints(
+    path: 'eventMessagingSetupReview.budgets.event.scope.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventMessagingSetupReviewBudgetsEventScopeContextMode = CatchContractFieldConstraints(
+    path: 'eventMessagingSetupReview.budgets.event.scope.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventMessagingSetupReviewBudgetsEventScopeContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventMessagingSetupReview.budgets.event.scope.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventMessagingSetupReviewBudgetsEventScopeDay = CatchContractFieldConstraints(
+    path: 'eventMessagingSetupReview.budgets.event.scope.day',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^\\d{4}-\\d{2}-\\d{2}\$',
+  );
+
+  static const eventMessagingSetupReviewBudgetsEventScopeKind = CatchContractFieldConstraints(
+    path: 'eventMessagingSetupReview.budgets.event.scope.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventMessagingSetupReviewBudgetsEventStartsAt = CatchContractFieldConstraints(
+    path: 'eventMessagingSetupReview.budgets.event.startsAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventMessagingSetupReviewBudgetsKind = CatchContractFieldConstraints(
+    path: 'eventMessagingSetupReview.budgets.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventMessagingSetupReviewBudgetsSenderDayApprovalId = CatchContractFieldConstraints(
+    path: 'eventMessagingSetupReview.budgets.senderDay.approvalId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventMessagingSetupReviewBudgetsSenderDayBudgetId = CatchContractFieldConstraints(
+    path: 'eventMessagingSetupReview.budgets.senderDay.budgetId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventMessagingSetupReviewBudgetsSenderDayChargedMicros = CatchContractFieldConstraints(
+    path: 'eventMessagingSetupReview.budgets.senderDay.chargedMicros',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventMessagingSetupReviewBudgetsSenderDayCurrency = CatchContractFieldConstraints(
+    path: 'eventMessagingSetupReview.budgets.senderDay.currency',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Z]{3}\$',
+  );
+
+  static const eventMessagingSetupReviewBudgetsSenderDayEndsAt = CatchContractFieldConstraints(
+    path: 'eventMessagingSetupReview.budgets.senderDay.endsAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventMessagingSetupReviewBudgetsSenderDayIssue = CatchContractFieldConstraints(
+    path: 'eventMessagingSetupReview.budgets.senderDay.issue',
+    valueTypes: <String>['string'],
+    enumValues: <String>['paused', 'expired', 'currencyChanged', 'agentChanged', 'exhausted'],
+  );
+
+  static const eventMessagingSetupReviewBudgetsSenderDayKind = CatchContractFieldConstraints(
+    path: 'eventMessagingSetupReview.budgets.senderDay.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventMessagingSetupReviewBudgetsSenderDayLimitMicros = CatchContractFieldConstraints(
+    path: 'eventMessagingSetupReview.budgets.senderDay.limitMicros',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventMessagingSetupReviewBudgetsSenderDayReason = CatchContractFieldConstraints(
+    path: 'eventMessagingSetupReview.budgets.senderDay.reason',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['missing', 'invalid'],
+  );
+
+  static const eventMessagingSetupReviewBudgetsSenderDayRemainingMicros = CatchContractFieldConstraints(
+    path: 'eventMessagingSetupReview.budgets.senderDay.remainingMicros',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventMessagingSetupReviewBudgetsSenderDayReviewHash = CatchContractFieldConstraints(
+    path: 'eventMessagingSetupReview.budgets.senderDay.reviewHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventMessagingSetupReviewBudgetsSenderDayRevision = CatchContractFieldConstraints(
+    path: 'eventMessagingSetupReview.budgets.senderDay.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventMessagingSetupReviewBudgetsSenderDayScopeContextEventId = CatchContractFieldConstraints(
+    path: 'eventMessagingSetupReview.budgets.senderDay.scope.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventMessagingSetupReviewBudgetsSenderDayScopeContextMode = CatchContractFieldConstraints(
+    path: 'eventMessagingSetupReview.budgets.senderDay.scope.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventMessagingSetupReviewBudgetsSenderDayScopeContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventMessagingSetupReview.budgets.senderDay.scope.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventMessagingSetupReviewBudgetsSenderDayScopeDay = CatchContractFieldConstraints(
+    path: 'eventMessagingSetupReview.budgets.senderDay.scope.day',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^\\d{4}-\\d{2}-\\d{2}\$',
+  );
+
+  static const eventMessagingSetupReviewBudgetsSenderDayScopeKind = CatchContractFieldConstraints(
+    path: 'eventMessagingSetupReview.budgets.senderDay.scope.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventMessagingSetupReviewBudgetsSenderDayStartsAt = CatchContractFieldConstraints(
+    path: 'eventMessagingSetupReview.budgets.senderDay.startsAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventMessagingSetupReviewCompletedAt = CatchContractFieldConstraints(
+    path: 'eventMessagingSetupReview.completedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventMessagingSetupReviewContextEventId = CatchContractFieldConstraints(
+    path: 'eventMessagingSetupReview.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventMessagingSetupReviewContextMode = CatchContractFieldConstraints(
+    path: 'eventMessagingSetupReview.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventMessagingSetupReviewContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventMessagingSetupReview.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventMessagingSetupReviewGrantsDispatchAuthority = CatchContractFieldConstraints(
+    path: 'eventMessagingSetupReview.grantsDispatchAuthority',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventMessagingSetupReviewKind = CatchContractFieldConstraints(
+    path: 'eventMessagingSetupReview.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventMessagingSetupReviewObservedAt = CatchContractFieldConstraints(
+    path: 'eventMessagingSetupReview.observedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventMessagingSetupReviewPurpose = CatchContractFieldConstraints(
+    path: 'eventMessagingSetupReview.purpose',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['joiningUpdate', 'joiningInstructions', 'planChanged', 'eventCancelled', 'eventFinished', 'guestRequirement', 'assignmentChanged', 'participationCheck', 'followUp'],
+  );
+
+  static const eventMessagingSetupReviewRouteId = CatchContractFieldConstraints(
+    path: 'eventMessagingSetupReview.routeId',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['catchEventSms', 'catchEventRcs', 'organizerEventWhatsapp'],
+  );
+
+  static const eventMessagingSetupReviewRuntimeAppliesToPurpose = CatchContractFieldConstraints(
+    path: 'eventMessagingSetupReview.runtime.appliesToPurpose',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventMessagingSetupReviewRuntimeRevision = CatchContractFieldConstraints(
+    path: 'eventMessagingSetupReview.runtime.revision',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventMessagingSetupReviewRuntimeSelected = CatchContractFieldConstraints(
+    path: 'eventMessagingSetupReview.runtime.selected',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventMessagingSetupReviewRuntimeSourceHash = CatchContractFieldConstraints(
+    path: 'eventMessagingSetupReview.runtime.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventMessagingSetupReviewRuntimeStatus = CatchContractFieldConstraints(
+    path: 'eventMessagingSetupReview.runtime.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['unconfigured', 'paused', 'sourceChanged', 'expired', 'eventClosed', 'configured'],
+  );
+
+  static const eventMessagingSetupReviewSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventMessagingSetupReview.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventMessagingSetupReviewSenderAvailability = CatchContractFieldConstraints(
+    path: 'eventMessagingSetupReview.sender.availability',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['eligible', 'setupRequired', 'approvalExpired', 'templateUnavailable'],
+  );
+
+  static const eventMessagingSetupReviewSenderDisplayAddress = CatchContractFieldConstraints(
+    path: 'eventMessagingSetupReview.sender.displayAddress',
+    maxLength: 2000,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventMessagingSetupReviewSenderDisplayName = CatchContractFieldConstraints(
+    path: 'eventMessagingSetupReview.sender.displayName',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventMessagingSetupReviewSenderReviewHash = CatchContractFieldConstraints(
+    path: 'eventMessagingSetupReview.sender.reviewHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventMessagingSetupReviewSenderRouteId = CatchContractFieldConstraints(
+    path: 'eventMessagingSetupReview.sender.routeId',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['catchEventSms', 'catchEventRcs', 'organizerEventWhatsapp'],
+  );
+
+  static const eventMessagingSetupReviewSenderSenderId = CatchContractFieldConstraints(
+    path: 'eventMessagingSetupReview.sender.senderId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventMessagingSetupReviewSenderId = CatchContractFieldConstraints(
+    path: 'eventMessagingSetupReview.senderId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
   static const eventOperatorAccessCallablePayloadEventId = CatchContractFieldConstraints(
     path: 'eventOperatorAccessCallablePayload.eventId',
     maxLength: 180,
@@ -99857,6 +100290,65 @@ abstract final class CatchContractConstraints {
     'eventLivePositionDocument.uid': eventLivePositionDocumentUid,
     'eventLivePositionDocument.updatedAt._nanoseconds': eventLivePositionDocumentUpdatedAtNanoseconds,
     'eventLivePositionDocument.updatedAt._seconds': eventLivePositionDocumentUpdatedAtSeconds,
+    'eventMessagingSetupReview.budgets.event.approvalId': eventMessagingSetupReviewBudgetsEventApprovalId,
+    'eventMessagingSetupReview.budgets.event.budgetId': eventMessagingSetupReviewBudgetsEventBudgetId,
+    'eventMessagingSetupReview.budgets.event.chargedMicros': eventMessagingSetupReviewBudgetsEventChargedMicros,
+    'eventMessagingSetupReview.budgets.event.currency': eventMessagingSetupReviewBudgetsEventCurrency,
+    'eventMessagingSetupReview.budgets.event.endsAt': eventMessagingSetupReviewBudgetsEventEndsAt,
+    'eventMessagingSetupReview.budgets.event.issue': eventMessagingSetupReviewBudgetsEventIssue,
+    'eventMessagingSetupReview.budgets.event.kind': eventMessagingSetupReviewBudgetsEventKind,
+    'eventMessagingSetupReview.budgets.event.limitMicros': eventMessagingSetupReviewBudgetsEventLimitMicros,
+    'eventMessagingSetupReview.budgets.event.reason': eventMessagingSetupReviewBudgetsEventReason,
+    'eventMessagingSetupReview.budgets.event.remainingMicros': eventMessagingSetupReviewBudgetsEventRemainingMicros,
+    'eventMessagingSetupReview.budgets.event.reviewHash': eventMessagingSetupReviewBudgetsEventReviewHash,
+    'eventMessagingSetupReview.budgets.event.revision': eventMessagingSetupReviewBudgetsEventRevision,
+    'eventMessagingSetupReview.budgets.event.scope.context.eventId': eventMessagingSetupReviewBudgetsEventScopeContextEventId,
+    'eventMessagingSetupReview.budgets.event.scope.context.mode': eventMessagingSetupReviewBudgetsEventScopeContextMode,
+    'eventMessagingSetupReview.budgets.event.scope.context.organizerId': eventMessagingSetupReviewBudgetsEventScopeContextOrganizerId,
+    'eventMessagingSetupReview.budgets.event.scope.day': eventMessagingSetupReviewBudgetsEventScopeDay,
+    'eventMessagingSetupReview.budgets.event.scope.kind': eventMessagingSetupReviewBudgetsEventScopeKind,
+    'eventMessagingSetupReview.budgets.event.startsAt': eventMessagingSetupReviewBudgetsEventStartsAt,
+    'eventMessagingSetupReview.budgets.kind': eventMessagingSetupReviewBudgetsKind,
+    'eventMessagingSetupReview.budgets.senderDay.approvalId': eventMessagingSetupReviewBudgetsSenderDayApprovalId,
+    'eventMessagingSetupReview.budgets.senderDay.budgetId': eventMessagingSetupReviewBudgetsSenderDayBudgetId,
+    'eventMessagingSetupReview.budgets.senderDay.chargedMicros': eventMessagingSetupReviewBudgetsSenderDayChargedMicros,
+    'eventMessagingSetupReview.budgets.senderDay.currency': eventMessagingSetupReviewBudgetsSenderDayCurrency,
+    'eventMessagingSetupReview.budgets.senderDay.endsAt': eventMessagingSetupReviewBudgetsSenderDayEndsAt,
+    'eventMessagingSetupReview.budgets.senderDay.issue': eventMessagingSetupReviewBudgetsSenderDayIssue,
+    'eventMessagingSetupReview.budgets.senderDay.kind': eventMessagingSetupReviewBudgetsSenderDayKind,
+    'eventMessagingSetupReview.budgets.senderDay.limitMicros': eventMessagingSetupReviewBudgetsSenderDayLimitMicros,
+    'eventMessagingSetupReview.budgets.senderDay.reason': eventMessagingSetupReviewBudgetsSenderDayReason,
+    'eventMessagingSetupReview.budgets.senderDay.remainingMicros': eventMessagingSetupReviewBudgetsSenderDayRemainingMicros,
+    'eventMessagingSetupReview.budgets.senderDay.reviewHash': eventMessagingSetupReviewBudgetsSenderDayReviewHash,
+    'eventMessagingSetupReview.budgets.senderDay.revision': eventMessagingSetupReviewBudgetsSenderDayRevision,
+    'eventMessagingSetupReview.budgets.senderDay.scope.context.eventId': eventMessagingSetupReviewBudgetsSenderDayScopeContextEventId,
+    'eventMessagingSetupReview.budgets.senderDay.scope.context.mode': eventMessagingSetupReviewBudgetsSenderDayScopeContextMode,
+    'eventMessagingSetupReview.budgets.senderDay.scope.context.organizerId': eventMessagingSetupReviewBudgetsSenderDayScopeContextOrganizerId,
+    'eventMessagingSetupReview.budgets.senderDay.scope.day': eventMessagingSetupReviewBudgetsSenderDayScopeDay,
+    'eventMessagingSetupReview.budgets.senderDay.scope.kind': eventMessagingSetupReviewBudgetsSenderDayScopeKind,
+    'eventMessagingSetupReview.budgets.senderDay.startsAt': eventMessagingSetupReviewBudgetsSenderDayStartsAt,
+    'eventMessagingSetupReview.completedAt': eventMessagingSetupReviewCompletedAt,
+    'eventMessagingSetupReview.context.eventId': eventMessagingSetupReviewContextEventId,
+    'eventMessagingSetupReview.context.mode': eventMessagingSetupReviewContextMode,
+    'eventMessagingSetupReview.context.organizerId': eventMessagingSetupReviewContextOrganizerId,
+    'eventMessagingSetupReview.grantsDispatchAuthority': eventMessagingSetupReviewGrantsDispatchAuthority,
+    'eventMessagingSetupReview.kind': eventMessagingSetupReviewKind,
+    'eventMessagingSetupReview.observedAt': eventMessagingSetupReviewObservedAt,
+    'eventMessagingSetupReview.purpose': eventMessagingSetupReviewPurpose,
+    'eventMessagingSetupReview.routeId': eventMessagingSetupReviewRouteId,
+    'eventMessagingSetupReview.runtime.appliesToPurpose': eventMessagingSetupReviewRuntimeAppliesToPurpose,
+    'eventMessagingSetupReview.runtime.revision': eventMessagingSetupReviewRuntimeRevision,
+    'eventMessagingSetupReview.runtime.selected': eventMessagingSetupReviewRuntimeSelected,
+    'eventMessagingSetupReview.runtime.sourceHash': eventMessagingSetupReviewRuntimeSourceHash,
+    'eventMessagingSetupReview.runtime.status': eventMessagingSetupReviewRuntimeStatus,
+    'eventMessagingSetupReview.schemaVersion': eventMessagingSetupReviewSchemaVersion,
+    'eventMessagingSetupReview.sender.availability': eventMessagingSetupReviewSenderAvailability,
+    'eventMessagingSetupReview.sender.displayAddress': eventMessagingSetupReviewSenderDisplayAddress,
+    'eventMessagingSetupReview.sender.displayName': eventMessagingSetupReviewSenderDisplayName,
+    'eventMessagingSetupReview.sender.reviewHash': eventMessagingSetupReviewSenderReviewHash,
+    'eventMessagingSetupReview.sender.routeId': eventMessagingSetupReviewSenderRouteId,
+    'eventMessagingSetupReview.sender.senderId': eventMessagingSetupReviewSenderSenderId,
+    'eventMessagingSetupReview.senderId': eventMessagingSetupReviewSenderId,
     'eventOperatorAccessCallablePayload.eventId': eventOperatorAccessCallablePayloadEventId,
     'eventOperatorAccessCallableResponse.actorRole': eventOperatorAccessCallableResponseActorRole,
     'eventOperatorAccessCallableResponse.endAtMillis': eventOperatorAccessCallableResponseEndAtMillis,

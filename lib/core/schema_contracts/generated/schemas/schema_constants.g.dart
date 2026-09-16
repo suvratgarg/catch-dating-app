@@ -227,6 +227,7 @@ export 'event_invite_link_secret_document.g.dart';
 export 'event_invite_touch_document.g.dart';
 export 'event_join_request_decision_callable_payload.g.dart';
 export 'event_live_position_document.g.dart';
+export 'event_messaging_setup_review.g.dart';
 export 'event_operator_access_callable_payload.g.dart';
 export 'event_operator_access_callable_response.g.dart';
 export 'event_origin.g.dart';

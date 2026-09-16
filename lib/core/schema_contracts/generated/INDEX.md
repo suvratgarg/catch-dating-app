@@ -129,6 +129,7 @@ Do not edit it by hand.
 | EventAssistanceSmsDispatchDocument | `firestore/event_assistance_sms_dispatches.schema.json` | `functions/src/shared/generated/eventAssistanceSmsDispatchDocument.ts` |
 | EventAssistanceRcsConfig | `operations/event_assistance_rcs_config.schema.json` | `functions/src/shared/generated/eventAssistanceRcsConfig.ts` |
 | EventAssistanceSmsConfig | `operations/event_assistance_sms_config.schema.json` | `functions/src/shared/generated/eventAssistanceSmsConfig.ts` |
+| EventMessagingSetupReview | `operations/event_messaging_setup_review.schema.json` | `functions/src/shared/generated/eventMessagingSetupReview.ts` |
 | EventAssistanceGuestDocument | `firestore/event_assistance_guests.schema.json` | `functions/src/shared/generated/eventAssistanceGuestDocument.ts` |
 | EventAssistanceThreadDocument | `firestore/event_assistance_threads.schema.json` | `functions/src/shared/generated/eventAssistanceThreadDocument.ts` |
 | EventAssistanceGuestGrantDocument | `firestore/event_assistance_guest_grants.schema.json` | `functions/src/shared/generated/eventAssistanceGuestGrantDocument.ts` |
@@ -812,6 +813,7 @@ Do not edit it by hand.
 | `schemaEventAssistanceSmsDispatchDocumentSchema` | EventAssistanceSmsDispatchDocument | `firestore/event_assistance_sms_dispatches.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_sms_dispatch_document.g.dart` |
 | `schemaEventAssistanceRcsConfigSchema` | EventAssistanceRcsConfig | `operations/event_assistance_rcs_config.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_rcs_config.g.dart` |
 | `schemaEventAssistanceSmsConfigSchema` | EventAssistanceSmsConfig | `operations/event_assistance_sms_config.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_sms_config.g.dart` |
+| `schemaEventMessagingSetupReviewSchema` | EventMessagingSetupReview | `operations/event_messaging_setup_review.schema.json` | `lib/core/schema_contracts/generated/schemas/event_messaging_setup_review.g.dart` |
 | `schemaEventAssistanceGuestDocumentSchema` | EventAssistanceGuestDocument | `firestore/event_assistance_guests.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_guest_document.g.dart` |
 | `schemaEventAssistanceThreadDocumentSchema` | EventAssistanceThreadDocument | `firestore/event_assistance_threads.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_thread_document.g.dart` |
 | `schemaEventAssistanceGuestGrantDocumentSchema` | EventAssistanceGuestGrantDocument | `firestore/event_assistance_guest_grants.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_guest_grant_document.g.dart` |

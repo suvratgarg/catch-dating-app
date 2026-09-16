@@ -122,6 +122,7 @@ export {validateEventAssistanceSmsBudgetDocument} from "./validators/eventAssist
 export {validateEventAssistanceSmsDispatchDocument} from "./validators/eventAssistanceSmsDispatchDocument";
 export {validateEventAssistanceRcsConfig} from "./validators/eventAssistanceRcsConfig";
 export {validateEventAssistanceSmsConfig} from "./validators/eventAssistanceSmsConfig";
+export {validateEventMessagingSetupReview} from "./validators/eventMessagingSetupReview";
 export {validateEventAssistanceGuestDocument} from "./validators/eventAssistanceGuestDocument";
 export {validateEventAssistanceThreadDocument} from "./validators/eventAssistanceThreadDocument";
 export {validateEventAssistanceGuestGrantDocument} from "./validators/eventAssistanceGuestGrantDocument";

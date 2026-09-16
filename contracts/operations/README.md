@@ -14,7 +14,12 @@ The contracts deliberately separate:
 - fenced leases for retry-safe workers;
 - hash-bound publication plans; and
 - rule proposals/evaluations, which require independent approval before
-activation.
+  activation.
+
+`event_messaging_setup_review.schema.json` is the portable, read-only operator
+review for one event messaging runtime, sender and its event and sender-day
+ceilings. Its literal `grantsDispatchAuthority: false` prevents the artifact
+from being mistaken for sender activation, spend approval or send permission.
 
 For the Supply Intake reference workflow, `primaryStage` is always exactly one
 of `incoming`, `verify`, `resolve`, or `ready`. Publication, rejection, expiry,

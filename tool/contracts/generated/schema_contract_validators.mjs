@@ -120,6 +120,7 @@ import {
   eventAssistanceSmsDispatchDocumentSchema,
   eventAssistanceRcsConfigSchema,
   eventAssistanceSmsConfigSchema,
+  eventMessagingSetupReviewSchema,
   eventAssistanceGuestDocumentSchema,
   eventAssistanceThreadDocumentSchema,
   eventAssistanceGuestGrantDocumentSchema,
@@ -822,6 +823,7 @@ export const validateEventAssistanceSmsBudgetDocument = ajv.compile(eventAssista
 export const validateEventAssistanceSmsDispatchDocument = ajv.compile(eventAssistanceSmsDispatchDocumentSchema);
 export const validateEventAssistanceRcsConfig = ajv.compile(eventAssistanceRcsConfigSchema);
 export const validateEventAssistanceSmsConfig = ajv.compile(eventAssistanceSmsConfigSchema);
+export const validateEventMessagingSetupReview = ajv.compile(eventMessagingSetupReviewSchema);
 export const validateEventAssistanceGuestDocument = ajv.compile(eventAssistanceGuestDocumentSchema);
 export const validateEventAssistanceThreadDocument = ajv.compile(eventAssistanceThreadDocumentSchema);
 export const validateEventAssistanceGuestGrantDocument = ajv.compile(eventAssistanceGuestGrantDocumentSchema);

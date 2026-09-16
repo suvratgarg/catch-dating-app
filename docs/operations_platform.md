@@ -888,6 +888,12 @@ credentials, guest consent, deployed workers or live delivery. Audited sender
 and budget provisioning, financial reconciliation and activation remain their
 own work. No setup report may substitute for those decisions.
 
+The review is validated against the versioned
+`EventMessagingSetupReview` operations contract before the CLI prints it. The
+contract fixes the channel, purpose, source hash, sender availability, exact
+budget scopes and recorded ceilings while preserving the literal
+`grantsDispatchAuthority: false` boundary.
+
 ## Adding Another Workflow
 
 Event Assistance is the second registered workflow. Its initial supported
