@@ -105,6 +105,7 @@ test("unimplemented live commands name their missing capability", () => {
       definition.live.missingCapability,
     ]));
   assert.deepEqual(gaps, {
+    changeProgramme: "liveProgrammeControl",
     reconcileFinance: "eventPaymentCaseResolution",
   });
 });
@@ -193,6 +194,42 @@ test("rehearsal allocations bind proposal and publication boundaries", () => {
     "getEventRehearsalGuestBootstrap",
   ]);
   assert.equal(publication.missingCapability, null);
+});
+
+test("programme control reports exact live and rehearsal coverage", () => {
+  const live = plannedWorkflowCommand(
+    "changeProgramme",
+    "host",
+    "live"
+  );
+  assert.deepEqual(live, {
+    kind: "changeProgramme",
+    actor: "host",
+    coverage: "none",
+    bindingType: "contractOnly",
+    operations: [],
+    missingCapability: "liveProgrammeControl",
+    variantField: null,
+    implementedVariants: [],
+    missingVariants: [],
+  });
+
+  const rehearsal = plannedWorkflowCommand(
+    "changeProgramme",
+    "host",
+    "rehearsal"
+  );
+  assert.deepEqual(rehearsal, {
+    kind: "changeProgramme",
+    actor: "host",
+    coverage: "partial",
+    bindingType: "domainAdapter",
+    operations: ["controlEventRehearsal"],
+    missingCapability: "rehearsalProgrammeControl",
+    variantField: "action",
+    implementedVariants: ["pause", "resume"],
+    missingVariants: ["extend", "skip", "reorder"],
+  });
 });
 
 test("every workflow names its command or external resolution boundary", () => {

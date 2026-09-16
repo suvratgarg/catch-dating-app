@@ -2766,6 +2766,14 @@ after that exact command is confirmed. The same owner freezes reveal decisions
 and survives temporary route detachment while the authenticated account is
 unchanged. Practice-role views remain read-only for these manager operations.
 
+The command-binding catalog now reports programme control from executable
+source facts. Dress rehearsal pause and resume are backed by the existing
+revision-fenced `controlEventRehearsal` transaction and are recorded as partial
+coverage. Extend, skip and reorder remain unavailable. The live control
+callable changes the active guide step, reveal state and completion state; it
+does not execute the canonical pause, resume, extend, skip or reorder command,
+so the former complete live binding is now an explicit capability gap.
+
 With the shared execution and SMS/WhatsApp/RCS boundaries in source, the next
 implementation sequence is:
 

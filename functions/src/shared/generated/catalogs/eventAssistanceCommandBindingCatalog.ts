@@ -243,15 +243,28 @@ export const eventAssistanceCommandBindingCatalog = {
     {
       "commandKind": "changeProgramme",
       "live": {
-        "bindingType": "domainAdapter",
-        "operations": [
-          "controlEventSuccessLive"
-        ],
-        "missingCapability": null
-      },
-      "rehearsal": {
         "bindingType": "contractOnly",
         "operations": [],
+        "missingCapability": "liveProgrammeControl"
+      },
+      "rehearsal": {
+        "bindingType": "domainAdapter",
+        "coverage": {
+          "kind": "partial",
+          "variantField": "action",
+          "implementedVariants": [
+            "pause",
+            "resume"
+          ],
+          "missingVariants": [
+            "extend",
+            "skip",
+            "reorder"
+          ]
+        },
+        "operations": [
+          "controlEventRehearsal"
+        ],
         "missingCapability": "rehearsalProgrammeControl"
       }
     },

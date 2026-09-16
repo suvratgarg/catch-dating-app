@@ -158,9 +158,25 @@ enum EventAssistanceCommandBindingType {
 
 enum EventAssistanceCommandCoverage { none, partial, complete }
 
-enum EventAssistanceCommandCoverageVariant { joining, planChange, followUp }
+enum EventAssistanceCommandCoverageVariant {
+  joining,
+  planChange,
+  followUp,
+  pause,
+  resume,
+  extend,
+  skip,
+  reorder,
+  reconcile,
+  retryDefiniteFailure,
+  manualHandoff,
+  startCountdown,
+  cancelPending,
+  publish,
+}
 
 enum EventAssistanceMissingCapability {
+  liveProgrammeControl,
   rehearsalProgrammeControl,
   eventPaymentCaseResolution,
   rehearsalFinanceReconciliation,
@@ -1640,23 +1656,30 @@ const eventAssistanceCommandBindingCatalog =
   EventAssistanceCommandBindingDescriptor(
     commandKind: EventAssistanceCommandKind.changeProgramme,
     live: EventAssistanceModeBinding(
-      bindingType: EventAssistanceCommandBindingType.domainAdapter,
-      coverage: EventAssistanceCommandCoverage.complete,
-      variantField: null,
-      implementedVariants: <EventAssistanceCommandCoverageVariant>[],
-      missingVariants: <EventAssistanceCommandCoverageVariant>[],
-      operations: <String>[
-        'controlEventSuccessLive',
-      ],
-      missingCapability: null,
-    ),
-    rehearsal: EventAssistanceModeBinding(
       bindingType: EventAssistanceCommandBindingType.contractOnly,
       coverage: EventAssistanceCommandCoverage.none,
       variantField: null,
       implementedVariants: <EventAssistanceCommandCoverageVariant>[],
       missingVariants: <EventAssistanceCommandCoverageVariant>[],
       operations: <String>[],
+      missingCapability: EventAssistanceMissingCapability.liveProgrammeControl,
+    ),
+    rehearsal: EventAssistanceModeBinding(
+      bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      coverage: EventAssistanceCommandCoverage.partial,
+      variantField: 'action',
+      implementedVariants: <EventAssistanceCommandCoverageVariant>[
+        EventAssistanceCommandCoverageVariant.pause,
+        EventAssistanceCommandCoverageVariant.resume,
+      ],
+      missingVariants: <EventAssistanceCommandCoverageVariant>[
+        EventAssistanceCommandCoverageVariant.extend,
+        EventAssistanceCommandCoverageVariant.skip,
+        EventAssistanceCommandCoverageVariant.reorder,
+      ],
+      operations: <String>[
+        'controlEventRehearsal',
+      ],
       missingCapability: EventAssistanceMissingCapability.rehearsalProgrammeControl,
     ),
   ),
