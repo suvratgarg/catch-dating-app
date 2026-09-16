@@ -350,10 +350,7 @@ class HostTeamProfessionalProfilePreview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return switch (state) {
-      HostTeamProfileLoading() => const CatchSkeleton.rows(
-        count: 4,
-        divided: true,
-      ),
+      HostTeamProfileLoading() => const CatchLoadingIndicator(),
       HostTeamProfileError(:final error) => CatchLocalizedErrorState(
         error,
         context: AppErrorContext.profile,
@@ -484,7 +481,7 @@ class HostTeamProfileSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return switch (state) {
-      HostTeamProfileLoading() => const CatchSkeleton.iconRows(divided: true),
+      HostTeamProfileLoading() => const CatchLoadingIndicator(),
       HostTeamProfileError(:final error) => CatchLocalizedErrorState(
         error,
         context: AppErrorContext.profile,

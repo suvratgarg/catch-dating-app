@@ -80,10 +80,8 @@ class _HostEventParticipantsSectionListState
           onSearchChanged: (value) => setState(() => _searchQuery = value),
           onFilterChanged: (value) => setState(() => _selectedFilter = value),
         ),
-      HostParticipantProfilesLookupStatus.loading => const CatchSkeleton.rows(
-        count: 4,
-        titleWidth: CatchLayout.skeletonTextSectionWidth,
-      ),
+      HostParticipantProfilesLookupStatus.loading =>
+        const CatchLoadingIndicator(),
       HostParticipantProfilesLookupStatus.error => Padding(
         padding: CatchInsets.content,
         child: CatchLocalizedErrorState(

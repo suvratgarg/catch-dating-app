@@ -2,52 +2,9 @@ import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
-class HostAnalyticsReportSkeleton extends StatelessWidget {
-  const HostAnalyticsReportSkeleton({super.key});
+export 'host_analytics_report_loading_indicator.dart';
 
-  @override
-  Widget build(BuildContext context) {
-    return const CatchSectionList.inset(
-      emptyStateOmitted: true,
-      padding: EdgeInsets.zero,
-      children: [
-        CatchSection.divided(
-          first: true,
-          child: HostAnalyticsMetricGridSkeleton(),
-        ),
-        CatchSection.divided(child: HostChartSkeleton()),
-        CatchSection.divided(child: CatchSkeleton.mediaRows(divided: true)),
-        CatchSection.divided(child: CatchSkeleton.iconRows(divided: true)),
-      ],
-    );
-  }
-}
-
-class HostChartSkeleton extends StatelessWidget {
-  const HostChartSkeleton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return CatchSurface(
-      borderColor: t.line,
-      padding: CatchInsets.content,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          CatchSkeleton.text(width: CatchLayout.skeletonTextInlineTitleWidth),
-          gapH16,
-          CatchSkeleton.box(
-            height: CatchLayout.hostChartSkeletonHeight,
-            radius: CatchRadius.sm,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
+/// A leaf placeholder used where only an inline icon is unresolved.
 class HostInlineSkeletonIcon extends StatelessWidget {
   const HostInlineSkeletonIcon({super.key, this.size = CatchIcon.md});
 
@@ -56,25 +13,5 @@ class HostInlineSkeletonIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CatchSkeleton.box(width: size, height: size, radius: CatchRadius.sm);
-  }
-}
-
-class HostAnalyticsMetricGridSkeleton extends StatelessWidget {
-  const HostAnalyticsMetricGridSkeleton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        for (var i = 0; i < 2; i++) ...[
-          Expanded(
-            child: CatchSkeleton.card(
-              height: CatchLayout.skeletonCardCompactHeight,
-            ),
-          ),
-          if (i == 0) gapW12,
-        ],
-      ],
-    );
   }
 }

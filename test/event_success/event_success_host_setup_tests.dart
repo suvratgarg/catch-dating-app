@@ -559,7 +559,7 @@ void _registerEventSuccessHostSetupTests() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('host section renders tab-shaped skeleton while guide loads', (
+  testWidgets('host section keeps real tabs while guide loads', (
     tester,
   ) async {
     final event = buildEvent(id: 'event-loading-host-guide');
@@ -587,9 +587,10 @@ void _registerEventSuccessHostSetupTests() {
 
     await tester.pump();
 
-    expect(find.byType(EventSuccessHostSectionSkeleton), findsOneWidget);
-    expect(find.byType(CatchSkeleton), findsWidgets);
-    expect(find.byType(CircularProgressIndicator), findsNothing);
+    expect(find.byType(EventSuccessHostSectionLoadingPageBody), findsOneWidget);
+    expect(find.byType(CatchSkeleton), findsNothing);
+    expect(find.byType(EventSuccessHostTabBar), findsOneWidget);
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
   });
 
   test('host section retains local provider failures', () {

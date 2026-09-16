@@ -6648,13 +6648,13 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'EventSuccessHostSectionSkeleton',
+                name: 'EventSuccessHostSectionLoadingPageBody',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
-                    name: 'Ready',
+                    name: 'Loading',
                     builder:
                         _widgetbook_workspace_event_success_host_workspace_components_use_cases
-                            .eventSuccessStrictEventSuccessHostSectionSkeleton,
+                            .eventSuccessStrictEventSuccessHostSectionLoadingPageBody,
                   ),
                 ],
               ),
@@ -6681,17 +6681,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'EventSuccessLiveTabSkeleton',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Ready',
-                    builder:
-                        _widgetbook_workspace_event_success_host_workspace_components_use_cases
-                            .eventSuccessStrictEventSuccessLiveTabSkeleton,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
                 name: 'EventSuccessReadinessField',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -6714,17 +6703,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'EventSuccessReportMetricsSkeleton',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Ready',
-                    builder:
-                        _widgetbook_workspace_event_success_host_workspace_components_use_cases
-                            .eventSuccessStrictEventSuccessReportMetricsSkeleton,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
                 name: 'EventSuccessReportQualitySection',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -6736,28 +6714,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'EventSuccessReportTabSkeleton',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Ready',
-                    builder:
-                        _widgetbook_workspace_event_success_host_workspace_components_use_cases
-                            .eventSuccessStrictEventSuccessReportTabSkeleton,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'EventSuccessSetupControlsSkeleton',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Ready',
-                    builder:
-                        _widgetbook_workspace_event_success_host_workspace_components_use_cases
-                            .eventSuccessStrictEventSuccessSetupControlsSkeleton,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
                 name: 'EventSuccessSetupNoticeBanner',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -6765,17 +6721,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_event_success_host_workspace_components_use_cases
                             .eventSuccessStrictNoticeCard,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'EventSuccessSetupTabSkeleton',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Ready',
-                    builder:
-                        _widgetbook_workspace_event_success_host_workspace_components_use_cases
-                            .eventSuccessStrictEventSuccessSetupTabSkeleton,
                   ),
                 ],
               ),
@@ -6856,16 +6801,6 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'EventSuccessCompanionPrimaryActionSkeleton',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Primary action loading',
-                builder: _widgetbook_workspace_event_success_companion_loading
-                    .eventSuccessCompanionPrimaryActionSkeletonState,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
             name: 'EventSuccessCompanionRouteScreen',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -6882,16 +6817,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Screen states',
                 builder: _widgetbook_workspace_event_success_companion_screen
                     .eventSuccessCompanionScreenStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'EventSuccessCompanionStageSkeleton',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Stage loading',
-                builder: _widgetbook_workspace_event_success_companion_loading
-                    .eventSuccessCompanionStageSkeletonState,
               ),
             ],
           ),
@@ -8869,24 +8794,13 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'HostAnalyticsMetricGridSkeleton',
+                name: 'HostAnalyticsReportLoadingIndicator',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
-                    name: 'Metric grid skeleton states',
+                    name: 'Report loading',
                     builder:
                         _widgetbook_workspace_hosts_operations_loading_and_tools
-                            .hostAnalyticsMetricGridSkeletonCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostAnalyticsReportSkeleton',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Skeleton states',
-                    builder:
-                        _widgetbook_workspace_hosts_operations_loading_and_tools
-                            .hostLoadingSkeletonCatalogStates,
+                            .hostLoadingStatesCatalog,
                   ),
                 ],
               ),
@@ -9951,13 +9865,13 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'HostAnalyticsReportSkeleton',
+                name: 'HostAnalyticsReportLoadingIndicator',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Exact catalog',
                     builder:
                         _widgetbook_workspace_hosts_operations_loading_and_tools
-                            .hostStrictHostAnalyticsReportSkeletonCatalogStates,
+                            .hostStrictHostAnalyticsReportLoadingIndicatorCatalogStates,
                   ),
                 ],
               ),
@@ -9999,17 +9913,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_operations_manage_components
                             .hostStrictHostCapacitySectionCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostChartSkeleton',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_operations_loading_and_tools
-                            .hostStrictHostChartSkeletonCatalogStates,
                   ),
                 ],
               ),

@@ -692,7 +692,7 @@ void _registerEventSuccessCompanionFlowTests() {
   });
 
   testWidgets(
-    'companion route keeps chrome with content skeleton while loading',
+    'companion route keeps chrome and centers progress while loading',
     (tester) async {
       final event = buildEvent(id: 'event-loading-companion');
 
@@ -737,8 +737,8 @@ void _registerEventSuccessCompanionFlowTests() {
       expect(find.byType(CatchScaffold), findsOneWidget);
       expect(find.text('Event companion'), findsOneWidget);
       expect(find.byType(EventSuccessCompanionLoadingPageBody), findsOneWidget);
-      expect(find.byType(CatchSkeleton), findsWidgets);
-      expect(find.byType(CircularProgressIndicator), findsNothing);
+      expect(find.byType(CatchSkeleton), findsNothing);
+      expect(find.byType(CircularProgressIndicator), findsOneWidget);
     },
   );
 

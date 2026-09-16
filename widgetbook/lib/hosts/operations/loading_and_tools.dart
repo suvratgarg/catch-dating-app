@@ -10,82 +10,32 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
-import '../../preview_layout_contracts.dart';
 import '../../support/page_preview.dart';
 import 'fixtures.dart';
 import 'preview.dart';
 
 @widgetbook.UseCase(
-  name: 'Skeleton states',
-  type: HostAnalyticsReportSkeleton,
+  name: 'Report loading',
+  type: HostAnalyticsReportLoadingIndicator,
   path: '[P1 product surfaces]/Host operations/Components',
 )
 @widgetbook.UseCase(
-  name: 'Skeleton states',
-  type: HostChartSkeleton,
-  path: '[P1 product surfaces]/Host operations/Components',
-)
-@widgetbook.UseCase(
-  name: 'Skeleton states',
-  type: CatchSkeleton,
-  path: '[P1 product surfaces]/Host operations/Components',
-)
-@widgetbook.UseCase(
-  name: 'Skeleton states',
+  name: 'Inline icon loading',
   type: HostInlineSkeletonIcon,
   path: '[P1 product surfaces]/Host operations/Components',
 )
-Widget hostLoadingSkeletonCatalogStates(BuildContext context) {
+Widget hostLoadingStatesCatalog(BuildContext context) {
   return const WidgetbookPageCatalogFrame(
-    title: 'Host loading skeletons',
+    title: 'Host loading states',
     contractId: 'component.host.loading_skeletons',
     children: [
       WidgetbookPageStateCard(
-        label: 'row and settings groups',
-        child: Column(
-          children: [
-            CatchSkeleton.mediaRows(count: 2, divided: true),
-            gapH12,
-            CatchSkeleton.iconRows(count: 2, divided: true),
-          ],
-        ),
+        label: 'unresolved report',
+        child: HostAnalyticsReportLoadingIndicator(),
       ),
       WidgetbookPageStateCard(
-        label: 'analytics and roster',
-        child: Column(
-          children: [
-            HostAnalyticsReportSkeleton(),
-            gapH12,
-            CatchSkeleton.rows(
-              count: 3,
-              titleWidth: CatchLayout.skeletonTextSectionWidth,
-            ),
-            gapH12,
-            HostInlineSkeletonIcon(),
-          ],
-        ),
-      ),
-      WidgetbookPageStateCard(label: 'chart', child: HostChartSkeleton()),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Metric grid skeleton states',
-  type: HostAnalyticsMetricGridSkeleton,
-  path: '[P1 product surfaces]/Host operations/Components',
-)
-Widget hostAnalyticsMetricGridSkeletonCatalogStates(BuildContext context) {
-  return const WidgetbookPageCatalogFrame(
-    title: 'HostAnalyticsMetricGridSkeleton',
-    contractId: 'component.host.analytics.metric_grid_skeleton',
-    children: [
-      WidgetbookPageStateCard(
-        label: 'two metrics',
-        child: SizedBox(
-          width: WidgetbookPreviewLayout.standardContractWidth,
-          child: HostAnalyticsMetricGridSkeleton(),
-        ),
+        label: 'unresolved icon',
+        child: HostInlineSkeletonIcon(),
       ),
     ],
   );
@@ -357,20 +307,12 @@ Widget hostStrictCatchRosterDecideTargetCatalogStates(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
-  type: HostAnalyticsReportSkeleton,
+  type: HostAnalyticsReportLoadingIndicator,
   path: '[P1 product surfaces]/Host operations/Strict coverage',
 )
-Widget hostStrictHostAnalyticsReportSkeletonCatalogStates(
+Widget hostStrictHostAnalyticsReportLoadingIndicatorCatalogStates(
   BuildContext context,
-) => hostLoadingSkeletonCatalogStates(context);
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostChartSkeleton,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostChartSkeletonCatalogStates(BuildContext context) =>
-    hostLoadingSkeletonCatalogStates(context);
+) => hostLoadingStatesCatalog(context);
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
@@ -403,4 +345,4 @@ Widget hostStrictHostEventToolsPageIndicatorCatalogStates(
   path: '[P1 product surfaces]/Host operations/Strict coverage',
 )
 Widget hostStrictHostInlineSkeletonIconCatalogStates(BuildContext context) =>
-    hostLoadingSkeletonCatalogStates(context);
+    hostLoadingStatesCatalog(context);

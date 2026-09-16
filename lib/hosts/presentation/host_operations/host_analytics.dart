@@ -81,7 +81,7 @@ class _HostClubInsightsPaneState extends ConsumerState<HostClubInsightsPane> {
           value: analyticsAsync,
           onRetry: () => ref.invalidate(hostAnalyticsProvider(query)),
           loadingBuilder: (_) =>
-              CatchSection.content(child: const HostAnalyticsReportSkeleton()),
+              CatchSection.content(child: const HostAnalyticsReportLoadingIndicator()),
           errorBuilder: (_, error, _, onBoundaryRetry) => CatchSection.content(
             child: CatchLocalizedErrorState(
               error,

@@ -23,7 +23,7 @@ import 'package:catch_dating_app/event_success/presentation/event_success_host_w
 import 'package:catch_dating_app/event_success/presentation/event_success_live_effects_controller.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_live_reveal_card_state.dart';
 import 'package:catch_dating_app/event_success/presentation/host_components/event_success_host_resource_error_state.dart';
-import 'package:catch_dating_app/event_success/presentation/host_components/event_success_host_section_skeleton.dart';
+import 'package:catch_dating_app/event_success/presentation/host_components/event_success_host_section_loading_page_body.dart';
 import 'package:catch_dating_app/events/data/event_attendee_repository.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -349,7 +349,7 @@ class _EventSuccessHostSectionState
     switch (state.status) {
       case EventSuccessHostSectionStatus.loading:
         return frameCompactLiveState(
-          EventSuccessHostSectionSkeleton(
+          EventSuccessHostSectionLoadingPageBody(
             initialTab: initialTab,
             showTabs: showTabs,
           ),

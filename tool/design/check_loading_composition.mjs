@@ -10,24 +10,8 @@ const legacyCollections = /\bCatchSkeleton\.(?:cards|boxes|chips)\s*\(/gu;
 // composition. Decrease or remove an entry with each migration. New files and
 // increases in an existing file fail even if another file loses a recipe.
 const allowedLegacyRowsByPath = Object.freeze({
-  'lib/event_rehearsal/presentation/host_event_rehearsal_screen.dart': 1,
-  'lib/event_success/presentation/companion/event_success_companion_loading_page_body.dart': 1,
-  'lib/event_success/presentation/host_components/event_success_host_section_skeleton.dart': 1,
-  'lib/hosts/presentation/club_management/create/widgets/host_club_editor_loading_screen.dart': 2,
-  'lib/hosts/presentation/host_operations/host_audience.dart': 1,
-  'lib/hosts/presentation/host_operations/host_club_team_screen.dart': 2,
-  'lib/hosts/presentation/inbox/host_campaign_composer.dart': 2,
-  'lib/hosts/presentation/inbox/host_inbox_person_page_body.dart': 1,
-  'lib/hosts/presentation/inbox/host_messaging_setup_screen.dart': 1,
-  'lib/hosts/presentation/inbox/host_whatsapp_thread_sheet.dart': 1,
-  'lib/hosts/presentation/widgets/host_event_attendance_panel.dart': 1,
-  'lib/hosts/presentation/widgets/host_event_participants_section_list.dart': 1,
-  'lib/hosts/presentation/widgets/host_loading_skeletons.dart': 2,
-  'lib/routing/go_router.dart': 1,
 });
 const allowedLegacyCollectionsByPath = Object.freeze({
-  'lib/event_success/presentation/host_components/event_success_host_section_skeleton.dart': 1,
-  'lib/hosts/presentation/club_management/create/widgets/host_club_editor_loading_screen.dart': 2,
 });
 export const legacyRowRecipeCeiling = Object.values(
   allowedLegacyRowsByPath,

@@ -26,40 +26,7 @@ class HostClubEditorLoadingScreen extends StatelessWidget {
             onBack: () => Navigator.of(context).maybePop(),
           ),
           const Expanded(
-            child: SingleChildScrollView(
-              padding: CatchInsets.formStepBody,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  CatchSkeleton.boxes(
-                    height: CatchLayout.clubEditorPhotoSkeletonHeight,
-                  ),
-                  gapH20,
-                  CatchSkeleton.iconRows(
-                    count: 4,
-                    titleWidth: CatchLayout.skeletonTextCardTitleWidth,
-                    divided: true,
-                  ),
-                  gapH20,
-                  CatchSkeleton.iconRows(
-                    titleWidth: CatchLayout.skeletonTextInlineTitleWidth,
-                    divided: true,
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const Padding(
-            padding: CatchInsets.hostClubEditorLoadingAction,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                CatchSkeleton.boxes(
-                  height: CatchLayout.buttonLgHeight,
-                  radius: CatchRadius.pill,
-                ),
-              ],
-            ),
+            child: CatchStateViewport.loading(accountForBottomOverlay: false),
           ),
         ],
       ),

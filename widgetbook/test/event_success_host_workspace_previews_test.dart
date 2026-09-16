@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_host_workspace_page_body.dart';
-import 'package:catch_dating_app/event_success/presentation/host_components/event_success_host_section_skeleton.dart';
+import 'package:catch_dating_app/event_success/presentation/host_components/event_success_host_section_loading_page_body.dart';
 import 'package:catch_dating_app/event_success/presentation/host_report/event_success_funnel_section.dart';
 import 'package:catch_dating_app/event_success/presentation/host_report/event_success_host_report_page_body.dart';
 import 'package:catch_dating_app/event_success/presentation/host_report/event_success_report_empty_state.dart';
@@ -42,33 +42,8 @@ void main() {
       ),
       (eventSuccessStrictHostFunnelSummary, EventSuccessFunnelSection, 1),
       (
-        eventSuccessStrictEventSuccessHostSectionSkeleton,
-        EventSuccessHostSectionSkeleton,
-        1,
-      ),
-      (
-        eventSuccessStrictEventSuccessSetupTabSkeleton,
-        EventSuccessSetupTabSkeleton,
-        1,
-      ),
-      (
-        eventSuccessStrictEventSuccessLiveTabSkeleton,
-        EventSuccessLiveTabSkeleton,
-        1,
-      ),
-      (
-        eventSuccessStrictEventSuccessReportTabSkeleton,
-        EventSuccessReportTabSkeleton,
-        1,
-      ),
-      (
-        eventSuccessStrictEventSuccessSetupControlsSkeleton,
-        EventSuccessSetupControlsSkeleton,
-        1,
-      ),
-      (
-        eventSuccessStrictEventSuccessReportMetricsSkeleton,
-        EventSuccessReportMetricsSkeleton,
+        eventSuccessStrictEventSuccessHostSectionLoadingPageBody,
+        EventSuccessHostSectionLoadingPageBody,
         1,
       ),
     ]) {
