@@ -443,7 +443,11 @@ final class RehearsalMovementReview {
     final selected = root['selected'] == null
         ? null
         : RehearsalMovementRecord._parse(root['selected'], scope, session);
-    final selectedRevision = selection.progressRevision ?? revision;
+    // A route decision advances progress without creating another departure.
+    // The default selected record remains the latest departure, as returned
+    // by the rehearsal movement reader.
+    final selectedRevision =
+        selection.progressRevision ?? current?.revision ?? 0;
     if (selectedRevision != (selected?.revision ?? 0) ||
         selectedRevision > revision ||
         selected?.revision == current?.revision &&

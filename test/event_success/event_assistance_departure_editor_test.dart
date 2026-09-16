@@ -12,6 +12,7 @@ void main() {
     h = DepartureSessionHarness();
     final raw = departureResponse();
     (departureRawView(raw)['destinations']! as List).add({
+      'alternativeId': 'alternative:${'e' * 64}',
       'target': departureMeeting.toJson(),
       'label': 'Meeting point',
       'location': {
