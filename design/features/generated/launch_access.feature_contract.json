@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/launch_access.feature.json",
   "generatedFor": "2026-08-10",
   "sourceDigest": "sha256:bbde17fc7567753c7e9b89edf54292f19f4501c3da324c7722193d54f614b6a2",
-  "resolvedDigest": "sha256:3c3a46be741c587073012a652c6d5fb9925a7c57f342f4e126c8bd9a1626660f",
+  "resolvedDigest": "sha256:a932d6e9a71e8bf759d0f119dab383f630c0cffd751d3f5dd647c2b1414e1907",
   "feature": {
     "id": "feature.launch_access",
     "name": "Launch Access",
@@ -965,13 +965,7 @@
                 "CatchSkeleton.textBlock",
                 "CatchSkeleton.circle",
                 "CatchSkeleton.custom",
-                "CatchSkeleton.content",
-                "CatchSkeleton.cards",
-                "CatchSkeleton.rows",
-                "CatchSkeleton.boxes",
-                "CatchSkeleton.chips",
-                "CatchSkeleton.mediaRows",
-                "CatchSkeleton.iconRows"
+                "CatchSkeleton.content"
               ]
             }
           },

@@ -1460,13 +1460,12 @@ The route scaffold and its body geometry belong outside async state switches.
 For example, Today selects `CatchRootScreenScaffold.sections` once, then
 switches only the sliver content. A state change cannot substitute a standard
 inset body for the loaded full-width section body. The
-`design:loading-composition` check rejects legacy row recipes on migrated Host
-screens and Consumer presentation surfaces, as well as root-title style
-overrides. It reports remaining legacy Host recipe calls for migration; those
-calls are existing debt, not an approved pattern for new screens. Its exact
-per-file legacy allowances for generic rows and repeated cards, boxes, or
-chips must decrease when a call site is migrated. A new recipe fails in any
-file, even if another migration keeps the total unchanged.
+`design:loading-composition` rejects removed generic row and collection
+recipes on Host and Consumer presentation surfaces, as well as root-title
+style overrides. Its per-file allowance is now zero everywhere. Catch UI no
+longer exposes repeated cards, rows, boxes, chips, or fake screen/sliver
+adapters; callers must choose the real composition or the centered state
+viewport.
 
 Both primitives apply `InitialLoadPolicy.standard` (12 seconds) to the first
 user-visible resolution and to blocking retries that have no credible data.
@@ -2414,10 +2413,9 @@ or implementation technique cannot justify a second shared implementation.
   sharing an icon and message does not make those delivery contracts identical.
   Skeleton owns content-shaped loading. Derived content uses the real widget
   composition; leaf shapes are for media and values with no renderable layout.
-  Generic card lists, row recipes, equal boxes, and wrapping chips are legacy
-  recipes tracked by the loading-composition ratchet, not new usage patterns.
-  `CatchScreenSkeleton` and `CatchSliverSkeleton` retain their page-body and
-  render-sliver placement protocols. They do not select asynchronous state.
+  Generic card lists, row recipes, equal boxes, and wrapping chips have been
+  removed. Known content loads through its actual Section, Field, and child
+  layout; unknown page structure uses the state viewport's centered progress.
   Scaffold owns the page surface, platform safe area, keyboard resize and
   preferred-size forwarding through `CatchScaffold`. `CatchRouteScaffold`
   adds fixed route chrome and scroll-under state; `CatchRootScreenScaffold`

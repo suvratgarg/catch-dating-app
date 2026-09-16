@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "9ab1ec6d792cd43b631d7761071ceab335a03216925791f3f661f2c2871bd86c",
+  "sourceDigest": "fd1ea6306cddb847191141555d02f3e0cd87cbcd27c764cd58ef71d005022e38",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "9ab1ec6d792cd43b631d7761071ceab335a03216925791f3f661f2c2871bd86c",
-    "contractDigest": "9ab1ec6d792cd43b631d7761071ceab335a03216925791f3f661f2c2871bd86c"
+    "digest": "fd1ea6306cddb847191141555d02f3e0cd87cbcd27c764cd58ef71d005022e38",
+    "contractDigest": "fd1ea6306cddb847191141555d02f3e0cd87cbcd27c764cd58ef71d005022e38"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "b14977f5a45a0c1002eda7c16a4bfa968bd1d041f56864902ecf3285fb6d7a16",
+    "handoffRequestDigest": "36cf2183feafbb37d4b29e7f4b781703130c91f9a923de4801675156408e5473",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -83,18 +83,18 @@
   },
   "metrics": {
     "contractCount": 68,
-    "publicClassCount": 228,
+    "publicClassCount": 226,
     "conceptCount": 60,
-    "memberCount": 150,
-    "membersPerConcept": 2.5,
+    "memberCount": 148,
+    "membersPerConcept": 2.47,
     "unclassifiedCount": 0,
     "byConceptRole": {
       "composition": 3,
       "concept": 60,
-      "member": 150,
+      "member": 148,
       "screen": 15
     },
-    "collisionCount": 30,
+    "collisionCount": 29,
     "collisions": [
       {
         "key": "catch.badge",
@@ -372,14 +372,6 @@
           "CatchSheetDragIndicator",
           "CatchSheetHeader",
           "CatchWheelPickerSheet"
-        ]
-      },
-      {
-        "key": "catch.skeleton",
-        "symbols": [
-          "CatchScreenSkeleton",
-          "CatchSkeleton",
-          "CatchSliverSkeleton"
         ]
       },
       {
@@ -883,8 +875,8 @@
       "figmaVariableBindingCount": 0,
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
-      "figmaExpectedPropertyCount": 6,
-      "figmaExpectedPropertyDigest": "fd5247beb952a5d9590cfb00dfe461a258c968222a235d2088cd853275f74d6d",
+      "figmaExpectedPropertyCount": 4,
+      "figmaExpectedPropertyDigest": "8e5cdff2a90c1f9abfd1ff5a1299e162b4a507efc9479da7c6fe40177a883375",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
@@ -892,7 +884,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Skeleton",
       "claudeAllowed": true,
-      "contractDigest": "a7dd78d2f8600709eb8ffefc228bbda77d848d3c6d4c98f8eecf7f53e678537f"
+      "contractDigest": "b13feae8516e2c190b3547e4ad542c7f1ded0db46aca76c662c149ec8d596133"
     },
     {
       "contractId": "catch.loading_indicator",

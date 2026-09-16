@@ -551,18 +551,6 @@ void _registerHostOperationsCustomerDetailTests() {
       ),
       findsOneWidget,
     );
-    expect(
-      find.byWidgetPredicate(
-        (widget) =>
-            widget is CatchSkeleton &&
-            {
-              CatchSkeletonVariant.rows,
-              CatchSkeletonVariant.mediaRows,
-              CatchSkeletonVariant.iconRows,
-            }.contains(widget.variant),
-      ),
-      findsNothing,
-    );
     expect(find.byType(HostCustomerIdentityCard), findsOneWidget);
     expect(find.byType(HostCustomerMemoryPreview), findsOneWidget);
     expect(find.byType(HostCustomerDetailOverview), findsOneWidget);

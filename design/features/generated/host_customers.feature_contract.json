@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_customers.feature.json",
   "generatedFor": "2026-09-03",
   "sourceDigest": "sha256:ef2ae59e811119e576bb73983ea0504ee5389eb3037618c08f53cc919fa017dd",
-  "resolvedDigest": "sha256:3d54b6265f7fe1e0523fd4739b30b0bc1e396f9c5aa567247a40622a651a5ad6",
+  "resolvedDigest": "sha256:41c15aded82971a601e100f775b7148a65525e5d4f99c48eab064a4892aaa7cf",
   "feature": {
     "id": "feature.host_customers",
     "name": "Host Audience CRM",
@@ -6260,13 +6260,7 @@
                 "CatchSkeleton.textBlock",
                 "CatchSkeleton.circle",
                 "CatchSkeleton.custom",
-                "CatchSkeleton.content",
-                "CatchSkeleton.cards",
-                "CatchSkeleton.rows",
-                "CatchSkeleton.boxes",
-                "CatchSkeleton.chips",
-                "CatchSkeleton.mediaRows",
-                "CatchSkeleton.iconRows"
+                "CatchSkeleton.content"
               ]
             }
           },

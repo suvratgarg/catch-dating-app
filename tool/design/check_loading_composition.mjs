@@ -6,9 +6,8 @@ import {repoRoot} from '../lib/repo_paths.mjs';
 
 const legacyRows = /\bCatchSkeleton\.(?:rows|mediaRows|iconRows)\s*\(/gu;
 const legacyCollections = /\bCatchSkeleton\.(?:cards|boxes|chips)\s*\(/gu;
-// Temporary allowances for older routes that still need their real loading
-// composition. Decrease or remove an entry with each migration. New files and
-// increases in an existing file fail even if another file loses a recipe.
+// Zero allowances remain: these constructors were removed from Catch UI.
+// Keep the source-level check so a copied legacy recipe fails before analysis.
 const allowedLegacyRowsByPath = Object.freeze({
 });
 const allowedLegacyCollectionsByPath = Object.freeze({

@@ -109,7 +109,7 @@ void main() {
     }
   }
 
-  testWidgets('retrying empty Past shows progress, not a false empty state', (
+  testWidgets('retrying empty Past shows derived rows, not a false empty state', (
     tester,
   ) async {
     await _pump(
@@ -130,17 +130,15 @@ void main() {
         loadingMorePast: true,
       ),
     );
+    await tester.tap(find.text('Past').hitTestable());
+    await pumpFeatureUi(tester);
     expect(
       find.byWidgetPredicate(
         (widget) =>
             widget is CatchSkeleton &&
-            {
-              CatchSkeletonVariant.rows,
-              CatchSkeletonVariant.mediaRows,
-              CatchSkeletonVariant.iconRows,
-            }.contains(widget.variant),
+            widget.variant == CatchSkeletonVariant.content,
       ),
-      findsOneWidget,
+      findsNWidgets(4),
     );
     expect(find.text('No past events yet'), findsNothing);
     expect(tester.takeException(), isNull);

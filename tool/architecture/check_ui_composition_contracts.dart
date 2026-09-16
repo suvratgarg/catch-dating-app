@@ -764,12 +764,10 @@ const _competingPageGeometryOwners = <String>{
   'CatchPageBody.slivers',
   'CatchFormReviewPageBody',
   'CatchSectionList.page',
-  'CatchScreenSkeleton',
 };
 
 const _defaultPageGeometryOwnerPadding = <String, String>{
   'CatchSectionList.inset': 'padding',
-  'CatchSliverSkeleton': 'padding',
 };
 
 const _competingPageInsetNames = <String>{
