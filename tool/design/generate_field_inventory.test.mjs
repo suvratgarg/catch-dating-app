@@ -24,7 +24,7 @@ const {interactionContracts} = JSON.parse(
 
 test("builds the live inventory from the package-owned status enum", () => {
   const inventory = buildFromRepo();
-  assert.equal(inventory.summary.facadeCount, 14);
+  assert.equal(inventory.summary.facadeCount, 15);
   assert.equal(inventory.summary.saveStateCount, 3);
   assert.equal(inventory.source.catchFieldStatus, statusPath);
   assert.match(inventory.source.catchFieldStatusApiSha256, /^[a-f0-9]{64}$/u);
@@ -61,6 +61,7 @@ test("extracts every current facade and semantic slot", () => {
     [
       "read",
       "content",
+      "navigate",
       "nav",
       "sortable",
       "action",
@@ -80,6 +81,10 @@ test("extracts every current facade and semantic slot", () => {
   assert.ok(facades.find((entry) => entry.mode === "control").slots.includes("control"));
   assert.ok(facades.find((entry) => entry.mode === "select").slots.includes("error"));
   assert.ok(facades.find((entry) => entry.mode === "read").slots.includes("actions"));
+  assert.deepEqual(facades.find((entry) => entry.mode === "navigate").slots, [
+    "content", "secondary-action",
+  ]);
+  assert.ok(facades.find((entry) => entry.mode === "read").slots.includes("content"));
   assert.ok(facades.find((entry) => entry.mode === "inputActions").slots.includes("feedback"));
   assert.deepEqual(extractCatchSectionVariants(sectionSource), [
     "divided",
@@ -89,6 +94,10 @@ test("extracts every current facade and semantic slot", () => {
     "contained",
     "plain",
     "horizontal",
+    "rows",
+    "containedRows",
+    "content",
+    "sliverRows",
   ]);
   assert.deepEqual(extractCatchSectionContract(sectionSource).slots, [
     "title",
@@ -109,7 +118,7 @@ test("known-bad deleted facade changes generated inventory", () => {
   );
   const modes = extractCatchFieldFacades(deleted).map((entry) => entry.mode);
   assert.ok(!modes.includes("add"));
-  assert.equal(modes.length, 13);
+  assert.equal(modes.length, 14);
 });
 
 test("known-bad added slot parameter changes generated inventory", () => {
@@ -145,6 +154,18 @@ test("private named initializing formals retain public parameter and slot names"
     "title", "meta", "actions", "child",
   ]);
   assert.deepEqual(facades[0].slots, ["title", "support", "feedback", "actions"]);
+});
+
+test("section factories preserve source order and omit package-internal adapters", () => {
+  const contract = extractCatchSectionContract(`
+    const CatchSection.content({required Widget child});
+    @internal
+    factory CatchSection.formRows({required List<Widget> children});
+    factory CatchSection.sliverRows({required CatchField Function(BuildContext, int) itemBuilder});
+    const CatchSection._rows({required Widget child});
+  `);
+  assert.deepEqual(contract.variants, ["content", "sliverRows"]);
+  assert.deepEqual(contract.slots, ["children", "child"]);
 });
 
 test("canonical slots retain their recipe-specific placement without former aliases", () => {

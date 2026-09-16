@@ -15,6 +15,7 @@
       "modes": [
         "read",
         "content",
+        "navigate",
         "nav",
         "sortable",
         "action",
@@ -26,10 +27,10 @@
         "stepper",
         "inputActions",
         "add",
-        "select",
-        "navigate"
+        "select"
       ],
       "slots": [
+        "content",
         "title",
         "body",
         "leading",
@@ -43,7 +44,8 @@
         "feedback",
         "status",
         "error",
-        "actions"
+        "actions",
+        "secondary-action"
       ],
       "saveStates": [
         "idle",
