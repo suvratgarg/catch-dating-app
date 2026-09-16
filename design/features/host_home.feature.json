@@ -69,6 +69,12 @@
             "symbol": "HostEventsRouteScaffold"
           },
           {
+            "id": "event_entry_flow",
+            "language": "dart",
+            "file": "lib/hosts/events/presentation/host_event_entry_flow.dart",
+            "symbol": "runHostEventEntryFlow"
+          },
+          {
             "id": "events_list",
             "language": "dart",
             "file": "lib/hosts/events/presentation/widgets/host_events_list.dart",
@@ -253,7 +259,7 @@
         },
         {
           "id": "create_event",
-          "owner": "workspace",
+          "owner": "event_entry_flow",
           "codeValue": "_openCreateEvent",
           "cardinality": "unbounded",
           "scopeKeys": ["viewerUid", "clubId", "tapAttemptId"],
@@ -263,11 +269,11 @@
               "authority": {"registry": "flutter_screens", "id": "screen.host.event.create"}
             }
           ],
-          "description": "Opens Host Event Create with the selected organizer id and organizer snapshot."
+          "description": "After the event-entry choice, opens Host Event Create with the selected organizer and its booking mode."
         },
         {
           "id": "repeat_event",
-          "owner": "workspace",
+          "owner": "event_entry_flow",
           "codeValue": "_openRepeatEvent",
           "cardinality": "unbounded",
           "scopeKeys": ["viewerUid", "clubId", "eventId", "tapAttemptId"],
@@ -277,7 +283,7 @@
               "authority": {"registry": "flutter_screens", "id": "screen.host.event.create"}
             }
           ],
-          "description": "Opens Host Event Create with a policy-gated repeat prefill from the latest eligible event."
+          "description": "After the event-entry choice, opens Host Event Create with a policy-gated repeat prefill from the latest eligible event."
         },
         {
           "id": "manage_event",

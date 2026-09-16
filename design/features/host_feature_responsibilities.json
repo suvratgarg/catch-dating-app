@@ -118,6 +118,7 @@
           "actionOwnerIds": [
             "events_route",
             "workspace",
+            "event_entry_flow",
             "events_list",
             "events_timeline",
             "host_shell"

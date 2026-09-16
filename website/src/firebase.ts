@@ -132,10 +132,11 @@ export type RegisterPublicEventResponse = RegisterPublicEventCallableResponse;
 export type EventRuntimeBootstrap = GetEventRuntimeBootstrapCallableResponse;
 export type EventRehearsalGuestBootstrap =
   EventRehearsalGuestBootstrapCallableResponse;
-// Single-step controls. An assistance reply also needs its message and choice.
+// Single-step controls. Assistance replies and required-data submissions need
+// their own structured payloads and cannot use the generic action button.
 export type EventRehearsalGuestAction = Exclude<
   SubmitEventRehearsalGuestActionCallablePayload["action"],
-  "respondToAssistance"
+  "respondToAssistance" | "submitRequiredData"
 >;
 export type EventSuccessConversationGraph =
   GetEventSuccessConversationGraphCallableResponse;
