@@ -187,6 +187,15 @@ export const eventRehearsalDocumentSchema: Record<string, unknown> = {
             ]
           }
         },
+        "unitOutcome": {
+          "type": "string",
+          "enum": [
+            "none",
+            "completion",
+            "score",
+            "rank"
+          ]
+        },
         "movementSimulation": {
           "type": "object",
           "additionalProperties": false,
@@ -1418,6 +1427,154 @@ export const eventRehearsalDocumentSchema: Record<string, unknown> = {
                     }
                   }
                 ]
+              }
+            }
+          }
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "unitOutcomes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "unitOutcome",
+        "revision",
+        "records"
+      ],
+      "properties": {
+        "unitOutcome": {
+          "type": "string",
+          "enum": [
+            "completion",
+            "score",
+            "rank"
+          ]
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "records": {
+          "type": "array",
+          "maxItems": 500,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "unitId",
+              "round",
+              "outcome",
+              "stateRevision",
+              "operationId",
+              "recordedBy",
+              "recordedAt"
+            ],
+            "properties": {
+              "unitId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 2000
+              },
+              "round": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 10000
+              },
+              "outcome": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "completed"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "type": "string",
+                        "const": "completion"
+                      },
+                      "completed": {
+                        "type": "boolean"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "score"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "type": "string",
+                        "const": "score"
+                      },
+                      "score": {
+                        "type": "number",
+                        "minimum": -9007199254740991,
+                        "maximum": 9007199254740991
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "rank"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "type": "string",
+                        "const": "rank"
+                      },
+                      "rank": {
+                        "type": "number",
+                        "minimum": -9007199254740991,
+                        "maximum": 9007199254740991
+                      }
+                    }
+                  }
+                ]
+              },
+              "stateRevision": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 2147483647
+              },
+              "operationId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "recordedBy": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "recordedAt": {
+                "type": "object",
+                "description": "Serialized Firestore Timestamp fixture shape.",
+                "x-firestore-type": "timestamp",
+                "additionalProperties": false,
+                "required": [
+                  "_seconds",
+                  "_nanoseconds"
+                ],
+                "properties": {
+                  "_seconds": {
+                    "type": "integer"
+                  },
+                  "_nanoseconds": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 999999999
+                  }
+                }
               }
             }
           }

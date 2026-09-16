@@ -24,7 +24,8 @@ export type ControlEventRehearsalCallablePayload = {
     | "movement"
     | "staff"
     | "settings"
-    | "requiredData";
+    | "requiredData"
+    | "outcome";
   minutes?: number;
   assistance?:
     | {
@@ -731,5 +732,23 @@ export type ControlEventRehearsalCallablePayload = {
     expectedProfileRevision: number;
     expectedRequestRevision: number;
     expectedSourceHash: string;
+  };
+  outcome?: {
+    unitId: string;
+    round: number;
+    outcome:
+      | {
+          kind: "completion";
+          completed: boolean;
+        }
+      | {
+          kind: "score";
+          score: number;
+        }
+      | {
+          kind: "rank";
+          rank: number;
+        };
+    expectedOutcomeRevision: number;
   };
 };

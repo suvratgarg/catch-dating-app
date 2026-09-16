@@ -145,6 +145,15 @@ export const eventRehearsalBootstrapCallableResponseSchema: Record<string, unkno
                 ]
               }
             },
+            "unitOutcome": {
+              "type": "string",
+              "enum": [
+                "none",
+                "completion",
+                "score",
+                "rank"
+              ]
+            },
             "movementSimulation": {
               "type": "object",
               "additionalProperties": false,
@@ -9010,6 +9019,138 @@ export const eventRehearsalBootstrapCallableResponseSchema: Record<string, unkno
           }
         }
       }
+    },
+    "outcomeReview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "unitOutcome",
+        "revision",
+        "unitIds",
+        "records"
+      ],
+      "properties": {
+        "unitOutcome": {
+          "type": "string",
+          "enum": [
+            "none",
+            "completion",
+            "score",
+            "rank"
+          ]
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "unitIds": {
+          "type": "array",
+          "maxItems": 50,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          }
+        },
+        "records": {
+          "type": "array",
+          "maxItems": 500,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "unitId",
+              "round",
+              "outcome",
+              "stateRevision",
+              "recordedAt"
+            ],
+            "properties": {
+              "unitId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 2000
+              },
+              "round": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 10000
+              },
+              "outcome": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "completed"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "type": "string",
+                        "const": "completion"
+                      },
+                      "completed": {
+                        "type": "boolean"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "score"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "type": "string",
+                        "const": "score"
+                      },
+                      "score": {
+                        "type": "number",
+                        "minimum": -9007199254740991,
+                        "maximum": 9007199254740991
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "rank"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "type": "string",
+                        "const": "rank"
+                      },
+                      "rank": {
+                        "type": "number",
+                        "minimum": -9007199254740991,
+                        "maximum": 9007199254740991
+                      }
+                    }
+                  }
+                ]
+              },
+              "stateRevision": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 2147483647
+              },
+              "recordedAt": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              }
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -9140,6 +9281,15 @@ export const eventRehearsalBootstrapCallableResponseSchema: Record<string, unkno
                   "accountability"
                 ]
               }
+            },
+            "unitOutcome": {
+              "type": "string",
+              "enum": [
+                "none",
+                "completion",
+                "score",
+                "rank"
+              ]
             },
             "movementSimulation": {
               "type": "object",

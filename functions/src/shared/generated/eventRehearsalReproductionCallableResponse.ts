@@ -41,6 +41,7 @@ export interface EventRehearsalReproductionCallableResponse {
       | "afterglow"
       | "accountability"
     )[];
+    unitOutcome?: "none" | "completion" | "score" | "rank";
     /**
      * Frozen, synthetic-only movement truth used by dress rehearsal. It never reads or writes a real person's live position.
      */

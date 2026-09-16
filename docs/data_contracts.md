@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.125.0
+version: 1.126.0
 updated: 2026-09-16
 owner: recursive_audit_loop
 status: active
@@ -1218,6 +1218,19 @@ Projections convert Firestore timestamps to virtual UTC milliseconds and mark a
 pending prompt expired without mutating history. Reset regenerates the initial
 display-name-only state. No profile value, Consumer profile, runtime participant
 or onboarding draft is read or written.
+
+Optional `eventRehearsals.unitOutcomes` stores only the rehearsal format's
+non-`none` unit-outcome primitive, one global revision and at most 500 synthetic
+unit/round records. Each record retains its operation id, resolving Host uid and
+virtual rehearsal timestamp as private audit evidence. The control payload
+carries one current unit id, round, typed completion/score/rank value and the
+reviewed outcome revision. New rounds are contiguous and require every current
+unit in the prior round; corrections replace one record, rank values are unique
+within a round and bounded by the current unit count. `outcomeReview` removes
+Host identity and operation ids while projecting milliseconds, current unit ids
+and the revision. Source-event setup freezes the live format primitive; setup
+changes and reset delete prior outcome state. This rehearsal state cannot write
+the live `eventSuccessUnitOutcomes` or `eventSuccessStandings` collections.
 
 Movement controls carry their own closed group command with the parent setup and
 runtime revisions; action receipts use `actorId: null`. The departure freezes its

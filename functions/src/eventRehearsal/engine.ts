@@ -174,7 +174,8 @@ export function resolveRehearsalControl(
   case "movement":
   case "assistance":
   case "requiredData":
-    throw new Error("Assistance commands require their rehearsal transaction.");
+  case "outcome":
+    throw new Error("Domain commands require their rehearsal transaction.");
   case "markReady":
     assertStatus(session.status, ["draft", "ready"], action);
     return result("ready", session.activeStepIndex, currentMillis);

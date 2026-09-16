@@ -147,6 +147,15 @@ const schemaEventRehearsalBootstrapCallableResponseSchema = <String, Object?>{
                 ],
               },
             },
+            'unitOutcome': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'none',
+                'completion',
+                'score',
+                'rank',
+              ],
+            },
             'movementSimulation': <String, Object?>{
               'type': 'object',
               'additionalProperties': false,
@@ -9013,6 +9022,138 @@ const schemaEventRehearsalBootstrapCallableResponseSchema = <String, Object?>{
         },
       },
     },
+    'outcomeReview': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'unitOutcome',
+        'revision',
+        'unitIds',
+        'records',
+      ],
+      'properties': <String, Object?>{
+        'unitOutcome': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'none',
+            'completion',
+            'score',
+            'rank',
+          ],
+        },
+        'revision': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 2147483647,
+        },
+        'unitIds': <String, Object?>{
+          'type': 'array',
+          'maxItems': 50,
+          'uniqueItems': true,
+          'items': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 2000,
+          },
+        },
+        'records': <String, Object?>{
+          'type': 'array',
+          'maxItems': 500,
+          'items': <String, Object?>{
+            'type': 'object',
+            'additionalProperties': false,
+            'required': <Object?>[
+              'unitId',
+              'round',
+              'outcome',
+              'stateRevision',
+              'recordedAt',
+            ],
+            'properties': <String, Object?>{
+              'unitId': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 2000,
+              },
+              'round': <String, Object?>{
+                'type': 'integer',
+                'minimum': 0,
+                'maximum': 10000,
+              },
+              'outcome': <String, Object?>{
+                'oneOf': <Object?>[
+                  <String, Object?>{
+                    'type': 'object',
+                    'additionalProperties': false,
+                    'required': <Object?>[
+                      'kind',
+                      'completed',
+                    ],
+                    'properties': <String, Object?>{
+                      'kind': <String, Object?>{
+                        'type': 'string',
+                        'const': 'completion',
+                      },
+                      'completed': <String, Object?>{
+                        'type': 'boolean',
+                      },
+                    },
+                  },
+                  <String, Object?>{
+                    'type': 'object',
+                    'additionalProperties': false,
+                    'required': <Object?>[
+                      'kind',
+                      'score',
+                    ],
+                    'properties': <String, Object?>{
+                      'kind': <String, Object?>{
+                        'type': 'string',
+                        'const': 'score',
+                      },
+                      'score': <String, Object?>{
+                        'type': 'number',
+                        'minimum': -9007199254740991,
+                        'maximum': 9007199254740991,
+                      },
+                    },
+                  },
+                  <String, Object?>{
+                    'type': 'object',
+                    'additionalProperties': false,
+                    'required': <Object?>[
+                      'kind',
+                      'rank',
+                    ],
+                    'properties': <String, Object?>{
+                      'kind': <String, Object?>{
+                        'type': 'string',
+                        'const': 'rank',
+                      },
+                      'rank': <String, Object?>{
+                        'type': 'number',
+                        'minimum': -9007199254740991,
+                        'maximum': 9007199254740991,
+                      },
+                    },
+                  },
+                ],
+              },
+              'stateRevision': <String, Object?>{
+                'type': 'integer',
+                'minimum': 1,
+                'maximum': 2147483647,
+              },
+              'recordedAt': <String, Object?>{
+                'type': 'integer',
+                'minimum': 0,
+                'maximum': 9007199254740991,
+              },
+            },
+          },
+        },
+      },
+    },
   },
   'definitions': <String, Object?>{
     'session': <String, Object?>{
@@ -9142,6 +9283,15 @@ const schemaEventRehearsalBootstrapCallableResponseSchema = <String, Object?>{
                   'accountability',
                 ],
               },
+            },
+            'unitOutcome': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'none',
+                'completion',
+                'score',
+                'rank',
+              ],
             },
             'movementSimulation': <String, Object?>{
               'type': 'object',

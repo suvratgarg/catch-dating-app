@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.146.0
+version: 1.147.0
 updated: 2026-09-16
 owner: recursive_audit_loop
 status: active
@@ -173,9 +173,9 @@ projections carry connection state separately, with native attention counts and
 the guest connection notice retaining that distinction. Rehearsal now exercises
 late join, practical help, participation, membership and handovers, scoped staff
 duties, movement, checkpoints, accountability, delivery takeover, runtime
-settings and attendance closeout through the transaction adapters described
-below. Catalog families without a registered executor remain modeled coverage
-rather than runnable rehearsal behavior.
+settings, attendance closeout and unit outcomes through the transaction adapters
+described below. Catalog families without a registered executor remain modeled
+coverage rather than runnable rehearsal behavior.
 
 Scheduled rehearsal behaviors now resolve their guests against the configured
 2–50-person roster. Existing guest indices remain stable when present; roles
@@ -2693,6 +2693,20 @@ requested field is complete. Changed source, reset generation, stale revisions,
 expired virtual time and changed idempotency content fail closed. The rehearsal
 stores no real profile values and does not touch runtime participants, onboarding
 drafts, provider channels or any live event collection.
+
+The rehearsal adapter also executes `recordOutcome` against a revisioned state
+stored only on the rehearsal session. Source-event rehearsals freeze the same
+`completion`, `score`, `rank` or `none` primitive as the live event format;
+custom legacy sessions derive a conservative completion default only when their
+frozen modules include pods or rotations. A Host records one current synthetic
+unit at a time. New rounds must be contiguous and cannot start until every
+current unit has an outcome in the prior round; corrections replace one
+unit/round value and advance the global outcome revision. Rank values are whole,
+bounded by the current unit count and unique within the round. Setup changes and
+reset clear the practice state, while completion still permits post-event
+correction. The Host projection exposes the current primitive, unit ids,
+revision and records. No rehearsal outcome writes `eventSuccessUnitOutcomes`,
+`eventSuccessStandings` or another live event collection.
 
 With the shared execution and SMS/WhatsApp/RCS boundaries in source, the next
 implementation sequence is:

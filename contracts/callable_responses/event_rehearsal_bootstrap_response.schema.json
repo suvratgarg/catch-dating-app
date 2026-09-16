@@ -58,6 +58,9 @@
     },
     "settingsReview": {
       "$ref": "../shared/event_rehearsal_settings.schema.json#/definitions/Review"
+    },
+    "outcomeReview": {
+      "$ref": "../shared/event_rehearsal_outcomes.schema.json#/definitions/Review"
     }
   },
   "definitions": {

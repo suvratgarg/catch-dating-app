@@ -106,6 +106,15 @@ const schemaUpdateEventRehearsalSetupCallablePayloadSchema = <String, Object?>{
             ],
           },
         },
+        'unitOutcome': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'none',
+            'completion',
+            'score',
+            'rank',
+          ],
+        },
         'movementSimulation': <String, Object?>{
           'type': 'object',
           'additionalProperties': false,

@@ -118547,6 +118547,15 @@ export const eventRehearsalDocumentSchema = {
             ]
           }
         },
+        "unitOutcome": {
+          "type": "string",
+          "enum": [
+            "none",
+            "completion",
+            "score",
+            "rank"
+          ]
+        },
         "movementSimulation": {
           "type": "object",
           "additionalProperties": false,
@@ -119778,6 +119787,154 @@ export const eventRehearsalDocumentSchema = {
                     }
                   }
                 ]
+              }
+            }
+          }
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "unitOutcomes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "unitOutcome",
+        "revision",
+        "records"
+      ],
+      "properties": {
+        "unitOutcome": {
+          "type": "string",
+          "enum": [
+            "completion",
+            "score",
+            "rank"
+          ]
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "records": {
+          "type": "array",
+          "maxItems": 500,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "unitId",
+              "round",
+              "outcome",
+              "stateRevision",
+              "operationId",
+              "recordedBy",
+              "recordedAt"
+            ],
+            "properties": {
+              "unitId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 2000
+              },
+              "round": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 10000
+              },
+              "outcome": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "completed"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "type": "string",
+                        "const": "completion"
+                      },
+                      "completed": {
+                        "type": "boolean"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "score"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "type": "string",
+                        "const": "score"
+                      },
+                      "score": {
+                        "type": "number",
+                        "minimum": -9007199254740991,
+                        "maximum": 9007199254740991
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "rank"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "type": "string",
+                        "const": "rank"
+                      },
+                      "rank": {
+                        "type": "number",
+                        "minimum": -9007199254740991,
+                        "maximum": 9007199254740991
+                      }
+                    }
+                  }
+                ]
+              },
+              "stateRevision": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 2147483647
+              },
+              "operationId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "recordedBy": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "recordedAt": {
+                "type": "object",
+                "description": "Serialized Firestore Timestamp fixture shape.",
+                "x-firestore-type": "timestamp",
+                "additionalProperties": false,
+                "required": [
+                  "_seconds",
+                  "_nanoseconds"
+                ],
+                "properties": {
+                  "_seconds": {
+                    "type": "integer"
+                  },
+                  "_nanoseconds": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 999999999
+                  }
+                }
               }
             }
           }
@@ -158359,6 +158516,15 @@ export const eventRehearsalBootstrapCallableResponseSchema = {
                 ]
               }
             },
+            "unitOutcome": {
+              "type": "string",
+              "enum": [
+                "none",
+                "completion",
+                "score",
+                "rank"
+              ]
+            },
             "movementSimulation": {
               "type": "object",
               "additionalProperties": false,
@@ -167224,6 +167390,138 @@ export const eventRehearsalBootstrapCallableResponseSchema = {
           }
         }
       }
+    },
+    "outcomeReview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "unitOutcome",
+        "revision",
+        "unitIds",
+        "records"
+      ],
+      "properties": {
+        "unitOutcome": {
+          "type": "string",
+          "enum": [
+            "none",
+            "completion",
+            "score",
+            "rank"
+          ]
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "unitIds": {
+          "type": "array",
+          "maxItems": 50,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          }
+        },
+        "records": {
+          "type": "array",
+          "maxItems": 500,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "unitId",
+              "round",
+              "outcome",
+              "stateRevision",
+              "recordedAt"
+            ],
+            "properties": {
+              "unitId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 2000
+              },
+              "round": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 10000
+              },
+              "outcome": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "completed"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "type": "string",
+                        "const": "completion"
+                      },
+                      "completed": {
+                        "type": "boolean"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "score"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "type": "string",
+                        "const": "score"
+                      },
+                      "score": {
+                        "type": "number",
+                        "minimum": -9007199254740991,
+                        "maximum": 9007199254740991
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "rank"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "type": "string",
+                        "const": "rank"
+                      },
+                      "rank": {
+                        "type": "number",
+                        "minimum": -9007199254740991,
+                        "maximum": 9007199254740991
+                      }
+                    }
+                  }
+                ]
+              },
+              "stateRevision": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 2147483647
+              },
+              "recordedAt": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              }
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -167354,6 +167652,15 @@ export const eventRehearsalBootstrapCallableResponseSchema = {
                   "accountability"
                 ]
               }
+            },
+            "unitOutcome": {
+              "type": "string",
+              "enum": [
+                "none",
+                "completion",
+                "score",
+                "rank"
+              ]
             },
             "movementSimulation": {
               "type": "object",
@@ -169759,6 +170066,15 @@ export const updateEventRehearsalSetupCallablePayloadSchema = {
             ]
           }
         },
+        "unitOutcome": {
+          "type": "string",
+          "enum": [
+            "none",
+            "completion",
+            "score",
+            "rank"
+          ]
+        },
         "movementSimulation": {
           "type": "object",
           "additionalProperties": false,
@@ -170179,7 +170495,8 @@ export const controlEventRehearsalCallablePayloadSchema = {
         "movement",
         "staff",
         "settings",
-        "requiredData"
+        "requiredData",
+        "outcome"
       ]
     },
     "minutes": {
@@ -173236,6 +173553,92 @@ export const controlEventRehearsalCallablePayloadSchema = {
           "pattern": "^[a-f0-9]{64}$"
         }
       }
+    },
+    "outcome": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "unitId",
+        "round",
+        "outcome",
+        "expectedOutcomeRevision"
+      ],
+      "properties": {
+        "unitId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "round": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "outcome": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "completed"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "completion"
+                },
+                "completed": {
+                  "type": "boolean"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "score"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "score"
+                },
+                "score": {
+                  "type": "number",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "rank"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "rank"
+                },
+                "rank": {
+                  "type": "number",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                }
+              }
+            }
+          ]
+        },
+        "expectedOutcomeRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      }
     }
   },
   "allOf": [
@@ -173277,6 +173680,11 @@ export const controlEventRehearsalCallablePayloadSchema = {
             {
               "required": [
                 "requiredData"
+              ]
+            },
+            {
+              "required": [
+                "outcome"
               ]
             }
           ]
@@ -173329,6 +173737,11 @@ export const controlEventRehearsalCallablePayloadSchema = {
               "required": [
                 "requiredData"
               ]
+            },
+            {
+              "required": [
+                "outcome"
+              ]
             }
           ]
         }
@@ -173380,6 +173793,11 @@ export const controlEventRehearsalCallablePayloadSchema = {
               "required": [
                 "requiredData"
               ]
+            },
+            {
+              "required": [
+                "outcome"
+              ]
             }
           ]
         }
@@ -173402,7 +173820,8 @@ export const controlEventRehearsalCallablePayloadSchema = {
                 "movement",
                 "staff",
                 "settings",
-                "requiredData"
+                "requiredData",
+                "outcome"
               ]
             }
           }
@@ -173495,6 +173914,11 @@ export const controlEventRehearsalCallablePayloadSchema = {
               "required": [
                 "requiredData"
               ]
+            },
+            {
+              "required": [
+                "outcome"
+              ]
             }
           ]
         }
@@ -173551,6 +173975,11 @@ export const controlEventRehearsalCallablePayloadSchema = {
               "required": [
                 "practiceOperatorId"
               ]
+            },
+            {
+              "required": [
+                "outcome"
+              ]
             }
           ]
         }
@@ -173559,6 +173988,67 @@ export const controlEventRehearsalCallablePayloadSchema = {
         "not": {
           "required": [
             "requiredData"
+          ]
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "action": {
+            "const": "outcome"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "outcome",
+          "expectedSetupRevision"
+        ],
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "assistance"
+              ]
+            },
+            {
+              "required": [
+                "movement"
+              ]
+            },
+            {
+              "required": [
+                "staff"
+              ]
+            },
+            {
+              "required": [
+                "minutes"
+              ]
+            },
+            {
+              "required": [
+                "settings"
+              ]
+            },
+            {
+              "required": [
+                "requiredData"
+              ]
+            },
+            {
+              "required": [
+                "practiceOperatorId"
+              ]
+            }
+          ]
+        }
+      },
+      "else": {
+        "not": {
+          "required": [
+            "outcome"
           ]
         }
       }
@@ -175041,6 +175531,15 @@ export const eventRehearsalReproductionCallableResponseSchema = {
               "accountability"
             ]
           }
+        },
+        "unitOutcome": {
+          "type": "string",
+          "enum": [
+            "none",
+            "completion",
+            "score",
+            "rank"
+          ]
         },
         "movementSimulation": {
           "type": "object",
@@ -210540,9 +211039,12 @@ export const eventAssistanceCommandBindingCatalog = {
         "missingCapability": null
       },
       "rehearsal": {
-        "bindingType": "contractOnly",
-        "operations": [],
-        "missingCapability": "rehearsalOutcomeRecording"
+        "bindingType": "domainAdapter",
+        "operations": [
+          "controlEventRehearsal",
+          "getEventRehearsalBootstrap"
+        ],
+        "missingCapability": null
       }
     },
     {

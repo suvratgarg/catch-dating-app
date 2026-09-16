@@ -6998,7 +6998,7 @@ abstract final class CatchContractConstraints {
     path: 'controlEventRehearsalCallablePayload.action',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['markReady', 'start', 'pause', 'resume', 'advance', 'previous', 'advanceClock', 'complete', 'assistance', 'movement', 'staff', 'settings', 'requiredData'],
+    enumValues: <String>['markReady', 'start', 'pause', 'resume', 'advance', 'previous', 'advanceClock', 'complete', 'assistance', 'movement', 'staff', 'settings', 'requiredData', 'outcome'],
   );
 
   static const controlEventRehearsalCallablePayloadAssistance = CatchContractFieldConstraints(
@@ -7038,6 +7038,58 @@ abstract final class CatchContractConstraints {
   static const controlEventRehearsalCallablePayloadMovement = CatchContractFieldConstraints(
     path: 'controlEventRehearsalCallablePayload.movement',
     valueTypes: <String>['object'],
+  );
+
+  static const controlEventRehearsalCallablePayloadOutcomeExpectedOutcomeRevision = CatchContractFieldConstraints(
+    path: 'controlEventRehearsalCallablePayload.outcome.expectedOutcomeRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const controlEventRehearsalCallablePayloadOutcomeOutcomeCompleted = CatchContractFieldConstraints(
+    path: 'controlEventRehearsalCallablePayload.outcome.outcome.completed',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const controlEventRehearsalCallablePayloadOutcomeOutcomeKind = CatchContractFieldConstraints(
+    path: 'controlEventRehearsalCallablePayload.outcome.outcome.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const controlEventRehearsalCallablePayloadOutcomeOutcomeRank = CatchContractFieldConstraints(
+    path: 'controlEventRehearsalCallablePayload.outcome.outcome.rank',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -9007199254740991,
+    maximum: 9007199254740991,
+  );
+
+  static const controlEventRehearsalCallablePayloadOutcomeOutcomeScore = CatchContractFieldConstraints(
+    path: 'controlEventRehearsalCallablePayload.outcome.outcome.score',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -9007199254740991,
+    maximum: 9007199254740991,
+  );
+
+  static const controlEventRehearsalCallablePayloadOutcomeRound = CatchContractFieldConstraints(
+    path: 'controlEventRehearsalCallablePayload.outcome.round',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 10000,
+  );
+
+  static const controlEventRehearsalCallablePayloadOutcomeUnitId = CatchContractFieldConstraints(
+    path: 'controlEventRehearsalCallablePayload.outcome.unitId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
   );
 
   static const controlEventRehearsalCallablePayloadPracticeOperatorId = CatchContractFieldConstraints(
@@ -36322,6 +36374,106 @@ abstract final class CatchContractConstraints {
     pattern: '^[a-f0-9]{64}\$',
   );
 
+  static const eventRehearsalBootstrapCallableResponseOutcomeReviewRecords = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.outcomeReview.records',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 500,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseOutcomeReviewRecordsItemsOutcomeCompleted = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.outcomeReview.records.items.outcome.completed',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseOutcomeReviewRecordsItemsOutcomeKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.outcomeReview.records.items.outcome.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseOutcomeReviewRecordsItemsOutcomeRank = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.outcomeReview.records.items.outcome.rank',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -9007199254740991,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseOutcomeReviewRecordsItemsOutcomeScore = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.outcomeReview.records.items.outcome.score',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -9007199254740991,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseOutcomeReviewRecordsItemsRecordedAt = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.outcomeReview.records.items.recordedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseOutcomeReviewRecordsItemsRound = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.outcomeReview.records.items.round',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 10000,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseOutcomeReviewRecordsItemsStateRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.outcomeReview.records.items.stateRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 2147483647,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseOutcomeReviewRecordsItemsUnitId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.outcomeReview.records.items.unitId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseOutcomeReviewRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.outcomeReview.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2147483647,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseOutcomeReviewUnitIds = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.outcomeReview.unitIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 50,
+    uniqueItems: true,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseOutcomeReviewUnitIdsItems = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.outcomeReview.unitIds.items',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseOutcomeReviewUnitOutcome = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.outcomeReview.unitOutcome',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['none', 'completion', 'score', 'rank'],
+  );
+
   static const eventRehearsalBootstrapCallableResponseSessionActionCount = CatchContractFieldConstraints(
     path: 'eventRehearsalBootstrapCallableResponse.session.actionCount',
     required: true,
@@ -36746,6 +36898,12 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSessionSetupUnitOutcome = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.session.setup.unitOutcome',
+    valueTypes: <String>['string'],
+    enumValues: <String>['none', 'completion', 'score', 'rank'],
   );
 
   static const eventRehearsalBootstrapCallableResponseSessionSetupRevision = CatchContractFieldConstraints(
@@ -38452,6 +38610,12 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const eventRehearsalDocumentSetupUnitOutcome = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.setup.unitOutcome',
+    valueTypes: <String>['string'],
+    enumValues: <String>['none', 'completion', 'score', 'rank'],
+  );
+
   static const eventRehearsalDocumentSetupRevision = CatchContractFieldConstraints(
     path: 'eventRehearsalDocument.setupRevision',
     required: true,
@@ -38570,6 +38734,111 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     enumValues: <String>['draft', 'ready', 'running', 'paused', 'complete', 'expired'],
+  );
+
+  static const eventRehearsalDocumentUnitOutcomesRecords = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.unitOutcomes.records',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 500,
+  );
+
+  static const eventRehearsalDocumentUnitOutcomesRecordsItemsOperationId = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.unitOutcomes.records.items.operationId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalDocumentUnitOutcomesRecordsItemsOutcomeCompleted = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.unitOutcomes.records.items.outcome.completed',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventRehearsalDocumentUnitOutcomesRecordsItemsOutcomeKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.unitOutcomes.records.items.outcome.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalDocumentUnitOutcomesRecordsItemsOutcomeRank = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.unitOutcomes.records.items.outcome.rank',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -9007199254740991,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalDocumentUnitOutcomesRecordsItemsOutcomeScore = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.unitOutcomes.records.items.outcome.score',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -9007199254740991,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalDocumentUnitOutcomesRecordsItemsRecordedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.unitOutcomes.records.items.recordedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventRehearsalDocumentUnitOutcomesRecordsItemsRecordedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.unitOutcomes.records.items.recordedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventRehearsalDocumentUnitOutcomesRecordsItemsRecordedBy = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.unitOutcomes.records.items.recordedBy',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalDocumentUnitOutcomesRecordsItemsRound = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.unitOutcomes.records.items.round',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 10000,
+  );
+
+  static const eventRehearsalDocumentUnitOutcomesRecordsItemsStateRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.unitOutcomes.records.items.stateRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 2147483647,
+  );
+
+  static const eventRehearsalDocumentUnitOutcomesRecordsItemsUnitId = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.unitOutcomes.records.items.unitId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalDocumentUnitOutcomesRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.unitOutcomes.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2147483647,
+  );
+
+  static const eventRehearsalDocumentUnitOutcomesUnitOutcome = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.unitOutcomes.unitOutcome',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['completion', 'score', 'rank'],
   );
 
   static const eventRehearsalDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
@@ -44143,6 +44412,12 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalReproductionCallableResponseSetupUnitOutcome = CatchContractFieldConstraints(
+    path: 'eventRehearsalReproductionCallableResponse.setup.unitOutcome',
+    valueTypes: <String>['string'],
+    enumValues: <String>['none', 'completion', 'score', 'rank'],
   );
 
   static const eventRehearsalRouteDecisionDocumentAlternativeId = CatchContractFieldConstraints(
@@ -89780,6 +90055,12 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const updateEventRehearsalSetupCallablePayloadSetupUnitOutcome = CatchContractFieldConstraints(
+    path: 'updateEventRehearsalSetupCallablePayload.setup.unitOutcome',
+    valueTypes: <String>['string'],
+    enumValues: <String>['none', 'completion', 'score', 'rank'],
+  );
+
   static const updateEventReviewCallablePayloadComment = CatchContractFieldConstraints(
     path: 'updateEventReviewCallablePayload.comment',
     maxLength: 1000,
@@ -95947,6 +96228,13 @@ abstract final class CatchContractConstraints {
     'controlEventRehearsalCallablePayload.expectedSetupRevision': controlEventRehearsalCallablePayloadExpectedSetupRevision,
     'controlEventRehearsalCallablePayload.minutes': controlEventRehearsalCallablePayloadMinutes,
     'controlEventRehearsalCallablePayload.movement': controlEventRehearsalCallablePayloadMovement,
+    'controlEventRehearsalCallablePayload.outcome.expectedOutcomeRevision': controlEventRehearsalCallablePayloadOutcomeExpectedOutcomeRevision,
+    'controlEventRehearsalCallablePayload.outcome.outcome.completed': controlEventRehearsalCallablePayloadOutcomeOutcomeCompleted,
+    'controlEventRehearsalCallablePayload.outcome.outcome.kind': controlEventRehearsalCallablePayloadOutcomeOutcomeKind,
+    'controlEventRehearsalCallablePayload.outcome.outcome.rank': controlEventRehearsalCallablePayloadOutcomeOutcomeRank,
+    'controlEventRehearsalCallablePayload.outcome.outcome.score': controlEventRehearsalCallablePayloadOutcomeOutcomeScore,
+    'controlEventRehearsalCallablePayload.outcome.round': controlEventRehearsalCallablePayloadOutcomeRound,
+    'controlEventRehearsalCallablePayload.outcome.unitId': controlEventRehearsalCallablePayloadOutcomeUnitId,
     'controlEventRehearsalCallablePayload.practiceOperatorId': controlEventRehearsalCallablePayloadPracticeOperatorId,
     'controlEventRehearsalCallablePayload.requiredData.attendeeId': controlEventRehearsalCallablePayloadRequiredDataAttendeeId,
     'controlEventRehearsalCallablePayload.requiredData.expectedProfileRevision': controlEventRehearsalCallablePayloadRequiredDataExpectedProfileRevision,
@@ -99868,6 +100156,19 @@ abstract final class CatchContractConstraints {
     'eventRehearsalBootstrapCallableResponse.movementReview.staffReview.revision': eventRehearsalBootstrapCallableResponseMovementReviewStaffReviewRevision,
     'eventRehearsalBootstrapCallableResponse.movementReview.staffReview.serverTime': eventRehearsalBootstrapCallableResponseMovementReviewStaffReviewServerTime,
     'eventRehearsalBootstrapCallableResponse.movementReview.staffReview.sourceHash': eventRehearsalBootstrapCallableResponseMovementReviewStaffReviewSourceHash,
+    'eventRehearsalBootstrapCallableResponse.outcomeReview.records': eventRehearsalBootstrapCallableResponseOutcomeReviewRecords,
+    'eventRehearsalBootstrapCallableResponse.outcomeReview.records.items.outcome.completed': eventRehearsalBootstrapCallableResponseOutcomeReviewRecordsItemsOutcomeCompleted,
+    'eventRehearsalBootstrapCallableResponse.outcomeReview.records.items.outcome.kind': eventRehearsalBootstrapCallableResponseOutcomeReviewRecordsItemsOutcomeKind,
+    'eventRehearsalBootstrapCallableResponse.outcomeReview.records.items.outcome.rank': eventRehearsalBootstrapCallableResponseOutcomeReviewRecordsItemsOutcomeRank,
+    'eventRehearsalBootstrapCallableResponse.outcomeReview.records.items.outcome.score': eventRehearsalBootstrapCallableResponseOutcomeReviewRecordsItemsOutcomeScore,
+    'eventRehearsalBootstrapCallableResponse.outcomeReview.records.items.recordedAt': eventRehearsalBootstrapCallableResponseOutcomeReviewRecordsItemsRecordedAt,
+    'eventRehearsalBootstrapCallableResponse.outcomeReview.records.items.round': eventRehearsalBootstrapCallableResponseOutcomeReviewRecordsItemsRound,
+    'eventRehearsalBootstrapCallableResponse.outcomeReview.records.items.stateRevision': eventRehearsalBootstrapCallableResponseOutcomeReviewRecordsItemsStateRevision,
+    'eventRehearsalBootstrapCallableResponse.outcomeReview.records.items.unitId': eventRehearsalBootstrapCallableResponseOutcomeReviewRecordsItemsUnitId,
+    'eventRehearsalBootstrapCallableResponse.outcomeReview.revision': eventRehearsalBootstrapCallableResponseOutcomeReviewRevision,
+    'eventRehearsalBootstrapCallableResponse.outcomeReview.unitIds': eventRehearsalBootstrapCallableResponseOutcomeReviewUnitIds,
+    'eventRehearsalBootstrapCallableResponse.outcomeReview.unitIds.items': eventRehearsalBootstrapCallableResponseOutcomeReviewUnitIdsItems,
+    'eventRehearsalBootstrapCallableResponse.outcomeReview.unitOutcome': eventRehearsalBootstrapCallableResponseOutcomeReviewUnitOutcome,
     'eventRehearsalBootstrapCallableResponse.session.actionCount': eventRehearsalBootstrapCallableResponseSessionActionCount,
     'eventRehearsalBootstrapCallableResponse.session.activeStepIndex': eventRehearsalBootstrapCallableResponseSessionActiveStepIndex,
     'eventRehearsalBootstrapCallableResponse.session.actorCount': eventRehearsalBootstrapCallableResponseSessionActorCount,
@@ -99925,6 +100226,7 @@ abstract final class CatchContractConstraints {
     'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.routePlan.stopKinds.items': eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationRoutePlanStopKindsItems,
     'eventRehearsalBootstrapCallableResponse.session.setup.movementSimulation.routePlan.version': eventRehearsalBootstrapCallableResponseSessionSetupMovementSimulationRoutePlanVersion,
     'eventRehearsalBootstrapCallableResponse.session.setup.title': eventRehearsalBootstrapCallableResponseSessionSetupTitle,
+    'eventRehearsalBootstrapCallableResponse.session.setup.unitOutcome': eventRehearsalBootstrapCallableResponseSessionSetupUnitOutcome,
     'eventRehearsalBootstrapCallableResponse.session.setupRevision': eventRehearsalBootstrapCallableResponseSessionSetupRevision,
     'eventRehearsalBootstrapCallableResponse.session.sourceEventId': eventRehearsalBootstrapCallableResponseSessionSourceEventId,
     'eventRehearsalBootstrapCallableResponse.session.status': eventRehearsalBootstrapCallableResponseSessionStatus,
@@ -100158,6 +100460,7 @@ abstract final class CatchContractConstraints {
     'eventRehearsalDocument.setup.movementSimulation.routePlan.stopKinds.items': eventRehearsalDocumentSetupMovementSimulationRoutePlanStopKindsItems,
     'eventRehearsalDocument.setup.movementSimulation.routePlan.version': eventRehearsalDocumentSetupMovementSimulationRoutePlanVersion,
     'eventRehearsalDocument.setup.title': eventRehearsalDocumentSetupTitle,
+    'eventRehearsalDocument.setup.unitOutcome': eventRehearsalDocumentSetupUnitOutcome,
     'eventRehearsalDocument.setupRevision': eventRehearsalDocumentSetupRevision,
     'eventRehearsalDocument.sourceEventId': eventRehearsalDocumentSourceEventId,
     'eventRehearsalDocument.sourceEventRevision': eventRehearsalDocumentSourceEventRevision,
@@ -100174,6 +100477,20 @@ abstract final class CatchContractConstraints {
     'eventRehearsalDocument.staff.operators.items.operatorId': eventRehearsalDocumentStaffOperatorsItemsOperatorId,
     'eventRehearsalDocument.staff.revision': eventRehearsalDocumentStaffRevision,
     'eventRehearsalDocument.status': eventRehearsalDocumentStatus,
+    'eventRehearsalDocument.unitOutcomes.records': eventRehearsalDocumentUnitOutcomesRecords,
+    'eventRehearsalDocument.unitOutcomes.records.items.operationId': eventRehearsalDocumentUnitOutcomesRecordsItemsOperationId,
+    'eventRehearsalDocument.unitOutcomes.records.items.outcome.completed': eventRehearsalDocumentUnitOutcomesRecordsItemsOutcomeCompleted,
+    'eventRehearsalDocument.unitOutcomes.records.items.outcome.kind': eventRehearsalDocumentUnitOutcomesRecordsItemsOutcomeKind,
+    'eventRehearsalDocument.unitOutcomes.records.items.outcome.rank': eventRehearsalDocumentUnitOutcomesRecordsItemsOutcomeRank,
+    'eventRehearsalDocument.unitOutcomes.records.items.outcome.score': eventRehearsalDocumentUnitOutcomesRecordsItemsOutcomeScore,
+    'eventRehearsalDocument.unitOutcomes.records.items.recordedAt._nanoseconds': eventRehearsalDocumentUnitOutcomesRecordsItemsRecordedAtNanoseconds,
+    'eventRehearsalDocument.unitOutcomes.records.items.recordedAt._seconds': eventRehearsalDocumentUnitOutcomesRecordsItemsRecordedAtSeconds,
+    'eventRehearsalDocument.unitOutcomes.records.items.recordedBy': eventRehearsalDocumentUnitOutcomesRecordsItemsRecordedBy,
+    'eventRehearsalDocument.unitOutcomes.records.items.round': eventRehearsalDocumentUnitOutcomesRecordsItemsRound,
+    'eventRehearsalDocument.unitOutcomes.records.items.stateRevision': eventRehearsalDocumentUnitOutcomesRecordsItemsStateRevision,
+    'eventRehearsalDocument.unitOutcomes.records.items.unitId': eventRehearsalDocumentUnitOutcomesRecordsItemsUnitId,
+    'eventRehearsalDocument.unitOutcomes.revision': eventRehearsalDocumentUnitOutcomesRevision,
+    'eventRehearsalDocument.unitOutcomes.unitOutcome': eventRehearsalDocumentUnitOutcomesUnitOutcome,
     'eventRehearsalDocument.updatedAt._nanoseconds': eventRehearsalDocumentUpdatedAtNanoseconds,
     'eventRehearsalDocument.updatedAt._seconds': eventRehearsalDocumentUpdatedAtSeconds,
     'eventRehearsalDocument.viewerTokenHash': eventRehearsalDocumentViewerTokenHash,
@@ -100902,6 +101219,7 @@ abstract final class CatchContractConstraints {
     'eventRehearsalReproductionCallableResponse.setup.movementSimulation.routePlan.stopKinds.items': eventRehearsalReproductionCallableResponseSetupMovementSimulationRoutePlanStopKindsItems,
     'eventRehearsalReproductionCallableResponse.setup.movementSimulation.routePlan.version': eventRehearsalReproductionCallableResponseSetupMovementSimulationRoutePlanVersion,
     'eventRehearsalReproductionCallableResponse.setup.title': eventRehearsalReproductionCallableResponseSetupTitle,
+    'eventRehearsalReproductionCallableResponse.setup.unitOutcome': eventRehearsalReproductionCallableResponseSetupUnitOutcome,
     'eventRehearsalRouteDecisionDocument.alternativeId': eventRehearsalRouteDecisionDocumentAlternativeId,
     'eventRehearsalRouteDecisionDocument.clockId': eventRehearsalRouteDecisionDocumentClockId,
     'eventRehearsalRouteDecisionDocument.decidedAt': eventRehearsalRouteDecisionDocumentDecidedAt,
@@ -107144,6 +107462,7 @@ abstract final class CatchContractConstraints {
     'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.routePlan.stopKinds.items': updateEventRehearsalSetupCallablePayloadSetupMovementSimulationRoutePlanStopKindsItems,
     'updateEventRehearsalSetupCallablePayload.setup.movementSimulation.routePlan.version': updateEventRehearsalSetupCallablePayloadSetupMovementSimulationRoutePlanVersion,
     'updateEventRehearsalSetupCallablePayload.setup.title': updateEventRehearsalSetupCallablePayloadSetupTitle,
+    'updateEventRehearsalSetupCallablePayload.setup.unitOutcome': updateEventRehearsalSetupCallablePayloadSetupUnitOutcome,
     'updateEventReviewCallablePayload.comment': updateEventReviewCallablePayloadComment,
     'updateEventReviewCallablePayload.rating': updateEventReviewCallablePayloadRating,
     'updateEventReviewCallablePayload.reviewId': updateEventReviewCallablePayloadReviewId,

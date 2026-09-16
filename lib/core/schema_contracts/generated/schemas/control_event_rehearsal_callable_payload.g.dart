@@ -48,6 +48,7 @@ const schemaControlEventRehearsalCallablePayloadSchema = <String, Object?>{
         'staff',
         'settings',
         'requiredData',
+        'outcome',
       ],
     },
     'minutes': <String, Object?>{
@@ -3105,6 +3106,92 @@ const schemaControlEventRehearsalCallablePayloadSchema = <String, Object?>{
         },
       },
     },
+    'outcome': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'unitId',
+        'round',
+        'outcome',
+        'expectedOutcomeRevision',
+      ],
+      'properties': <String, Object?>{
+        'unitId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 2000,
+        },
+        'round': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 10000,
+        },
+        'outcome': <String, Object?>{
+          'oneOf': <Object?>[
+            <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'kind',
+                'completed',
+              ],
+              'properties': <String, Object?>{
+                'kind': <String, Object?>{
+                  'type': 'string',
+                  'const': 'completion',
+                },
+                'completed': <String, Object?>{
+                  'type': 'boolean',
+                },
+              },
+            },
+            <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'kind',
+                'score',
+              ],
+              'properties': <String, Object?>{
+                'kind': <String, Object?>{
+                  'type': 'string',
+                  'const': 'score',
+                },
+                'score': <String, Object?>{
+                  'type': 'number',
+                  'minimum': -9007199254740991,
+                  'maximum': 9007199254740991,
+                },
+              },
+            },
+            <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'kind',
+                'rank',
+              ],
+              'properties': <String, Object?>{
+                'kind': <String, Object?>{
+                  'type': 'string',
+                  'const': 'rank',
+                },
+                'rank': <String, Object?>{
+                  'type': 'number',
+                  'minimum': -9007199254740991,
+                  'maximum': 9007199254740991,
+                },
+              },
+            },
+          ],
+        },
+        'expectedOutcomeRevision': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 9007199254740991,
+        },
+      },
+    },
   },
   'allOf': <Object?>[
     <String, Object?>{
@@ -3145,6 +3232,11 @@ const schemaControlEventRehearsalCallablePayloadSchema = <String, Object?>{
             <String, Object?>{
               'required': <Object?>[
                 'requiredData',
+              ],
+            },
+            <String, Object?>{
+              'required': <Object?>[
+                'outcome',
               ],
             },
           ],
@@ -3198,6 +3290,11 @@ const schemaControlEventRehearsalCallablePayloadSchema = <String, Object?>{
                 'requiredData',
               ],
             },
+            <String, Object?>{
+              'required': <Object?>[
+                'outcome',
+              ],
+            },
           ],
         },
       },
@@ -3249,6 +3346,11 @@ const schemaControlEventRehearsalCallablePayloadSchema = <String, Object?>{
                 'requiredData',
               ],
             },
+            <String, Object?>{
+              'required': <Object?>[
+                'outcome',
+              ],
+            },
           ],
         },
       },
@@ -3271,6 +3373,7 @@ const schemaControlEventRehearsalCallablePayloadSchema = <String, Object?>{
                 'staff',
                 'settings',
                 'requiredData',
+                'outcome',
               ],
             },
           },
@@ -3364,6 +3467,11 @@ const schemaControlEventRehearsalCallablePayloadSchema = <String, Object?>{
                 'requiredData',
               ],
             },
+            <String, Object?>{
+              'required': <Object?>[
+                'outcome',
+              ],
+            },
           ],
         },
       },
@@ -3420,6 +3528,11 @@ const schemaControlEventRehearsalCallablePayloadSchema = <String, Object?>{
                 'practiceOperatorId',
               ],
             },
+            <String, Object?>{
+              'required': <Object?>[
+                'outcome',
+              ],
+            },
           ],
         },
       },
@@ -3427,6 +3540,67 @@ const schemaControlEventRehearsalCallablePayloadSchema = <String, Object?>{
         'not': <String, Object?>{
           'required': <Object?>[
             'requiredData',
+          ],
+        },
+      },
+    },
+    <String, Object?>{
+      'if': <String, Object?>{
+        'properties': <String, Object?>{
+          'action': <String, Object?>{
+            'const': 'outcome',
+          },
+        },
+      },
+      'then': <String, Object?>{
+        'required': <Object?>[
+          'outcome',
+          'expectedSetupRevision',
+        ],
+        'not': <String, Object?>{
+          'anyOf': <Object?>[
+            <String, Object?>{
+              'required': <Object?>[
+                'assistance',
+              ],
+            },
+            <String, Object?>{
+              'required': <Object?>[
+                'movement',
+              ],
+            },
+            <String, Object?>{
+              'required': <Object?>[
+                'staff',
+              ],
+            },
+            <String, Object?>{
+              'required': <Object?>[
+                'minutes',
+              ],
+            },
+            <String, Object?>{
+              'required': <Object?>[
+                'settings',
+              ],
+            },
+            <String, Object?>{
+              'required': <Object?>[
+                'requiredData',
+              ],
+            },
+            <String, Object?>{
+              'required': <Object?>[
+                'practiceOperatorId',
+              ],
+            },
+          ],
+        },
+      },
+      'else': <String, Object?>{
+        'not': <String, Object?>{
+          'required': <Object?>[
+            'outcome',
           ],
         },
       },

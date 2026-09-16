@@ -8551,6 +8551,7 @@ export interface EventRehearsalDocument {
       | "afterglow"
       | "accountability"
     )[];
+    unitOutcome?: "none" | "completion" | "score" | "rank";
     /**
      * Frozen, synthetic-only movement truth used by dress rehearsal. It never reads or writes a real person's live position.
      */
@@ -8830,6 +8831,34 @@ export interface EventRehearsalDocument {
               };
             };
           };
+    }[];
+  };
+  unitOutcomes?: {
+    unitOutcome: "completion" | "score" | "rank";
+    revision: number;
+    /**
+     * @maxItems 500
+     */
+    records: {
+      unitId: string;
+      round: number;
+      outcome:
+        | {
+            kind: "completion";
+            completed: boolean;
+          }
+        | {
+            kind: "score";
+            score: number;
+          }
+        | {
+            kind: "rank";
+            rank: number;
+          };
+      stateRevision: number;
+      operationId: string;
+      recordedBy: string;
+      recordedAt: FirebaseFirestore.Timestamp;
     }[];
   };
 }

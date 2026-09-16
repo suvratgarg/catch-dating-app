@@ -46,6 +46,7 @@ export interface EventRehearsalBootstrapCallableResponse {
         | "afterglow"
         | "accountability"
       )[];
+      unitOutcome?: "none" | "completion" | "score" | "rank";
       /**
        * Frozen, synthetic-only movement truth used by dress rehearsal. It never reads or writes a real person's live position.
        */
@@ -2118,6 +2119,36 @@ export interface EventRehearsalBootstrapCallableResponse {
           text: string;
         }[];
       };
+    }[];
+  };
+  outcomeReview?: {
+    unitOutcome: "none" | "completion" | "score" | "rank";
+    revision: number;
+    /**
+     * @maxItems 50
+     */
+    unitIds: string[];
+    /**
+     * @maxItems 500
+     */
+    records: {
+      unitId: string;
+      round: number;
+      outcome:
+        | {
+            kind: "completion";
+            completed: boolean;
+          }
+        | {
+            kind: "score";
+            score: number;
+          }
+        | {
+            kind: "rank";
+            rank: number;
+          };
+      stateRevision: number;
+      recordedAt: number;
     }[];
   };
 }

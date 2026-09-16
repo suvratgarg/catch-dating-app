@@ -136,6 +136,8 @@ import {practiceMembershipProjection} from "./membership";
 import {applyPracticeRequiredDataSubmission,
   practiceRequiredDataReview, preparePracticeRequiredDataRequest} from
   "./requiredData";
+import {practiceOutcomeReview, preparePracticeOutcome} from "./outcomes";
+import {eventSuccessPrimitivesFor} from "../eventSuccess/formatPrimitives";
 
 const sessions = "eventRehearsals";
 const actors = "eventRehearsalActors";
@@ -289,6 +291,7 @@ export async function updateEventRehearsalSetupHandler(
       setupRevision: session.setupRevision + 1,
       staff: admin.firestore.FieldValue.delete(),
       assistanceSettings: admin.firestore.FieldValue.delete(),
+      unitOutcomes: admin.firestore.FieldValue.delete(),
       updatedAt: now,
     });
     for (const actorSnap of actorSnaps.docs) {
@@ -340,7 +343,8 @@ export async function controlEventRehearsalHandler(
   requireAssistanceGeneration(authorized, data);
   if (previous.exists) {
     requireAssistanceReceipt(previous, requestHash,
-      ["assistance", "movement", "staff", "settings", "requiredData"]
+      ["assistance", "movement", "staff", "settings", "requiredData",
+        "outcome"]
         .includes(data.action));
     return hostProjection(db, data.sessionId,
       await requireHostSession(db, data.sessionId, uid), request,
@@ -359,7 +363,8 @@ export async function controlEventRehearsalHandler(
     const organizer = await requireCurrentHostAuthority(db, tx, session, uid);
     if (actionSnap.exists) {
       requireAssistanceReceipt(actionSnap, requestHash,
-        ["assistance", "movement", "staff", "settings", "requiredData"]
+        ["assistance", "movement", "staff", "settings", "requiredData",
+          "outcome"]
           .includes(data.action));
       return;
     }
@@ -391,6 +396,32 @@ export async function controlEventRehearsalHandler(
     }
     const roleAuthority = practiceRoleAuthority(data.sessionId, session,
       {organizer, actorUid: uid}, data.practiceOperatorId);
+    if (data.action === "outcome") {
+      const actorValues = actorSnaps.docs.map((doc) =>
+        requireDoc<EventRehearsalActorDocument>(doc,
+          "EventRehearsalActorDocument"));
+      if (actorValues.length !== session.actorCount ||
+          new Set(actorValues.map((actor) => actor.actorId)).size !==
+            actorValues.length ||
+          actorValues.some((actor) => actor.sessionId !== data.sessionId)) {
+        throw new HttpsError("failed-precondition", "Practice roster changed.");
+      }
+      const unitOutcomes = preparePracticeOutcome(session, actorValues,
+        data.outcome!, uid, data.clientActionId);
+      const now = admin.firestore.Timestamp.now();
+      if (session.expiresAt.toMillis() <= now.toMillis()) {
+        throw new HttpsError("not-found", "This dress rehearsal has expired.");
+      }
+      tx.update(sessionRef, {unitOutcomes,
+        runtimeRevision: session.runtimeRevision + 1,
+        actionCount: session.actionCount + 1, updatedAt: now});
+      tx.create(actionRef, actionDocument({sessionId: data.sessionId,
+        clientActionId: data.clientActionId, actorUid: uid, actorId: null,
+        kind: "control", name: "outcome:record", requestHash,
+        runtimeRevision: session.runtimeRevision + 1,
+        virtualNow: session.virtualNow, createdAt: now}));
+      return;
+    }
     if (data.action === "requiredData") {
       const command = data.requiredData!;
       const target = actorSnaps.docs.find((doc) =>
@@ -828,6 +859,7 @@ export async function resetEventRehearsalHandler(
     runtimeRevision: 0,
     staff: admin.firestore.FieldValue.delete(),
     assistanceSettings: admin.firestore.FieldValue.delete(),
+    unitOutcomes: admin.firestore.FieldValue.delete(),
     actionCount: 0,
     activeStepIndex: 0,
     virtualNow: now,
@@ -1284,6 +1316,7 @@ async function sourceSetup(
       meetingLocation: event.meetingLocation,
       itinerary: event.itinerary ?? [],
       routePlan: event.eventFormat.activityDetails?.routePlan ?? null,
+      unitOutcome: eventSuccessPrimitivesFor(event.eventFormat).unitOutcome,
     })).slice(0, 32),
     setup: {...setup, durationMinutes},
   };
@@ -1325,6 +1358,7 @@ export function rehearsalSetupFromEvent(event: EventDocument): RehearsalSetup {
     ),
     hostGoal: "Help every guest understand what happens next.",
     attendeePrompt: "Introduce yourself to someone you have not met yet.",
+    unitOutcome: eventSuccessPrimitivesFor(event.eventFormat).unitOutcome,
     moduleIds: [
       "arrival",
       "firstHello",
@@ -1355,6 +1389,7 @@ function sampleSetup(): RehearsalSetup {
     durationMinutes: 120,
     hostGoal: "Learn the whole Host flow before guests arrive.",
     attendeePrompt: "Find one thing you have in common with your group.",
+    unitOutcome: "completion",
     moduleIds: [
       "arrival",
       "firstHello",
@@ -1475,6 +1510,7 @@ async function hostProjection(
     staffReview: practiceStaffProjection(sessionId, session, roleAuthority),
     settingsReview: practiceSettingsProjection(sessionId, session,
       roleAuthority),
+    outcomeReview: practiceOutcomeReview(session, actorValues),
     helpRequests,
     deliveryReviews,
     accountabilityReviews: practiceAccountabilityProjection(sessionId,
@@ -1912,7 +1948,8 @@ function actionDocument(
 /** A reset reuses runtime revisions but always advances setup revision. */
 function requireAssistanceGeneration(session: EventRehearsalDocument,
   data: ControlEventRehearsalCallablePayload): void {
-  if (["assistance", "movement", "staff", "settings", "requiredData"]
+  if (["assistance", "movement", "staff", "settings", "requiredData",
+    "outcome"]
     .includes(data.action) &&
       data.expectedSetupRevision !== session.setupRevision) {
     throw new HttpsError("aborted",

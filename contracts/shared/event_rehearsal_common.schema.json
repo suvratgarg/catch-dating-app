@@ -80,7 +80,8 @@
         "movement",
         "staff",
         "settings",
-        "requiredData"
+        "requiredData",
+        "outcome"
       ]
     },
     "behavior": {
@@ -186,6 +187,15 @@
           "items": {
             "$ref": "#/definitions/moduleId"
           }
+        },
+        "unitOutcome": {
+          "type": "string",
+          "enum": [
+            "none",
+            "completion",
+            "score",
+            "rank"
+          ]
         },
         "movementSimulation": {
           "type": "object",
