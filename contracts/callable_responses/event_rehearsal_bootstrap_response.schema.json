@@ -61,6 +61,9 @@
     },
     "outcomeReview": {
       "$ref": "../shared/event_rehearsal_outcomes.schema.json#/definitions/Review"
+    },
+    "revealReview": {
+      "$ref": "../shared/event_rehearsal_reveal.schema.json#/definitions/Review"
     }
   },
   "definitions": {

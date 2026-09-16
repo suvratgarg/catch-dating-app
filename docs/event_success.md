@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.147.0
+version: 1.148.0
 updated: 2026-09-16
 owner: recursive_audit_loop
 status: active
@@ -2707,6 +2707,16 @@ reset clear the practice state, while completion still permits post-event
 correction. The Host projection exposes the current primitive, unit ids,
 revision and records. No rehearsal outcome writes `eventSuccessUnitOutcomes`,
 `eventSuccessStandings` or another live event collection.
+
+The rehearsal `controlReveal` adapter owns a separate revisioned virtual
+countdown. A manager may start the next round's ten-second practice countdown,
+cancel it before virtual expiry, or publish the next round directly. Advancing
+the rehearsal clock past the deadline settles the pending round exactly once;
+the same decision id cannot be reused for another action. Publication moves the
+synthetic roster to the existing reveal moment and reevaluates rehearsal
+assistance in the same parent transaction. Reset and setup changes clear the
+state. The Host projection exposes status, pending/published round, countdown
+start and reveal revision, with no live plan, match or attendee write.
 
 With the shared execution and SMS/WhatsApp/RCS boundaries in source, the next
 implementation sequence is:

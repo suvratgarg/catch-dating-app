@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.126.0
+version: 1.127.0
 updated: 2026-09-16
 owner: recursive_audit_loop
 status: active
@@ -1231,6 +1231,18 @@ Host identity and operation ids while projecting milliseconds, current unit ids
 and the revision. Source-event setup freezes the live format primitive; setup
 changes and reset delete prior outcome state. This rehearsal state cannot write
 the live `eventSuccessUnitOutcomes` or `eventSuccessStandings` collections.
+
+Optional `eventRehearsals.revealControl` stores a rehearsal-only revision,
+idle/counting/revealed status, published and pending round, virtual countdown
+start, bounded countdown duration and the last decision identity. Its Host
+command mirrors the canonical `controlReveal` actions and expected live revision
+without accepting a practice operator. Virtual-clock advancement settles an
+elapsed countdown without incrementing the reveal revision; the parent control
+transaction persists that settlement, advances the existing reveal moment and
+reevaluates synthetic automation atomically. `revealReview` omits the decision
+identity and converts the virtual timestamp to milliseconds. Reset and setup
+changes delete the state. No live event-success plan, publication or match is
+read or written.
 
 Movement controls carry their own closed group command with the parent setup and
 runtime revisions; action receipts use `actorId: null`. The departure freezes its

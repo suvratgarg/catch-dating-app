@@ -117,6 +117,7 @@ import {
   REHEARSAL_MAX_ACTIVE_SESSIONS,
   REHEARSAL_RETENTION_MILLIS,
   rehearsalActorConnectionState,
+  rehearsalGuestMoments,
   resolveRehearsalControl,
 } from "./engine";
 
@@ -138,6 +139,8 @@ import {applyPracticeRequiredDataSubmission,
   "./requiredData";
 import {practiceOutcomeReview, preparePracticeOutcome} from "./outcomes";
 import {eventSuccessPrimitivesFor} from "../eventSuccess/formatPrimitives";
+import {practiceRevealReview, preparePracticeReveal,
+  settlePracticeReveal} from "./reveal";
 
 const sessions = "eventRehearsals";
 const actors = "eventRehearsalActors";
@@ -292,6 +295,7 @@ export async function updateEventRehearsalSetupHandler(
       staff: admin.firestore.FieldValue.delete(),
       assistanceSettings: admin.firestore.FieldValue.delete(),
       unitOutcomes: admin.firestore.FieldValue.delete(),
+      revealControl: admin.firestore.FieldValue.delete(),
       updatedAt: now,
     });
     for (const actorSnap of actorSnaps.docs) {
@@ -344,7 +348,7 @@ export async function controlEventRehearsalHandler(
   if (previous.exists) {
     requireAssistanceReceipt(previous, requestHash,
       ["assistance", "movement", "staff", "settings", "requiredData",
-        "outcome"]
+        "outcome", "reveal"]
         .includes(data.action));
     return hostProjection(db, data.sessionId,
       await requireHostSession(db, data.sessionId, uid), request,
@@ -364,7 +368,7 @@ export async function controlEventRehearsalHandler(
     if (actionSnap.exists) {
       requireAssistanceReceipt(actionSnap, requestHash,
         ["assistance", "movement", "staff", "settings", "requiredData",
-          "outcome"]
+          "outcome", "reveal"]
           .includes(data.action));
       return;
     }
@@ -396,6 +400,43 @@ export async function controlEventRehearsalHandler(
     }
     const roleAuthority = practiceRoleAuthority(data.sessionId, session,
       {organizer, actorUid: uid}, data.practiceOperatorId);
+    if (data.action === "reveal") {
+      const actorValues = actorSnaps.docs.map((doc) =>
+        requireDoc<EventRehearsalActorDocument>(doc,
+          "EventRehearsalActorDocument"));
+      if (actorValues.length !== session.actorCount ||
+          new Set(actorValues.map((actor) => actor.actorId)).size !==
+            actorValues.length ||
+          actorValues.some((actor) => actor.sessionId !== data.sessionId)) {
+        throw new HttpsError("failed-precondition", "Practice roster changed.");
+      }
+      const reveal = preparePracticeReveal(session, data.reveal!);
+      const now = admin.firestore.Timestamp.now();
+      if (session.expiresAt.toMillis() <= now.toMillis()) {
+        throw new HttpsError("not-found", "This dress rehearsal has expired.");
+      }
+      const revealStep = rehearsalGuestMoments.indexOf("reveal");
+      const activeStepIndex = reveal.publishedNow ? revealStep :
+        session.activeStepIndex;
+      const nextActors = reveal.publishedNow ?
+        await applyPracticeAutomations(db, tx, {...session,
+          revealControl: reveal.state, activeStepIndex,
+          runtimeRevision: session.runtimeRevision + 1},
+        actorValues.map((actor) => actorAtMoment(actor, "reveal", now))) : [];
+      for (const actor of nextActors) {
+        tx.set(db.collection(actors).doc(actorDocumentId(data.sessionId,
+          actor.actorId)), actor);
+      }
+      tx.update(sessionRef, {revealControl: reveal.state, activeStepIndex,
+        runtimeRevision: session.runtimeRevision + 1,
+        actionCount: session.actionCount + 1, updatedAt: now});
+      tx.create(actionRef, actionDocument({sessionId: data.sessionId,
+        clientActionId: data.clientActionId, actorUid: uid, actorId: null,
+        kind: "control", name: "reveal:" + data.reveal!.action, requestHash,
+        runtimeRevision: session.runtimeRevision + 1,
+        virtualNow: session.virtualNow, createdAt: now}));
+      return;
+    }
     if (data.action === "outcome") {
       const actorValues = actorSnaps.docs.map((doc) =>
         requireDoc<EventRehearsalActorDocument>(doc,
@@ -577,17 +618,26 @@ export async function controlEventRehearsalHandler(
       resolved.virtualNowMillis,
       session.actorCount
     ) : [];
-    const nextSession = {...session, status: resolved.status,
+    const provisionalSession = {...session, status: resolved.status,
       activeStepIndex: resolved.activeStepIndex, virtualNow,
       runtimeRevision: nextRevision};
+    const revealControl = settlePracticeReveal(provisionalSession);
+    const revealPublished = session.revealControl?.status === "countingDown" &&
+      revealControl.status === "revealed" &&
+      revealControl.publishedRound > session.revealControl.publishedRound;
+    const activeStepIndex = revealPublished ?
+      rehearsalGuestMoments.indexOf("reveal") : resolved.activeStepIndex;
+    const nextSession = {...provisionalSession, activeStepIndex,
+      ...(session.revealControl ? {revealControl} : {})};
     const nextActors = await applyPracticeAutomations(db, tx, nextSession,
       applyRehearsalCues(actorDocuments.map((actor) =>
-        actorAtMoment(actor.value, momentForStep(resolved.activeStepIndex), now)
+        actorAtMoment(actor.value, momentForStep(activeStepIndex), now)
       ), cues, now, session.virtualStartedAt.toMillis()));
     tx.update(sessionRef, {
       status: resolved.status,
-      activeStepIndex: resolved.activeStepIndex,
+      activeStepIndex,
       virtualNow,
+      ...(session.revealControl ? {revealControl} : {}),
       runtimeRevision: nextRevision,
       actionCount: session.actionCount + 1,
       updatedAt: now,
@@ -860,6 +910,7 @@ export async function resetEventRehearsalHandler(
     staff: admin.firestore.FieldValue.delete(),
     assistanceSettings: admin.firestore.FieldValue.delete(),
     unitOutcomes: admin.firestore.FieldValue.delete(),
+    revealControl: admin.firestore.FieldValue.delete(),
     actionCount: 0,
     activeStepIndex: 0,
     virtualNow: now,
@@ -1511,6 +1562,7 @@ async function hostProjection(
     settingsReview: practiceSettingsProjection(sessionId, session,
       roleAuthority),
     outcomeReview: practiceOutcomeReview(session, actorValues),
+    revealReview: practiceRevealReview(session),
     helpRequests,
     deliveryReviews,
     accountabilityReviews: practiceAccountabilityProjection(sessionId,
@@ -1949,7 +2001,7 @@ function actionDocument(
 function requireAssistanceGeneration(session: EventRehearsalDocument,
   data: ControlEventRehearsalCallablePayload): void {
   if (["assistance", "movement", "staff", "settings", "requiredData",
-    "outcome"]
+    "outcome", "reveal"]
     .includes(data.action) &&
       data.expectedSetupRevision !== session.setupRevision) {
     throw new HttpsError("aborted",

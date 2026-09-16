@@ -6998,7 +6998,7 @@ abstract final class CatchContractConstraints {
     path: 'controlEventRehearsalCallablePayload.action',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['markReady', 'start', 'pause', 'resume', 'advance', 'previous', 'advanceClock', 'complete', 'assistance', 'movement', 'staff', 'settings', 'requiredData', 'outcome'],
+    enumValues: <String>['markReady', 'start', 'pause', 'resume', 'advance', 'previous', 'advanceClock', 'complete', 'assistance', 'movement', 'staff', 'settings', 'requiredData', 'outcome', 'reveal'],
   );
 
   static const controlEventRehearsalCallablePayloadAssistance = CatchContractFieldConstraints(
@@ -7154,6 +7154,30 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     enumValues: <String>['displayName', 'gender', 'interestedInGenders', 'relationshipGoal', 'dateOfBirth', 'paceBand', 'skillBand', 'dietaryAndSeatingNotes', 'questionnaireAnswerIds', 'teamName'],
+  );
+
+  static const controlEventRehearsalCallablePayloadRevealAction = CatchContractFieldConstraints(
+    path: 'controlEventRehearsalCallablePayload.reveal.action',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['startCountdown', 'cancelPending', 'publish'],
+  );
+
+  static const controlEventRehearsalCallablePayloadRevealDecisionId = CatchContractFieldConstraints(
+    path: 'controlEventRehearsalCallablePayload.reveal.decisionId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const controlEventRehearsalCallablePayloadRevealExpectedLiveRevision = CatchContractFieldConstraints(
+    path: 'controlEventRehearsalCallablePayload.reveal.expectedLiveRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
   );
 
   static const controlEventRehearsalCallablePayloadSessionId = CatchContractFieldConstraints(
@@ -36474,6 +36498,51 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['none', 'completion', 'score', 'rank'],
   );
 
+  static const eventRehearsalBootstrapCallableResponseRevealReviewCountdownSeconds = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.revealReview.countdownSeconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 300,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseRevealReviewPendingRound = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.revealReview.pendingRound',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseRevealReviewPublishedRound = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.revealReview.publishedRound',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: -1,
+    maximum: 100,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseRevealReviewRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.revealReview.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2147483647,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseRevealReviewStartedAt = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.revealReview.startedAt',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseRevealReviewStatus = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.revealReview.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['idle', 'countingDown', 'revealed'],
+  );
+
   static const eventRehearsalBootstrapCallableResponseSessionActionCount = CatchContractFieldConstraints(
     path: 'eventRehearsalBootstrapCallableResponse.session.actionCount',
     required: true,
@@ -38223,6 +38292,72 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     pattern: '^[A-Za-z0-9_-]{20,80}\$',
+  );
+
+  static const eventRehearsalDocumentRevealControlCountdownSeconds = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.revealControl.countdownSeconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 300,
+  );
+
+  static const eventRehearsalDocumentRevealControlLastAction = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.revealControl.lastAction',
+    valueTypes: <String>['string'],
+    enumValues: <String>['startCountdown', 'cancelPending', 'publish'],
+  );
+
+  static const eventRehearsalDocumentRevealControlLastDecisionId = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.revealControl.lastDecisionId',
+    maxLength: 160,
+    minLength: 1,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRehearsalDocumentRevealControlPendingRound = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.revealControl.pendingRound',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100,
+  );
+
+  static const eventRehearsalDocumentRevealControlPublishedRound = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.revealControl.publishedRound',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: -1,
+    maximum: 100,
+  );
+
+  static const eventRehearsalDocumentRevealControlRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.revealControl.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 2147483647,
+  );
+
+  static const eventRehearsalDocumentRevealControlStartedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.revealControl.startedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventRehearsalDocumentRevealControlStartedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.revealControl.startedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventRehearsalDocumentRevealControlStatus = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.revealControl.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['idle', 'countingDown', 'revealed'],
   );
 
   static const eventRehearsalDocumentRuntimeRevision = CatchContractFieldConstraints(
@@ -96243,6 +96378,9 @@ abstract final class CatchContractConstraints {
     'controlEventRehearsalCallablePayload.requiredData.expiresAt': controlEventRehearsalCallablePayloadRequiredDataExpiresAt,
     'controlEventRehearsalCallablePayload.requiredData.fieldIds': controlEventRehearsalCallablePayloadRequiredDataFieldIds,
     'controlEventRehearsalCallablePayload.requiredData.fieldIds.items': controlEventRehearsalCallablePayloadRequiredDataFieldIdsItems,
+    'controlEventRehearsalCallablePayload.reveal.action': controlEventRehearsalCallablePayloadRevealAction,
+    'controlEventRehearsalCallablePayload.reveal.decisionId': controlEventRehearsalCallablePayloadRevealDecisionId,
+    'controlEventRehearsalCallablePayload.reveal.expectedLiveRevision': controlEventRehearsalCallablePayloadRevealExpectedLiveRevision,
     'controlEventRehearsalCallablePayload.sessionId': controlEventRehearsalCallablePayloadSessionId,
     'controlEventRehearsalCallablePayload.settings': controlEventRehearsalCallablePayloadSettings,
     'controlEventRehearsalCallablePayload.staff.decision.duty': controlEventRehearsalCallablePayloadStaffDecisionDuty,
@@ -100169,6 +100307,12 @@ abstract final class CatchContractConstraints {
     'eventRehearsalBootstrapCallableResponse.outcomeReview.unitIds': eventRehearsalBootstrapCallableResponseOutcomeReviewUnitIds,
     'eventRehearsalBootstrapCallableResponse.outcomeReview.unitIds.items': eventRehearsalBootstrapCallableResponseOutcomeReviewUnitIdsItems,
     'eventRehearsalBootstrapCallableResponse.outcomeReview.unitOutcome': eventRehearsalBootstrapCallableResponseOutcomeReviewUnitOutcome,
+    'eventRehearsalBootstrapCallableResponse.revealReview.countdownSeconds': eventRehearsalBootstrapCallableResponseRevealReviewCountdownSeconds,
+    'eventRehearsalBootstrapCallableResponse.revealReview.pendingRound': eventRehearsalBootstrapCallableResponseRevealReviewPendingRound,
+    'eventRehearsalBootstrapCallableResponse.revealReview.publishedRound': eventRehearsalBootstrapCallableResponseRevealReviewPublishedRound,
+    'eventRehearsalBootstrapCallableResponse.revealReview.revision': eventRehearsalBootstrapCallableResponseRevealReviewRevision,
+    'eventRehearsalBootstrapCallableResponse.revealReview.startedAt': eventRehearsalBootstrapCallableResponseRevealReviewStartedAt,
+    'eventRehearsalBootstrapCallableResponse.revealReview.status': eventRehearsalBootstrapCallableResponseRevealReviewStatus,
     'eventRehearsalBootstrapCallableResponse.session.actionCount': eventRehearsalBootstrapCallableResponseSessionActionCount,
     'eventRehearsalBootstrapCallableResponse.session.activeStepIndex': eventRehearsalBootstrapCallableResponseSessionActiveStepIndex,
     'eventRehearsalBootstrapCallableResponse.session.actorCount': eventRehearsalBootstrapCallableResponseSessionActorCount,
@@ -100410,6 +100554,15 @@ abstract final class CatchContractConstraints {
     'eventRehearsalDocument.organizerId': eventRehearsalDocumentOrganizerId,
     'eventRehearsalDocument.ownerUid': eventRehearsalDocumentOwnerUid,
     'eventRehearsalDocument.publicRehearsalId': eventRehearsalDocumentPublicRehearsalId,
+    'eventRehearsalDocument.revealControl.countdownSeconds': eventRehearsalDocumentRevealControlCountdownSeconds,
+    'eventRehearsalDocument.revealControl.lastAction': eventRehearsalDocumentRevealControlLastAction,
+    'eventRehearsalDocument.revealControl.lastDecisionId': eventRehearsalDocumentRevealControlLastDecisionId,
+    'eventRehearsalDocument.revealControl.pendingRound': eventRehearsalDocumentRevealControlPendingRound,
+    'eventRehearsalDocument.revealControl.publishedRound': eventRehearsalDocumentRevealControlPublishedRound,
+    'eventRehearsalDocument.revealControl.revision': eventRehearsalDocumentRevealControlRevision,
+    'eventRehearsalDocument.revealControl.startedAt._nanoseconds': eventRehearsalDocumentRevealControlStartedAtNanoseconds,
+    'eventRehearsalDocument.revealControl.startedAt._seconds': eventRehearsalDocumentRevealControlStartedAtSeconds,
+    'eventRehearsalDocument.revealControl.status': eventRehearsalDocumentRevealControlStatus,
     'eventRehearsalDocument.runtimeRevision': eventRehearsalDocumentRuntimeRevision,
     'eventRehearsalDocument.scenarioId': eventRehearsalDocumentScenarioId,
     'eventRehearsalDocument.seed': eventRehearsalDocumentSeed,

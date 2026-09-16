@@ -165,6 +165,10 @@
     "unitOutcomes": {
       "$ref": "../shared/event_rehearsal_outcomes.schema.json#/definitions/State",
       "x-catch-ownership": "callable-owned"
+    },
+    "revealControl": {
+      "$ref": "../shared/event_rehearsal_reveal.schema.json#/definitions/State",
+      "x-catch-ownership": "callable-owned"
     }
   }
 }

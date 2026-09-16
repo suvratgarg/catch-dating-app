@@ -9151,6 +9151,59 @@ export const eventRehearsalBootstrapCallableResponseSchema: Record<string, unkno
           }
         }
       }
+    },
+    "revealReview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "revision",
+        "status",
+        "publishedRound",
+        "pendingRound",
+        "startedAt",
+        "countdownSeconds"
+      ],
+      "properties": {
+        "revision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "idle",
+            "countingDown",
+            "revealed"
+          ]
+        },
+        "publishedRound": {
+          "type": "integer",
+          "minimum": -1,
+          "maximum": 100
+        },
+        "pendingRound": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 100
+        },
+        "startedAt": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "countdownSeconds": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 300
+        }
+      }
     }
   },
   "definitions": {

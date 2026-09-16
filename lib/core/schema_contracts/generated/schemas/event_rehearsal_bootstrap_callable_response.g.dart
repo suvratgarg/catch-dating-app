@@ -9154,6 +9154,59 @@ const schemaEventRehearsalBootstrapCallableResponseSchema = <String, Object?>{
         },
       },
     },
+    'revealReview': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'revision',
+        'status',
+        'publishedRound',
+        'pendingRound',
+        'startedAt',
+        'countdownSeconds',
+      ],
+      'properties': <String, Object?>{
+        'revision': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 2147483647,
+        },
+        'status': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'idle',
+            'countingDown',
+            'revealed',
+          ],
+        },
+        'publishedRound': <String, Object?>{
+          'type': 'integer',
+          'minimum': -1,
+          'maximum': 100,
+        },
+        'pendingRound': <String, Object?>{
+          'type': <Object?>[
+            'integer',
+            'null',
+          ],
+          'minimum': 0,
+          'maximum': 100,
+        },
+        'startedAt': <String, Object?>{
+          'type': <Object?>[
+            'integer',
+            'null',
+          ],
+          'minimum': 0,
+          'maximum': 9007199254740991,
+        },
+        'countdownSeconds': <String, Object?>{
+          'type': 'integer',
+          'minimum': 1,
+          'maximum': 300,
+        },
+      },
+    },
   },
   'definitions': <String, Object?>{
     'session': <String, Object?>{

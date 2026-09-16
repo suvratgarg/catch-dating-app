@@ -81,7 +81,8 @@
         "staff",
         "settings",
         "requiredData",
-        "outcome"
+        "outcome",
+        "reveal"
       ]
     },
     "behavior": {

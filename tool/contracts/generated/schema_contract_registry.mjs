@@ -119941,6 +119941,109 @@ export const eventRehearsalDocumentSchema = {
         }
       },
       "x-catch-ownership": "callable-owned"
+    },
+    "revealControl": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "revision",
+        "status",
+        "publishedRound",
+        "pendingRound",
+        "startedAt",
+        "countdownSeconds",
+        "lastDecisionId",
+        "lastAction"
+      ],
+      "properties": {
+        "revision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "idle",
+            "countingDown",
+            "revealed"
+          ]
+        },
+        "publishedRound": {
+          "type": "integer",
+          "minimum": -1,
+          "maximum": 100
+        },
+        "pendingRound": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 100
+        },
+        "startedAt": {
+          "anyOf": [
+            {
+              "type": "object",
+              "description": "Serialized Firestore Timestamp fixture shape.",
+              "x-firestore-type": "timestamp",
+              "additionalProperties": false,
+              "required": [
+                "_seconds",
+                "_nanoseconds"
+              ],
+              "properties": {
+                "_seconds": {
+                  "type": "integer"
+                },
+                "_nanoseconds": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 999999999
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "countdownSeconds": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 300
+        },
+        "lastDecisionId": {
+          "oneOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "lastAction": {
+          "oneOf": [
+            {
+              "type": "string",
+              "enum": [
+                "startCountdown",
+                "cancelPending",
+                "publish"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "x-catch-ownership": "callable-owned"
     }
   }
 };
@@ -167522,6 +167625,59 @@ export const eventRehearsalBootstrapCallableResponseSchema = {
           }
         }
       }
+    },
+    "revealReview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "revision",
+        "status",
+        "publishedRound",
+        "pendingRound",
+        "startedAt",
+        "countdownSeconds"
+      ],
+      "properties": {
+        "revision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2147483647
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "idle",
+            "countingDown",
+            "revealed"
+          ]
+        },
+        "publishedRound": {
+          "type": "integer",
+          "minimum": -1,
+          "maximum": 100
+        },
+        "pendingRound": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 100
+        },
+        "startedAt": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "countdownSeconds": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 300
+        }
+      }
     }
   },
   "definitions": {
@@ -170496,7 +170652,8 @@ export const controlEventRehearsalCallablePayloadSchema = {
         "staff",
         "settings",
         "requiredData",
-        "outcome"
+        "outcome",
+        "reveal"
       ]
     },
     "minutes": {
@@ -173639,6 +173796,36 @@ export const controlEventRehearsalCallablePayloadSchema = {
           "maximum": 9007199254740991
         }
       }
+    },
+    "reveal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "action",
+        "expectedLiveRevision",
+        "decisionId"
+      ],
+      "properties": {
+        "action": {
+          "type": "string",
+          "enum": [
+            "startCountdown",
+            "cancelPending",
+            "publish"
+          ]
+        },
+        "expectedLiveRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "decisionId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        }
+      }
     }
   },
   "allOf": [
@@ -173685,6 +173872,11 @@ export const controlEventRehearsalCallablePayloadSchema = {
             {
               "required": [
                 "outcome"
+              ]
+            },
+            {
+              "required": [
+                "reveal"
               ]
             }
           ]
@@ -173742,6 +173934,11 @@ export const controlEventRehearsalCallablePayloadSchema = {
               "required": [
                 "outcome"
               ]
+            },
+            {
+              "required": [
+                "reveal"
+              ]
             }
           ]
         }
@@ -173798,6 +173995,11 @@ export const controlEventRehearsalCallablePayloadSchema = {
               "required": [
                 "outcome"
               ]
+            },
+            {
+              "required": [
+                "reveal"
+              ]
             }
           ]
         }
@@ -173821,7 +174023,8 @@ export const controlEventRehearsalCallablePayloadSchema = {
                 "staff",
                 "settings",
                 "requiredData",
-                "outcome"
+                "outcome",
+                "reveal"
               ]
             }
           }
@@ -173919,6 +174122,11 @@ export const controlEventRehearsalCallablePayloadSchema = {
               "required": [
                 "outcome"
               ]
+            },
+            {
+              "required": [
+                "reveal"
+              ]
             }
           ]
         }
@@ -173979,6 +174187,11 @@ export const controlEventRehearsalCallablePayloadSchema = {
             {
               "required": [
                 "outcome"
+              ]
+            },
+            {
+              "required": [
+                "reveal"
               ]
             }
           ]
@@ -174041,6 +174254,11 @@ export const controlEventRehearsalCallablePayloadSchema = {
               "required": [
                 "practiceOperatorId"
               ]
+            },
+            {
+              "required": [
+                "reveal"
+              ]
             }
           ]
         }
@@ -174049,6 +174267,72 @@ export const controlEventRehearsalCallablePayloadSchema = {
         "not": {
           "required": [
             "outcome"
+          ]
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "action": {
+            "const": "reveal"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "reveal",
+          "expectedSetupRevision"
+        ],
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "assistance"
+              ]
+            },
+            {
+              "required": [
+                "movement"
+              ]
+            },
+            {
+              "required": [
+                "staff"
+              ]
+            },
+            {
+              "required": [
+                "minutes"
+              ]
+            },
+            {
+              "required": [
+                "settings"
+              ]
+            },
+            {
+              "required": [
+                "requiredData"
+              ]
+            },
+            {
+              "required": [
+                "outcome"
+              ]
+            },
+            {
+              "required": [
+                "practiceOperatorId"
+              ]
+            }
+          ]
+        }
+      },
+      "else": {
+        "not": {
+          "required": [
+            "reveal"
           ]
         }
       }
@@ -211300,9 +211584,12 @@ export const eventAssistanceCommandBindingCatalog = {
         "missingCapability": null
       },
       "rehearsal": {
-        "bindingType": "contractOnly",
-        "operations": [],
-        "missingCapability": "rehearsalRevealControl"
+        "bindingType": "domainAdapter",
+        "operations": [
+          "controlEventRehearsal",
+          "getEventRehearsalBootstrap"
+        ],
+        "missingCapability": null
       }
     },
     {

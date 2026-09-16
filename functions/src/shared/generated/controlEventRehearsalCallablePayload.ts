@@ -25,7 +25,8 @@ export type ControlEventRehearsalCallablePayload = {
     | "staff"
     | "settings"
     | "requiredData"
-    | "outcome";
+    | "outcome"
+    | "reveal";
   minutes?: number;
   assistance?:
     | {
@@ -750,5 +751,10 @@ export type ControlEventRehearsalCallablePayload = {
           rank: number;
         };
     expectedOutcomeRevision: number;
+  };
+  reveal?: {
+    action: "startCountdown" | "cancelPending" | "publish";
+    expectedLiveRevision: number;
+    decisionId: string;
   };
 };

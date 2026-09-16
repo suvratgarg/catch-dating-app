@@ -8861,6 +8861,16 @@ export interface EventRehearsalDocument {
       recordedAt: FirebaseFirestore.Timestamp;
     }[];
   };
+  revealControl?: {
+    revision: number;
+    status: "idle" | "countingDown" | "revealed";
+    publishedRound: number;
+    pendingRound: number | null;
+    startedAt: FirebaseFirestore.Timestamp | null;
+    countdownSeconds: number;
+    lastDecisionId: string | null;
+    lastAction: ("startCountdown" | "cancelPending" | "publish") | null;
+  };
 }
 
 /**

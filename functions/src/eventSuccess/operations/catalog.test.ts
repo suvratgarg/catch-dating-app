@@ -162,6 +162,14 @@ test("rehearsal outcomes bind the Host control and review boundaries", () => {
   assert.equal(binding.missingCapability, null);
 });
 
+test("rehearsal reveal binds the Host control and review boundaries", () => {
+  const binding = commandBinding("controlReveal", "rehearsal");
+  assert.equal(binding.bindingType, "domainAdapter");
+  assert.deepEqual(binding.operations,
+    ["controlEventRehearsal", "getEventRehearsalBootstrap"]);
+  assert.equal(binding.missingCapability, null);
+});
+
 test("every workflow names its command or external resolution boundary", () => {
   const externallyResolved = Object.fromEntries(
     workflowDefinitions

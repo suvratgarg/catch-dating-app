@@ -168,7 +168,6 @@ enum EventAssistanceMissingCapability {
   eventPaymentCaseResolution,
   rehearsalFinanceReconciliation,
   rehearsalUnitProgressControl,
-  rehearsalRevealControl,
   rehearsalOverrideControl,
   rehearsalLocationSharing,
   rehearsalRestrictedCaseRouting,
@@ -2052,13 +2051,16 @@ const eventAssistanceCommandBindingCatalog =
       missingCapability: null,
     ),
     rehearsal: EventAssistanceModeBinding(
-      bindingType: EventAssistanceCommandBindingType.contractOnly,
-      coverage: EventAssistanceCommandCoverage.none,
+      bindingType: EventAssistanceCommandBindingType.domainAdapter,
+      coverage: EventAssistanceCommandCoverage.complete,
       variantField: null,
       implementedVariants: <EventAssistanceCommandCoverageVariant>[],
       missingVariants: <EventAssistanceCommandCoverageVariant>[],
-      operations: <String>[],
-      missingCapability: EventAssistanceMissingCapability.rehearsalRevealControl,
+      operations: <String>[
+        'controlEventRehearsal',
+        'getEventRehearsalBootstrap',
+      ],
+      missingCapability: null,
     ),
   ),
   EventAssistanceCommandBindingDescriptor(

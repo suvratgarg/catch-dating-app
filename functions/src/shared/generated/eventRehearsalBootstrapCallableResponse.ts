@@ -2151,4 +2151,12 @@ export interface EventRehearsalBootstrapCallableResponse {
       recordedAt: number;
     }[];
   };
+  revealReview?: {
+    revision: number;
+    status: "idle" | "countingDown" | "revealed";
+    publishedRound: number;
+    pendingRound: number | null;
+    startedAt: number | null;
+    countdownSeconds: number;
+  };
 }

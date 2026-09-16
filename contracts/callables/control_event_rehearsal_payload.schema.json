@@ -57,6 +57,9 @@
     },
     "outcome": {
       "$ref": "../shared/event_rehearsal_outcomes.schema.json#/definitions/Command"
+    },
+    "reveal": {
+      "$ref": "../shared/event_rehearsal_reveal.schema.json#/definitions/Command"
     }
   },
   "allOf": [
@@ -103,6 +106,11 @@
             {
               "required": [
                 "outcome"
+              ]
+            },
+            {
+              "required": [
+                "reveal"
               ]
             }
           ]
@@ -160,6 +168,11 @@
               "required": [
                 "outcome"
               ]
+            },
+            {
+              "required": [
+                "reveal"
+              ]
             }
           ]
         }
@@ -216,6 +229,11 @@
               "required": [
                 "outcome"
               ]
+            },
+            {
+              "required": [
+                "reveal"
+              ]
             }
           ]
         }
@@ -239,7 +257,8 @@
                 "staff",
                 "settings",
                 "requiredData",
-                "outcome"
+                "outcome",
+                "reveal"
               ]
             }
           }
@@ -337,6 +356,11 @@
               "required": [
                 "outcome"
               ]
+            },
+            {
+              "required": [
+                "reveal"
+              ]
             }
           ]
         }
@@ -397,6 +421,11 @@
             {
               "required": [
                 "outcome"
+              ]
+            },
+            {
+              "required": [
+                "reveal"
               ]
             }
           ]
@@ -459,6 +488,11 @@
               "required": [
                 "practiceOperatorId"
               ]
+            },
+            {
+              "required": [
+                "reveal"
+              ]
             }
           ]
         }
@@ -467,6 +501,72 @@
         "not": {
           "required": [
             "outcome"
+          ]
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "action": {
+            "const": "reveal"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "reveal",
+          "expectedSetupRevision"
+        ],
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "assistance"
+              ]
+            },
+            {
+              "required": [
+                "movement"
+              ]
+            },
+            {
+              "required": [
+                "staff"
+              ]
+            },
+            {
+              "required": [
+                "minutes"
+              ]
+            },
+            {
+              "required": [
+                "settings"
+              ]
+            },
+            {
+              "required": [
+                "requiredData"
+              ]
+            },
+            {
+              "required": [
+                "outcome"
+              ]
+            },
+            {
+              "required": [
+                "practiceOperatorId"
+              ]
+            }
+          ]
+        }
+      },
+      "else": {
+        "not": {
+          "required": [
+            "reveal"
           ]
         }
       }

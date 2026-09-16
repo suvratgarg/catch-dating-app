@@ -398,4 +398,17 @@ export interface EventRehearsalDocument {
       };
     }[];
   };
+  revealControl?: {
+    revision: number;
+    status: "idle" | "countingDown" | "revealed";
+    publishedRound: number;
+    pendingRound: number | null;
+    startedAt: {
+      _seconds: number;
+      _nanoseconds: number;
+    } | null;
+    countdownSeconds: number;
+    lastDecisionId: string | null;
+    lastAction: ("startCountdown" | "cancelPending" | "publish") | null;
+  };
 }

@@ -46,7 +46,8 @@ export const controlEventRehearsalCallablePayloadSchema: Record<string, unknown>
         "staff",
         "settings",
         "requiredData",
-        "outcome"
+        "outcome",
+        "reveal"
       ]
     },
     "minutes": {
@@ -3189,6 +3190,36 @@ export const controlEventRehearsalCallablePayloadSchema: Record<string, unknown>
           "maximum": 9007199254740991
         }
       }
+    },
+    "reveal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "action",
+        "expectedLiveRevision",
+        "decisionId"
+      ],
+      "properties": {
+        "action": {
+          "type": "string",
+          "enum": [
+            "startCountdown",
+            "cancelPending",
+            "publish"
+          ]
+        },
+        "expectedLiveRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "decisionId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        }
+      }
     }
   },
   "allOf": [
@@ -3235,6 +3266,11 @@ export const controlEventRehearsalCallablePayloadSchema: Record<string, unknown>
             {
               "required": [
                 "outcome"
+              ]
+            },
+            {
+              "required": [
+                "reveal"
               ]
             }
           ]
@@ -3292,6 +3328,11 @@ export const controlEventRehearsalCallablePayloadSchema: Record<string, unknown>
               "required": [
                 "outcome"
               ]
+            },
+            {
+              "required": [
+                "reveal"
+              ]
             }
           ]
         }
@@ -3348,6 +3389,11 @@ export const controlEventRehearsalCallablePayloadSchema: Record<string, unknown>
               "required": [
                 "outcome"
               ]
+            },
+            {
+              "required": [
+                "reveal"
+              ]
             }
           ]
         }
@@ -3371,7 +3417,8 @@ export const controlEventRehearsalCallablePayloadSchema: Record<string, unknown>
                 "staff",
                 "settings",
                 "requiredData",
-                "outcome"
+                "outcome",
+                "reveal"
               ]
             }
           }
@@ -3469,6 +3516,11 @@ export const controlEventRehearsalCallablePayloadSchema: Record<string, unknown>
               "required": [
                 "outcome"
               ]
+            },
+            {
+              "required": [
+                "reveal"
+              ]
             }
           ]
         }
@@ -3529,6 +3581,11 @@ export const controlEventRehearsalCallablePayloadSchema: Record<string, unknown>
             {
               "required": [
                 "outcome"
+              ]
+            },
+            {
+              "required": [
+                "reveal"
               ]
             }
           ]
@@ -3591,6 +3648,11 @@ export const controlEventRehearsalCallablePayloadSchema: Record<string, unknown>
               "required": [
                 "practiceOperatorId"
               ]
+            },
+            {
+              "required": [
+                "reveal"
+              ]
             }
           ]
         }
@@ -3599,6 +3661,72 @@ export const controlEventRehearsalCallablePayloadSchema: Record<string, unknown>
         "not": {
           "required": [
             "outcome"
+          ]
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "action": {
+            "const": "reveal"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "reveal",
+          "expectedSetupRevision"
+        ],
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "assistance"
+              ]
+            },
+            {
+              "required": [
+                "movement"
+              ]
+            },
+            {
+              "required": [
+                "staff"
+              ]
+            },
+            {
+              "required": [
+                "minutes"
+              ]
+            },
+            {
+              "required": [
+                "settings"
+              ]
+            },
+            {
+              "required": [
+                "requiredData"
+              ]
+            },
+            {
+              "required": [
+                "outcome"
+              ]
+            },
+            {
+              "required": [
+                "practiceOperatorId"
+              ]
+            }
+          ]
+        }
+      },
+      "else": {
+        "not": {
+          "required": [
+            "reveal"
           ]
         }
       }
