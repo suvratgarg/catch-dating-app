@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.130.0
+version: 1.131.0
 updated: 2026-09-16
 owner: recursive_audit_loop
 status: active
@@ -1237,6 +1237,10 @@ Host identity and operation ids while projecting milliseconds, current unit ids
 and the revision. Source-event setup freezes the live format primitive; setup
 changes and reset delete prior outcome state. This rehearsal state cannot write
 the live `eventSuccessUnitOutcomes` or `eventSuccessStandings` collections.
+The native setup parser retains the optional `unitOutcome` value through setup
+edits, applies the backend's legacy pods/rotations completion fallback when it
+is absent, and rejects an `outcomeReview` whose primitive differs from that
+frozen setup.
 
 Optional `eventRehearsals.revealControl` stores a rehearsal-only revision,
 idle/counting/revealed status, published and pending round, virtual countdown

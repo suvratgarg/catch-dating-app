@@ -18,6 +18,7 @@ export 'domain/event_success_plan.dart';
 export 'domain/event_success_playbooks.dart';
 export 'domain/event_success_preference.dart';
 export 'domain/event_success_runtime.dart';
+export 'domain/event_success_standings.dart';
 export 'domain/event_success_structure.dart';
 export 'domain/event_success_wingman_request.dart';
 export 'presentation/companion/event_success_companion_loading_page_body.dart'; // public-api: shared presentation component used outside this feature

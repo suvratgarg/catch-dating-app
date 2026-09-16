@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.151.0
+version: 1.152.0
 updated: 2026-09-16
 owner: recursive_audit_loop
 status: active
@@ -2755,6 +2755,16 @@ requested state transition. These adapters are exposed through the rehearsal
 repository and controller without adding a second Event Success runtime UI.
 An exact legacy fixture state without Host review metadata remains readable but
 does not grant the required-data command.
+
+The production Host rehearsal screen now projects the frozen unit-outcome
+primitive, synthetic units, complete score/rank rounds and rehearsal reveal
+clock into the existing Event Success workspace. Partial rounds stay out of
+standings and remain the current editable round. A route-scoped operation owner
+sequences the backend's per-unit commands, keeps the current command and client
+action id across an uncertain result, and resumes the remaining units only
+after that exact command is confirmed. The same owner freezes reveal decisions
+and survives temporary route detachment while the authenticated account is
+unchanged. Practice-role views remain read-only for these manager operations.
 
 With the shared execution and SMS/WhatsApp/RCS boundaries in source, the next
 implementation sequence is:

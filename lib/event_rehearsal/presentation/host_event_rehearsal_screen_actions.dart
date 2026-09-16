@@ -2,6 +2,68 @@ part of 'host_event_rehearsal_screen.dart';
 
 mixin _HostEventRehearsalScreenActions
     on ConsumerState<HostEventRehearsalScreen> {
+  Future<void> _retryRuntimeOperation(String sessionId) async {
+    try {
+      await ref
+          .read(
+            eventRehearsalRuntimeOperationControllerProvider(
+              sessionId,
+            ).notifier,
+          )
+          .retry();
+    } on Object {
+      // The shared runtime surface renders the retained operation error.
+    }
+  }
+
+  Future<void> _changeReveal(
+    EventRehearsalBootstrap rehearsal,
+    RehearsalRevealAction decision, {
+    int? expectedRound,
+    int? countdownSeconds,
+  }) async {
+    try {
+      await ref
+          .read(
+            eventRehearsalRuntimeOperationControllerProvider(
+              rehearsal.session.id,
+            ).notifier,
+          )
+          .changeReveal(
+            snapshot: rehearsal,
+            decision: decision,
+            expectedRound: expectedRound,
+            countdownSeconds: countdownSeconds,
+          );
+    } on Object {
+      // The shared reveal surface renders the controller's retained error.
+    }
+  }
+
+  Future<void> _recordOutcomes(
+    EventRehearsalBootstrap rehearsal, {
+    required int expectedRevision,
+    required int roundIndex,
+    required List<EventSuccessUnitOutcomeEntryInput> entries,
+  }) async {
+    try {
+      await ref
+          .read(
+            eventRehearsalRuntimeOperationControllerProvider(
+              rehearsal.session.id,
+            ).notifier,
+          )
+          .recordOutcomes(
+            snapshot: rehearsal,
+            expectedRevision: expectedRevision,
+            roundIndex: roundIndex,
+            entries: entries,
+          );
+    } on Object {
+      // The shared outcome surface renders the controller's retained error.
+    }
+  }
+
   Future<List<EventSuccessSpatialDestination>> _previewSpatial(
     EventRehearsalRuntimeProjection runtime,
     EventRehearsalBootstrap rehearsal,

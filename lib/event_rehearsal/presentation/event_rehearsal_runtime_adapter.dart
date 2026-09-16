@@ -13,7 +13,6 @@ import 'package:catch_dating_app/event_success/domain/event_success_playbooks.da
 import 'package:catch_dating_app/event_success/domain/event_success_presence.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_standings.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_structure.dart';
-import 'package:catch_dating_app/event_success/presentation/event_success_live_reveal_card_state.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_attendee.dart';
 import 'package:catch_dating_app/events/domain/event_participation_roster.dart';

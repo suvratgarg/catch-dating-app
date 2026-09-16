@@ -6,9 +6,11 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/event_rehearsal/data/event_rehearsal_repository.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
+import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_operations.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_controller.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_practice_role_controller.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_runtime_adapter.dart';
+import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_runtime_operation_controller.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_delivery_section.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_groups_section.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_help_section.dart';
@@ -91,6 +93,9 @@ class _HostEventRehearsalScreenState
     );
     final exportMutation = ref.watch(EventRehearsalController.exportMutation);
     final shareMutation = ref.watch(EventRehearsalController.shareMutation);
+    final runtimeOperation = ref.watch(
+      eventRehearsalRuntimeOperationControllerProvider(widget.sessionId),
+    );
     final busy =
         setupMutation.isPending ||
         controlMutation.isPending ||
@@ -100,7 +105,8 @@ class _HostEventRehearsalScreenState
         forkMutation.isPending ||
         guestLinkMutation.isPending ||
         exportMutation.isPending ||
-        shareMutation.isPending;
+        shareMutation.isPending ||
+        runtimeOperation.isSubmitting;
     final topBarTitleMaxLines = MediaQuery.textScalerOf(context).scale(1) >= 1.4
         ? 3
         : 1;
@@ -205,6 +211,18 @@ class _HostEventRehearsalScreenState
                     context.l10n.hostEventRehearsalLatePracticeGuest,
               );
               final coachTask = _buildCoachTask(context, rehearsal);
+              final revealOperationAvailable =
+                  runtimeOperation.canSubmit ||
+                  runtimeOperation.kind ==
+                          RehearsalRuntimeOperationKind.reveal &&
+                      (runtimeOperation.canRetry ||
+                          runtimeOperation.isSubmitting);
+              final outcomeOperationAvailable =
+                  runtimeOperation.canSubmit ||
+                  runtimeOperation.kind ==
+                          RehearsalRuntimeOperationKind.outcomes &&
+                      (runtimeOperation.canRetry ||
+                          runtimeOperation.isSubmitting);
               _syncCoachTask(coachTask);
               return Column(
                 children: [
@@ -329,6 +347,85 @@ class _HostEventRehearsalScreenState
                         assignment.uid,
                         EventRehearsalSpatialAction.releasePinned,
                       ),
+                      revealActionState: EventSuccessRevealActionState(
+                        isLoading:
+                            runtimeOperation.isSubmitting &&
+                            runtimeOperation.kind ==
+                                RehearsalRuntimeOperationKind.reveal,
+                        error:
+                            runtimeOperation.kind == null ||
+                                runtimeOperation.kind ==
+                                    RehearsalRuntimeOperationKind.reveal
+                            ? runtimeOperation.error
+                            : null,
+                      ),
+                      onStartRevealCountdown:
+                          selectedRole == null &&
+                              rehearsal.revealReview != null &&
+                              revealOperationAvailable
+                          ? (roundIndex, countdownSeconds) =>
+                                runtimeOperation.canRetry
+                                ? _retryRuntimeOperation(rehearsal.session.id)
+                                : _changeReveal(
+                                    rehearsal,
+                                    RehearsalRevealAction.startCountdown,
+                                    expectedRound: roundIndex,
+                                    countdownSeconds: countdownSeconds,
+                                  )
+                          : null,
+                      onRevealRound:
+                          selectedRole == null &&
+                              rehearsal.revealReview != null &&
+                              revealOperationAvailable
+                          ? (roundIndex) => runtimeOperation.canRetry
+                                ? _retryRuntimeOperation(rehearsal.session.id)
+                                : _changeReveal(
+                                    rehearsal,
+                                    RehearsalRevealAction.publish,
+                                    expectedRound: roundIndex,
+                                  )
+                          : null,
+                      onResetReveal:
+                          selectedRole == null &&
+                              revealOperationAvailable &&
+                              rehearsal.revealReview?.status ==
+                                  RehearsalRevealStatus.countingDown
+                          ? () => runtimeOperation.canRetry
+                                ? _retryRuntimeOperation(rehearsal.session.id)
+                                : _changeReveal(
+                                    rehearsal,
+                                    RehearsalRevealAction.cancelPending,
+                                  )
+                          : null,
+                      outcomeActionState: EventSuccessOutcomeActionState(
+                        isLoading:
+                            runtimeOperation.isSubmitting &&
+                            runtimeOperation.kind ==
+                                RehearsalRuntimeOperationKind.outcomes,
+                        error:
+                            runtimeOperation.kind == null ||
+                                runtimeOperation.kind ==
+                                    RehearsalRuntimeOperationKind.outcomes
+                            ? runtimeOperation.error
+                            : null,
+                      ),
+                      onRecordOutcomes:
+                          selectedRole == null &&
+                              rehearsal.outcomeReview != null &&
+                              outcomeOperationAvailable
+                          ? ({
+                              required expectedRevision,
+                              required roundIndex,
+                              required entries,
+                            }) => runtimeOperation.canRetry
+                                ? _retryRuntimeOperation(rehearsal.session.id)
+                                : _recordOutcomes(
+                                    rehearsal,
+                                    expectedRevision: expectedRevision,
+                                    roundIndex: roundIndex,
+                                    entries: entries,
+                                  )
+                          : null,
                     ),
                   ),
                   _RehearsalCoachDock(
