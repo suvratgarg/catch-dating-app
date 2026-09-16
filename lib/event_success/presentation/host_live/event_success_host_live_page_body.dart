@@ -62,6 +62,7 @@ class EventSuccessHostLivePageBody extends StatelessWidget {
     required this.rotationParticipantProfiles,
     required this.preferences,
     this.standings,
+    this.outcomeUnits,
     this.presenceSummary,
     this.presenceError,
     this.accountabilityAttendees = const [],
@@ -128,6 +129,7 @@ class EventSuccessHostLivePageBody extends StatelessWidget {
   final List<PublicProfile> rotationParticipantProfiles;
   final List<EventSuccessPreference> preferences;
   final EventSuccessStandings? standings;
+  final List<EventSuccessOutcomeUnit>? outcomeUnits;
   final EventSuccessPresenceSummary? presenceSummary;
   final Object? presenceError;
   final List<EventAttendee> accountabilityAttendees;
@@ -403,17 +405,19 @@ class EventSuccessHostLivePageBody extends StatelessWidget {
       rotationAssignments: rotationAssignments,
       preferences: preferences,
       standings: standings,
-      outcomeUnits: eventSuccessHostOutcomeUnits(
-        event: event,
-        plan: plan,
-        assignments: assignments,
-        rotationAssignments: rotationAssignments,
-        operationalAttendees: accountabilityAttendees,
-        profiles: [
-          ...rotationParticipantProfiles,
-          ...assignmentParticipantProfiles,
-        ],
-      ),
+      outcomeUnits:
+          outcomeUnits ??
+          eventSuccessHostOutcomeUnits(
+            event: event,
+            plan: plan,
+            assignments: assignments,
+            rotationAssignments: rotationAssignments,
+            operationalAttendees: accountabilityAttendees,
+            profiles: [
+              ...rotationParticipantProfiles,
+              ...assignmentParticipantProfiles,
+            ],
+          ),
       participantProfiles: [
         ...rotationParticipantProfiles,
         ...assignmentParticipantProfiles,

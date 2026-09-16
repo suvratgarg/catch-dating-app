@@ -49,6 +49,7 @@ class EventSuccessHostWorkspacePageBody extends StatefulWidget {
     this.rotationParticipantProfiles = const [],
     this.preferences = const [],
     this.standings,
+    this.outcomeUnits,
     this.presenceSummary,
     this.presenceError,
     this.accountabilityAttendees = const [],
@@ -130,6 +131,7 @@ class EventSuccessHostWorkspacePageBody extends StatefulWidget {
   final List<PublicProfile> rotationParticipantProfiles;
   final List<EventSuccessPreference> preferences;
   final EventSuccessStandings? standings;
+  final List<EventSuccessOutcomeUnit>? outcomeUnits;
   final EventSuccessPresenceSummary? presenceSummary;
   final Object? presenceError;
   final List<EventAttendee> accountabilityAttendees;
@@ -265,6 +267,7 @@ class _EventSuccessHostWorkspacePageBodyState
         rotationParticipantProfiles: widget.rotationParticipantProfiles,
         preferences: widget.preferences,
         standings: widget.standings,
+        outcomeUnits: widget.outcomeUnits,
         presenceSummary: widget.presenceSummary,
         presenceError: widget.presenceError,
         accountabilityAttendees: widget.accountabilityAttendees,

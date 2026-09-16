@@ -123,6 +123,7 @@ class EventRehearsalSetup {
     required this.hostGoal,
     required this.attendeePrompt,
     required this.modules,
+    this.unitOutcome,
     this.movementSimulation,
   });
 
@@ -136,6 +137,11 @@ class EventRehearsalSetup {
         modules: _stringList(map['moduleIds'])
             .map((value) => EventRehearsalModule.values.byName(value))
             .toList(growable: false),
+        unitOutcome: map['unitOutcome'] == null
+            ? null
+            : RehearsalOutcomeKind.values.byName(
+                _requiredString(map, 'unitOutcome'),
+              ),
         movementSimulation: map['movementSimulation'] == null
             ? null
             : EventRehearsalMovementSimulation.fromMap(
@@ -149,7 +155,19 @@ class EventRehearsalSetup {
   final String hostGoal;
   final String attendeePrompt;
   final List<EventRehearsalModule> modules;
+  final RehearsalOutcomeKind? unitOutcome;
   final EventRehearsalMovementSimulation? movementSimulation;
+
+  /// Resolves legacy rehearsals using the same fallback as the backend.
+  RehearsalOutcomeKind get effectiveUnitOutcome =>
+      unitOutcome ??
+      (modules.any(
+            (module) =>
+                module == EventRehearsalModule.pods ||
+                module == EventRehearsalModule.rotations,
+          )
+          ? RehearsalOutcomeKind.completion
+          : RehearsalOutcomeKind.none);
 
   Map<String, Object?> toJson() => {
     'title': title,
@@ -158,6 +176,7 @@ class EventRehearsalSetup {
     'hostGoal': hostGoal,
     'attendeePrompt': attendeePrompt,
     'moduleIds': modules.map((module) => module.name).toList(growable: false),
+    if (unitOutcome != null) 'unitOutcome': unitOutcome!.name,
     if (movementSimulation != null)
       'movementSimulation': movementSimulation!.toJson(),
   };
@@ -169,6 +188,7 @@ class EventRehearsalSetup {
     String? hostGoal,
     String? attendeePrompt,
     List<EventRehearsalModule>? modules,
+    RehearsalOutcomeKind? unitOutcome,
     EventRehearsalMovementSimulation? movementSimulation,
   }) => EventRehearsalSetup(
     title: title ?? this.title,
@@ -177,6 +197,7 @@ class EventRehearsalSetup {
     hostGoal: hostGoal ?? this.hostGoal,
     attendeePrompt: attendeePrompt ?? this.attendeePrompt,
     modules: modules ?? this.modules,
+    unitOutcome: unitOutcome ?? this.unitOutcome,
     movementSimulation: movementSimulation ?? this.movementSimulation,
   );
 }
@@ -506,6 +527,20 @@ class EventRehearsalBootstrap {
         );
       }
     }
+    final outcome = !map.containsKey('outcomeReview')
+        ? null
+        : RehearsalOutcomeReview.fromJson(
+            map['outcomeReview'],
+            expectedUnitIds: actors
+                .map((actor) => actor.layoutUnitId)
+                .nonNulls
+                .toSet(),
+          );
+    if (outcome != null && outcome.kind != session.setup.effectiveUnitOutcome) {
+      throw const FormatException(
+        'Practice outcome review changed the configured format.',
+      );
+    }
     return EventRehearsalBootstrap(
       session: session,
       actors: actors,
@@ -517,15 +552,7 @@ class EventRehearsalBootstrap {
               session: session,
               staff: staff,
             ),
-      outcomeReview: !map.containsKey('outcomeReview')
-          ? null
-          : RehearsalOutcomeReview.fromJson(
-              map['outcomeReview'],
-              expectedUnitIds: actors
-                  .map((actor) => actor.layoutUnitId)
-                  .nonNulls
-                  .toSet(),
-            ),
+      outcomeReview: outcome,
       revealReview: !map.containsKey('revealReview')
           ? null
           : RehearsalRevealReview.fromJson(map['revealReview']),

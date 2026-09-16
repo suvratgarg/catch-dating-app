@@ -223,6 +223,8 @@ class _HostEventRehearsalScreenState
                       roster: runtime.roster,
                       assignments: runtime.assignments,
                       assignmentParticipantProfiles: runtime.profiles,
+                      standings: runtime.standings,
+                      outcomeUnits: runtime.outcomeUnits,
                       presenceSummary: runtime.presence,
                       accountabilityAttendees: runtime.accountabilityAttendees,
                       accountabilityMode:
