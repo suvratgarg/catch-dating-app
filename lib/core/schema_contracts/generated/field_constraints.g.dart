@@ -29127,6 +29127,13 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
+  static const eventMessagingSetupReviewBudgetsCurrency = CatchContractFieldConstraints(
+    path: 'eventMessagingSetupReview.budgets.currency',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Z]{3}\$',
+  );
+
   static const eventMessagingSetupReviewBudgetsEventApprovalId = CatchContractFieldConstraints(
     path: 'eventMessagingSetupReview.budgets.event.approvalId',
     maxLength: 160,
@@ -29403,6 +29410,13 @@ abstract final class CatchContractConstraints {
     maximum: 9007199254740991,
   );
 
+  static const eventMessagingSetupReviewBudgetsSourceHash = CatchContractFieldConstraints(
+    path: 'eventMessagingSetupReview.budgets.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
   static const eventMessagingSetupReviewCompletedAt = CatchContractFieldConstraints(
     path: 'eventMessagingSetupReview.completedAt',
     required: true,
@@ -29472,6 +29486,14 @@ abstract final class CatchContractConstraints {
     path: 'eventMessagingSetupReview.runtime.appliesToPurpose',
     required: true,
     valueTypes: <String>['boolean'],
+  );
+
+  static const eventMessagingSetupReviewRuntimeEventEnd = CatchContractFieldConstraints(
+    path: 'eventMessagingSetupReview.runtime.eventEnd',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
   );
 
   static const eventMessagingSetupReviewRuntimeRevision = CatchContractFieldConstraints(
@@ -100290,6 +100312,7 @@ abstract final class CatchContractConstraints {
     'eventLivePositionDocument.uid': eventLivePositionDocumentUid,
     'eventLivePositionDocument.updatedAt._nanoseconds': eventLivePositionDocumentUpdatedAtNanoseconds,
     'eventLivePositionDocument.updatedAt._seconds': eventLivePositionDocumentUpdatedAtSeconds,
+    'eventMessagingSetupReview.budgets.currency': eventMessagingSetupReviewBudgetsCurrency,
     'eventMessagingSetupReview.budgets.event.approvalId': eventMessagingSetupReviewBudgetsEventApprovalId,
     'eventMessagingSetupReview.budgets.event.budgetId': eventMessagingSetupReviewBudgetsEventBudgetId,
     'eventMessagingSetupReview.budgets.event.chargedMicros': eventMessagingSetupReviewBudgetsEventChargedMicros,
@@ -100327,6 +100350,7 @@ abstract final class CatchContractConstraints {
     'eventMessagingSetupReview.budgets.senderDay.scope.day': eventMessagingSetupReviewBudgetsSenderDayScopeDay,
     'eventMessagingSetupReview.budgets.senderDay.scope.kind': eventMessagingSetupReviewBudgetsSenderDayScopeKind,
     'eventMessagingSetupReview.budgets.senderDay.startsAt': eventMessagingSetupReviewBudgetsSenderDayStartsAt,
+    'eventMessagingSetupReview.budgets.sourceHash': eventMessagingSetupReviewBudgetsSourceHash,
     'eventMessagingSetupReview.completedAt': eventMessagingSetupReviewCompletedAt,
     'eventMessagingSetupReview.context.eventId': eventMessagingSetupReviewContextEventId,
     'eventMessagingSetupReview.context.mode': eventMessagingSetupReviewContextMode,
@@ -100337,6 +100361,7 @@ abstract final class CatchContractConstraints {
     'eventMessagingSetupReview.purpose': eventMessagingSetupReviewPurpose,
     'eventMessagingSetupReview.routeId': eventMessagingSetupReviewRouteId,
     'eventMessagingSetupReview.runtime.appliesToPurpose': eventMessagingSetupReviewRuntimeAppliesToPurpose,
+    'eventMessagingSetupReview.runtime.eventEnd': eventMessagingSetupReviewRuntimeEventEnd,
     'eventMessagingSetupReview.runtime.revision': eventMessagingSetupReviewRuntimeRevision,
     'eventMessagingSetupReview.runtime.selected': eventMessagingSetupReviewRuntimeSelected,
     'eventMessagingSetupReview.runtime.sourceHash': eventMessagingSetupReviewRuntimeSourceHash,

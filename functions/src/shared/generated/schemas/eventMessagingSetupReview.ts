@@ -108,7 +108,8 @@ export const eventMessagingSetupReviewSchema: Record<string, unknown> = {
         "status",
         "revision",
         "selected",
-        "sourceHash"
+        "sourceHash",
+        "eventEnd"
       ],
       "properties": {
         "appliesToPurpose": {
@@ -139,6 +140,11 @@ export const eventMessagingSetupReviewSchema: Record<string, unknown> = {
         "sourceHash": {
           "type": "string",
           "pattern": "^[a-f0-9]{64}$"
+        },
+        "eventEnd": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
         }
       }
     },
@@ -222,6 +228,8 @@ export const eventMessagingSetupReviewSchema: Record<string, unknown> = {
           "additionalProperties": false,
           "required": [
             "kind",
+            "currency",
+            "sourceHash",
             "event",
             "senderDay"
           ],
@@ -229,6 +237,14 @@ export const eventMessagingSetupReviewSchema: Record<string, unknown> = {
             "kind": {
               "type": "string",
               "const": "reviewed"
+            },
+            "currency": {
+              "type": "string",
+              "pattern": "^[A-Z]{3}$"
+            },
+            "sourceHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
             },
             "event": {
               "oneOf": [

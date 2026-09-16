@@ -111,6 +111,7 @@ const schemaEventMessagingSetupReviewSchema = <String, Object?>{
         'revision',
         'selected',
         'sourceHash',
+        'eventEnd',
       ],
       'properties': <String, Object?>{
         'appliesToPurpose': <String, Object?>{
@@ -141,6 +142,11 @@ const schemaEventMessagingSetupReviewSchema = <String, Object?>{
         'sourceHash': <String, Object?>{
           'type': 'string',
           'pattern': '^[a-f0-9]{64}\$',
+        },
+        'eventEnd': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 9007199254740991,
         },
       },
     },
@@ -224,6 +230,8 @@ const schemaEventMessagingSetupReviewSchema = <String, Object?>{
           'additionalProperties': false,
           'required': <Object?>[
             'kind',
+            'currency',
+            'sourceHash',
             'event',
             'senderDay',
           ],
@@ -231,6 +239,14 @@ const schemaEventMessagingSetupReviewSchema = <String, Object?>{
             'kind': <String, Object?>{
               'type': 'string',
               'const': 'reviewed',
+            },
+            'currency': <String, Object?>{
+              'type': 'string',
+              'pattern': '^[A-Z]{3}\$',
+            },
+            'sourceHash': <String, Object?>{
+              'type': 'string',
+              'pattern': '^[a-f0-9]{64}\$',
             },
             'event': <String, Object?>{
               'oneOf': <Object?>[

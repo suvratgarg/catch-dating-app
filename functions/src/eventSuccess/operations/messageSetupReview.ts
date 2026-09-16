@@ -62,7 +62,9 @@ export async function reviewEventMessageSetup(db: Firestore,
         db.collection(budgetSource.collection).doc(id)));
       const reviews = snapshots.map((snap, i) => reviewBudget(snap.data(),
         scopes[i], ids[i], budgetSource, now));
-      budgets = {kind: "reviewed", event: reviews[0], senderDay: reviews[1]};
+      budgets = {kind: "reviewed", currency: budgetSource.currency,
+        sourceHash: budgetSource.sourceHash,
+        event: reviews[0], senderDay: reviews[1]};
     }
     const completedAt = clock();
     if (!Number.isSafeInteger(completedAt) || completedAt < now) {
@@ -79,6 +81,7 @@ export async function reviewEventMessageSetup(db: Firestore,
       runtime: {appliesToPurpose: input.purpose === "joiningUpdate",
         status: runtimeConfigStatus(record, source, now),
         revision: record?.revision ?? null, sourceHash: source.hash,
+        eventEnd: source.eventEnd,
         selected: input.purpose === "joiningUpdate" &&
           (record?.configuration?.options.routes.some((r) =>
             r.routeId === input.routeId &&
@@ -94,6 +97,7 @@ export async function reviewEventMessageSetup(db: Firestore,
 interface BudgetSource {
   collection: string;
   currency: string;
+  sourceHash: string;
   agentId?: string;
   id(scope: BudgetScope): string;
   scopes(context: RuntimeContext, now: number): [BudgetScope, BudgetScope];
@@ -116,6 +120,7 @@ async function readBudgetSource(db: Firestore, tx: Transaction,
       if (sender.senderId !== input.senderId) return null;
       return {collection: smsCollections.budgets,
         currency: sender.quote.currency,
+        sourceHash: operationContentHash(sender),
         scopes: smsBudgetScopes, parse: parseSmsBudget,
         id: (scope) => smsBudgetId(input.senderId, scope)};
     }
@@ -123,7 +128,8 @@ async function readBudgetSource(db: Firestore, tx: Transaction,
       const sender = parseRcsConfig(value);
       if (sender.senderId !== input.senderId) return null;
       return {collection: RCS_BUDGETS, currency: sender.quote.currency,
-        agentId: sender.agentId, scopes: rcsBudgetScopes, parse: parseRcsBudget,
+        sourceHash: operationContentHash(sender), agentId: sender.agentId,
+        scopes: rcsBudgetScopes, parse: parseRcsBudget,
         id: (scope) => rcsBudgetId(input.senderId, scope)};
     }
     case "organizerEventWhatsapp": {
@@ -131,6 +137,7 @@ async function readBudgetSource(db: Firestore, tx: Transaction,
         input.context.organizerId, connection, value)?.policy;
       if (!policy) return null;
       return {collection: WHATSAPP_BUDGETS, currency: policy.quote.currency,
+        sourceHash: operationContentHash([connection, policy]),
         scopes: whatsappBudgetScopes, parse: parseWhatsappBudget,
         id: (scope) => whatsappBudgetId(input.senderId, policy.quote.currency,
           scope)};

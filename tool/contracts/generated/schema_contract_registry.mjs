@@ -46858,7 +46858,8 @@ export const eventMessagingSetupReviewSchema = {
         "status",
         "revision",
         "selected",
-        "sourceHash"
+        "sourceHash",
+        "eventEnd"
       ],
       "properties": {
         "appliesToPurpose": {
@@ -46889,6 +46890,11 @@ export const eventMessagingSetupReviewSchema = {
         "sourceHash": {
           "type": "string",
           "pattern": "^[a-f0-9]{64}$"
+        },
+        "eventEnd": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
         }
       }
     },
@@ -46972,6 +46978,8 @@ export const eventMessagingSetupReviewSchema = {
           "additionalProperties": false,
           "required": [
             "kind",
+            "currency",
+            "sourceHash",
             "event",
             "senderDay"
           ],
@@ -46979,6 +46987,14 @@ export const eventMessagingSetupReviewSchema = {
             "kind": {
               "type": "string",
               "const": "reviewed"
+            },
+            "currency": {
+              "type": "string",
+              "pattern": "^[A-Z]{3}$"
+            },
+            "sourceHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
             },
             "event": {
               "oneOf": [

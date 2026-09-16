@@ -40,6 +40,7 @@ export interface EventMessagingSetupReview {
     revision: number | null;
     selected: boolean;
     sourceHash: string;
+    eventEnd: number;
   };
   sender: {
     routeId: "catchEventSms" | "catchEventRcs" | "organizerEventWhatsapp";
@@ -59,6 +60,8 @@ export interface EventMessagingSetupReview {
       }
     | {
         kind: "reviewed";
+        currency: string;
+        sourceHash: string;
         event:
           | {
               budgetId: string;

@@ -58,7 +58,8 @@
         "status",
         "revision",
         "selected",
-        "sourceHash"
+        "sourceHash",
+        "eventEnd"
       ],
       "properties": {
         "appliesToPurpose": {
@@ -88,6 +89,9 @@
         },
         "sourceHash": {
           "$ref": "common.schema.json#/definitions/sha256"
+        },
+        "eventEnd": {
+          "$ref": "#/definitions/time"
         }
       }
     },
@@ -121,6 +125,8 @@
           "additionalProperties": false,
           "required": [
             "kind",
+            "currency",
+            "sourceHash",
             "event",
             "senderDay"
           ],
@@ -128,6 +134,13 @@
             "kind": {
               "type": "string",
               "const": "reviewed"
+            },
+            "currency": {
+              "type": "string",
+              "pattern": "^[A-Z]{3}$"
+            },
+            "sourceHash": {
+              "$ref": "common.schema.json#/definitions/sha256"
             },
             "event": {
               "$ref": "#/definitions/budgetReview"

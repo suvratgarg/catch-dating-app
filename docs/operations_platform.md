@@ -891,7 +891,8 @@ own work. No setup report may substitute for those decisions.
 The review is validated against the versioned
 `EventMessagingSetupReview` operations contract before the CLI prints it. The
 contract fixes the channel, purpose, source hash, sender availability, exact
-budget scopes and recorded ceilings while preserving the literal
+event service horizon, budget currency and budget-source hash, exact budget
+scopes and recorded ceilings while preserving the literal
 `grantsDispatchAuthority: false` boundary.
 
 ## Adding Another Workflow

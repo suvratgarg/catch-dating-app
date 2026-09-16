@@ -49,9 +49,12 @@ for (const route of routes) {
     assert.equal(result.runtime.appliesToPurpose, true);
     assert.equal(result.runtime.status, "unconfigured");
     assert.equal(result.runtime.selected, false);
+    assert.equal(result.runtime.eventEnd, start + 3_600_000);
     assert.equal(result.sender?.availability, "eligible");
     assert.equal(result.budgets.kind, "reviewed");
     assert.ok(result.budgets.kind === "reviewed");
+    assert.equal(result.budgets.currency, "INR");
+    assert.match(result.budgets.sourceHash, /^[a-f0-9]{64}$/);
     for (const budget of [result.budgets.event, result.budgets.senderDay]) {
       assert.ok(budget.kind === "recorded");
       assert.equal(budget.issue, null);
