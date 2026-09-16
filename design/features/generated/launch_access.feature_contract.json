@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/launch_access.feature.json",
   "generatedFor": "2026-08-10",
   "sourceDigest": "sha256:bbde17fc7567753c7e9b89edf54292f19f4501c3da324c7722193d54f614b6a2",
-  "resolvedDigest": "sha256:8ac7bd496eedda083677a62908a2b9bd488215121d146313e75fb7ea27527a8e",
+  "resolvedDigest": "sha256:3c3a46be741c587073012a652c6d5fb9925a7c57f342f4e126c8bd9a1626660f",
   "feature": {
     "id": "feature.launch_access",
     "name": "Launch Access",
@@ -921,6 +921,7 @@
               "file": "packages/catch_ui/lib/src/components/catch_field.dart",
               "constructors": [
                 "CatchField.read",
+                "CatchField.navigate",
                 "CatchField.content",
                 "CatchField.nav",
                 "CatchField.sortable",

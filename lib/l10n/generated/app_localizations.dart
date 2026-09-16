@@ -3728,12 +3728,6 @@ abstract class AppLocalizations {
   /// **'prospective attendees'**
   String get hostsHostInboxScreenTitleProspectiveAttendees;
 
-  /// Product copy used by lib/hosts/presentation/inbox/host_inbox_screen.dart (message).
-  ///
-  /// In en, this message translates to:
-  /// **'Personal questions appear here. Broadcast audience size is based on the event roster, not this thread list.'**
-  String get hostsHostInboxScreenMessagePersonalQuestionsAppearHere;
-
   /// Product copy used by lib/hosts/presentation/payments/host_payment_account_card.dart (title).
   ///
   /// In en, this message translates to:
@@ -6395,12 +6389,6 @@ abstract class AppLocalizations {
   /// **'No general inquiries'**
   String get hostsHostInboxScreenTitleNoGeneralInquiries;
 
-  /// Product copy used by lib/hosts/presentation/inbox/host_inbox_screen.dart (message).
-  ///
-  /// In en, this message translates to:
-  /// **'Questions that are not tied to one event will appear here.'**
-  String get hostsHostInboxScreenMessageQuestionsThatAreNot;
-
   /// Product copy used by lib/hosts/presentation/payments/host_payment_account_card.dart (title).
   ///
   /// In en, this message translates to:
@@ -6870,7 +6858,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/hosts/presentation/inbox/host_inbox_screen.dart (label).
   ///
   /// In en, this message translates to:
-  /// **'BOOKED · {bookedThreadCount}'**
+  /// **'Booked · {bookedThreadCount}'**
   String hostsHostInboxScreenLabelBookedBookedthreadcount({
     required Object bookedThreadCount,
   });
@@ -6878,7 +6866,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/hosts/presentation/inbox/host_inbox_screen.dart (label).
   ///
   /// In en, this message translates to:
-  /// **'PROSPECTIVE · {prospectiveThreadCount}'**
+  /// **'Prospective · {prospectiveThreadCount}'**
   String hostsHostInboxScreenLabelProspectiveProspectivethreadcount({
     required Object prospectiveThreadCount,
   });
@@ -10144,18 +10132,6 @@ abstract class AppLocalizations {
   /// **'Import CSV or XLSX; ticketing stays on your existing platform.'**
   String get hostsHostEventEntrySheetBodyImportCsvOrXlsx;
 
-  /// Product copy used by lib/hosts/presentation/host_operations/host_events_list.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'LIVE'**
-  String get hostsHostEventsListTextLive;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_events_list.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'TODAY'**
-  String get hostsHostEventsListTextToday;
-
   /// Peer view containing live and upcoming events.
   ///
   /// In en, this message translates to:
@@ -10383,12 +10359,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'expected'**
   String get hostsHostTodayLabelGoing;
-
-  /// Checked-in guest count label in the Host Today current-event focus.
-  ///
-  /// In en, this message translates to:
-  /// **'checked in'**
-  String get hostsHostTodayLabelWaiting;
 
   /// Open task count label in the Host Today current-event focus.
   ///
@@ -21218,12 +21188,6 @@ abstract class AppLocalizations {
   /// **'WhatsApp Business · Organizer number'**
   String get hostInboxWhatsappChannel;
 
-  /// Explicit channel/sender prefix for a Catch inquiry row.
-  ///
-  /// In en, this message translates to:
-  /// **'Catch chat · Organizer · {details}'**
-  String hostInboxCatchChatPreview({required String details});
-
   /// Delivery disclosure in the event announcement composer.
   ///
   /// In en, this message translates to:
@@ -27513,12 +27477,6 @@ abstract class AppLocalizations {
     required int count,
   });
 
-  /// Summary view for every form submission.
-  ///
-  /// In en, this message translates to:
-  /// **'All responses'**
-  String get hostAudienceAllResponses;
-
   /// Response directory without a form filter.
   ///
   /// In en, this message translates to:
@@ -28043,6 +28001,198 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Create event'**
   String get hostsCreateEventCreateAction;
+
+  /// Lower bound for known tasks when some attention sources are incomplete.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}+'**
+  String hostTodayTaskCountPartial({required int count});
+
+  /// Explains incomplete attention coverage.
+  ///
+  /// In en, this message translates to:
+  /// **'Some tasks may be missing'**
+  String get hostTodayTaskCoverageIncomplete;
+
+  /// Event day label only for an event this evening.
+  ///
+  /// In en, this message translates to:
+  /// **'Tonight'**
+  String get hostTodayTonight;
+
+  /// Featured event currently running.
+  ///
+  /// In en, this message translates to:
+  /// **'Live now'**
+  String get hostTodayLiveNow;
+
+  /// Imminent featured event countdown.
+  ///
+  /// In en, this message translates to:
+  /// **'Starts in {minutes} min'**
+  String hostTodayStartsInMinutes({required int minutes});
+
+  /// Featured event countdown later today.
+  ///
+  /// In en, this message translates to:
+  /// **'Starts in {hours}h {minutes}m'**
+  String hostTodayStartsInHours({required int hours, required int minutes});
+
+  /// Featured event start on a later date.
+  ///
+  /// In en, this message translates to:
+  /// **'Starts {date} · {time}'**
+  String hostTodayStartsOn({required String date, required String time});
+
+  /// Actual checked-in attendance, distinct from waitlist.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} checked in'**
+  String hostTodayCheckedIn({required int count});
+
+  /// Person-based Host messaging interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'New message'**
+  String get hostInboxNewMessage;
+
+  /// Person-based Host messaging interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Find a person'**
+  String get hostInboxFindPerson;
+
+  /// Person-based Host messaging interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose someone from People or add a new person.'**
+  String get hostInboxChoosePerson;
+
+  /// Person-based Host messaging interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Add person'**
+  String get hostInboxAddPerson;
+
+  /// Person-based Host messaging interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Reply via'**
+  String get hostInboxReplyVia;
+
+  /// Person-based Host messaging interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch'**
+  String get hostInboxCatchChannel;
+
+  /// Person-based Host messaging interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Some conversations are still loading or unavailable. Available messages are shown.'**
+  String get hostInboxPartialSources;
+
+  /// Person-based Host messaging interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Load more conversations'**
+  String get hostInboxMoreConversations;
+
+  /// Person-based Host messaging interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking status is unavailable for some people. Their conversations are included below.'**
+  String get hostInboxUnclassified;
+
+  /// Person-based Host messaging interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking status unavailable'**
+  String get hostInboxUnknownBooking;
+
+  /// Person-based Host messaging interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'At least {count} unread messages. Some source read counts are unavailable.'**
+  String hostInboxPartialUnread({required int count});
+
+  /// Person-based Host messaging interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'This conversation shows available retained history. Some older messages may be missing.'**
+  String get hostInboxHistoryCoverage;
+
+  /// Person-based Host messaging interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'This source conversation also covers other events. Its messages are shown together because individual messages do not carry event labels.'**
+  String get hostInboxSharedThreadHistory;
+
+  /// Person-based Host messaging interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'This conversation is no longer available in the selected organizer and scope.'**
+  String get hostInboxSelectionUnavailable;
+
+  /// Person-based Host messaging interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'This reply route is unavailable. Choose an available route or review the person’s details.'**
+  String get hostInboxRouteUnavailable;
+
+  /// Person-based Host messaging interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a reply route before writing a message.'**
+  String get hostInboxChooseReplyRoute;
+
+  /// Person-based Host messaging interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Available ways to message'**
+  String get hostInboxAvailableRoutes;
+
+  /// Person-based Host messaging interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Open person details'**
+  String get hostInboxOpenPerson;
+
+  /// Person-based Host messaging interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'No in-app reply route is currently available. Review contact details and messaging permissions on the person’s record.'**
+  String get hostInboxNewMessageUnavailable;
+
+  /// Person-based Host messaging interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Message via {channel}'**
+  String hostInboxMessageVia({required String channel});
+
+  /// Person-based Host messaging interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Booked'**
+  String get hostInboxBookedStatus;
+
+  /// Person-based Host messaging interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Prospective'**
+  String get hostInboxProspectiveStatus;
+
+  /// History pagination action for a Catch conversation source.
+  ///
+  /// In en, this message translates to:
+  /// **'Load older Catch messages'**
+  String get hostInboxOlderMessages;
+
+  /// Short label for the WhatsApp reply route and transcript source.
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp'**
+  String get hostInboxWhatsappReplyChannel;
 }
 
 class _AppLocalizationsDelegate

@@ -59,6 +59,7 @@ const _screenScaffoldExpressions = <String>{
 
 const catchRootScreenPageScrollExpressions = <String>{
   'CatchRootScreenPageScrollView.standard',
+  'CatchRootScreenPageScrollView.sections',
   'CatchRootScreenPageScrollView.fullBleed',
   'CatchRootScreenPageScrollView.embeddedViewport',
 };
@@ -111,6 +112,7 @@ const _canonicalLayoutConstructorsByPath = <String, Map<String, Set<String>>>{
 
 const _rootPageScrollRoles = <String, String>{
   'CatchRootScreenPageScrollView.standard': 'CatchPageBodyMode.standard',
+  'CatchRootScreenPageScrollView.sections': 'CatchPageBodyMode.fullBleed',
   'CatchRootScreenPageScrollView.fullBleed': 'CatchPageBodyMode.fullBleed',
   'CatchRootScreenPageScrollView.embeddedViewport':
       'CatchPageBodyMode.fullBleed',
@@ -1005,6 +1007,7 @@ const _widgetBuilderOwnerSignatures = <String>{
   'AnimatedBuilder',
   'Builder',
   'CatchAsyncBoundary',
+  'CatchViewport.box',
   'FutureBuilder',
   'LayoutBuilder',
   'ListenableBuilder',

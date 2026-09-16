@@ -443,7 +443,14 @@ void main() {
         find.byKey(AppShellKeys.scaffold),
       );
       expect(shellScaffold.bottomNavigationBar, isNull);
-      expect(shellScaffold.body, isA<Stack>());
+      expect(
+        find.descendant(
+          of: find.byWidget(shellScaffold.body!),
+          matching: find.byType(CatchTabViewportScope),
+          matchRoot: true,
+        ),
+        findsOneWidget,
+      );
       expect(
         find.byKey(const ValueKey('catch_tab_bar.floating_chrome')),
         findsOneWidget,
@@ -491,7 +498,14 @@ void main() {
       expect(find.byType(AppShellNavigationBar), findsNothing);
       expect(keyboardScaffold.extendBody, isFalse);
       expect(keyboardScaffold.bottomNavigationBar, isNull);
-      expect(keyboardScaffold.body, isA<Stack>());
+      expect(
+        find.descendant(
+          of: find.byWidget(keyboardScaffold.body!),
+          matching: find.byType(CatchTabViewportScope),
+          matchRoot: true,
+        ),
+        findsOneWidget,
+      );
       expect(tester.element(editor), same(editorElement));
       expect(editorFocusNode.hasFocus, isTrue);
       expect(editorController.text, 'Runner One');

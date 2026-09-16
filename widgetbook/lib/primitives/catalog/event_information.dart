@@ -245,13 +245,13 @@ Widget eventDetailMechanismListCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contact states',
-  type: CatchPersonRow,
+  type: CatchPersonLayout,
   path: '[Core catalog]/Event detail',
 )
 Widget eventDetailHostCardCatalogStates(BuildContext context) {
   final t = CatchTokens.of(context);
   return WidgetbookCatalogFrame(
-    title: 'CatchPersonRow.contact',
+    title: 'Person layout with independent Field actions',
     catalogId: 'catch.person_row',
     children: [
       WidgetbookCatalogStateCard(
@@ -261,53 +261,50 @@ Widget eventDetailHostCardCatalogStates(BuildContext context) {
           children: [
             SizedBox(
               width: WidgetbookPreviewLayout.mediaPanelWidth,
-              child: CatchPersonRow.contact(
-                data: const CatchPersonRowData(
-                  name: 'Sunday sea-face crew',
-                  metaLine: 'HOSTING SINCE FEB 2026 - BANDRA',
+              child: CatchField.navigate(
+                onActivate: widgetbookNoop,
+                secondaryAction: CatchFieldSecondaryAction.command(
+                  label: 'Message host',
+                  icon: CatchIcons.chatBubbleOutlineRounded,
+                  onActivate: widgetbookNoop,
                 ),
-                colors: ActivityPalette.resolve(
-                  context,
-                  ActivityKind.socialRun,
-                ).avatarColors,
-                onMessage: widgetbookNoop,
-                messageTooltip: 'Message host',
-                onTap: widgetbookNoop,
+                content: CatchPersonLayout(
+                  avatarColors: ActivityPalette.resolve(
+                    context,
+                    ActivityKind.socialRun,
+                  ).avatarColors,
+                  name: 'Sunday sea-face crew',
+                  supportingText: 'HOSTING SINCE FEB 2026 - BANDRA',
+                ),
               ),
             ),
             SizedBox(
               width: WidgetbookPreviewLayout.mediaPanelWidth,
-              child: CatchPersonRow.contact(
-                data: const CatchPersonRowData(
+              child: CatchField.read(
+                content: CatchPersonLayout(
+                  avatarColors: ActivityPalette.resolve(
+                    context,
+                    ActivityKind.dinner,
+                  ).avatarColors,
                   name: 'Catch supper club',
-                  metaLine: 'HOSTING SINCE MAR 2026',
+                  supportingText: 'HOSTING SINCE MAR 2026',
                 ),
-                colors: ActivityPalette.resolve(
-                  context,
-                  ActivityKind.dinner,
-                ).avatarColors,
-                verified: false,
               ),
             ),
             SizedBox(
               width: WidgetbookPreviewLayout.mediaPanelWidth,
               child: CatchSurface(
                 backgroundColor: t.primary,
-                child: CatchPersonRow.contact(
-                  data: const CatchPersonRowData(
+                child: CatchField.navigate(
+                  onActivate: widgetbookNoop,
+                  content: CatchPersonLayout(
+                    avatarColors: ActivityPalette.resolve(
+                      context,
+                      ActivityKind.pickleball,
+                    ).avatarColors,
                     name: 'Courtside social',
-                    metaLine: 'HOSTING SINCE JAN 2026 - REPLIES FAST',
+                    supportingText: 'HOSTING SINCE JAN 2026 - REPLIES FAST',
                   ),
-                  colors: ActivityPalette.resolve(
-                    context,
-                    ActivityKind.pickleball,
-                  ).avatarColors,
-                  nameColor: t.primaryInk,
-                  metaColor: t.primaryInk.withValues(
-                    alpha: CatchOpacity.eventHeroMutedInk,
-                  ),
-                  actionColor: t.primaryInk,
-                  onTap: widgetbookNoop,
                 ),
               ),
             ),

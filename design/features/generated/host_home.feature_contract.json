@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/host_home.feature.json",
   "generatedFor": "2026-09-04",
-  "sourceDigest": "sha256:523605cf45a5977123930d004ad497f3d2078b25336b448414a93399217335e0",
-  "resolvedDigest": "sha256:8e640903f553be20ec1feb97885f1e14d7698ffdace683f129189e82f171331a",
+  "sourceDigest": "sha256:13787bbf6315e63ec917bfa866066793317c3756af436b0fc8a75bf40d2192a6",
+  "resolvedDigest": "sha256:87a2c5240486de8c51169f5403552178d2b922277eb9535b41c1c613b08f5d4b",
   "feature": {
     "id": "feature.host_home",
     "name": "Host Today and Events",
@@ -110,7 +110,6 @@
           "catch.event_card",
           "catch.field",
           "catch.menu",
-          "catch.record_row",
           "catch.section",
           "catch.skeleton",
           "catch.surface",
@@ -1945,6 +1944,7 @@
               "file": "packages/catch_ui/lib/src/components/catch_field.dart",
               "constructors": [
                 "CatchField.read",
+                "CatchField.navigate",
                 "CatchField.content",
                 "CatchField.nav",
                 "CatchField.sortable",
@@ -1974,17 +1974,6 @@
             }
           },
           {
-            "id": "catch.record_row",
-            "kind": "composite",
-            "dart": {
-              "symbol": "CatchRecordRow",
-              "file": "packages/catch_ui/lib/src/components/catch_record_row.dart",
-              "constructors": [
-                "CatchRecordRow"
-              ]
-            }
-          },
-          {
             "id": "catch.section",
             "kind": "composite",
             "dart": {
@@ -1997,7 +1986,12 @@
                 "CatchSection.containedFieldGroups",
                 "CatchSection.contained",
                 "CatchSection.plain",
-                "CatchSection.horizontal"
+                "CatchSection.horizontal",
+                "CatchSection.rows",
+                "CatchSection.containedRows",
+                "CatchSection.sliverRows",
+                "CatchSection.content",
+                "CatchSection.formRows"
               ]
             }
           },

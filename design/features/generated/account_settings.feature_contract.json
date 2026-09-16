@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/account_settings.feature.json",
   "generatedFor": "2026-09-14",
-  "sourceDigest": "sha256:b910c7277dfedf9e124a2200ef5458d75af99ca915763770985c836e6e2d8f0f",
-  "resolvedDigest": "sha256:d8da06747ac14878eb11e4ff76d74432ad5eff3bcce1df05af72dd31d872049e",
+  "sourceDigest": "sha256:e7180899058fc3543571b5501886d614a8c0741ef0630f2799f58958495420ea",
+  "resolvedDigest": "sha256:fe8063f07d450848dfcb099acead83b83f4fca0ae348ef1fa62bdaedb3450cc5",
   "feature": {
     "id": "feature.account_settings",
     "name": "Account Settings",
@@ -81,7 +81,6 @@
           "catch.empty_state",
           "catch.error_state",
           "catch.field",
-          "catch.person_row",
           "catch.surface",
           "catch.toggle",
           "catch.top_bar"
@@ -2098,6 +2097,7 @@
               "file": "packages/catch_ui/lib/src/components/catch_field.dart",
               "constructors": [
                 "CatchField.read",
+                "CatchField.navigate",
                 "CatchField.content",
                 "CatchField.nav",
                 "CatchField.sortable",
@@ -2111,19 +2111,6 @@
                 "CatchField.stepper",
                 "CatchField.add",
                 "CatchField.select"
-              ]
-            }
-          },
-          {
-            "id": "catch.person_row",
-            "kind": "composite",
-            "dart": {
-              "symbol": "CatchPersonRow",
-              "file": "packages/catch_ui/lib/src/components/catch_person_row.dart",
-              "constructors": [
-                "CatchPersonRow",
-                "CatchPersonRow.directory",
-                "CatchPersonRow.contact"
               ]
             }
           },

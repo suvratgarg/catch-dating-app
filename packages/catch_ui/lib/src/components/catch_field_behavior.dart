@@ -487,7 +487,12 @@ extension _CatchFieldBehavior on _CatchFieldState {
   // drawer is actually offstage, the header becomes the only visible owner.
   bool get _visibleCommitBarOwnsSavingIndicator =>
       _isSaving && !_disclosureOffstage && widget._onSubmit != null;
-  bool get _active => _focused || _rowFocused || widget.focused || _isOpen;
+  bool get _active =>
+      _focused ||
+      _rowFocused ||
+      widget.focused ||
+      widget.states.contains(WidgetState.selected) ||
+      _isOpen;
   bool get _isEdit => widget._config is _EditConfig;
   bool get _isToggle => widget._config is _ToggleConfig;
   bool get _isNavigation => switch (widget._config) {
@@ -526,7 +531,7 @@ extension _CatchFieldBehavior on _CatchFieldState {
       ? (widget.leadingExtent ?? CatchFieldTokens.leadingIconExtent) +
             CatchFieldTokens.leadingGap
       : CatchFieldRow.textLaneInset;
-  String? get _title => widget.title;
+  String? get _title => widget._rowLayout?._subject ?? widget.title;
   String? get _body => widget.body;
   String? get _displayError => widget.errorText ?? widget.error;
   String? get _placeholderText => widget.placeholder;

@@ -100,6 +100,51 @@ void main() {
       expect(messages.single.sentAt, isA<DateTime>());
     });
 
+    test(
+      'a stable send operation is idempotent and rejects conflicting reuse',
+      () async {
+        await repository.sendMessage(
+          matchId: 'match-1',
+          senderId: 'runner-1',
+          text: 'Hello',
+          messageId: 'operation-1',
+        );
+        await repository.sendMessage(
+          matchId: 'match-1',
+          senderId: 'runner-1',
+          text: 'Hello',
+          messageId: 'operation-1',
+        );
+        expect(
+          await repository.watchMessages(matchId: 'match-1').first,
+          hasLength(1),
+        );
+        await expectLater(
+          repository.sendMessage(
+            matchId: 'match-1',
+            senderId: 'runner-1',
+            text: 'Changed',
+            messageId: 'operation-1',
+          ),
+          throwsA(anything),
+        );
+        final messages = await repository
+            .watchMessages(matchId: 'match-1')
+            .first;
+        expect(messages.single.text, 'Hello');
+        await repository.sendMessage(
+          matchId: 'match-2',
+          senderId: 'runner-1',
+          text: 'Hello',
+          messageId: 'operation-1',
+        );
+        expect(
+          await repository.watchMessages(matchId: 'match-2').first,
+          hasLength(1),
+        );
+      },
+    );
+
     test('sendImageMessage stores the already-uploaded image URL', () async {
       await repository.sendImageMessage(
         matchId: 'match-1',

@@ -77,6 +77,8 @@ export 'route_contract.dart';
 
 part 'go_router.g.dart';
 
+part 'host_inbox_route.dart';
+
 HostEventManageSection _hostManageSectionFromState(GoRouterState state) {
   return switch (state.uri.queryParameters['section']) {
     'guests' => HostEventManageSection.guests,
@@ -95,35 +97,6 @@ HostClubsScreen hostOrganizerScreenForUri(Uri uri) {
       (tab) => tab.name == uri.queryParameters['tab'],
       orElse: () => HostClubTab.edit,
     ),
-  );
-}
-
-@visibleForTesting
-HostInboxScreen hostInboxScreenForUri(Uri uri, {String? initialOrganizerId}) {
-  final eventId = uri.queryParameters['eventId']?.trim();
-  final general = uri.queryParameters['scope'] == 'general';
-  final initialScope = eventId != null && eventId.isNotEmpty
-      ? HostInboxScope.event(eventId)
-      : general
-      ? const HostInboxScope.general()
-      : null;
-  final initialWorkspace = HostMessagingWorkspace.values.firstWhere(
-    (workspace) => workspace.name == uri.queryParameters['workspace'],
-    orElse: () => HostMessagingWorkspace.inbox,
-  );
-  final requestedAudienceId = uri.queryParameters['audienceId']?.trim();
-  return HostInboxScreen(
-    initialScope: initialScope,
-    initialWorkspace: initialWorkspace,
-    initialSavedAudienceId:
-        uri.queryParameters['compose'] == '1' &&
-            requestedAudienceId != null &&
-            requestedAudienceId.isNotEmpty
-        ? requestedAudienceId
-        : null,
-    initialOrganizerId:
-        initialOrganizerId ?? uri.queryParameters['organizerId'],
-    initialThreadId: uri.queryParameters['threadId'],
   );
 }
 

@@ -1,7 +1,5 @@
-import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/chat_input_bar.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
-import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/activity_section.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/notifications/domain/activity_notification.dart';
@@ -12,6 +10,14 @@ import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 import 'package:widgetbook_workspace/support/contract_preview.dart';
 
 import '../../preview_layout_contracts.dart';
+
+@widgetbook.UseCase(
+  name: 'Localized conversation copy',
+  type: CatchPersonRowCopy,
+  path: '[Core primitives]/Product composites',
+)
+Widget catchPersonRowCopyContract(BuildContext context) =>
+    catchPersonRowChatPreviewContractStates(context);
 
 @widgetbook.UseCase(
   name: 'Contract states',
@@ -108,284 +114,187 @@ Widget chatInputBarFocusedDraft(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchPersonRow,
+  type: CatchPersonLayout,
   path: '[Core primitives]/Product composites',
 )
 Widget catchPersonRowChatPreviewContractStates(BuildContext context) {
-  final CatchPersonRowCopy copy = catchPersonRowCopy(context.l10n);
+  final copy = catchPersonRowCopy(context.l10n);
+  Widget preview(
+    String label,
+    CatchFieldLayout layout, {
+    double scale = 1,
+    bool read = false,
+    CatchFieldSecondaryAction? action,
+  }) => WidgetbookContractStateCard(
+    label: label,
+    child: MediaQuery(
+      data: MediaQuery.of(
+        context,
+      ).copyWith(textScaler: TextScaler.linear(scale)),
+      child: CatchSection.containedRows(
+        children: [
+          if (read)
+            CatchField.read(content: layout, secondaryAction: action)
+          else
+            CatchField.navigate(
+              content: layout,
+              onActivate: () {},
+              secondaryAction: action,
+            ),
+        ],
+      ),
+    ),
+  );
   return WidgetbookContractFrame(
-    title: 'CatchPersonRow states',
-    contractId: 'catch.person_row',
+    title: 'Person and conversation layouts in Field',
+    contractId: 'catch.field',
     states: const [
+      'directory',
+      'directory-large-text',
       'roster',
       'roster-trailing',
       'chat-preview',
       'chat-preview-new',
       'chat-preview-unread',
       'chat-preview-square-avatar',
-      'divider',
-      'long-copy',
-      'directory',
-      'directory-large-text',
       'chat-context',
       'chat-typing',
-      'roster-long-copy',
       'contact-identity-only',
       'contact-navigable',
       'contact-message-enabled',
       'contact-verified',
-      'contact-divider',
-      'contact-long-copy',
+      'long-copy',
     ],
     children: [
-      WidgetbookContractStateCard(
-        label: 'directory',
-        child: CatchPersonRow.directory(
-          data: const CatchPersonRowData(name: 'Ananya Rao'),
-          meta: const Text('8 events · Last seen 18 June'),
-          body: const Text('Returning customer'),
-          trailing: const CatchBadge.status(
-            label: 'Regular',
-            tone: CatchBadgeTone.affinity,
-          ),
-          onTap: () {},
+      preview(
+        'directory',
+        const CatchPersonLayout(
+          name: 'Ananya Rao',
+          supportingText: '8 events · Last seen 18 June',
+          badges: [
+            CatchRowBadge(label: 'Regular', tone: CatchBadgeTone.affinity),
+          ],
         ),
       ),
-      WidgetbookContractStateCard(
-        label: 'directory-large-text',
-        child: MediaQuery(
-          data: MediaQuery.of(
-            context,
-          ).copyWith(textScaler: const TextScaler.linear(2)),
-          child: CatchPersonRow.directory(
-            data: const CatchPersonRowData(
-              name: 'Ananya Rao with a longer family name',
-            ),
-            meta: const Text('8 events · Last seen 18 June'),
-            body: const Text(
-              'Returning customer with complete contextual information',
-            ),
-            trailing: const CatchBadge.status(
+      preview(
+        'directory-large-text',
+        const CatchPersonLayout(
+          name: 'Ananya Rao with a longer family name',
+          supportingText: '8 events · Last seen 18 June',
+          context: 'Returning customer with complete contextual information',
+          badges: [
+            CatchRowBadge(
               label: 'Needs identity review',
               tone: CatchBadgeTone.warning,
             ),
-            onTap: () {},
-          ),
+          ],
+        ),
+        scale: 2,
+      ),
+      preview(
+        'roster',
+        const CatchPersonLayout(name: 'Riya', supportingText: '5:30 /km · 26'),
+        read: true,
+      ),
+      preview(
+        'roster-trailing',
+        const CatchPersonLayout(name: 'Riya', supportingText: 'Checked in'),
+        read: true,
+        action: CatchFieldSecondaryAction.button(
+          label: 'Undo check-in',
+          onActivate: () {},
         ),
       ),
-      WidgetbookContractStateCard(
-        label: 'roster',
-        child: _MessageFrame(
-          child: CatchPersonRow(
-            copy: copy,
-            data: const CatchPersonRowData(
-              name: 'Aanya Rao',
-              metaLine: '5:20 /km · 29',
-              contextLine: 'Sundowner 5K',
+      preview(
+        'chat-preview',
+        const CatchConversationLayout(
+          name: 'Riya',
+          preview: 'See you Saturday!',
+          timestamp: '2m',
+        ),
+      ),
+      preview(
+        'chat-preview-new',
+        CatchConversationLayout(
+          name: 'Riya',
+          preview: 'You matched!',
+          activityLabel: copy.newMatchLabel,
+          activitySemantics: copy.newMatchLabel,
+        ),
+      ),
+      preview(
+        'chat-preview-unread',
+        CatchConversationLayout(
+          name: 'Riya',
+          preview: 'See you Saturday!',
+          timestamp: '2m',
+          activityLabel: '2',
+          activitySemantics: copy.unreadCountLabel(2),
+        ),
+      ),
+      preview(
+        'chat-preview-square-avatar',
+        const CatchConversationLayout(
+          name: 'Sunday Social',
+          preview: 'We look forward to seeing you.',
+          avatarShape: CatchAvatarVariant.square,
+        ),
+      ),
+      preview(
+        'chat-context',
+        const CatchConversationLayout(
+          name: 'Riya',
+          preview: 'See you Saturday!',
+          context: 'Bandra Breakers 7K',
+        ),
+      ),
+      preview(
+        'chat-typing',
+        CatchConversationLayout(name: 'Riya', preview: copy.typingLabel),
+      ),
+      preview(
+        'contact-identity-only',
+        const CatchPersonLayout(name: 'Mira Shah'),
+        read: true,
+      ),
+      preview(
+        'contact-navigable',
+        const CatchPersonLayout(
+          name: 'Mira Shah',
+          supportingText: 'Hosting since May 2026',
+        ),
+      ),
+      preview(
+        'contact-message-enabled',
+        const CatchPersonLayout(name: 'Mira Shah'),
+        action: CatchFieldSecondaryAction.command(
+          label: 'Message Mira',
+          icon: CatchIcons.chatBubbleOutlineRounded,
+          onActivate: () {},
+        ),
+      ),
+      preview(
+        'contact-verified',
+        CatchPersonLayout(
+          name: 'Mira Shah',
+          badges: [
+            CatchRowBadge(
+              label: 'Owner verified',
+              tone: CatchBadgeTone.success,
+              icon: CatchIcons.sealCheck,
             ),
-            onTap: widgetbookNoop,
-          ),
+          ],
         ),
       ),
-      WidgetbookContractStateCard(
-        label: 'roster-trailing',
-        child: _MessageFrame(
-          child: CatchPersonRow(
-            copy: copy,
-            data: const CatchPersonRowData(
-              name: 'Dev Malhotra',
-              metaLine: 'Checked in',
-              contextLine: 'Versova Padel',
-            ),
-            trailing: const CatchBadge(
-              label: 'Host',
-              tone: CatchBadgeTone.gold,
-            ),
-            onTap: widgetbookNoop,
-          ),
+      preview(
+        'long-copy',
+        const CatchConversationLayout(
+          name: 'A person whose complete name must remain readable',
+          preview:
+              'A complete message preview with enough detail to wrap naturally across lines.',
+          context: 'Sunday social at the neighbourhood garden',
         ),
-      ),
-      WidgetbookContractStateCard(
-        label: 'chat-preview',
-        child: _MessageFrame(
-          child: CatchPersonRow(
-            copy: copy,
-            data: const CatchPersonRowData(
-              name: 'Isha Mehta',
-              lastMessage: 'You: See you by the host stand.',
-              timestamp: '9m',
-            ),
-            onTap: widgetbookNoop,
-          ),
-        ),
-      ),
-      WidgetbookContractStateCard(
-        label: 'chat-preview-new',
-        child: _MessageFrame(
-          child: CatchPersonRow(
-            copy: copy,
-            data: const CatchPersonRowData(
-              name: 'Isha Mehta',
-              lastMessage: 'You matched!',
-              timestamp: '2m',
-              isFresh: true,
-              showFreshDot: true,
-            ),
-            showFreshBackground: false,
-            onTap: widgetbookNoop,
-          ),
-        ),
-      ),
-      WidgetbookContractStateCard(
-        label: 'chat-preview-unread',
-        child: _MessageFrame(
-          child: CatchPersonRow(
-            copy: copy,
-            data: const CatchPersonRowData(
-              name: 'Isha Mehta',
-              lastMessage: 'I just joined the event.',
-              timestamp: '1h',
-              unreadCount: 2,
-              isFresh: true,
-            ),
-            showFreshBackground: false,
-            onTap: widgetbookNoop,
-          ),
-        ),
-      ),
-      WidgetbookContractStateCard(
-        label: 'chat-preview-square-avatar',
-        child: _MessageFrame(
-          child: CatchPersonRow(
-            copy: copy,
-            data: const CatchPersonRowData(
-              name: 'Catch Hosts',
-              lastMessage: 'Can I bring a friend?',
-              timestamp: '3h',
-              unreadCount: 1,
-              isFresh: true,
-              avatarShape: CatchAvatarVariant.square,
-            ),
-            showFreshBackground: false,
-            onTap: widgetbookNoop,
-          ),
-        ),
-      ),
-      WidgetbookContractStateCard(
-        label: 'divider',
-        child: _MessageFrame(
-          child: CatchPersonRow(
-            copy: copy,
-            data: const CatchPersonRowData(
-              name: 'Isha Mehta',
-              lastMessage: 'You: See you there.',
-              timestamp: '1d',
-            ),
-            divider: true,
-            onTap: widgetbookNoop,
-          ),
-        ),
-      ),
-      WidgetbookContractStateCard(
-        label: 'long-copy',
-        child: _MessageFrame(
-          child: CatchPersonRow(
-            copy: copy,
-            data: const CatchPersonRowData(
-              name: 'A very long display name that should ellipsize',
-              lastMessage:
-                  'This is a very long latest message preview that should truncate cleanly inside the inbox row.',
-              timestamp: '4d',
-            ),
-            onTap: widgetbookNoop,
-          ),
-        ),
-      ),
-      WidgetbookContractStateCard(
-        label: 'contact-identity-only',
-        child: CatchPersonRow.contact(
-          data: const CatchPersonRowData(
-            name: 'Sunday sea-face crew',
-            metaLine: 'HOSTING SINCE FEB 2026',
-          ),
-          colors: ActivityPalette.resolve(
-            context,
-            ActivityKind.socialRun,
-          ).avatarColors,
-        ),
-      ),
-      WidgetbookContractStateCard(
-        label: 'contact-navigable / message / verified / divider',
-        child: CatchPersonRow.contact(
-          data: const CatchPersonRowData(
-            name: 'Catch supper club',
-            metaLine: 'HOSTING SINCE MAR 2026 · REPLIES FAST',
-          ),
-          colors: ActivityPalette.resolve(
-            context,
-            ActivityKind.dinner,
-          ).avatarColors,
-          verified: true,
-          divider: true,
-          messageTooltip: 'Message host',
-          onMessage: widgetbookNoop,
-          onTap: widgetbookNoop,
-        ),
-      ),
-      WidgetbookContractStateCard(
-        label: 'contact-long-copy',
-        child: CatchPersonRow.contact(
-          data: const CatchPersonRowData(
-            name:
-                'A deliberately long organizer identity for text-scale review',
-            metaLine: 'LONG LOCATION AND RESPONSE METADATA',
-          ),
-          colors: ActivityPalette.resolve(
-            context,
-            ActivityKind.openActivity,
-          ).avatarColors,
-        ),
-      ),
-      WidgetbookContractStateCard(
-        label: 'chat-context',
-        child: _MessageFrame(
-          child: CatchPersonRow(
-            copy: copy,
-            data: const CatchPersonRowData(
-              name: 'Isha Mehta',
-              contextLine: 'Sundowner 5K',
-              lastMessage: 'See you by the host stand.',
-            ),
-          ),
-        ),
-      ),
-      WidgetbookContractStateCard(
-        label: 'chat-typing',
-        child: _MessageFrame(
-          child: CatchPersonRow(
-            copy: copy,
-            data: const CatchPersonRowData(
-              name: 'Isha Mehta',
-              lastMessage: 'Draft message',
-              isTyping: true,
-            ),
-          ),
-        ),
-      ),
-      WidgetbookContractStateCard(
-        label: 'roster-long-copy',
-        child: _MessageFrame(
-          child: CatchPersonRow(
-            copy: copy,
-            data: const CatchPersonRowData(
-              name: 'A very long roster name that should ellipsize',
-              metaLine:
-                  'A very long roster metadata line that should truncate inside the row.',
-              contextLine:
-                  'A very long event context that should stay inside the available width.',
-            ),
-          ),
-        ),
+        scale: 2,
       ),
     ],
   );

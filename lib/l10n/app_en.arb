@@ -4315,13 +4315,6 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.inbox.host_inbox_screen"
   },
-  "hostsHostInboxScreenMessagePersonalQuestionsAppearHere": "Personal questions appear here. Broadcast audience size is based on the event roster, not this thread list.",
-  "@hostsHostInboxScreenMessagePersonalQuestionsAppearHere": {
-    "description": "Product copy used by lib/hosts/presentation/inbox/host_inbox_screen.dart (message).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.inbox.host_inbox_screen"
-  },
   "hostsHostPaymentAccountCardTitleSetUpPayouts": "Set up payouts",
   "@hostsHostPaymentAccountCardTitleSetUpPayouts": {
     "description": "Product copy used by lib/hosts/presentation/payments/host_payment_account_card.dart (title).",
@@ -7297,13 +7290,6 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.inbox.host_inbox_screen"
   },
-  "hostsHostInboxScreenMessageQuestionsThatAreNot": "Questions that are not tied to one event will appear here.",
-  "@hostsHostInboxScreenMessageQuestionsThatAreNot": {
-    "description": "Product copy used by lib/hosts/presentation/inbox/host_inbox_screen.dart (message).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.inbox.host_inbox_screen"
-  },
   "hostsHostPaymentAccountCardTitlePayouts": "Payouts",
   "@hostsHostPaymentAccountCardTitlePayouts": {
     "description": "Product copy used by lib/hosts/presentation/payments/host_payment_account_card.dart (title).",
@@ -7897,7 +7883,7 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.inbox.host_broadcast_composer_sheet"
   },
-  "hostsHostInboxScreenLabelBookedBookedthreadcount": "BOOKED · {bookedThreadCount}",
+  "hostsHostInboxScreenLabelBookedBookedthreadcount": "Booked · {bookedThreadCount}",
   "@hostsHostInboxScreenLabelBookedBookedthreadcount": {
     "description": "Product copy used by lib/hosts/presentation/inbox/host_inbox_screen.dart (label).",
     "placeholders": {
@@ -7907,7 +7893,7 @@
     "x-owner": "product",
     "x-surface": "hosts.presentation.inbox.host_inbox_screen"
   },
-  "hostsHostInboxScreenLabelProspectiveProspectivethreadcount": "PROSPECTIVE · {prospectiveThreadCount}",
+  "hostsHostInboxScreenLabelProspectiveProspectivethreadcount": "Prospective · {prospectiveThreadCount}",
   "@hostsHostInboxScreenLabelProspectiveProspectivethreadcount": {
     "description": "Product copy used by lib/hosts/presentation/inbox/host_inbox_screen.dart (label).",
     "placeholders": {
@@ -11735,20 +11721,6 @@
     "x-owner": "product",
     "x-surface": "hosts.events.presentation.host_event_entry_sheet"
   },
-  "hostsHostEventsListTextLive": "LIVE",
-  "@hostsHostEventsListTextLive": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_events_list.dart (Text).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_events_list"
-  },
-  "hostsHostEventsListTextToday": "TODAY",
-  "@hostsHostEventsListTextToday": {
-    "description": "Product copy used by lib/hosts/presentation/host_operations/host_events_list.dart (Text).",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.presentation.host_operations.host_events_list"
-  },
   "hostEventsUpcomingTab": "Upcoming",
   "@hostEventsUpcomingTab": {
     "description": "Peer view containing live and upcoming events.",
@@ -12039,13 +12011,6 @@
   "hostsHostTodayLabelGoing": "expected",
   "@hostsHostTodayLabelGoing": {
     "description": "Expected guest count label in the Host Today current-event focus.",
-    "x-audience": "host",
-    "x-owner": "product",
-    "x-surface": "hosts.today"
-  },
-  "hostsHostTodayLabelWaiting": "checked in",
-  "@hostsHostTodayLabelWaiting": {
-    "description": "Checked-in guest count label in the Host Today current-event focus.",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.today"
@@ -21743,8 +21708,6 @@
   "@hostSendsFollowerDeliveryStatus": {"description": "User-facing delivery state for an organizer follower update.", "placeholders": {"status": {"type": "String"}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.inbox"},
   "hostInboxWhatsappChannel": "WhatsApp Business · Organizer number",
   "@hostInboxWhatsappChannel": {"description": "Channel facet label for retained WhatsApp threads.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.inbox"},
-  "hostInboxCatchChatPreview": "Catch chat · Organizer · {details}",
-  "@hostInboxCatchChatPreview": {"description": "Explicit channel/sender prefix for a Catch inquiry row.", "placeholders": {"details": {"type": "String"}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.inbox"},
   "hostInboxAnnouncementDisclosure": "Recipients see a durable Activity update and may receive a push notification. This does not create a chat thread.",
   "@hostInboxAnnouncementDisclosure": {"description": "Delivery disclosure in the event announcement composer.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.inbox"},
   "hostInboxWhatsappReply": "Reply",
@@ -24026,8 +23989,6 @@
   "@hostAudienceFormLastResponse": {"description": "Latest submitted response activity on a form record.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms", "placeholders": {"time": {"type": "String"}}},
   "hostAudienceFormRecordStatus": "{status} · {count, plural, =0{No responses} =1{1 response} other{{count} responses}}",
   "@hostAudienceFormRecordStatus": {"description": "Form record lifecycle and submitted response count.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms", "placeholders": {"status": {"type": "String"}, "count": {"type": "int"}}},
-  "hostAudienceAllResponses": "All responses",
-  "@hostAudienceAllResponses": {"description": "Summary view for every form submission.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
   "hostAudienceAllForms": "All forms",
   "@hostAudienceAllForms": {"description": "Response directory without a form filter.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
   "hostAudienceSelectedForm": "Selected form",
@@ -24281,5 +24242,260 @@
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_create"
-  }
+  },
+  "hostTodayTaskCountPartial": "{count}+",
+  "@hostTodayTaskCountPartial": {
+    "description": "Lower bound for known tasks when some attention sources are incomplete.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today.presentation",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hostTodayTaskCoverageIncomplete": "Some tasks may be missing",
+  "@hostTodayTaskCoverageIncomplete": {
+    "description": "Explains incomplete attention coverage.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today.presentation"
+  },
+  "hostTodayTonight": "Tonight",
+  "@hostTodayTonight": {
+    "description": "Event day label only for an event this evening.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today.presentation"
+  },
+  "hostTodayLiveNow": "Live now",
+  "@hostTodayLiveNow": {
+    "description": "Featured event currently running.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today.presentation"
+  },
+  "hostTodayStartsInMinutes": "Starts in {minutes} min",
+  "@hostTodayStartsInMinutes": {
+    "description": "Imminent featured event countdown.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today.presentation",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "hostTodayStartsInHours": "Starts in {hours}h {minutes}m",
+  "@hostTodayStartsInHours": {
+    "description": "Featured event countdown later today.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today.presentation",
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "hostTodayStartsOn": "Starts {date} · {time}",
+  "@hostTodayStartsOn": {
+    "description": "Featured event start on a later date.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today.presentation",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "hostTodayCheckedIn": "{count} checked in",
+  "@hostTodayCheckedIn": {
+    "description": "Actual checked-in attendance, distinct from waitlist.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.today.presentation",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hostInboxNewMessage": "New message",
+  "@hostInboxNewMessage": {
+    "description": "Person-based Host messaging interface copy.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.inbox"
+  },
+  "hostInboxFindPerson": "Find a person",
+  "@hostInboxFindPerson": {
+    "description": "Person-based Host messaging interface copy.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.inbox"
+  },
+  "hostInboxChoosePerson": "Choose someone from People or add a new person.",
+  "@hostInboxChoosePerson": {
+    "description": "Person-based Host messaging interface copy.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.inbox"
+  },
+  "hostInboxAddPerson": "Add person",
+  "@hostInboxAddPerson": {
+    "description": "Person-based Host messaging interface copy.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.inbox"
+  },
+  "hostInboxReplyVia": "Reply via",
+  "@hostInboxReplyVia": {
+    "description": "Person-based Host messaging interface copy.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.inbox"
+  },
+  "hostInboxCatchChannel": "Catch",
+  "@hostInboxCatchChannel": {
+    "description": "Person-based Host messaging interface copy.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.inbox"
+  },
+  "hostInboxPartialSources": "Some conversations are still loading or unavailable. Available messages are shown.",
+  "@hostInboxPartialSources": {
+    "description": "Person-based Host messaging interface copy.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.inbox"
+  },
+  "hostInboxMoreConversations": "Load more conversations",
+  "@hostInboxMoreConversations": {
+    "description": "Person-based Host messaging interface copy.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.inbox"
+  },
+  "hostInboxUnclassified": "Booking status is unavailable for some people. Their conversations are included below.",
+  "@hostInboxUnclassified": {
+    "description": "Person-based Host messaging interface copy.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.inbox"
+  },
+  "hostInboxUnknownBooking": "Booking status unavailable",
+  "@hostInboxUnknownBooking": {
+    "description": "Person-based Host messaging interface copy.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.inbox"
+  },
+  "hostInboxPartialUnread": "At least {count} unread messages. Some source read counts are unavailable.",
+  "@hostInboxPartialUnread": {
+    "description": "Person-based Host messaging interface copy.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.inbox",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hostInboxHistoryCoverage": "This conversation shows available retained history. Some older messages may be missing.",
+  "@hostInboxHistoryCoverage": {
+    "description": "Person-based Host messaging interface copy.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.inbox"
+  },
+  "hostInboxSharedThreadHistory": "This source conversation also covers other events. Its messages are shown together because individual messages do not carry event labels.",
+  "@hostInboxSharedThreadHistory": {
+    "description": "Person-based Host messaging interface copy.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.inbox"
+  },
+  "hostInboxSelectionUnavailable": "This conversation is no longer available in the selected organizer and scope.",
+  "@hostInboxSelectionUnavailable": {
+    "description": "Person-based Host messaging interface copy.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.inbox"
+  },
+  "hostInboxRouteUnavailable": "This reply route is unavailable. Choose an available route or review the person’s details.",
+  "@hostInboxRouteUnavailable": {
+    "description": "Person-based Host messaging interface copy.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.inbox"
+  },
+  "hostInboxChooseReplyRoute": "Choose a reply route before writing a message.",
+  "@hostInboxChooseReplyRoute": {
+    "description": "Person-based Host messaging interface copy.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.inbox"
+  },
+  "hostInboxAvailableRoutes": "Available ways to message",
+  "@hostInboxAvailableRoutes": {
+    "description": "Person-based Host messaging interface copy.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.inbox"
+  },
+  "hostInboxOpenPerson": "Open person details",
+  "@hostInboxOpenPerson": {
+    "description": "Person-based Host messaging interface copy.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.inbox"
+  },
+  "hostInboxNewMessageUnavailable": "No in-app reply route is currently available. Review contact details and messaging permissions on the person’s record.",
+  "@hostInboxNewMessageUnavailable": {
+    "description": "Person-based Host messaging interface copy.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.inbox"
+  },
+  "hostInboxMessageVia": "Message via {channel}",
+  "@hostInboxMessageVia": {
+    "description": "Person-based Host messaging interface copy.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.inbox",
+    "placeholders": {
+      "channel": {
+        "type": "String"
+      }
+    }
+  },
+  "hostInboxBookedStatus": "Booked",
+  "@hostInboxBookedStatus": {
+    "description": "Person-based Host messaging interface copy.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.inbox"
+  },
+  "hostInboxProspectiveStatus": "Prospective",
+  "@hostInboxProspectiveStatus": {
+    "description": "Person-based Host messaging interface copy.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.inbox"
+  },
+  "hostInboxOlderMessages": "Load older Catch messages",
+  "@hostInboxOlderMessages": {"description": "History pagination action for a Catch conversation source.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.inbox.host_person_conversation"},
+  "hostInboxWhatsappReplyChannel": "WhatsApp",
+  "@hostInboxWhatsappReplyChannel": {"description": "Short label for the WhatsApp reply route and transcript source.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.inbox"}
 }

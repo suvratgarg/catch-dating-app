@@ -55,7 +55,7 @@ void registerHostEventEntryTests() {
 
     expect(
       tester
-          .widget<HostTodayEventSpotlight>(find.byType(HostTodayEventSpotlight))
+          .widget<HostTodayEventSection>(find.byType(HostTodayEventSection))
           .event,
       event,
     );

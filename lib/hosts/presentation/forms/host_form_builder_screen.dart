@@ -231,6 +231,62 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
                   ],
                 );
               }
+              final body = switch (view) {
+                HostFormWorkspaceView.overview => HostFormOverviewSectionList(
+                  organizerId: widget.organizerId,
+                  state: value,
+                  onQuestions: () =>
+                      setState(() => _view = HostFormWorkspaceView.questions),
+                  onReviewResponses: () =>
+                      setState(() => _view = HostFormWorkspaceView.responses),
+                  onSettings: () => openHostFormSettings(
+                    context,
+                    organizerId: widget.organizerId,
+                    formId: widget.formId,
+                  ),
+                  onShare: () =>
+                      _runBuilderAction(notifier, _BuilderAction.share),
+                  onPreview: _openPreview,
+                ),
+                HostFormWorkspaceView.questions => HostFormQuestionsPageBody(
+                  organizerId: widget.organizerId,
+                  formId: widget.formId,
+                  state: value,
+                  notifier: notifier,
+                  onSelectionChanged: (section, question) => setState(() {
+                    _selectedSection = section;
+                    _selectedQuestion = question;
+                  }),
+                ),
+                HostFormWorkspaceView.responses => HostFormResponsesPanel(
+                  organizerId: widget.organizerId,
+                  formId: widget.formId,
+                  formTitle: value.editor.definition.title,
+                  showFormContext: false,
+                ),
+                HostFormWorkspaceView.settings => Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    HostFormEditorNotice(state: value, notifier: notifier),
+                    HostFormSettingsSectionList(
+                      definition: value.editor.definition,
+                      notifier: notifier,
+                    ),
+                  ],
+                ),
+              };
+              if (view == HostFormWorkspaceView.responses) {
+                return CustomScrollView(
+                  key: const PageStorageKey('host-form-builder-responses'),
+                  slivers: [
+                    CatchPageBody.sliver(
+                      child: SliverToBoxAdapter(child: header),
+                    ),
+                    body,
+                    const SliverToBoxAdapter(child: gapH40),
+                  ],
+                );
+              }
               return CatchPageBody.screen(
                 key: ValueKey('host-form-builder-${view.name}'),
                 pb: CatchSpacing.s10,
@@ -241,65 +297,7 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        header,
-                        gapH24,
-                        switch (view) {
-                          HostFormWorkspaceView.overview =>
-                            HostFormOverviewSectionList(
-                              organizerId: widget.organizerId,
-                              state: value,
-                              onQuestions: () => setState(
-                                () => _view = HostFormWorkspaceView.questions,
-                              ),
-                              onReviewResponses: () => setState(
-                                () => _view = HostFormWorkspaceView.responses,
-                              ),
-                              onSettings: () => openHostFormSettings(
-                                context,
-                                organizerId: widget.organizerId,
-                                formId: widget.formId,
-                              ),
-                              onShare: () => _runBuilderAction(
-                                notifier,
-                                _BuilderAction.share,
-                              ),
-                              onPreview: _openPreview,
-                            ),
-                          HostFormWorkspaceView.questions =>
-                            HostFormQuestionsPageBody(
-                              organizerId: widget.organizerId,
-                              formId: widget.formId,
-                              state: value,
-                              notifier: notifier,
-                              onSelectionChanged: (section, question) =>
-                                  setState(() {
-                                    _selectedSection = section;
-                                    _selectedQuestion = question;
-                                  }),
-                            ),
-                          HostFormWorkspaceView.responses =>
-                            HostFormResponsesPanel(
-                              organizerId: widget.organizerId,
-                              formId: widget.formId,
-                              formTitle: value.editor.definition.title,
-                              showFormContext: false,
-                            ),
-                          HostFormWorkspaceView.settings => Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              HostFormEditorNotice(
-                                state: value,
-                                notifier: notifier,
-                              ),
-                              HostFormSettingsSectionList(
-                                definition: value.editor.definition,
-                                notifier: notifier,
-                              ),
-                            ],
-                          ),
-                        },
-                      ],
+                      children: [header, gapH24, body],
                     ),
                   ),
                 ),

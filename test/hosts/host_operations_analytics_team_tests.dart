@@ -49,7 +49,7 @@ void _registerHostOperationsAnalyticsTeamTests() {
     Finder tab(String label) =>
         find.descendant(of: tabRail, matching: find.text(label));
 
-    void expectSharedChrome({bool constrainToContentWidth = true}) {
+    void expectSharedChrome({bool? constrainToContentWidth}) {
       expect(find.byType(CatchRootScreenScaffold), findsOneWidget);
       expect(find.byType(NestedScrollView), findsOneWidget);
       expect(find.byType(SliverOverlapAbsorber), findsOneWidget);
@@ -76,7 +76,10 @@ void _registerHostOperationsAnalyticsTeamTests() {
         find.byType(CatchRootScreenPageScrollView),
       );
       expect(currentPage.includeTerminalPadding, isTrue);
-      expect(currentPage.constrainToContentWidth, constrainToContentWidth);
+      expect(
+        currentPage.constrainToContentWidth,
+        constrainToContentWidth ?? false,
+      );
     }
 
     expectSharedChrome();
@@ -84,7 +87,7 @@ void _registerHostOperationsAnalyticsTeamTests() {
       CatchFieldInteractionPlaneScope.outsetsOf(
         tester.element(find.byType(HostClubEditTab)),
       ),
-      EdgeInsets.symmetric(horizontal: CatchInsets.pageBody.left),
+      EdgeInsets.zero,
     );
     final loadedHeader = tester.widget<CatchScreenHeader>(
       find.byWidgetPredicate(
@@ -103,7 +106,7 @@ void _registerHostOperationsAnalyticsTeamTests() {
       closeTo(CatchInsets.pageBody.top, 0.5),
     );
     expect(
-      find.byKey(const ValueKey('host-club-insights-summary')),
+      find.byKey(const ValueKey('host-analytics-primary-grid')),
       findsNothing,
     );
 
@@ -132,11 +135,9 @@ void _registerHostOperationsAnalyticsTeamTests() {
     expect(editScroll.pixels, greaterThan(0));
 
     await tester.tap(tab('Insights'));
+    await pumpUntilFound(tester, find.byType(HostAnalyticsPeriodInput));
     await pumpFeatureUi(tester);
-    expect(
-      find.byKey(const ValueKey('host-club-insights-summary')),
-      findsOneWidget,
-    );
+    expect(find.byType(HostAnalyticsPeriodInput), findsOneWidget);
 
     expectSharedChrome();
     expect(find.byType(HostClubInsightsPane), findsOneWidget);
@@ -151,7 +152,7 @@ void _registerHostOperationsAnalyticsTeamTests() {
           (padding) =>
               padding.padding == CatchInsets.pageBody.copyWith(bottom: 0),
         );
-    expect(insightsBodyPadding, hasLength(1));
+    expect(insightsBodyPadding, isEmpty);
     expect(find.byType(HostAnalyticsTrendPanel), findsOneWidget);
     expect(find.text('SAKET · INDORE'), findsNothing);
     expect(find.byTooltip('Back to Organizer'), findsNothing);
@@ -264,11 +265,12 @@ void _registerHostOperationsAnalyticsTeamTests() {
 
       final editTab = find.byType(HostClubEditTab);
       expect(editTab, findsOneWidget);
+      expect(tester.getSize(editTab).width, closeTo(900, 0.1));
+      expect(tester.getCenter(editTab).dx, closeTo(450, 0.1));
       expect(
-        tester.getSize(editTab).width,
+        tester.getSize(find.byType(HostClubMediaSummary)).width,
         closeTo(CatchLayout.maxContentWidth, 0.1),
       );
-      expect(tester.getCenter(editTab).dx, closeTo(450, 0.1));
       expect(find.text('0 photos'), findsOneWidget);
 
       final descriptionEditor = find.byKey(

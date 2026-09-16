@@ -112,29 +112,23 @@ void main() {
     expect(find.text('Inbox'), findsOneWidget);
     expect(find.text('Sends'), findsOneWidget);
     expect(find.byType(HostInboxScopeMenu), findsOneWidget);
-    expect(find.text('BOOKED · 1'), findsOneWidget);
-    expect(find.text('PROSPECTIVE · 1'), findsOneWidget);
+    expect(find.text('Booked · 1'), findsOneWidget);
+    expect(find.text('Prospective · 1'), findsOneWidget);
     expect(
       find.byType(CatchChoiceInput<HostInboxAudienceSegment>),
       findsOneWidget,
     );
     expect(find.text('Message 1 booked attendee'), findsNothing);
     expect(find.text('Asha Guest'), findsOneWidget);
-    expect(
-      find.text('Catch chat · Organizer · Booked · Can you help?'),
-      findsOneWidget,
-    );
+    expect(find.text('Can you help?'), findsOneWidget);
     expect(find.text('Mira Guest'), findsNothing);
 
-    await tester.tap(find.text('PROSPECTIVE · 1'));
+    await tester.tap(find.text('Prospective · 1'));
     await pumpFeatureUi(tester);
 
     expect(find.text('Message 1 prospective attendee'), findsNothing);
     expect(find.text('Mira Guest'), findsOneWidget);
-    expect(
-      find.text('Catch chat · Organizer · Requested · Can you help?'),
-      findsOneWidget,
-    );
+    expect(find.text('Can you help?'), findsOneWidget);
     expect(find.text('Asha Guest'), findsNothing);
   });
 
@@ -162,7 +156,7 @@ void main() {
       expect(find.byType(NestedScrollView), findsOneWidget);
       final topBar = tester.widget<CatchTopBar>(find.byType(CatchTopBar));
       expect(topBar.contentPadding, CatchInsets.primaryRailTitleBlock);
-      final rail = find.byType(HostMessagingWorkspaceRail);
+      final rail = find.byType(HostMessagingWorkspaceTabBar);
       final railBefore = tester.getRect(rail);
 
       await tester.drag(find.byType(CustomScrollView), const Offset(0, -600));
@@ -355,7 +349,8 @@ void main() {
 
     expect(find.text('Event Guest'), findsOneWidget);
     expect(find.text('Where is the entrance?'), findsOneWidget);
-    expect(find.text('WhatsApp Business · Organizer number'), findsOneWidget);
+    expect(find.byType(CatchField), findsOneWidget);
+    expect(find.text('Booking status unavailable'), findsOneWidget);
     expect(find.text('General Guest'), findsNothing);
 
     await tester.tap(find.bySemanticsLabel(RegExp('Inbox scope')));
@@ -392,10 +387,7 @@ void main() {
     await pumpFeatureUi(tester);
 
     expect(find.text('Asha Guest'), findsOneWidget);
-    expect(
-      find.text('Catch chat · Organizer · General inquiry · Can you help?'),
-      findsOneWidget,
-    );
+    expect(find.text('Can you help?'), findsOneWidget);
     expect(find.text('Chat not found'), findsNothing);
   });
 
@@ -457,7 +449,7 @@ void main() {
     expect(find.byType(HostCampaignComposer), findsOneWidget);
     expect(find.text('MESSAGE PAST ATTENDEES'), findsOneWidget);
     expect(find.byType(HostInboxScopeMenu), findsNothing);
-    expect(find.byType(HostInboxAudienceRail), findsNothing);
+    expect(find.byType(HostInboxAudienceInput), findsNothing);
   });
 
   testWidgets('Follower update intent opens its composer', (tester) async {
@@ -676,7 +668,7 @@ void main() {
     await pumpFeatureUi(tester);
 
     expect(find.text('GENERAL INQUIRIES'), findsOneWidget);
-    expect(find.byType(HostInboxAudienceRail), findsNothing);
+    expect(find.byType(HostInboxAudienceInput), findsNothing);
   });
 
   testWidgets(
@@ -765,10 +757,7 @@ void main() {
 
     expect(find.text('GENERAL INQUIRIES'), findsOneWidget);
     expect(find.text('General Guest'), findsOneWidget);
-    expect(
-      find.text('Catch chat · Organizer · General inquiry · Can you help?'),
-      findsOneWidget,
-    );
+    expect(find.text('Can you help?'), findsOneWidget);
     expect(find.text('Event Guest'), findsNothing);
     expect(find.textContaining('Message '), findsNothing);
     expect(find.textContaining('Booked ·'), findsNothing);
@@ -831,7 +820,7 @@ void main() {
     );
     await pumpFeatureUi(tester);
 
-    expect(find.byType(HostMessagingWorkspaceRail), findsOneWidget);
+    expect(find.byType(HostMessagingWorkspaceTabBar), findsOneWidget);
     expect(find.byType(HostCampaignComposer), findsOneWidget);
     expect(find.text('Lapsed customers · 12 people at last preview'), findsOne);
   });

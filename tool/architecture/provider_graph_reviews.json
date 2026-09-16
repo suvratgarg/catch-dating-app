@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updated": "2026-09-04",
+  "updated": "2026-09-16",
   "owner": "app_architecture",
   "candidatePolicy": {
     "highFanOutUniqueDependencies": 8,
@@ -13,6 +13,11 @@
     ]
   },
   "decisions": [
+    {
+      "id": "cross-feature-presentation:hostInboxCatchViewModelProvider->chatsListViewModelProvider",
+      "status": "accepted",
+      "rationale": "Host composes the canonical Chat live read model through the annotated, narrowly exported lib/chats/chats.dart API, then adds account-scoped historical pages. Chat retains preview identity and live-window ownership; Host rechecks each older match's current membership before projecting it into organizer-authorized person collections. This is the sanctioned public read-model seam, not a dependency on sibling widgets or a second Chat subscription implementation. Chat projection, Host person identity, conversation revocation and pagination tests cover the constituent contracts; dependency-direction and topology checks enforce the exact public edge and reject cycles or stale decisions."
+    },
     {
       "id": "cross-feature-presentation:authSessionControllerProvider->onboardingControllerProvider",
       "status": "accepted",

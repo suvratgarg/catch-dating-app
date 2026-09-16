@@ -26,19 +26,21 @@ class HostCustomerMemoryPreview extends StatelessWidget {
   final VoidCallback onOpenMemory;
 
   @override
-  Widget build(BuildContext context) => CatchSection.fieldRows(
+  Widget build(BuildContext context) => CatchSection.containedRows(
     key: const ValueKey('host-customer-memory-preview'),
     title: context.l10n.hostCustomersMemory,
     children: [
-      CatchRecordRow(
-        title: customer.manualTags.isEmpty
-            ? context.l10n.hostCustomersNotes
-            : customer.manualTags.map((tag) => tag.label).join(' · '),
-        description:
-            customer.notes.firstOrNull?.body ??
-            context.l10n.hostCustomersNoNotes,
-        icon: CatchIcons.editNoteOutlined,
-        onTap: onOpenMemory,
+      CatchField.navigate(
+        onActivate: onOpenMemory,
+        content: CatchRecordLayout(
+          title: customer.manualTags.isEmpty
+              ? context.l10n.hostCustomersNotes
+              : customer.manualTags.map((tag) => tag.label).join(' · '),
+          description:
+              customer.notes.firstOrNull?.body ??
+              context.l10n.hostCustomersNoNotes,
+          icon: CatchIcons.editNoteOutlined,
+        ),
       ),
     ],
   );
@@ -111,39 +113,13 @@ class HostCustomerMemorySection extends StatelessWidget {
                 else
                   for (final note in notes) ...[
                     const CatchDivider(),
-                    CatchRowPressSurface(
+                    CatchField.content(
                       key: ValueKey('host-customer-note-${note.noteId}'),
+                      copy: catchFieldCopy(context.l10n),
+                      title: note.body,
+                      body: _noteAttribution(context, note, currentUid),
+                      icon: CatchIcons.editNoteOutlined,
                       onTap: () => onEditNote(note),
-                      child: Padding(
-                        padding: CatchInsets.tileVertical,
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Icon(
-                              CatchIcons.editNoteOutlined,
-                              size: CatchFieldTokens.leadingIconExtent,
-                              color: CatchTokens.of(context).ink2,
-                            ),
-                            const SizedBox(width: CatchFieldTokens.leadingGap),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [
-                                  Text(
-                                    note.body,
-                                    style: CatchTextStyles.bodyL(context),
-                                  ),
-                                  gapH8,
-                                  Text(
-                                    _noteAttribution(context, note, currentUid),
-                                    style: CatchTextStyles.supporting(context),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
                     ),
                   ],
                 gapH8,

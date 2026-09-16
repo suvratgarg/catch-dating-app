@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/reviews.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:0b0882433f2f4708dc327a21ccb82930a2b33ad54d3303d935854fa71f19a25b",
-  "resolvedDigest": "sha256:ca20bdda71c1adc62f1b7ac4df21f8f4ce3b36e2a13fc4c879d43c56ddfd34f1",
+  "resolvedDigest": "sha256:27545d2548ded16a41695b32b705fb327bb52fade849542859fc5fd6e046013c",
   "feature": {
     "id": "feature.reviews",
     "name": "Reviews",
@@ -1149,6 +1149,7 @@
               "file": "packages/catch_ui/lib/src/components/catch_field.dart",
               "constructors": [
                 "CatchField.read",
+                "CatchField.navigate",
                 "CatchField.content",
                 "CatchField.nav",
                 "CatchField.sortable",

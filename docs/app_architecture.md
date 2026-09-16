@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.65.8
-updated: 2026-09-15
+version: 1.65.9
+updated: 2026-09-16
 owner: app_architecture
 status: active
 ---
@@ -590,14 +590,22 @@ Screen composition should be predictable:
   -> feature widgets and core primitives
 ```
 
-`CatchPageBody` is the canonical page-inset owner. Its `formStep`, `screen`,
-`sliver`, and `slivers` recipes preserve their layout protocols. The screen
-recipe uses `CatchPageBodyVariant.scrolling` or `.fixed`; scrolling delegates
-to `CatchScrollView`, which fills short content to its local viewport and
-scrolls overflow. Field paint extents come from
-`CatchFieldInteractionPlaneScope.fromPadding`, preserving inherited interaction
-policy and accumulating directional insets. Features use the semantic body
-owner rather than publishing field geometry directly.
+Row pages use a full-width body or `CatchRootScreenPageScrollView.sections`.
+`CatchSection.rows` / `.sliverRows` own the content gutter and the complete
+page or pane interaction plane; `.containedRows` explicitly owns an inset
+rounded group. Section alone owns headers and between-row rules. `CatchField`
+owns interaction and takes sealed `CatchRecordLayout`, `CatchPersonLayout` or
+`CatchConversationLayout` data. These layouts cannot be arbitrary Widgets and
+cannot accept callbacks. Secondary targets belong to `CatchFieldSecondaryAction`.
+
+`CatchPageBody` remains the semantic inset owner for non-row content and legacy
+form flows. Never wrap full-width row sections with an additional horizontal
+page inset. `CatchScaffold`, `CatchMasterDetailViewport` and
+`CatchSectionList.panes` publish local viewport bounds for geometry assertions.
+Square full-width feedback requires a matching published paint extent. Missing
+geometry context uses rounded containment; a known mismatch asserts in debug
+and remains rounded in release. The Field paint owner checks legacy geometry
+declarations too, so omitting Section cannot authorize an inset square highlight.
 `CatchScrollTerminalGap` owns terminal clearance, with `.sliver` for a sliver
 scroll owner. `CatchStateViewport` owns the visible area for empty/error
 placement, also with `.sliver`; both protocols share one obstruction policy.
@@ -905,6 +913,21 @@ preference:
 - Organizer remains the identity, team, defaults, provider, payout, and
   settings authority.
 
+Inbox groups endpoints by verified person identity within the selected organizer
+and event/general scope. Names, phone suffixes and fuzzy matching never merge
+identities. Each endpoint retains its transport id, cursor and authorization.
+The pane combines authorized history but requires an explicit reply route; no
+transport fallback or fan-out is permitted. New message chooses a person and
+then an available route. Partial source coverage is shown as partial, including
+counts; unknown booking membership never becomes a prospective classification.
+`HostInboxCatchPages`, `HostInboxWhatsappPages` and `HostConversationHistory`
+controllers own pagination and generation fences. `HostPersonConversationController`
+owns WhatsApp reply/read IO; the widget owns only presentation and ephemeral
+selection. Reply drafts are scoped by account, organizer, person, scope and
+route; retries preserve the operation id and successful sends clear only the
+unchanged draft. Authentication changes clear session drafts.
+
+
 The decision follows platform guidance that primary navigation represents a
 small number of persistent, peer top-level areas and preserves state within
 each area: [Apple tab bars](https://developer.apple.com/design/human-interface-guidelines/tab-bars)
@@ -946,7 +969,7 @@ captures. Reference images alone cannot reopen or bypass this boundary.
 **Section-page composition**
 
 `CatchSectionList` owns ordered complete sections. Its `.inset`, `.sliver`,
-`.responsive`, and `.page` recipes preserve their distinct layout protocols
+`.responsive`, `.panes`, and `.page` recipes preserve their distinct layout protocols
 through named constructors. Every constructor declares an empty-state owner
 or explicit omission; a recipe must not duplicate its parent's gutter or scroll
 owner. Section delimiters stay with `CatchSection`.
@@ -1325,6 +1348,14 @@ layout numbers or Material/Cupertino controls. `catch_no_raw_stroke_width`
 covers all handwritten app code, including shared widgets and 1 px literals;
 zero remains the explicit no-border value, while decorative `CustomPainter`
 artwork is outside this UI-boundary diagnostic.
+
+Closed Field layouts and secondary actions render only inside their owning
+Field library. The inventory's exact source/library/owner/method/return-type
+declarations in `tool/design/lib/owned_composition_renderers.mjs` recognize
+those renderer fragments and the two typed domain/route factories. They do
+not exempt sibling helpers, moved implementations, or generic Widget-returning
+factories. Mutation tests cover each identity dimension; resolved Catch UI
+lints separately enforce the primitive's construction and interaction boundary.
 
 Widget identity is checked globally rather than one folder at a time. The
 source-derived classification and new-widget gates scan `lib/**`,
@@ -2332,7 +2363,8 @@ or implementation technique cannot justify a second shared implementation.
   Skeleton, Indicator, TopBar, Header, HeaderTitle, Scaffold, PageBody,
   ScrollView, TabBar, TabScaffold, Poster, Polaroid, Ticket, Gap, Inset,
   Divider, Avatar, Photo, Cover, Stepper, StepFlow, Accordion, Drawer,
-  Overlay, Viewport, Menu, Surface, Input, Text, Image, Scope, AsyncBoundary.
+  Overlay, Viewport, Layout, Action, Menu, Surface, Input, Text, Image, Scope,
+  AsyncBoundary.
 - **Role selection.** Classify the public responsibility, not a child it
   happens to render. Menu owns commands/choices; Surface owns token-backed
   paint and containment; Input owns editing mechanics; Text owns display-only
@@ -2786,7 +2818,7 @@ Host Inbox is the reference for sharing foundations without sharing product
 composition. Consumer `/chats` owns `ChatsListScreen`; the compatibility route
 `/host/inbox` owns `HostInboxScreen`; its shell label is Inbox while the local
 screen heading Messaging names the combined Inbox and Sends modes.
-They may reuse `ChatConversationsList`, `CatchPersonRow`, search state, inquiry
+They may reuse `ChatConversationsList`, Field-owned person layouts, search state, inquiry
 repositories, and routing contracts, but the consumer screen must not remain
 the Host route dispatcher.
 

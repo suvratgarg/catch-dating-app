@@ -11,7 +11,10 @@
     {
       "id": "consumer_flutter",
       "runtime": "flutter",
-      "authority": {"registry": "flutter_screens", "id": "screen.settings.account"},
+      "authority": {
+        "registry": "flutter_screens",
+        "id": "screen.settings.account"
+      },
       "actionScope": {
         "included": "Profile and blocked-account recovery; review/payment history and host-app navigation; bounded preference changes; unblock, delete-account, and sign-out mutations; and configured privacy, support, and terms links.",
         "excluded": [
@@ -62,7 +65,6 @@
           "catch.empty_state",
           "catch.error_state",
           "catch.field",
-          "catch.person_row",
           "catch.surface",
           "catch.toggle",
           "catch.top_bar"
@@ -76,16 +78,69 @@
         ]
       },
       "dimensions": {
-        "profile": {"default": "ready", "values": ["loading", "error", "missing", "ready"]},
-        "blocked_accounts": {"default": "empty", "values": ["loading", "error", "empty", "content"]},
+        "profile": {
+          "default": "ready",
+          "values": [
+            "loading",
+            "error",
+            "missing",
+            "ready"
+          ]
+        },
+        "blocked_accounts": {
+          "default": "empty",
+          "values": [
+            "loading",
+            "error",
+            "empty",
+            "content"
+          ]
+        },
         "mutation": {
           "default": "idle",
-          "values": ["idle", "preference_pending", "preference_error", "unblock_pending", "unblock_error", "delete_confirm", "delete_pending", "delete_error", "sign_out_pending", "sign_out_error"]
+          "values": [
+            "idle",
+            "preference_pending",
+            "preference_error",
+            "unblock_pending",
+            "unblock_error",
+            "delete_confirm",
+            "delete_pending",
+            "delete_error",
+            "sign_out_pending",
+            "sign_out_error"
+          ]
         },
-        "external_link": {"default": "idle", "values": ["idle", "pending", "failure"]},
-        "connectivity": {"default": "online", "values": ["online", "offline"]},
-        "accessibility": {"default": "standard", "values": ["standard", "text_scale_2", "reduced_motion"]},
-        "theme": {"default": "standard", "values": ["standard", "light_dark"]}
+        "external_link": {
+          "default": "idle",
+          "values": [
+            "idle",
+            "pending",
+            "failure"
+          ]
+        },
+        "connectivity": {
+          "default": "online",
+          "values": [
+            "online",
+            "offline"
+          ]
+        },
+        "accessibility": {
+          "default": "standard",
+          "values": [
+            "standard",
+            "text_scale_2",
+            "reduced_motion"
+          ]
+        },
+        "theme": {
+          "default": "standard",
+          "values": [
+            "standard",
+            "light_dark"
+          ]
+        }
       },
       "actions": [
         {
@@ -93,8 +148,15 @@
           "owner": "settings_screen",
           "codeValue": "back",
           "cardinality": "singleton",
-          "scopeKeys": ["routeInstanceId"],
-          "outcomes": [{"kind": "side_effect", "id": "navigation.route_popped"}],
+          "scopeKeys": [
+            "routeInstanceId"
+          ],
+          "outcomes": [
+            {
+              "kind": "side_effect",
+              "id": "navigation.route_popped"
+            }
+          ],
           "description": "Closes Account Settings through its canonical top-bar back control."
         },
         {
@@ -102,8 +164,21 @@
           "owner": "settings_screen",
           "codeValue": "watchUserProfileProvider",
           "cardinality": "singleton",
-          "scopeKeys": ["viewerUid", "profileLoadGeneration"],
-          "outcomes": [{"kind": "surface_state", "stateIds": ["profile_loading", "profile_error", "profile_missing", "profile_backed_account"]}],
+          "scopeKeys": [
+            "viewerUid",
+            "profileLoadGeneration"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "profile_loading",
+                "profile_error",
+                "profile_missing",
+                "profile_backed_account"
+              ]
+            }
+          ],
           "description": "Invalidates the current profile provider from the inline account-status recovery surface."
         },
         {
@@ -111,8 +186,18 @@
           "owner": "settings_screen",
           "codeValue": "reviewsHistoryScreen",
           "cardinality": "unbounded",
-          "scopeKeys": ["routeInstanceId"],
-          "outcomes": [{"kind": "route", "authority": {"registry": "flutter_screens", "id": "screen.reviews.history"}}],
+          "scopeKeys": [
+            "routeInstanceId"
+          ],
+          "outcomes": [
+            {
+              "kind": "route",
+              "authority": {
+                "registry": "flutter_screens",
+                "id": "screen.reviews.history"
+              }
+            }
+          ],
           "description": "Opens the current member's Review History."
         },
         {
@@ -120,8 +205,18 @@
           "owner": "settings_screen",
           "codeValue": "paymentHistoryScreen",
           "cardinality": "unbounded",
-          "scopeKeys": ["routeInstanceId"],
-          "outcomes": [{"kind": "route", "authority": {"registry": "flutter_screens", "id": "screen.payments.history"}}],
+          "scopeKeys": [
+            "routeInstanceId"
+          ],
+          "outcomes": [
+            {
+              "kind": "route",
+              "authority": {
+                "registry": "flutter_screens",
+                "id": "screen.payments.history"
+              }
+            }
+          ],
           "description": "Opens the current member's Payment History."
         },
         {
@@ -129,10 +224,20 @@
           "owner": "external_links",
           "codeValue": "openHostApp",
           "cardinality": "singleton",
-          "scopeKeys": ["routeInstanceId"],
+          "scopeKeys": [
+            "routeInstanceId"
+          ],
           "outcomes": [
-            {"kind": "surface_state", "stateIds": ["external_link_outcomes"]},
-            {"kind": "side_effect", "id": "external_links.open_host_app"}
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "external_link_outcomes"
+              ]
+            },
+            {
+              "kind": "side_effect",
+              "id": "external_links.open_host_app"
+            }
           ],
           "description": "Requests the configured external Catch Host handoff with whole-surface pending exclusivity and visible false/error feedback."
         },
@@ -141,10 +246,25 @@
           "owner": "settings_controller",
           "codeValue": "savePreference",
           "cardinality": "domain_bounded",
-          "scopeKeys": ["viewerUid", "preference", "value", "preferenceVersion"],
+          "scopeKeys": [
+            "viewerUid",
+            "preference",
+            "value",
+            "preferenceVersion"
+          ],
           "outcomes": [
-            {"kind": "surface_state", "stateIds": ["notification_preferences", "preference_save_error", "privacy_safety_defaults"]},
-            {"kind": "side_effect", "id": "user_profile.update_preference"}
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "notification_preferences",
+                "preference_save_error",
+                "privacy_safety_defaults"
+              ]
+            },
+            {
+              "kind": "side_effect",
+              "id": "user_profile.update_preference"
+            }
           ],
           "description": "Optimistically changes one supported notification, map-visibility, or feature-gated global Cross Paths preference and rolls back on failure."
         },
@@ -153,8 +273,20 @@
           "owner": "settings_screen",
           "codeValue": "watchBlockedUsersProvider",
           "cardinality": "singleton",
-          "scopeKeys": ["viewerUid", "blockedAccountLoadGeneration"],
-          "outcomes": [{"kind": "surface_state", "stateIds": ["blocked_accounts_loading_error", "blocked_accounts_empty", "blocked_accounts_list"]}],
+          "scopeKeys": [
+            "viewerUid",
+            "blockedAccountLoadGeneration"
+          ],
+          "outcomes": [
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "blocked_accounts_loading_error",
+                "blocked_accounts_empty",
+                "blocked_accounts_list"
+              ]
+            }
+          ],
           "description": "Invalidates the blocked-account provider after a list or profile-enrichment failure."
         },
         {
@@ -162,10 +294,23 @@
           "owner": "settings_controller",
           "codeValue": "unblockUser",
           "cardinality": "unbounded",
-          "scopeKeys": ["viewerUid", "targetUserId"],
+          "scopeKeys": [
+            "viewerUid",
+            "targetUserId"
+          ],
           "outcomes": [
-            {"kind": "surface_state", "stateIds": ["blocked_accounts_list", "blocked_accounts_empty", "unblock_mutation"]},
-            {"kind": "side_effect", "id": "safety.unblock_user"}
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "blocked_accounts_list",
+                "blocked_accounts_empty",
+                "unblock_mutation"
+              ]
+            },
+            {
+              "kind": "side_effect",
+              "id": "safety.unblock_user"
+            }
           ],
           "description": "Removes one selected account from the current member's block list."
         },
@@ -174,10 +319,21 @@
           "owner": "external_links",
           "codeValue": "openExternal",
           "cardinality": "singleton",
-          "scopeKeys": ["routeInstanceId", "privacyPolicyUri"],
+          "scopeKeys": [
+            "routeInstanceId",
+            "privacyPolicyUri"
+          ],
           "outcomes": [
-            {"kind": "surface_state", "stateIds": ["external_link_outcomes"]},
-            {"kind": "side_effect", "id": "external_links.open_privacy_policy"}
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "external_link_outcomes"
+              ]
+            },
+            {
+              "kind": "side_effect",
+              "id": "external_links.open_privacy_policy"
+            }
           ],
           "description": "Requests the configured privacy-policy URL when present with whole-surface pending exclusivity and visible false/error feedback."
         },
@@ -186,10 +342,21 @@
           "owner": "settings_controller",
           "codeValue": "requestAccountDeletion",
           "cardinality": "singleton",
-          "scopeKeys": ["viewerUid", "accountVersion"],
+          "scopeKeys": [
+            "viewerUid",
+            "accountVersion"
+          ],
           "outcomes": [
-            {"kind": "surface_state", "stateIds": ["delete_account_flow"]},
-            {"kind": "side_effect", "id": "safety.request_account_deletion"}
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "delete_account_flow"
+              ]
+            },
+            {
+              "kind": "side_effect",
+              "id": "safety.request_account_deletion"
+            }
           ],
           "description": "Opens the destructive confirmation and requests deletion after explicit confirmation."
         },
@@ -198,10 +365,21 @@
           "owner": "external_links",
           "codeValue": "openExternal",
           "cardinality": "singleton",
-          "scopeKeys": ["routeInstanceId", "helpUri"],
+          "scopeKeys": [
+            "routeInstanceId",
+            "helpUri"
+          ],
           "outcomes": [
-            {"kind": "surface_state", "stateIds": ["external_link_outcomes"]},
-            {"kind": "side_effect", "id": "external_links.open_help"}
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "external_link_outcomes"
+              ]
+            },
+            {
+              "kind": "side_effect",
+              "id": "external_links.open_help"
+            }
           ],
           "description": "Requests the configured help and support URL when present with whole-surface pending exclusivity and visible false/error feedback."
         },
@@ -210,10 +388,21 @@
           "owner": "external_links",
           "codeValue": "openExternal",
           "cardinality": "singleton",
-          "scopeKeys": ["routeInstanceId", "termsUri"],
+          "scopeKeys": [
+            "routeInstanceId",
+            "termsUri"
+          ],
           "outcomes": [
-            {"kind": "surface_state", "stateIds": ["external_link_outcomes"]},
-            {"kind": "side_effect", "id": "external_links.open_terms"}
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "external_link_outcomes"
+              ]
+            },
+            {
+              "kind": "side_effect",
+              "id": "external_links.open_terms"
+            }
           ],
           "description": "Requests the configured terms URL when present with whole-surface pending exclusivity and visible false/error feedback."
         },
@@ -222,10 +411,21 @@
           "owner": "auth_session",
           "codeValue": "signOut",
           "cardinality": "singleton",
-          "scopeKeys": ["viewerUid", "authSessionVersion"],
+          "scopeKeys": [
+            "viewerUid",
+            "authSessionVersion"
+          ],
           "outcomes": [
-            {"kind": "surface_state", "stateIds": ["sign_out_action"]},
-            {"kind": "side_effect", "id": "auth.sign_out"}
+            {
+              "kind": "surface_state",
+              "stateIds": [
+                "sign_out_action"
+              ]
+            },
+            {
+              "kind": "side_effect",
+              "id": "auth.sign_out"
+            }
           ],
           "description": "Signs out the current account through the shared auth-session mutation."
         }
@@ -272,130 +472,518 @@
         ]
       },
       "scenarioOverrides": {
-        "profile_loading": {"dimensions": {"profile": "loading"}},
+        "profile_loading": {
+          "dimensions": {
+            "profile": "loading"
+          }
+        },
         "profile_error": {
-          "dimensions": {"profile": "error"},
+          "dimensions": {
+            "profile": "error"
+          },
           "actionCases": [
             {
               "id": "retry_with_other_actions_live",
-              "enabledActions": ["close_settings", "retry_profile", "open_review_history", "open_payment_history", "open_host_app", "set_preference", "open_privacy_policy", "request_account_deletion", "open_help_support", "open_terms", "sign_out"]
+              "enabledActions": [
+                "close_settings",
+                "retry_profile",
+                "open_review_history",
+                "open_payment_history",
+                "open_host_app",
+                "set_preference",
+                "open_privacy_policy",
+                "request_account_deletion",
+                "open_help_support",
+                "open_terms",
+                "sign_out"
+              ]
             }
           ]
         },
-        "profile_missing": {"dimensions": {"profile": "missing"}},
+        "profile_missing": {
+          "dimensions": {
+            "profile": "missing"
+          }
+        },
         "history_navigation_rows": {
-          "actionCases": [{"id": "history_and_host", "enabledActions": ["close_settings", "open_review_history", "open_payment_history", "open_host_app"]}]
+          "actionCases": [
+            {
+              "id": "history_and_host",
+              "enabledActions": [
+                "close_settings",
+                "open_review_history",
+                "open_payment_history",
+                "open_host_app"
+              ]
+            }
+          ]
         },
         "external_link_outcomes": {
           "actionCases": [
             {
               "id": "host_handoff_idle",
-              "dimensions": {"external_link": "idle"},
-              "enabledActions": ["close_settings", "open_host_app"]
+              "dimensions": {
+                "external_link": "idle"
+              },
+              "enabledActions": [
+                "close_settings",
+                "open_host_app"
+              ]
             },
             {
               "id": "pending_surface_frozen",
-              "dimensions": {"external_link": "pending"},
+              "dimensions": {
+                "external_link": "pending"
+              },
               "enabledActions": [],
-              "disabledActions": ["close_settings", "retry_profile", "open_review_history", "open_payment_history", "open_host_app", "set_preference", "retry_blocked_accounts", "unblock_account", "open_privacy_policy", "request_account_deletion", "open_help_support", "open_terms", "sign_out"]
+              "disabledActions": [
+                "close_settings",
+                "retry_profile",
+                "open_review_history",
+                "open_payment_history",
+                "open_host_app",
+                "set_preference",
+                "retry_blocked_accounts",
+                "unblock_account",
+                "open_privacy_policy",
+                "request_account_deletion",
+                "open_help_support",
+                "open_terms",
+                "sign_out"
+              ]
             },
             {
               "id": "failure_actions_restored",
-              "dimensions": {"external_link": "failure"},
-              "enabledActions": ["close_settings", "open_review_history", "open_payment_history", "open_host_app", "set_preference", "open_privacy_policy", "request_account_deletion", "open_help_support", "open_terms", "sign_out"]
+              "dimensions": {
+                "external_link": "failure"
+              },
+              "enabledActions": [
+                "close_settings",
+                "open_review_history",
+                "open_payment_history",
+                "open_host_app",
+                "set_preference",
+                "open_privacy_policy",
+                "request_account_deletion",
+                "open_help_support",
+                "open_terms",
+                "sign_out"
+              ]
             }
           ]
         },
         "notification_preferences": {
-          "dimensions": {"mutation": "preference_pending"},
+          "dimensions": {
+            "mutation": "preference_pending"
+          },
           "actionCases": [
             {
               "id": "preference_pending_surface_frozen",
               "enabledActions": [],
-              "disabledActions": ["close_settings", "retry_profile", "open_review_history", "open_payment_history", "open_host_app", "set_preference", "retry_blocked_accounts", "unblock_account", "open_privacy_policy", "request_account_deletion", "open_help_support", "open_terms", "sign_out"]
+              "disabledActions": [
+                "close_settings",
+                "retry_profile",
+                "open_review_history",
+                "open_payment_history",
+                "open_host_app",
+                "set_preference",
+                "retry_blocked_accounts",
+                "unblock_account",
+                "open_privacy_policy",
+                "request_account_deletion",
+                "open_help_support",
+                "open_terms",
+                "sign_out"
+              ]
             }
           ]
         },
-        "preference_save_error": {"dimensions": {"mutation": "preference_error"}},
-        "privacy_safety_defaults": {"dimensions": {"blocked_accounts": "empty"}},
+        "preference_save_error": {
+          "dimensions": {
+            "mutation": "preference_error"
+          }
+        },
+        "privacy_safety_defaults": {
+          "dimensions": {
+            "blocked_accounts": "empty"
+          }
+        },
         "blocked_accounts_loading_error": {
           "actionCases": [
-            {"id": "loading", "dimensions": {"blocked_accounts": "loading"}, "enabledActions": ["close_settings", "open_review_history", "open_payment_history", "open_host_app", "set_preference", "open_privacy_policy", "request_account_deletion", "open_help_support", "open_terms", "sign_out"]},
-            {"id": "error", "dimensions": {"blocked_accounts": "error"}, "enabledActions": ["close_settings", "open_review_history", "open_payment_history", "open_host_app", "set_preference", "retry_blocked_accounts", "open_privacy_policy", "request_account_deletion", "open_help_support", "open_terms", "sign_out"]}
+            {
+              "id": "loading",
+              "dimensions": {
+                "blocked_accounts": "loading"
+              },
+              "enabledActions": [
+                "close_settings",
+                "open_review_history",
+                "open_payment_history",
+                "open_host_app",
+                "set_preference",
+                "open_privacy_policy",
+                "request_account_deletion",
+                "open_help_support",
+                "open_terms",
+                "sign_out"
+              ]
+            },
+            {
+              "id": "error",
+              "dimensions": {
+                "blocked_accounts": "error"
+              },
+              "enabledActions": [
+                "close_settings",
+                "open_review_history",
+                "open_payment_history",
+                "open_host_app",
+                "set_preference",
+                "retry_blocked_accounts",
+                "open_privacy_policy",
+                "request_account_deletion",
+                "open_help_support",
+                "open_terms",
+                "sign_out"
+              ]
+            }
           ]
         },
-        "blocked_accounts_empty": {"dimensions": {"blocked_accounts": "empty"}},
+        "blocked_accounts_empty": {
+          "dimensions": {
+            "blocked_accounts": "empty"
+          }
+        },
         "blocked_accounts_list": {
-          "dimensions": {"blocked_accounts": "content"},
+          "dimensions": {
+            "blocked_accounts": "content"
+          },
           "actionCases": [
-            {"id": "content", "enabledActions": ["close_settings", "open_review_history", "open_payment_history", "open_host_app", "set_preference", "unblock_account", "open_privacy_policy", "request_account_deletion", "open_help_support", "open_terms", "sign_out"]}
+            {
+              "id": "content",
+              "enabledActions": [
+                "close_settings",
+                "open_review_history",
+                "open_payment_history",
+                "open_host_app",
+                "set_preference",
+                "unblock_account",
+                "open_privacy_policy",
+                "request_account_deletion",
+                "open_help_support",
+                "open_terms",
+                "sign_out"
+              ]
+            }
           ]
         },
         "unblock_mutation": {
-          "dimensions": {"blocked_accounts": "content"},
+          "dimensions": {
+            "blocked_accounts": "content"
+          },
           "actionCases": [
             {
               "id": "pending_surface_frozen",
-              "dimensions": {"mutation": "unblock_pending"},
+              "dimensions": {
+                "mutation": "unblock_pending"
+              },
               "enabledActions": [],
-              "disabledActions": ["close_settings", "retry_profile", "open_review_history", "open_payment_history", "open_host_app", "set_preference", "retry_blocked_accounts", "unblock_account", "open_privacy_policy", "request_account_deletion", "open_help_support", "open_terms", "sign_out"]
+              "disabledActions": [
+                "close_settings",
+                "retry_profile",
+                "open_review_history",
+                "open_payment_history",
+                "open_host_app",
+                "set_preference",
+                "retry_blocked_accounts",
+                "unblock_account",
+                "open_privacy_policy",
+                "request_account_deletion",
+                "open_help_support",
+                "open_terms",
+                "sign_out"
+              ]
             },
             {
               "id": "failed",
-              "dimensions": {"mutation": "unblock_error"},
-              "enabledActions": ["close_settings", "open_review_history", "open_payment_history", "open_host_app", "set_preference", "unblock_account", "open_privacy_policy", "request_account_deletion", "open_help_support", "open_terms", "sign_out"]
+              "dimensions": {
+                "mutation": "unblock_error"
+              },
+              "enabledActions": [
+                "close_settings",
+                "open_review_history",
+                "open_payment_history",
+                "open_host_app",
+                "set_preference",
+                "unblock_account",
+                "open_privacy_policy",
+                "request_account_deletion",
+                "open_help_support",
+                "open_terms",
+                "sign_out"
+              ]
             }
           ]
         },
         "delete_account_flow": {
           "actionCases": [
-            {"id": "confirm", "dimensions": {"mutation": "delete_confirm"}, "enabledActions": ["request_account_deletion"]},
+            {
+              "id": "confirm",
+              "dimensions": {
+                "mutation": "delete_confirm"
+              },
+              "enabledActions": [
+                "request_account_deletion"
+              ]
+            },
             {
               "id": "pending_surface_frozen",
-              "dimensions": {"mutation": "delete_pending"},
+              "dimensions": {
+                "mutation": "delete_pending"
+              },
               "enabledActions": [],
-              "disabledActions": ["close_settings", "retry_profile", "open_review_history", "open_payment_history", "open_host_app", "set_preference", "retry_blocked_accounts", "unblock_account", "open_privacy_policy", "request_account_deletion", "open_help_support", "open_terms", "sign_out"]
+              "disabledActions": [
+                "close_settings",
+                "retry_profile",
+                "open_review_history",
+                "open_payment_history",
+                "open_host_app",
+                "set_preference",
+                "retry_blocked_accounts",
+                "unblock_account",
+                "open_privacy_policy",
+                "request_account_deletion",
+                "open_help_support",
+                "open_terms",
+                "sign_out"
+              ]
             },
-            {"id": "failed", "dimensions": {"mutation": "delete_error"}, "enabledActions": ["close_settings", "open_review_history", "open_payment_history", "open_host_app", "set_preference", "open_privacy_policy", "request_account_deletion", "open_help_support", "open_terms", "sign_out"]}
+            {
+              "id": "failed",
+              "dimensions": {
+                "mutation": "delete_error"
+              },
+              "enabledActions": [
+                "close_settings",
+                "open_review_history",
+                "open_payment_history",
+                "open_host_app",
+                "set_preference",
+                "open_privacy_policy",
+                "request_account_deletion",
+                "open_help_support",
+                "open_terms",
+                "sign_out"
+              ]
+            }
           ]
         },
         "sign_out_action": {
           "actionCases": [
             {
               "id": "pending_surface_frozen",
-              "dimensions": {"mutation": "sign_out_pending"},
+              "dimensions": {
+                "mutation": "sign_out_pending"
+              },
               "enabledActions": [],
-              "disabledActions": ["close_settings", "retry_profile", "open_review_history", "open_payment_history", "open_host_app", "set_preference", "retry_blocked_accounts", "unblock_account", "open_privacy_policy", "request_account_deletion", "open_help_support", "open_terms", "sign_out"]
+              "disabledActions": [
+                "close_settings",
+                "retry_profile",
+                "open_review_history",
+                "open_payment_history",
+                "open_host_app",
+                "set_preference",
+                "retry_blocked_accounts",
+                "unblock_account",
+                "open_privacy_policy",
+                "request_account_deletion",
+                "open_help_support",
+                "open_terms",
+                "sign_out"
+              ]
             },
-            {"id": "failed", "dimensions": {"mutation": "sign_out_error"}, "enabledActions": ["close_settings", "open_review_history", "open_payment_history", "open_host_app", "set_preference", "open_privacy_policy", "request_account_deletion", "open_help_support", "open_terms", "sign_out"]}
+            {
+              "id": "failed",
+              "dimensions": {
+                "mutation": "sign_out_error"
+              },
+              "enabledActions": [
+                "close_settings",
+                "open_review_history",
+                "open_payment_history",
+                "open_host_app",
+                "set_preference",
+                "open_privacy_policy",
+                "request_account_deletion",
+                "open_help_support",
+                "open_terms",
+                "sign_out"
+              ]
+            }
           ]
         },
         "offline": {
-          "dimensions": {"connectivity": "offline"},
+          "dimensions": {
+            "connectivity": "offline"
+          },
           "actionCases": [
-            {"id": "profile_offline", "dimensions": {"profile": "error"}, "enabledActions": ["close_settings", "retry_profile", "open_review_history", "open_payment_history", "open_host_app", "set_preference", "open_privacy_policy", "request_account_deletion", "open_help_support", "open_terms", "sign_out"]},
-            {"id": "blocked_accounts_offline", "dimensions": {"blocked_accounts": "error"}, "enabledActions": ["close_settings", "open_review_history", "open_payment_history", "open_host_app", "set_preference", "retry_blocked_accounts", "open_privacy_policy", "request_account_deletion", "open_help_support", "open_terms", "sign_out"]},
-            {"id": "preference_offline", "dimensions": {"mutation": "preference_error"}, "enabledActions": ["close_settings", "open_review_history", "open_payment_history", "open_host_app", "set_preference", "open_privacy_policy", "request_account_deletion", "open_help_support", "open_terms", "sign_out"]},
-            {"id": "unblock_offline", "dimensions": {"blocked_accounts": "content", "mutation": "unblock_error"}, "enabledActions": ["close_settings", "open_review_history", "open_payment_history", "open_host_app", "set_preference", "unblock_account", "open_privacy_policy", "request_account_deletion", "open_help_support", "open_terms", "sign_out"]},
-            {"id": "delete_offline", "dimensions": {"mutation": "delete_error"}, "enabledActions": ["close_settings", "open_review_history", "open_payment_history", "open_host_app", "set_preference", "open_privacy_policy", "request_account_deletion", "open_help_support", "open_terms", "sign_out"]},
-            {"id": "sign_out_offline", "dimensions": {"mutation": "sign_out_error"}, "enabledActions": ["close_settings", "open_review_history", "open_payment_history", "open_host_app", "set_preference", "open_privacy_policy", "request_account_deletion", "open_help_support", "open_terms", "sign_out"]}
+            {
+              "id": "profile_offline",
+              "dimensions": {
+                "profile": "error"
+              },
+              "enabledActions": [
+                "close_settings",
+                "retry_profile",
+                "open_review_history",
+                "open_payment_history",
+                "open_host_app",
+                "set_preference",
+                "open_privacy_policy",
+                "request_account_deletion",
+                "open_help_support",
+                "open_terms",
+                "sign_out"
+              ]
+            },
+            {
+              "id": "blocked_accounts_offline",
+              "dimensions": {
+                "blocked_accounts": "error"
+              },
+              "enabledActions": [
+                "close_settings",
+                "open_review_history",
+                "open_payment_history",
+                "open_host_app",
+                "set_preference",
+                "retry_blocked_accounts",
+                "open_privacy_policy",
+                "request_account_deletion",
+                "open_help_support",
+                "open_terms",
+                "sign_out"
+              ]
+            },
+            {
+              "id": "preference_offline",
+              "dimensions": {
+                "mutation": "preference_error"
+              },
+              "enabledActions": [
+                "close_settings",
+                "open_review_history",
+                "open_payment_history",
+                "open_host_app",
+                "set_preference",
+                "open_privacy_policy",
+                "request_account_deletion",
+                "open_help_support",
+                "open_terms",
+                "sign_out"
+              ]
+            },
+            {
+              "id": "unblock_offline",
+              "dimensions": {
+                "blocked_accounts": "content",
+                "mutation": "unblock_error"
+              },
+              "enabledActions": [
+                "close_settings",
+                "open_review_history",
+                "open_payment_history",
+                "open_host_app",
+                "set_preference",
+                "unblock_account",
+                "open_privacy_policy",
+                "request_account_deletion",
+                "open_help_support",
+                "open_terms",
+                "sign_out"
+              ]
+            },
+            {
+              "id": "delete_offline",
+              "dimensions": {
+                "mutation": "delete_error"
+              },
+              "enabledActions": [
+                "close_settings",
+                "open_review_history",
+                "open_payment_history",
+                "open_host_app",
+                "set_preference",
+                "open_privacy_policy",
+                "request_account_deletion",
+                "open_help_support",
+                "open_terms",
+                "sign_out"
+              ]
+            },
+            {
+              "id": "sign_out_offline",
+              "dimensions": {
+                "mutation": "sign_out_error"
+              },
+              "enabledActions": [
+                "close_settings",
+                "open_review_history",
+                "open_payment_history",
+                "open_host_app",
+                "set_preference",
+                "open_privacy_policy",
+                "request_account_deletion",
+                "open_help_support",
+                "open_terms",
+                "sign_out"
+              ]
+            }
           ]
         },
-        "text_scale_2": {"dimensions": {"accessibility": "text_scale_2"}},
-        "reduced_motion": {"dimensions": {"accessibility": "reduced_motion"}},
-        "light_dark": {"dimensions": {"theme": "light_dark"}}
+        "text_scale_2": {
+          "dimensions": {
+            "accessibility": "text_scale_2"
+          }
+        },
+        "reduced_motion": {
+          "dimensions": {
+            "accessibility": "reduced_motion"
+          }
+        },
+        "light_dark": {
+          "dimensions": {
+            "theme": "light_dark"
+          }
+        }
       },
-      "requiredEvidence": {"captures": true, "previews": true, "tests": true},
+      "requiredEvidence": {
+        "captures": true,
+        "previews": true,
+        "tests": true
+      },
       "evidenceExceptions": [
         {
-          "stateIds": ["blocked_accounts_loading_error", "offline", "text_scale_2", "reduced_motion", "light_dark"],
-          "evidence": ["tests"],
+          "stateIds": [
+            "blocked_accounts_loading_error",
+            "offline",
+            "text_scale_2",
+            "reduced_motion",
+            "light_dark"
+          ],
+          "evidence": [
+            "tests"
+          ],
           "debtId": "FEATURE-CONTRACT-MIGRATION-001",
           "reason": "These Account Settings states have deterministic capture and Widgetbook evidence but no focused state-level test recorded by the authority."
         },
         {
-          "stateIds": ["history_navigation_rows"],
-          "evidence": ["captures"],
+          "stateIds": [
+            "history_navigation_rows"
+          ],
+          "evidence": [
+            "captures"
+          ],
           "debtId": "FEATURE-CONTRACT-MIGRATION-001",
           "reason": "Review and payment history navigation rows are focused-test and Widgetbook proven but share the profile-backed account capture rather than dedicated standalone state captures."
         }

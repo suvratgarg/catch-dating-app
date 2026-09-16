@@ -3,9 +3,23 @@ import 'package:catch_dating_app/chats/domain/chat_message.dart';
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'conversation_repository.g.dart';
+
+/// Opaque history position. Only the repository can construct storage cursors.
+final class ConversationMessageCursor {
+  const ConversationMessageCursor._(this._document);
+  final DocumentSnapshot<ChatMessage> _document;
+}
+
+final class ConversationMessagePage {
+  const ConversationMessagePage({required this.messages, this.nextCursor});
+  final List<ChatMessage> messages;
+  final ConversationMessageCursor? nextCursor;
+  bool get hasMore => nextCursor != null;
+}
 
 /// App-facing conversation boundary.
 ///
@@ -16,12 +30,18 @@ part 'conversation_repository.g.dart';
 abstract interface class ConversationRepository {
   Stream<List<ChatMessage>> watchMessages({required String conversationId});
 
+  Future<ConversationMessagePage> fetchMessagesPage({
+    required String conversationId,
+    ConversationMessageCursor? cursor,
+  });
+
   Future<String> createMessageId({required String conversationId});
 
   Future<void> sendTextMessage({
     required String conversationId,
     required String senderId,
     required String text,
+    String? messageId,
   });
 
   Future<void> sendImageMessage({
@@ -48,6 +68,23 @@ class FirestoreConversationRepository implements ConversationRepository {
       _chatRepository.watchMessages(matchId: conversationId);
 
   @override
+  Future<ConversationMessagePage> fetchMessagesPage({
+    required String conversationId,
+    ConversationMessageCursor? cursor,
+  }) async {
+    final page = await _chatRepository.fetchMessagesPage(
+      matchId: conversationId,
+      startAfter: cursor?._document,
+    );
+    return ConversationMessagePage(
+      messages: page.items,
+      nextCursor: page.nextCursor == null
+          ? null
+          : ConversationMessageCursor._(page.nextCursor!),
+    );
+  }
+
+  @override
   Future<String> createMessageId({required String conversationId}) =>
       _chatRepository.createMessageId(matchId: conversationId);
 
@@ -56,10 +93,12 @@ class FirestoreConversationRepository implements ConversationRepository {
     required String conversationId,
     required String senderId,
     required String text,
+    String? messageId,
   }) => _chatRepository.sendMessage(
     matchId: conversationId,
     senderId: senderId,
     text: text,
+    messageId: messageId,
   );
 
   @override

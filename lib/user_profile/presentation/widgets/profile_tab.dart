@@ -17,7 +17,6 @@ import 'package:catch_dating_app/user_profile/presentation/profile_edit_controll
 import 'package:catch_dating_app/user_profile/presentation/self_profile_edit_tab_state.dart';
 import 'package:catch_dating_app/user_profile/presentation/self_profile_photo_intent_factory.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_inline_editors.dart';
-import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -46,23 +45,8 @@ class ProfileTab extends ConsumerWidget {
       builder: (context, children) => ListView(
         key: scrollViewKey,
         physics: physics,
-        padding: CatchInsets.formEditBodyRelaxed,
-        children: [
-          Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(
-                maxWidth: CatchLayout.maxContentWidth,
-              ),
-              child: SizedBox(
-                width: double.infinity,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: children,
-                ),
-              ),
-            ),
-          ),
-        ],
+        padding: CatchInsets.pageBody.copyWith(left: 0, right: 0),
+        children: children,
       ),
     );
   }
@@ -189,70 +173,80 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
         emptyStateOmitted: true,
         gap: 0,
         children: [
-          ProfilePhotosSection(
-            first: true,
-            state: editState.photoGrid,
-            onSlotTapped: (index) {
-              final request = photoActions.editorRequest(
-                state: editState.photoGrid,
-                index: index,
-              );
-              unawaited(
-                openProfilePhotoEditor(
-                  context: context,
-                  ref: ref,
-                  index: request.index,
-                  photo: request.photo,
-                  canDelete: request.canDelete,
-                ),
-              );
-            },
-            onDeletePhoto: (index) {
-              final intent = photoActions.deleteIntent(index);
-              unawaited(
-                PhotoUploadController.uploadPhotoMutation.run(ref, (tx) async {
-                  await tx
-                      .get(photoUploadControllerProvider.notifier)
-                      .deletePhoto(intent.index);
-                }),
-              );
-            },
-            onReorderPhoto: (fromIndex, toIndex) {
-              final intent = photoActions.reorderIntent(
-                fromIndex: fromIndex,
-                toIndex: toIndex,
-              );
-              unawaited(
-                PhotoUploadController.uploadPhotoMutation.run(ref, (tx) async {
-                  await tx
-                      .get(photoUploadControllerProvider.notifier)
-                      .reorderPhoto(
-                        fromIndex: intent.fromIndex,
-                        toIndex: intent.toIndex,
-                      );
-                }),
-              );
-            },
+          CatchPageBody(
+            padding: CatchInsets.pageHorizontal,
+            child: ProfilePhotosSection(
+              first: true,
+              state: editState.photoGrid,
+              onSlotTapped: (index) {
+                final request = photoActions.editorRequest(
+                  state: editState.photoGrid,
+                  index: index,
+                );
+                unawaited(
+                  openProfilePhotoEditor(
+                    context: context,
+                    ref: ref,
+                    index: request.index,
+                    photo: request.photo,
+                    canDelete: request.canDelete,
+                  ),
+                );
+              },
+              onDeletePhoto: (index) {
+                final intent = photoActions.deleteIntent(index);
+                unawaited(
+                  PhotoUploadController.uploadPhotoMutation.run(ref, (
+                    tx,
+                  ) async {
+                    await tx
+                        .get(photoUploadControllerProvider.notifier)
+                        .deletePhoto(intent.index);
+                  }),
+                );
+              },
+              onReorderPhoto: (fromIndex, toIndex) {
+                final intent = photoActions.reorderIntent(
+                  fromIndex: fromIndex,
+                  toIndex: toIndex,
+                );
+                unawaited(
+                  PhotoUploadController.uploadPhotoMutation.run(ref, (
+                    tx,
+                  ) async {
+                    await tx
+                        .get(photoUploadControllerProvider.notifier)
+                        .reorderPhoto(
+                          fromIndex: intent.fromIndex,
+                          toIndex: intent.toIndex,
+                        );
+                  }),
+                );
+              },
+            ),
           ),
-          CatchSection.divided(
-            title: context.l10n.userProfileProfileTabTitlePrompts,
-            count: context.l10n
-                .userProfileProfileTabVisiblecopyCompletedpromptcountOfMaxprofilepromptanswersAnswered(
-                  completedPromptCount: editState.completedPromptCount,
-                  maxProfilePromptAnswers: maxProfilePromptAnswers,
-                ),
-            showInternalDividers: false,
-            children: [
-              for (var index = 0; index < prompts.length; index++)
-                Padding(
-                  padding: index == 0
-                      ? _firstPromptPadding
-                      : visiblePromptSlots[index].isAddAffordance
-                      ? _promptAddPadding
-                      : _promptCardPadding,
-                  child: prompts[index],
-                ),
-            ],
+          CatchPageBody(
+            padding: CatchInsets.pageHorizontal,
+            child: CatchSection.divided(
+              title: context.l10n.userProfileProfileTabTitlePrompts,
+              count: context.l10n
+                  .userProfileProfileTabVisiblecopyCompletedpromptcountOfMaxprofilepromptanswersAnswered(
+                    completedPromptCount: editState.completedPromptCount,
+                    maxProfilePromptAnswers: maxProfilePromptAnswers,
+                  ),
+              showInternalDividers: false,
+              children: [
+                for (var index = 0; index < prompts.length; index++)
+                  Padding(
+                    padding: index == 0
+                        ? _firstPromptPadding
+                        : visiblePromptSlots[index].isAddAffordance
+                        ? _promptAddPadding
+                        : _promptCardPadding,
+                    child: prompts[index],
+                  ),
+              ],
+            ),
           ),
           CatchFormRowList<UpdateUserProfilePatch>(
             fieldCopy: catchFieldCopy(context.l10n),
@@ -265,31 +259,37 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
             onSave: _saveAboutPatch,
             errorTextBuilder: _profileSaveErrorText,
           ),
-          CatchSection.fieldRows(
-            title: context.l10n.userProfileProfileTabTitleRunning,
-            children: [
-              for (final row in editState.runningRows)
-                ProfileFieldRow(
-                  descriptor: row,
-                  isExpanded: _fieldAccordion.isExpanded,
-                  onToggle: _fieldAccordion.toggle,
-                  onSaved: _fieldAccordion.collapse,
-                  onCancel: _fieldAccordion.collapse,
-                ),
-            ],
+          CatchPageBody(
+            padding: CatchInsets.pageHorizontal,
+            child: CatchSection.fieldRows(
+              title: context.l10n.userProfileProfileTabTitleRunning,
+              children: [
+                for (final row in editState.runningRows)
+                  ProfileFieldRow(
+                    descriptor: row,
+                    isExpanded: _fieldAccordion.isExpanded,
+                    onToggle: _fieldAccordion.toggle,
+                    onSaved: _fieldAccordion.collapse,
+                    onCancel: _fieldAccordion.collapse,
+                  ),
+              ],
+            ),
           ),
-          CatchSection.fieldRows(
-            title: context.l10n.userProfileProfileTabTitleLifestyle,
-            children: [
-              for (final row in editState.lifestyleRows)
-                ProfileFieldRow(
-                  descriptor: row,
-                  isExpanded: _fieldAccordion.isExpanded,
-                  onToggle: _fieldAccordion.toggle,
-                  onSaved: _fieldAccordion.collapse,
-                  onCancel: _fieldAccordion.collapse,
-                ),
-            ],
+          CatchPageBody(
+            padding: CatchInsets.pageHorizontal,
+            child: CatchSection.fieldRows(
+              title: context.l10n.userProfileProfileTabTitleLifestyle,
+              children: [
+                for (final row in editState.lifestyleRows)
+                  ProfileFieldRow(
+                    descriptor: row,
+                    isExpanded: _fieldAccordion.isExpanded,
+                    onToggle: _fieldAccordion.toggle,
+                    onSaved: _fieldAccordion.collapse,
+                    onCancel: _fieldAccordion.collapse,
+                  ),
+              ],
+            ),
           ),
         ],
       ),

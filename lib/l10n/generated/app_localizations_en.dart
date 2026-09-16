@@ -2134,10 +2134,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'prospective attendees';
 
   @override
-  String get hostsHostInboxScreenMessagePersonalQuestionsAppearHere =>
-      'Personal questions appear here. Broadcast audience size is based on the event roster, not this thread list.';
-
-  @override
   String get hostsHostPaymentAccountCardTitleSetUpPayouts => 'Set up payouts';
 
   @override
@@ -3663,10 +3659,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'No general inquiries';
 
   @override
-  String get hostsHostInboxScreenMessageQuestionsThatAreNot =>
-      'Questions that are not tied to one event will appear here.';
-
-  @override
   String get hostsHostPaymentAccountCardTitlePayouts => 'Payouts';
 
   @override
@@ -4073,14 +4065,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String hostsHostInboxScreenLabelBookedBookedthreadcount({
     required Object bookedThreadCount,
   }) {
-    return 'BOOKED · $bookedThreadCount';
+    return 'Booked · $bookedThreadCount';
   }
 
   @override
   String hostsHostInboxScreenLabelProspectiveProspectivethreadcount({
     required Object prospectiveThreadCount,
   }) {
-    return 'PROSPECTIVE · $prospectiveThreadCount';
+    return 'Prospective · $prospectiveThreadCount';
   }
 
   @override
@@ -6367,12 +6359,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Import CSV or XLSX; ticketing stays on your existing platform.';
 
   @override
-  String get hostsHostEventsListTextLive => 'LIVE';
-
-  @override
-  String get hostsHostEventsListTextToday => 'TODAY';
-
-  @override
   String get hostEventsUpcomingTab => 'Upcoming';
 
   @override
@@ -6520,9 +6506,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsHostTodayLabelGoing => 'expected';
-
-  @override
-  String get hostsHostTodayLabelWaiting => 'checked in';
 
   @override
   String get hostsHostTodayLabelNeedsYou => 'things to finish';
@@ -13592,11 +13575,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostInboxWhatsappChannel => 'WhatsApp Business · Organizer number';
 
   @override
-  String hostInboxCatchChatPreview({required String details}) {
-    return 'Catch chat · Organizer · $details';
-  }
-
-  @override
   String get hostInboxAnnouncementDisclosure =>
       'Recipients see a durable Activity update and may receive a push notification. This does not create a chat thread.';
 
@@ -17405,9 +17383,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get hostAudienceAllResponses => 'All responses';
-
-  @override
   String get hostAudienceAllForms => 'All forms';
 
   @override
@@ -17715,4 +17690,123 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsCreateEventCreateAction => 'Create event';
+
+  @override
+  String hostTodayTaskCountPartial({required int count}) {
+    return '$count+';
+  }
+
+  @override
+  String get hostTodayTaskCoverageIncomplete => 'Some tasks may be missing';
+
+  @override
+  String get hostTodayTonight => 'Tonight';
+
+  @override
+  String get hostTodayLiveNow => 'Live now';
+
+  @override
+  String hostTodayStartsInMinutes({required int minutes}) {
+    return 'Starts in $minutes min';
+  }
+
+  @override
+  String hostTodayStartsInHours({required int hours, required int minutes}) {
+    return 'Starts in ${hours}h ${minutes}m';
+  }
+
+  @override
+  String hostTodayStartsOn({required String date, required String time}) {
+    return 'Starts $date · $time';
+  }
+
+  @override
+  String hostTodayCheckedIn({required int count}) {
+    return '$count checked in';
+  }
+
+  @override
+  String get hostInboxNewMessage => 'New message';
+
+  @override
+  String get hostInboxFindPerson => 'Find a person';
+
+  @override
+  String get hostInboxChoosePerson =>
+      'Choose someone from People or add a new person.';
+
+  @override
+  String get hostInboxAddPerson => 'Add person';
+
+  @override
+  String get hostInboxReplyVia => 'Reply via';
+
+  @override
+  String get hostInboxCatchChannel => 'Catch';
+
+  @override
+  String get hostInboxPartialSources =>
+      'Some conversations are still loading or unavailable. Available messages are shown.';
+
+  @override
+  String get hostInboxMoreConversations => 'Load more conversations';
+
+  @override
+  String get hostInboxUnclassified =>
+      'Booking status is unavailable for some people. Their conversations are included below.';
+
+  @override
+  String get hostInboxUnknownBooking => 'Booking status unavailable';
+
+  @override
+  String hostInboxPartialUnread({required int count}) {
+    return 'At least $count unread messages. Some source read counts are unavailable.';
+  }
+
+  @override
+  String get hostInboxHistoryCoverage =>
+      'This conversation shows available retained history. Some older messages may be missing.';
+
+  @override
+  String get hostInboxSharedThreadHistory =>
+      'This source conversation also covers other events. Its messages are shown together because individual messages do not carry event labels.';
+
+  @override
+  String get hostInboxSelectionUnavailable =>
+      'This conversation is no longer available in the selected organizer and scope.';
+
+  @override
+  String get hostInboxRouteUnavailable =>
+      'This reply route is unavailable. Choose an available route or review the person’s details.';
+
+  @override
+  String get hostInboxChooseReplyRoute =>
+      'Choose a reply route before writing a message.';
+
+  @override
+  String get hostInboxAvailableRoutes => 'Available ways to message';
+
+  @override
+  String get hostInboxOpenPerson => 'Open person details';
+
+  @override
+  String get hostInboxNewMessageUnavailable =>
+      'No in-app reply route is currently available. Review contact details and messaging permissions on the person’s record.';
+
+  @override
+  String hostInboxMessageVia({required String channel}) {
+    return 'Message via $channel';
+  }
+
+  @override
+  String get hostInboxBookedStatus => 'Booked';
+
+  @override
+  String get hostInboxProspectiveStatus => 'Prospective';
+
+  @override
+  String get hostInboxOlderMessages => 'Load older Catch messages';
+
+  @override
+  String get hostInboxWhatsappReplyChannel => 'WhatsApp';
 }

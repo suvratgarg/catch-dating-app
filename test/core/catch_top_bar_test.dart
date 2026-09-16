@@ -9,6 +9,43 @@ import 'package:flutter_test/flutter_test.dart';
 import '../test_pump_helpers.dart';
 
 void main() {
+  testWidgets('identity chrome reserves scaled name and control padding', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: const MediaQuery(
+          data: MediaQueryData(textScaler: TextScaler.linear(2)),
+          child: Scaffold(
+            body: Column(
+              children: [
+                CatchTopBar.identity(
+                  identityName: 'Riya Mehta',
+                  identitySemanticLabel: 'Riya Mehta',
+                  applySafeArea: false,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+    final bar = tester.getRect(find.byType(CatchTopBar));
+    final name = tester.getRect(find.text('Riya Mehta'));
+    expect(bar.contains(name.topLeft), isTrue);
+    expect(name.bottom, lessThanOrEqualTo(bar.bottom));
+    expect(tester.takeException(), isNull);
+    final context = tester.element(find.byType(CatchTopBar));
+    expect(
+      tester
+          .widget<CatchTopBar>(find.byType(CatchTopBar))
+          .preferredSizeFor(context)
+          .height,
+      bar.height,
+    );
+  });
+
   testWidgets('CatchTopBar renders the handoff-sized title row', (
     tester,
   ) async {

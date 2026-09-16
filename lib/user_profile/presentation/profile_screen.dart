@@ -211,7 +211,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
           controller: controller,
           pages: [
             CatchRootScreenPageSpec.scroll(
-              page: CatchRootScreenPageScrollView.standard(
+              page: CatchRootScreenPageScrollView.sections(
                 scrollKey: const PageStorageKey('profile-edit-tab-scroll'),
                 children: [
                   ProfileTabSliverBody(

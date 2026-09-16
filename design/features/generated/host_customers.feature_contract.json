@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/host_customers.feature.json",
   "generatedFor": "2026-09-03",
-  "sourceDigest": "sha256:c96012eb59c923ec7e150b9ed747bfeeb8e28d237e0bfcfebb1eea9fb4766c57",
-  "resolvedDigest": "sha256:e638d7e8cffe42a0c09090039429420a9e390e6132c1739927d0b5d18afc3b44",
+  "sourceDigest": "sha256:ef2ae59e811119e576bb73983ea0504ee5389eb3037618c08f53cc919fa017dd",
+  "resolvedDigest": "sha256:2055ef6b8b1e30a9eda29ff748ef77d0026426b02b00706288c0e8ec20a749de",
   "feature": {
     "id": "feature.host_customers",
     "name": "Host Audience CRM",
@@ -119,7 +119,6 @@
           "catch.field",
           "catch.notice",
           "catch.chip.field",
-          "catch.person_row",
           "catch.search_field",
           "catch.section",
           "catch.skeleton",
@@ -6167,6 +6166,7 @@
               "file": "packages/catch_ui/lib/src/components/catch_field.dart",
               "constructors": [
                 "CatchField.read",
+                "CatchField.navigate",
                 "CatchField.content",
                 "CatchField.nav",
                 "CatchField.sortable",
@@ -6209,19 +6209,6 @@
             }
           },
           {
-            "id": "catch.person_row",
-            "kind": "composite",
-            "dart": {
-              "symbol": "CatchPersonRow",
-              "file": "packages/catch_ui/lib/src/components/catch_person_row.dart",
-              "constructors": [
-                "CatchPersonRow",
-                "CatchPersonRow.directory",
-                "CatchPersonRow.contact"
-              ]
-            }
-          },
-          {
             "id": "catch.search_field",
             "kind": "primitive",
             "dart": {
@@ -6247,7 +6234,12 @@
                 "CatchSection.containedFieldGroups",
                 "CatchSection.contained",
                 "CatchSection.plain",
-                "CatchSection.horizontal"
+                "CatchSection.horizontal",
+                "CatchSection.rows",
+                "CatchSection.containedRows",
+                "CatchSection.sliverRows",
+                "CatchSection.content",
+                "CatchSection.formRows"
               ]
             }
           },

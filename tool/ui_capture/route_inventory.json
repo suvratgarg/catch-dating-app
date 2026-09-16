@@ -4,7 +4,7 @@
   "source": {
     "path": "lib/routing/route_contract.dart",
     "runtimePath": "lib/routing/go_router.dart",
-    "normalizedFileSha256": "d58dc7023764a3566ce20f74b583ce7fc62c8c7785feb6bfc86362cee39f45eb",
+    "normalizedFileSha256": "5ae8091efe6e0b91e7e012f069b3baa0eeab4d57576ef639aad68f811322047a",
     "routeContractSha256": "201100c69a1d9af09e2701ec817a5abe998e8d9171d1634df6cbf75922c6c234",
     "goRouteCount": 86,
     "shellBranchCount": 9,
@@ -19,8 +19,8 @@
       "_hostCustomersLegacyRoute",
       "_hostFormsLegacyRoute"
     ],
-    "imperativePageRouteCount": 11,
-    "imperativePageTargetCount": 7
+    "imperativePageRouteCount": 12,
+    "imperativePageTargetCount": 8
   },
   "routes": [
     {
@@ -1247,6 +1247,15 @@
       "presentationExpression": "(_)=>OrderedPhotoManagerScreen(photos:photos,onAddPhotos:_pickPhotos,onRemovePhoto:_removePhoto,onReorderPhoto:_reorderPhoto,onRetryPhoto:_retryPhoto,onAddPhotosInManager:_pickPhotosInManager,photosListenable:_mediaManagerPhotos,canAdd:true,header:_HostClubLogoManagerHeader(imageBytes:_pickedLogo?.bytes,existingImageUrl:_removeLogoOnSave?null:widget.club.profileImageUrl,onPickLogo:_pickLogo,onRemoveLogo:_removeLogo),footer:_HostClubMediaManagerActions(onSave:_saveMedia,errorText:_mediaErrorText),showDoneAction:false)",
       "presentationTarget": "OrderedPhotoManagerScreen",
       "fullscreenDialogExpression": "true"
+    },
+    {
+      "siteId": "material-page:lib/hosts/presentation/inbox/host_inbox_screen.dart:1",
+      "sourcePath": "lib/hosts/presentation/inbox/host_inbox_screen.dart",
+      "line": 350,
+      "ordinal": 1,
+      "presentationExpression": "(_)=>HostNewMessageScreen(organizerId:organizerId)",
+      "presentationTarget": "HostNewMessageScreen",
+      "fullscreenDialogExpression": null
     },
     {
       "siteId": "material-page:lib/image_uploads/shared/profile_photo_editor_screen.dart:1",

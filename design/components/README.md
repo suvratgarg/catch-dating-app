@@ -49,7 +49,7 @@ gap with a named owner, a specific reason, and a review expiry.
 
 ## Workflow
 
-1. Add or change the Flutter primitive in `lib/core/widgets`.
+1. Add or change the Flutter primitive in `packages/catch_ui/lib/src`.
 2. Update the matching contract entry here, including props, states, slots, and
    DTCG token references. Confirm its accessibility policy preserves primary
    meaning and actions at text scale 2.0 and does not depend on motion.

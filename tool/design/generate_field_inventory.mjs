@@ -13,8 +13,9 @@ const DEFAULT_CONTRACTS = "design/components/catch.components.json";
 const DEFAULT_OUTPUT = "build/reports/field_facade_inventory.json";
 
 export const facadeUseWhen = Object.freeze({
-  read: "Display a non-interactive value row with optional validity and save status.",
+  read: "Display passive typed row content or a value, with Field-owned state and an optional secondary action.",
   content: "Display title and supporting copy as a stable content row with an optional action.",
+  navigate: "Open a destination from a passive typed layout; Field owns activation, interaction state, semantics and secondary actions.",
   nav: "Open another destination or picker from a row that may show a current value.",
   sortable: "Reorder a compact one-line title and metadata row that also opens item details.",
   action: "Run a non-navigation row action without implying inline value editing.",
@@ -32,11 +33,11 @@ export const facadeUseWhen = Object.freeze({
 export const forbiddenSurfaces = Object.freeze([
   {
     id: "browse",
-    reason: "Browse surfaces tell a product story and must use their owning editorial or card composition.",
+    reason: "An editorial browse surface keeps its own story or card composition; ordinary record rows within it still use Field and Section.",
   },
   {
     id: "discovery",
-    reason: "Discovery surfaces must preserve their feed and recommendation hierarchy instead of adopting form chrome.",
+    reason: "Discovery keeps its feed and recommendation hierarchy; ordinary list rows still use Field without turning the entire feed into a form.",
   },
   {
     id: "celebration",
@@ -49,6 +50,7 @@ export const forbiddenSurfaces = Object.freeze([
 ]);
 
 const slotByParameter = Object.freeze({
+  content: "content",
   title: "title",
   body: "body",
   leading: "leading",
@@ -80,6 +82,7 @@ const slotByParameter = Object.freeze({
   trailing: "suffix",
   suffixText: "suffix",
   actions: "actions",
+  secondaryAction: "secondary-action",
   status: "status",
   valid: "status",
   error: "error",
@@ -90,6 +93,7 @@ const slotByParameter = Object.freeze({
 });
 
 const slotOrder = Object.freeze([
+  "content",
   "title",
   "body",
   "leading",
@@ -104,6 +108,7 @@ const slotOrder = Object.freeze([
   "status",
   "error",
   "actions",
+  "secondary-action",
 ]);
 
 function fieldSlotForParameter(mode, name) {
@@ -121,6 +126,7 @@ const sectionSlotByParameter = Object.freeze({
   footer: "footer",
   groups: "groups",
   children: "children",
+  itemBuilder: "children",
   child: "child",
 });
 
@@ -149,7 +155,8 @@ export function extractCatchFieldFacades(source, {useWhen = facadeUseWhen} = {})
       "factory",
       "CatchField",
     ),
-  ].sort((left, right) => left.offset - right.offset);
+  ].filter((declaration) => !declaration.internal)
+    .sort((left, right) => left.offset - right.offset);
 
   if (declarations.length === 0) {
     throw new Error("No public CatchField facades were found.");
@@ -181,12 +188,21 @@ export function extractCatchSectionVariants(source) {
 }
 
 export function extractCatchSectionContract(source) {
-  const declarations = extractDeclarations(
-    source,
-    /\bconst\s+CatchSection\.([A-Za-z][A-Za-z0-9_]*)\s*\(/gu,
-    "constructor",
-    "CatchSection",
-  ).filter((declaration) => !declaration.name.startsWith("_"));
+  const declarations = [
+    ...extractDeclarations(
+      source,
+      /\bconst\s+CatchSection\.([A-Za-z][A-Za-z0-9_]*)\s*\(/gu,
+      "constructor",
+      "CatchSection",
+    ),
+    ...extractDeclarations(
+      source,
+      /\bfactory\s+CatchSection\.([A-Za-z][A-Za-z0-9_]*)\s*\(/gu,
+      "factory",
+      "CatchSection",
+    ),
+  ].filter((declaration) => !declaration.internal)
+    .sort((left, right) => left.offset - right.offset);
   if (declarations.length === 0) throw new Error("No public CatchSection variants were found.");
   const observedSlots = new Set(
     declarations.flatMap((declaration) =>
@@ -292,6 +308,9 @@ function extractDeclarations(source, expression, kind, owner) {
       name: match[1],
       kind,
       offset: match.index,
+      internal: /@(?:[A-Za-z_]\w*\.)?internal\s*$/u.test(
+        source.slice(0, match.index),
+      ),
       parameters: splitParameters(body.slice(1, -1)).map(parseParameter),
     });
   }

@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../test_pump_helpers.dart';
+
 Widget _app(Widget child) => MaterialApp(
   theme: CatchTheme.light,
   home: Scaffold(body: child),

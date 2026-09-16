@@ -25,11 +25,6 @@ import 'shell_fixture.dart';
 )
 @widgetbook.UseCase(
   name: 'Covered by host event section states',
-  type: HostEventLifecycleRow,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host event section states',
   type: HostEventsTimelinePage,
   path: '[P1 product surfaces]/Host operations/Composed sections',
 )
@@ -230,19 +225,15 @@ Widget _hostHomePreviewFor(BuildContext context, String focus) {
       onViewEvents: () {},
       onStartRehearsal: () {},
     ),
-    'HostTodayEventSpotlight' => HostTodayEventSpotlight(
+    'HostTodayEventSection' => HostTodayEventSection(
       event: event,
       now: HostOperationsFixtures.now,
       taskCount: tasks.length,
       onPressed: () {},
     ),
-    'HostTodayEventMetric' => const HostTodayEventMetric(
+    'HostTodayEventMetricTile' => const HostTodayEventMetricTile(
       value: '10',
       label: 'Going',
-    ),
-    'HostTodayAttentionCard' => HostTodayAttentionCard(
-      data: tasks.first,
-      onPrimary: () {},
     ),
     _ => Text('No exact preview registered for $focus.'),
   };
@@ -255,14 +246,6 @@ Widget _hostHomePreviewFor(BuildContext context, String focus) {
 )
 Widget hostStrictCatchEmptyStateCatalogStates(BuildContext context) =>
     _hostHomeExactCatalog(context, 'CatchEmptyState');
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: HostEventLifecycleRow,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictHostEventLifecycleRowCatalogStates(BuildContext context) =>
-    hostHomeEventSectionStates(context);
 
 @widgetbook.UseCase(
   name: 'Exact catalog',

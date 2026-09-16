@@ -213,6 +213,13 @@ class _CatchChoiceInputState<T> extends State<CatchChoiceInput<T>> {
   var _labelKeys = <GlobalKey>[];
   var _labelRects = <Rect?>[];
   bool _revealSelected = true;
+  final _railScrollController = ScrollController();
+
+  @override
+  void dispose() {
+    _railScrollController.dispose();
+    super.dispose();
+  }
 
   List<CatchOption<T>> get _options {
     final values = CatchContractFieldPolicy.supportedChoiceValues(
@@ -307,15 +314,17 @@ class _CatchChoiceInputState<T> extends State<CatchChoiceInput<T>> {
       if (index < 0 || index >= _labelKeys.length) return;
       final labelContext = _labelKeys[index].currentContext;
       if (labelContext == null) return;
-      final scrollable = Scrollable.maybeOf(
-        labelContext,
-        axis: Axis.horizontal,
-      );
+
       final labelBox = labelContext.findRenderObject();
-      if (scrollable != null && labelBox != null) {
+      if (_railScrollController.hasClients && labelBox != null) {
         // Reveal only this rail. Scrolling an ancestor page would move content
         // unexpectedly when a user switches tabs or restores a deep link.
-        unawaited(scrollable.position.ensureVisible(labelBox, alignment: 0.5));
+        unawaited(
+          _railScrollController.position.ensureVisible(
+            labelBox,
+            alignment: 0.5,
+          ),
+        );
       }
     }
   }
@@ -516,6 +525,7 @@ class _CatchChoiceInputState<T> extends State<CatchChoiceInput<T>> {
                                 return false;
                               },
                               child: SingleChildScrollView(
+                                controller: _railScrollController,
                                 scrollDirection: Axis.horizontal,
                                 child: optionsRow,
                               ),

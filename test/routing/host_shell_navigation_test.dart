@@ -240,8 +240,12 @@ void main() {
       );
       expect(shellScaffold.extendBody, tabBarFloats);
       expect(
-        shellScaffold.body,
-        tabBarFloats ? isA<Stack>() : isA<CatchTabViewportScope>(),
+        find.descendant(
+          of: find.byWidget(shellScaffold.body!),
+          matching: find.byType(CatchTabViewportScope),
+          matchRoot: true,
+        ),
+        findsOneWidget,
       );
       expect(
         shellScaffold.bottomNavigationBar,
@@ -297,8 +301,12 @@ void main() {
       expect(keyboardScaffold.extendBody, isFalse);
       expect(keyboardScaffold.bottomNavigationBar, isNull);
       expect(
-        keyboardScaffold.body,
-        tabBarFloats ? isA<Stack>() : isA<CatchTabViewportScope>(),
+        find.descendant(
+          of: find.byWidget(keyboardScaffold.body!),
+          matching: find.byType(CatchTabViewportScope),
+          matchRoot: true,
+        ),
+        findsOneWidget,
       );
       expect(
         keyboardActiveTab.bottomBarPlacement,

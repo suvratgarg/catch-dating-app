@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$ChatsListViewModel {
 
- List<ChatThreadPreview> get newMatches; List<ChatThreadPreview> get conversations; int get totalThreadCount;
+ List<ChatThreadPreview> get newMatches; List<ChatThreadPreview> get conversations; int get totalThreadCount; bool get sourceWindowMayHaveMore;
 /// Create a copy of ChatsListViewModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $ChatsListViewModelCopyWith<ChatsListViewModel> get copyWith => _$ChatsListViewM
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ChatsListViewModel&&const DeepCollectionEquality().equals(other.newMatches, newMatches)&&const DeepCollectionEquality().equals(other.conversations, conversations)&&(identical(other.totalThreadCount, totalThreadCount) || other.totalThreadCount == totalThreadCount));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ChatsListViewModel&&const DeepCollectionEquality().equals(other.newMatches, newMatches)&&const DeepCollectionEquality().equals(other.conversations, conversations)&&(identical(other.totalThreadCount, totalThreadCount) || other.totalThreadCount == totalThreadCount)&&(identical(other.sourceWindowMayHaveMore, sourceWindowMayHaveMore) || other.sourceWindowMayHaveMore == sourceWindowMayHaveMore));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(newMatches),const DeepCollectionEquality().hash(conversations),totalThreadCount);
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(newMatches),const DeepCollectionEquality().hash(conversations),totalThreadCount,sourceWindowMayHaveMore);
 
 @override
 String toString() {
-  return 'ChatsListViewModel(newMatches: $newMatches, conversations: $conversations, totalThreadCount: $totalThreadCount)';
+  return 'ChatsListViewModel(newMatches: $newMatches, conversations: $conversations, totalThreadCount: $totalThreadCount, sourceWindowMayHaveMore: $sourceWindowMayHaveMore)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $ChatsListViewModelCopyWith<$Res>  {
   factory $ChatsListViewModelCopyWith(ChatsListViewModel value, $Res Function(ChatsListViewModel) _then) = _$ChatsListViewModelCopyWithImpl;
 @useResult
 $Res call({
- List<ChatThreadPreview> newMatches, List<ChatThreadPreview> conversations, int totalThreadCount
+ List<ChatThreadPreview> newMatches, List<ChatThreadPreview> conversations, int totalThreadCount, bool sourceWindowMayHaveMore
 });
 
 
@@ -62,12 +62,13 @@ class _$ChatsListViewModelCopyWithImpl<$Res>
 
 /// Create a copy of ChatsListViewModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? newMatches = null,Object? conversations = null,Object? totalThreadCount = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? newMatches = null,Object? conversations = null,Object? totalThreadCount = null,Object? sourceWindowMayHaveMore = null,}) {
   return _then(_self.copyWith(
 newMatches: null == newMatches ? _self.newMatches : newMatches // ignore: cast_nullable_to_non_nullable
 as List<ChatThreadPreview>,conversations: null == conversations ? _self.conversations : conversations // ignore: cast_nullable_to_non_nullable
 as List<ChatThreadPreview>,totalThreadCount: null == totalThreadCount ? _self.totalThreadCount : totalThreadCount // ignore: cast_nullable_to_non_nullable
-as int,
+as int,sourceWindowMayHaveMore: null == sourceWindowMayHaveMore ? _self.sourceWindowMayHaveMore : sourceWindowMayHaveMore // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 
@@ -152,10 +153,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<ChatThreadPreview> newMatches,  List<ChatThreadPreview> conversations,  int totalThreadCount)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<ChatThreadPreview> newMatches,  List<ChatThreadPreview> conversations,  int totalThreadCount,  bool sourceWindowMayHaveMore)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ChatsListViewModel() when $default != null:
-return $default(_that.newMatches,_that.conversations,_that.totalThreadCount);case _:
+return $default(_that.newMatches,_that.conversations,_that.totalThreadCount,_that.sourceWindowMayHaveMore);case _:
   return orElse();
 
 }
@@ -173,10 +174,10 @@ return $default(_that.newMatches,_that.conversations,_that.totalThreadCount);cas
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<ChatThreadPreview> newMatches,  List<ChatThreadPreview> conversations,  int totalThreadCount)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<ChatThreadPreview> newMatches,  List<ChatThreadPreview> conversations,  int totalThreadCount,  bool sourceWindowMayHaveMore)  $default,) {final _that = this;
 switch (_that) {
 case _ChatsListViewModel():
-return $default(_that.newMatches,_that.conversations,_that.totalThreadCount);case _:
+return $default(_that.newMatches,_that.conversations,_that.totalThreadCount,_that.sourceWindowMayHaveMore);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -193,10 +194,10 @@ return $default(_that.newMatches,_that.conversations,_that.totalThreadCount);cas
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<ChatThreadPreview> newMatches,  List<ChatThreadPreview> conversations,  int totalThreadCount)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<ChatThreadPreview> newMatches,  List<ChatThreadPreview> conversations,  int totalThreadCount,  bool sourceWindowMayHaveMore)?  $default,) {final _that = this;
 switch (_that) {
 case _ChatsListViewModel() when $default != null:
-return $default(_that.newMatches,_that.conversations,_that.totalThreadCount);case _:
+return $default(_that.newMatches,_that.conversations,_that.totalThreadCount,_that.sourceWindowMayHaveMore);case _:
   return null;
 
 }
@@ -208,7 +209,7 @@ return $default(_that.newMatches,_that.conversations,_that.totalThreadCount);cas
 
 
 class _ChatsListViewModel extends ChatsListViewModel {
-  const _ChatsListViewModel({required final  List<ChatThreadPreview> newMatches, required final  List<ChatThreadPreview> conversations, required this.totalThreadCount}): _newMatches = newMatches,_conversations = conversations,super._();
+  const _ChatsListViewModel({required final  List<ChatThreadPreview> newMatches, required final  List<ChatThreadPreview> conversations, required this.totalThreadCount, this.sourceWindowMayHaveMore = false}): _newMatches = newMatches,_conversations = conversations,super._();
   
 
  final  List<ChatThreadPreview> _newMatches;
@@ -226,6 +227,7 @@ class _ChatsListViewModel extends ChatsListViewModel {
 }
 
 @override final  int totalThreadCount;
+@override@JsonKey() final  bool sourceWindowMayHaveMore;
 
 /// Create a copy of ChatsListViewModel
 /// with the given fields replaced by the non-null parameter values.
@@ -237,16 +239,16 @@ _$ChatsListViewModelCopyWith<_ChatsListViewModel> get copyWith => __$ChatsListVi
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ChatsListViewModel&&const DeepCollectionEquality().equals(other._newMatches, _newMatches)&&const DeepCollectionEquality().equals(other._conversations, _conversations)&&(identical(other.totalThreadCount, totalThreadCount) || other.totalThreadCount == totalThreadCount));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ChatsListViewModel&&const DeepCollectionEquality().equals(other._newMatches, _newMatches)&&const DeepCollectionEquality().equals(other._conversations, _conversations)&&(identical(other.totalThreadCount, totalThreadCount) || other.totalThreadCount == totalThreadCount)&&(identical(other.sourceWindowMayHaveMore, sourceWindowMayHaveMore) || other.sourceWindowMayHaveMore == sourceWindowMayHaveMore));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_newMatches),const DeepCollectionEquality().hash(_conversations),totalThreadCount);
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_newMatches),const DeepCollectionEquality().hash(_conversations),totalThreadCount,sourceWindowMayHaveMore);
 
 @override
 String toString() {
-  return 'ChatsListViewModel(newMatches: $newMatches, conversations: $conversations, totalThreadCount: $totalThreadCount)';
+  return 'ChatsListViewModel(newMatches: $newMatches, conversations: $conversations, totalThreadCount: $totalThreadCount, sourceWindowMayHaveMore: $sourceWindowMayHaveMore)';
 }
 
 
@@ -257,7 +259,7 @@ abstract mixin class _$ChatsListViewModelCopyWith<$Res> implements $ChatsListVie
   factory _$ChatsListViewModelCopyWith(_ChatsListViewModel value, $Res Function(_ChatsListViewModel) _then) = __$ChatsListViewModelCopyWithImpl;
 @override @useResult
 $Res call({
- List<ChatThreadPreview> newMatches, List<ChatThreadPreview> conversations, int totalThreadCount
+ List<ChatThreadPreview> newMatches, List<ChatThreadPreview> conversations, int totalThreadCount, bool sourceWindowMayHaveMore
 });
 
 
@@ -274,12 +276,13 @@ class __$ChatsListViewModelCopyWithImpl<$Res>
 
 /// Create a copy of ChatsListViewModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? newMatches = null,Object? conversations = null,Object? totalThreadCount = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? newMatches = null,Object? conversations = null,Object? totalThreadCount = null,Object? sourceWindowMayHaveMore = null,}) {
   return _then(_ChatsListViewModel(
 newMatches: null == newMatches ? _self._newMatches : newMatches // ignore: cast_nullable_to_non_nullable
 as List<ChatThreadPreview>,conversations: null == conversations ? _self._conversations : conversations // ignore: cast_nullable_to_non_nullable
 as List<ChatThreadPreview>,totalThreadCount: null == totalThreadCount ? _self.totalThreadCount : totalThreadCount // ignore: cast_nullable_to_non_nullable
-as int,
+as int,sourceWindowMayHaveMore: null == sourceWindowMayHaveMore ? _self.sourceWindowMayHaveMore : sourceWindowMayHaveMore // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 

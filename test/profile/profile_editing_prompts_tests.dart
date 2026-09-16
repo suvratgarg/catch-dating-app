@@ -86,7 +86,7 @@ void _registerProfileEditingPromptsTests() {
     );
   });
 
-  testWidgets('ProfileTab field rows honor fixed screen gutters', (
+  testWidgets('ProfileTab separates full-width rows from content gutters', (
     tester,
   ) async {
     final user = buildUser(name: 'Suvrat Garg');
@@ -96,18 +96,17 @@ void _registerProfileEditingPromptsTests() {
     expect(displayNameTile, findsOneWidget);
 
     final rowRect = tester.getRect(displayNameTile);
-    expect(rowRect.left, CatchSpacing.screenPx);
-    expect(rowRect.right, 390 - CatchSpacing.screenPx);
+    expect(rowRect.left, 0);
+    expect(rowRect.right, 390);
 
-    // Flush contract: within the fixed gutter the row content spans the full
-    // section width — the leading icon starts on the row's leading edge.
+    // Interaction reaches the edges while the leading content stays inset.
     final leadingIcon = find
         .descendant(of: displayNameTile, matching: find.byType(Icon))
         .first;
-    expect(tester.getRect(leadingIcon).left, rowRect.left);
+    expect(tester.getRect(leadingIcon).left, CatchSpacing.screenPx);
 
     // Every section divider aligns to the field text lane (derived from the
-    // leading-slot metrics) and terminates on the row's trailing edge.
+    // leading-slot metrics) and terminates at the trailing content edge.
     final aboutSection = find.ancestor(
       of: displayNameTile,
       matching: find.byType(CatchSection),
@@ -117,7 +116,7 @@ void _registerProfileEditingPromptsTests() {
       matching: find.byWidgetPredicate(
         (widget) =>
             widget is CatchDivider &&
-            widget.variant == CatchDividerVariant.fieldSection,
+            widget.variant == CatchDividerVariant.fieldRow,
       ),
     );
     expect(dividers, findsWidgets);
@@ -128,8 +127,11 @@ void _registerProfileEditingPromptsTests() {
       );
       final box = tester.renderObject<RenderBox>(coloredBox);
       final dividerRect = box.localToGlobal(Offset.zero) & box.size;
-      expect(dividerRect.left - rowRect.left, CatchFieldRow.textLaneInset);
-      expect(dividerRect.right, rowRect.right);
+      expect(
+        dividerRect.left - rowRect.left,
+        CatchSpacing.screenPx + CatchFieldRow.textLaneInset,
+      );
+      expect(dividerRect.right, rowRect.right - CatchSpacing.screenPx);
     }
   });
 
