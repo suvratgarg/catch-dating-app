@@ -4390,6 +4390,15 @@
             "trailing",
             "children"
           ],
+          "CatchSection.loadingRows": [
+            "title",
+            "layouts",
+            "navigable"
+          ],
+          "CatchSection.controls": [
+            "leading",
+            "trailing"
+          ],
           "CatchSection.containedRows": [
             "title",
             "count",
@@ -4415,6 +4424,11 @@
             "itemCount",
             "itemBuilder",
             "indexForKeyBuilder"
+          ],
+          "CatchSection.sliverLoadingRows": [
+            "itemCount",
+            "layoutBuilder",
+            "navigable"
           ]
         },
         "props": [
@@ -4621,6 +4635,35 @@
             "required": false,
             "dartType": "IndexedWidgetBuilder",
             "notes": "sliverRows requires a CatchField return; horizontal accepts arbitrary bounded rail content."
+          },
+          {
+            "name": "layoutBuilder",
+            "type": "callback",
+            "required": false,
+            "dartType": "CatchFieldLayout Function(BuildContext, int)",
+            "notes": "sliverLoadingRows supplies only passive row anatomy; Section and Field own loading paint and geometry."
+          },
+          {
+            "name": "layouts",
+            "type": "list",
+            "required": false,
+            "dartType": "List<CatchFieldLayout>",
+            "notes": "loadingRows supplies passive row anatomy, never a second placeholder tree."
+          },
+          {
+            "name": "leading",
+            "type": "widget",
+            "required": false,
+            "dartType": "Widget",
+            "notes": "controls only; the Section owns both boundaries and content gutter."
+          },
+          {
+            "name": "navigable",
+            "type": "bool",
+            "required": false,
+            "default": true,
+            "dartType": "bool",
+            "notes": "Loading rows reserve a disclosure slot without enabling interaction."
           },
           {
             "name": "height",
@@ -5123,8 +5166,11 @@
           "CatchSection.plain",
           "CatchSection.horizontal",
           "CatchSection.rows",
+          "CatchSection.loadingRows",
+          "CatchSection.controls",
           "CatchSection.containedRows",
           "CatchSection.sliverRows",
+          "CatchSection.sliverLoadingRows",
           "CatchSection.content",
           "CatchSection.formRows"
         ]

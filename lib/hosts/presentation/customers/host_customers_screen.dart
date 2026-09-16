@@ -430,9 +430,13 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
                             }),
                           ),
                           gapH8,
-                          const CatchDivider.section(),
-                          directoryControls,
-                          const CatchDivider.section(),
+                        ],
+                      ),
+                    ),
+                    SliverToBoxAdapter(child: directoryControls),
+                    CatchPageBody.sliver(
+                      child: SliverList.list(
+                        children: [
                           if (directoryState != null &&
                               (effectiveFilter != HostCustomerFilter.all ||
                                   _manualTag != null ||
@@ -480,14 +484,18 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
                         hostCustomersDirectoryControllerProvider(request),
                       ),
                       initialLoadTimeout: null,
-                      loadingBuilder: (_) => const SliverToBoxAdapter(
-                        child: CatchSkeleton.rows(count: 5),
+                      loadingBuilder: (_) => CatchSection.sliverLoadingRows(
+                        itemCount: 5,
+                        layoutBuilder: (_, _) =>
+                            const CatchPersonLayout.placeholder(
+                              hasSupportingText: true,
+                              hasBadge: true,
+                            ),
                       ),
                       errorBuilder: (_, error, _, onBoundaryRetry) =>
                           CatchLocalizedSliverErrorState(
                             error,
                             context: AppErrorContext.customers,
-                            fillRemaining: false,
                             onRetry: onBoundaryRetry,
                           ),
                       builder: (context, state) => HostCustomersDirectory(

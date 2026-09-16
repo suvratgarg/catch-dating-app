@@ -5904,6 +5904,36 @@
       }
     },
     {
+      "id": "design:loading-composition",
+      "category": "design",
+      "path": "tool/design/check_loading_composition.mjs",
+      "command": "node tool/design/check_loading_composition.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Rejects unrelated row skeleton recipes on migrated Host and Consumer screens and screen-local root title typography overrides; reports remaining legacy recipe count for migration.",
+      "impactPaths": [
+        "tool/design/check_loading_composition.test.mjs"
+      ],
+      "checks": [
+        "node --check tool/design/check_loading_composition.mjs",
+        "node --test tool/design/check_loading_composition.test.mjs",
+        "node tool/design/check_loading_composition.mjs"
+      ],
+      "role": "gate",
+      "rules": [
+        "UI-LINT-001",
+        "ASYNC-LOADING-PRESENTATION-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/design/check_loading_composition.test.mjs",
+        "contains": [
+          "rejects hand-built loading rows on protected Host and Consumer screens",
+          "rejects root typography overrides while ignoring comments and strings"
+        ]
+      }
+    },
+    {
       "id": "design:section-dividers",
       "category": "design",
       "path": "tool/design/check_section_dividers.mjs",

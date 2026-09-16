@@ -26,6 +26,7 @@ import 'package:flutter/material.dart';
 
 part 'catch_section_render.dart';
 part 'catch_section_configs.dart';
+part 'catch_collection_toolbar.dart';
 
 enum _CatchSectionVariant { divided, contained, plain }
 
@@ -323,6 +324,35 @@ class CatchSection extends StatelessWidget {
     ),
   );
 
+  /// Box placeholders with the same Field and Section geometry as [rows].
+  factory CatchSection.loadingRows({
+    Key? key,
+    String? title,
+    required List<CatchFieldLayout> layouts,
+    bool navigable = true,
+  }) => CatchSection._rows(
+    key: key,
+    title: title,
+    rowSection: CatchRowSection(
+      title: title,
+      loading: true,
+      children: [
+        for (final layout in layouts)
+          CatchField.loading(content: layout, navigable: navigable),
+      ],
+    ),
+  );
+
+  /// Collection sort/filter controls with both section-owned boundary rules.
+  factory CatchSection.controls({
+    Key? key,
+    required Widget leading,
+    Widget? trailing,
+  }) => CatchSection._rows(
+    key: key,
+    rowSection: _CatchCollectionToolbar(leading: leading, trailing: trailing),
+  );
+
   /// One rounded exterior containing full-width internal row bands.
   factory CatchSection.containedRows({
     Key? key,
@@ -398,6 +428,25 @@ class CatchSection extends StatelessWidget {
       itemCount: itemCount,
       itemBuilder: itemBuilder,
       indexForKeyBuilder: indexForKeyBuilder,
+    ),
+  );
+
+  /// Lazy placeholders rendered through the same Field and Section geometry
+  /// as [sliverRows]. Only the passive value layout is caller-configurable.
+  factory CatchSection.sliverLoadingRows({
+    Key? key,
+    int itemCount = 3,
+    required CatchFieldLayout Function(BuildContext, int) layoutBuilder,
+    bool navigable = true,
+  }) => CatchSection._rows(
+    key: key,
+    rowSection: CatchRowSection.sliver(
+      itemCount: itemCount,
+      loading: true,
+      itemBuilder: (context, index) => CatchField.loading(
+        content: layoutBuilder(context, index),
+        navigable: navigable,
+      ),
     ),
   );
 

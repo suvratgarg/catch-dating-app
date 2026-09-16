@@ -8,6 +8,7 @@ import 'package:catch_ui/src/components/catch_field_geometry_scope_variant.dart'
 import 'package:catch_ui/src/components/catch_field_motion.dart';
 import 'package:catch_ui/src/components/catch_section_surface.dart';
 import 'package:catch_ui/src/patterns/catch_row_viewport.dart';
+import 'package:catch_ui/src/patterns/catch_skeleton.dart';
 import 'package:catch_ui/src/primitives/catch_divider.dart';
 import 'package:flutter/material.dart';
 
@@ -28,6 +29,7 @@ class CatchRowSection extends StatefulWidget {
     this.count,
     this.trailing,
     this.contained = false,
+    this.loading = false,
   }) : _itemCount = null,
        formLeadingInset = null,
        itemBuilder = null,
@@ -41,6 +43,7 @@ class CatchRowSection extends StatefulWidget {
     this.title,
     this.count,
     this.trailing,
+    this.loading = false,
   }) : children = null,
        formLeadingInset = null,
        contained = false;
@@ -56,6 +59,7 @@ class CatchRowSection extends StatefulWidget {
     this.count,
     this.trailing,
   }) : formLeadingInset = leadingInset,
+       loading = false,
        _itemCount = null,
        itemBuilder = null,
        indexForKeyBuilder = null,
@@ -72,6 +76,7 @@ class CatchRowSection extends StatefulWidget {
   final Object? count;
   final Widget? trailing;
   final bool contained;
+  final bool loading;
 
   @override
   State<CatchRowSection> createState() => _CatchRowSectionState();
@@ -159,7 +164,9 @@ class _CatchRowSectionState extends State<CatchRowSection> {
                   : fullPlane
                   ? CatchFieldGeometryScopeVariant.fullBleedBand
                   : CatchFieldGeometryScopeVariant.roundedTile,
-              child: entry,
+              child: widget.loading
+                  ? CatchSkeleton.content(child: entry)
+                  : entry,
             ),
             if (index < widget.itemCount - 1)
               PositionedDirectional(

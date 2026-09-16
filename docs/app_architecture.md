@@ -1433,13 +1433,26 @@ Use `CatchAsyncBoundary` for simple body screens with one async value.
 
 Use `CatchAsyncBoundary.sliver` for simple sliver surfaces.
 
-When the loaded detail or form composition is known, render that same
-composition with representative branch data inside `CatchSkeleton.content`.
-Do not maintain a second tree of placeholder rows for a detail or form screen:
-section order, field geometry, typography changes, and responsive reflow must
-come from the production body. `CatchSkeleton.rows` and `CatchSkeleton.cards`
-remain appropriate for genuinely repeated collections whose item count and
-row data do not exist yet; they are not substitutes for a known screen body.
+When the loaded detail, form, card, or collection composition is known, render
+that same composition with representative branch data inside
+`CatchSkeleton.content`. `CatchSkeleton.content` suppresses pointer input and
+placeholder semantics while the real layout supplies shape and reflow.
+Ordinary row collections use `CatchSection.loadingRows` or
+`CatchSection.sliverLoadingRows` with the eventual `CatchFieldLayout` anatomy;
+the Section and Field still own gutters, dividers, interaction shape, and
+disclosure slots. A loading branch may estimate count, but it must not invent a
+second row tree or enclosing card. Leaf `CatchSkeleton.box/text/circle` shapes
+remain appropriate only where no actual child layout exists yet, such as an
+unknown remote image or chart.
+
+The route scaffold and its body geometry belong outside async state switches.
+For example, Today selects `CatchRootScreenScaffold.sections` once, then
+switches only the sliver content. A state change cannot substitute a standard
+inset body for the loaded full-width section body. The
+`design:loading-composition` check rejects legacy row recipes on migrated Host
+screens and Consumer presentation surfaces, as well as root-title style
+overrides. It reports remaining legacy Host recipe calls for migration; those
+calls are existing debt, not an approved pattern for new screens.
 
 Both primitives apply `InitialLoadPolicy.standard` (12 seconds) to the first
 user-visible resolution and to blocking retries that have no credible data.

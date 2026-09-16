@@ -32,6 +32,7 @@ class CatchRootScreenScaffold extends StatelessWidget {
   }) : _title = title,
        _primaryRailHeader = null,
        bodyLayout = CatchPageBodyMode.standard,
+       _sectionRhythm = false,
        children = children,
        actions = null,
        body = null,
@@ -54,6 +55,31 @@ class CatchRootScreenScaffold extends StatelessWidget {
   }) : _title = title,
        _primaryRailHeader = null,
        bodyLayout = CatchPageBodyMode.fullBleed,
+       _sectionRhythm = false,
+       children = children,
+       actions = null,
+       body = null,
+       constrainToContentWidth = false,
+       maxContentExtent = CatchLayout.screenPageMaxExtent,
+       assert(children.length > 0);
+
+  /// Section-composed root: edge-owned rows with canonical title rhythm.
+  const CatchRootScreenScaffold.sections({
+    super.key,
+    required Widget title,
+    required List<Widget> children,
+    this.scrollKey,
+    this.controller,
+    this.physics,
+    this.primary,
+    this.onRefresh,
+    this.semanticsLabel,
+    this.semanticsHint,
+    this.topEdge = CatchRootScreenScrollViewPlacement.safeArea,
+  }) : _title = title,
+       _primaryRailHeader = null,
+       bodyLayout = CatchPageBodyMode.fullBleed,
+       _sectionRhythm = true,
        children = children,
        actions = null,
        body = null,
@@ -82,6 +108,7 @@ class CatchRootScreenScaffold extends StatelessWidget {
        _primaryRailHeader = header,
        actions = actions,
        bodyLayout = null,
+       _sectionRhythm = false,
        children = null,
        primary = null,
        onRefresh = null,
@@ -91,6 +118,7 @@ class CatchRootScreenScaffold extends StatelessWidget {
   final Widget? _title;
   final CatchRootScreenHeader? _primaryRailHeader;
   final CatchPageBodyMode? bodyLayout;
+  final bool _sectionRhythm;
 
   /// Sliver children of the standard/fullBleed recipes; the rail recipe uses body.
   final List<Widget>? children;
@@ -139,6 +167,19 @@ class CatchRootScreenScaffold extends StatelessWidget {
           topEdge: topEdge,
           children: children!,
         ),
+        CatchPageBodyMode.fullBleed when _sectionRhythm =>
+          CatchRootScreenScrollView.sections(
+            title: _title!,
+            scrollKey: scrollKey,
+            controller: controller,
+            physics: physics,
+            primary: primary,
+            onRefresh: onRefresh,
+            semanticsLabel: semanticsLabel,
+            semanticsHint: semanticsHint,
+            topEdge: topEdge,
+            children: children!,
+          ),
         CatchPageBodyMode.fullBleed => CatchRootScreenScrollView.fullBleed(
           title: _title!,
           scrollKey: scrollKey,

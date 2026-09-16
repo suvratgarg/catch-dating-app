@@ -72,6 +72,66 @@ void main() {
     expect(find.text('org-1/form-1'), findsOneWidget);
   });
 
+  testWidgets('Responses empty state centers below controls and above nav', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(390, 800);
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          hostFormResponsesControllerProvider.overrideWith2(
+            (_) => _FixedHostFormResponsesController([]),
+          ),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: const CatchTabViewportScope(
+            index: 2,
+            bottomOverlayInset: 100,
+            bottomBarPlacement: CatchTabViewportScopePlacement.floating,
+            child: Scaffold(
+              body: CustomScrollView(
+                slivers: [HostFormResponsesPanel(organizerId: 'org-1')],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    await pumpFeatureUi(tester);
+    final toolbarBottom = tester
+        .getRect(
+          find
+              .ancestor(
+                of: find.text('All statuses'),
+                matching: find.byType(CatchSection),
+              )
+              .first,
+        )
+        .bottom;
+    final empty = find.byType(CatchEmptyState);
+    final iconTop = tester
+        .getRect(
+          find
+              .descendant(of: empty, matching: find.byType(CatchIconTile))
+              .first,
+        )
+        .top;
+    final messageBottom = tester
+        .getRect(
+          find.text(
+            'Share a published form. New submissions will appear here.',
+          ),
+        )
+        .bottom;
+    final contentCenter = (iconTop + messageBottom) / 2;
+    final availableCenter = (toolbarBottom + 700) / 2;
+    expect(contentCenter, closeTo(availableCenter, 24));
+  });
+
   testWidgets('Host Forms keeps Audience composition across route states', (
     tester,
   ) async {

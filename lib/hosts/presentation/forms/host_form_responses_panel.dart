@@ -54,6 +54,32 @@ class _HostFormResponsesPanelState
       query: widget.query,
     );
     final responses = ref.watch(hostFormResponsesControllerProvider(request));
+    final statusControl = CatchButton.command(
+      label: switch (_status) {
+        HostFormResponseStatus.submitted =>
+          context.l10n.hostFormResponsesSubmitted,
+        HostFormResponseStatus.withdrawn =>
+          context.l10n.hostFormResponsesWithdrawn,
+        null => context.l10n.hostAudienceAllStatuses,
+      },
+      leading: Icon(CatchIcons.tune),
+      onPressed: _selectStatus,
+    );
+    final formControl = widget.showFormContext
+        ? CatchButton.command(
+            label: widget.formId == null
+                ? context.l10n.hostAudienceAllForms
+                : widget.formTitle ??
+                      catchAsyncStateFromAsyncValue(
+                        responses,
+                      ).value?.responses.firstOrNull?.formTitle ??
+                      context.l10n.hostAudienceSelectedForm,
+            leading: Icon(CatchIcons.descriptionOutlined),
+            onPressed: widget.onFormChanged != null
+                ? _chooseForm
+                : widget.onClearFormFilter,
+          )
+        : null;
     return SliverMainAxisGroup(
       slivers: [
         SliverToBoxAdapter(
@@ -76,39 +102,10 @@ class _HostFormResponsesPanelState
             ],
           ),
         ),
-        CatchPageBody.sliver(
-          child: SliverToBoxAdapter(
-            child: Wrap(
-              alignment: WrapAlignment.spaceBetween,
-              spacing: CatchSpacing.s4,
-              children: [
-                if (widget.showFormContext)
-                  CatchButton.command(
-                    label: widget.formId == null
-                        ? context.l10n.hostAudienceAllForms
-                        : widget.formTitle ??
-                              catchAsyncStateFromAsyncValue(
-                                responses,
-                              ).value?.responses.firstOrNull?.formTitle ??
-                              context.l10n.hostAudienceSelectedForm,
-                    leading: Icon(CatchIcons.descriptionOutlined),
-                    onPressed: widget.onFormChanged != null
-                        ? _chooseForm
-                        : widget.onClearFormFilter,
-                  ),
-                CatchButton.command(
-                  label: switch (_status) {
-                    HostFormResponseStatus.submitted =>
-                      context.l10n.hostFormResponsesSubmitted,
-                    HostFormResponseStatus.withdrawn =>
-                      context.l10n.hostFormResponsesWithdrawn,
-                    null => context.l10n.hostAudienceAllStatuses,
-                  },
-                  leading: Icon(CatchIcons.tune),
-                  onPressed: _selectStatus,
-                ),
-              ],
-            ),
+        SliverToBoxAdapter(
+          child: CatchSection.controls(
+            leading: formControl ?? statusControl,
+            trailing: formControl == null ? null : statusControl,
           ),
         ),
         CatchAsyncBoundary<HostFormResponsesState>.sliver(
@@ -116,28 +113,31 @@ class _HostFormResponsesPanelState
           onRetry: () =>
               ref.invalidate(hostFormResponsesControllerProvider(request)),
           initialLoadTimeout: null,
-          loadingBuilder: (_) =>
-              const SliverToBoxAdapter(child: CatchSkeleton.rows(count: 6)),
+          loadingBuilder: (_) => CatchSection.sliverLoadingRows(
+            itemCount: 6,
+            layoutBuilder: (_, _) => const CatchPersonLayout.placeholder(
+              hasSupportingText: true,
+              hasContext: true,
+              hasBadge: true,
+            ),
+          ),
           errorBuilder: (_, error, _, onBoundaryRetry) =>
               CatchLocalizedSliverErrorState(
                 error,
                 context: AppErrorContext.formResponses,
-                fillRemaining: false,
                 onRetry: onBoundaryRetry,
               ),
           builder: (context, state) {
             if (state.responses.isEmpty) {
               final filtered = widget.query != null || _status != null;
-              return SliverToBoxAdapter(
-                child: CatchEmptyState(
-                  icon: CatchIcons.descriptionOutlined,
-                  title: filtered
-                      ? context.l10n.hostFormResponsesNoMatchesTitle
-                      : context.l10n.hostFormResponsesEmptyTitle,
-                  message: filtered
-                      ? context.l10n.hostFormResponsesNoMatchesBody
-                      : context.l10n.hostFormResponsesEmptyBody,
-                ),
+              return CatchSliverEmptyState(
+                icon: CatchIcons.descriptionOutlined,
+                title: filtered
+                    ? context.l10n.hostFormResponsesNoMatchesTitle
+                    : context.l10n.hostFormResponsesEmptyTitle,
+                message: filtered
+                    ? context.l10n.hostFormResponsesNoMatchesBody
+                    : context.l10n.hostFormResponsesEmptyBody,
               );
             }
             return SliverMainAxisGroup(
@@ -277,7 +277,17 @@ class _HostFormResponsesPanelState
                 onRetry: () => ref.invalidate(
                   hostFormsDirectoryControllerProvider(request),
                 ),
-                loadingBuilder: (_) => const CatchSkeleton.rows(),
+                loadingBuilder: (_) => CatchSkeleton.content(
+                  child: CatchSection.fieldRows(
+                    children: [
+                      for (var index = 0; index < 3; index++)
+                        CatchField.nav(
+                          copy: catchFieldCopy(context.l10n),
+                          title: 'Loading form',
+                        ),
+                    ],
+                  ),
+                ),
                 builder: (context, state) => CatchSection.fieldRows(
                   children: [
                     for (final form in state.forms)

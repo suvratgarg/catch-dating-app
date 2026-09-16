@@ -367,19 +367,22 @@ class CatchSkeleton extends StatelessWidget {
           ],
         );
       case null:
-        return ExcludeSemantics(
-          excluding: enabled,
-          child: variant == CatchSkeletonVariant.content
-              ? Skeletonizer(
-                  enabled: enabled,
-                  effect: catchSkeletonEffect(context),
-                  ignoreContainers: true,
-                  child: child!,
-                )
-              : Skeletonizer.zone(
-                  effect: catchSkeletonEffect(context),
-                  child: Skeleton.shade(child: child!),
-                ),
+        return IgnorePointer(
+          ignoring: enabled,
+          child: ExcludeSemantics(
+            excluding: enabled,
+            child: variant == CatchSkeletonVariant.content
+                ? Skeletonizer(
+                    enabled: enabled,
+                    effect: catchSkeletonEffect(context),
+                    ignoreContainers: true,
+                    child: child!,
+                  )
+                : Skeletonizer.zone(
+                    effect: catchSkeletonEffect(context),
+                    child: Skeleton.shade(child: child!),
+                  ),
+          ),
         );
       default:
         throw StateError('Unknown internal skeleton recipe');
