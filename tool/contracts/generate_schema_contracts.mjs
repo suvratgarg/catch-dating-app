@@ -598,6 +598,31 @@ const schemaSpecs = [
       "eventMessagingBudgetDecisionReceiptDocument.ts",
   },
   {
+    name: "AdminApplyEventMessagingBudgetCallablePayload",
+    source:
+      "callables/admin_apply_event_messaging_budget_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "adminApplyEventMessagingBudgetCallablePayload.ts",
+  },
+  {
+    name: "AdminApplyEventMessagingBudgetCallableResponse",
+    source:
+      "callable_responses/" +
+      "admin_apply_event_messaging_budget_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "adminApplyEventMessagingBudgetCallableResponse.ts",
+  },
+  {
+    name: "EventMessagingBudgetApplicationReceiptDocument",
+    source:
+      "firestore/event_messaging_budget_application_receipts.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "eventMessagingBudgetApplicationReceiptDocument.ts",
+  },
+  {
     "name": "EventAssistanceGuestDocument",
     "source": "firestore/event_assistance_guests.schema.json",
     "typeOutput": "functions/src/shared/generated/eventAssistanceGuestDocument.ts"

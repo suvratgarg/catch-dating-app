@@ -471,6 +471,193 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const adminApplyEventMessagingBudgetCallablePayloadDecisionId = CatchContractFieldConstraints(
+    path: 'adminApplyEventMessagingBudgetCallablePayload.decisionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminApplyEventMessagingBudgetCallablePayloadExpectedDecisionRevision = CatchContractFieldConstraints(
+    path: 'adminApplyEventMessagingBudgetCallablePayload.expectedDecisionRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const adminApplyEventMessagingBudgetCallablePayloadNote = CatchContractFieldConstraints(
+    path: 'adminApplyEventMessagingBudgetCallablePayload.note',
+    maxLength: 1000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminApplyEventMessagingBudgetCallablePayloadRequestId = CatchContractFieldConstraints(
+    path: 'adminApplyEventMessagingBudgetCallablePayload.requestId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminApplyEventMessagingBudgetCallableResponseApplied = CatchContractFieldConstraints(
+    path: 'adminApplyEventMessagingBudgetCallableResponse.applied',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminApplyEventMessagingBudgetCallableResponseDecisionId = CatchContractFieldConstraints(
+    path: 'adminApplyEventMessagingBudgetCallableResponse.decisionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminApplyEventMessagingBudgetCallableResponseDecisionRevision = CatchContractFieldConstraints(
+    path: 'adminApplyEventMessagingBudgetCallableResponse.decisionRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const adminApplyEventMessagingBudgetCallableResponseEffect = CatchContractFieldConstraints(
+    path: 'adminApplyEventMessagingBudgetCallableResponse.effect',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminApplyEventMessagingBudgetCallableResponseEventBudgetBudgetId = CatchContractFieldConstraints(
+    path: 'adminApplyEventMessagingBudgetCallableResponse.eventBudget.budgetId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const adminApplyEventMessagingBudgetCallableResponseEventBudgetPath = CatchContractFieldConstraints(
+    path: 'adminApplyEventMessagingBudgetCallableResponse.eventBudget.path',
+    maxLength: 500,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminApplyEventMessagingBudgetCallableResponseEventBudgetRevision = CatchContractFieldConstraints(
+    path: 'adminApplyEventMessagingBudgetCallableResponse.eventBudget.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const adminApplyEventMessagingBudgetCallableResponseEventBudgetStatus = CatchContractFieldConstraints(
+    path: 'adminApplyEventMessagingBudgetCallableResponse.eventBudget.status',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminApplyEventMessagingBudgetCallableResponseGrantsDispatchAuthority = CatchContractFieldConstraints(
+    path: 'adminApplyEventMessagingBudgetCallableResponse.grantsDispatchAuthority',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminApplyEventMessagingBudgetCallableResponseGrantsSpendingAuthority = CatchContractFieldConstraints(
+    path: 'adminApplyEventMessagingBudgetCallableResponse.grantsSpendingAuthority',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminApplyEventMessagingBudgetCallableResponseProviderContacted = CatchContractFieldConstraints(
+    path: 'adminApplyEventMessagingBudgetCallableResponse.providerContacted',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminApplyEventMessagingBudgetCallableResponseReceiptId = CatchContractFieldConstraints(
+    path: 'adminApplyEventMessagingBudgetCallableResponse.receiptId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminApplyEventMessagingBudgetCallableResponseReceiptPath = CatchContractFieldConstraints(
+    path: 'adminApplyEventMessagingBudgetCallableResponse.receiptPath',
+    maxLength: 500,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminApplyEventMessagingBudgetCallableResponseReplayed = CatchContractFieldConstraints(
+    path: 'adminApplyEventMessagingBudgetCallableResponse.replayed',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminApplyEventMessagingBudgetCallableResponseRouteId = CatchContractFieldConstraints(
+    path: 'adminApplyEventMessagingBudgetCallableResponse.routeId',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['catchEventSms', 'catchEventRcs', 'organizerEventWhatsapp'],
+  );
+
+  static const adminApplyEventMessagingBudgetCallableResponseSchemaVersion = CatchContractFieldConstraints(
+    path: 'adminApplyEventMessagingBudgetCallableResponse.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const adminApplyEventMessagingBudgetCallableResponseSenderDayBudgetBudgetId = CatchContractFieldConstraints(
+    path: 'adminApplyEventMessagingBudgetCallableResponse.senderDayBudget.budgetId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const adminApplyEventMessagingBudgetCallableResponseSenderDayBudgetPath = CatchContractFieldConstraints(
+    path: 'adminApplyEventMessagingBudgetCallableResponse.senderDayBudget.path',
+    maxLength: 500,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminApplyEventMessagingBudgetCallableResponseSenderDayBudgetRevision = CatchContractFieldConstraints(
+    path: 'adminApplyEventMessagingBudgetCallableResponse.senderDayBudget.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const adminApplyEventMessagingBudgetCallableResponseSenderDayBudgetStatus = CatchContractFieldConstraints(
+    path: 'adminApplyEventMessagingBudgetCallableResponse.senderDayBudget.status',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const adminApplyEventMessagingBudgetCallableResponseStagesSpendingCeilings = CatchContractFieldConstraints(
+    path: 'adminApplyEventMessagingBudgetCallableResponse.stagesSpendingCeilings',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const adminApplyEventMessagingBudgetCallableResponseWorkerActivated = CatchContractFieldConstraints(
+    path: 'adminApplyEventMessagingBudgetCallableResponse.workerActivated',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
   static const adminAssignSafetyTriageItemCallablePayloadAssigneeUid = CatchContractFieldConstraints(
     path: 'adminAssignSafetyTriageItemCallablePayload.assigneeUid',
     valueTypes: <String>['string'],
@@ -29307,6 +29494,331 @@ abstract final class CatchContractConstraints {
     path: 'eventLivePositionDocument.updatedAt._seconds',
     required: true,
     valueTypes: <String>['integer'],
+  );
+
+  static const eventMessagingBudgetApplicationReceiptDocumentAppliedByUid = CatchContractFieldConstraints(
+    path: 'eventMessagingBudgetApplicationReceiptDocument.appliedByUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventMessagingBudgetApplicationReceiptDocumentBudgetSourceHash = CatchContractFieldConstraints(
+    path: 'eventMessagingBudgetApplicationReceiptDocument.budgetSourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventMessagingBudgetApplicationReceiptDocumentContextEventId = CatchContractFieldConstraints(
+    path: 'eventMessagingBudgetApplicationReceiptDocument.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventMessagingBudgetApplicationReceiptDocumentContextMode = CatchContractFieldConstraints(
+    path: 'eventMessagingBudgetApplicationReceiptDocument.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventMessagingBudgetApplicationReceiptDocumentContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventMessagingBudgetApplicationReceiptDocument.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventMessagingBudgetApplicationReceiptDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventMessagingBudgetApplicationReceiptDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventMessagingBudgetApplicationReceiptDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventMessagingBudgetApplicationReceiptDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventMessagingBudgetApplicationReceiptDocumentDecisionId = CatchContractFieldConstraints(
+    path: 'eventMessagingBudgetApplicationReceiptDocument.decisionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventMessagingBudgetApplicationReceiptDocumentDecisionReviewHash = CatchContractFieldConstraints(
+    path: 'eventMessagingBudgetApplicationReceiptDocument.decisionReviewHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventMessagingBudgetApplicationReceiptDocumentDecisionRevision = CatchContractFieldConstraints(
+    path: 'eventMessagingBudgetApplicationReceiptDocument.decisionRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventMessagingBudgetApplicationReceiptDocumentEffect = CatchContractFieldConstraints(
+    path: 'eventMessagingBudgetApplicationReceiptDocument.effect',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventMessagingBudgetApplicationReceiptDocumentEventBudgetBudgetId = CatchContractFieldConstraints(
+    path: 'eventMessagingBudgetApplicationReceiptDocument.eventBudget.budgetId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventMessagingBudgetApplicationReceiptDocumentEventBudgetChargedMicros = CatchContractFieldConstraints(
+    path: 'eventMessagingBudgetApplicationReceiptDocument.eventBudget.chargedMicros',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventMessagingBudgetApplicationReceiptDocumentEventBudgetCurrency = CatchContractFieldConstraints(
+    path: 'eventMessagingBudgetApplicationReceiptDocument.eventBudget.currency',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Z]{3}\$',
+  );
+
+  static const eventMessagingBudgetApplicationReceiptDocumentEventBudgetEndsAt = CatchContractFieldConstraints(
+    path: 'eventMessagingBudgetApplicationReceiptDocument.eventBudget.endsAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventMessagingBudgetApplicationReceiptDocumentEventBudgetLimitMicros = CatchContractFieldConstraints(
+    path: 'eventMessagingBudgetApplicationReceiptDocument.eventBudget.limitMicros',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventMessagingBudgetApplicationReceiptDocumentEventBudgetPath = CatchContractFieldConstraints(
+    path: 'eventMessagingBudgetApplicationReceiptDocument.eventBudget.path',
+    maxLength: 500,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventMessagingBudgetApplicationReceiptDocumentEventBudgetReviewHash = CatchContractFieldConstraints(
+    path: 'eventMessagingBudgetApplicationReceiptDocument.eventBudget.reviewHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventMessagingBudgetApplicationReceiptDocumentEventBudgetRevision = CatchContractFieldConstraints(
+    path: 'eventMessagingBudgetApplicationReceiptDocument.eventBudget.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventMessagingBudgetApplicationReceiptDocumentEventBudgetStartsAt = CatchContractFieldConstraints(
+    path: 'eventMessagingBudgetApplicationReceiptDocument.eventBudget.startsAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventMessagingBudgetApplicationReceiptDocumentEventBudgetStatus = CatchContractFieldConstraints(
+    path: 'eventMessagingBudgetApplicationReceiptDocument.eventBudget.status',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventMessagingBudgetApplicationReceiptDocumentGrantsDispatchAuthority = CatchContractFieldConstraints(
+    path: 'eventMessagingBudgetApplicationReceiptDocument.grantsDispatchAuthority',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventMessagingBudgetApplicationReceiptDocumentGrantsSpendingAuthority = CatchContractFieldConstraints(
+    path: 'eventMessagingBudgetApplicationReceiptDocument.grantsSpendingAuthority',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventMessagingBudgetApplicationReceiptDocumentNote = CatchContractFieldConstraints(
+    path: 'eventMessagingBudgetApplicationReceiptDocument.note',
+    maxLength: 1000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventMessagingBudgetApplicationReceiptDocumentProviderContacted = CatchContractFieldConstraints(
+    path: 'eventMessagingBudgetApplicationReceiptDocument.providerContacted',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventMessagingBudgetApplicationReceiptDocumentPurpose = CatchContractFieldConstraints(
+    path: 'eventMessagingBudgetApplicationReceiptDocument.purpose',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['joiningUpdate', 'joiningInstructions', 'planChanged', 'eventCancelled', 'eventFinished', 'guestRequirement', 'assignmentChanged', 'participationCheck', 'followUp'],
+  );
+
+  static const eventMessagingBudgetApplicationReceiptDocumentReceiptId = CatchContractFieldConstraints(
+    path: 'eventMessagingBudgetApplicationReceiptDocument.receiptId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventMessagingBudgetApplicationReceiptDocumentRequestHash = CatchContractFieldConstraints(
+    path: 'eventMessagingBudgetApplicationReceiptDocument.requestHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventMessagingBudgetApplicationReceiptDocumentRequestId = CatchContractFieldConstraints(
+    path: 'eventMessagingBudgetApplicationReceiptDocument.requestId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventMessagingBudgetApplicationReceiptDocumentRouteId = CatchContractFieldConstraints(
+    path: 'eventMessagingBudgetApplicationReceiptDocument.routeId',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['catchEventSms', 'catchEventRcs', 'organizerEventWhatsapp'],
+  );
+
+  static const eventMessagingBudgetApplicationReceiptDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventMessagingBudgetApplicationReceiptDocument.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventMessagingBudgetApplicationReceiptDocumentSenderDayBudgetBudgetId = CatchContractFieldConstraints(
+    path: 'eventMessagingBudgetApplicationReceiptDocument.senderDayBudget.budgetId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventMessagingBudgetApplicationReceiptDocumentSenderDayBudgetChargedMicros = CatchContractFieldConstraints(
+    path: 'eventMessagingBudgetApplicationReceiptDocument.senderDayBudget.chargedMicros',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventMessagingBudgetApplicationReceiptDocumentSenderDayBudgetCurrency = CatchContractFieldConstraints(
+    path: 'eventMessagingBudgetApplicationReceiptDocument.senderDayBudget.currency',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Z]{3}\$',
+  );
+
+  static const eventMessagingBudgetApplicationReceiptDocumentSenderDayBudgetEndsAt = CatchContractFieldConstraints(
+    path: 'eventMessagingBudgetApplicationReceiptDocument.senderDayBudget.endsAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventMessagingBudgetApplicationReceiptDocumentSenderDayBudgetLimitMicros = CatchContractFieldConstraints(
+    path: 'eventMessagingBudgetApplicationReceiptDocument.senderDayBudget.limitMicros',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventMessagingBudgetApplicationReceiptDocumentSenderDayBudgetPath = CatchContractFieldConstraints(
+    path: 'eventMessagingBudgetApplicationReceiptDocument.senderDayBudget.path',
+    maxLength: 500,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventMessagingBudgetApplicationReceiptDocumentSenderDayBudgetReviewHash = CatchContractFieldConstraints(
+    path: 'eventMessagingBudgetApplicationReceiptDocument.senderDayBudget.reviewHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventMessagingBudgetApplicationReceiptDocumentSenderDayBudgetRevision = CatchContractFieldConstraints(
+    path: 'eventMessagingBudgetApplicationReceiptDocument.senderDayBudget.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventMessagingBudgetApplicationReceiptDocumentSenderDayBudgetStartsAt = CatchContractFieldConstraints(
+    path: 'eventMessagingBudgetApplicationReceiptDocument.senderDayBudget.startsAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventMessagingBudgetApplicationReceiptDocumentSenderDayBudgetStatus = CatchContractFieldConstraints(
+    path: 'eventMessagingBudgetApplicationReceiptDocument.senderDayBudget.status',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventMessagingBudgetApplicationReceiptDocumentSenderId = CatchContractFieldConstraints(
+    path: 'eventMessagingBudgetApplicationReceiptDocument.senderId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventMessagingBudgetApplicationReceiptDocumentStagesSpendingCeilings = CatchContractFieldConstraints(
+    path: 'eventMessagingBudgetApplicationReceiptDocument.stagesSpendingCeilings',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventMessagingBudgetApplicationReceiptDocumentWorkerActivated = CatchContractFieldConstraints(
+    path: 'eventMessagingBudgetApplicationReceiptDocument.workerActivated',
+    required: true,
+    valueTypes: <String>['boolean'],
   );
 
   static const eventMessagingBudgetDecisionDocumentContextEventId = CatchContractFieldConstraints(
@@ -96987,6 +97499,32 @@ abstract final class CatchContractConstraints {
     'addOrganizerManagerCallablePayload.organizerId': addOrganizerManagerCallablePayloadOrganizerId,
     'addOrganizerManagerCallablePayload.phoneNumber': addOrganizerManagerCallablePayloadPhoneNumber,
     'addOrganizerManagerCallablePayload.uid': addOrganizerManagerCallablePayloadUid,
+    'adminApplyEventMessagingBudgetCallablePayload.decisionId': adminApplyEventMessagingBudgetCallablePayloadDecisionId,
+    'adminApplyEventMessagingBudgetCallablePayload.expectedDecisionRevision': adminApplyEventMessagingBudgetCallablePayloadExpectedDecisionRevision,
+    'adminApplyEventMessagingBudgetCallablePayload.note': adminApplyEventMessagingBudgetCallablePayloadNote,
+    'adminApplyEventMessagingBudgetCallablePayload.requestId': adminApplyEventMessagingBudgetCallablePayloadRequestId,
+    'adminApplyEventMessagingBudgetCallableResponse.applied': adminApplyEventMessagingBudgetCallableResponseApplied,
+    'adminApplyEventMessagingBudgetCallableResponse.decisionId': adminApplyEventMessagingBudgetCallableResponseDecisionId,
+    'adminApplyEventMessagingBudgetCallableResponse.decisionRevision': adminApplyEventMessagingBudgetCallableResponseDecisionRevision,
+    'adminApplyEventMessagingBudgetCallableResponse.effect': adminApplyEventMessagingBudgetCallableResponseEffect,
+    'adminApplyEventMessagingBudgetCallableResponse.eventBudget.budgetId': adminApplyEventMessagingBudgetCallableResponseEventBudgetBudgetId,
+    'adminApplyEventMessagingBudgetCallableResponse.eventBudget.path': adminApplyEventMessagingBudgetCallableResponseEventBudgetPath,
+    'adminApplyEventMessagingBudgetCallableResponse.eventBudget.revision': adminApplyEventMessagingBudgetCallableResponseEventBudgetRevision,
+    'adminApplyEventMessagingBudgetCallableResponse.eventBudget.status': adminApplyEventMessagingBudgetCallableResponseEventBudgetStatus,
+    'adminApplyEventMessagingBudgetCallableResponse.grantsDispatchAuthority': adminApplyEventMessagingBudgetCallableResponseGrantsDispatchAuthority,
+    'adminApplyEventMessagingBudgetCallableResponse.grantsSpendingAuthority': adminApplyEventMessagingBudgetCallableResponseGrantsSpendingAuthority,
+    'adminApplyEventMessagingBudgetCallableResponse.providerContacted': adminApplyEventMessagingBudgetCallableResponseProviderContacted,
+    'adminApplyEventMessagingBudgetCallableResponse.receiptId': adminApplyEventMessagingBudgetCallableResponseReceiptId,
+    'adminApplyEventMessagingBudgetCallableResponse.receiptPath': adminApplyEventMessagingBudgetCallableResponseReceiptPath,
+    'adminApplyEventMessagingBudgetCallableResponse.replayed': adminApplyEventMessagingBudgetCallableResponseReplayed,
+    'adminApplyEventMessagingBudgetCallableResponse.routeId': adminApplyEventMessagingBudgetCallableResponseRouteId,
+    'adminApplyEventMessagingBudgetCallableResponse.schemaVersion': adminApplyEventMessagingBudgetCallableResponseSchemaVersion,
+    'adminApplyEventMessagingBudgetCallableResponse.senderDayBudget.budgetId': adminApplyEventMessagingBudgetCallableResponseSenderDayBudgetBudgetId,
+    'adminApplyEventMessagingBudgetCallableResponse.senderDayBudget.path': adminApplyEventMessagingBudgetCallableResponseSenderDayBudgetPath,
+    'adminApplyEventMessagingBudgetCallableResponse.senderDayBudget.revision': adminApplyEventMessagingBudgetCallableResponseSenderDayBudgetRevision,
+    'adminApplyEventMessagingBudgetCallableResponse.senderDayBudget.status': adminApplyEventMessagingBudgetCallableResponseSenderDayBudgetStatus,
+    'adminApplyEventMessagingBudgetCallableResponse.stagesSpendingCeilings': adminApplyEventMessagingBudgetCallableResponseStagesSpendingCeilings,
+    'adminApplyEventMessagingBudgetCallableResponse.workerActivated': adminApplyEventMessagingBudgetCallableResponseWorkerActivated,
     'adminAssignSafetyTriageItemCallablePayload.assigneeUid': adminAssignSafetyTriageItemCallablePayloadAssigneeUid,
     'adminAssignSafetyTriageItemCallablePayload.note': adminAssignSafetyTriageItemCallablePayloadNote,
     'adminAssignSafetyTriageItemCallablePayload.targetPath': adminAssignSafetyTriageItemCallablePayloadTargetPath,
@@ -100900,6 +101438,50 @@ abstract final class CatchContractConstraints {
     'eventLivePositionDocument.uid': eventLivePositionDocumentUid,
     'eventLivePositionDocument.updatedAt._nanoseconds': eventLivePositionDocumentUpdatedAtNanoseconds,
     'eventLivePositionDocument.updatedAt._seconds': eventLivePositionDocumentUpdatedAtSeconds,
+    'eventMessagingBudgetApplicationReceiptDocument.appliedByUid': eventMessagingBudgetApplicationReceiptDocumentAppliedByUid,
+    'eventMessagingBudgetApplicationReceiptDocument.budgetSourceHash': eventMessagingBudgetApplicationReceiptDocumentBudgetSourceHash,
+    'eventMessagingBudgetApplicationReceiptDocument.context.eventId': eventMessagingBudgetApplicationReceiptDocumentContextEventId,
+    'eventMessagingBudgetApplicationReceiptDocument.context.mode': eventMessagingBudgetApplicationReceiptDocumentContextMode,
+    'eventMessagingBudgetApplicationReceiptDocument.context.organizerId': eventMessagingBudgetApplicationReceiptDocumentContextOrganizerId,
+    'eventMessagingBudgetApplicationReceiptDocument.createdAt._nanoseconds': eventMessagingBudgetApplicationReceiptDocumentCreatedAtNanoseconds,
+    'eventMessagingBudgetApplicationReceiptDocument.createdAt._seconds': eventMessagingBudgetApplicationReceiptDocumentCreatedAtSeconds,
+    'eventMessagingBudgetApplicationReceiptDocument.decisionId': eventMessagingBudgetApplicationReceiptDocumentDecisionId,
+    'eventMessagingBudgetApplicationReceiptDocument.decisionReviewHash': eventMessagingBudgetApplicationReceiptDocumentDecisionReviewHash,
+    'eventMessagingBudgetApplicationReceiptDocument.decisionRevision': eventMessagingBudgetApplicationReceiptDocumentDecisionRevision,
+    'eventMessagingBudgetApplicationReceiptDocument.effect': eventMessagingBudgetApplicationReceiptDocumentEffect,
+    'eventMessagingBudgetApplicationReceiptDocument.eventBudget.budgetId': eventMessagingBudgetApplicationReceiptDocumentEventBudgetBudgetId,
+    'eventMessagingBudgetApplicationReceiptDocument.eventBudget.chargedMicros': eventMessagingBudgetApplicationReceiptDocumentEventBudgetChargedMicros,
+    'eventMessagingBudgetApplicationReceiptDocument.eventBudget.currency': eventMessagingBudgetApplicationReceiptDocumentEventBudgetCurrency,
+    'eventMessagingBudgetApplicationReceiptDocument.eventBudget.endsAt': eventMessagingBudgetApplicationReceiptDocumentEventBudgetEndsAt,
+    'eventMessagingBudgetApplicationReceiptDocument.eventBudget.limitMicros': eventMessagingBudgetApplicationReceiptDocumentEventBudgetLimitMicros,
+    'eventMessagingBudgetApplicationReceiptDocument.eventBudget.path': eventMessagingBudgetApplicationReceiptDocumentEventBudgetPath,
+    'eventMessagingBudgetApplicationReceiptDocument.eventBudget.reviewHash': eventMessagingBudgetApplicationReceiptDocumentEventBudgetReviewHash,
+    'eventMessagingBudgetApplicationReceiptDocument.eventBudget.revision': eventMessagingBudgetApplicationReceiptDocumentEventBudgetRevision,
+    'eventMessagingBudgetApplicationReceiptDocument.eventBudget.startsAt': eventMessagingBudgetApplicationReceiptDocumentEventBudgetStartsAt,
+    'eventMessagingBudgetApplicationReceiptDocument.eventBudget.status': eventMessagingBudgetApplicationReceiptDocumentEventBudgetStatus,
+    'eventMessagingBudgetApplicationReceiptDocument.grantsDispatchAuthority': eventMessagingBudgetApplicationReceiptDocumentGrantsDispatchAuthority,
+    'eventMessagingBudgetApplicationReceiptDocument.grantsSpendingAuthority': eventMessagingBudgetApplicationReceiptDocumentGrantsSpendingAuthority,
+    'eventMessagingBudgetApplicationReceiptDocument.note': eventMessagingBudgetApplicationReceiptDocumentNote,
+    'eventMessagingBudgetApplicationReceiptDocument.providerContacted': eventMessagingBudgetApplicationReceiptDocumentProviderContacted,
+    'eventMessagingBudgetApplicationReceiptDocument.purpose': eventMessagingBudgetApplicationReceiptDocumentPurpose,
+    'eventMessagingBudgetApplicationReceiptDocument.receiptId': eventMessagingBudgetApplicationReceiptDocumentReceiptId,
+    'eventMessagingBudgetApplicationReceiptDocument.requestHash': eventMessagingBudgetApplicationReceiptDocumentRequestHash,
+    'eventMessagingBudgetApplicationReceiptDocument.requestId': eventMessagingBudgetApplicationReceiptDocumentRequestId,
+    'eventMessagingBudgetApplicationReceiptDocument.routeId': eventMessagingBudgetApplicationReceiptDocumentRouteId,
+    'eventMessagingBudgetApplicationReceiptDocument.schemaVersion': eventMessagingBudgetApplicationReceiptDocumentSchemaVersion,
+    'eventMessagingBudgetApplicationReceiptDocument.senderDayBudget.budgetId': eventMessagingBudgetApplicationReceiptDocumentSenderDayBudgetBudgetId,
+    'eventMessagingBudgetApplicationReceiptDocument.senderDayBudget.chargedMicros': eventMessagingBudgetApplicationReceiptDocumentSenderDayBudgetChargedMicros,
+    'eventMessagingBudgetApplicationReceiptDocument.senderDayBudget.currency': eventMessagingBudgetApplicationReceiptDocumentSenderDayBudgetCurrency,
+    'eventMessagingBudgetApplicationReceiptDocument.senderDayBudget.endsAt': eventMessagingBudgetApplicationReceiptDocumentSenderDayBudgetEndsAt,
+    'eventMessagingBudgetApplicationReceiptDocument.senderDayBudget.limitMicros': eventMessagingBudgetApplicationReceiptDocumentSenderDayBudgetLimitMicros,
+    'eventMessagingBudgetApplicationReceiptDocument.senderDayBudget.path': eventMessagingBudgetApplicationReceiptDocumentSenderDayBudgetPath,
+    'eventMessagingBudgetApplicationReceiptDocument.senderDayBudget.reviewHash': eventMessagingBudgetApplicationReceiptDocumentSenderDayBudgetReviewHash,
+    'eventMessagingBudgetApplicationReceiptDocument.senderDayBudget.revision': eventMessagingBudgetApplicationReceiptDocumentSenderDayBudgetRevision,
+    'eventMessagingBudgetApplicationReceiptDocument.senderDayBudget.startsAt': eventMessagingBudgetApplicationReceiptDocumentSenderDayBudgetStartsAt,
+    'eventMessagingBudgetApplicationReceiptDocument.senderDayBudget.status': eventMessagingBudgetApplicationReceiptDocumentSenderDayBudgetStatus,
+    'eventMessagingBudgetApplicationReceiptDocument.senderId': eventMessagingBudgetApplicationReceiptDocumentSenderId,
+    'eventMessagingBudgetApplicationReceiptDocument.stagesSpendingCeilings': eventMessagingBudgetApplicationReceiptDocumentStagesSpendingCeilings,
+    'eventMessagingBudgetApplicationReceiptDocument.workerActivated': eventMessagingBudgetApplicationReceiptDocumentWorkerActivated,
     'eventMessagingBudgetDecisionDocument.context.eventId': eventMessagingBudgetDecisionDocumentContextEventId,
     'eventMessagingBudgetDecisionDocument.context.mode': eventMessagingBudgetDecisionDocumentContextMode,
     'eventMessagingBudgetDecisionDocument.context.organizerId': eventMessagingBudgetDecisionDocumentContextOrganizerId,

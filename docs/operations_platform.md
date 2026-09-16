@@ -1,6 +1,6 @@
 ---
 doc_id: operations_platform
-version: 1.29.0
+version: 1.30.0
 updated: 2026-09-16
 owner: operations_platform
 status: active
@@ -913,14 +913,33 @@ admin audit entry commit atomically. Stored evidence includes the complete setup
 review hash and the revisions and hashes of any existing event and sender-day
 budgets.
 
-This boundary is deliberately decision-only. It writes
+The decision boundary is deliberately decision-only. It writes
 `eventMessagingBudgetDecisions` plus one immutable request receipt, never any
 channel budget collection. The receipt preserves exact replay after later scope
 decisions. The decision, receipt and response fix
 `grantsSpendingAuthority: false` and
-`effect: decision_only_no_spending_authority`. Creating or changing a budget,
-preserving charged amounts, rechecking the approved decision, provisioning a
-provider and activating a worker remain separate work.
+`effect: decision_only_no_spending_authority`.
+
+`adminApplyEventMessagingBudget` is the separate Admin Owner or Finance
+boundary that can consume one current approved decision. Its request names the
+exact decision revision. In one transaction, the callable rechecks the runtime,
+sender and budget-source hashes; confirms the route is still selected when the
+purpose uses runtime routing; and verifies that neither prior ceiling, revision,
+hash nor conservative charge changed after approval. It then stages both the
+event and sender-day ceilings in `paused` state, preserving charges and
+advancing each revision. New event ceilings begin at application time; SMS
+sender-day windows use India time and WhatsApp/RCS use UTC. RCS also binds the
+private current agent id without returning it through the setup review.
+
+The application writes an immutable request-hash receipt and the admin audit in
+the same transaction. Exact retries replay that receipt; a changed request id
+or stale source fails closed. Its literal effect is
+`budgets_staged_paused_no_spending_or_dispatch_authority`: it grants neither
+spending nor dispatch authority. It does not load a credential, contact a
+provider, write an outbox or dispatch record, configure the runtime, or enable
+a dispatch worker. A later live activation boundary must revalidate the staged
+receipt and change both ceilings together before spending can occur. Consent,
+current content, runtime, provider and dispatch gates remain independent.
 
 ## Adding Another Workflow
 

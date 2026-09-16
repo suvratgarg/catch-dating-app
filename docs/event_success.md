@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.152.0
+version: 1.153.0
 updated: 2026-09-16
 owner: recursive_audit_loop
 status: active
@@ -3195,7 +3195,9 @@ that other channel's consent. Automatic messages still honor their saved sender
 selection. Rehearsal and unpermitted routes cannot load live RCS credentials.
 
 Capability lookup occurs outside Firestore transactions, after checking the
-current sender, event consent, original guest episode and recipient prefix.
+current sender, both active agent/currency-bound budgets, event consent,
+original guest episode and recipient prefix. Missing, paused, expired or
+insufficient budgets stop before credential access and provider capability I/O.
 The in-memory observation binds the exact config and permission hashes, agent,
 endpoint, request ID and open-URL support. It expires within 60 seconds of lookup
 start, bounded further by OAuth, sender, consent and guest-link lifetimes.

@@ -70,6 +70,19 @@ export class RcsDispatchStore {
       const grant = parseGrant(grantSnap.data());
       if (grant.linkId !== linkId || grant.revokedAt !== null ||
           grant.issuedAt > now || grant.expiresAt <= now) return null;
+      const scopes = rcsBudgetScopes(grant.context, now);
+      const budgetSnaps = await tx.getAll(...scopes.map((scope) =>
+        this.db.collection(RCS_BUDGETS)
+          .doc(rcsBudgetId(this.senderId, scope))));
+      if (budgetSnaps.some((snap) => !snap.exists)) return null;
+      let budgets: [RcsBudget, RcsBudget];
+      try {
+        budgets = budgetSnaps.map((snap) =>
+          parseRcsBudget(snap.data())) as [RcsBudget, RcsBudget];
+      } catch {
+        return null;
+      }
+      if (!this.budgetsReady(budgets, scopes, config, now)) return null;
       const consent = await readRcsMessagePermission(this.db, tx,
         {context: grant.context, attendeeId: grant.attendeeId,
           senderId: this.senderId}, config, now);
@@ -230,6 +243,17 @@ export class RcsDispatchStore {
       permission.phoneE164.startsWith(p))) {
       return blocked("channelUnavailable");
     }
+    if (budgetSnaps.some((s) => !s.exists)) return blocked("budgetExceeded");
+    let budgets: [RcsBudget, RcsBudget];
+    try {
+      budgets = budgetSnaps.map((s) => parseRcsBudget(s.data())) as
+        [RcsBudget, RcsBudget];
+    } catch {
+      return blocked("budgetExceeded");
+    }
+    if (!this.budgetsReady(budgets, scopes, config, now)) {
+      return blocked("budgetExceeded");
+    }
     if (!capability) return blocked("channelUnavailable");
     parseRcsCapability(capability);
     if (capability.senderId !== config.senderId ||
@@ -251,15 +275,10 @@ export class RcsDispatchStore {
     } catch {
       return blocked("templateUnavailable");
     }
-    if (budgetSnaps.some((s) => !s.exists)) return blocked("budgetExceeded");
-    const budgets = budgetSnaps.map((s) => parseRcsBudget(s.data())) as
-      [RcsBudget, RcsBudget];
-    if (budgets.some((b, i) =>
-      b.budgetId !== rcsBudgetId(this.senderId, scopes[i]) ||
-      b.agentId !== config.agentId || b.currency !== config.quote.currency ||
-      b.status !== "active" || b.startsAt > now || b.endsAt <= now ||
-      b.updatedAt > now || b.limitMicros - b.chargedMicros <
-        prepared.maxCostMicros)) return blocked("budgetExceeded");
+    if (budgets.some((budget) =>
+      budget.limitMicros - budget.chargedMicros < prepared.maxCostMicros)) {
+      return blocked("budgetExceeded");
+    }
     const validUntil = Math.min(now + 30_000, gate.validUntil,
       permission.expiresAt, prepared.validUntil, capability.validUntil,
       ...budgets.map((b) => b.endsAt));
@@ -287,5 +306,18 @@ export class RcsDispatchStore {
   private senderReady(config: RcsConfig, now: number) {
     return config.senderId === this.senderId && config.status === "ready" &&
       config.activation.approvedAt <= now && config.activation.validUntil > now;
+  }
+
+  private budgetsReady(budgets: [RcsBudget, RcsBudget],
+    scopes: ReturnType<typeof rcsBudgetScopes>, config: RcsConfig,
+    now: number): boolean {
+    return budgets.every((budget, index) =>
+      budget.budgetId === rcsBudgetId(this.senderId, scopes[index]) &&
+      budget.agentId === config.agentId &&
+      budget.currency === config.quote.currency &&
+      budget.status === "active" && budget.startsAt <= now &&
+      budget.endsAt > now && budget.updatedAt <= now &&
+      budget.limitMicros - budget.chargedMicros >=
+        config.quote.maxMicrosPerMessage);
   }
 }

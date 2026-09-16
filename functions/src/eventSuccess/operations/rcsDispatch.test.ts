@@ -96,6 +96,9 @@ test("unavailable RCS chooses SMS with independent consent and no RCS debit",
       if (result.kind !== "submitted") throw new Error("Expected fallback");
       assert.equal(result.routeId, "catchEventSms", cause);
       assert.equal(posts(h).length, 0);
+      if (cause === "budget") {
+        assert.equal(h.requests.filter((r) => r.method === "GET").length, 0);
+      }
       assert.equal((await h.read(h.rcsBudgetPaths[1]))?.chargedMicros, 0);
     }
     const h = await rcsHarness(undefined, "wa-fallback",

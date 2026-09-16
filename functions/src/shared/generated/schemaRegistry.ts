@@ -127,6 +127,9 @@ export {adminDecideEventMessagingBudgetCallablePayloadSchema} from "./schemas/ad
 export {adminDecideEventMessagingBudgetCallableResponseSchema} from "./schemas/adminDecideEventMessagingBudgetOutput";
 export {eventMessagingBudgetDecisionDocumentSchema} from "./schemas/eventMessagingBudgetDecisionDocument";
 export {eventMessagingBudgetDecisionReceiptDocumentSchema} from "./schemas/eventMessagingBudgetDecisionReceiptDocument";
+export {adminApplyEventMessagingBudgetCallablePayloadSchema} from "./schemas/adminApplyEventMessagingBudgetInput";
+export {adminApplyEventMessagingBudgetCallableResponseSchema} from "./schemas/adminApplyEventMessagingBudgetOutput";
+export {eventMessagingBudgetApplicationReceiptDocumentSchema} from "./schemas/eventMessagingBudgetApplicationReceiptDocument";
 export {eventAssistanceGuestDocumentSchema} from "./schemas/eventAssistanceGuestDocument";
 export {eventAssistanceThreadDocumentSchema} from "./schemas/eventAssistanceThreadDocument";
 export {eventAssistanceGuestGrantDocumentSchema} from "./schemas/eventAssistanceGuestGrantDocument";

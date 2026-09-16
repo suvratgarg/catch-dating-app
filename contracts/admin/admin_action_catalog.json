@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "catalogVersion": "1.2.0",
+  "catalogVersion": "1.3.0",
   "updated": "2026-09-16",
   "owner": "operations_platform",
   "program": "catch-admin",
@@ -120,6 +120,20 @@
       "requestSchema": "contracts/callables/admin_decide_event_messaging_budget_payload.schema.json",
       "summary": "Record a source-fenced event-messaging ceiling decision without creating or activating a spending budget.",
       "example": {"requestId": "example-budget-review", "organizerId": "example-organizer", "eventId": "example-event", "routeId": "catchEventRcs", "senderId": "example-sender", "purpose": "joiningUpdate", "expectedRevision": 0, "expectedRuntimeSourceHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "expectedSenderReviewHash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "expectedBudgetSourceHash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc", "decision": {"kind": "hold"}, "note": "Fixture hold; this decision grants no spending authority."}
+    },
+    {
+      "actionId": "finance.stage-event-messaging-budget",
+      "callable": "adminApplyEventMessagingBudget",
+      "workflowIds": ["finance"],
+      "guiPath": "/finance",
+      "kind": "mutation",
+      "risk": "critical",
+      "roles": ["adminOwner", "finance"],
+      "confirmation": "action-and-target",
+      "targetField": "decisionId",
+      "requestSchema": "contracts/callables/admin_apply_event_messaging_budget_payload.schema.json",
+      "summary": "Stage one still-current approved messaging decision as two paused channel ceilings without granting spend, dispatch, or worker activation.",
+      "example": {"requestId": "example-budget-application", "decisionId": "message-budget-decision:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "expectedDecisionRevision": 1, "note": "Stage both reviewed ceilings in paused state."}
     },
     {
       "actionId": "cross-paths-showcase.list",

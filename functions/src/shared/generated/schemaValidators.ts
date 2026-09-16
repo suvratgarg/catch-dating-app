@@ -127,6 +127,9 @@ export {validateAdminDecideEventMessagingBudgetCallablePayload} from "./validato
 export {validateAdminDecideEventMessagingBudgetCallableResponse} from "./validators/adminDecideEventMessagingBudgetOutput";
 export {validateEventMessagingBudgetDecisionDocument} from "./validators/eventMessagingBudgetDecisionDocument";
 export {validateEventMessagingBudgetDecisionReceiptDocument} from "./validators/eventMessagingBudgetDecisionReceiptDocument";
+export {validateAdminApplyEventMessagingBudgetCallablePayload} from "./validators/adminApplyEventMessagingBudgetInput";
+export {validateAdminApplyEventMessagingBudgetCallableResponse} from "./validators/adminApplyEventMessagingBudgetOutput";
+export {validateEventMessagingBudgetApplicationReceiptDocument} from "./validators/eventMessagingBudgetApplicationReceiptDocument";
 export {validateEventAssistanceGuestDocument} from "./validators/eventAssistanceGuestDocument";
 export {validateEventAssistanceThreadDocument} from "./validators/eventAssistanceThreadDocument";
 export {validateEventAssistanceGuestGrantDocument} from "./validators/eventAssistanceGuestGrantDocument";

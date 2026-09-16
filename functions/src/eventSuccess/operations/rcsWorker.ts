@@ -14,6 +14,9 @@ import type {PreparedMessageChannel, ChannelDispatchResult} from
 import type {FirestoreMessageOutbox} from "./firestoreMessageOutbox";
 import type {DeliveryDecision} from "./messagingPolicy";
 
+type CapabilityTarget = NonNullable<Awaited<ReturnType<
+  RcsDispatchStore["capabilityTarget"]>>>;
+
 /** Short-lived OAuth material from a trusted, pinned credential loader. */
 export interface RcsCredentials {
   senderId: string;
@@ -60,6 +63,16 @@ export class EventRcsWorker {
     if (!config || config.status !== "ready") {
       return {kind: "unavailable", reason: "senderUnavailable"};
     }
+    const checkedAt = this.clock();
+    if (!rbmTime(checkedAt)) throw new Error("Invalid RCS capability clock");
+    const target = await this.store.capabilityTarget(linkId, config, checkedAt);
+    if (!target) {
+      return {kind: "ready", routeId: "catchEventRcs",
+        readFacts: (tx, intent, now) => this.store.readFacts(tx, intent, linkId,
+          now, config, null),
+        dispatchReserved: async () =>
+          ({kind: "withheld", reason: "resourceUnavailable"})};
+    }
     let credentials: RcsCredentials;
     try {
       credentials = parseRcsCredentials(await this.credentials.access(config),
@@ -67,7 +80,8 @@ export class EventRcsWorker {
     } catch {
       return {kind: "unavailable", reason: "credentialUnavailable"};
     }
-    const capability = await this.lookupCapability(linkId, config, credentials);
+    const capability = await this.lookupCapability(config, credentials,
+      target, checkedAt);
     // An unavailable capability blocks only RCS; the shared composer can still
     // choose an independently consented SMS or WhatsApp route.
     return {kind: "ready", routeId: "catchEventRcs",
@@ -78,12 +92,9 @@ export class EventRcsWorker {
           credentials, capability)};
   }
 
-  private async lookupCapability(linkId: string, config: RcsConfig,
-    credentials: RcsCredentials): Promise<RcsCapability | null> {
-    const checkedAt = this.clock();
-    if (!rbmTime(checkedAt)) throw new Error("Invalid RCS capability clock");
-    const target = await this.store.capabilityTarget(linkId, config, checkedAt);
-    if (!target) return null;
+  private async lookupCapability(config: RcsConfig,
+    credentials: RcsCredentials, target: CapabilityTarget,
+    checkedAt: number): Promise<RcsCapability | null> {
     const now = this.clock();
     const validUntil = Math.min(checkedAt + RCS_CAPABILITY_MAX_AGE,
       credentials.expiresAt, config.activation.validUntil,

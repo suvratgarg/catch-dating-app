@@ -2383,6 +2383,22 @@
       ]
     },
     {
+      "id": "eventMessagingBudgetApplicationReceipts",
+      "path": "eventMessagingBudgetApplicationReceipts/{receiptId}",
+      "rulesMatch": "/eventMessagingBudgetApplicationReceipts/{receiptId}",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "adminApplyEventMessagingBudget callable",
+      "read": "server/admin callable only",
+      "write": "server only",
+      "exportedFunctions": [
+        "adminApplyEventMessagingBudget"
+      ],
+      "migrationNotes": [
+        "Immutable request-hash receipt binds one still-current approved decision to both replacement channel ceilings.",
+        "The receipt records that both ceilings remain paused and that spending authority, dispatch authority, provider contact and worker activation all remained false."
+      ]
+    },
+    {
       "id": "seedEvents",
       "path": "seedEvents/{manifestId}",
       "rulesMatch": "/seedEvents/{manifestId}",
@@ -2425,8 +2441,12 @@
       "owner": "trusted event-assistance SMS worker",
       "read": "server only",
       "write": "server only",
+      "exportedFunctions": [
+        "adminApplyEventMessagingBudget"
+      ],
       "migrationNotes": [
-        "Sender provisioning and provider activation remain separate gates. Verified participant callables record event-service consent; direct client writes remain denied."
+        "Sender provisioning and provider activation remain separate gates. Verified participant callables record event-service consent; direct client writes remain denied.",
+        "The finance apply callable may stage the event and India sender-day ceilings from one current approved decision; both remain paused pending a separate live activation boundary."
       ]
     },
     {
@@ -2533,8 +2553,12 @@
       "owner": "trusted event-service WhatsApp dispatch",
       "read": "server only",
       "write": "server only",
+      "exportedFunctions": [
+        "adminApplyEventMessagingBudget"
+      ],
       "migrationNotes": [
-        "Event and UTC sender-day limits are debited atomically with a claim. Currency-specific identity prevents mixing quote currencies; uncertain sends retain reservations."
+        "Event and UTC sender-day limits are debited atomically with a claim. Currency-specific identity prevents mixing quote currencies; uncertain sends retain reservations.",
+        "The finance apply callable may stage both ceilings in paused state from one current approved decision without contacting Meta or enabling a worker."
       ]
     },
     {
@@ -2597,8 +2621,12 @@
       "owner": "event-service RCS dispatch",
       "read": "server only",
       "write": "server only",
+      "exportedFunctions": [
+        "adminApplyEventMessagingBudget"
+      ],
       "migrationNotes": [
-        "Explicit approved event and UTC sender-day limits. Agent and currency must match the current sender; both worst-case charges commit once with an outbox claim."
+        "Explicit approved event and UTC sender-day limits. Agent and currency must match the current sender; both worst-case charges commit once with an outbox claim.",
+        "The finance apply callable source-fences the private agent binding and stages both ceilings in paused state without loading an RBM credential or activating dispatch."
       ]
     },
     {

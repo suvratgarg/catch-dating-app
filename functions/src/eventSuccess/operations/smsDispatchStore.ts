@@ -100,6 +100,49 @@ export class SmsDispatchStore {
     return config;
   }
 
+  /** Paused or absent ceilings stop before a worker loads SMS credentials. */
+  async spendingAvailable(linkId: string, expected: SmsConfig,
+    now: number): Promise<boolean> {
+    if (!/^[a-f0-9]{32}$/.test(linkId)) return false;
+    return this.db.runTransaction(async (tx) => {
+      const [senderSnap, grantSnap] = await tx.getAll(
+        this.db.collection(smsCollections.senders).doc(this.senderId),
+        this.db.collection(guestCollections.grants).doc(linkId));
+      if (!senderSnap.exists || !grantSnap.exists) return false;
+      let config: SmsConfig;
+      let grant: Grant;
+      try {
+        config = parseSmsConfig(senderSnap.data());
+        grant = parseGrant(grantSnap.data());
+      } catch {
+        return false;
+      }
+      if (operationContentHash(config) !== operationContentHash(expected) ||
+          config.senderId !== this.senderId || config.status !== "ready" ||
+          config.activation.approvedAt > now ||
+          now >= Math.min(config.activation.validUntil,
+            config.quote.validUntil) || grant.linkId !== linkId ||
+          grant.revokedAt !== null || grant.issuedAt > now ||
+          grant.expiresAt <= now) return false;
+      const scopes = smsBudgetScopes(grant.context, now);
+      const snaps = await tx.getAll(...scopes.map((scope) => this.db
+        .collection(smsCollections.budgets)
+        .doc(smsBudgetId(this.senderId, scope))));
+      if (snaps.some((snap) => !snap.exists)) return false;
+      try {
+        const budgets = snaps.map((snap) => parseSmsBudget(snap.data()));
+        return budgets.every((budget, index) =>
+          budget.budgetId === smsBudgetId(this.senderId, scopes[index]) &&
+          budget.currency === config.quote.currency &&
+          budget.status === "active" && budget.startsAt <= now &&
+          budget.endsAt > now && budget.updatedAt <= now &&
+          budget.limitMicros > budget.chargedMicros);
+      } catch {
+        return false;
+      }
+    }, {readOnly: true});
+  }
+
   outbox(linkId: string): FirestoreMessageOutbox {
     if (!/^[a-f0-9]{32}$/.test(linkId)) throw new Error("Invalid SMS grant id");
     return new FirestoreMessageOutbox(this.db, async (tx, intent, now) => {

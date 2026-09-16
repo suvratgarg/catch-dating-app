@@ -15,6 +15,7 @@
 
 export 'callables/add_club_host_callable_request.g.dart';
 export 'callables/add_organizer_manager_callable_request.g.dart';
+export 'callables/admin_apply_event_messaging_budget_callable_request.g.dart';
 export 'callables/admin_assign_safety_triage_item_callable_request.g.dart';
 export 'callables/admin_create_marketing_content_draft_callable_request.g.dart';
 export 'callables/admin_create_organizer_draft_from_candidate_callable_request.g.dart';

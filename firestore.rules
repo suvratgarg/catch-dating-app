@@ -971,6 +971,12 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // Immutable evidence that an approved decision updated the two
+    // server-owned channel ceilings. It is never direct dispatch authority.
+    match /eventMessagingBudgetApplicationReceipts/{receiptId} {
+      allow read, write: if false;
+    }
+
     // Written exclusively by admin organizer publishing callables to reserve
     // public website routes before pages become indexable.
     match /publicRouteReservations/{routeKey} {

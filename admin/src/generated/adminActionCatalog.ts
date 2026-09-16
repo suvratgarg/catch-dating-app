@@ -1,7 +1,7 @@
 // GENERATED FILE. Run: node tool/admin/generate_admin_action_catalog.mjs
 export const adminActionCatalog = {
   "schemaVersion": 1,
-  "catalogVersion": "1.2.0",
+  "catalogVersion": "1.3.0",
   "actions": [
     {
       "actionId": "overview.get",
@@ -163,6 +163,22 @@ export const adminActionCatalog = {
         "finance"
       ],
       "summary": "Record a source-fenced event-messaging ceiling decision without creating or activating a spending budget.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "finance.stage-event-messaging-budget",
+      "callable": "adminApplyEventMessagingBudget",
+      "workflowIds": [
+        "finance"
+      ],
+      "guiPath": "/finance",
+      "kind": "mutation",
+      "risk": "critical",
+      "roles": [
+        "adminOwner",
+        "finance"
+      ],
+      "summary": "Stage one still-current approved messaging decision as two paused channel ceilings without granting spend, dispatch, or worker activation.",
       "controlPlane": false
     },
     {

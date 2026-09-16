@@ -55,6 +55,13 @@ export class EventSmsWorker {
     if (!config || config.status !== "ready") {
       return {kind: "unavailable", reason: "senderUnavailable"};
     }
+    if (!await this.store.spendingAvailable(linkId, config, this.clock())) {
+      return {kind: "ready", routeId: "catchEventSms",
+        readFacts: (tx, intent, now) =>
+          this.store.readFacts(tx, intent, linkId, now, config),
+        dispatchReserved: async () =>
+          ({kind: "withheld", reason: "resourceUnavailable"})};
+    }
     // Slow secret I/O precedes the reservation's short authorization window.
     let credentials: SmsCredentials;
     try {

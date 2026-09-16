@@ -529,6 +529,9 @@ export {
   adminDecideEventMessagingBudget,
 } from "./admin/eventMessagingBudget";
 export {
+  adminApplyEventMessagingBudget,
+} from "./admin/eventMessagingBudgetApplication";
+export {
   adminCreateMarketingContentDraft,
   adminGetMarketingOpsDashboard,
   adminRecordMarketingReviewDecision,

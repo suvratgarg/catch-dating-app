@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.132.0
+version: 1.133.0
 updated: 2026-09-16
 owner: recursive_audit_loop
 status: active
@@ -3619,9 +3619,23 @@ existing conservative charges. The document is not one of the three channel
 budget records: its literal effect is decision-only and
 `grantsSpendingAuthority` is always false. An immutable
 `eventMessagingBudgetDecisionReceipts` row preserves exact request replay even
-after a newer scope decision. A later apply boundary must consume
-and revalidate this evidence before it may preserve charges and change a real
-budget.
+after a newer scope decision.
+
+`adminApplyEventMessagingBudget` consumes one exact still-current approved
+revision. It transactionally revalidates the live runtime, eligible sender,
+budget-source hash and both prior budget revisions, review hashes and charges.
+It writes the event and channel-specific sender-day budget together, preserves
+each conservative charge, increments existing revisions, and binds RCS budgets
+to the current private agent id. Both records remain `paused`. The immutable
+`eventMessagingBudgetApplicationReceipts` record stores the resulting budget
+paths, revisions, limits, charges, windows and hashes plus the decision hash and
+admin actor. It is the request-replay and audit companion, not an outbox or
+dispatch record. It fixes `stagesSpendingCeilings: true` while
+`grantsSpendingAuthority`, `grantsDispatchAuthority`, `providerContacted`, and
+`workerActivated` all remain false. A separate live activation boundary is
+required to change both ceilings to `active`. Direct client access to the
+decision and both receipt collections remains denied, including for Admin
+clients.
 
 The dormant `eventAssistanceSmsDeliveryWebhook` accepts a bounded, strictly
 decoded GET report and delegates credential/scope validation to the reporting

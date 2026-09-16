@@ -26,6 +26,14 @@ current runtime, sender and budget-source hashes. The resulting receipt has a
 literal `decision_only_no_spending_authority` effect; it cannot create a budget
 or authorize dispatch. A separate immutable request receipt preserves exact
 replay after a later revision replaces the current decision view.
+`adminApplyEventMessagingBudget` is the typed mutation boundary for one exact
+approved revision. It rechecks that same evidence, preserves recorded charges,
+and stages the event and sender-day ceilings atomically in paused state. Its
+immutable application receipt fixes `stagesSpendingCeilings: true` while
+spending authority, dispatch authority, provider contact and worker activation
+remain false. A separate live boundary must revalidate and activate both
+ceilings; all runtime, consent, content and dispatch gates still apply
+independently.
 
 For the Supply Intake reference workflow, `primaryStage` is always exactly one
 of `incoming`, `verify`, `resolve`, or `ready`. Publication, rejection, expiry,

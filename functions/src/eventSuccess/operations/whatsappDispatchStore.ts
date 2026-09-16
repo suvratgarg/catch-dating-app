@@ -66,6 +66,56 @@ export class WhatsappDispatchStore {
     return this.config(connection.data(), policy.data());
   }
 
+  /** Paused or absent ceilings stop before a worker loads a Meta token. */
+  async spendingAvailable(linkId: string, expected: WhatsappSenderConfig,
+    now: number): Promise<boolean> {
+    if (!/^[a-f0-9]{32}$/.test(linkId)) return false;
+    return this.db.runTransaction(async (tx) => {
+      const [connectionSnap, policySnap, grantSnap] = await tx.getAll(
+        this.db.collection("organizerSenderConnections").doc(this.senderId),
+        this.db.collection(WHATSAPP_POLICIES).doc(this.senderId),
+        this.db.collection(guestCollections.grants).doc(linkId));
+      const config = this.config(connectionSnap.data(), policySnap.data());
+      if (!config || !grantSnap.exists ||
+          operationContentHash(config) !== operationContentHash(expected)) {
+        return false;
+      }
+      let grant: Grant;
+      try {
+        grant = parseGrant(grantSnap.data());
+      } catch {
+        return false;
+      }
+      const {policy} = config;
+      if (policy.status !== "ready" || policy.activation.approvedAt > now ||
+          now >= Math.min(policy.activation.validUntil,
+            policy.quote.validUntil) || grant.linkId !== linkId ||
+          grant.revokedAt !== null || grant.issuedAt > now ||
+          grant.expiresAt <= now ||
+          grant.context.organizerId !== config.connection.organizerId) {
+        return false;
+      }
+      const scopes = whatsappBudgetScopes(grant.context, now);
+      const snaps = await tx.getAll(...scopes.map((scope) => this.db
+        .collection(WHATSAPP_BUDGETS).doc(whatsappBudgetId(this.senderId,
+          policy.quote.currency, scope))));
+      if (snaps.some((snap) => !snap.exists)) return false;
+      try {
+        const budgets = snaps.map((snap) =>
+          parseWhatsappBudget(snap.data()));
+        return budgets.every((budget, index) =>
+          budget.budgetId === whatsappBudgetId(this.senderId,
+            policy.quote.currency, scopes[index]) &&
+          budget.status === "active" && budget.startsAt <= now &&
+          budget.endsAt > now && budget.updatedAt <= now &&
+          budget.limitMicros - budget.chargedMicros >=
+            policy.quote.maxMicrosPerMessage);
+      } catch {
+        return false;
+      }
+    }, {readOnly: true});
+  }
+
   outbox(linkId: string): FirestoreMessageOutbox {
     return new FirestoreMessageOutbox(this.db, async (tx, intent, now) => {
       if (intent.permittedRoutes.some((r) => r !== "organizerEventWhatsapp")) {

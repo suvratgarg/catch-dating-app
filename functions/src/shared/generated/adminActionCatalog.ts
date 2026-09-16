@@ -91,6 +91,15 @@ export const ADMIN_ACTION_CATALOG = {
       "finance"
     ]
   },
+  "finance.stage-event-messaging-budget": {
+    "callable": "adminApplyEventMessagingBudget",
+    "controlPlane": false,
+    "kind": "mutation",
+    "roles": [
+      "adminOwner",
+      "finance"
+    ]
+  },
   "cross-paths-showcase.list": {
     "callable": "adminListCrossPathsShowcaseCandidates",
     "controlPlane": false,

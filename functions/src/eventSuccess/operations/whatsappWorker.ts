@@ -54,6 +54,13 @@ export class EventWhatsappWorker {
     Promise<PreparedMessageChannel<WhatsappSubmissionOutcome>> {
     const config = await this.store.sender();
     if (!config) return {kind: "unavailable", reason: "senderUnavailable"};
+    if (!await this.store.spendingAvailable(linkId, config, this.clock())) {
+      return {kind: "ready", routeId: "organizerEventWhatsapp",
+        readFacts: (tx, intent, now) =>
+          this.store.readFacts(tx, intent, linkId, now, config),
+        dispatchReserved: async () =>
+          ({kind: "withheld", reason: "resourceUnavailable"})};
+    }
     // Secret I/O precedes the short reservation window. The claim rechecks
     // the complete sender/policy snapshot, including this pinned version.
     let accessToken: string;
