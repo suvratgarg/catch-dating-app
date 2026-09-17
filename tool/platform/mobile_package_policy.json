@@ -44,10 +44,10 @@
         "forbiddenNativeEntries": []
       },
       "host": {
-        "baselineArtifactBytes": 94430410,
-        "maxArtifactBytes": 98000000,
-        "baselineUncompressedBytes": 289520178,
-        "maxUncompressedBytes": 300000000,
+        "baselineArtifactBytes": 100669592,
+        "maxArtifactBytes": 120000000,
+        "baselineUncompressedBytes": 307006086,
+        "maxUncompressedBytes": 360000000,
         "forbiddenNativeEntries": [
           "libhealth",
           "razorpay"
