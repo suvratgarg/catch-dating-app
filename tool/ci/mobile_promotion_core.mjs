@@ -87,7 +87,10 @@ export function selectMobilePromotion({
     `Mobile build authority must contain exactly one package for ${releaseTarget}.`);
   const selected = matches[0];
   const authorityArtifactName =
-    `mobile-build-authority-v1-${validated.sourceCiWorkflowId}-` +
+    (validated.schema === "catch.mobile-build-authority/v2"
+      ? `mobile-build-authority-v2-${validated.platform}-`
+      : "mobile-build-authority-v1-") +
+    `${validated.sourceCiWorkflowId}-` +
     `${validated.sourceCiRunNumber}-${validated.sourceCiRunId}-` +
     `${validated.sourceCiRunAttempt}-${validated.sourceSha}-` +
     `${validated.producerRunId}-${validated.producerRunAttempt}`;
