@@ -133,19 +133,21 @@ class _HostTodayPersonalizedLayoutState
               spacing: CatchSpacing.s2,
               runSpacing: CatchSpacing.s2,
               children: [
-              if (widget.onCreateEvent != null) CatchButton(
-                key: const ValueKey('host-today-create-event'),
-                label: context.l10n.hostsHostEventsListLabelNewEvent,
-                variant: CatchButtonVariant.secondary,
-                onPressed: widget.onCreateEvent,
-              ),
-              CatchButton(
-              key: const ValueKey('host-today-view-events'),
-              label: context.l10n.hostTodayViewAllEvents,
-              variant: CatchButtonVariant.secondary,
-              onPressed: () => context.goNamed(Routes.hostEventsScreen.name),
-            ),
-            ],
+                if (widget.onCreateEvent != null)
+                  CatchButton(
+                    key: const ValueKey('host-today-create-event'),
+                    label: context.l10n.hostsHostEventsListLabelNewEvent,
+                    variant: CatchButtonVariant.secondary,
+                    onPressed: widget.onCreateEvent,
+                  ),
+                CatchButton(
+                  key: const ValueKey('host-today-view-events'),
+                  label: context.l10n.hostTodayViewAllEvents,
+                  variant: CatchButtonVariant.secondary,
+                  onPressed: () =>
+                      context.goNamed(Routes.hostEventsScreen.name),
+                ),
+              ],
             ),
           ),
         ),

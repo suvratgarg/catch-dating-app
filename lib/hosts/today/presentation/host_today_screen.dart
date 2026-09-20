@@ -331,8 +331,12 @@ class HostTodayLoadedRoute extends ConsumerWidget {
       today: todayState,
       now: clockNow,
       onCreateEvent: () => _showEventEntry(
-        context: context, ref: ref, organizer: organizer,
-        state: entryState, request: request),
+        context: context,
+        ref: ref,
+        organizer: organizer,
+        state: entryState,
+        request: request,
+      ),
       operationalSurface: HostTodayBody(
         organizer: organizer,
         state: todayState,

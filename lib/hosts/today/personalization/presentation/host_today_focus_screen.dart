@@ -116,10 +116,9 @@ class _HostTodayFocusScreenState extends ConsumerState<HostTodayFocusScreen> {
           title: context.l10n.hostTodayFocusScreenTitle,
           subtitle: organizer?.name,
           navigation: CatchTopBarNavigation(
-            mode: pending
-                ? CatchTopBarNavigationMode.none
-                : CatchTopBarNavigationMode.back,
+            mode: CatchTopBarNavigationMode.back,
             onPressed: () {
+              if (pending) return;
               if (scope != null && saved?.answered == false) {
                 unawaited(_save(scope, null));
               } else {

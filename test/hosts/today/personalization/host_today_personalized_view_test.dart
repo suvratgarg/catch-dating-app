@@ -30,25 +30,31 @@ void main() {
   Future<GoRouter> mount(
     WidgetTester tester, {
     HostTodayStatus status = HostTodayStatus.empty,
+    ValueNotifier<HostTodayStatus>? statusChanges,
   }) async {
+    final statuses = statusChanges ?? ValueNotifier(status);
+    if (statusChanges == null) addTearDown(statuses.dispose);
     final router = GoRouter(
       initialLocation: '/host/today',
       routes: [
         GoRoute(
           path: '/host/today',
           name: Routes.hostTodayScreen.name,
-          builder: (_, _) => CatchRootScreenScaffold.sections(
-            title: const Text('Today'),
-            children: [
-              HostTodayPersonalizedLayout(
-                scope: scope,
-                today: HostTodayState(status: status),
-                now: DateTime(2026, 9, 21),
-                operationalSurface: const SliverToBoxAdapter(
-                  child: Text('Operational work'),
+          builder: (_, _) => ValueListenableBuilder<HostTodayStatus>(
+            valueListenable: statuses,
+            builder: (_, currentStatus, _) => CatchRootScreenScaffold.sections(
+              title: const Text('Today'),
+              children: [
+                HostTodayPersonalizedLayout(
+                  scope: scope,
+                  today: HostTodayState(status: currentStatus),
+                  now: DateTime(2026, 9, 21),
+                  operationalSurface: const SliverToBoxAdapter(
+                    child: Text('Operational work'),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
           routes: [
             GoRoute(
@@ -139,6 +145,29 @@ void main() {
     expect(router.state.uri.path, '/host/today');
     expect(find.text('Operational work'), findsOneWidget);
     expect(preferences.loads, 0);
+  });
+
+  testWidgets(
+    'operational work appearing closes optional focus without recording skip',
+    (tester) async {
+      final status = ValueNotifier(HostTodayStatus.empty);
+      addTearDown(status.dispose);
+      final router = await mount(tester, statusChanges: status);
+      expect(find.byType(HostTodayFocusScreen), findsOneWidget);
+      status.value = HostTodayStatus.loading;
+      await pumpFeatureUi(tester);
+      expect(router.state.uri.path, '/host/today');
+      expect(find.text('Operational work'), findsOneWidget);
+      expect(preferences.values, isEmpty);
+    },
+  );
+
+  testWidgets('system back persists the first-run skip', (tester) async {
+    final router = await mount(tester);
+    router.pop();
+    await pumpFeatureUi(tester);
+    expect(preferences.values[scope], const HostTodayPreference.skipped());
+    expect(router.state.uri.path, '/host/today');
   });
 
   testWidgets('saved skip does not reopen focus on a later visit', (

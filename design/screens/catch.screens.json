@@ -1040,8 +1040,8 @@
           "routes": [
             "hostEventRehearsalStartScreen"
           ],
-          "file": "lib/event_rehearsal/presentation/widgets/event_rehearsal_entry_view.dart",
-          "symbol": "EventRehearsalEntryView",
+          "file": "lib/event_rehearsal/presentation/widgets/event_rehearsal_entry_scaffold.dart",
+          "symbol": "EventRehearsalEntryScaffold",
           "family": "pushed-route",
           "expression": "CatchRouteScaffold",
           "bodyGeometry": "mixed",
@@ -1052,7 +1052,7 @@
             "hostEventRehearsalStartScreen"
           ],
           "file": "lib/event_rehearsal/presentation/host_event_rehearsal_start_screen.dart",
-          "symbol": "EventRehearsalEntryLoadState",
+          "symbol": "EventRehearsalEntryStateScaffold",
           "family": "pushed-route",
           "expression": "CatchRouteScaffold",
           "bodyGeometry": "standard",
