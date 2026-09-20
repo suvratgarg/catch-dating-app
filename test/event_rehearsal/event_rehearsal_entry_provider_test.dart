@@ -16,6 +16,7 @@ void main() {
     () async {
       var sourceReads = 0;
       final container = ProviderContainer.test(
+        retry: (_, _) => null,
         overrides: [
           clubsRepositoryProvider.overrideWithValue(_Clubs()),
           eventRepositoryProvider.overrideWithValue(
@@ -27,6 +28,7 @@ void main() {
           }),
         ],
       );
+      container.listen(eventRehearsalEntryProvider('club-1', null), (_, _) {});
       final data = await container.read(
         eventRehearsalEntryProvider('club-1', null).future,
       );
@@ -41,6 +43,7 @@ void main() {
     'explicit event failure remains an error, not sample defaults',
     () async {
       final container = ProviderContainer.test(
+        retry: (_, _) => null,
         overrides: [
           clubsRepositoryProvider.overrideWithValue(_Clubs()),
           eventRepositoryProvider.overrideWithValue(
@@ -51,9 +54,19 @@ void main() {
           ).overrideWith((ref) async => throw StateError('Roster unavailable')),
         ],
       );
+      container.listen(
+        eventRehearsalEntryProvider('club-1', 'event-1'),
+        (_, _) {},
+      );
       await expectLater(
         container.read(eventRehearsalEntryProvider('club-1', 'event-1').future),
-        throwsStateError,
+        throwsA(
+          isA<StateError>().having(
+            (error) => error.message,
+            'message',
+            'Roster unavailable',
+          ),
+        ),
       );
     },
   );
@@ -61,6 +74,7 @@ void main() {
   test('another organizer event is rejected before reading roster', () async {
     var sourceReads = 0;
     final container = ProviderContainer.test(
+      retry: (_, _) => null,
       overrides: [
         clubsRepositoryProvider.overrideWithValue(_Clubs()),
         eventRepositoryProvider.overrideWithValue(
@@ -71,6 +85,10 @@ void main() {
           return (plan: null, guestCount: 18);
         }),
       ],
+    );
+    container.listen(
+      eventRehearsalEntryProvider('club-1', 'event-1'),
+      (_, _) {},
     );
     await expectLater(
       container.read(eventRehearsalEntryProvider('club-1', 'event-1').future),
