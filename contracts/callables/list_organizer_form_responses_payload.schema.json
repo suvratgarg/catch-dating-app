@@ -17,6 +17,18 @@
     "fromMillis": {"type": ["integer", "null"], "minimum": 0, "maximum": 9007199254740991},
     "toMillis": {"type": ["integer", "null"], "minimum": 0, "maximum": 9007199254740991},
     "cursor": {"type": ["string", "null"], "maxLength": 1000},
+    "sortDirection": {"type": "string", "enum": ["asc", "desc"]},
+    "answerFilters": {
+      "type": "array", "maxItems": 5,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["questionId", "values"],
+        "properties": {
+          "questionId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+          "values": {"type": "array", "minItems": 1, "maxItems": 20, "uniqueItems": true, "items": {"type": "string", "minLength": 1, "maxLength": 200}}
+        }
+      }
+    },
     "limit": {"type": "integer", "minimum": 1, "maximum": 100}
   }
 }
