@@ -31,7 +31,7 @@ class _ImportDemoState extends State<ImportDemo> {
   bool _busy = false;
   Map<String, Object?>? _lastPayload;
 
-  Future<void> _post(Map<String, Object?> payload) async {
+  Future<Map<String, Object?>> _post(Map<String, Object?> payload) async {
     final response = await http.post(
       Uri.parse('http://127.0.0.1:8792/import'),
       headers: {'Content-Type': 'application/json'},
@@ -39,7 +39,7 @@ class _ImportDemoState extends State<ImportDemo> {
     );
     final parsed = jsonDecode(response.body) as Map<String, Object?>;
     if (response.statusCode != 200) throw StateError('${parsed['error']}');
-    if (mounted) setState(() => _result = parsed);
+    return parsed;
   }
 
   Future<void> _load() async {
@@ -60,7 +60,6 @@ class _ImportDemoState extends State<ImportDemo> {
       if (!mounted) return;
       final plan = await showHostRosterMapping(context, table);
       if (plan == null || !mounted) return;
-      setState(() => _plan = plan);
       final payload = <String, Object?>{
         'eventId': data['eventId'],
         'fileName': plan.fileName,
@@ -68,8 +67,14 @@ class _ImportDemoState extends State<ImportDemo> {
         'importKey': hostRosterImportKey(format: plan.format, rows: plan.rows),
         'rows': plan.rows.map((row) => row.toJson()).toList(),
       };
-      _lastPayload = payload;
-      await _post(payload);
+      final result = await _post(payload);
+      if (mounted) {
+        setState(() {
+          _plan = plan;
+          _lastPayload = payload;
+          _result = result;
+        });
+      }
     } on Object catch (error) {
       if (mounted) setState(() => _error = error.toString());
     } finally {
@@ -85,7 +90,8 @@ class _ImportDemoState extends State<ImportDemo> {
       _error = null;
     });
     try {
-      await _post(payload);
+      final result = await _post(payload);
+      if (mounted) setState(() => _result = result);
     } on Object catch (error) {
       if (mounted) setState(() => _error = error.toString());
     } finally {

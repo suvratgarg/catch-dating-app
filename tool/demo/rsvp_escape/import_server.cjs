@@ -14,7 +14,8 @@ class ImportStore extends AudienceTestStore {
   batch() {
     const writes = [];
     return {
-      set: (ref, data) => writes.push(() => this.write(ref, data)),
+      set: (ref, data, options) => writes.push(() => this.write(ref, data, options?.merge === true)),
+      delete: ref => writes.push(() => { delete this.docs[ref.path]; }),
       create: (ref, data) => writes.push(() => {
         assert.equal(this.docs[ref.path], undefined, 'Duplicate batch create');
         this.write(ref, data);
@@ -29,14 +30,14 @@ const store = new ImportStore({
 });
 const deps = {firestore:()=>store.asFirestore(),timestamp:()=>Timestamp.fromMillis(Date.parse('2026-09-21T10:00:00Z')),checkRateLimit:async()=>{},identitySecret:()=> 'LOCAL-SYNTHETIC-ONLY-'.repeat(4)};
 const entities = prefix => Object.entries(store.docs).filter(([key])=>key.startsWith(prefix+'/')).map(([key,value])=>({id:key.split('/').at(-1),...value}));
-async function importRows(payload) {
+async function importRows(payload, project = projectEventAttendeeToOrganizerAudience) {
   if(payload.eventId !== eventId) throw Error('Synthetic demo event only');
   const before = new Map(entities('eventAttendees').map(row=>[row.id,row]));
   const receipt = await importEventAttendeesHandler({auth:{uid:'demo-host',token:{}},data:payload},deps);
-  if(!receipt.replayed) {
-    for(const row of entities('eventAttendees')) {
-      await projectEventAttendeeToOrganizerAudience(row.id,before.get(row.id),row,'demo-spreadsheet',deps);
-    }
+  // Retry projection after a committed roster receipt; production receipts make it idempotent.
+  // Ignore rows since superseded by another import when replaying an older receipt.
+  for(const row of entities('eventAttendees').filter(row=>row.importId===receipt.importId)) {
+    await project(row.id,before.get(row.id),row,receipt.importId,deps);
   }
   return {receipt,attendees:entities('eventAttendees'),contactCount:entities('organizerContacts').length};
 }
@@ -59,7 +60,23 @@ async function verify() {
   assert.equal(entities('payments').length,0);
   await assert.rejects(importRows({...payload,eventId:'not-this-demo'}),/Synthetic demo/);
   await assert.rejects(importRows({...payload,rows:[...rows,{...rows[0],rowId:'5'}]}),/already used/);
-  console.log('Verified 3 attendees, 3 CRM people, 2 registered, 1 waitlisted, INR 3000 imported revenue; same-key replay unchanged; no Catch payments.');
+  const corrected = {...payload,importKey:'rsvp-synthetic-import-v2',rows:[
+    {...rows[0],email:'maya.corrected@example.com',status:'waitlisted'},rows[1],rows[2],
+  ]};
+  await assert.rejects(importRows(corrected,async()=>{throw Error('Injected projection interruption');}),/Injected/);
+  const recovered=await importRows(corrected);
+  assert.equal(recovered.receipt.replayed,true);
+  assert.equal(recovered.attendees.length,3);
+  assert.equal(recovered.contactCount,3);
+  const maya=entities('organizerContacts').find(row=>row.email==='maya.corrected@example.com');
+  assert.ok(maya,'Corrected email reaches CRM on retry');
+  assert.equal(store.docs[`organizerContactTraits/${maya.id}`].expectedEventCount,0);
+  const afterCorrection=JSON.stringify(entities('organizerAudienceSummaries'));
+  await importRows(corrected);
+  assert.equal(JSON.stringify(entities('organizerAudienceSummaries')),afterCorrection);
+  await importRows(payload);
+  assert.equal(store.docs[`organizerContactTraits/${maya.id}`].expectedEventCount,0,'Old replay cannot revert latest traits');
+  console.log('Verified 3 attendees and CRM people, source revenue, idempotent replay, corrected-email evidence cleanup, changed-import traits, projection retry recovery, and no Catch payments.');
 }
 if(process.argv.includes('--verify')) {
   verify().catch(error=>{console.error(error);process.exitCode=1;});
