@@ -506,7 +506,7 @@ export function validateReleaseOwnership({
     ["immutable package upload binding", /package_mobile_release\.mjs bind-upload/u],
     ["90-day package retention", /retention-days:\s*90/u],
     ["cross-role package comparison", /compare-role-packages:[\s\S]*?check_mobile_package\.mjs --compare/u],
-    ["post-comparison build authority", /publish-authority:[\s\S]*?needs:\s*\[authorize, compare-role-packages\][\s\S]*?catch\.mobile-build-authority\/v1/u],
+    ["post-comparison build authority", /publish-authority:[\s\S]*?needs:\s*compare-role-packages[\s\S]*?catch\.mobile-build-authority\/v2/u],
   ]) {
     if (!marker.test(workflowSource)) findings.push(`mobile release workflow is missing ${label}`);
   }
@@ -744,7 +744,8 @@ export function scanAppTargets({root = defaultRepoRoot} = {}) {
     const releaseResult = validateReleaseOwnership({
       externalGates,
       manifest,
-      workflowSource: fs.readFileSync(prodWorkflow, "utf8"),
+      workflowSource: fs.readFileSync(prodWorkflow, "utf8") + "\n" +
+        fs.readFileSync(path.join(root, ".github/workflows/_mobile-platform-authority.yml"), "utf8"),
     });
     findings.push(...releaseResult.findings);
     warnings.push(...releaseResult.warnings);

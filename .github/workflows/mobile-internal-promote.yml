@@ -13,11 +13,11 @@ on:
           - host-android
           - host-ios
       producer_run_id:
-        description: Successful Mobile Internal Release producer run id.
+        description: Mobile Internal Release run containing the verified platform authority.
         required: true
         type: string
       producer_run_attempt:
-        description: Current successful attempt of the producer run.
+        description: Current attempt of the producer run.
         required: true
         type: string
       authority_artifact_id:
@@ -56,7 +56,7 @@ jobs:
 
     steps:
       - id: producer
-        name: Authorize the current successful producer attempt
+        name: Authorize the current producer platform attempt
         env:
           AUTHORITY_ARTIFACT_ID: ${{ inputs.authority_artifact_id }}
           AUTHORITY_ARTIFACT_SHA256: ${{ inputs.authority_artifact_sha256 }}
@@ -91,25 +91,48 @@ jobs:
               (.path | split("@")[0]) == ".github/workflows/mobile-internal-release.yml"
             ) | .id
           ' <<< "$canonical_workflow")"
+          authority_metadata="$(gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/$AUTHORITY_ARTIFACT_ID")"
+          authority_name="$(jq -er --arg digest "sha256:$AUTHORITY_ARTIFACT_SHA256" '
+            select(.expired == false and .digest == $digest) | .name
+          ' <<< "$authority_metadata")"
+          platform="${RELEASE_TARGET##*-}"
+          platform_authority=false
+          case "$authority_name" in
+            mobile-build-authority-v2-${platform}-*) platform_authority=true ;;
+            mobile-build-authority-v1-*) ;;
+            *) echo "Authority does not match the requested platform."; exit 64 ;;
+          esac
           current_run=""
           for wait_attempt in {1..60}; do
             current_run="$(gh api \
               "repos/$GITHUB_REPOSITORY/actions/runs/$PRODUCER_RUN_ID")"
+            # A new producer attempt invalidates the dispatch even while we wait.
+            test "$(jq -er '.run_attempt' <<< "$current_run")" = "$PRODUCER_RUN_ATTEMPT"
             status="$(jq -er '.status' <<< "$current_run")"
-            if [[ "$status" == "completed" ]]; then break; fi
+            if [[ "$platform_authority" == "true" ]]; then
+              jobs="$(gh api --paginate --slurp \
+                "repos/$GITHUB_REPOSITORY/actions/runs/$PRODUCER_RUN_ID/attempts/$PRODUCER_RUN_ATTEMPT/jobs?per_page=100")"
+              if jq -e --arg name "Verify $platform packages / Publish verified mobile build authority" '
+                [.[].jobs[] | select(.name == $name)] as $jobs |
+                ($jobs | length) == 1 and
+                $jobs[0].status == "completed" and $jobs[0].conclusion == "success"
+              ' <<< "$jobs" > /dev/null; then break; fi
+              if [[ "$status" == "completed" ]]; then
+                echo "The selected platform did not publish a successful authority."; exit 64
+              fi
+            elif [[ "$status" == "completed" ]]; then break; fi
             if [[ "$status" != "in_progress" && "$status" != "queued" &&
                   "$status" != "pending" && "$status" != "requested" &&
                   "$status" != "waiting" ]]; then
-              echo "Producer entered unsupported status: $status"
-              exit 64
+              echo "Producer entered unsupported status: $status"; exit 64
             fi
             if [[ "$wait_attempt" == "60" ]]; then
-              echo "Timed out waiting for the automatically dispatching producer to complete."
-              exit 64
+              echo "Timed out waiting for the selected producer authority to complete."; exit 64
             fi
             sleep 10
           done
           binding="$(jq -ce \
+            --argjson platform_authority "$platform_authority" \
             --arg repository "$GITHUB_REPOSITORY" \
             --arg run_id "$PRODUCER_RUN_ID" \
             --argjson run_attempt "$PRODUCER_RUN_ATTEMPT" \
@@ -125,8 +148,9 @@ jobs:
                 .head_branch == "main" and
                 .head_repository.full_name == $repository and
                 (.head_sha | test("^[0-9a-f]{40}$")) and
-                .status == "completed" and
-                .conclusion == "success" and
+                ((.status == "completed" and .conclusion == "success") or
+                 ($platform_authority and (.status == "in_progress" or
+                   (.status == "completed" and .conclusion == "failure")))) and
                 (.run_number | type == "number" and . > 0 and floor == .)
               ) |
               {producerHeadSha: .head_sha, runNumber: .run_number}
@@ -137,6 +161,7 @@ jobs:
           exact_attempt="$(gh api \
             "repos/$GITHUB_REPOSITORY/actions/runs/$PRODUCER_RUN_ID/attempts/$PRODUCER_RUN_ATTEMPT")"
           jq -e \
+            --argjson platform_authority "$platform_authority" \
             --arg repository "$GITHUB_REPOSITORY" \
             --arg run_id "$PRODUCER_RUN_ID" \
             --arg producer_head_sha "$producer_head_sha" \
@@ -154,10 +179,12 @@ jobs:
               .event == "workflow_run" and
               .head_branch == "main" and
               .head_repository.full_name == $repository and
-              .status == "completed" and
-              .conclusion == "success"
+              ((.status == "completed" and .conclusion == "success") or
+               ($platform_authority and (.status == "in_progress" or
+                 (.status == "completed" and .conclusion == "failure"))))
             ' <<< "$exact_attempt" > /dev/null
           {
+            echo "platform_authority=$platform_authority"
             echo "producer_head_sha=$producer_head_sha"
             echo "producer_workflow_id=$workflow_id"
             echo "producer_run_number=$run_number"
@@ -426,6 +453,7 @@ jobs:
           PACKAGE_ARTIFACT_DIGEST: ${{ steps.authority.outputs.package_artifact_digest }}
           PACKAGE_ARTIFACT_ID: ${{ steps.authority.outputs.package_artifact_id }}
           PACKAGE_ARTIFACT_NAME: ${{ steps.authority.outputs.package_artifact_name }}
+          PLATFORM_AUTHORITY: ${{ steps.producer.outputs.platform_authority }}
           PRODUCER_HEAD_SHA: ${{ steps.producer.outputs.producer_head_sha }}
           PRODUCER_RUN_ATTEMPT: ${{ inputs.producer_run_attempt }}
           PRODUCER_RUN_ID: ${{ inputs.producer_run_id }}
@@ -466,6 +494,7 @@ jobs:
           current_run="$(gh api \
             "repos/$GITHUB_REPOSITORY/actions/runs/$PRODUCER_RUN_ID")"
           jq -e \
+            --argjson platform_authority "$PLATFORM_AUTHORITY" \
             --arg run_id "$PRODUCER_RUN_ID" \
             --arg producer_head_sha "$PRODUCER_HEAD_SHA" \
             --arg repository "$GITHUB_REPOSITORY" \
@@ -478,9 +507,20 @@ jobs:
               .event == "workflow_run" and
               .head_branch == "main" and
               .head_repository.full_name == $repository and
-              .status == "completed" and
-              .conclusion == "success"
+              ((.status == "completed" and .conclusion == "success") or
+               ($platform_authority and (.status == "in_progress" or
+                 (.status == "completed" and .conclusion == "failure"))))
             ' <<< "$current_run" > /dev/null
+
+          if [[ "$PLATFORM_AUTHORITY" == "true" ]]; then
+            jobs="$(gh api --paginate --slurp \
+              "repos/$GITHUB_REPOSITORY/actions/runs/$PRODUCER_RUN_ID/attempts/$PRODUCER_RUN_ATTEMPT/jobs?per_page=100")"
+            jq -e --arg name "Verify ${RELEASE_TARGET##*-} packages / Publish verified mobile build authority" '
+              [.[].jobs[] | select(.name == $name)] as $jobs |
+              ($jobs | length) == 1 and
+              $jobs[0].status == "completed" and $jobs[0].conclusion == "success"
+            ' <<< "$jobs" > /dev/null
+          fi
 
           git fetch origin main:refs/remotes/origin/main --no-tags
           git merge-base --is-ancestor "$GITHUB_SHA" refs/remotes/origin/main

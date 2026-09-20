@@ -789,6 +789,7 @@ export function validateMobileBuildAuthority(value, expected = {}) {
   assertExactKeys(value, [
     "crossRoleComparisons",
     "packages",
+    ...(value?.schema === "catch.mobile-build-authority/v2" ? ["platform"] : []),
     "producerRunAttempt",
     "producerRunId",
     "releaseTargets",
@@ -799,7 +800,7 @@ export function validateMobileBuildAuthority(value, expected = {}) {
     "sourceCiWorkflowId",
     "sourceSha",
   ], "mobile build authority");
-  assert(value.schema === MOBILE_BUILD_AUTHORITY_SCHEMA,
+  assert([MOBILE_BUILD_AUTHORITY_SCHEMA, "catch.mobile-build-authority/v2"].includes(value.schema),
     `Mobile build authority schema must be ${MOBILE_BUILD_AUTHORITY_SCHEMA}.`);
   const binding = {
     sourceCiWorkflowId: positiveInteger(value.sourceCiWorkflowId, "source CI workflow id"),
@@ -832,6 +833,11 @@ export function validateMobileBuildAuthority(value, expected = {}) {
   const releaseTargets = sortedUniqueStrings(value.releaseTargets, "authority releaseTargets");
   assert(releaseTargets.length > 0 && releaseTargets.every((entry) => RELEASE_TARGETS[entry]),
     "Mobile build authority must contain at least one supported release target.");
+  if (value.schema === "catch.mobile-build-authority/v2") {
+    assert(["ios", "android"].includes(value.platform) &&
+      releaseTargets.every((entry) => target(entry).platform === value.platform),
+    "Platform authority must contain only its declared platform.");
+  }
   if (expected.releaseTargets !== undefined) {
     const expectedTargets = typeof expected.releaseTargets === "string"
       ? JSON.parse(expected.releaseTargets)

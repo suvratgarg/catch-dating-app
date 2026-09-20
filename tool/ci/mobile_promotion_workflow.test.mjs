@@ -77,7 +77,7 @@ test("promotion accepts exact automatic or confirmed recovery dispatches with on
   assert.match(workflow, /timeout-minutes: 90/u);
   assert.match(workflow, /test "\$GITHUB_RUN_ATTEMPT" = "1"/u);
   assert.match(workflow, /for wait_attempt in \{1\.\.60\}/u);
-  assert.match(workflow, /Timed out waiting for the automatically dispatching producer to complete/u);
+  assert.match(workflow, /Timed out waiting for the selected producer authority to complete/u);
 });
 
 test("producer attempt and current promoter implementation are fail-closed", () => {
@@ -297,4 +297,48 @@ test("upload claim is durable before idempotent distribution and credentials are
   assert.match(workflow, /name: \$\{\{ steps\.claim\.outputs\.claim_artifact_name \}\}/u);
   assert.match(workflow, /retention-days: 90/u);
   assert.match(workflow, /--evidence-level exact-artifact/u);
+});
+
+test("actual producer predicates allow sibling failure but reject stale or cancelled runs", async () => {
+  const {spawnSync} = await import("node:child_process");
+  // Execute the workflow's jq predicates rather than a JavaScript approximation.
+  const runPredicates = [...workflow.matchAll(/'\n(\s+(?:select\(|\(\.id)[^']*?)\n\s+' <<< "\$(current_run|exact_attempt)"/gu)]
+    .map((match) => match[1]).filter((query) => query.includes("$platform_authority"));
+  assert.equal(runPredicates.length, 3, "initial, exact-attempt, and pre-credential gates");
+  const valid = {id: 7001, run_attempt: 3, workflow_id: 77, run_number: 91,
+    name: "Mobile Internal Release", path: ".github/workflows/mobile-internal-release.yml",
+    event: "workflow_run", head_branch: "main", head_repository: {full_name: "catch/repo"},
+    head_sha: "a".repeat(40), status: "completed", conclusion: "success"};
+  const args = ["-e", "--arg", "repository", "catch/repo", "--arg", "run_id", "7001",
+    "--arg", "producer_head_sha", valid.head_sha, "--argjson", "run_attempt", "3",
+    "--argjson", "workflow_id", "77", "--argjson", "run_number", "91"];
+  for (const query of runPredicates) {
+    for (const platformAuthority of [true, false]) {
+      for (const [status, conclusion] of [["completed", "success"], ["completed", "failure"],
+        ["completed", "cancelled"], ["in_progress", null], ["queued", null]]) {
+        const result = spawnSync("jq", [...args, "--argjson", "platform_authority",
+          String(platformAuthority), query], {input: JSON.stringify({...valid, status, conclusion}), encoding: "utf8"});
+        assert.equal(result.status === 0, conclusion === "success" ||
+          (platformAuthority && (conclusion === "failure" || status === "in_progress")), result.stderr);
+      }
+    }
+    for (const bad of [{run_attempt: 4}, {head_branch: "feature"},
+      {head_repository: {full_name: "fork/repo"}}]) {
+      assert.notEqual(spawnSync("jq", [...args, "--argjson", "platform_authority", "true", query],
+        {input: JSON.stringify({...valid, ...bad}), encoding: "utf8"}).status, 0);
+    }
+  }
+  const jobPredicates = [...workflow.matchAll(/'\n(\s+\[\.\[\]\.jobs\[\][^']*?)\n\s+' <<< "\$jobs"/gu)].map((match) => match[1]);
+  assert.equal(jobPredicates.length, 2, "platform proof is repeated before credentials");
+  for (const query of jobPredicates) {
+    const name = "Verify ios packages / Publish verified mobile build authority";
+    const own = {name, status: "completed", conclusion: "success"};
+    const sibling = {name: "Verify android packages / Publish verified mobile build authority", status: "completed", conclusion: "failure"};
+    for (const [jobs, allowed] of [[[own, sibling], true], [[sibling], false],
+      [[{...own, conclusion: "failure"}], false], [[{...own, status: "in_progress"}], false],
+      [[own, own], false], [[], false]]) {
+      assert.equal(spawnSync("jq", ["-e", "--arg", "name", name, query],
+        {input: JSON.stringify([{jobs}]), encoding: "utf8"}).status === 0, allowed);
+    }
+  }
 });
