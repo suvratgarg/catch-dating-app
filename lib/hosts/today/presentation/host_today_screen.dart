@@ -19,7 +19,6 @@ import 'package:catch_dating_app/hosts/today/presentation/host_today_feed_contro
 import 'package:catch_dating_app/hosts/today/presentation/host_today_state.dart';
 import 'package:catch_dating_app/hosts/today/presentation/host_today_view_model.dart';
 import 'package:catch_dating_app/hosts/today/presentation/widgets/host_today_body.dart';
-import 'package:catch_dating_app/hosts/today/presentation/widgets/host_today_event_section.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_tokens/catch_tokens.dart';
@@ -112,11 +111,7 @@ class _HostTodayScreenState extends ConsumerState<HostTodayScreen> {
                 context.l10n.hostsHostAuthRequiredScreenVisiblecopySignIn,
             onRetry: () => context.go(Routes.authScreen.path),
           ),
-          HostTodayRouteStatus.loading => SliverToBoxAdapter(
-            child: CatchSection.content(
-              child: HostTodayEventSection.loading(now: _clockNow),
-            ),
-          ),
+          HostTodayRouteStatus.loading => const CatchStateViewport.sliverLoading(),
           HostTodayRouteStatus.error => CatchLocalizedSliverErrorState(
             routeState.error!,
             context: routeState.errorContext,

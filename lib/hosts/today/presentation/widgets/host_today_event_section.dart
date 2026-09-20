@@ -16,31 +16,7 @@ class HostTodayEventSection extends StatelessWidget {
     this.taskCountIsComplete = true,
     required this.onPressed,
     this.contained = true,
-  }) : _loading = false;
-
-  /// Reserve the same event card and metric slots used by loaded content.
-  /// The representative values are never exposed to input or accessibility.
-  HostTodayEventSection.loading({super.key, required this.now})
-    : event = Event(
-        id: 'loading',
-        clubId: 'loading',
-        name: 'Upcoming event name',
-        startTime: now.add(const Duration(hours: 2)),
-        endTime: now.add(const Duration(hours: 4)),
-        meetingPoint: 'Event location',
-        distanceKm: 0,
-        pace: PaceLevel.easy,
-        capacityLimit: 0,
-        description: '',
-        priceInPaise: 0,
-      ),
-      taskCount = 0,
-      taskCountIsComplete = true,
-      onPressed = _ignoreLoadingActivation,
-      contained = true,
-      _loading = true;
-
-  static void _ignoreLoadingActivation() {}
+  });
 
   final Event event;
   final DateTime now;
@@ -48,7 +24,6 @@ class HostTodayEventSection extends StatelessWidget {
   final bool taskCountIsComplete;
   final VoidCallback onPressed;
   final bool contained;
-  final bool _loading;
 
   @override
   Widget build(BuildContext context) {
@@ -122,7 +97,7 @@ class HostTodayEventSection extends StatelessWidget {
         ),
       ],
     );
-    final rendered = !contained
+    return !contained
         ? content
         : CatchSurface(
             borderColor: t.line,
@@ -132,7 +107,6 @@ class HostTodayEventSection extends StatelessWidget {
             padding: CatchInsets.contentRelaxed,
             child: content,
           );
-    return _loading ? CatchSkeleton.content(child: rendered) : rendered;
   }
 }
 

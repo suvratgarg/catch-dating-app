@@ -220,7 +220,7 @@ void _registerHostOperationsClubWorkspaceTests() {
     expect(find.text('Section live'), findsOneWidget);
   });
 
-  testWidgets('Host Today loading uses the loaded card and root title rhythm', (
+  testWidgets('Host Today loading centers progress below the persistent root title', (
     tester,
   ) async {
     final now = DateTime(2026, 6, 15, 12);
@@ -237,6 +237,7 @@ void _registerHostOperationsClubWorkspaceTests() {
             onRetry: () {},
             onOpenEvent: (_) {},
             onOpenAttention: (_) {},
+            onCreateEvent: () {},
             onViewEvents: () {},
             onStartRehearsal: () {},
           ),
@@ -256,11 +257,13 @@ void _registerHostOperationsClubWorkspaceTests() {
           .titleStyle,
       isNull,
     );
-    expect(find.byType(HostTodayEventSection), findsOneWidget);
-    expect(find.byType(CatchSkeleton), findsOneWidget);
+    expect(find.byType(HostTodayEventSection), findsNothing);
+    expect(find.byType(CatchSkeleton), findsNothing);
+    expect(find.byType(CatchLoadingIndicator), findsOneWidget);
     final headerBottom = tester.getRect(find.byType(CatchScreenHeader)).bottom;
-    final cardTop = tester.getRect(find.byType(HostTodayEventSection)).top;
-    expect(cardTop - headerBottom, closeTo(CatchSpacing.screenPt, 1));
+    final progress = tester.getRect(find.byType(CircularProgressIndicator));
+    expect(progress.center.dy, greaterThan(headerBottom));
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets(

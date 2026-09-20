@@ -39,11 +39,7 @@ class HostTodayBody extends StatelessWidget {
     return SliverMainAxisGroup(
       slivers: [
         switch (state.status) {
-          HostTodayStatus.loading => SliverToBoxAdapter(
-            child: CatchSection.content(
-              child: HostTodayEventSection.loading(now: now),
-            ),
-          ),
+          HostTodayStatus.loading => const CatchStateViewport.sliverLoading(),
           HostTodayStatus.error => CatchLocalizedSliverErrorState(
             state.error!,
             context: AppErrorContext.event,
