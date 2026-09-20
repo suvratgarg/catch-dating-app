@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../test_pump_helpers.dart';
 
@@ -78,7 +79,10 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            externalUrlLauncherProvider.overrideWithValue((uri, {mode}) async {
+            externalUrlLauncherProvider.overrideWithValue((
+              uri, {
+              mode = LaunchMode.platformDefault,
+            }) async {
               opened.add(uri);
               return true;
             }),

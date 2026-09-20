@@ -91,7 +91,8 @@ import {requireOrganizerManager} from
   "../shared/organizerManagerAuthority";
 import {checkRateLimit} from "../shared/rateLimit";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
-import {answersForSubmission, reachableFormSections} from "./organizerFormLogic";
+import {answersForSubmission, reachableFormSections}
+  from "./organizerFormLogic";
 import {incrementOrganizerFormFunnel} from "./organizerFormAggregates";
 
 type FormDefinition = OrganizerFormVersionDocument["definition"];

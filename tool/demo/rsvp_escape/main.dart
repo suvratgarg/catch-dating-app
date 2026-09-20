@@ -1,3 +1,12 @@
+import 'package:catch_dating_app/event_rehearsal/data/event_rehearsal_repository.dart';
+import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
+import 'package:catch_dating_app/event_rehearsal/presentation/host_event_rehearsal_screen.dart';
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/hosts/data/crm/host_contacts_repository.dart';
+import 'package:catch_dating_app/hosts/data/crm/host_communication_repository.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_audience_contact_detail.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_communication_plan.dart';
+import 'package:catch_dating_app/hosts/presentation/customers/host_customer_detail_screen.dart';
 // Local-only visual QA of production Host widgets with handler-backed fixtures.
 import 'dart:convert';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
@@ -24,11 +33,10 @@ import 'package:http/http.dart' as http;
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
-import 'fixture_data.dart';
 
-final fixture = jsonDecode(rsvpFixtureJson) as Map<String, dynamic>;
-final organizerId = fixture['organizerId'] as String;
-final formId = fixture['formId'] as String;
+late final Map<String, dynamic> fixture;
+late final String organizerId;
+late final String formId;
 
 Future<Object?> call(String action, Map<String, Object?> payload) async {
   final response = await http.post(
@@ -41,10 +49,32 @@ Future<Object?> call(String action, Map<String, Object?> payload) async {
   return result;
 }
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  fixture =
+      (await call('fixture', {'organizerId': 'demo-saket'}))
+          as Map<String, dynamic>;
+  organizerId = fixture['organizerId'] as String;
+  formId = fixture['formId'] as String;
   final router = GoRouter(
     initialLocation: '/forms/$formId',
     routes: [
+      GoRoute(
+        path: '/rehearsal',
+        builder: (_, _) => const HostEventRehearsalScreen(
+          clubId: 'demo-saket',
+          sessionId: 'demo-snapshot',
+        ),
+      ),
+
+      GoRoute(
+        path: '/people/:contactId',
+        name: Routes.hostCustomerDetailScreen.name,
+        builder: (_, state) => HostCustomerDetailScreen(
+          organizerId: organizerId,
+          contactId: state.pathParameters['contactId']!,
+        ),
+      ),
       GoRoute(
         path: '/forms/:formId',
         name: Routes.hostFormBuilderScreen.name,
@@ -87,6 +117,55 @@ void main() {
   runApp(
     ProviderScope(
       overrides: [
+        eventRehearsalRepositoryProvider.overrideWithValue(
+          DemoRehearsalRepository(),
+        ),
+
+        uidProvider.overrideWith((ref) => Stream.value('demo-host')),
+        hostAudienceContactDetailProvider.overrideWith(
+          (ref, args) async => HostAudienceContactDetail.fromCallableData(
+            await call('contactDetail', {
+              'organizerId': args.$1,
+              'contactId': args.$2,
+              'includeHistory': false,
+            }),
+          ),
+        ),
+        hostAudienceContactHistoryProvider.overrideWith(
+          (ref, args) async => HostAudienceContactDetail.fromCallableData(
+            await call('contactDetail', {
+              'organizerId': args.$1,
+              'contactId': args.$2,
+            }),
+          ),
+        ),
+        hostCommunicationPlanProvider.overrideWith(
+          (ref, args) async => HostCommunicationPlan(
+            organizerId: args.$1,
+            intent: HostCommunicationIntent.individualConversation,
+            capabilityVersion: 1,
+            resolvedAt: DateTime(2026, 9, 21),
+            recipients: [
+              HostCommunicationRecipientPlan(
+                contactId: args.$2,
+                displayName: 'Synthetic guest',
+                outcome: HostCommunicationOutcome.unavailable,
+                recommendedRouteId: null,
+                routes: [
+                  for (final route in HostCommunicationRouteId.values)
+                    HostCommunicationRouteOption(
+                      routeId: route,
+                      executionMode:
+                          HostCommunicationExecutionMode.managedDelivery,
+                      availability:
+                          HostCommunicationRouteAvailability.unavailable,
+                      blocker: HostCommunicationRouteBlocker.permissionRequired,
+                    ),
+                ],
+              ),
+            ],
+          ),
+        ),
         hostFormsRepositoryProvider.overrideWithValue(DemoFormsRepository()),
         hostFormsControllerProvider.overrideWith(
           (ref) => DemoFormsController(),
@@ -337,4 +416,23 @@ class DemoFormsController extends HostFormsController {
       priceInPaise: 0,
     ),
   ];
+}
+
+// Snapshot of the isolated account rehearsal, containing synthetic actors only.
+// Mutations remain unavailable; use the signed-in Host app for live controls.
+class DemoRehearsalRepository implements EventRehearsalRepository {
+  @override
+  Future<EventRehearsalBootstrap> fetch(String sessionId) async =>
+      EventRehearsalBootstrap.fromCallableData(
+        await call('rehearsalSnapshot', {'organizerId': organizerId}),
+      );
+  @override
+  Stream<EventRehearsalBootstrap> watch(String sessionId) async* {
+    yield await fetch(sessionId);
+  }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => throw UnsupportedError(
+    'Read-only account rehearsal snapshot; use the signed-in Host app for live controls.',
+  );
 }

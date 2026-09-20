@@ -123,8 +123,10 @@ class _HostFormResponsesPanelState
         SliverToBoxAdapter(
           child: CatchSection.controls(
             leading: Wrap(
+              spacing: CatchSpacing.s4,
+              runSpacing: CatchSpacing.s2,
               children: [
-                if (formControl != null) formControl,
+                ?formControl,
                 statusControl,
                 for (final filter in filterOptions.take(5))
                   CatchButton.command(

@@ -61,7 +61,8 @@ test("filter eligibility follows each immutable response version", () => {
 
 test("only published categorical options can be queried", () => {
   const options = responseFilterOptions(definition());
-  assert.deepEqual(options.map((item) => item.questionId), ["city", "interests"]);
+  assert.deepEqual(options.map((item) => item.questionId),
+    ["city", "interests"]);
   assert.doesNotThrow(() => validateResponseFilters(
     [{questionId: "city", values: ["Mumbai"]}], options));
   for (const filters of [

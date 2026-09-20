@@ -113,7 +113,9 @@ export async function listOrganizerFormResponsesHandler(
       answerFilterOptions = responseFilterOptions(version.definition);
     }
   } else if (answerFilters.length > 0) {
-    throw new HttpsError("invalid-argument", "Select a form to filter answers.");
+    throw new HttpsError(
+      "invalid-argument", "Select a form to filter answers."
+    );
   }
   validateResponseFilters(answerFilters, answerFilterOptions);
   const filterHash = hashJson({

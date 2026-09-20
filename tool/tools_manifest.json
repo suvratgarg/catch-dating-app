@@ -7038,6 +7038,47 @@
           "rejects root typography overrides while ignoring comments and strings"
         ]
       }
+    },
+    {
+      "id": "demo:rsvp-preview",
+      "category": "demo",
+      "path": "tool/demo/rsvp_escape/form_definition.mjs",
+      "command": "node tool/demo/rsvp_escape/build_fixture.cjs",
+      "safety": "local-writes-build-artifacts",
+      "status": "active",
+      "role": "generator",
+      "description": "Builds an isolated synthetic RSVP form and review fixture; does not initialize Firebase or send messages.",
+      "impactPaths": [
+        "tool/demo/rsvp_escape/**"
+      ],
+      "checks": [
+        "node --check tool/demo/rsvp_escape/build_fixture.cjs",
+        "node --test tool/demo/rsvp_escape/form_definition.test.mjs"
+      ]
+    },
+    {
+      "id": "demo:rsvp-host-ui",
+      "category": "demo",
+      "path": "tool/demo/rsvp_escape/main.dart",
+      "command": "flutter build web --target=tool/demo/rsvp_escape/main.dart --output=build/rsvp-demo-web",
+      "safety": "local-writes-build-artifacts",
+      "status": "internal",
+      "description": "Renders production Host widgets with localhost synthetic repository adapters.",
+      "checks": [
+        "dart format --output=none --set-exit-if-changed tool/demo/rsvp_escape/main.dart"
+      ]
+    },
+    {
+      "id": "demo:rsvp-public-ui",
+      "category": "demo",
+      "path": "tool/demo/rsvp_escape/vite.config.mjs",
+      "command": "node website/node_modules/vite/bin/vite.js --config tool/demo/rsvp_escape/vite.config.mjs",
+      "safety": "local",
+      "status": "internal",
+      "description": "Serves the production public form renderer with synthetic in-memory submission adapters.",
+      "checks": [
+        "node --check tool/demo/rsvp_escape/vite.config.mjs"
+      ]
     }
   ]
 }

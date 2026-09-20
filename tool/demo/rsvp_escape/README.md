@@ -24,14 +24,19 @@ node website/node_modules/vite/bin/vite.js --config tool/demo/rsvp_escape/vite.c
 Host: http://127.0.0.1:8788. Public renderer:
 http://127.0.0.1:5173/public.html. The local API binds only 127.0.0.1:8789,
 accepts only the synthetic organizer, and permits only named demo operations.
-Generated fixture JSON and Dart data are ignored. Restarting the API resets all
-synthetic decisions. Rebuild Flutter after regenerating the initial fixture.
+Generated fixture JSON is ignored. Restarting the API resets all
+synthetic decisions. The Host entrypoint loads the initial fixture from the local API.
 
-The public renderer currently demonstrates the actual questionnaire layout,
-conditional questions, validation and review; its submit/upload adapters do not
-write responses. Host review and conversion actions use the in-memory handlers.
+The public renderer uses the actual questionnaire layout, conditional questions,
+validation and review. Submission, withdrawal, Host review and conversion use
+the in-memory handlers. Image upload remains a synthetic asset stub; it is not
+evidence of a real storage upload.
 The live, separately published Saket Run Club form is not served by this harness.
 
 The definition consolidates Mumbai, Bangalore, Hyderabad, Ahmedabad and Dubai.
 Only Dubai shows the Dubai residency and singles-trip questions. The data uses
 example.com addresses and reserved fictional North American phone numbers.
+
+The optional `/rehearsal` route displays a read-only snapshot from an isolated
+account rehearsal, if `rehearsal_fixture.json` has been supplied locally. It does
+not operate the live console. The signed-in Host app owns live controls.

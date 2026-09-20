@@ -327,7 +327,6 @@ class _HostApplicationDetailScreenState
                           title: context.l10n.hostApplicationReviewNote,
                           contractExemption:
                               'Disclosure for the optional review note, using its generated payload binding.',
-                          disclosureMode: CatchFieldMode.localCollapsed,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
@@ -392,6 +391,14 @@ class _HostApplicationDetailScreenState
             reviewNote: _reviewNoteController.text,
           );
       _invalidateDetail();
+      if (application.sourceResponseId case final responseId?) {
+        ref.invalidate(
+          hostFormResponseDetailProvider(
+            organizerId: widget.organizerId,
+            responseId: responseId,
+          ),
+        );
+      }
       ref.invalidate(hostApplicationsDirectoryControllerProvider);
       if (mounted) {
         showCatchSnackBar(context, context.l10n.hostApplicationReviewUpdated);

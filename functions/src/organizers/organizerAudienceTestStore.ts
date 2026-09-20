@@ -102,7 +102,8 @@ class Query {
           assert.equal(op, "==", "Unsupported test-store query operator");
           return actual === value;
         }))
-      .filter((entry) => after.length === 0 || compare(values(entry), after) > 0)
+      .filter((entry) => after.length === 0 ||
+        compare(values(entry), after) > 0)
       .sort((a, b) => compare(values(a), values(b))).slice(0, this.cap)
       .map(([path]) => this.store.snapshot(new Ref(this.store, path)));
     return {docs, size: docs.length, empty: docs.length === 0};

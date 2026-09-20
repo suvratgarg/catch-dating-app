@@ -64,10 +64,31 @@ const {projectEventAttendeeToOrganizerAudience} = from('organizers/organizerAudi
  for(const record of records){details[record.responseId]=await operations.getOrganizerFormResponseDetailHandler(host({organizerId,responseId:record.responseId}),deps);applicationDetails[record.applicationId]=await applications.getOrganizerApplicationDetailHandler(host({organizerId,applicationId:record.applicationId}),deps);}
  const fixture={label:'LOCAL PREVIEW — synthetic data; no production writes or messages',organizerId,eventId,formId,editor,listing,details,applicationDetails,records,cities,contacts:Object.entries(store.docs).filter(([key])=>key.startsWith('organizerContacts/')).map(([key,value])=>({id:key.split('/')[1],...value})),attendees:Object.entries(store.docs).filter(([key])=>key.startsWith('eventAttendees/')).map(([key,value])=>({id:key.split('/')[1],...value}))};
  fs.writeFileSync(path.join(__dirname,'fixture.json'),JSON.stringify(fixture,null,2)+'\n');
- fs.writeFileSync(path.join(__dirname,'fixture_data.dart'),`// Generated local-only demo fixture by build_fixture.cjs.\nconst rsvpFixtureJson = r'''${JSON.stringify(fixture)}''';\n`);
  console.log({forms:1,responses:listing.items.length,applications:Object.keys(applicationDetails).length,contacts:fixture.contacts.length,attendees:fixture.attendees.length});
  if (process.argv.includes('--serve')) {
+  let publicSequence = 0;
   const handlers = {
+   fixture:async()=>fixture,
+   submitPublic:async request => {
+    const sequence = ++publicSequence;
+    const uid = `synthetic-public-${sequence}`;
+    const guest = data => ({auth:{uid, token:{email:`public-${sequence}@example.com`,email_verified:true}},data});
+    const started = await responses.beginOrganizerFormResponseHandler(guest({publicFormId:deps.publicFormId(),requestId:`rsvp-public-begin-${sequence}`,sourceToken:null}),deps);
+    const answers = {...request.data.answers};
+    // Image selection is a local stub; the asset is scoped to this synthetic draft.
+    if (answers.rsvp_photo?.length) {
+     const assetId = `formasset_public_${sequence}`;
+     store.docs[`organizerFormAssets/${assetId}`] = {...store.docs['organizerFormAssets/formasset_demo_0'],draftId:started.draftId,respondentUid:uid};
+     answers.rsvp_photo = [assetId];
+    }
+    const saved = await responses.saveOrganizerFormResponseDraftHandler(guest({draftId:started.draftId,draftToken:null,expectedRevision:started.revision,answers,consentAccepted:request.data.consentAccepted}),deps);
+    const receipt = await responses.submitOrganizerFormResponseHandler(guest({draftId:started.draftId,draftToken:null,expectedRevision:saved.revision,requestId:`rsvp-public-submit-${sequence}`}),deps);
+    await projectApplicationPurposeResponse(receipt.responseId,undefined,store.docs[`organizerFormResponses/${receipt.responseId}`],deps);
+    return receipt;
+   },
+   withdrawPublic:async request => responses.withdrawOrganizerFormResponseHandler({data:{responseId:request.data.responseId,withdrawalToken:request.data.withdrawalToken,requestId:`rsvp-withdraw-${request.data.responseId}`}},deps),
+   rehearsalSnapshot:async()=>JSON.parse(fs.readFileSync(path.join(__dirname,'rehearsal_fixture.json'))),
+   contactDetail:from('organizers/organizerContacts').getOrganizerContactDetailHandler,
    getEditor:forms.getOrganizerFormEditorHandler,
    updateDraft:forms.updateOrganizerFormDraftHandler,
    validateDraft:forms.validateOrganizerFormDraftHandler,
@@ -78,7 +99,13 @@ const {projectEventAttendeeToOrganizerAudience} = from('organizers/organizerAudi
    applicationDetail:applications.getOrganizerApplicationDetailHandler,
    reviewApplication:applications.reviewOrganizerApplicationHandler,
    previewConversion:from('organizers/organizerFormConversions').previewOrganizerFormConversionHandler,
-   convertResponse:convertOrganizerFormResponseHandler,
+   convertResponse:async request => {
+    const result=await convertOrganizerFormResponseHandler(request,deps);
+    if(request.data.kind==='eventAttendeeProposal'&&result.resultId){
+     await projectEventAttendeeToOrganizerAudience(result.resultId,undefined,store.docs[`eventAttendees/${result.resultId}`],'demo-ui-roster',deps);
+    }
+    return result;
+   },
   };
   require('node:http').createServer(async(req,res)=>{
    const origin=req.headers.origin;

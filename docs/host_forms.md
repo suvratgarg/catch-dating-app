@@ -1,7 +1,7 @@
 ---
 doc_id: host_forms_product_spec
-version: 1.0.1
-updated: 2026-09-15
+version: 1.0.2
+updated: 2026-09-21
 owner: host_tooling
 status: active
 ---
@@ -343,6 +343,21 @@ Hosts can search/filter/sort bounded response pages by form, version, target,
 submission time, completion/review state, source, and permitted mapped fields.
 Answer detail renders from the immutable snapshot and clearly distinguishes
 anonymous, respondent-granted, organizer-acquired, and revoked data.
+
+The response inbox exposes published categorical questions promoted as
+filterable or sortable. Selection uses stable question IDs and option values,
+AND across questions and OR within a question, with each response checked
+against its immutable version. Detail-only and withdrawn answers never satisfy
+an answer filter. Changing answer filters or chronological order starts a new
+query; cursors are bound to those selections. Bounded scans can yield an empty
+page with a continuation, so the UI must retain Load more and active controls.
+
+Application detail places authorized phone/social contact actions and review
+status controls before the answer list. Acceptance creates or reuses a CRM
+person; event admission remains a separate, explicit conversion. Required
+question validation follows the reachable conditional path, so hidden questions
+do not prevent submission.
+
 
 ### Aggregate analytics
 
