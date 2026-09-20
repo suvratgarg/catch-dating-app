@@ -476,10 +476,13 @@ class _CatchButtonState extends State<CatchButton> {
                     Flexible(
                       child: Text(
                         widget.label,
+                        // Commands own a complete function style. Inheriting
+                        // a packaged header style would namespace its system
+                        // font as a nonexistent catch_ui font asset.
                         style: CatchTextStyles.control(
                           context,
                           color: _enabled ? t.ink : t.ink3,
-                        ),
+                        ).copyWith(inherit: false),
                       ),
                     ),
                     if (widget.trailing != null) ...[
