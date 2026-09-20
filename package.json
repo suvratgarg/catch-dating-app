@@ -66,11 +66,11 @@
     "ajv-formats": "^3.0.1",
     "picomatch": "^4.0.7",
     "pngjs": "^7.0.0",
-    "react": "^19.2.8",
-    "react-dom": "^19.2.8",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
     "typescript": "^6.0.3"
   },
   "optionalDependencies": {
-    "@rollup/rollup-linux-x64-gnu": "4.63.1"
+    "@rollup/rollup-linux-x64-gnu": "4.63.2"
   }
 }
