@@ -1,12 +1,11 @@
 import 'dart:io';
 import 'dart:ui' as ui;
-import '../support/catch_test_fonts.dart';
-import '../test_pump_helpers.dart';
-import 'event_rehearsal_configuration_test.dart' show rehearsalSourceEvent;
+
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_configuration.dart';
+import 'package:catch_dating_app/event_rehearsal/presentation/host_event_rehearsal_start_screen.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_customise_sheet.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_entry_scaffold.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_start_sheet.dart';
@@ -16,8 +15,27 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../support/catch_test_fonts.dart';
+import '../test_pump_helpers.dart';
+import 'event_rehearsal_configuration_test.dart' show rehearsalSourceEvent;
+
 void main() {
   setUpAll(loadCatchTestFonts);
+  testWidgets('entry loading centers feedback in the bounded route viewport', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _app(
+        const EventRehearsalEntryStateScaffold(child: CatchLoadingIndicator()),
+      ),
+    );
+    await tester.pump();
+    final viewport = tester.getRect(find.byType(CatchLoadingIndicator));
+    final progress = tester.getCenter(find.byType(CircularProgressIndicator));
+    expect(viewport.height, greaterThan(200));
+    expect(progress.dy, closeTo(viewport.center.dy, 1));
+    expect(tester.takeException(), isNull);
+  });
   for (final (width, scale, dark) in [
     (390.0, 1.0, false),
     (390.0, 2.0, false),

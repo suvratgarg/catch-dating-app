@@ -55,15 +55,17 @@ class _HostEventRehearsalStartScreenState
       value: ref.watch(provider),
       errorContext: AppErrorContext.event,
       onRetry: () => ref.invalidate(provider),
-      loadingBuilder: (_) =>
-          const EventRehearsalEntryStateScaffold(child: CatchLoadingIndicator()),
-      errorBuilder: (_, error, stack, retry) => EventRehearsalEntryStateScaffold(
-        child: CatchLocalizedErrorState(
-          error,
-          context: AppErrorContext.event,
-          onRetry: retry,
-        ),
+      loadingBuilder: (_) => const EventRehearsalEntryStateScaffold(
+        child: CatchLoadingIndicator(),
       ),
+      errorBuilder: (_, error, stack, retry) =>
+          EventRehearsalEntryStateScaffold(
+            child: CatchLocalizedErrorState(
+              error,
+              context: AppErrorContext.event,
+              onRetry: retry,
+            ),
+          ),
       builder: (context, data) {
         final configuration =
             _configuration ??
@@ -212,6 +214,6 @@ class EventRehearsalEntryStateScaffold extends StatelessWidget {
           ? CatchTopBarEmphasis.divided
           : CatchTopBarEmphasis.plain,
     ),
-    body: CatchRouteBody.standard(child: child),
+    body: CatchRouteBody.standardViewport(child: child),
   );
 }
