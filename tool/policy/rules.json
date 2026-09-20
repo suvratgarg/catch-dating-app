@@ -3129,6 +3129,11 @@
           "docAnchor": "docs/operations_platform.md#admin-projection-bridge"
         },
         {
+          "tool": "operations:review-event-messaging",
+          "stage": "manual",
+          "docAnchor": "docs/operations_platform.md#read-only-event-messaging-setup-review"
+        },
+        {
           "stage": "manual",
           "docAnchor": "docs/operations_platform.md#activation-checklist"
         }

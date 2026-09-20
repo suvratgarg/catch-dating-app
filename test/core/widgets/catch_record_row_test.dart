@@ -25,18 +25,20 @@ void main() {
                     width: 320,
                     child: Column(
                       children: [
-                        CatchRecordRow(
-                          title:
-                              'A long record title which must remain completely readable',
-                          metadata: 'Form response · 20 May 2026',
-                          facts: const [
-                            '18:00 · A location name that must remain fully readable',
-                            '24 of 30 registered',
-                          ],
-                          description:
-                              'A complete message or source explanation belongs here, including its last sentence.',
-                          icon: CatchIcons.descriptionOutlined,
-                          onTap: () => opened++,
+                        CatchField.navigate(
+                          onActivate: () => opened++,
+                          content: CatchRecordLayout(
+                            title:
+                                'A long record title which must remain completely readable',
+                            metadata: 'Form response · 20 May 2026',
+                            facts: const [
+                              '18:00 · A location name that must remain fully readable',
+                              '24 of 30 registered',
+                            ],
+                            description:
+                                'A complete message or source explanation belongs here, including its last sentence.',
+                            icon: CatchIcons.descriptionOutlined,
+                          ),
                         ),
                         CatchFieldSupportRow(
                           text:
@@ -86,10 +88,12 @@ void main() {
       MaterialApp(
         theme: AppTheme.dark,
         home: Scaffold(
-          body: CatchRecordRow(
-            title: 'WhatsApp permission',
-            description: 'No participant permission is recorded.',
-            icon: CatchIcons.verifiedUserOutlined,
+          body: CatchField.read(
+            content: CatchRecordLayout(
+              title: 'WhatsApp permission',
+              description: 'No participant permission is recorded.',
+              icon: CatchIcons.verifiedUserOutlined,
+            ),
           ),
         ),
       ),

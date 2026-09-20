@@ -908,6 +908,12 @@ class FakeShellConversationRepository implements ConversationRepository {
   final List<SentTextMessage> sentTextMessages = [];
 
   @override
+  Future<ConversationMessagePage> fetchMessagesPage({
+    required String conversationId,
+    ConversationMessageCursor? cursor,
+  }) async => const ConversationMessagePage(messages: []);
+
+  @override
   Stream<List<ChatMessage>> watchMessages({required String conversationId}) =>
       Stream.value(const []);
 
@@ -920,6 +926,7 @@ class FakeShellConversationRepository implements ConversationRepository {
     required String conversationId,
     required String senderId,
     required String text,
+    String? messageId,
   }) async {
     sentTextMessages.add(
       SentTextMessage(

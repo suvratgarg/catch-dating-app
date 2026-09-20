@@ -6,17 +6,12 @@ import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_sliver_error_state.dart';
-import 'package:catch_dating_app/events/data/event_draft_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/domain/event_draft.dart';
+import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_flow.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_state.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_events_state.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_events_view_model.dart';
 import 'package:catch_dating_app/hosts/events/presentation/widgets/host_events_list.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_draft_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_prefill.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/host_create_event_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/event_management/widgets/draft_picker_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeletons.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -220,83 +215,14 @@ class _HostEventsRouteScaffoldState
     Club club,
     HostEventEntryState state,
     HostEventEntryIntent intent,
-  ) async {
-    switch (intent) {
-      case HostEventEntryIntent.resumeDraft:
-        final draft = await _pickDraft(state);
-        if (draft == null || !mounted) return;
-        await _openCreateEvent(club, initialDraft: draft);
-      case HostEventEntryIntent.repeatLastEvent:
-        final source = state.repeatSource;
-        if (source == null) return;
-        await _openRepeatEvent(club, source);
-      case HostEventEntryIntent.createWithCatchBookings:
-        await _openCreateEvent(club);
-      case HostEventEntryIntent.createFromGuestList:
-        await _openExternalEvent(club);
-    }
-  }
-
-  Future<EventDraft?> _pickDraft(HostEventEntryState state) async {
-    if (!state.hasMultipleDrafts) return state.mostRecentDraft;
-    return showDraftPickerSheet(
-      context: context,
-      drafts: state.drafts,
-      showStartFreshAction: false,
-      onDeleteDraft: (draft) async {
-        await CreateEventDraftController.deleteDraftMutation.run(ref, (tx) {
-          return tx
-              .get(createEventDraftControllerProvider.notifier)
-              .deleteDraft(clubId: draft.clubId, draftId: draft.id);
-        });
-        ref.invalidate(clubEventDraftsProvider(clubId: draft.clubId));
-      },
-    );
-  }
-
-  Future<void> _openCreateEvent(Club club, {EventDraft? initialDraft}) async {
-    await context.pushNamed(
-      Routes.hostCreateEventScreen.name,
-      pathParameters: {'clubId': club.id},
-      extra: HostCreateEventRouteArguments(
-        initialClub: club,
-        initialDraft: initialDraft,
-        externalBookingMode: initialDraft?.externalBookingMode ?? false,
-        promptForDrafts: false,
-      ),
-    );
-    ref.invalidate(clubEventDraftsProvider(clubId: club.id));
-  }
-
-  Future<void> _openExternalEvent(Club club) async {
-    await context.pushNamed(
-      Routes.hostCreateEventScreen.name,
-      pathParameters: {'clubId': club.id},
-      extra: HostCreateEventRouteArguments(
-        initialClub: club,
-        externalBookingMode: true,
-        promptForDrafts: false,
-      ),
-    );
-    ref.invalidate(clubEventDraftsProvider(clubId: club.id));
-  }
-
-  Future<void> _openRepeatEvent(Club club, Event event) async {
-    final prefill = CreateEventPrefill.repeat(
-      event: event,
-      createdAt: _clockNow,
-    );
-    await context.pushNamed(
-      Routes.hostCreateEventScreen.name,
-      pathParameters: {'clubId': club.id},
-      extra: HostCreateEventRouteArguments(
-        initialClub: club,
-        initialPrefill: prefill,
-        promptForDrafts: false,
-      ),
-    );
-    ref.invalidate(clubEventDraftsProvider(clubId: club.id));
-  }
+  ) => runHostEventEntryFlow(
+    context: context,
+    ref: ref,
+    club: club,
+    state: state,
+    intent: intent,
+    createdAt: _clockNow,
+  );
 
   void _openEvent(Club club, Event event) {
     final isLive =

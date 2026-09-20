@@ -68,31 +68,35 @@ class _HostFormTemplatesScreenState
                           context: AppErrorContext.forms,
                           onRetry: onBoundaryRetry,
                         ),
-                    builder: (context, values) => CatchSection.divided(
-                      first: true,
+                    builder: (context, values) => CatchSection.containedRows(
                       children: [
                         for (final template in values)
-                          CatchRecordRow(
+                          CatchField.navigate(
                             key: ValueKey(
                               'host-form-template-${template.templateId}',
                             ),
-                            title: template.title,
-                            description: template.description,
-                            metadata: _creatingTemplateId == template.templateId
-                                ? context.l10n.hostAudienceCreatingForm
-                                : context.l10n.hostFormTemplateSummary(
-                                    purpose: hostFormPurposeLabel(
-                                      context,
-                                      template.purpose,
+                            onActivate: () => _create(template),
+                            states: {
+                              if (_creatingTemplateId != null)
+                                WidgetState.disabled,
+                            },
+                            content: CatchRecordLayout(
+                              title: template.title,
+                              description: template.description,
+                              metadata:
+                                  _creatingTemplateId == template.templateId
+                                  ? context.l10n.hostAudienceCreatingForm
+                                  : context.l10n.hostFormTemplateSummary(
+                                      purpose: hostFormPurposeLabel(
+                                        context,
+                                        template.purpose,
+                                      ),
+                                      count: template.questionCount,
                                     ),
-                                    count: template.questionCount,
-                                  ),
-                            icon: template.templateId == 'blank_form'
-                                ? CatchIcons.addRounded
-                                : CatchIcons.descriptionOutlined,
-                            onTap: _creatingTemplateId == null
-                                ? () => _create(template)
-                                : null,
+                              icon: template.templateId == 'blank_form'
+                                  ? CatchIcons.addRounded
+                                  : CatchIcons.descriptionOutlined,
+                            ),
                           ),
                       ],
                     ),

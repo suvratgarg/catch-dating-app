@@ -8,6 +8,96 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:json_schema/json_schema.dart';
 
 void main() {
+  test('generated event assistance catalog is exhaustive and typed', () {
+    expect(
+      schema_contracts.eventAssistanceWorkflowCatalog.length,
+      schema_contracts.EventAssistanceWorkflowKind.values.length,
+    );
+    for (final kind in schema_contracts.EventAssistanceWorkflowKind.values) {
+      expect(
+        schema_contracts.eventAssistanceWorkflowCatalog[kind.index].kind,
+        kind,
+      );
+    }
+    expect(
+      schema_contracts.eventAssistanceWorkflowCatalog
+          .expand(
+            (definition) => <schema_contracts.EventAssistanceCommandKind>[
+              ...definition.automaticCommands,
+              ...definition.hostCommands,
+              ...definition.guestCommands,
+            ],
+          )
+          .toSet(),
+      schema_contracts.EventAssistanceCommandKind.values.toSet(),
+    );
+    expect(
+      schema_contracts.eventAssistanceWorkflowCatalog
+          .expand((definition) => definition.hostProjection.surfaces)
+          .toSet(),
+      schema_contracts.EventAssistanceHostSurface.values.toSet(),
+    );
+    expect(
+      schema_contracts.eventAssistanceWorkflowCatalog
+          .map((definition) => definition.resolutionBoundary)
+          .toSet(),
+      schema_contracts.EventAssistanceResolutionBoundary.values.toSet(),
+    );
+    for (final definition in schema_contracts.eventAssistanceWorkflowCatalog) {
+      expect(
+        definition.hasCommandContract,
+        definition.resolutionBoundary ==
+            schema_contracts
+                .EventAssistanceResolutionBoundary
+                .eventAssistanceCommand,
+      );
+    }
+  });
+
+  test('generated event assistance command bindings are exhaustive', () {
+    expect(
+      schema_contracts.eventAssistanceCommandBindingCatalog.length,
+      schema_contracts.EventAssistanceCommandKind.values.length,
+    );
+    for (final kind in schema_contracts.EventAssistanceCommandKind.values) {
+      final binding = kind.binding;
+      expect(binding.commandKind, kind);
+      for (final mode in [binding.live, binding.rehearsal]) {
+        expect(
+          mode.operations.isEmpty,
+          mode.bindingType ==
+              schema_contracts.EventAssistanceCommandBindingType.contractOnly,
+        );
+        expect(
+          mode.isImplemented,
+          mode.coverage != schema_contracts.EventAssistanceCommandCoverage.none,
+        );
+        expect(
+          mode.isFullyImplemented,
+          mode.coverage ==
+              schema_contracts.EventAssistanceCommandCoverage.complete,
+        );
+        expect(
+          mode.missingCapability != null,
+          mode.coverage !=
+              schema_contracts.EventAssistanceCommandCoverage.complete,
+        );
+      }
+    }
+    final messageBinding = schema_contracts
+        .EventAssistanceCommandKind
+        .sendOperationalMessage
+        .binding
+        .live;
+    expect(
+      messageBinding.coverage,
+      schema_contracts.EventAssistanceCommandCoverage.complete,
+    );
+    expect(messageBinding.variantField, isNull);
+    expect(messageBinding.implementedVariants, isEmpty);
+    expect(messageBinding.missingVariants, isEmpty);
+  });
+
   test('generated profile prompt constants match contract limits', () {
     expect(schemaProfilePromptPerfectEventId, 'perfectRun');
     expect(schemaMaxProfilePromptAnswers, 3);

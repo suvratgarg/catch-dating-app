@@ -46,7 +46,8 @@ Typed handoffs:
 | Owner | Source | Responsibility |
 |---|---|---|
 | `HostEventsScreen` | `lib/hosts/events/presentation/host_events_screen.dart` | Feature-contract actions: retry_host_home. |
-| `HostEventsRouteScaffold` | `lib/hosts/events/presentation/host_events_screen.dart` | Feature-contract actions: create_organizer, create_event, repeat_event, manage_event. |
+| `HostEventsRouteScaffold` | `lib/hosts/events/presentation/host_events_screen.dart` | Feature-contract actions: create_organizer, manage_event. |
+| `runHostEventEntryFlow` | `lib/hosts/events/presentation/host_event_entry_flow.dart` | Feature-contract actions: create_event, repeat_event. |
 | `HostEventsClubCard` | `lib/hosts/events/presentation/widgets/host_events_list.dart` | Feature-contract actions: retry_host_events. |
 | `HostEventsTimelineController` | `lib/hosts/events/presentation/host_events_timeline_controller.dart` | Feature-contract actions: load_more_schedule, load_more_history, retry_event_history. |
 | `HostAppShell` | `lib/core/presentation/host_app_shell.dart` | Feature-contract actions: switch_organizer. |

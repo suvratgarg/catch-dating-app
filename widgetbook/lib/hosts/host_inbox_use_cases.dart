@@ -20,6 +20,7 @@ import 'package:catch_dating_app/hosts/domain/crm/host_whatsapp_thread.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_broadcast_composer_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_scope_menu.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_people.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -34,6 +35,22 @@ const _scopeControlHeight = 180.0;
 const _audienceControlHeight = 120.0;
 const _workspaceHeight = 560.0;
 const _emptyStateHeight = 320.0;
+
+@widgetbook.UseCase(
+  name: 'People and sends navigation',
+  type: HostMessagingWorkspaceTabBar,
+  path: '[P1 product surfaces]/Host/Inbox/Components',
+)
+Widget hostMessagingTabs(BuildContext context) =>
+    const _HostRoleBoundary(child: _HostInboxFrame());
+
+@widgetbook.UseCase(
+  name: 'Resolved scope and people',
+  type: HostInboxWorkspaceSection,
+  path: '[P1 product surfaces]/Host/Inbox/Components',
+)
+Widget hostInboxWorkspaceSection(BuildContext context) =>
+    const _HostRoleBoundary(child: _HostInboxFrame());
 
 @widgetbook.UseCase(
   name: 'Event-scoped states',
@@ -171,14 +188,14 @@ Widget hostInboxScopeSelectorStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Audience control states',
-  type: HostInboxAudienceRail,
+  type: HostInboxAudienceInput,
   path: '[P1 product surfaces]/Host/Inbox/Components',
 )
 Widget hostInboxAudienceRailStates(BuildContext context) {
   final workspace = _workspace();
   return _HostRoleBoundary(
     child: _HostInboxCatalog(
-      title: 'HostInboxAudienceRail',
+      title: 'HostInboxAudienceInput',
       contractId: 'component.host.inbox_audience_rail',
       children: [
         _StateCard(
@@ -188,7 +205,7 @@ Widget hostInboxAudienceRailStates(BuildContext context) {
             child: Scaffold(
               body: CustomScrollView(
                 slivers: [
-                  HostInboxAudienceRail(
+                  HostInboxAudienceInput(
                     workspace: workspace,
                     onChanged: (_) {},
                   ),
@@ -204,14 +221,14 @@ Widget hostInboxAudienceRailStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Workspace states',
-  type: HostInboxWorkspaceSliver,
+  type: HostInboxPeopleSection,
   path: '[P1 product surfaces]/Host/Inbox/Components',
 )
 Widget hostInboxWorkspaceStates(BuildContext context) {
   final workspace = _workspace();
   return _HostRoleBoundary(
     child: _HostInboxCatalog(
-      title: 'HostInboxWorkspaceSliver',
+      title: 'HostInboxPeopleSection',
       contractId: 'component.host.inbox_workspace',
       children: [
         _StateCard(
@@ -221,10 +238,20 @@ Widget hostInboxWorkspaceStates(BuildContext context) {
             child: Scaffold(
               body: CustomScrollView(
                 slivers: [
-                  HostInboxWorkspaceSliver(
+                  HostInboxPeopleSection(
                     workspace: workspace,
                     now: HostInboxSurfaceFixtures.now,
-                    onThreadSelected: (_) {},
+                    onPersonSelected: (_) {},
+                    people: composeHostInboxPeople(
+                      organizerId: HostInboxSurfaceFixtures.club.id,
+                      scope: workspace.selectedScope,
+                      segment: workspace.selectedSegment,
+                      catchThreads: workspace.threads
+                          .map((row) => row.preview)
+                          .toList(),
+                      whatsappThreads: const [],
+                      participations: null,
+                    ),
                   ),
                 ],
               ),

@@ -71,7 +71,14 @@ void main() {
       );
 
       expect(scaffold.extendBody, isTrue);
-      expect(scaffold.body, isA<Stack>());
+      expect(
+        find.descendant(
+          of: find.byWidget(scaffold.body!),
+          matching: find.byType(CatchTabViewportScope),
+          matchRoot: true,
+        ),
+        findsOneWidget,
+      );
       expect(scaffold.bottomNavigationBar, isNull);
       expect(find.byKey(navigationKey), findsOneWidget);
       expect(
@@ -136,7 +143,14 @@ void main() {
           find.byType(CatchTabViewportScope),
         );
         expect(keyboardScaffold.extendBody, isFalse);
-        expect(keyboardScaffold.body, isA<Stack>());
+        expect(
+          find.descendant(
+            of: find.byWidget(keyboardScaffold.body!),
+            matching: find.byType(CatchTabViewportScope),
+            matchRoot: true,
+          ),
+          findsOneWidget,
+        );
         expect(keyboardScaffold.bottomNavigationBar, isNull);
         expect(find.byKey(navigationKey), findsNothing);
         expect(
@@ -192,7 +206,14 @@ void main() {
       );
 
       expect(scaffold.extendBody, isFalse);
-      expect(scaffold.body, isA<CatchTabViewportScope>());
+      expect(
+        find.descendant(
+          of: find.byWidget(scaffold.body!),
+          matching: find.byType(CatchTabViewportScope),
+          matchRoot: true,
+        ),
+        findsOneWidget,
+      );
       expect(scaffold.bottomNavigationBar, isNotNull);
       expect(find.byKey(navigationKey), findsOneWidget);
       expect(

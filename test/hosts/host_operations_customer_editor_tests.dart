@@ -40,14 +40,8 @@ void _registerHostOperationsCustomerEditorTests() {
       find.byKey(const ValueKey('host-customer-name-field')),
       findsNothing,
     );
-    expect(
-      find.byKey(const ValueKey('host-customer-phone-summary')),
-      findsOneWidget,
-    );
-    expect(
-      find.byKey(const ValueKey('host-customer-email-summary')),
-      findsOneWidget,
-    );
+    expect(find.text('+919876543210'), findsOneWidget);
+    expect(find.text('Add email'), findsOneWidget);
     final avatar = tester.widget<CatchAvatar>(find.byType(CatchAvatar));
     expect(avatar.size, CatchRecordTokens.avatarExtent);
     expect(find.text('Regular'), findsOneWidget);

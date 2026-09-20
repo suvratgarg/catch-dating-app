@@ -176,40 +176,34 @@ class _ChatComposer extends StatelessWidget {
                       ),
                     if (showImageButton) gapW8,
                     Expanded(
-                      child: GestureDetector(
-                        key: ChatInputBar.fieldLaneKey,
-                        behavior: HitTestBehavior.opaque,
-                        onTap: hardDisabled ? null : focusNode.requestFocus,
-                        child: CatchFieldLanes.single(
-                          child: CatchField.input(
-                            copy: catchFieldCopy(context.l10n),
-                            title: context.l10n.chatsChatInputBarTitleMessage,
-                            contract: CatchContractConstraints
-                                .createChatMessageClientWriteDataText,
-                            labelMode: CatchFieldLabelTextMode.hidden,
-                            controller: controller,
-                            focusNode: focusNode,
-                            // Sending keeps the native editor focused.
-                            onEditingComplete: () {},
-                            textCapitalization: TextCapitalization.sentences,
-                            textInputAction: TextInputAction.send,
-                            minLines: 1,
-                            maxLines: 4,
-                            inputHint:
-                                disabledReason ??
-                                context
-                                    .l10n
-                                    .chatsChatInputBarPlaceholderMessage,
-                            size: CatchFieldSize.floating,
-                            variant: CatchFieldVariant.bare,
-                            states: <WidgetState>{
-                              if (hardDisabled) WidgetState.disabled,
-                            },
-                            autofocus: autofocus,
-                            onSubmitted: (_) {
-                              if (sendActionEnabled) onSend?.call();
-                            },
-                          ),
+                      child: CatchFieldLanes.single(
+                        child: CatchField.input(
+                          key: ChatInputBar.fieldLaneKey,
+                          copy: catchFieldCopy(context.l10n),
+                          title: context.l10n.chatsChatInputBarTitleMessage,
+                          contract: CatchContractConstraints
+                              .createChatMessageClientWriteDataText,
+                          labelMode: CatchFieldLabelTextMode.hidden,
+                          controller: controller,
+                          focusNode: focusNode,
+                          // Sending keeps the native editor focused.
+                          onEditingComplete: () {},
+                          textCapitalization: TextCapitalization.sentences,
+                          textInputAction: TextInputAction.send,
+                          minLines: 1,
+                          maxLines: 4,
+                          inputHint:
+                              disabledReason ??
+                              context.l10n.chatsChatInputBarPlaceholderMessage,
+                          size: CatchFieldSize.floating,
+                          variant: CatchFieldVariant.bare,
+                          states: <WidgetState>{
+                            if (hardDisabled) WidgetState.disabled,
+                          },
+                          autofocus: autofocus,
+                          onSubmitted: (_) {
+                            if (sendActionEnabled) onSend?.call();
+                          },
                         ),
                       ),
                     ),

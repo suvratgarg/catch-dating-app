@@ -1,3 +1,5 @@
+import 'dart:ui' show Tristate;
+
 import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/widgets/chat_conversations_list.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
@@ -11,6 +13,7 @@ void main() {
   ) async {
     final selected = _preview('selected', 'Selected guest');
     final other = _preview('other', 'Other guest');
+    final semantics = tester.ensureSemantics();
     ChatThreadPreview? tapped;
 
     await tester.pumpWidget(
@@ -30,23 +33,36 @@ void main() {
       ),
     );
 
-    final selectedSemantics = find.byKey(
-      const ValueKey<String>('chat-conversation-selected-match-selected'),
-    );
-    expect(selectedSemantics, findsOneWidget);
-    expect(
-      tester.widget<Semantics>(selectedSemantics).properties.selected,
-      true,
-    );
-    expect(
-      find.byKey(
-        const ValueKey<String>('chat-conversation-selected-match-other'),
+    final selectedRow = find.byKey(ValueKey(selected.matchId));
+    final otherRow = find.byKey(ValueKey(other.matchId));
+    Finder rowAction(Finder row) => find.descendant(
+      of: row,
+      matching: find.byWidgetPredicate(
+        (widget) => widget is Semantics && widget.properties.button == true,
       ),
-      findsNothing,
+    );
+    expect(
+      tester.getSemantics(rowAction(selectedRow)).flagsCollection.isSelected,
+      Tristate.isTrue,
+    );
+    expect(
+      tester.getSemantics(rowAction(otherRow)).flagsCollection.isSelected,
+      isNot(Tristate.isTrue),
+    );
+    final activePaint = find.descendant(
+      of: selectedRow,
+      matching: find.byKey(const ValueKey('catch-field-active-overlay')),
+    );
+    expect(
+      (tester.widget<AnimatedContainer>(activePaint).decoration!
+              as BoxDecoration)
+          .color,
+      isNot(Colors.transparent),
     );
 
     await tester.tap(find.text('Selected guest'));
     expect(tapped?.matchId, selected.matchId);
+    semantics.dispose();
   });
 }
 

@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_apply_event_messaging_budget_payload.schema.json",
+  "title": "AdminApplyEventMessagingBudgetCallablePayload",
+  "description": "Stages one still-current approved event-messaging budget decision as paused event and sender-day ceilings. The operation grants no spending or dispatch authority and cannot activate a worker.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "requestId",
+    "decisionId",
+    "expectedDecisionRevision",
+    "note"
+  ],
+  "properties": {
+    "requestId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "decisionId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "expectedDecisionRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "note": {"type": "string", "minLength": 1, "maxLength": 1000}
+  }
+}

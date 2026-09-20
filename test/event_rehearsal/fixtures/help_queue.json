@@ -1,0 +1,718 @@
+{
+  "initial": {
+    "session": {
+      "id": "practice-help",
+      "organizerId": "organizer-1",
+      "clubId": "organizer-1",
+      "ownerUid": "host-1",
+      "sourceEventId": null,
+      "sourceEventRevision": null,
+      "publicRehearsalId": "practicepublic1234567890",
+      "viewerTokenHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "scenarioId": "lateAndNoShow",
+      "seed": 1,
+      "actorCount": 2,
+      "actionCount": 0,
+      "status": "running",
+      "setup": {
+        "title": "Practice",
+        "locationName": "Practice venue",
+        "durationMinutes": 120,
+        "hostGoal": "Learn",
+        "attendeePrompt": "Say hello",
+        "moduleIds": [
+          "arrival"
+        ],
+        "movementSimulation": {
+          "routePlan": null,
+          "livePositions": [],
+          "lateArrivalGuidance": null,
+          "itinerary": [
+            {
+              "id": "first",
+              "title": "first",
+              "kind": "stop",
+              "offsetMinutes": 0,
+              "location": {
+                "name": "first",
+                "latitude": 22.7,
+                "longitude": 75.8
+              }
+            },
+            {
+              "id": "second",
+              "title": "second",
+              "kind": "stop",
+              "offsetMinutes": 15,
+              "location": {
+                "name": "second",
+                "latitude": 22.7,
+                "longitude": 75.8
+              }
+            },
+            {
+              "id": "bar",
+              "title": "bar",
+              "kind": "stop",
+              "offsetMinutes": 30,
+              "location": {
+                "name": "bar",
+                "latitude": 22.7,
+                "longitude": 75.8
+              }
+            },
+            {
+              "id": "water",
+              "title": "water",
+              "kind": "stop",
+              "offsetMinutes": 45,
+              "location": {
+                "name": "water",
+                "latitude": 22.7,
+                "longitude": 75.8
+              }
+            }
+          ]
+        }
+      },
+      "setupRevision": 0,
+      "runtimeRevision": 1,
+      "activeStepIndex": 1,
+      "virtualStartedAt": {
+        "_seconds": 1,
+        "_nanoseconds": 0
+      },
+      "virtualNow": {
+        "_seconds": 1,
+        "_nanoseconds": 0
+      },
+      "faultId": "none",
+      "faultConsumed": false,
+      "createdAt": {
+        "_seconds": 1,
+        "_nanoseconds": 0
+      },
+      "updatedAt": {
+        "_seconds": 1,
+        "_nanoseconds": 0
+      },
+      "expiresAt": {
+        "_seconds": 86401,
+        "_nanoseconds": 0
+      },
+      "completedAt": null,
+      "virtualStartedAtMillis": 1000,
+      "virtualNowMillis": 1000,
+      "expiresAtMillis": 86401000
+    },
+    "actors": [
+      {
+        "sessionId": "practice-help",
+        "actorId": "actor-01",
+        "displayName": "Diya",
+        "persona": "regular",
+        "status": "expected",
+        "visit": {
+          "attendanceRevision": 0,
+          "checkedInAtMillis": null,
+          "accountabilityRevision": 0,
+          "resolution": null
+        },
+        "participation": {
+          "revision": 0,
+          "episodeRevision": 0,
+          "state": "active"
+        },
+        "connectionState": "connected",
+        "guestMoment": "welcome",
+        "optedOut": false,
+        "keepApartActorIds": [],
+        "helpRequested": true,
+        "untrackedHelpRequested": false,
+        "promptCompleted": false,
+        "requiredData": {
+          "profileRevision": 0,
+          "completedFieldIds": [
+            "displayName"
+          ],
+          "requestRevision": 0,
+          "request": null
+        },
+        "layoutUnitId": "table-1",
+        "confirmedLayoutUnitId": null,
+        "lastActionAt": null,
+        "createdAt": {
+          "_seconds": 1,
+          "_nanoseconds": 0
+        },
+        "updatedAt": {
+          "_seconds": 1,
+          "_nanoseconds": 0
+        }
+      },
+      {
+        "sessionId": "practice-help",
+        "actorId": "actor-02",
+        "displayName": "Kabir",
+        "persona": "quiet",
+        "status": "expected",
+        "visit": {
+          "attendanceRevision": 0,
+          "checkedInAtMillis": null,
+          "accountabilityRevision": 0,
+          "resolution": null
+        },
+        "participation": {
+          "revision": 0,
+          "episodeRevision": 0,
+          "state": "active"
+        },
+        "connectionState": "connected",
+        "guestMoment": "welcome",
+        "optedOut": false,
+        "keepApartActorIds": [],
+        "helpRequested": false,
+        "untrackedHelpRequested": false,
+        "promptCompleted": false,
+        "requiredData": {
+          "profileRevision": 0,
+          "completedFieldIds": [
+            "displayName"
+          ],
+          "requestRevision": 0,
+          "request": null
+        },
+        "layoutUnitId": "table-1",
+        "confirmedLayoutUnitId": null,
+        "lastActionAt": null,
+        "createdAt": {
+          "_seconds": 1,
+          "_nanoseconds": 0
+        },
+        "updatedAt": {
+          "_seconds": 1,
+          "_nanoseconds": 0
+        }
+      }
+    ],
+    "actions": [],
+    "canUseInternalFaults": false,
+    "guestUrl": "https://catchdates.com/rehearse/practicepublic1234567890",
+    "helpRequests": {
+      "clockId": "clock:2437f59975ea7eff1bb40d51ced15b0ee629c23b0f37cf5e71dbe7b9b2b29f14",
+      "coverage": "boundedSession",
+      "cases": [
+        {
+          "caseId": "practice-case:140155507875441547a1b7fb585eaab3331dd53e70c8772bbf29fba297998892",
+          "revision": 0,
+          "sourceHash": "c380cb55737c16bb73f2aa4ca73def2e50bb8adbaf362c8eba054bcfe7969f46",
+          "availability": "current",
+          "attendeeId": "actor-01",
+          "displayName": "Diya",
+          "category": "other",
+          "receivedAt": 1000,
+          "assignment": {
+            "kind": "unassigned"
+          },
+          "status": "open",
+          "resolution": null,
+          "canChange": true
+        }
+      ],
+      "managerOptions": {
+        "actorUid": "host-1",
+        "managers": [
+          {
+            "uid": "host-1",
+            "displayName": "Sam"
+          },
+          {
+            "uid": "host-2",
+            "displayName": "Priya"
+          }
+        ]
+      },
+      "untrackedActorIds": []
+    }
+  },
+  "assigned": {
+    "session": {
+      "id": "practice-help",
+      "organizerId": "organizer-1",
+      "clubId": "organizer-1",
+      "ownerUid": "host-1",
+      "sourceEventId": null,
+      "sourceEventRevision": null,
+      "publicRehearsalId": "practicepublic1234567890",
+      "viewerTokenHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "scenarioId": "lateAndNoShow",
+      "seed": 1,
+      "actorCount": 2,
+      "actionCount": 0,
+      "status": "running",
+      "setup": {
+        "title": "Practice",
+        "locationName": "Practice venue",
+        "durationMinutes": 120,
+        "hostGoal": "Learn",
+        "attendeePrompt": "Say hello",
+        "moduleIds": [
+          "arrival"
+        ],
+        "movementSimulation": {
+          "routePlan": null,
+          "livePositions": [],
+          "lateArrivalGuidance": null,
+          "itinerary": [
+            {
+              "id": "first",
+              "title": "first",
+              "kind": "stop",
+              "offsetMinutes": 0,
+              "location": {
+                "name": "first",
+                "latitude": 22.7,
+                "longitude": 75.8
+              }
+            },
+            {
+              "id": "second",
+              "title": "second",
+              "kind": "stop",
+              "offsetMinutes": 15,
+              "location": {
+                "name": "second",
+                "latitude": 22.7,
+                "longitude": 75.8
+              }
+            },
+            {
+              "id": "bar",
+              "title": "bar",
+              "kind": "stop",
+              "offsetMinutes": 30,
+              "location": {
+                "name": "bar",
+                "latitude": 22.7,
+                "longitude": 75.8
+              }
+            },
+            {
+              "id": "water",
+              "title": "water",
+              "kind": "stop",
+              "offsetMinutes": 45,
+              "location": {
+                "name": "water",
+                "latitude": 22.7,
+                "longitude": 75.8
+              }
+            }
+          ]
+        }
+      },
+      "setupRevision": 0,
+      "runtimeRevision": 1,
+      "activeStepIndex": 1,
+      "virtualStartedAt": {
+        "_seconds": 1,
+        "_nanoseconds": 0
+      },
+      "virtualNow": {
+        "_seconds": 1,
+        "_nanoseconds": 0
+      },
+      "faultId": "none",
+      "faultConsumed": false,
+      "createdAt": {
+        "_seconds": 1,
+        "_nanoseconds": 0
+      },
+      "updatedAt": {
+        "_seconds": 1,
+        "_nanoseconds": 0
+      },
+      "expiresAt": {
+        "_seconds": 86401,
+        "_nanoseconds": 0
+      },
+      "completedAt": null,
+      "virtualStartedAtMillis": 1000,
+      "virtualNowMillis": 1000,
+      "expiresAtMillis": 86401000
+    },
+    "actors": [
+      {
+        "sessionId": "practice-help",
+        "actorId": "actor-01",
+        "displayName": "Diya",
+        "persona": "regular",
+        "status": "expected",
+        "visit": {
+          "attendanceRevision": 0,
+          "checkedInAtMillis": null,
+          "accountabilityRevision": 0,
+          "resolution": null
+        },
+        "participation": {
+          "revision": 0,
+          "episodeRevision": 0,
+          "state": "active"
+        },
+        "connectionState": "connected",
+        "guestMoment": "welcome",
+        "optedOut": false,
+        "keepApartActorIds": [],
+        "helpRequested": true,
+        "untrackedHelpRequested": false,
+        "promptCompleted": false,
+        "requiredData": {
+          "profileRevision": 0,
+          "completedFieldIds": [
+            "displayName"
+          ],
+          "requestRevision": 0,
+          "request": null
+        },
+        "layoutUnitId": "table-1",
+        "confirmedLayoutUnitId": null,
+        "lastActionAt": null,
+        "createdAt": {
+          "_seconds": 1,
+          "_nanoseconds": 0
+        },
+        "updatedAt": {
+          "_seconds": 1,
+          "_nanoseconds": 0
+        }
+      },
+      {
+        "sessionId": "practice-help",
+        "actorId": "actor-02",
+        "displayName": "Kabir",
+        "persona": "quiet",
+        "status": "expected",
+        "visit": {
+          "attendanceRevision": 0,
+          "checkedInAtMillis": null,
+          "accountabilityRevision": 0,
+          "resolution": null
+        },
+        "participation": {
+          "revision": 0,
+          "episodeRevision": 0,
+          "state": "active"
+        },
+        "connectionState": "connected",
+        "guestMoment": "welcome",
+        "optedOut": false,
+        "keepApartActorIds": [],
+        "helpRequested": false,
+        "untrackedHelpRequested": false,
+        "promptCompleted": false,
+        "requiredData": {
+          "profileRevision": 0,
+          "completedFieldIds": [
+            "displayName"
+          ],
+          "requestRevision": 0,
+          "request": null
+        },
+        "layoutUnitId": "table-1",
+        "confirmedLayoutUnitId": null,
+        "lastActionAt": null,
+        "createdAt": {
+          "_seconds": 1,
+          "_nanoseconds": 0
+        },
+        "updatedAt": {
+          "_seconds": 1,
+          "_nanoseconds": 0
+        }
+      }
+    ],
+    "actions": [],
+    "canUseInternalFaults": false,
+    "guestUrl": "https://catchdates.com/rehearse/practicepublic1234567890",
+    "helpRequests": {
+      "clockId": "clock:2437f59975ea7eff1bb40d51ced15b0ee629c23b0f37cf5e71dbe7b9b2b29f14",
+      "coverage": "boundedSession",
+      "cases": [
+        {
+          "caseId": "practice-case:140155507875441547a1b7fb585eaab3331dd53e70c8772bbf29fba297998892",
+          "revision": 1,
+          "sourceHash": "6b540992c48ee353e81c7c09dc569b69420a4be4627f10734641c3e8bcc5275e",
+          "availability": "current",
+          "attendeeId": "actor-01",
+          "displayName": "Diya",
+          "category": "other",
+          "receivedAt": 1000,
+          "assignment": {
+            "kind": "assigned",
+            "uid": "host-2",
+            "authority": "current"
+          },
+          "status": "open",
+          "resolution": null,
+          "canChange": true
+        }
+      ],
+      "managerOptions": {
+        "actorUid": "host-1",
+        "managers": [
+          {
+            "uid": "host-1",
+            "displayName": "Sam"
+          },
+          {
+            "uid": "host-2",
+            "displayName": "Priya"
+          }
+        ]
+      },
+      "untrackedActorIds": []
+    }
+  },
+  "resolved": {
+    "session": {
+      "id": "practice-help",
+      "organizerId": "organizer-1",
+      "clubId": "organizer-1",
+      "ownerUid": "host-1",
+      "sourceEventId": null,
+      "sourceEventRevision": null,
+      "publicRehearsalId": "practicepublic1234567890",
+      "viewerTokenHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "scenarioId": "lateAndNoShow",
+      "seed": 1,
+      "actorCount": 2,
+      "actionCount": 0,
+      "status": "running",
+      "setup": {
+        "title": "Practice",
+        "locationName": "Practice venue",
+        "durationMinutes": 120,
+        "hostGoal": "Learn",
+        "attendeePrompt": "Say hello",
+        "moduleIds": [
+          "arrival"
+        ],
+        "movementSimulation": {
+          "routePlan": null,
+          "livePositions": [],
+          "lateArrivalGuidance": null,
+          "itinerary": [
+            {
+              "id": "first",
+              "title": "first",
+              "kind": "stop",
+              "offsetMinutes": 0,
+              "location": {
+                "name": "first",
+                "latitude": 22.7,
+                "longitude": 75.8
+              }
+            },
+            {
+              "id": "second",
+              "title": "second",
+              "kind": "stop",
+              "offsetMinutes": 15,
+              "location": {
+                "name": "second",
+                "latitude": 22.7,
+                "longitude": 75.8
+              }
+            },
+            {
+              "id": "bar",
+              "title": "bar",
+              "kind": "stop",
+              "offsetMinutes": 30,
+              "location": {
+                "name": "bar",
+                "latitude": 22.7,
+                "longitude": 75.8
+              }
+            },
+            {
+              "id": "water",
+              "title": "water",
+              "kind": "stop",
+              "offsetMinutes": 45,
+              "location": {
+                "name": "water",
+                "latitude": 22.7,
+                "longitude": 75.8
+              }
+            }
+          ]
+        }
+      },
+      "setupRevision": 0,
+      "runtimeRevision": 1,
+      "activeStepIndex": 1,
+      "virtualStartedAt": {
+        "_seconds": 1,
+        "_nanoseconds": 0
+      },
+      "virtualNow": {
+        "_seconds": 1,
+        "_nanoseconds": 0
+      },
+      "faultId": "none",
+      "faultConsumed": false,
+      "createdAt": {
+        "_seconds": 1,
+        "_nanoseconds": 0
+      },
+      "updatedAt": {
+        "_seconds": 1,
+        "_nanoseconds": 0
+      },
+      "expiresAt": {
+        "_seconds": 86401,
+        "_nanoseconds": 0
+      },
+      "completedAt": null,
+      "virtualStartedAtMillis": 1000,
+      "virtualNowMillis": 1000,
+      "expiresAtMillis": 86401000
+    },
+    "actors": [
+      {
+        "sessionId": "practice-help",
+        "actorId": "actor-01",
+        "displayName": "Diya",
+        "persona": "regular",
+        "status": "expected",
+        "visit": {
+          "attendanceRevision": 0,
+          "checkedInAtMillis": null,
+          "accountabilityRevision": 0,
+          "resolution": null
+        },
+        "participation": {
+          "revision": 0,
+          "episodeRevision": 0,
+          "state": "active"
+        },
+        "connectionState": "connected",
+        "guestMoment": "welcome",
+        "optedOut": false,
+        "keepApartActorIds": [],
+        "helpRequested": false,
+        "untrackedHelpRequested": false,
+        "promptCompleted": false,
+        "requiredData": {
+          "profileRevision": 0,
+          "completedFieldIds": [
+            "displayName"
+          ],
+          "requestRevision": 0,
+          "request": null
+        },
+        "layoutUnitId": "table-1",
+        "confirmedLayoutUnitId": null,
+        "lastActionAt": null,
+        "createdAt": {
+          "_seconds": 1,
+          "_nanoseconds": 0
+        },
+        "updatedAt": {
+          "_seconds": 1,
+          "_nanoseconds": 0
+        }
+      },
+      {
+        "sessionId": "practice-help",
+        "actorId": "actor-02",
+        "displayName": "Kabir",
+        "persona": "quiet",
+        "status": "expected",
+        "visit": {
+          "attendanceRevision": 0,
+          "checkedInAtMillis": null,
+          "accountabilityRevision": 0,
+          "resolution": null
+        },
+        "participation": {
+          "revision": 0,
+          "episodeRevision": 0,
+          "state": "active"
+        },
+        "connectionState": "connected",
+        "guestMoment": "welcome",
+        "optedOut": false,
+        "keepApartActorIds": [],
+        "helpRequested": false,
+        "untrackedHelpRequested": false,
+        "promptCompleted": false,
+        "requiredData": {
+          "profileRevision": 0,
+          "completedFieldIds": [
+            "displayName"
+          ],
+          "requestRevision": 0,
+          "request": null
+        },
+        "layoutUnitId": "table-1",
+        "confirmedLayoutUnitId": null,
+        "lastActionAt": null,
+        "createdAt": {
+          "_seconds": 1,
+          "_nanoseconds": 0
+        },
+        "updatedAt": {
+          "_seconds": 1,
+          "_nanoseconds": 0
+        }
+      }
+    ],
+    "actions": [],
+    "canUseInternalFaults": false,
+    "guestUrl": "https://catchdates.com/rehearse/practicepublic1234567890",
+    "helpRequests": {
+      "clockId": "clock:2437f59975ea7eff1bb40d51ced15b0ee629c23b0f37cf5e71dbe7b9b2b29f14",
+      "coverage": "boundedSession",
+      "cases": [
+        {
+          "caseId": "practice-case:140155507875441547a1b7fb585eaab3331dd53e70c8772bbf29fba297998892",
+          "revision": 2,
+          "sourceHash": "92f3eca31dc3538d95de5fd810b8b7f8d7514c595ab91161f1b43ee180f1f022",
+          "availability": "current",
+          "attendeeId": "actor-01",
+          "displayName": "Diya",
+          "category": "other",
+          "receivedAt": 1000,
+          "assignment": {
+            "kind": "assigned",
+            "uid": "host-2",
+            "authority": "current"
+          },
+          "status": "resolved",
+          "resolution": {
+            "outcome": "resolved",
+            "actorUid": "host-1",
+            "at": 1000
+          },
+          "canChange": false
+        }
+      ],
+      "managerOptions": {
+        "actorUid": "host-1",
+        "managers": [
+          {
+            "uid": "host-1",
+            "displayName": "Sam"
+          },
+          {
+            "uid": "host-2",
+            "displayName": "Priya"
+          }
+        ]
+      },
+      "untrackedActorIds": []
+    }
+  }
+}

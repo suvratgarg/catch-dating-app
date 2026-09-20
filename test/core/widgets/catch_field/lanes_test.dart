@@ -8,6 +8,39 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('action rows expose caller-owned selection', (tester) async {
+    var taps = 0;
+    await tester.pumpWidget(
+      _wrap(
+        CatchSection.containedRows(
+          children: [
+            CatchField.action(
+              key: const ValueKey('selected-action'),
+              copy: catchFieldCopy(AppLocalizationsEn()),
+              title: 'Alex Morgan',
+              states: const {WidgetState.selected},
+              onTap: () => taps++,
+            ),
+          ],
+        ),
+      ),
+    );
+
+    final field = find.byKey(const ValueKey('selected-action'));
+    expect(
+      find.descendant(
+        of: field,
+        matching: find.byWidgetPredicate(
+          (widget) => widget is Semantics && widget.properties.selected == true,
+        ),
+      ),
+      findsOneWidget,
+    );
+    expect(find.byIcon(CatchIcons.chevronRightRounded), findsNothing);
+    await tester.tap(field);
+    expect(taps, 1);
+  });
+
   testWidgets('field action labels follow caller copy and saving state', (
     tester,
   ) async {
@@ -719,6 +752,25 @@ void main() {
     final overlayFinder = find.byKey(CatchField.pressOverlayKey);
 
     await tester.sendEventToBinding(
+      PointerAddedEvent(
+        pointer: 41,
+        position: fieldRect.center,
+        kind: PointerDeviceKind.mouse,
+      ),
+    );
+    await tester.sendEventToBinding(
+      PointerHoverEvent(
+        pointer: 41,
+        position: fieldRect.center,
+        kind: PointerDeviceKind.mouse,
+      ),
+    );
+    await tester.pump();
+    final hoverColor =
+        (tester.widget<AnimatedContainer>(overlayFinder).decoration!
+                as BoxDecoration)
+            .color;
+    await tester.sendEventToBinding(
       PointerDownEvent(
         pointer: 41,
         position: fieldRect.center,
@@ -730,7 +782,7 @@ void main() {
     var decoration =
         tester.widget<AnimatedContainer>(overlayFinder).decoration!
             as BoxDecoration;
-    expect(decoration.color, Colors.transparent);
+    expect(decoration.color, hoverColor);
     expect(decoration.border, isNull);
     await tester.sendEventToBinding(
       PointerUpEvent(
@@ -739,6 +791,14 @@ void main() {
         kind: PointerDeviceKind.mouse,
       ),
     );
+    await tester.sendEventToBinding(
+      PointerRemovedEvent(
+        pointer: 41,
+        position: fieldRect.center,
+        kind: PointerDeviceKind.mouse,
+      ),
+    );
+    await tester.pump();
 
     final gesture = await tester.startGesture(fieldRect.center);
     await tester.pump();

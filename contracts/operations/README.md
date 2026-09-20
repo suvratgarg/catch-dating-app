@@ -14,7 +14,29 @@ The contracts deliberately separate:
 - fenced leases for retry-safe workers;
 - hash-bound publication plans; and
 - rule proposals/evaluations, which require independent approval before
-activation.
+  activation.
+
+`event_messaging_setup_review.schema.json` is the portable, read-only operator
+review for one event messaging runtime, sender and its event and sender-day
+ceilings. Its literal `grantsDispatchAuthority: false` prevents the artifact
+from being mistaken for sender activation, spend approval or send permission.
+`adminReviewEventMessagingBudget` exposes that bounded review plus the current
+decision summary to the Finance workspace without exposing credentials, private
+RCS agent ids, guest rosters, spending authority or dispatch authority. The
+separate callable and Firestore contracts for
+`adminDecideEventMessagingBudget` bind a finance decision to that review's
+current runtime, sender and budget-source hashes. The resulting receipt has a
+literal `decision_only_no_spending_authority` effect; it cannot create a budget
+or authorize dispatch. A separate immutable request receipt preserves exact
+replay after a later revision replaces the current decision view.
+`adminApplyEventMessagingBudget` is the typed mutation boundary for one exact
+approved revision. It rechecks that same evidence, preserves recorded charges,
+and stages the event and sender-day ceilings atomically in paused state. Its
+immutable application receipt fixes `stagesSpendingCeilings: true` while
+spending authority, dispatch authority, provider contact and worker activation
+remain false. A separate live boundary must revalidate and activate both
+ceilings; all runtime, consent, content and dispatch gates still apply
+independently.
 
 For the Supply Intake reference workflow, `primaryStage` is always exactly one
 of `incoming`, `verify`, `resolve`, or `ready`. Publication, rejection, expiry,

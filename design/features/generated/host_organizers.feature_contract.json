@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_organizers.feature.json",
   "generatedFor": "2026-09-14",
   "sourceDigest": "sha256:6c41a73eac567f3d8d4bce13909d58c1fb028049c7c73ee0f1c393a13aa8ea5e",
-  "resolvedDigest": "sha256:4e1a693f95f5a2c1d3ca97bec0567e52e26c6be5ef56517d0c1c705f6e6e75be",
+  "resolvedDigest": "sha256:03f4ec0b66d85f91f4a340f989df7f76ec7f3d5afbbade921013c1f218ab4cb5",
   "feature": {
     "id": "feature.host_organizers",
     "name": "Host Organizers",
@@ -5221,6 +5221,7 @@
               "file": "packages/catch_ui/lib/src/components/catch_field.dart",
               "constructors": [
                 "CatchField.read",
+                "CatchField.navigate",
                 "CatchField.content",
                 "CatchField.nav",
                 "CatchField.sortable",
@@ -5290,7 +5291,12 @@
                 "CatchSection.containedFieldGroups",
                 "CatchSection.contained",
                 "CatchSection.plain",
-                "CatchSection.horizontal"
+                "CatchSection.horizontal",
+                "CatchSection.rows",
+                "CatchSection.containedRows",
+                "CatchSection.sliverRows",
+                "CatchSection.content",
+                "CatchSection.formRows"
               ]
             }
           },

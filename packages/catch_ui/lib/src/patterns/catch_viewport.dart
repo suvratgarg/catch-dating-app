@@ -24,7 +24,8 @@ class CatchViewport extends StatelessWidget {
        ),
        _sliverBuilder = null,
        _scene = null,
-       _sliverLane = null;
+       _sliverLane = null,
+       _boxBuilder = null;
 
   const CatchViewport.atWidth({
     super.key,
@@ -39,14 +40,16 @@ class CatchViewport extends StatelessWidget {
        ),
        _sliverBuilder = null,
        _scene = null,
-       _sliverLane = null;
+       _sliverLane = null,
+       _boxBuilder = null;
 
   const CatchViewport.sliver({
     super.key,
     required CatchViewportSliverBuilder this._sliverBuilder,
   }) : _selection = null,
        _scene = null,
-       _sliverLane = null;
+       _sliverLane = null,
+       _boxBuilder = null;
 
   const CatchViewport.scene({
     super.key,
@@ -55,7 +58,8 @@ class CatchViewport extends StatelessWidget {
   }) : _selection = null,
        _sliverBuilder = null,
        _scene = (maxWidth: maxWidth, builder: builder),
-       _sliverLane = null;
+       _sliverLane = null,
+       _boxBuilder = null;
 
   /// Centers a sliver in a readable lane without boxing or adding gutters.
   const CatchViewport.sliverLane({
@@ -66,7 +70,19 @@ class CatchViewport extends StatelessWidget {
        _selection = null,
        _sliverBuilder = null,
        _scene = null,
-       _sliverLane = (child: child, maxExtent: maxExtent);
+       _sliverLane = (child: child, maxExtent: maxExtent),
+       _boxBuilder = null;
+
+  /// Supplies local box geometry without making a feature own measurement.
+  const CatchViewport.box({
+    super.key,
+    required CatchViewportSliverBuilder builder,
+  }) : _boxBuilder = builder,
+       _selection = null,
+       _sliverBuilder = null,
+       _scene = null,
+       _sliverLane = null;
+  final CatchViewportSliverBuilder? _boxBuilder;
 
   final ({Widget child, double maxExtent})? _sliverLane;
 
@@ -119,6 +135,15 @@ class CatchViewport extends StatelessWidget {
     }
     return LayoutBuilder(
       builder: (context, constraints) {
+        if (_boxBuilder case final builder?) {
+          return builder(
+            context,
+            CatchViewportGeometry(
+              width: constraints.maxWidth,
+              sizeClass: CatchWindowSize.fromWidth(constraints.maxWidth),
+            ),
+          );
+        }
         final scene = _scene;
         if (scene != null) {
           final media = MediaQuery.of(context);

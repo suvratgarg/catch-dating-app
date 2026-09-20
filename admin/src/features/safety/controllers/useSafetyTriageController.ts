@@ -388,7 +388,7 @@ function buildSafetyRows(snapshot: Awaited<
     safetyRow(row, "moderation", "Moderation flags")
   );
   const eventRows = snapshot.queues.eventSafetyReports.map((row) =>
-    safetyRow(row, "event", "Event reports")
+    safetyRow(row, "event", "Event safety")
   );
   return [...reportRows, ...moderationRows, ...eventRows];
 }
@@ -414,7 +414,7 @@ function safetyRowFromDetail(
         "event";
   const queueLabel = queueKind === "reports" ? "User reports" :
     queueKind === "moderation" ? "Moderation flags" :
-      "Event reports";
+      "Event safety";
   return {
     id: detail.targetPath,
     title: detail.title,

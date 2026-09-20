@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/profile_self.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:f34f97e784f0e6c20d8367e020a2878d1b3bf618e21d1bbb7911c9c00613561e",
-  "resolvedDigest": "sha256:44d6ed1ae5ed4eee500ffeddd50a4e2926b4c4d79cee901db1c769ae630192af",
+  "resolvedDigest": "sha256:5494784ef2d2fb603995985e37a9863c0d3ad859f6d1f7853646a35322e7376a",
   "feature": {
     "id": "feature.profile_self",
     "name": "Self Profile",
@@ -1169,6 +1169,7 @@
               "file": "packages/catch_ui/lib/src/components/catch_field.dart",
               "constructors": [
                 "CatchField.read",
+                "CatchField.navigate",
                 "CatchField.content",
                 "CatchField.nav",
                 "CatchField.sortable",
@@ -1237,7 +1238,12 @@
                 "CatchSection.containedFieldGroups",
                 "CatchSection.contained",
                 "CatchSection.plain",
-                "CatchSection.horizontal"
+                "CatchSection.horizontal",
+                "CatchSection.rows",
+                "CatchSection.containedRows",
+                "CatchSection.sliverRows",
+                "CatchSection.content",
+                "CatchSection.formRows"
               ]
             }
           },

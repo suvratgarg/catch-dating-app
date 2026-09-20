@@ -1,0 +1,6 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/set_event_assistance_checkpoint_closeout_payload.schema.json",
+  "title": "SetEventAssistanceCheckpointCloseoutCallablePayload",
+  "$ref": "../shared/event_assistance_checkpoint.schema.json#/definitions/CloseoutInput"
+}

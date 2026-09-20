@@ -125,6 +125,12 @@ export const eventRuntimeParticipantDocumentSchema: Record<string, unknown> = {
         ]
       }
     },
+    "profileRevision": {
+      "description": "Monotonic accepted runtime-profile submission revision. Legacy documents omit it and read as zero.",
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
     "runtimeProfile": {
       "type": "object",
       "additionalProperties": false,

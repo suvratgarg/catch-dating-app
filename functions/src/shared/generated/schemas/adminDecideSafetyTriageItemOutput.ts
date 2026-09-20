@@ -17,7 +17,7 @@ export const adminDecideSafetyTriageItemCallableResponseSchema: Record<string, u
     "targetPath": {
       "type": "string",
       "maxLength": 260,
-      "pattern": "^(reports|moderationFlags|eventSafetyReports)/[^/]+$"
+      "pattern": "^(reports|moderationFlags|eventSafetyReports|eventAssistanceCases)/[^/]+$"
     },
     "decision": {
       "type": "string",
@@ -30,7 +30,8 @@ export const adminDecideSafetyTriageItemCallableResponseSchema: Record<string, u
       "type": "string",
       "enum": [
         "reviewed",
-        "dismissed"
+        "dismissed",
+        "resolved"
       ]
     }
   }

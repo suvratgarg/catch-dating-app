@@ -36,6 +36,7 @@ class ChatsBrowseHeader extends StatefulWidget {
     this.showHostSubtitle = true,
     this.subtitle,
     this.compactForPrimaryRail = false,
+    this.actions = const [],
   });
 
   final ChatsBrowsePresentation presentation;
@@ -48,6 +49,7 @@ class ChatsBrowseHeader extends StatefulWidget {
   final bool showHostSubtitle;
   final String? subtitle;
   final bool compactForPrimaryRail;
+  final List<Widget> actions;
 
   @override
   State<ChatsBrowseHeader> createState() => _ChatsBrowseHeaderState();
@@ -100,6 +102,7 @@ class _ChatsBrowseHeaderState extends State<ChatsBrowseHeader> {
             title: title,
             subtitle: subtitle,
             search: search,
+            actions: widget.actions,
           )
         : CatchTopBar.screen(
             context: context,
@@ -110,6 +113,7 @@ class _ChatsBrowseHeaderState extends State<ChatsBrowseHeader> {
             ),
             applySafeArea: false,
             search: search,
+            actions: widget.actions,
           );
 
     return Column(

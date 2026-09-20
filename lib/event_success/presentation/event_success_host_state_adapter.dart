@@ -1,4 +1,3 @@
-
 import 'package:catch_dating_app/event_success/domain/event_success_layout.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_structure.dart';

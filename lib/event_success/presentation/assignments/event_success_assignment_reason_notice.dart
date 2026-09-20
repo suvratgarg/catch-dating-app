@@ -1,4 +1,3 @@
-
 import 'package:catch_dating_app/event_success/domain/event_success_assignment.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';

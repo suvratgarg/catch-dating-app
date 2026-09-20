@@ -19,7 +19,7 @@ const schemaAdminAssignSafetyTriageItemCallablePayloadSchema = <String, Object?>
     'targetPath': <String, Object?>{
       'type': 'string',
       'maxLength': 260,
-      'pattern': '^(reports|moderationFlags|eventSafetyReports)/[^/]+\$',
+      'pattern': '^(reports|moderationFlags|eventSafetyReports|eventAssistanceCases)/[^/]+\$',
     },
     'assigneeUid': <String, Object?>{
       'anyOf': <Object?>[

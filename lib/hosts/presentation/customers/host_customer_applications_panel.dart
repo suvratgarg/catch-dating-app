@@ -45,7 +45,7 @@ class HostCustomerApplicationsPanel extends ConsumerWidget {
       builder: (context, state) => Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          CatchSection.fieldRows(
+          CatchSection.containedRows(
             key: const ValueKey('host-customer-applications'),
             title: context.l10n.hostApplicationsTitle,
             children: [
@@ -55,21 +55,24 @@ class HostCustomerApplicationsPanel extends ConsumerWidget {
                   body: context.l10n.hostCustomersNoApplications,
                 ),
               for (final application in state.applications)
-                CatchRecordRow(
+                CatchField.navigate(
                   key: ValueKey(
                     'host-customer-application-${application.applicationId}',
                   ),
-                  title: hostApplicationContextLabel(
-                    context,
-                    formId: application.formId,
-                    targetKind: application.targetKind,
-                    targetId: application.targetId,
-                    sources: sources,
+                  onActivate: () =>
+                      onOpenApplication(application.applicationId),
+                  content: CatchRecordLayout(
+                    title: hostApplicationContextLabel(
+                      context,
+                      formId: application.formId,
+                      targetKind: application.targetKind,
+                      targetId: application.targetId,
+                      sources: sources,
+                    ),
+                    metadata:
+                        '${hostApplicationStatusLabel(context, application.reviewStatus)} · ${AppTimeFormatters.shortDate(application.submittedAt)}',
+                    icon: CatchIcons.tabForms,
                   ),
-                  metadata:
-                      '${hostApplicationStatusLabel(context, application.reviewStatus)} · ${AppTimeFormatters.shortDate(application.submittedAt)}',
-                  icon: CatchIcons.tabForms,
-                  onTap: () => onOpenApplication(application.applicationId),
                 ),
             ],
           ),

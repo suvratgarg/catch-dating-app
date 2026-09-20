@@ -81,6 +81,8 @@ import 'package:widgetbook_workspace/dashboard/catalog/recommendations.dart'
     as _widgetbook_workspace_dashboard_catalog_recommendations;
 import 'package:widgetbook_workspace/dashboard/catalog/screen.dart'
     as _widgetbook_workspace_dashboard_catalog_screen;
+import 'package:widgetbook_workspace/event_rehearsal/rehearsal_settings_use_cases.dart'
+    as _widgetbook_workspace_event_rehearsal_rehearsal_settings_use_cases;
 import 'package:widgetbook_workspace/event_success/companion/feedback.dart'
     as _widgetbook_workspace_event_success_companion_feedback;
 import 'package:widgetbook_workspace/event_success/companion/loading.dart'
@@ -89,6 +91,22 @@ import 'package:widgetbook_workspace/event_success/companion/route.dart'
     as _widgetbook_workspace_event_success_companion_route;
 import 'package:widgetbook_workspace/event_success/companion/screen.dart'
     as _widgetbook_workspace_event_success_companion_screen;
+import 'package:widgetbook_workspace/event_success/event_assistance_use_cases.dart'
+    as _widgetbook_workspace_event_success_event_assistance_use_cases;
+import 'package:widgetbook_workspace/event_success/event_checkpoint_use_cases.dart'
+    as _widgetbook_workspace_event_success_event_checkpoint_use_cases;
+import 'package:widgetbook_workspace/event_success/event_delivery_use_cases.dart'
+    as _widgetbook_workspace_event_success_event_delivery_use_cases;
+import 'package:widgetbook_workspace/event_success/event_departure_use_cases.dart'
+    as _widgetbook_workspace_event_success_event_departure_use_cases;
+import 'package:widgetbook_workspace/event_success/event_help_use_cases.dart'
+    as _widgetbook_workspace_event_success_event_help_use_cases;
+import 'package:widgetbook_workspace/event_success/event_late_join_use_cases.dart'
+    as _widgetbook_workspace_event_success_event_late_join_use_cases;
+import 'package:widgetbook_workspace/event_success/event_message_preferences_use_cases.dart'
+    as _widgetbook_workspace_event_success_event_message_preferences_use_cases;
+import 'package:widgetbook_workspace/event_success/event_runtime_use_cases.dart'
+    as _widgetbook_workspace_event_success_event_runtime_use_cases;
 import 'package:widgetbook_workspace/event_success/event_success_module_consolidation_prototypes.dart'
     as _widgetbook_workspace_event_success_event_success_module_consolidation_prototypes;
 import 'package:widgetbook_workspace/event_success/host_assignment_components_use_cases.dart'
@@ -221,6 +239,8 @@ import 'package:widgetbook_workspace/hosts/host_form_workspace_use_cases.dart'
     as _widgetbook_workspace_hosts_host_form_workspace_use_cases;
 import 'package:widgetbook_workspace/hosts/host_inbox_use_cases.dart'
     as _widgetbook_workspace_hosts_host_inbox_use_cases;
+import 'package:widgetbook_workspace/hosts/host_person_messaging_use_cases.dart'
+    as _widgetbook_workspace_hosts_host_person_messaging_use_cases;
 import 'package:widgetbook_workspace/hosts/host_roster_import_use_cases.dart'
     as _widgetbook_workspace_hosts_host_roster_import_use_cases;
 import 'package:widgetbook_workspace/hosts/host_saved_audience_use_cases.dart'
@@ -389,6 +409,8 @@ import 'package:widgetbook_workspace/primitives/contracts/root_screen.dart'
     as _widgetbook_workspace_primitives_contracts_root_screen;
 import 'package:widgetbook_workspace/primitives/contracts/roster.dart'
     as _widgetbook_workspace_primitives_contracts_roster;
+import 'package:widgetbook_workspace/primitives/contracts/row_composition.dart'
+    as _widgetbook_workspace_primitives_contracts_row_composition;
 import 'package:widgetbook_workspace/primitives/contracts/section.dart'
     as _widgetbook_workspace_primitives_contracts_section;
 import 'package:widgetbook_workspace/primitives/contracts/section_lists.dart'
@@ -1269,7 +1291,7 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Event detail',
         children: [
           _widgetbook.WidgetbookComponent(
-            name: 'CatchPersonRow',
+            name: 'CatchPersonLayout',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contact states',
@@ -2653,7 +2675,7 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Content',
         children: [
           _widgetbook.WidgetbookComponent(
-            name: 'CatchRecordRow',
+            name: 'CatchRecordLayout',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
@@ -3119,6 +3141,17 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'CatchFieldActivityNotification',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Field active handoff',
+                builder:
+                    _widgetbook_workspace_primitives_contracts_row_composition
+                        .catchFieldActivityContract,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'CatchFieldCommitButton',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -3192,10 +3225,10 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'CatchRowPressSurface',
             useCases: [
               _widgetbook.WidgetbookUseCase(
-                name: 'Contract states',
+                name: 'Field-owned press states',
                 builder:
-                    _widgetbook_workspace_primitives_contracts_section_lists
-                        .catchRowPressSurfaceContractStates,
+                    _widgetbook_workspace_primitives_contracts_row_composition
+                        .catchInternalRowPressContract,
               ),
             ],
           ),
@@ -3255,6 +3288,28 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Layout',
         children: [
           _widgetbook.WidgetbookComponent(
+            name: 'CatchContentSection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Non-row section header',
+                builder:
+                    _widgetbook_workspace_primitives_contracts_row_composition
+                        .catchContentSectionContract,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchContentSectionHeader',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Content-width rule',
+                builder:
+                    _widgetbook_workspace_primitives_contracts_row_composition
+                        .catchSectionHeaderContract,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'CatchFractionalViewport',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -3273,6 +3328,39 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_primitives_layout_motion_use_cases
                         .pagerFocusStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchRowSection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Typed row boundaries',
+                builder:
+                    _widgetbook_workspace_primitives_contracts_row_composition
+                        .catchRowSectionContract,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchRowViewport',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Pane interaction width',
+                builder:
+                    _widgetbook_workspace_primitives_contracts_row_composition
+                        .catchRowViewportContract,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchRowViewportScope',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Published pane width',
+                builder:
+                    _widgetbook_workspace_primitives_contracts_row_composition
+                        .catchRowViewportScopeContract,
               ),
             ],
           ),
@@ -3768,12 +3856,22 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CatchPersonRow',
+            name: 'CatchPersonLayout',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
                 builder: _widgetbook_workspace_primitives_contracts_messages
                     .catchPersonRowChatPreviewContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchPersonRowCopy',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Localized conversation copy',
+                builder: _widgetbook_workspace_primitives_contracts_messages
+                    .catchPersonRowCopyContract,
               ),
             ],
           ),
@@ -6436,8 +6534,243 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookFolder(
+            name: 'Automatic guest updates',
+            children: [
+              _widgetbook.WidgetbookComponent(
+                name: 'EventAssistanceRuntimeChannelsSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Named sender order and fallback choices',
+                    builder:
+                        _widgetbook_workspace_event_success_event_runtime_use_cases
+                            .assistanceRuntimeChannels,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventAssistanceRuntimeLimitsSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Optional response deadline and bounded retry limits',
+                    builder:
+                        _widgetbook_workspace_event_success_event_runtime_use_cases
+                            .assistanceRuntimeLimits,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventAssistanceRuntimeSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Explicit channels with progressive limits',
+                    builder:
+                        _widgetbook_workspace_event_success_event_runtime_use_cases
+                            .assistanceRuntimeForm,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventAssistanceRuntimeSheet',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Reviewed event settings and recoverable save',
+                    builder:
+                        _widgetbook_workspace_event_success_event_runtime_use_cases
+                            .assistanceRuntimeSheet,
+                  ),
+                ],
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookFolder(
+            name: 'Guest help',
+            children: [
+              _widgetbook.WidgetbookComponent(
+                name: 'EventAssistanceHelpDecisionSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Shared reviewed help decision',
+                    builder:
+                        _widgetbook_workspace_event_success_event_help_use_cases
+                            .assistanceHelpDecision,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventAssistanceHelpEntrySection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Shared help entry',
+                    builder:
+                        _widgetbook_workspace_event_success_event_help_use_cases
+                            .assistanceHelpEntry,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventAssistanceHelpQueueSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Shared practical request records',
+                    builder:
+                        _widgetbook_workspace_event_success_event_help_use_cases
+                            .assistanceHelpRecords,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventAssistanceHelpQueueSheet',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Live request queue',
+                    builder:
+                        _widgetbook_workspace_event_success_event_help_use_cases
+                            .assistanceLiveHelpQueue,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventAssistanceHelpSheet',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Live request and exact retry',
+                    builder:
+                        _widgetbook_workspace_event_success_event_help_use_cases
+                            .assistanceLiveHelpRequest,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventAssistanceLiveHelpSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Live runtime help entry',
+                    builder:
+                        _widgetbook_workspace_event_success_event_help_use_cases
+                            .assistanceLiveHelpEntry,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventRehearsalHelpQueueSheet',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Practice request queue',
+                    builder:
+                        _widgetbook_workspace_event_success_event_help_use_cases
+                            .assistancePracticeHelpQueue,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventRehearsalHelpSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Practice runtime help entry',
+                    builder:
+                        _widgetbook_workspace_event_success_event_help_use_cases
+                            .assistancePracticeHelpEntry,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventRehearsalHelpSheet',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Practice request and exact retry',
+                    builder:
+                        _widgetbook_workspace_event_success_event_help_use_cases
+                            .assistancePracticeHelpRequest,
+                  ),
+                ],
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookFolder(
+            name: 'Guest message permissions',
+            children: [
+              _widgetbook.WidgetbookComponent(
+                name: 'EventMessageChannelAccordion',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Collapsed channel summary',
+                    builder:
+                        _widgetbook_workspace_event_success_event_message_preferences_use_cases
+                            .eventMessageChannelAccordion,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventMessagePreferenceSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Server-authored permission terms',
+                    builder:
+                        _widgetbook_workspace_event_success_event_message_preferences_use_cases
+                            .eventMessagePreferenceSection,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventMessagePreferencesNavigationSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Event detail entry',
+                    builder:
+                        _widgetbook_workspace_event_success_event_message_preferences_use_cases
+                            .eventMessagePreferencesNavigation,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventMessagePreferencesSheet',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Linked guest and independent channels',
+                    builder:
+                        _widgetbook_workspace_event_success_event_message_preferences_use_cases
+                            .eventMessagePreferencesSheet,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventMessageSenderSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Reviewed WhatsApp sender',
+                    builder:
+                        _widgetbook_workspace_event_success_event_message_preferences_use_cases
+                            .eventMessageSenderSection,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventMessageSmsSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Legacy SMS permission owner',
+                    builder:
+                        _widgetbook_workspace_event_success_event_message_preferences_use_cases
+                            .eventMessageSmsSection,
+                  ),
+                ],
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookFolder(
             name: 'Host live components',
             children: [
+              _widgetbook.WidgetbookComponent(
+                name: 'CatchPersonLayout',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Ready',
+                    builder:
+                        _widgetbook_workspace_event_success_host_live_components_use_cases
+                            .eventSuccessStrictWingmanRequestHostRow,
+                  ),
+                ],
+              ),
               _widgetbook.WidgetbookComponent(
                 name: 'EventSuccessAccountabilitySection',
                 useCases: [
@@ -6457,6 +6790,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_event_success_host_live_components_use_cases
                             .eventSuccessStrictHostActivitySummary,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventSuccessAttendeeSpatialRow',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Contained spatial selection',
+                    builder:
+                        _widgetbook_workspace_event_success_host_live_components_use_cases
+                            .previewSpatialAttendeeRow,
                   ),
                 ],
               ),
@@ -6512,17 +6856,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_event_success_host_live_components_use_cases
                             .previewEventSuccessExclusionAlertBanner,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'EventSuccessHostHelpRow',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Ready',
-                    builder:
-                        _widgetbook_workspace_event_success_host_live_components_use_cases
-                            .eventSuccessStrictWingmanRequestHostRow,
                   ),
                 ],
               ),
@@ -6809,6 +7142,219 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookFolder(
+            name: 'Late arrival settings',
+            children: [
+              _widgetbook.WidgetbookComponent(
+                name: 'EventAssistanceLateJoinDestinationField',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Verified places and joining point selection',
+                    builder:
+                        _widgetbook_workspace_event_success_event_late_join_use_cases
+                            .assistanceLateJoinDestinations,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventAssistanceLateJoinRulesSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Custom rules preserve the remaining configuration',
+                    builder:
+                        _widgetbook_workspace_event_success_event_late_join_use_cases
+                            .assistanceLateJoinRules,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventAssistanceLateJoinSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Smart defaults and progressive customization',
+                    builder:
+                        _widgetbook_workspace_event_success_event_late_join_use_cases
+                            .assistanceLateJoinForm,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventAssistanceLateJoinSheet',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Reviewed settings and exact retry',
+                    builder:
+                        _widgetbook_workspace_event_success_event_late_join_use_cases
+                            .assistanceLateJoinSheet,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventAssistanceLiveSettingsSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Compact entry and optional group rules',
+                    builder:
+                        _widgetbook_workspace_event_success_event_late_join_use_cases
+                            .assistanceLateJoinEntry,
+                  ),
+                ],
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookFolder(
+            name: 'Message delivery',
+            children: [
+              _widgetbook.WidgetbookComponent(
+                name: 'EventAssistanceDeliveryDecisionSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Shared reviewed delivery handoff',
+                    builder:
+                        _widgetbook_workspace_event_success_event_delivery_use_cases
+                            .assistanceDeliveryDecision,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventAssistanceDeliveryEntrySection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Shared delivery entry',
+                    builder:
+                        _widgetbook_workspace_event_success_event_delivery_use_cases
+                            .assistanceDeliveryEntry,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventAssistanceDeliveryQueueSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Shared message delivery records',
+                    builder:
+                        _widgetbook_workspace_event_success_event_delivery_use_cases
+                            .assistanceDeliveryRecords,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventAssistanceDeliveryQueueSheet',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Live message queue',
+                    builder:
+                        _widgetbook_workspace_event_success_event_delivery_use_cases
+                            .assistanceLiveDeliveryQueue,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventAssistanceDeliverySheet',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Live message and exact handoff',
+                    builder:
+                        _widgetbook_workspace_event_success_event_delivery_use_cases
+                            .assistanceLiveDeliveryRequest,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventAssistanceLiveDeliverySection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Live runtime delivery entry',
+                    builder:
+                        _widgetbook_workspace_event_success_event_delivery_use_cases
+                            .assistanceLiveDeliveryEntry,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventRehearsalDeliveryQueueSheet',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Practice message queue',
+                    builder:
+                        _widgetbook_workspace_event_success_event_delivery_use_cases
+                            .assistancePracticeDeliveryQueue,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventRehearsalDeliverySection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Practice runtime delivery entry',
+                    builder:
+                        _widgetbook_workspace_event_success_event_delivery_use_cases
+                            .assistancePracticeDeliveryEntry,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventRehearsalDeliverySheet',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Practice message and exact handoff',
+                    builder:
+                        _widgetbook_workspace_event_success_event_delivery_use_cases
+                            .assistancePracticeDeliveryRequest,
+                  ),
+                ],
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookFolder(
+            name: 'Rehearsal settings',
+            children: [
+              _widgetbook.WidgetbookComponent(
+                name: 'EventRehearsalRuntimePreviewSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Simulated outcome sequence',
+                    builder:
+                        _widgetbook_workspace_event_rehearsal_rehearsal_settings_use_cases
+                            .rehearsalRuntimeFields,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventRehearsalRuntimeSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Progressive delivery configuration',
+                    builder:
+                        _widgetbook_workspace_event_rehearsal_rehearsal_settings_use_cases
+                            .rehearsalRuntimeSection,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventRehearsalSettingsSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Compact settings entry',
+                    builder:
+                        _widgetbook_workspace_event_rehearsal_rehearsal_settings_use_cases
+                            .rehearsalSettingsEntry,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'EventRehearsalSettingsSheet',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Practice save and exact retry',
+                    builder:
+                        _widgetbook_workspace_event_rehearsal_rehearsal_settings_use_cases
+                            .rehearsalSettingsSheet,
+                  ),
+                ],
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookFolder(
             name: 'Reveal components',
             children: [
               _widgetbook.WidgetbookComponent(
@@ -6843,6 +7389,396 @@ final directories = <_widgetbook.WidgetbookNode>[
                             .eventSuccessStandingsSectionStates,
                   ),
                 ],
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
+        name: 'Event Success assistance',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'EventAssistanceCheckpointGuestRow',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Explicit guest observation',
+                builder:
+                    _widgetbook_workspace_event_success_event_checkpoint_use_cases
+                        .assistanceCheckpointGuest,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventAssistanceCheckpointRequestSection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Shared checkpoint reporter and closeout',
+                builder:
+                    _widgetbook_workspace_event_success_event_checkpoint_use_cases
+                        .assistanceCheckpointRequest,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventAssistanceCheckpointRequestSheet',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Live legacy request availability',
+                builder:
+                    _widgetbook_workspace_event_success_event_checkpoint_use_cases
+                        .assistanceLiveCheckpointRequest,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventAssistanceCheckpointRosterSection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Original departure roster',
+                builder:
+                    _widgetbook_workspace_event_success_event_checkpoint_use_cases
+                        .assistanceCheckpointRoster,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventAssistanceCheckpointSection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Shared checkpoint observations',
+                builder:
+                    _widgetbook_workspace_event_success_event_checkpoint_use_cases
+                        .assistanceCheckpointForm,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventAssistanceCheckpointSheet',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Live checkpoint report and retry',
+                builder:
+                    _widgetbook_workspace_event_success_event_checkpoint_use_cases
+                        .assistanceLiveCheckpoint,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventAssistanceCheckpointVisitsSection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Original guests with unconfirmed arrivals',
+                builder:
+                    _widgetbook_workspace_event_success_event_checkpoint_use_cases
+                        .assistanceCheckpointVisits,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventAssistanceDepartureHistorySection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Historical departure records',
+                builder:
+                    _widgetbook_workspace_event_success_event_checkpoint_use_cases
+                        .assistanceCheckpointHistory,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventAssistanceDepartureHistorySheet',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Live historical checkpoint discovery',
+                builder:
+                    _widgetbook_workspace_event_success_event_checkpoint_use_cases
+                        .assistanceLiveCheckpointHistory,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventAssistanceDepartureRosterSection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Searchable observed departure roster',
+                builder:
+                    _widgetbook_workspace_event_success_event_departure_use_cases
+                        .assistanceDepartureRoster,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventAssistanceDepartureSection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Shared progressive departure form',
+                builder:
+                    _widgetbook_workspace_event_success_event_departure_use_cases
+                        .assistanceDepartureStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventAssistanceDepartureSheet',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Live departure and exact retry',
+                builder:
+                    _widgetbook_workspace_event_success_event_departure_use_cases
+                        .assistanceLiveDeparture,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventAssistanceGroupRosterSection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Shared guest selection for groups',
+                builder:
+                    _widgetbook_workspace_event_success_event_assistance_use_cases
+                        .assistanceGroupRoster,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventAssistanceLiveGroupsSection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Live roster to group review',
+                builder:
+                    _widgetbook_workspace_event_success_event_assistance_use_cases
+                        .assistanceLiveGroups,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventAssistanceLiveMovementSection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Live group departure entry',
+                builder:
+                    _widgetbook_workspace_event_success_event_departure_use_cases
+                        .assistanceLiveMovement,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventAssistanceLiveSweepSection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Live roster to visit',
+                builder:
+                    _widgetbook_workspace_event_success_event_assistance_use_cases
+                        .assistanceLiveSweep,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventAssistanceMembershipSection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Shared group responsibility actions',
+                builder:
+                    _widgetbook_workspace_event_success_event_assistance_use_cases
+                        .assistanceMembershipStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventAssistanceMembershipSheet',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Live group action with exact retry',
+                builder:
+                    _widgetbook_workspace_event_success_event_assistance_use_cases
+                        .assistanceLiveMembership,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventAssistanceMovementSection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Shared group departure entry',
+                builder:
+                    _widgetbook_workspace_event_success_event_departure_use_cases
+                        .assistanceMovementEntry,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventAssistanceSweepSection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Mixed visit roster',
+                builder:
+                    _widgetbook_workspace_event_success_event_assistance_use_cases
+                        .assistanceSweepStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventAssistanceVisitSection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Observation and recovery states',
+                builder:
+                    _widgetbook_workspace_event_success_event_assistance_use_cases
+                        .assistanceVisitStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventAssistanceVisitSheet',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Live observation with exact retry',
+                builder:
+                    _widgetbook_workspace_event_success_event_assistance_use_cases
+                        .assistanceLiveVisit,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventRehearsalCheckpointRequestSheet',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Practice checkpoint closeout and reopen',
+                builder:
+                    _widgetbook_workspace_event_success_event_checkpoint_use_cases
+                        .assistancePracticeCheckpointRequest,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventRehearsalCheckpointSheet',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Practice checkpoint report and retry',
+                builder:
+                    _widgetbook_workspace_event_success_event_checkpoint_use_cases
+                        .assistancePracticeCheckpoint,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventRehearsalCheckpointVisitSheet',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Practice original departure visit outcome',
+                builder:
+                    _widgetbook_workspace_event_success_event_checkpoint_use_cases
+                        .assistancePracticeCheckpointVisit,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventRehearsalDepartureHistorySheet',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Practice historical checkpoint discovery',
+                builder:
+                    _widgetbook_workspace_event_success_event_checkpoint_use_cases
+                        .assistancePracticeCheckpointHistory,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventRehearsalDepartureSheet',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Practice departure and exact retry',
+                builder:
+                    _widgetbook_workspace_event_success_event_departure_use_cases
+                        .assistancePracticeDeparture,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventRehearsalGroupsSection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Practice roster to group review',
+                builder:
+                    _widgetbook_workspace_event_success_event_assistance_use_cases
+                        .assistancePracticeGroups,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventRehearsalMembershipSheet',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Practice group action with exact retry',
+                builder:
+                    _widgetbook_workspace_event_success_event_assistance_use_cases
+                        .assistancePracticeMembership,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventRehearsalMovementSection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Practice group departure entry',
+                builder:
+                    _widgetbook_workspace_event_success_event_departure_use_cases
+                        .assistancePracticeMovement,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventRehearsalPracticeRoleSection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Choose assistance identity',
+                builder:
+                    _widgetbook_workspace_event_success_event_assistance_use_cases
+                        .assistancePracticeRole,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventRehearsalStaffEditSection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Edit duty with exact retry',
+                builder:
+                    _widgetbook_workspace_event_success_event_assistance_use_cases
+                        .assistancePracticeStaffEdit,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventRehearsalStaffSection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Manage fictional staff',
+                builder:
+                    _widgetbook_workspace_event_success_event_assistance_use_cases
+                        .assistancePracticeStaff,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventRehearsalSweepSection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Practice roster to visit',
+                builder:
+                    _widgetbook_workspace_event_success_event_assistance_use_cases
+                        .assistancePracticeSweep,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventRehearsalVisitSheet',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Practice observation with exact retry',
+                builder:
+                    _widgetbook_workspace_event_success_event_assistance_use_cases
+                        .assistancePracticeVisit,
               ),
             ],
           ),
@@ -8133,7 +9069,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                     ],
                   ),
                   _widgetbook.WidgetbookComponent(
-                    name: 'HostInboxAudienceRail',
+                    name: 'HostInboxAudienceInput',
                     useCases: [
                       _widgetbook.WidgetbookUseCase(
                         name: 'Audience control states',
@@ -8155,6 +9091,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                     ],
                   ),
                   _widgetbook.WidgetbookComponent(
+                    name: 'HostInboxPeopleSection',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Workspace states',
+                        builder:
+                            _widgetbook_workspace_hosts_host_inbox_use_cases
+                                .hostInboxWorkspaceStates,
+                      ),
+                    ],
+                  ),
+                  _widgetbook.WidgetbookComponent(
                     name: 'HostInboxScopeMenu',
                     useCases: [
                       _widgetbook.WidgetbookUseCase(
@@ -8166,13 +9113,24 @@ final directories = <_widgetbook.WidgetbookNode>[
                     ],
                   ),
                   _widgetbook.WidgetbookComponent(
-                    name: 'HostInboxWorkspaceSliver',
+                    name: 'HostInboxWorkspaceSection',
                     useCases: [
                       _widgetbook.WidgetbookUseCase(
-                        name: 'Workspace states',
+                        name: 'Resolved scope and people',
                         builder:
                             _widgetbook_workspace_hosts_host_inbox_use_cases
-                                .hostInboxWorkspaceStates,
+                                .hostInboxWorkspaceSection,
+                      ),
+                    ],
+                  ),
+                  _widgetbook.WidgetbookComponent(
+                    name: 'HostMessagingWorkspaceTabBar',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'People and sends navigation',
+                        builder:
+                            _widgetbook_workspace_hosts_host_inbox_use_cases
+                                .hostMessagingTabs,
                       ),
                     ],
                   ),
@@ -8217,6 +9175,66 @@ final directories = <_widgetbook.WidgetbookNode>[
                     name: 'Event-scoped states',
                     builder: _widgetbook_workspace_hosts_host_inbox_use_cases
                         .hostInboxEventScopedStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookFolder(
+                name: 'Person',
+                children: [
+                  _widgetbook.WidgetbookComponent(
+                    name: 'HostInboxPersonPageBody',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Selected person in workspace',
+                        builder:
+                            _widgetbook_workspace_hosts_host_person_messaging_use_cases
+                                .selectedPersonPreview,
+                      ),
+                    ],
+                  ),
+                  _widgetbook.WidgetbookComponent(
+                    name: 'HostNewMessageRouteSection',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Explicit available route',
+                        builder:
+                            _widgetbook_workspace_hosts_host_person_messaging_use_cases
+                                .newMessageRoutePreview,
+                      ),
+                    ],
+                  ),
+                  _widgetbook.WidgetbookComponent(
+                    name: 'HostNewMessageScreen',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Choose a person',
+                        builder:
+                            _widgetbook_workspace_hosts_host_person_messaging_use_cases
+                                .newMessagePersonPreview,
+                      ),
+                    ],
+                  ),
+                  _widgetbook.WidgetbookComponent(
+                    name: 'HostPersonConversationMenu',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Authorized conversation actions',
+                        builder:
+                            _widgetbook_workspace_hosts_host_person_messaging_use_cases
+                                .personConversationMenuPreview,
+                      ),
+                    ],
+                  ),
+                  _widgetbook.WidgetbookComponent(
+                    name: 'HostPersonConversationPageBody',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Catch and WhatsApp in one history',
+                        builder:
+                            _widgetbook_workspace_hosts_host_person_messaging_use_cases
+                                .personConversationPreview,
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -8959,16 +9977,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'HostTodayAttentionCard',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Attention card states',
-                    builder: _widgetbook_workspace_hosts_operations_home_routes
-                        .hostTodayAttentionCardStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
                 name: 'HostTodayBody',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -8979,17 +9987,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'HostTodayEventDateBlock',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Covered by Today route states',
-                    builder: _widgetbook_workspace_hosts_operations_home_routes
-                        .hostTodayEventDateBlockStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostTodayEventMetadata',
+                name: 'HostTodayEventMetadataRow',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Covered by Today route states',
@@ -8999,7 +9997,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'HostTodayEventMetric',
+                name: 'HostTodayEventMetricTile',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Operational metric states',
@@ -9009,17 +10007,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'HostTodayEventRow',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Covered by Today route states',
-                    builder: _widgetbook_workspace_hosts_operations_home_routes
-                        .hostTodayEventRowStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostTodayEventSpotlight',
+                name: 'HostTodayEventSection',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Operational spotlight states',
@@ -9073,6 +10061,17 @@ final directories = <_widgetbook.WidgetbookNode>[
           _widgetbook.WidgetbookFolder(
             name: 'Customers',
             children: [
+              _widgetbook.WidgetbookComponent(
+                name: 'CatchField',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Populated component',
+                    builder:
+                        _widgetbook_workspace_hosts_operations_customer_components
+                            .hostCustomerTimelineRecordComponentStates,
+                  ),
+                ],
+              ),
               _widgetbook.WidgetbookComponent(
                 name: 'HostAddCustomerScreen',
                 useCases: [
@@ -9290,28 +10289,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_operations_customer_components
                             .hostCustomerRevenueStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostCustomerRow',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Row states',
-                    builder:
-                        _widgetbook_workspace_hosts_operations_customer_components
-                            .hostCustomerDirectoryRowStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostCustomerTimelineRecord',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Populated component',
-                    builder:
-                        _widgetbook_workspace_hosts_operations_customer_components
-                            .hostCustomerTimelineRecordComponentStates,
                   ),
                 ],
               ),
@@ -9725,6 +10702,16 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'HostAnalyticsPeriodInput',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Period remains available during loading',
+                builder: _widgetbook_workspace_hosts_operations_analytics
+                    .hostAnalyticsPeriodStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'HostClubEditorLoadingScreen',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -9916,16 +10903,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'HostAnalyticsEventTile',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder: _widgetbook_workspace_hosts_operations_analytics
-                        .hostStrictHostAnalyticsEventTileCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
                 name: 'HostAnalyticsReportSkeleton',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -10084,17 +11061,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_operations_manage_components
                             .hostStrictHostEventCheckInQrSectionCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'HostEventLifecycleRow',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_operations_home_sections
-                            .hostStrictHostEventLifecycleRowCatalogStates,
                   ),
                 ],
               ),
@@ -12201,7 +13167,17 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Settings',
         children: [
           _widgetbook.WidgetbookComponent(
-            name: 'BlockedAccountTile',
+            name: 'BlockedAccountsSection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contained people with unblock actions',
+                builder: _widgetbook_workspace_utility_settings
+                    .blockedAccountsSectionStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchPersonLayout',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Blocked account row',

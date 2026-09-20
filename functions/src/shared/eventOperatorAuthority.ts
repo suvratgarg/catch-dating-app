@@ -49,7 +49,7 @@ export async function requireEventOperatorPermission(params: {
   if (!grant || grant.eventId !== params.eventId ||
       grant.organizerId !== (params.event.organizerId ?? params.event.clubId) ||
       grant.uid !== params.actorUid || grant.status !== "active" ||
-      grant.expiresAt.toMillis() <= now.toMillis() ||
+      (eventOperatorExpiryMillis(grant) ?? 0) <= now.toMillis() ||
       !grant.permissions.includes(params.permission)) {
     throw new HttpsError(
       "permission-denied",
@@ -57,4 +57,33 @@ export async function requireEventOperatorPermission(params: {
     );
   }
   return {role: "operator", grant};
+}
+
+
+/** Group duties never prolong the independently granted event-wide access. */
+export function eventOperatorExpiryMillis(grant: EventStaffGrantDocument):
+number | null {
+  const value = grant.operatorExpiresAt === undefined ?
+    (grant.role === "checkInOperator" ? grant.expiresAt : null) :
+    grant.operatorExpiresAt;
+  return value === null ? null : Math.min(staffTimestampMillis(value),
+    staffTimestampMillis(grant.expiresAt));
+}
+
+export function staffTimestampMillis(value: unknown): number {
+  if (!value || typeof value !== "object") throw invalidStaff();
+  const stamp = value as {seconds?: number; nanoseconds?: number;
+    _seconds?: number; _nanoseconds?: number};
+  const seconds = stamp.seconds ?? stamp._seconds;
+  const nanos = stamp.nanoseconds ?? stamp._nanoseconds;
+  if (!Number.isSafeInteger(seconds) || !Number.isInteger(nanos) ||
+      nanos! < 0 || nanos! >= 1_000_000_000) throw invalidStaff();
+  const millis = Math.floor(seconds! * 1000 + nanos! / 1_000_000);
+  if (!Number.isSafeInteger(millis) || millis < 0) throw invalidStaff();
+  return millis;
+}
+
+function invalidStaff(): HttpsError {
+  return new HttpsError("failed-precondition",
+    "Event staff access is invalid.");
 }

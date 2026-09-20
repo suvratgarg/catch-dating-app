@@ -348,28 +348,28 @@ class _ResponseIdentityHeader extends StatelessWidget {
   const _ResponseIdentityHeader({required this.detail});
   final HostFormResponseDetail detail;
   @override
-  Widget build(BuildContext context) => CatchPersonRow.directory(
-    key: const ValueKey('host-form-response-name'),
-    data: CatchPersonRowData(
-      name:
-          detail.response.identity.primaryLabel ??
-          context.l10n.hostFormResponsesAnonymous,
-      seed: detail.response.responseId,
-    ),
-    meta: Text(
-      detail.response.formTitle,
-      style: CatchTextStyles.supporting(context),
-    ),
-    body: Text(
-      '${context.l10n.hostAudienceResultsVersion(version: detail.response.version)} · ${AppTimeFormatters.dateTime(detail.response.submittedAt)}',
-      style: CatchTextStyles.recordContext(context),
-    ),
-    trailing: CatchBadge.status(
-      key: const ValueKey('host-form-response-status'),
-      label: detail.response.status == HostFormResponseStatus.submitted
-          ? context.l10n.hostFormResponsesSubmitted
-          : context.l10n.hostFormResponsesWithdrawn,
-    ),
+  Widget build(BuildContext context) => CatchSection.containedRows(
+    children: [
+      CatchField.read(
+        key: const ValueKey('host-form-response-name'),
+        content: CatchPersonLayout(
+          name:
+              detail.response.identity.primaryLabel ??
+              context.l10n.hostFormResponsesAnonymous,
+          supportingText: detail.response.formTitle,
+          context:
+              '${context.l10n.hostAudienceResultsVersion(version: detail.response.version)} · ${AppTimeFormatters.dateTime(detail.response.submittedAt)}',
+          badges: [
+            CatchRowBadge(
+              label: detail.response.status == HostFormResponseStatus.submitted
+                  ? context.l10n.hostFormResponsesSubmitted
+                  : context.l10n.hostFormResponsesWithdrawn,
+              tone: CatchBadgeTone.neutral,
+            ),
+          ],
+        ),
+      ),
+    ],
   );
 }
 

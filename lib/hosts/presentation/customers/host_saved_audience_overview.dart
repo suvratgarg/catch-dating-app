@@ -140,8 +140,7 @@ class HostSavedAudienceOverview extends ConsumerWidget {
               builder: (context, state) => Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  CatchSection.divided(
-                    first: true,
+                  CatchSection.containedRows(
                     title: context.l10n.hostSavedAudienceMembers,
                     count: state.preview.matchCount,
                     trailing: CatchButton.text(
@@ -153,26 +152,23 @@ class HostSavedAudienceOverview extends ConsumerWidget {
                     ),
                     children: [
                       if (state.members.isEmpty)
-                        Text(
-                          context.l10n.hostSavedAudienceNoMembers,
-                          style: CatchTextStyles.supporting(context),
+                        CatchField.read(
+                          copy: catchFieldCopy(context.l10n),
+                          body: context.l10n.hostSavedAudienceNoMembers,
                         ),
                       for (final member in state.members)
-                        CatchPersonRow.directory(
+                        CatchField.navigate(
                           key: ValueKey(
                             'host-saved-audience-member-${member.contactId}',
                           ),
-                          data: CatchPersonRowData(
-                            name: member.displayName,
-                            seed: member.contactId,
-                          ),
-                          onTap: () => context.pushNamed(
+                          onActivate: () => context.pushNamed(
                             Routes.hostCustomerDetailScreen.name,
                             pathParameters: {'contactId': member.contactId},
                             queryParameters: {
                               'organizerId': audience.organizerId,
                             },
                           ),
+                          content: CatchPersonLayout(name: member.displayName),
                         ),
                     ],
                   ),

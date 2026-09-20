@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
@@ -20,19 +21,28 @@ void main() {
           theme: AppTheme.light,
           home: Scaffold(
             body: Builder(
-              builder: (context) => CatchPersonRow.contact(
-                data: const CatchPersonRowData(
-                  name: 'Jordan Ellis',
-                  metaLine: 'HOSTING SINCE MAY 2026 · VIJAY NAGAR',
+              builder: (context) => CatchField.navigate(
+                onActivate: () => rowTaps += 1,
+                secondaryAction: CatchFieldSecondaryAction.command(
+                  label: 'Message Jordan Ellis',
+                  icon: CatchIcons.chatBubbleOutlineRounded,
+                  onActivate: () => messageTaps += 1,
                 ),
-                colors: ActivityPalette.resolve(
-                  context,
-                  ActivityKind.socialRun,
-                ).avatarColors,
-                verified: true,
-                onTap: () => rowTaps += 1,
-                onMessage: () => messageTaps += 1,
-                messageTooltip: 'Message Jordan Ellis',
+                content: CatchPersonLayout(
+                  avatarColors: ActivityPalette.resolve(
+                    context,
+                    ActivityKind.socialRun,
+                  ).avatarColors,
+                  name: 'Jordan Ellis',
+                  badges: [
+                    CatchRowBadge(
+                      label: 'Owner verified',
+                      tone: CatchBadgeTone.success,
+                      icon: CatchIcons.sealCheck,
+                    ),
+                  ],
+                  supportingText: 'HOSTING SINCE MAY 2026 · VIJAY NAGAR',
+                ),
               ),
             ),
           ),
@@ -40,7 +50,7 @@ void main() {
       );
 
       final avatar = tester.widget<CatchAvatar>(find.byType(CatchAvatar));
-      expect(avatar.size, CatchSpacing.s10);
+      expect(avatar.size, CatchRecordTokens.avatarExtent);
       final colors = ActivityPalette.light.getActivity(ActivityKind.socialRun);
       expect(avatar.colors?.accent, colors.accent);
       expect(avatar.colors?.deep, colors.deep);
@@ -81,7 +91,7 @@ void main() {
   });
 
   testWidgets(
-    'caller colors update avatar and verified mark without app theme',
+    'caller avatar colors update while verification uses its semantic status tone',
     (tester) async {
       const firstColors = CatchAvatarColors(
         accent: Color(0xff9b2c77),
@@ -98,12 +108,23 @@ void main() {
           MaterialApp(
             theme: CatchTheme.light,
             home: Scaffold(
-              body: CatchPersonRow.contact(
-                data: const CatchPersonRowData(name: 'Mira Shah'),
-                colors: colors,
-                verified: true,
-                onMessage: () {},
-                messageTooltip: 'Écrire à Mira',
+              body: CatchField.read(
+                secondaryAction: CatchFieldSecondaryAction.command(
+                  label: 'Écrire à Mira',
+                  icon: CatchIcons.chatBubbleOutlineRounded,
+                  onActivate: () {},
+                ),
+                content: CatchPersonLayout(
+                  avatarColors: colors,
+                  name: 'Mira Shah',
+                  badges: [
+                    CatchRowBadge(
+                      label: 'Owner verified',
+                      tone: CatchBadgeTone.success,
+                      icon: CatchIcons.sealCheck,
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -111,7 +132,10 @@ void main() {
         final avatar = tester.widget<CatchAvatar>(find.byType(CatchAvatar));
         expect(avatar.colors, same(colors));
         final mark = tester.widget<Icon>(find.byIcon(CatchIcons.sealCheck));
-        expect(mark.color, colors.accent);
+        expect(
+          mark.color,
+          CatchTokens.of(tester.element(find.byType(CatchAvatar))).positiveText,
+        );
         expect(find.byTooltip('Écrire à Mira'), findsOneWidget);
         expect(tester.takeException(), isNull);
       }
@@ -126,12 +150,14 @@ void main() {
         theme: AppTheme.light,
         home: Scaffold(
           body: Builder(
-            builder: (context) => CatchPersonRow.contact(
-              data: const CatchPersonRowData(name: 'Mira Shah'),
-              colors: ActivityPalette.resolve(
-                context,
-                ActivityKind.dinner,
-              ).avatarColors,
+            builder: (context) => CatchField.read(
+              content: CatchPersonLayout(
+                avatarColors: ActivityPalette.resolve(
+                  context,
+                  ActivityKind.dinner,
+                ).avatarColors,
+                name: 'Mira Shah',
+              ),
             ),
           ),
         ),

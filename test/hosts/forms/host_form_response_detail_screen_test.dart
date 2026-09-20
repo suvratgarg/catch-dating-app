@@ -73,7 +73,10 @@ void main() {
 
     expect(tester.takeException(), isNull);
     final name = find.text('Maya Kapoor');
-    final status = find.byKey(const ValueKey('host-form-response-status'));
+    final status = find.descendant(
+      of: find.byKey(const ValueKey('host-form-response-name')),
+      matching: find.text('Submitted'),
+    );
     await pumpUntilFound(tester, name);
     expect(
       tester.getBottomLeft(name).dy,

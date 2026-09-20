@@ -79,6 +79,17 @@ mixin _EventDetailScreenActions on ConsumerState<EventDetailScreen> {
   }
 }
 
+bool _canAddEventToCalendar({
+  required Event event,
+  required EventParticipation? participation,
+  required bool isHost,
+  required DateTime now,
+}) {
+  if (event.isCancelled || !event.startTime.isAfter(now)) return false;
+  if (isHost) return true;
+  return participation?.status == EventParticipationStatus.signedUp;
+}
+
 EventDetailSurfaceStyle _eventDetailSurfaceStyle(
   BuildContext context, {
   required EventDetailPresentationMode presentationMode,

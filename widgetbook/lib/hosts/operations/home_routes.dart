@@ -53,17 +53,12 @@ final _longNameEvent = HostOperationsFixtures.upcomingEvent.copyWith(
 )
 @widgetbook.UseCase(
   name: 'Covered by host home route states',
-  type: HostTodayEventSpotlight,
+  type: HostTodayEventSection,
   path: '[P1 product surfaces]/Host operations/Composed sections',
 )
 @widgetbook.UseCase(
   name: 'Covered by host home route states',
-  type: HostTodayEventMetric,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-@widgetbook.UseCase(
-  name: 'Covered by host home route states',
-  type: HostTodayAttentionCard,
+  type: HostTodayEventMetricTile,
   path: '[P1 product surfaces]/Host operations/Composed sections',
 )
 @widgetbook.UseCase(
@@ -260,14 +255,6 @@ Widget hostTodayHeaderStates(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Covered by Today route states',
-  type: HostTodayEventRow,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-Widget hostTodayEventRowStates(BuildContext context) =>
-    hostHomeRouteStates(context);
-
-@widgetbook.UseCase(
-  name: 'Covered by Today route states',
   type: HostTodayOrganizerEmptyState,
   path: '[P1 product surfaces]/Host operations/Composed sections',
 )
@@ -276,15 +263,7 @@ Widget hostTodayOrganizerEmptyStateStates(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Covered by Today route states',
-  type: HostTodayEventDateBlock,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-Widget hostTodayEventDateBlockStates(BuildContext context) =>
-    hostHomeRouteStates(context);
-
-@widgetbook.UseCase(
-  name: 'Covered by Today route states',
-  type: HostTodayEventMetadata,
+  type: HostTodayEventMetadataRow,
   path: '[P1 product surfaces]/Host operations/Composed sections',
 )
 Widget hostTodayEventMetadataStates(BuildContext context) =>
@@ -346,7 +325,7 @@ Widget hostTodayOverviewStates(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Operational spotlight states',
-  type: HostTodayEventSpotlight,
+  type: HostTodayEventSection,
   path: '[P1 product surfaces]/Host operations/Composed sections',
 )
 Widget hostTodayEventSpotlightStates(BuildContext context) =>
@@ -354,18 +333,10 @@ Widget hostTodayEventSpotlightStates(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Operational metric states',
-  type: HostTodayEventMetric,
+  type: HostTodayEventMetricTile,
   path: '[P1 product surfaces]/Host operations/Composed sections',
 )
 Widget hostTodayEventMetricStates(BuildContext context) =>
-    hostHomeRouteStates(context);
-
-@widgetbook.UseCase(
-  name: 'Attention card states',
-  type: HostTodayAttentionCard,
-  path: '[P1 product surfaces]/Host operations/Composed sections',
-)
-Widget hostTodayAttentionCardStates(BuildContext context) =>
     hostHomeRouteStates(context);
 
 @widgetbook.UseCase(

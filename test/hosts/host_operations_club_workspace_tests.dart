@@ -164,7 +164,7 @@ void _registerHostOperationsClubWorkspaceTests() {
       ],
     );
 
-    expect(find.text('STARTS IN 5H'), findsOneWidget);
+    expect(find.text('STARTS IN 5H 0M'), findsOneWidget);
     expect(find.text('Review waitlist'), findsOneWidget);
     expect(
       find.text('3 people are waiting for ${later.title}.'),
@@ -173,7 +173,7 @@ void _registerHostOperationsClubWorkspaceTests() {
     expect(find.text('Check host setup'), findsNothing);
     expect(
       tester
-          .widget<HostTodayEventSpotlight>(find.byType(HostTodayEventSpotlight))
+          .widget<HostTodayEventSection>(find.byType(HostTodayEventSection))
           .event,
       hero,
     );
@@ -241,6 +241,7 @@ void _registerHostOperationsClubWorkspaceTests() {
           onRetry: () {},
           onOpenEvent: (_) {},
           onOpenAttention: (_) {},
+          onCreateEvent: () {},
           onViewEvents: () {},
           onStartRehearsal: () {},
         ),
@@ -295,7 +296,7 @@ void _registerHostOperationsClubWorkspaceTests() {
       ],
     );
 
-    expect(find.text('STARTS IN 5H'), findsOneWidget);
+    expect(find.text('STARTS IN 5H 0M'), findsOneWidget);
     expect(find.text('Continue setup'), findsOneWidget);
     final createAction = find.byKey(
       const ValueKey<String>('host-today-create-event'),
@@ -537,7 +538,7 @@ void _registerHostOperationsClubWorkspaceTests() {
     expect(find.text('Live'), findsNothing);
     expect(find.text('Past'), findsOneWidget);
     expect(find.text('SCHEDULE'), findsNothing);
-    expect(find.byType(HostTodayEventSpotlight), findsNothing);
+    expect(find.byType(HostTodayEventSection), findsNothing);
     expect(
       find.byKey(const ValueKey<String>('host-event-row-live-event')),
       findsOneWidget,
@@ -586,23 +587,36 @@ void _registerHostOperationsClubWorkspaceTests() {
 
     final juneFieldFinder = find.descendant(
       of: juneSection,
-      matching: find.byType(CatchRecordRow),
+      matching: find.byType(CatchField),
     );
     final mayFieldFinder = find.descendant(
       of: maySection,
-      matching: find.byType(CatchRecordRow),
+      matching: find.byType(CatchField),
     );
     expect(juneFieldFinder, findsOneWidget);
     expect(mayFieldFinder, findsNWidgets(2));
-    final juneField = tester.widget<CatchRecordRow>(juneFieldFinder);
-    expect(juneField.title, past.title);
-    expect(juneField.facts.last, contains('attended'));
     expect(
-      juneField.icon,
-      ActivityPalette.resolve(
-        tester.element(juneSection),
-        past.activityKind,
-      ).glyph,
+      find.descendant(of: juneFieldFinder, matching: find.text(past.title)),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(
+        of: juneFieldFinder,
+        matching: find.textContaining('attended'),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(
+        of: juneFieldFinder,
+        matching: find.byIcon(
+          ActivityPalette.resolve(
+            tester.element(juneSection),
+            past.activityKind,
+          ).glyph,
+        ),
+      ),
+      findsOneWidget,
     );
     final mayDividers = tester
         .widgetList<CatchDivider>(
@@ -610,6 +624,7 @@ void _registerHostOperationsClubWorkspaceTests() {
         )
         .toList();
     expect(mayDividers.map((divider) => divider.variant), [
+      CatchDividerVariant.section,
       CatchDividerVariant.fieldRow,
     ]);
     final tokens = CatchTokens.of(tester.element(maySection));
@@ -627,13 +642,24 @@ void _registerHostOperationsClubWorkspaceTests() {
             widget.variant == CatchDividerVariant.fieldRow,
       ),
     );
+    final mayTitle = find
+        .descendant(of: mayFieldFinder.first, matching: find.byType(Text))
+        .first;
+    final mayHeaderRule = find.descendant(
+      of: maySection,
+      matching: find.byWidgetPredicate(
+        (widget) =>
+            widget is CatchDivider &&
+            widget.variant == CatchDividerVariant.section,
+      ),
+    );
     expect(
       tester.getTopLeft(mayRowDivider).dx,
-      closeTo(tester.getTopLeft(maySection).dx, 0.5),
+      closeTo(tester.getTopLeft(mayTitle).dx, 0.5),
     );
     expect(
       tester.getTopRight(mayRowDivider).dx,
-      closeTo(tester.getTopRight(maySection).dx, 0.5),
+      closeTo(tester.getTopRight(mayHeaderRule).dx, 0.5),
     );
 
     await tester.fling(_hostEventsScrollable(), const Offset(0, 1200), 10000);
@@ -707,7 +733,7 @@ void _registerHostOperationsClubWorkspaceTests() {
     );
     expect(
       tester
-          .widget<HostTodayEventSpotlight>(find.byType(HostTodayEventSpotlight))
+          .widget<HostTodayEventSection>(find.byType(HostTodayEventSection))
           .event,
       ownedEvent,
     );
@@ -727,7 +753,7 @@ void _registerHostOperationsClubWorkspaceTests() {
     );
     expect(
       tester
-          .widget<HostTodayEventSpotlight>(find.byType(HostTodayEventSpotlight))
+          .widget<HostTodayEventSection>(find.byType(HostTodayEventSection))
           .event,
       hostedEvent,
     );
@@ -838,8 +864,11 @@ void _registerHostOperationsClubWorkspaceTests() {
           ),
         )
         .toList();
-    expect(editSections, hasLength(5));
-    expect(editSections.map((section) => section.title), [
+    final titledSections = editSections
+        .where((section) => section.title != null)
+        .toList();
+    expect(titledSections, hasLength(5));
+    expect(titledSections.map((section) => section.title), [
       'Public visibility',
       'Media',
       'Identity',

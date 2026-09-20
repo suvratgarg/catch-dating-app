@@ -1,0 +1,254 @@
+{
+  "initial": {
+    "outcome": "read",
+    "operationRevision": null,
+    "view": {
+      "context": {
+        "mode": "live",
+        "organizerId": "o-11111111-2222-4333-8444-555555555555",
+        "eventId": "e-11111111-2222-4333-8444-555555555555"
+      },
+      "serverTime": 1788782400000,
+      "sourceHash": "d0e766f5011ad1157d372e541e89e5ec74b5e6324f2aa33f94740404da5fcd83",
+      "revision": 0,
+      "runtime": null,
+      "status": "unconfigured",
+      "canConfigure": true,
+      "eventEnd": 1788786000000,
+      "senderSetup": {
+        "choices": [
+          {
+            "routeId": "catchEventSms",
+            "senderId": "fixture-sms",
+            "displayName": "Catch",
+            "displayAddress": "CATCHS",
+            "availability": "eligible",
+            "reviewHash": "65434e6524278e97b68b47e4c125e6e4ab7c771b6c2a3e5c08a1914163b1bac4"
+          },
+          {
+            "routeId": "organizerEventWhatsapp",
+            "senderId": "sender-11111111-2222-4333-8444-555555555555",
+            "displayName": "Fixture organizer",
+            "displayAddress": "+918888888888",
+            "availability": "eligible",
+            "reviewHash": "1f2cee9bc0f80f16dfe6c55f23ee50a1f7c3965eb641a9c7a9571b88db39ee91"
+          },
+          {
+            "routeId": "catchEventRcs",
+            "senderId": "fixture-rcs",
+            "displayName": "Catch event updates",
+            "displayAddress": null,
+            "availability": "eligible",
+            "reviewHash": "e0263b537a51bd96567a11f5fa079699314b40c72d8bc91cef2ab931bc7063e3"
+          }
+        ],
+        "nextCursors": {}
+      }
+    }
+  },
+  "input": {
+    "context": {
+      "mode": "live",
+      "organizerId": "o-11111111-2222-4333-8444-555555555555",
+      "eventId": "e-11111111-2222-4333-8444-555555555555"
+    },
+    "requestId": "reviewed-senders",
+    "expectedRevision": 0,
+    "expectedSourceHash": "d0e766f5011ad1157d372e541e89e5ec74b5e6324f2aa33f94740404da5fcd83",
+    "command": {
+      "kind": "configure",
+      "senderReviews": [
+        {
+          "routeId": "catchEventSms",
+          "senderId": "fixture-sms",
+          "reviewHash": "65434e6524278e97b68b47e4c125e6e4ab7c771b6c2a3e5c08a1914163b1bac4"
+        },
+        {
+          "routeId": "organizerEventWhatsapp",
+          "senderId": "sender-11111111-2222-4333-8444-555555555555",
+          "reviewHash": "1f2cee9bc0f80f16dfe6c55f23ee50a1f7c3965eb641a9c7a9571b88db39ee91"
+        },
+        {
+          "routeId": "catchEventRcs",
+          "senderId": "fixture-rcs",
+          "reviewHash": "e0263b537a51bd96567a11f5fa079699314b40c72d8bc91cef2ab931bc7063e3"
+        }
+      ],
+      "configuration": {
+        "options": {
+          "routes": [
+            {
+              "routeId": "catchEventSms",
+              "senderId": "fixture-sms"
+            },
+            {
+              "routeId": "organizerEventWhatsapp",
+              "senderId": "sender-11111111-2222-4333-8444-555555555555"
+            },
+            {
+              "routeId": "catchEventRcs",
+              "senderId": "fixture-rcs"
+            }
+          ],
+          "responseDeadline": null,
+          "deliveryPolicy": {
+            "maxAttempts": 3,
+            "maxAttemptsPerRoute": 3,
+            "minimumRetrySeconds": 1
+          }
+        },
+        "expiresAt": 1788786000000,
+        "maxEvaluations": 100
+      }
+    }
+  },
+  "applied": {
+    "outcome": "applied",
+    "operationRevision": 1,
+    "view": {
+      "context": {
+        "mode": "live",
+        "organizerId": "o-11111111-2222-4333-8444-555555555555",
+        "eventId": "e-11111111-2222-4333-8444-555555555555"
+      },
+      "serverTime": 1788782400000,
+      "sourceHash": "d0e766f5011ad1157d372e541e89e5ec74b5e6324f2aa33f94740404da5fcd83",
+      "revision": 1,
+      "runtime": {
+        "schemaVersion": 1,
+        "runtimeId": "runtime:lateJoin:8ea4d014147f0267f278a9c05868e19c9056bdb404a90425340cf5c12fb152cf",
+        "context": {
+          "mode": "live",
+          "organizerId": "o-11111111-2222-4333-8444-555555555555",
+          "eventId": "e-11111111-2222-4333-8444-555555555555"
+        },
+        "workflowKind": "lateJoin",
+        "revision": 1,
+        "status": "enabled",
+        "configuration": {
+          "options": {
+            "routes": [
+              {
+                "routeId": "catchEventSms",
+                "senderId": "fixture-sms"
+              },
+              {
+                "routeId": "organizerEventWhatsapp",
+                "senderId": "sender-11111111-2222-4333-8444-555555555555"
+              },
+              {
+                "routeId": "catchEventRcs",
+                "senderId": "fixture-rcs"
+              }
+            ],
+            "responseDeadline": null,
+            "deliveryPolicy": {
+              "maxAttempts": 3,
+              "maxAttemptsPerRoute": 3,
+              "minimumRetrySeconds": 1
+            }
+          },
+          "expiresAt": 1788786000000,
+          "maxEvaluations": 100
+        },
+        "sourceHash": "d0e766f5011ad1157d372e541e89e5ec74b5e6324f2aa33f94740404da5fcd83",
+        "sourceGeneration": "143b5ab4ddbb14421a24e161737d914bb809046cc7390d903e12fa629923c57a",
+        "updatedBy": "host-1",
+        "createdAt": 1788782400000,
+        "updatedAt": 1788782400000
+      },
+      "status": "configured",
+      "canConfigure": true,
+      "eventEnd": 1788786000000
+    }
+  },
+  "configured": {
+    "outcome": "read",
+    "operationRevision": null,
+    "view": {
+      "context": {
+        "mode": "live",
+        "organizerId": "o-11111111-2222-4333-8444-555555555555",
+        "eventId": "e-11111111-2222-4333-8444-555555555555"
+      },
+      "serverTime": 1788782400000,
+      "sourceHash": "d0e766f5011ad1157d372e541e89e5ec74b5e6324f2aa33f94740404da5fcd83",
+      "revision": 1,
+      "runtime": {
+        "schemaVersion": 1,
+        "runtimeId": "runtime:lateJoin:8ea4d014147f0267f278a9c05868e19c9056bdb404a90425340cf5c12fb152cf",
+        "context": {
+          "mode": "live",
+          "organizerId": "o-11111111-2222-4333-8444-555555555555",
+          "eventId": "e-11111111-2222-4333-8444-555555555555"
+        },
+        "workflowKind": "lateJoin",
+        "revision": 1,
+        "status": "enabled",
+        "configuration": {
+          "options": {
+            "routes": [
+              {
+                "routeId": "catchEventSms",
+                "senderId": "fixture-sms"
+              },
+              {
+                "routeId": "organizerEventWhatsapp",
+                "senderId": "sender-11111111-2222-4333-8444-555555555555"
+              },
+              {
+                "routeId": "catchEventRcs",
+                "senderId": "fixture-rcs"
+              }
+            ],
+            "responseDeadline": null,
+            "deliveryPolicy": {
+              "maxAttempts": 3,
+              "maxAttemptsPerRoute": 3,
+              "minimumRetrySeconds": 1
+            }
+          },
+          "expiresAt": 1788786000000,
+          "maxEvaluations": 100
+        },
+        "sourceHash": "d0e766f5011ad1157d372e541e89e5ec74b5e6324f2aa33f94740404da5fcd83",
+        "sourceGeneration": "143b5ab4ddbb14421a24e161737d914bb809046cc7390d903e12fa629923c57a",
+        "updatedBy": "host-1",
+        "createdAt": 1788782400000,
+        "updatedAt": 1788782400000
+      },
+      "status": "configured",
+      "canConfigure": true,
+      "eventEnd": 1788786000000,
+      "senderSetup": {
+        "choices": [
+          {
+            "routeId": "catchEventSms",
+            "senderId": "fixture-sms",
+            "displayName": "Catch",
+            "displayAddress": "CATCHS",
+            "availability": "eligible",
+            "reviewHash": "65434e6524278e97b68b47e4c125e6e4ab7c771b6c2a3e5c08a1914163b1bac4"
+          },
+          {
+            "routeId": "organizerEventWhatsapp",
+            "senderId": "sender-11111111-2222-4333-8444-555555555555",
+            "displayName": "Fixture organizer",
+            "displayAddress": "+918888888888",
+            "availability": "eligible",
+            "reviewHash": "1f2cee9bc0f80f16dfe6c55f23ee50a1f7c3965eb641a9c7a9571b88db39ee91"
+          },
+          {
+            "routeId": "catchEventRcs",
+            "senderId": "fixture-rcs",
+            "displayName": "Catch event updates",
+            "displayAddress": null,
+            "availability": "eligible",
+            "reviewHash": "e0263b537a51bd96567a11f5fa079699314b40c72d8bc91cef2ab931bc7063e3"
+          }
+        ],
+        "nextCursors": {}
+      }
+    }
+  }
+}

@@ -3,6 +3,68 @@ import type {
   EventRehearsalGuestBootstrap,
 } from "../../firebase";
 
+export type RehearsalInstruction = NonNullable<
+  EventRehearsalGuestBootstrap["actor"]["assistanceMessage"]>;
+export type RehearsalReply = Pick<RehearsalInstruction,
+  "messageId" | "intentRevision"> & {choiceId: string};
+export type RehearsalRequiredData = NonNullable<
+  EventRehearsalGuestBootstrap["actor"]["requiredData"]>;
+export type RehearsalRequiredField = RehearsalRequiredData["availableFieldIds"][number];
+export interface RehearsalRequiredDataSubmission {
+  fieldIds: RehearsalRequiredField[];
+  expectedProfileRevision: number;
+  expectedRequestRevision: number;
+  expectedSourceHash: string;
+}
+export interface RehearsalReplyState {
+  fresh: boolean;
+  pendingChoice: string | null;
+  retryChoice: string | null;
+  notice: string;
+}
+
+/** Only synthetic field identities cross this guest link, never profile values. */
+export function pendingRehearsalRequiredData(
+  bootstrap: EventRehearsalGuestBootstrap
+): RehearsalRequiredDataSubmission | null {
+  const review = bootstrap.actor.requiredData;
+  const request = review?.request;
+  if (!review || !request || request.status !== "pending" ||
+      review.requestRevision !== request.revision ||
+      !["running", "paused"].includes(bootstrap.session.status) ||
+      bootstrap.session.virtualNowMillis >= request.expiresAt) return null;
+  const fieldIds = request.fieldIds.filter((field) =>
+    !review.completedFieldIds.includes(field) &&
+    !request.completedFieldIds.includes(field));
+  if (!fieldIds.length) return null;
+  return {fieldIds, expectedProfileRevision: review.profileRevision,
+    expectedRequestRevision: review.requestRevision,
+    expectedSourceHash: review.sourceHash};
+}
+
+export function canReplyToRehearsal(bootstrap: EventRehearsalGuestBootstrap) {
+  const message = bootstrap.actor.assistanceMessage;
+  return Boolean(message?.canRespond && message.lifecycle === "active" &&
+    message.responseChoiceId === null &&
+    bootstrap.session.virtualNowMillis < message.expiresAt &&
+    ["running", "paused"].includes(bootstrap.session.status));
+}
+
+/** A confirmed instruction cannot regress when an older poll arrives. */
+export function reconcileRehearsalProjection(
+  previous: EventRehearsalGuestBootstrap | undefined,
+  next: EventRehearsalGuestBootstrap
+): EventRehearsalGuestBootstrap {
+  const before = previous?.actor.assistanceMessage;
+  const after = next.actor.assistanceMessage;
+  if (previous && before && after && previous.slotToken === next.slotToken &&
+      previous.actor.actorId === next.actor.actorId &&
+      before.messageId === after.messageId && before.intentRevision === after.intentRevision &&
+      previous.session.runtimeRevision > next.session.runtimeRevision) return previous;
+  // Reset has a new message identity (or none) and may restart at revision 0.
+  return next;
+}
+
 export function availableEventRehearsalGuestActions(
   bootstrap: EventRehearsalGuestBootstrap
 ): EventRehearsalGuestAction[] {

@@ -1,0 +1,38 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_messaging_budget_decision_receipts.schema.json",
+  "title": "EventMessagingBudgetDecisionReceiptDocument",
+  "description": "Immutable request receipt for an event-messaging budget decision. It preserves exact replay without granting spending authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventMessagingBudgetDecisionReceipts",
+  "x-firestore-path": "eventMessagingBudgetDecisionReceipts/{receiptId}",
+  "x-document-id-field": "receiptId",
+  "x-owner": "adminDecideEventMessagingBudget callable",
+  "required": [
+    "schemaVersion",
+    "receiptId",
+    "decisionId",
+    "requestId",
+    "requestHash",
+    "revision",
+    "decisionStatus",
+    "decisionPath",
+    "effect",
+    "grantsSpendingAuthority",
+    "createdAt"
+  ],
+  "properties": {
+    "schemaVersion": {"type": "integer", "const": 1},
+    "receiptId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "decisionId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "requestId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "requestHash": {"$ref": "../operations/common.schema.json#/definitions/sha256"},
+    "revision": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+    "decisionStatus": {"type": "string", "enum": ["approved", "held", "rejected"]},
+    "decisionPath": {"type": "string", "minLength": 1, "maxLength": 500},
+    "effect": {"type": "string", "const": "decision_only_no_spending_authority"},
+    "grantsSpendingAuthority": {"type": "boolean", "const": false},
+    "createdAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"}
+  }
+}

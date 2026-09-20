@@ -18,7 +18,7 @@ const schemaAdminAssignSafetyTriageItemCallableResponseSchema = <String, Object?
     'targetPath': <String, Object?>{
       'type': 'string',
       'maxLength': 260,
-      'pattern': '^(reports|moderationFlags|eventSafetyReports)/[^/]+\$',
+      'pattern': '^(reports|moderationFlags|eventSafetyReports|eventAssistanceCases)/[^/]+\$',
     },
     'assignment': <String, Object?>{
       'type': 'object',

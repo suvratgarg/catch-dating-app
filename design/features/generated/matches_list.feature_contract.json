@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/matches_list.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:593a5bff84e825931e059000d9f7ed28b7e881adaaf9bcdd6b4ceb018bec7a59",
-  "resolvedDigest": "sha256:7ec40affa382796572931f8cd541db207f843b4347f82ebd62a3fd95751653a2",
+  "resolvedDigest": "sha256:848d6e26f2e1eaef06c5bca4eb7b765b9245a2167731441a4df7d390b441bc3b",
   "feature": {
     "id": "feature.matches_list",
     "name": "Matches List",
@@ -923,6 +923,7 @@
               "file": "packages/catch_ui/lib/src/components/catch_field.dart",
               "constructors": [
                 "CatchField.read",
+                "CatchField.navigate",
                 "CatchField.content",
                 "CatchField.nav",
                 "CatchField.sortable",

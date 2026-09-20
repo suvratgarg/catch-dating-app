@@ -6,7 +6,13 @@ import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_sliver_error_state.dart';
+import 'package:catch_dating_app/events/data/event_draft_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/domain/event_draft.dart';
+import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_flow.dart';
+import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_sheet.dart';
+import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_state.dart';
+import 'package:catch_dating_app/hosts/events/presentation/host_events_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeletons.dart';
 import 'package:catch_dating_app/hosts/today/domain/host_attention_item.dart';
@@ -281,6 +287,22 @@ class HostTodayLoadedRoute extends ConsumerWidget {
     final feedState = catchAsyncStateFromAsyncValue(
       ref.watch(hostTodayFeedControllerProvider(request)),
     );
+    final draftsAsync = ref.watch(
+      clubEventDraftsProvider(clubId: organizer.id),
+    );
+    final drafts = switch (draftsAsync) {
+      AsyncData<List<EventDraft>>(:final value) => value,
+      _ => const <EventDraft>[],
+    };
+    final repeatSource = HostEventsWorkspaceState.fromEvents(
+      events: feedState.value?.pastEvents ?? const <Event>[],
+      now: clockNow,
+    ).repeatSource;
+    final entryState = HostEventEntryState.resolve(
+      organizerId: organizer.id,
+      drafts: drafts,
+      repeatSource: repeatSource,
+    );
     final todayState = buildHostTodayState(
       feedState,
       now: clockNow,
@@ -295,9 +317,40 @@ class HostTodayLoadedRoute extends ConsumerWidget {
           ref.read(hostTodayFeedControllerProvider(request).notifier).retry(),
       onOpenEvent: (event) => onOpenEvent(organizer, event),
       onOpenAttention: (item) => onOpenAttention(organizer, item),
+      onCreateEvent: () => _showEventEntry(
+        context: context,
+        ref: ref,
+        organizer: organizer,
+        state: entryState,
+        request: request,
+      ),
       onViewEvents: onViewEvents,
       onStartRehearsal: () => onStartRehearsal(organizer),
     );
+  }
+
+  Future<void> _showEventEntry({
+    required BuildContext context,
+    required WidgetRef ref,
+    required Club organizer,
+    required HostEventEntryState state,
+    required HostTodayFeedRequest request,
+  }) async {
+    final intent = await showHostEventEntrySheet(
+      context: context,
+      state: state,
+    );
+    if (intent == null || !context.mounted) return;
+    await runHostEventEntryFlow(
+      context: context,
+      ref: ref,
+      club: organizer,
+      state: state,
+      intent: intent,
+      createdAt: clockNow,
+    );
+    if (!context.mounted) return;
+    ref.invalidate(hostTodayFeedControllerProvider(request));
   }
 }
 

@@ -4,6 +4,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
+import {isOwnedCompositionRenderer} from "./lib/owned_composition_renderers.mjs";
 import {fileURLToPath} from "node:url";
 
 import {
@@ -22,6 +23,26 @@ import {
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 
+test("owned renderers require exact source, library, owner, method and return type", () => {
+  const entry = {
+    file: "packages/catch_ui/lib/src/components/catch_field_layout.dart",
+    library: "packages/catch_ui/lib/src/components/catch_field.dart",
+    owner: "CatchPersonLayout", name: "_body", returnType: "Widget",
+  };
+  assert.equal(isOwnedCompositionRenderer(entry), true);
+  for (const key of Object.keys(entry)) {
+    assert.equal(isOwnedCompositionRenderer({...entry, [key]: "unowned"}), false, key);
+  }
+  assert.equal(isOwnedCompositionRenderer({...entry, name: "status"}), false);
+  const factory = {
+    file: "lib/hosts/presentation/customers/host_customer_timeline.dart",
+    library: "lib/hosts/presentation/customers/host_customer_timeline.dart",
+    owner: null, name: "hostCustomerTimelineField", returnType: "CatchField",
+  };
+  assert.equal(isOwnedCompositionRenderer(factory), true);
+  assert.equal(isOwnedCompositionRenderer({...factory, returnType: "Widget"}), false);
+});
+
 test("new-widget gate uses exact registry and Widgetbook identities without reading markdown", (t) => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-new-widget-policy-"));
   t.after(() => fs.rmSync(root, {recursive: true, force: true}));
@@ -32,6 +53,7 @@ test("new-widget gate uses exact registry and Widgetbook identities without read
     "tool/design/lib/component_naming.mjs",
     "design/components/catch.components.schema.json",
     "tool/design/lib/new_widget_inventory_declarations.mjs",
+    "tool/design/lib/owned_composition_renderers.mjs",
     "tool/design/lib/production_widget_roots.mjs",
   ]) {
     fs.mkdirSync(path.dirname(path.join(root, file)), {recursive: true});

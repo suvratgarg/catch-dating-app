@@ -5,5 +5,5 @@
 export interface AdminDecideSafetyTriageItemCallableResponse {
   targetPath: string;
   decision: "review" | "dismiss";
-  status: "reviewed" | "dismissed";
+  status: "reviewed" | "dismissed" | "resolved";
 }

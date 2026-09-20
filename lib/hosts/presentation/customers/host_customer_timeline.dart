@@ -47,75 +47,78 @@ class HostCustomerReachSection extends StatelessWidget {
       key: const ValueKey('host-customer-reach-and-provenance'),
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        CatchSection.plain(
+        CatchSection.containedRows(
           title: l10n.hostCustomersMessaging,
-          showInternalDividers: false,
           children: [
             if (communicationPlanLoading)
-              CatchRecordRow(
+              CatchField.read(
                 key: const ValueKey('host-customer-message-plan-loading'),
-                title: l10n.hostCustomersMessageOptionsLoading,
-                icon: CatchIcons.tabChats,
+                content: CatchRecordLayout(
+                  title: l10n.hostCustomersMessageOptionsLoading,
+                  icon: CatchIcons.tabChats,
+                ),
               )
             else if (communicationPlanFailed || recipient == null) ...[
-              CatchRecordRow(
+              CatchField.read(
                 key: const ValueKey('host-customer-message-plan-error'),
-                title: l10n.hostCustomersMessageOptionsUnavailable,
-                description: l10n.hostCustomersMessageOptionsRetry,
-                icon: CatchIcons.tabChats,
-                color: t.warning,
-              ),
-              Align(
-                alignment: AlignmentDirectional.centerStart,
-                child: CatchButton(
+                secondaryAction: CatchFieldSecondaryAction.button(
                   key: const ValueKey('host-customer-message-plan-retry'),
                   label: l10n.hostCustomersCheckMessaging,
-                  onPressed: onRetryCommunicationPlan,
-                  variant: CatchButtonVariant.ghost,
+                  onActivate: onRetryCommunicationPlan,
+                ),
+                content: CatchRecordLayout(
+                  title: l10n.hostCustomersMessageOptionsUnavailable,
+                  description: l10n.hostCustomersMessageOptionsRetry,
+                  icon: CatchIcons.tabChats,
+                  color: t.warning,
                 ),
               ),
             ] else if (recommendedRoute != null) ...[
-              CatchRecordRow(
+              CatchField.read(
                 key: const ValueKey('host-customer-message-availability'),
-                title: _recommendedMessageBody(context, recommendedRoute),
-                icon: CatchIcons.tabChats,
-              ),
-              if (!messageActionInHeader)
-                Align(
-                  alignment: AlignmentDirectional.centerStart,
-                  child: CatchButton(
-                    key: const ValueKey('host-customer-message'),
-                    label: l10n.hostCustomersMessagePerson(
-                      name: customer.displayName,
-                    ),
-                    onPressed: messageLoading ? null : onMessage,
-                    variant: CatchButtonVariant.ghost,
-                  ),
+                secondaryAction: messageActionInHeader
+                    ? null
+                    : CatchFieldSecondaryAction.button(
+                        key: const ValueKey('host-customer-message'),
+                        label: l10n.hostCustomersMessagePerson(
+                          name: customer.displayName,
+                        ),
+                        onActivate: messageLoading ? null : onMessage,
+                        loading: messageLoading,
+                      ),
+                content: CatchRecordLayout(
+                  title: _recommendedMessageBody(context, recommendedRoute),
+                  icon: CatchIcons.tabChats,
                 ),
+              ),
             ] else
-              CatchRecordRow(
+              CatchField.read(
                 key: const ValueKey('host-customer-message'),
-                title: l10n.hostCustomersMessageOptionsUnavailable,
-                description: _unavailableMessageBody(context, recipient),
-                icon: CatchIcons.tabChats,
+                content: CatchRecordLayout(
+                  title: l10n.hostCustomersMessageOptionsUnavailable,
+                  description: _unavailableMessageBody(context, recipient),
+                  icon: CatchIcons.tabChats,
+                ),
               ),
-            CatchRecordRow(
+            CatchField.read(
               key: const ValueKey('host-customer-whatsapp-permission'),
-              title: l10n.hostCustomersWhatsappPermission,
-              description: _permissionSummary(
-                context,
-                customer.whatsappPermission,
-              ),
-              icon: CatchIcons.verifiedUserOutlined,
-              color: switch (customer.whatsappPermission.evidenceStatus) {
-                HostCustomerPermissionEvidenceStatus.unavailable => t.ink2,
-                HostCustomerPermissionEvidenceStatus.incomplete => t.warning,
-                _ => switch (customer.whatsappPermission.status) {
-                  HostAudiencePermissionStatus.optedIn => t.success,
-                  HostAudiencePermissionStatus.optedOut => t.danger,
-                  HostAudiencePermissionStatus.unknown => t.ink2,
+              content: CatchRecordLayout(
+                title: l10n.hostCustomersWhatsappPermission,
+                description: _permissionSummary(
+                  context,
+                  customer.whatsappPermission,
+                ),
+                icon: CatchIcons.verifiedUserOutlined,
+                color: switch (customer.whatsappPermission.evidenceStatus) {
+                  HostCustomerPermissionEvidenceStatus.unavailable => t.ink2,
+                  HostCustomerPermissionEvidenceStatus.incomplete => t.warning,
+                  _ => switch (customer.whatsappPermission.status) {
+                    HostAudiencePermissionStatus.optedIn => t.success,
+                    HostAudiencePermissionStatus.optedOut => t.danger,
+                    HostAudiencePermissionStatus.unknown => t.ink2,
+                  },
                 },
-              },
+              ),
             ),
           ],
         ),
@@ -138,48 +141,49 @@ class HostCustomerReachSection extends StatelessWidget {
           ],
         ),
         gapH24,
-        CatchSection.plain(
+        CatchSection.containedRows(
           key: const ValueKey('host-customer-provenance'),
           title: l10n.hostCustomersCustomerProvenance,
-          showInternalDividers: false,
-          children: [
-            if (customer.origins.isEmpty)
-              CatchRecordRow(
-                title: l10n.hostCustomersSourceUnavailable,
-                description: l10n.hostCustomersCustomerProvenanceUnavailable,
-                icon: CatchIcons.accountTreeOutlined,
-              )
-            else
-              for (final origin in customer.origins)
-                CatchRecordRow(
-                  key: ValueKey('host-customer-origin-${origin.originId}'),
-                  title: _originLabel(context, origin),
-                  metadata: l10n.hostCustomersCustomerProvenanceItem(
-                    source: _originKindLabel(context, origin.sourceKind),
-                    date: AppTimeFormatters.shortDate(origin.observedAt),
-                  ),
-                  icon:
-                      origin.sourceKind == HostCustomerOriginSourceKind.hostForm
-                      ? CatchIcons.descriptionOutlined
-                      : CatchIcons.accountTreeOutlined,
-                ),
-            if (customer.originsTruncated)
-              Text(
-                l10n.hostCustomersSourcesTruncated,
-                style: CatchTextStyles.recordContext(context),
-              ),
-            if (onReviewDuplicates != null)
-              Align(
-                alignment: AlignmentDirectional.centerStart,
-                child: CatchButton(
+          trailing: onReviewDuplicates == null
+              ? null
+              : CatchButton.text(
                   key: const ValueKey('host-customer-review-duplicates'),
                   label: l10n.hostCustomersReviewDuplicates,
                   onPressed: onReviewDuplicates,
-                  variant: CatchButtonVariant.ghost,
                 ),
-              ),
+          children: [
+            if (customer.origins.isEmpty)
+              CatchField.read(
+                content: CatchRecordLayout(
+                  title: l10n.hostCustomersSourceUnavailable,
+                  description: l10n.hostCustomersCustomerProvenanceUnavailable,
+                  icon: CatchIcons.accountTreeOutlined,
+                ),
+              )
+            else
+              for (final origin in customer.origins)
+                CatchField.read(
+                  key: ValueKey('host-customer-origin-${origin.originId}'),
+                  content: CatchRecordLayout(
+                    title: _originLabel(context, origin),
+                    metadata: l10n.hostCustomersCustomerProvenanceItem(
+                      source: _originKindLabel(context, origin.sourceKind),
+                      date: AppTimeFormatters.shortDate(origin.observedAt),
+                    ),
+                    icon:
+                        origin.sourceKind ==
+                            HostCustomerOriginSourceKind.hostForm
+                        ? CatchIcons.descriptionOutlined
+                        : CatchIcons.accountTreeOutlined,
+                  ),
+                ),
           ],
         ),
+        if (customer.originsTruncated)
+          Text(
+            l10n.hostCustomersSourcesTruncated,
+            style: CatchTextStyles.recordContext(context),
+          ),
       ],
     );
   }
@@ -494,50 +498,41 @@ class _HostCustomerTimelineRows extends StatelessWidget {
       children: [
         for (final day in days.entries) ...[
           if (day.key != days.keys.first) gapH24,
-          Semantics(
-            header: true,
-            child: Text(
-              MaterialLocalizations.of(context).formatFullDate(day.key),
-              style: CatchTextStyles.supportingStrong(context),
-            ),
+          CatchSection.containedRows(
+            title: MaterialLocalizations.of(context).formatFullDate(day.key),
+            children: [
+              for (final entry in day.value)
+                hostCustomerTimelineField(
+                  context,
+                  entry: entry,
+                  onOpenFormResponse: onOpenFormResponse,
+                  onOpenEvent: onOpenEvent,
+                  onOpenCatchThread: onOpenCatchThread,
+                  onOpenWhatsappThread: onOpenWhatsappThread,
+                ),
+            ],
           ),
-          gapH8,
-          for (final entry in day.value)
-            HostCustomerTimelineRecord(
-              entry: entry,
-              onOpenFormResponse: onOpenFormResponse,
-              onOpenEvent: onOpenEvent,
-              onOpenCatchThread: onOpenCatchThread,
-              onOpenWhatsappThread: onOpenWhatsappThread,
-            ),
         ],
       ],
     );
   }
 }
 
-class HostCustomerTimelineRecord extends StatelessWidget {
-  const HostCustomerTimelineRecord({
-    super.key,
-    required this.entry,
-    required this.onOpenFormResponse,
-    required this.onOpenEvent,
-    required this.onOpenCatchThread,
-    required this.onOpenWhatsappThread,
-  });
-  final HostCustomerTimelineEntry entry;
-  final ValueChanged<String> onOpenFormResponse;
-  final ValueChanged<String> onOpenEvent;
-  final ValueChanged<String> onOpenCatchThread;
-  final ValueChanged<String> onOpenWhatsappThread;
-  @override
-  Widget build(BuildContext context) {
-    final entry = this.entry;
-    final t = CatchTokens.of(context);
-    final key = ValueKey('host-customer-timeline-${entry.timelineId}');
-    return switch (entry) {
-      HostCustomerFormTimelineEntry() => CatchRecordRow(
-        key: key,
+CatchField hostCustomerTimelineField(
+  BuildContext context, {
+  required HostCustomerTimelineEntry entry,
+  required ValueChanged<String> onOpenFormResponse,
+  required ValueChanged<String> onOpenEvent,
+  required ValueChanged<String> onOpenCatchThread,
+  required ValueChanged<String> onOpenWhatsappThread,
+}) {
+  final t = CatchTokens.of(context);
+  final key = ValueKey('host-customer-timeline-${entry.timelineId}');
+  return switch (entry) {
+    HostCustomerFormTimelineEntry() => CatchField.navigate(
+      key: key,
+      onActivate: () => onOpenFormResponse(entry.responseId),
+      content: CatchRecordLayout(
         title:
             entry.formTitle ?? context.l10n.hostCustomersTimelineFormFallback,
         metadata: entry.action == HostCustomerFormTimelineAction.submitted
@@ -547,20 +542,23 @@ class HostCustomerTimelineRecord extends StatelessWidget {
             : context.l10n.hostFormResponsesWithdrawn,
         icon: CatchIcons.tabForms,
         color: t.primary,
-        onTap: () => onOpenFormResponse(entry.responseId),
       ),
-      HostCustomerEventTimelineEntry() => CatchRecordRow(
-        key: key,
+    ),
+    HostCustomerEventTimelineEntry() => CatchField.navigate(
+      key: key,
+      onActivate: () => onOpenEvent(entry.eventId),
+      content: CatchRecordLayout(
         title: entry.eventName,
         metadata: context.l10n.hostCustomersTimelineEventStatus(
           status: entry.checkedIn ? 'checkedIn' : entry.status,
         ),
         icon: CatchIcons.eventAvailable,
         color: entry.checkedIn ? t.success : t.ink2,
-        onTap: () => onOpenEvent(entry.eventId),
       ),
-      HostCustomerSendTimelineEntry() => CatchRecordRow(
-        key: key,
+    ),
+    HostCustomerSendTimelineEntry() => CatchField.read(
+      key: key,
+      content: CatchRecordLayout(
         title: entry.sendKind == HostCustomerTimelineSendKind.manualHandoff
             ? context.l10n.hostCustomersTimelineManualHandoff
             : entry.name,
@@ -570,8 +568,13 @@ class HostCustomerTimelineRecord extends StatelessWidget {
         icon: CatchIcons.sendRounded,
         color: entry.status == 'failed' ? t.danger : t.ink2,
       ),
-      HostCustomerReplyTimelineEntry() => CatchRecordRow(
-        key: key,
+    ),
+    HostCustomerReplyTimelineEntry() => CatchField.navigate(
+      key: key,
+      onActivate: () => entry.transport == HostCustomerReplyTransport.catchChat
+          ? onOpenCatchThread(entry.threadId)
+          : onOpenWhatsappThread(entry.threadId),
+      content: CatchRecordLayout(
         title: context.l10n.hostCustomersTimelineDirection(
           direction: entry.direction.name,
         ),
@@ -581,10 +584,7 @@ class HostCustomerTimelineRecord extends StatelessWidget {
         description: entry.bodyPreview,
         icon: CatchIcons.tabChats,
         color: t.primary,
-        onTap: () => entry.transport == HostCustomerReplyTransport.catchChat
-            ? onOpenCatchThread(entry.threadId)
-            : onOpenWhatsappThread(entry.threadId),
       ),
-    };
-  }
+    ),
+  };
 }

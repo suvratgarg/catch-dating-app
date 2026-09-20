@@ -38,6 +38,7 @@ void main() {
     expect(refreshingData.isLoading, isTrue);
     expect(state.status, CatchAsyncStatus.data);
     expect(state.phase, CatchAsyncPhase.refreshing);
+    expect(state.isSettledData, isFalse);
     expect(state.value, 7);
   });
 
@@ -63,6 +64,10 @@ void main() {
     expect(
       catchAsyncStateFromAsyncValue(const AsyncData<int>(7)).phase,
       CatchAsyncPhase.data,
+    );
+    expect(
+      catchAsyncStateFromAsyncValue(const AsyncData<int>(7)).isSettledData,
+      isTrue,
     );
   });
 
@@ -92,6 +97,7 @@ void main() {
     expect(retryingWithData.hasValue, isTrue);
     expect(retryingWithData.hasError, isTrue);
     expect(state.phase, CatchAsyncPhase.staleDataWithError);
+    expect(state.isSettledData, isFalse);
     expect(state.retrying, isTrue);
     expect(
       catchAsyncBoundaryStatus(retryingWithData),

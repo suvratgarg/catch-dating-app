@@ -19,7 +19,7 @@ const schemaAdminDecideSafetyTriageItemCallableResponseSchema = <String, Object?
     'targetPath': <String, Object?>{
       'type': 'string',
       'maxLength': 260,
-      'pattern': '^(reports|moderationFlags|eventSafetyReports)/[^/]+\$',
+      'pattern': '^(reports|moderationFlags|eventSafetyReports|eventAssistanceCases)/[^/]+\$',
     },
     'decision': <String, Object?>{
       'type': 'string',
@@ -33,6 +33,7 @@ const schemaAdminDecideSafetyTriageItemCallableResponseSchema = <String, Object?
       'enum': <Object?>[
         'reviewed',
         'dismissed',
+        'resolved',
       ],
     },
   },

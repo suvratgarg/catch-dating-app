@@ -55,7 +55,7 @@ void registerHostEventEntryTests() {
 
     expect(
       tester
-          .widget<HostTodayEventSpotlight>(find.byType(HostTodayEventSpotlight))
+          .widget<HostTodayEventSection>(find.byType(HostTodayEventSection))
           .event,
       event,
     );
@@ -89,6 +89,62 @@ void registerHostEventEntryTests() {
     await tester.tap(rehearsalAction);
     await pumpFeatureUi(tester);
     expect(find.text('Rehearse rehearsal-club'), findsOneWidget);
+  });
+
+  testWidgets('Host Today opens smart event entry from its quiet state', (
+    tester,
+  ) async {
+    final club = buildClub(id: 'quiet-club', ownerUserId: _hostUid);
+    final draft = EventDraft(
+      id: 'quiet-draft',
+      clubId: club.id,
+      savedAt: DateTime(2026, 6, 15, 10),
+      customActivityLabel: 'Quiz night',
+    );
+    final pastEvent = buildEvent(
+      id: 'past-event',
+      clubId: club.id,
+      startTime: DateTime(2026, 6, 14, 17),
+    );
+
+    await _pumpHostScreen(
+      tester,
+      HostTodayScreen(now: DateTime(2026, 6, 15, 12)),
+      overrides: [
+        ..._hostClubOverrides(
+          owned: [club],
+          draftsByOrganizer: {
+            club.id: [draft],
+          },
+          timelineEventsByOrganizer: {
+            club.id: [pastEvent],
+          },
+        ),
+        watchEventsForClubProvider(
+          club.id,
+        ).overrideWithValue(AsyncData<List<Event>>([pastEvent])),
+      ],
+    );
+
+    final createEvent = find.byKey(
+      const ValueKey<String>('host-today-create-event'),
+    );
+    expect(createEvent, findsOneWidget);
+    await tester.tap(createEvent);
+    await pumpFeatureUi(tester);
+
+    expect(
+      find.byKey(const ValueKey<String>('host-event-entry-sheet')),
+      findsOneWidget,
+    );
+    expect(find.text('Continue draft'), findsOneWidget);
+    expect(find.text('Quiz night'), findsOneWidget);
+    expect(find.text('Repeat last event'), findsOneWidget);
+    expect(find.text('Use guest list'), findsOneWidget);
+
+    await tester.tap(find.text('Continue draft'));
+    await pumpFeatureUi(tester);
+    expect(find.text('Draft quiet-draft'), findsOneWidget);
   });
 
   testWidgets('Host Events resumes a loaded draft without a second lookup', (

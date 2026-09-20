@@ -371,19 +371,21 @@ void main() {
         home: Scaffold(
           body: SizedBox(
             width: 390,
-            child: CatchPageBody.screen(
-              variant: CatchPageBodyVariant.fixed,
-              pt: 0,
-              pb: 0,
-              child: CatchSection.fieldRows(
-                first: true,
-                children: [
-                  CatchField.nav(
-                    copy: catchFieldCopy(AppLocalizationsEn()),
-                    title: 'Reminder timing',
-                    onTap: () {},
-                  ),
-                ],
+            child: CatchSectionList.panes(
+              body: CatchPageBody.screen(
+                variant: CatchPageBodyVariant.fixed,
+                pt: 0,
+                pb: 0,
+                child: CatchSection.fieldRows(
+                  first: true,
+                  children: [
+                    CatchField.nav(
+                      copy: catchFieldCopy(AppLocalizationsEn()),
+                      title: 'Reminder timing',
+                      onTap: () {},
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

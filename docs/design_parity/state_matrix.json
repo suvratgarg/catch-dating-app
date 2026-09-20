@@ -3415,7 +3415,7 @@
             "lib/chats/presentation/inbox/widgets/chats_sliver_header.dart",
             "lib/chats/presentation/inbox/widgets/chats_list.dart",
             "lib/chats/presentation/inbox/widgets/chats_list_body.dart",
-            "packages/catch_ui/lib/src/components/catch_person_row.dart"
+            "packages/catch_ui/lib/src/components/catch_field.dart"
           ],
           "componentIds": [
             "catch.badge",
@@ -4913,7 +4913,7 @@
               "previewIds": [
                 "hostHomeRouteStates",
                 "hostHomeEventSectionStates",
-                "HostEventLifecycleRow/Exact catalog"
+                "HostEventsTimelinePage/Exact catalog"
               ],
               "captureIds": [
                 "host_home_dashboard",
@@ -4984,7 +4984,7 @@
               "notes": "HostTodayScreen and HostEventsRouteScaffold own independent lifecycle-aware event callbacks and push hostAppEventManageScreen with organizer id, event id, event extra, and live/setup/report section. Provider-free Today and Events rows delegate taps to their owning route edges.",
               "previewIds": [
                 "hostHomeRouteStates",
-                "HostEventLifecycleRow/Exact catalog"
+                "HostEventsTimelinePage/Exact catalog"
               ]
             },
             {
@@ -5118,7 +5118,6 @@
             "catch.field",
             "catch.notice",
             "catch.chip.field",
-            "catch.person_row",
             "catch.search_field",
             "catch.section",
             "catch.skeleton",
@@ -8745,7 +8744,7 @@
             "lib/chats/presentation/inbox/widgets/chats_list_body.dart",
             "lib/chats/presentation/inbox/widgets/chat_conversations_list.dart",
             "lib/chats/presentation/chat_screen.dart",
-            "packages/catch_ui/lib/src/components/catch_person_row.dart",
+            "packages/catch_ui/lib/src/components/catch_field.dart",
             "packages/catch_ui/lib/src/patterns/catch_master_detail_viewport.dart",
             "lib/chats/presentation/inbox/widgets/chats_empty_state.dart",
             "lib/events/data/event_repository.dart",

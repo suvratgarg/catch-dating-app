@@ -34,6 +34,7 @@ function main() {
   checkPromptCatalogs(parsed);
   checkPersonFieldCatalog(parsed);
   checkHostAttentionPolicyCatalog(parsed);
+  checkEventAssistanceContracts(parsed);
   checkFixturePlacement(parsed);
   checkCurrentCodeDrift(parsed);
 
@@ -43,6 +44,329 @@ function main() {
       file.endsWith(".schema.json")
     ).length,
   });
+}
+
+function checkEventAssistanceContracts(parsed) {
+  const catalog = parsed.get(
+    path.join(contractRoot, "catalogs/event_assistance_workflows.json")
+  );
+  const commandBindingCatalog = parsed.get(
+    path.join(contractRoot,
+      "catalogs/event_assistance_command_bindings.json")
+  );
+  const common = parsed.get(
+    path.join(contractRoot, "shared/event_assistance_common.schema.json")
+  );
+  if (!catalog || !commandBindingCatalog || !common) {
+    fail("Missing event assistance contracts.");
+    return;
+  }
+  const kinds = common.definitions?.workflowKind?.enum ?? [];
+  const policies = common.definitions?.WorkflowPolicy?.oneOf ?? [];
+  const rows = catalog.definitions ?? [];
+  if (
+    catalog.schemaVersion !== 1 ||
+    catalog.kind !== "eventAssistanceWorkflows"
+  )
+    fail("Invalid event assistance catalog identity.");
+  if (new Set(kinds).size !== kinds.length || kinds.length === 0)
+    fail("Workflow kinds must be nonempty and unique.");
+  if (JSON.stringify(rows.map((row) => row.kind)) !== JSON.stringify(kinds))
+    fail(
+      "Event assistance catalog must cover workflow kinds exactly and in order."
+    );
+  if (
+    JSON.stringify(policies.map((row) => row.properties?.kind?.const)) !==
+    JSON.stringify(kinds)
+  )
+    fail("Each assistance workflow requires a correlated policy schema.");
+  const rules = new Set([
+    "all",
+    "moving",
+    "groups",
+    "movingSubgroups",
+    "resources",
+    "rounds",
+    "outcomes",
+    "accountability",
+    "paid",
+    "requiredData",
+    "roles",
+    "admission",
+    "tracking",
+    "groupsOrResources",
+    "independentUnits",
+  ]);
+  for (const [index, row] of rows.entries()) {
+    const policy = policies[index];
+    if (!rules.has(row.applicability))
+      fail("Unknown assistance applicability rule: " + row.kind);
+    if (
+      !common.definitions[row.configDefinition] ||
+      policy?.properties?.config?.$ref !==
+        "#/definitions/" + row.configDefinition
+    )
+      fail("Missing or mismatched workflow configuration: " + row.kind);
+    for (const field of [
+      "trigger",
+      "automatic",
+      "hostDecision",
+      "resolution",
+    ]) {
+      if (typeof row[field] !== "string" || row[field].trim().length === 0)
+        fail("Missing workflow " + field + ": " + row.kind);
+    }
+  }
+  const settings = parsed.get(path.join(contractRoot,
+    "shared/event_assistance_settings.schema.json"));
+  const templates = settings?.definitions?.Template?.oneOf ?? [];
+  if (JSON.stringify(templates.map((t) => t.properties?.kind?.const)) !==
+      JSON.stringify(kinds)) fail("Settings templates must cover every workflow.");
+  for (const [index, template] of templates.entries()) {
+    const row = rows[index];
+    const expectedRef = row?.kind === "lateJoin" ?
+      "#/definitions/LateJoinTemplateConfig" :
+      "event_assistance_common.schema.json#/definitions/" +
+        row?.configDefinition;
+    if (template.additionalProperties !== false ||
+        !["kind", "version", "config", "setting"].every((key) =>
+          template.required?.includes(key)) ||
+        template.properties?.config?.$ref !== expectedRef ||
+        template.properties?.setting?.$ref !== "#/definitions/TemplateSetting") {
+      fail("Settings template lost its correlated configuration: " + row?.kind);
+    }
+  }
+  const templateSetting = structuredClone(common.definitions.PolicySetting);
+  templateSetting.anyOf[0].required = templateSetting.anyOf[0].required
+    .filter((key) => key !== "policyVersion");
+  delete templateSetting.anyOf[0].properties.policyVersion;
+  if (JSON.stringify(settings?.definitions?.TemplateSetting) !==
+      JSON.stringify(templateSetting)) {
+    fail("Template authority must match runtime authority without code version.");
+  }
+  const lateTemplate = settings?.definitions?.LateJoinTemplateConfig;
+  const lateRuntime = common.definitions.LateJoinPolicy;
+  if (lateTemplate?.additionalProperties !== false ||
+      JSON.stringify(lateTemplate?.required) !==
+        JSON.stringify(lateRuntime.required) ||
+      JSON.stringify(Object.keys(lateTemplate?.properties ?? {})) !==
+        JSON.stringify(Object.keys(lateRuntime.properties))) {
+    fail("Late-join templates must retain the runtime configuration fields.");
+  }
+  for (const [key, value] of Object.entries(lateRuntime.properties)) {
+    if (key !== "destination" && JSON.stringify(lateTemplate?.properties?.[key])
+        !== JSON.stringify(value)) {
+      fail("Late-join template constraint drift: " + key);
+    }
+  }
+  const commands = (common.definitions?.Command?.oneOf ?? []).map((entry) => {
+    if (!entry.$ref) return entry;
+    const match = /^#\/definitions\/([^/]+)$/.exec(entry.$ref);
+    if (!match || Object.keys(entry).length !== 1) {
+      fail("Assistance command references must name one local definition.");
+      return {};
+    }
+    return common.definitions[match[1]] ?? {};
+  });
+  const commandKinds = commands.map(
+    (command) => command.properties?.kind?.const
+  );
+  if (
+    !commands.length ||
+    new Set(commandKinds).size !== commands.length ||
+    commandKinds.some((kind) => typeof kind !== "string")
+  )
+    fail("Assistance command variants must be unique and named.");
+  for (const command of commands) {
+    if (
+      command.additionalProperties !== false ||
+      !["kind", "context", "eventId", "operationId", "payload"].every((field) =>
+        command.required?.includes(field)
+      )
+    )
+      fail("Assistance commands require closed context-bound envelopes.");
+  }
+  const knownCommandKinds = new Set(commandKinds);
+  const commandBindings = commandBindingCatalog.definitions ?? [];
+  if (commandBindingCatalog.schemaVersion !== 1 ||
+      commandBindingCatalog.kind !== "eventAssistanceCommandBindings") {
+    fail("Invalid event assistance command binding catalog identity.");
+  }
+  if (JSON.stringify(commandBindings.map((row) => row.commandKind)) !==
+      JSON.stringify(commandKinds)) {
+    fail("Command bindings must cover command kinds exactly and in order.");
+  }
+  const bindingTypes = new Set([
+    "directCommand",
+    "domainAdapter",
+    "internalCoordinator",
+    "contractOnly",
+  ]);
+  for (const row of commandBindings) {
+    if (!row || typeof row !== "object" ||
+        JSON.stringify(Object.keys(row)) !==
+          JSON.stringify(["commandKind", "live", "rehearsal"])) {
+      fail("Invalid command binding row: " + (row?.commandKind ?? "unknown"));
+      continue;
+    }
+    for (const mode of ["live", "rehearsal"]) {
+      const binding = row[mode];
+      const partialCoverage = binding?.coverage;
+      const expectedBindingKeys = partialCoverage === undefined ?
+        ["bindingType", "operations", "missingCapability"] :
+        ["bindingType", "coverage", "operations", "missingCapability"];
+      if (!binding || typeof binding !== "object" ||
+          JSON.stringify(Object.keys(binding)) !==
+            JSON.stringify(expectedBindingKeys) ||
+          !bindingTypes.has(binding.bindingType) ||
+          !Array.isArray(binding.operations) ||
+          new Set(binding.operations).size !== binding.operations.length ||
+          binding.operations.some((operation) =>
+            typeof operation !== "string" ||
+            !/^[A-Za-z][A-Za-z0-9]*(?:\.[A-Za-z][A-Za-z0-9]*)?$/.test(
+              operation
+            )) ||
+          (binding.missingCapability !== null &&
+            (typeof binding.missingCapability !== "string" ||
+              !/^[a-z][A-Za-z0-9]*$/.test(binding.missingCapability)))) {
+        fail(`Invalid ${mode} command binding: ${row.commandKind}`);
+        continue;
+      }
+      const contractOnly = binding.bindingType === "contractOnly";
+      if (contractOnly !== (binding.operations.length === 0) ||
+          contractOnly && binding.missingCapability === null ||
+          !contractOnly && partialCoverage === undefined &&
+            binding.missingCapability !== null) {
+        fail(`Command binding operations mismatch: ${row.commandKind}/${mode}`);
+      }
+      if (partialCoverage !== undefined &&
+          !validPartialCommandCoverage(partialCoverage, row.commandKind,
+            commands, binding)) {
+        fail(`Invalid partial command coverage: ${row.commandKind}/${mode}`);
+      }
+    }
+  }
+  const referencedCommandKinds = new Set();
+  const commandRoles = ["automatic", "host", "guest"];
+  const overridePolicies = new Set(["none", "scopedReasonedExpiring"]);
+  const resolutionBoundaries = new Set([
+    "eventAssistanceCommand",
+    "eventConfiguration",
+    "messagingConfiguration",
+    "paymentConfiguration",
+    "navigation",
+    "reportReview",
+  ]);
+  const hostSurfaces = new Set([
+    "today",
+    "eventSetup",
+    "liveNow",
+    "liveGuests",
+    "liveRoom",
+    "eventReport",
+  ]);
+  const hostPresentations = new Set([
+    "readinessTask",
+    "atomicAction",
+    "statusControl",
+    "exceptionQueue",
+    "reportInsight",
+  ]);
+  for (const row of rows) {
+    const workflow = row.kind ?? "unknown";
+    const commandMap = row.commands;
+    if (!commandMap || typeof commandMap !== "object" ||
+        JSON.stringify(Object.keys(commandMap)) !==
+          JSON.stringify(commandRoles)) {
+      fail("Workflow commands must cover every actor role: " + workflow);
+      continue;
+    }
+    for (const role of commandRoles) {
+      const values = commandMap[role];
+      if (!Array.isArray(values) ||
+          new Set(values).size !== values.length ||
+          values.some((kind) => !knownCommandKinds.has(kind))) {
+        fail("Invalid " + role + " workflow commands: " + workflow);
+        continue;
+      }
+      for (const kind of values) referencedCommandKinds.add(kind);
+    }
+    const hasCommandContract = commandRoles.some(
+      (role) => commandMap[role].length > 0
+    );
+    if (!resolutionBoundaries.has(row.resolutionBoundary) ||
+        (row.resolutionBoundary === "eventAssistanceCommand") !==
+          hasCommandContract) {
+      fail("Invalid workflow resolution boundary: " + workflow);
+    }
+    if (!overridePolicies.has(row.overridePolicy)) {
+      fail("Invalid workflow override policy: " + workflow);
+    }
+    const supportsOverride = commandMap.host.includes("applyOverride");
+    if ((row.overridePolicy === "scopedReasonedExpiring") !==
+        supportsOverride) {
+      fail("Workflow override policy must match applyOverride: " + workflow);
+    }
+    const projection = row.hostProjection;
+    if (!projection || typeof projection !== "object" ||
+        JSON.stringify(Object.keys(projection)) !==
+          JSON.stringify(["surfaces", "presentation"]) ||
+        !Array.isArray(projection.surfaces) ||
+        projection.surfaces.length === 0 ||
+        new Set(projection.surfaces).size !== projection.surfaces.length ||
+        projection.surfaces.some((surface) => !hostSurfaces.has(surface)) ||
+        !hostPresentations.has(projection.presentation)) {
+      fail("Invalid Host projection: " + workflow);
+    }
+  }
+  if (JSON.stringify([...referencedCommandKinds].sort()) !==
+      JSON.stringify([...knownCommandKinds].sort())) {
+    fail("Event assistance workflows must account for every command kind.");
+  }
+}
+
+function validPartialCommandCoverage(
+  coverage,
+  commandKind,
+  commands,
+  binding
+) {
+  if (!coverage || typeof coverage !== "object" ||
+      JSON.stringify(Object.keys(coverage)) !== JSON.stringify([
+        "kind",
+        "variantField",
+        "implementedVariants",
+        "missingVariants",
+      ]) ||
+      coverage.kind !== "partial" ||
+      typeof coverage.variantField !== "string" ||
+      !/^[a-z][A-Za-z0-9]*$/.test(coverage.variantField) ||
+      !validCoverageVariants(coverage.implementedVariants) ||
+      !validCoverageVariants(coverage.missingVariants) ||
+      binding.bindingType === "contractOnly" ||
+      binding.missingCapability === null) {
+    return false;
+  }
+  const command = commands.find((candidate) =>
+    candidate.properties?.kind?.const === commandKind
+  );
+  const variants = command?.properties?.payload?.properties?.[
+    coverage.variantField
+  ]?.enum;
+  const partition = [
+    ...coverage.implementedVariants,
+    ...coverage.missingVariants,
+  ];
+  return Array.isArray(variants) &&
+    JSON.stringify(partition) === JSON.stringify(variants) &&
+    new Set(partition).size === partition.length;
+}
+
+function validCoverageVariants(value) {
+  return Array.isArray(value) && value.length > 0 &&
+    new Set(value).size === value.length &&
+    value.every((variant) =>
+      typeof variant === "string" && /^[a-z][A-Za-z0-9]*$/.test(variant));
 }
 
 function checkHostAttentionPolicyCatalog(parsed) {

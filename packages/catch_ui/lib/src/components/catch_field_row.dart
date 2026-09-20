@@ -19,24 +19,6 @@ class CatchFieldRow extends StatelessWidget {
   }) : leadingGap = leadingSlotGap,
        trailingGap = CatchFieldTokens.trailingGap;
 
-  const CatchFieldRow.add({
-    super.key,
-    required this.leading,
-    required this.body,
-    this.onTap,
-  }) : trailing = null,
-       constraints = const BoxConstraints(),
-       padding = const EdgeInsets.symmetric(
-         horizontal: CatchFieldTokens.rowHorizontalPadding,
-         vertical: CatchFieldTokens.rowVerticalPadding,
-       ),
-       crossAxisAlignment = CrossAxisAlignment.start,
-       leadingTopPadding = 0,
-       paddingDuration = CatchMotion.none,
-       paddingCurve = CatchMotion.linearCurve,
-       leadingGap = leadingSlotGap,
-       trailingGap = CatchFieldTokens.trailingGap;
-
   /// Render size of icons in the leading slot.
   static const double leadingSlotIconSize = CatchFieldTokens.leadingIconExtent;
 

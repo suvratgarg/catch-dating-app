@@ -15,6 +15,8 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.da
 import 'package:catch_dating_app/cross_paths/cross_paths.dart';
 import 'package:catch_dating_app/cross_paths/presentation/cross_paths_event_consent_controller.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
+import 'package:catch_dating_app/event_success/event_success.dart'
+    show EventMessagePreferencesNavigationSection;
 import 'package:catch_dating_app/events/data/event_calendar_links.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
@@ -375,6 +377,20 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen>
           heroTag: widget.heroTag,
           enableMapNetworkTiles: widget.enableMapNetworkTiles,
           crossPathsConsentState: crossPathsConsentState,
+          messagePreferencesSection:
+              !isHostApp && vm.isAuthenticated && vm.participation != null
+              ? Theme(
+                  data: Theme.of(context).copyWith(
+                    extensions: [
+                      ...Theme.of(context).extensions.values,
+                      if (style.isDark) CatchTokens.editorialDark,
+                    ],
+                  ),
+                  child: EventMessagePreferencesNavigationSection(
+                    eventId: vm.event.id,
+                  ),
+                )
+              : null,
           onCrossPathsConsentChanged: (enabled) =>
               CrossPathsEventConsentController.setConsentMutation.run(
                 ref,
@@ -768,17 +784,6 @@ Future<void> _addEventToCalendar(
       );
     }
   }
-}
-
-bool _canAddEventToCalendar({
-  required Event event,
-  required EventParticipation? participation,
-  required bool isHost,
-  required DateTime now,
-}) {
-  if (event.isCancelled || !event.startTime.isAfter(now)) return false;
-  if (isHost) return true;
-  return participation?.status == EventParticipationStatus.signedUp;
 }
 
 /// Keeps Event Detail inside the runtime's route family. In particular, a

@@ -422,20 +422,46 @@ class _HostOperationalRosterPanelState
                           .hostsOperationalRosterInsightsFilterEmptyMessage,
                     )
                   else
-                    for (final indexed in filteredAttendees.indexed)
-                      _HostOperationalAttendeeRow(
-                        key: ValueKey(indexed.$2.id),
-                        attendee: indexed.$2,
-                        insight: insightByAttendeeId[indexed.$2.id],
-                        divider: indexed.$1 > 0,
-                        pending:
-                            _pendingAttendanceId == indexed.$2.id ||
-                            _attendanceOutbox?.forAttendee(indexed.$2.id) !=
-                                null,
-                        enabled: widget.allowAttendanceChanges,
-                        onPressed: () =>
-                            unawaited(_toggleAttendance(indexed.$2)),
-                      ),
+                    CatchSection.containedRows(
+                      children: [
+                        for (final attendee in filteredAttendees)
+                          CatchField.read(
+                            key: ValueKey(attendee.id),
+                            content: _attendeeLayout(
+                              context,
+                              attendee,
+                              insightByAttendeeId[attendee.id],
+                            ),
+                            secondaryAction: widget.allowAttendanceChanges
+                                ? CatchFieldSecondaryAction.button(
+                                    label: attendee.isCheckedIn
+                                        ? context
+                                              .l10n
+                                              .hostsOperationalRosterUndoCheckIn
+                                        : context
+                                              .l10n
+                                              .hostsOperationalRosterCheckIn,
+                                    loading:
+                                        _pendingAttendanceId == attendee.id ||
+                                        _attendanceOutbox?.forAttendee(
+                                              attendee.id,
+                                            ) !=
+                                            null,
+                                    onActivate:
+                                        _pendingAttendanceId == attendee.id ||
+                                            _attendanceOutbox?.forAttendee(
+                                                  attendee.id,
+                                                ) !=
+                                                null
+                                        ? null
+                                        : () => unawaited(
+                                            _toggleAttendance(attendee),
+                                          ),
+                                  )
+                                : null,
+                          ),
+                      ],
+                    ),
                 ],
               );
             },
@@ -556,66 +582,32 @@ class _HostRosterInsightsBar extends StatelessWidget {
   );
 }
 
-class _HostOperationalAttendeeRow extends StatelessWidget {
-  const _HostOperationalAttendeeRow({
-    super.key,
-    required this.attendee,
-    required this.insight,
-    required this.divider,
-    required this.pending,
-    required this.enabled,
-    required this.onPressed,
-  });
-
-  final EventAttendee attendee;
-  final HostEventRosterInsight? insight;
-  final bool divider;
-  final bool pending;
-  final bool enabled;
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    final signals = _displayInsightSignals(insight);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        CatchPersonRow(
-          copy: catchPersonRowCopy(context.l10n),
-          data: CatchPersonRowData(
-            name: attendee.displayName,
-            seed: attendee.id,
-            metaLine: _attendeeMeta(context, attendee),
-            contextLine: attendee.hasEventIdentity
-                ? context.l10n.hostsOperationalRosterIdentityLinked
-                : null,
-          ),
-          divider: divider,
-          trailing: _RosterAttendanceAction(
-            attendee: attendee,
-            pending: pending,
-            enabled: enabled,
-            onPressed: onPressed,
-          ),
+CatchPersonLayout _attendeeLayout(
+  BuildContext context,
+  EventAttendee attendee,
+  HostEventRosterInsight? insight,
+) {
+  final signals = _displayInsightSignals(insight);
+  return CatchPersonLayout(
+    name: attendee.displayName,
+    supportingText: _attendeeMeta(context, attendee),
+    context: attendee.hasEventIdentity
+        ? context.l10n.hostsOperationalRosterIdentityLinked
+        : null,
+    badges: [
+      CatchRowBadge(
+        label: _statusCopy(context, attendee.status),
+        tone: attendee.isCheckedIn
+            ? CatchBadgeTone.success
+            : CatchBadgeTone.neutral,
+      ),
+      for (final signal in signals)
+        CatchRowBadge(
+          label: _insightSignalLabel(context, signal),
+          tone: _insightSignalTone(signal),
         ),
-        if (signals.isNotEmpty)
-          Padding(
-            padding: CatchInsets.operationalRosterInsightLane,
-            child: Wrap(
-              spacing: CatchSpacing.s1,
-              runSpacing: CatchSpacing.s1,
-              children: [
-                for (final signal in signals)
-                  CatchBadge(
-                    label: _insightSignalLabel(context, signal),
-                    tone: _insightSignalTone(signal),
-                  ),
-              ],
-            ),
-          ),
-      ],
-    );
-  }
+    ],
+  );
 }
 
 class _HostRuntimeClaimQueue extends StatelessWidget {
@@ -649,141 +641,69 @@ class _HostRuntimeClaimQueue extends StatelessWidget {
           tone: CatchBadgeTone.warning,
         ),
         gapH8,
-        for (final indexed in claims.indexed)
-          CatchPersonRow(
-            copy: catchPersonRowCopy(context.l10n),
-            key: ValueKey('runtime-claim-${indexed.$2.uid}'),
-            data: CatchPersonRowData(
-              name: indexed.$2.displayName,
-              seed: indexed.$2.uid,
-              metaLine: context.l10n.hostsOperationalRosterClaimPhone(
-                phoneLastFour: indexed.$2.phoneLastFour,
-              ),
-              contextLine: context.l10n.hostsOperationalRosterClaimContext,
-            ),
-            divider: indexed.$1 > 0,
-            trailing: _HostRuntimeClaimActions(
-              claim: indexed.$2,
-              attendeesById: attendeesById,
-              pending: pendingUid == indexed.$2.uid,
-              enabled: pendingUid == null,
-              onApprove: (attendeeId) => onApprove(indexed.$2, attendeeId),
-              onReject: () => onReject(indexed.$2),
-            ),
-          ),
-      ],
-    );
-  }
-}
-
-class _HostRuntimeClaimActions extends StatelessWidget {
-  const _HostRuntimeClaimActions({
-    required this.claim,
-    required this.attendeesById,
-    required this.pending,
-    required this.enabled,
-    required this.onApprove,
-    required this.onReject,
-  });
-
-  final EventRuntimeClaimRequest claim;
-  final Map<String, EventAttendee> attendeesById;
-  final bool pending;
-  final bool enabled;
-  final ValueChanged<String> onApprove;
-  final VoidCallback onReject;
-
-  @override
-  Widget build(BuildContext context) {
-    final candidateIds = claim.candidateAttendeeIds;
-    final approve = candidateIds.length == 1
-        ? CatchButton(
-            label: context.l10n.hostsOperationalRosterClaimApprove,
-            onPressed: enabled ? () => onApprove(candidateIds.single) : null,
-            status: (pending)
-                ? CatchButtonStatus.loading
-                : CatchButtonStatus.idle,
-            variant: CatchButtonVariant.secondary,
-            size: CatchButtonSize.sm,
-          )
-        : CatchMenu<String>.anchored(
-            items: [
-              for (final attendeeId in candidateIds)
-                CatchMenuItem<String>(
-                  value: attendeeId,
-                  label: attendeesById[attendeeId]?.displayName ?? attendeeId,
-                  sublabel: attendeesById[attendeeId]?.phoneE164,
+        CatchSection.containedRows(
+          children: [
+            for (final indexed in claims.indexed)
+              CatchField.read(
+                key: ValueKey('runtime-claim-${indexed.$2.uid}'),
+                content: CatchPersonLayout(
+                  name: indexed.$2.displayName,
+                  supportingText: context.l10n.hostsOperationalRosterClaimPhone(
+                    phoneLastFour: indexed.$2.phoneLastFour,
+                  ),
+                  context: context.l10n.hostsOperationalRosterClaimContext,
                 ),
-            ],
-            onSelected: (attendeeId, _) => onApprove(attendeeId),
-            builder: (context, controller, child) => CatchButton(
-              label: context.l10n.hostsOperationalRosterClaimChooseGuest,
-              onPressed: enabled && candidateIds.isNotEmpty
-                  ? controller.open
-                  : null,
-              status: (pending)
-                  ? CatchButtonStatus.loading
-                  : CatchButtonStatus.idle,
-              variant: CatchButtonVariant.secondary,
-              size: CatchButtonSize.sm,
-            ),
-          );
-    return Wrap(
-      alignment: WrapAlignment.end,
-      spacing: CatchSpacing.s1,
-      runSpacing: CatchSpacing.s1,
-      children: [
-        approve,
-        CatchButton(
-          label: context.l10n.hostsOperationalRosterClaimReject,
-          onPressed: enabled ? onReject : null,
-          variant: CatchButtonVariant.ghost,
-          size: CatchButtonSize.sm,
+                secondaryAction: hostRuntimeClaimActions(
+                  context,
+                  claim: indexed.$2,
+                  attendeesById: attendeesById,
+                  pending: pendingUid == indexed.$2.uid,
+                  enabled: pendingUid == null,
+                  onApprove: (id) => onApprove(indexed.$2, id),
+                  onReject: () => onReject(indexed.$2),
+                ),
+              ),
+          ],
         ),
       ],
     );
   }
 }
 
-class _RosterAttendanceAction extends StatelessWidget {
-  const _RosterAttendanceAction({
-    required this.attendee,
-    required this.pending,
-    required this.enabled,
-    required this.onPressed,
-  });
-
-  final EventAttendee attendee;
-  final bool pending;
-  final bool enabled;
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    final checkedIn = attendee.isCheckedIn;
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        CatchBadge.functional(
-          label: _statusCopy(context, attendee.status),
-          tone: checkedIn ? CatchBadgeTone.success : CatchBadgeTone.neutral,
-        ),
-        if (enabled) ...[
-          gapH4,
-          CatchButton(
-            label: checkedIn
-                ? context.l10n.hostsOperationalRosterUndoCheckIn
-                : context.l10n.hostsOperationalRosterCheckIn,
-            onPressed: pending ? null : onPressed,
-            status: (pending)
-                ? CatchButtonStatus.loading
-                : CatchButtonStatus.idle,
-            variant: CatchButtonVariant.ghost,
-            size: CatchButtonSize.sm,
+CatchFieldSecondaryAction hostRuntimeClaimActions(
+  BuildContext context, {
+  required EventRuntimeClaimRequest claim,
+  required Map<String, EventAttendee> attendeesById,
+  required bool pending,
+  required bool enabled,
+  required ValueChanged<String> onApprove,
+  required VoidCallback onReject,
+}) => CatchFieldSecondaryAction.group([
+  if (claim.candidateAttendeeIds.length == 1)
+    CatchFieldSecondaryAction.button(
+      label: context.l10n.hostsOperationalRosterClaimApprove,
+      loading: pending,
+      onActivate: enabled
+          ? () => onApprove(claim.candidateAttendeeIds.single)
+          : null,
+    )
+  else
+    CatchFieldSecondaryAction.selection<String>(
+      label: context.l10n.hostsOperationalRosterClaimChooseGuest,
+      enabled: enabled,
+      loading: pending,
+      items: [
+        for (final id in claim.candidateAttendeeIds)
+          CatchMenuItem(
+            value: id,
+            label: attendeesById[id]?.displayName ?? id,
+            sublabel: attendeesById[id]?.phoneE164,
           ),
-        ],
       ],
-    );
-  }
-}
+      onSelected: onApprove,
+    ),
+  CatchFieldSecondaryAction.button(
+    label: context.l10n.hostsOperationalRosterClaimReject,
+    onActivate: enabled && !pending ? onReject : null,
+  ),
+]);

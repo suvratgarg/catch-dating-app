@@ -49,10 +49,17 @@ class _FakeConversationRepository implements ConversationRepository {
   _FakeConversationRepository();
 
   @override
+  Future<ConversationMessagePage> fetchMessagesPage({
+    required String conversationId,
+    ConversationMessageCursor? cursor,
+  }) async => const ConversationMessagePage(messages: []);
+
+  @override
   Future<void> sendTextMessage({
     required String conversationId,
     required String senderId,
     required String text,
+    String? messageId,
   }) async {}
 
   @override

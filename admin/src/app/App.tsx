@@ -242,7 +242,7 @@ const navRoleMap: Record<AdminNavId, readonly AdminRoleClaim[]> = {
   organizers: ["admin", "adminOwner", "support"],
   events: ["admin", "adminOwner", "support"],
   users: ["adminOwner", "analyticsViewer"],
-  finance: ["adminOwner", "analyticsViewer"],
+  finance: ["adminOwner", "analyticsViewer", "finance"],
   quality: ["adminOwner"],
   operations: ["admin", "adminOwner", "support"],
   "admin-roles": ["adminOwner"],
@@ -839,8 +839,10 @@ function AdminRouteApp() {
         ) : currentNav === "finance" ? (
           <Suspense fallback={<AdminFeatureLoadingState label="Loading Finance" />}>
             <FinanceOpsScreen
+              adminRoles={adminRoles}
               onBackToList={() => navigate(adminPathForNav("finance"))}
               onError={setError}
+              onNotice={setNotice}
               onSelectIssueId={(issueId) => {
                 navigate(`/finance/issues/${encodeURIComponent(issueId)}`);
               }}

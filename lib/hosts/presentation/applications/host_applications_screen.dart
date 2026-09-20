@@ -405,37 +405,32 @@ class _HostApplicationListFrame extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchSection.divided(
-      first: true,
+    return CatchSection.containedRows(
       children: [
         for (final application in applications)
-          CatchPersonRow.directory(
-            data: CatchPersonRowData(
+          CatchField.navigate(
+            onActivate: () => onOpen(application),
+            content: CatchPersonLayout(
               name: application.applicantDisplayName,
-              seed: application.applicationId,
-            ),
-            meta: Text(
-              hostApplicationContextLabel(
+              supportingText: hostApplicationContextLabel(
                 context,
                 formId: application.formId,
                 targetKind: application.targetKind,
                 targetId: application.targetId,
                 sources: sources,
               ),
-              style: CatchTextStyles.supporting(context),
+              context:
+                  '${_sourceLabel(context, application.sourceKind)} · ${DateFormat.yMMMd().format(application.submittedAt)}',
+              badges: [
+                CatchRowBadge(
+                  label: hostApplicationStatusLabel(
+                    context,
+                    application.reviewStatus,
+                  ),
+                  tone: _applicationStatusTone(application.reviewStatus),
+                ),
+              ],
             ),
-            body: Text(
-              '${_sourceLabel(context, application.sourceKind)} · ${DateFormat.yMMMd().format(application.submittedAt)}',
-              style: CatchTextStyles.recordContext(context),
-            ),
-            trailing: CatchBadge.status(
-              label: hostApplicationStatusLabel(
-                context,
-                application.reviewStatus,
-              ),
-              tone: _applicationStatusTone(application.reviewStatus),
-            ),
-            onTap: () => onOpen(application),
           ),
       ],
     );

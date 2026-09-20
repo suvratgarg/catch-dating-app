@@ -1,0 +1,29 @@
+{
+  "unlinked": {
+    "eventId": "context-event",
+    "subjectUid": "context-guest",
+    "serverTime": 1000,
+    "resolution": {
+      "kind": "unlinked"
+    }
+  },
+  "linked": {
+    "eventId": "context-event",
+    "subjectUid": "context-guest",
+    "serverTime": 1000,
+    "resolution": {
+      "kind": "linked",
+      "organizerId": "context-organizer",
+      "attendeeId": "own",
+      "sourceHash": "bba35b829ff31e257755c98642a4a71c3f18fab007de449cc166798b952b442a"
+    }
+  },
+  "ambiguous": {
+    "eventId": "context-event",
+    "subjectUid": "context-guest",
+    "serverTime": 1000,
+    "resolution": {
+      "kind": "ambiguous"
+    }
+  }
+}

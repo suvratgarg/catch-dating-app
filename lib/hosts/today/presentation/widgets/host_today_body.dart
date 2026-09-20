@@ -19,6 +19,7 @@ class HostTodayBody extends StatelessWidget {
     required this.onRetry,
     required this.onOpenEvent,
     required this.onOpenAttention,
+    required this.onCreateEvent,
     required this.onViewEvents,
     required this.onStartRehearsal,
   });
@@ -29,15 +30,15 @@ class HostTodayBody extends StatelessWidget {
   final VoidCallback onRetry;
   final ValueChanged<Event> onOpenEvent;
   final ValueChanged<HostAttentionItem> onOpenAttention;
+  final VoidCallback onCreateEvent;
   final VoidCallback onViewEvents;
   final VoidCallback onStartRehearsal;
 
   @override
   Widget build(BuildContext context) {
-    return CatchRootScreenScaffold.standard(
+    return CatchRootScreenScaffold.fullBleed(
       scrollKey: const ValueKey<String>('host-today-scroll-view'),
       title: HostTodayHeader(now: now),
-      maxContentExtent: CatchLayout.hostTodayWorkspacePageMaxExtent,
       children: [
         switch (state.status) {
           HostTodayStatus.loading => const SliverToBoxAdapter(
@@ -49,9 +50,12 @@ class HostTodayBody extends StatelessWidget {
             onRetry: onRetry,
           ),
           HostTodayStatus.empty => SliverToBoxAdapter(
-            child: HostTodayQuietState(
-              onViewEvents: onViewEvents,
-              onStartRehearsal: onStartRehearsal,
+            child: CatchSection.content(
+              child: HostTodayQuietState(
+                onCreateEvent: onCreateEvent,
+                onViewEvents: onViewEvents,
+                onStartRehearsal: onStartRehearsal,
+              ),
             ),
           ),
           HostTodayStatus.content => SliverToBoxAdapter(
@@ -99,10 +103,12 @@ class HostTodayHeader extends StatelessWidget {
 class HostTodayQuietState extends StatelessWidget {
   const HostTodayQuietState({
     super.key,
+    required this.onCreateEvent,
     required this.onViewEvents,
     required this.onStartRehearsal,
   });
 
+  final VoidCallback onCreateEvent;
   final VoidCallback onViewEvents;
   final VoidCallback onStartRehearsal;
 
@@ -136,6 +142,13 @@ class HostTodayQuietState extends StatelessWidget {
             spacing: CatchSpacing.s2,
             runSpacing: CatchSpacing.s2,
             children: [
+              CatchButton(
+                key: const ValueKey<String>('host-today-create-event'),
+                label: context.l10n.hostsHostEventsListLabelNewEvent,
+                leading: Icon(CatchIcons.addRounded, size: CatchIcon.sm),
+                size: CatchButtonSize.sm,
+                onPressed: onCreateEvent,
+              ),
               CatchButton(
                 key: const ValueKey<String>('host-today-view-events'),
                 label: context.l10n.hostTodayViewAllEvents,

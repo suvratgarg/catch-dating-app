@@ -1,0 +1,88 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_decide_event_messaging_budget_payload.schema.json",
+  "title": "AdminDecideEventMessagingBudgetCallablePayload",
+  "description": "Finance review decision for proposed event-messaging ceilings. The callable records evidence only and does not create, update, or activate a spending budget.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "requestId",
+    "organizerId",
+    "eventId",
+    "routeId",
+    "senderId",
+    "purpose",
+    "expectedRevision",
+    "expectedRuntimeSourceHash",
+    "expectedSenderReviewHash",
+    "expectedBudgetSourceHash",
+    "decision",
+    "note"
+  ],
+  "properties": {
+    "requestId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "routeId": {"$ref": "../operations/event_messaging_setup_review.schema.json#/definitions/routeId"},
+    "senderId": {"$ref": "../operations/event_messaging_setup_review.schema.json#/definitions/id"},
+    "purpose": {"$ref": "../operations/event_messaging_setup_review.schema.json#/definitions/purpose"},
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "expectedRuntimeSourceHash": {"$ref": "../operations/common.schema.json#/definitions/sha256"},
+    "expectedSenderReviewHash": {"$ref": "../operations/common.schema.json#/definitions/sha256"},
+    "expectedBudgetSourceHash": {"$ref": "../operations/common.schema.json#/definitions/sha256"},
+    "decision": {"$ref": "#/definitions/decision"},
+    "note": {"type": "string", "minLength": 1, "maxLength": 1000}
+  },
+  "definitions": {
+    "decision": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "currency",
+            "eventLimitMicros",
+            "senderDayLimitMicros",
+            "validUntil"
+          ],
+          "properties": {
+            "kind": {"type": "string", "const": "approve"},
+            "currency": {"type": "string", "pattern": "^[A-Z]{3}$"},
+            "eventLimitMicros": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "senderDayLimitMicros": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "validUntil": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind"],
+          "properties": {"kind": {"type": "string", "const": "hold"}}
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind"],
+          "properties": {"kind": {"type": "string", "const": "reject"}}
+        }
+      ]
+    }
+  }
+}

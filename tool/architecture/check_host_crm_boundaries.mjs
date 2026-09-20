@@ -369,12 +369,12 @@ export function audienceWorkspacePresentationFindings({
 
   const createKey = "ValueKey('host-saved-audience-create')";
   const createActionCount = workspaceSource.split(createKey).length - 1;
-  if (!workspaceSource.includes("CatchSection.divided(") ||
-      !workspaceSource.includes("CatchField.nav(")) {
+  if (!/CatchSection\.(?:rows|sliverRows)\s*\(/u.test(workspaceSource) ||
+      !/CatchField\.navigate\s*\(/u.test(workspaceSource)) {
     findings.push({
       path: workspacePath,
       line: 1,
-      reason: "The top-level saved-audience directory must use a divided section with navigation rows.",
+      reason: "The top-level saved-audience directory must use a full-width typed row section with navigation fields.",
     });
   }
   if (createActionCount !== 1) {

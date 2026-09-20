@@ -505,6 +505,13 @@ const schemaEventRehearsalGuestBootstrapCallableResponseSchema = <String, Object
             'ambiguousClaim',
           ],
         },
+        'connectionState': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'connected',
+            'disconnected',
+          ],
+        },
         'guestMoment': <String, Object?>{
           'type': 'string',
           'enum': <Object?>[
@@ -527,6 +534,439 @@ const schemaEventRehearsalGuestBootstrapCallableResponseSchema = <String, Object
         },
         'promptCompleted': <String, Object?>{
           'type': 'boolean',
+        },
+        'assistance': <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'intention',
+            'latestMessageId',
+          ],
+          'properties': <String, Object?>{
+            'intention': <String, Object?>{
+              'anyOf': <Object?>[
+                <String, Object?>{
+                  'type': 'object',
+                  'additionalProperties': false,
+                  'required': <Object?>[
+                    'kind',
+                  ],
+                  'properties': <String, Object?>{
+                    'kind': <String, Object?>{
+                      'type': 'string',
+                      'const': 'unknown',
+                    },
+                  },
+                },
+                <String, Object?>{
+                  'type': 'object',
+                  'additionalProperties': false,
+                  'required': <Object?>[
+                    'kind',
+                    'claimedEta',
+                  ],
+                  'properties': <String, Object?>{
+                    'kind': <String, Object?>{
+                      'type': 'string',
+                      'const': 'onMyWay',
+                    },
+                    'claimedEta': <String, Object?>{
+                      'anyOf': <Object?>[
+                        <String, Object?>{
+                          'type': 'integer',
+                          'minimum': 0,
+                          'maximum': 9007199254740991,
+                          'description': 'UTC milliseconds.',
+                        },
+                        <String, Object?>{
+                          'type': 'null',
+                          'const': null,
+                        },
+                      ],
+                    },
+                  },
+                },
+                <String, Object?>{
+                  'type': 'object',
+                  'additionalProperties': false,
+                  'required': <Object?>[
+                    'kind',
+                    'target',
+                  ],
+                  'properties': <String, Object?>{
+                    'kind': <String, Object?>{
+                      'type': 'string',
+                      'const': 'joinLater',
+                    },
+                    'target': <String, Object?>{
+                      'anyOf': <Object?>[
+                        <String, Object?>{
+                          'type': 'object',
+                          'additionalProperties': false,
+                          'required': <Object?>[
+                            'kind',
+                            'placeId',
+                            'lateEntry',
+                          ],
+                          'properties': <String, Object?>{
+                            'kind': <String, Object?>{
+                              'type': 'string',
+                              'const': 'fixedPlace',
+                            },
+                            'placeId': <String, Object?>{
+                              'type': 'string',
+                              'minLength': 1,
+                              'maxLength': 160,
+                              'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                            },
+                            'lateEntry': <String, Object?>{
+                              'type': 'string',
+                              'enum': <Object?>[
+                                'allowed',
+                                'hostDecision',
+                                'closed',
+                              ],
+                            },
+                          },
+                        },
+                        <String, Object?>{
+                          'type': 'object',
+                          'additionalProperties': false,
+                          'required': <Object?>[
+                            'kind',
+                            'itineraryId',
+                            'stopId',
+                          ],
+                          'properties': <String, Object?>{
+                            'kind': <String, Object?>{
+                              'type': 'string',
+                              'const': 'itineraryStop',
+                            },
+                            'itineraryId': <String, Object?>{
+                              'type': 'string',
+                              'minLength': 1,
+                              'maxLength': 2000,
+                            },
+                            'stopId': <String, Object?>{
+                              'type': 'string',
+                              'minLength': 1,
+                              'maxLength': 2000,
+                            },
+                          },
+                        },
+                        <String, Object?>{
+                          'type': 'object',
+                          'additionalProperties': false,
+                          'required': <Object?>[
+                            'kind',
+                            'routeId',
+                            'groupId',
+                            'checkpointId',
+                          ],
+                          'properties': <String, Object?>{
+                            'kind': <String, Object?>{
+                              'type': 'string',
+                              'const': 'groupCheckpoint',
+                            },
+                            'routeId': <String, Object?>{
+                              'type': 'string',
+                              'minLength': 1,
+                              'maxLength': 2000,
+                            },
+                            'groupId': <String, Object?>{
+                              'type': 'string',
+                              'minLength': 1,
+                              'maxLength': 160,
+                              'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                            },
+                            'checkpointId': <String, Object?>{
+                              'type': 'string',
+                              'minLength': 1,
+                              'maxLength': 2000,
+                            },
+                          },
+                        },
+                      ],
+                    },
+                  },
+                },
+                <String, Object?>{
+                  'type': 'object',
+                  'additionalProperties': false,
+                  'required': <Object?>[
+                    'kind',
+                  ],
+                  'properties': <String, Object?>{
+                    'kind': <String, Object?>{
+                      'type': 'string',
+                      'const': 'notComing',
+                    },
+                  },
+                },
+              ],
+            },
+            'latestMessageId': <String, Object?>{
+              'anyOf': <Object?>[
+                <String, Object?>{
+                  'type': 'string',
+                  'pattern': '^outbox:[a-f0-9]{64}\$',
+                },
+                <String, Object?>{
+                  'type': 'null',
+                },
+              ],
+            },
+          },
+        },
+        'assistanceMessage': <String, Object?>{
+          'anyOf': <Object?>[
+            <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'messageId',
+                'intentId',
+                'intentRevision',
+                'text',
+                'choices',
+                'lifecycle',
+                'expiresAt',
+                'canRespond',
+                'responseChoiceId',
+              ],
+              'properties': <String, Object?>{
+                'messageId': <String, Object?>{
+                  'type': 'string',
+                  'pattern': '^outbox:[a-f0-9]{64}\$',
+                },
+                'intentId': <String, Object?>{
+                  'type': 'string',
+                },
+                'intentRevision': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 1,
+                  'maximum': 9007199254740991,
+                },
+                'text': <String, Object?>{
+                  'type': 'string',
+                  'maxLength': 2000,
+                },
+                'choices': <String, Object?>{
+                  'type': 'array',
+                  'maxItems': 20,
+                  'items': <String, Object?>{
+                    'type': 'object',
+                    'additionalProperties': false,
+                    'required': <Object?>[
+                      'choiceId',
+                      'label',
+                    ],
+                    'properties': <String, Object?>{
+                      'choiceId': <String, Object?>{
+                        'type': 'string',
+                      },
+                      'label': <String, Object?>{
+                        'type': 'string',
+                        'maxLength': 80,
+                      },
+                    },
+                  },
+                },
+                'lifecycle': <String, Object?>{
+                  'type': 'string',
+                  'enum': <Object?>[
+                    'active',
+                    'cancelled',
+                    'superseded',
+                    'responded',
+                  ],
+                },
+                'expiresAt': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 0,
+                  'maximum': 9007199254740991,
+                },
+                'canRespond': <String, Object?>{
+                  'type': 'boolean',
+                },
+                'responseChoiceId': <String, Object?>{
+                  'anyOf': <Object?>[
+                    <String, Object?>{
+                      'type': 'string',
+                    },
+                    <String, Object?>{
+                      'type': 'null',
+                    },
+                  ],
+                },
+              },
+            },
+            <String, Object?>{
+              'type': 'null',
+            },
+          ],
+        },
+        'requiredData': <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'sourceHash',
+            'profileRevision',
+            'requestRevision',
+            'availableFieldIds',
+            'completedFieldIds',
+            'request',
+          ],
+          'properties': <String, Object?>{
+            'sourceHash': <String, Object?>{
+              'type': 'string',
+              'pattern': '^[a-f0-9]{64}\$',
+            },
+            'profileRevision': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 9007199254740991,
+            },
+            'requestRevision': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 9007199254740991,
+            },
+            'availableFieldIds': <String, Object?>{
+              'type': 'array',
+              'uniqueItems': true,
+              'maxItems': 10,
+              'items': <String, Object?>{
+                'type': 'string',
+                'enum': <Object?>[
+                  'displayName',
+                  'gender',
+                  'interestedInGenders',
+                  'relationshipGoal',
+                  'dateOfBirth',
+                  'paceBand',
+                  'skillBand',
+                  'dietaryAndSeatingNotes',
+                  'questionnaireAnswerIds',
+                  'teamName',
+                ],
+              },
+            },
+            'completedFieldIds': <String, Object?>{
+              'type': 'array',
+              'uniqueItems': true,
+              'maxItems': 10,
+              'items': <String, Object?>{
+                'type': 'string',
+                'enum': <Object?>[
+                  'displayName',
+                  'gender',
+                  'interestedInGenders',
+                  'relationshipGoal',
+                  'dateOfBirth',
+                  'paceBand',
+                  'skillBand',
+                  'dietaryAndSeatingNotes',
+                  'questionnaireAnswerIds',
+                  'teamName',
+                ],
+              },
+            },
+            'request': <String, Object?>{
+              'anyOf': <Object?>[
+                <String, Object?>{
+                  'type': 'object',
+                  'additionalProperties': false,
+                  'required': <Object?>[
+                    'revision',
+                    'fieldIds',
+                    'completedFieldIds',
+                    'status',
+                    'requestedAt',
+                    'expiresAt',
+                    'completedAt',
+                  ],
+                  'properties': <String, Object?>{
+                    'revision': <String, Object?>{
+                      'type': 'integer',
+                      'minimum': 1,
+                      'maximum': 9007199254740991,
+                    },
+                    'fieldIds': <String, Object?>{
+                      'type': 'array',
+                      'uniqueItems': true,
+                      'minItems': 1,
+                      'maxItems': 10,
+                      'items': <String, Object?>{
+                        'type': 'string',
+                        'enum': <Object?>[
+                          'displayName',
+                          'gender',
+                          'interestedInGenders',
+                          'relationshipGoal',
+                          'dateOfBirth',
+                          'paceBand',
+                          'skillBand',
+                          'dietaryAndSeatingNotes',
+                          'questionnaireAnswerIds',
+                          'teamName',
+                        ],
+                      },
+                    },
+                    'completedFieldIds': <String, Object?>{
+                      'type': 'array',
+                      'uniqueItems': true,
+                      'maxItems': 10,
+                      'items': <String, Object?>{
+                        'type': 'string',
+                        'enum': <Object?>[
+                          'displayName',
+                          'gender',
+                          'interestedInGenders',
+                          'relationshipGoal',
+                          'dateOfBirth',
+                          'paceBand',
+                          'skillBand',
+                          'dietaryAndSeatingNotes',
+                          'questionnaireAnswerIds',
+                          'teamName',
+                        ],
+                      },
+                    },
+                    'status': <String, Object?>{
+                      'type': 'string',
+                      'enum': <Object?>[
+                        'pending',
+                        'completed',
+                        'expired',
+                      ],
+                    },
+                    'requestedAt': <String, Object?>{
+                      'type': 'integer',
+                      'minimum': 0,
+                      'maximum': 9007199254740991,
+                    },
+                    'expiresAt': <String, Object?>{
+                      'type': 'integer',
+                      'minimum': 0,
+                      'maximum': 9007199254740991,
+                    },
+                    'completedAt': <String, Object?>{
+                      'type': <Object?>[
+                        'integer',
+                        'null',
+                      ],
+                      'minimum': 0,
+                      'maximum': 9007199254740991,
+                    },
+                  },
+                },
+                <String, Object?>{
+                  'type': 'null',
+                },
+              ],
+            },
+          },
         },
       },
     },

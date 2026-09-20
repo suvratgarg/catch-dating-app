@@ -52,12 +52,6 @@ void main() {
       label: '3 km',
       onTap: activate,
     ),
-    'small row press surface': (activate) => CatchRowPressSurface(
-      key: _controlKey,
-      onTap: activate,
-      expandToMaxWidth: false,
-      child: const Text('Go'),
-    ),
     'small button': (activate) => CatchButton(
       key: _controlKey,
       label: 'Go',

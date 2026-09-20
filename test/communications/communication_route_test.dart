@@ -95,4 +95,26 @@ void main() {
       CommunicationAudienceScope.organizerFollowers,
     );
   });
+
+  test(
+    'event-service routes do not inherit marketing or native SMS replies',
+    () {
+      for (final id in [
+        CommunicationRouteId.catchEventSms,
+        CommunicationRouteId.catchEventRcs,
+        CommunicationRouteId.organizerEventWhatsapp,
+      ]) {
+        final route = communicationRouteCapability(id);
+        expect(route.consentScope, CommunicationConsentScope.eventService);
+        expect(route.audienceScope, CommunicationAudienceScope.eventRoster);
+        expect(route.requiresHostFinalSend, isFalse);
+      }
+      expect(
+        communicationRouteCapability(
+          CommunicationRouteId.catchEventSms,
+        ).supportsReplies,
+        isFalse,
+      );
+    },
+  );
 }

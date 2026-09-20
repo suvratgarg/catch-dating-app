@@ -26,7 +26,10 @@ if (args.selfTest) {
 
 const allowedFeatureImports = new Map([
   ["claims", new Set(["marketing", "organizers"])],
-  ["events", new Set(["marketing", "organizers", "reviews"])],
+  ["events", new Set(["marketing", "organizers", "reviews", "eventMessaging"])],
+  // Verified event text preferences are shared by registration and guest runtime.
+  ["eventAssistance", new Set(["eventMessaging"])],
+  ["eventRuntime", new Set(["eventMessaging"])],
   ["home", new Set(["marketing", "organizers", "waitlist"])],
   ["host", new Set(["marketing"])],
   ["organizers", new Set(["claims", "events", "marketing", "reviews"])],

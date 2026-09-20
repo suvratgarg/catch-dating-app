@@ -100,6 +100,15 @@ export const eventRehearsalReproductionCallableResponseSchema: Record<string, un
             ]
           }
         },
+        "unitOutcome": {
+          "type": "string",
+          "enum": [
+            "none",
+            "completion",
+            "score",
+            "rank"
+          ]
+        },
         "movementSimulation": {
           "type": "object",
           "additionalProperties": false,

@@ -28,6 +28,7 @@ import {
 } from "./organizerCampaignModel";
 import {metaWhatsappAppSecret} from "./organizerMessagingSetup";
 import {persistInboundWhatsappMessage} from "./organizerWhatsappThreads";
+import {prepareWhatsappStop} from "../shared/organizerWhatsappStops";
 
 export const metaWhatsappWebhookVerifyToken = defineSecret(
   "META_WHATSAPP_WEBHOOK_VERIFY_TOKEN"
@@ -37,6 +38,10 @@ const webhookRetentionMillis = 30 * 24 * 60 * 60 * 1000;
 interface ParsedWebhookEvent {
   providerEventId: string;
   phoneNumberId: string | null;
+  providerAccountId: string | null;
+  callbackData: string | null;
+  inboundReply: NonNullable<
+    OrganizerMessagingWebhookEventDocument["inboundReply"]> | null;
   eventKind: OrganizerMessagingWebhookEventDocument["eventKind"];
   providerMessageId: string | null;
   contextProviderMessageId: string | null;
@@ -46,6 +51,8 @@ interface ParsedWebhookEvent {
   hasReply: boolean;
   inboundBody: string | null;
   providerErrorCode: number | null;
+  providerErrorEvidence: NonNullable<
+    OrganizerMessagingWebhookEventDocument["providerErrorEvidence"]>;
   providerOccurredAt: FirebaseFirestore.Timestamp | null;
   payloadHash: string;
 }
@@ -63,11 +70,12 @@ export function parseMetaWhatsappWebhook(
   const events: ParsedWebhookEvent[] = [];
   for (const rawEntry of arrayValue(root.entry)) {
     const entry = recordValue(rawEntry);
+    const providerAccountId = providerIdentity(entry.id);
     for (const rawChange of arrayValue(entry.changes)) {
       const change = recordValue(rawChange);
       const value = recordValue(change.value);
       const metadata = recordValue(value.metadata);
-      const phoneNumberId = stringValue(metadata.phone_number_id);
+      const phoneNumberId = providerIdentity(metadata.phone_number_id);
       for (const rawStatus of arrayValue(value.statuses)) {
         const status = recordValue(rawStatus);
         const providerMessageId = stringValue(status.id);
@@ -76,12 +84,16 @@ export function parseMetaWhatsappWebhook(
         );
         if (!providerMessageId || !deliveryStatus) continue;
         const timestamp = timestampValue(status.timestamp);
-        const error = recordValue(arrayValue(status.errors)[0]);
-        const providerErrorCode = numberValue(error.code);
+        const providerErrorEvidence = parseErrorEvidence(status.errors);
+        const providerErrorCode = providerErrorEvidence.kind === "codes" ?
+          providerErrorEvidence.codes[0] : null;
         events.push({
           providerEventId: `status:${providerMessageId}:${deliveryStatus}:` +
             `${timestamp?.toMillis() ?? "unknown"}`,
           phoneNumberId,
+          providerAccountId,
+          callbackData: boundedString(status.biz_opaque_callback_data, 512),
+          inboundReply: null,
           eventKind: "status",
           providerMessageId,
           contextProviderMessageId: null,
@@ -91,6 +103,7 @@ export function parseMetaWhatsappWebhook(
           hasReply: false,
           inboundBody: null,
           providerErrorCode,
+          providerErrorEvidence,
           providerOccurredAt: timestamp,
           payloadHash,
         });
@@ -99,10 +112,15 @@ export function parseMetaWhatsappWebhook(
         const message = recordValue(rawMessage);
         const providerMessageId = stringValue(message.id);
         if (!providerMessageId) continue;
-        const body = stringValue(recordValue(message.text).body) ?? "";
+        const reply = parseNativeReply(message);
+        const body = message.type === "text" ?
+          stringValue(recordValue(message.text).body) ?? "" : "";
         events.push({
           providerEventId: `inbound:${providerMessageId}`,
           phoneNumberId,
+          providerAccountId,
+          callbackData: null,
+          inboundReply: reply,
           eventKind: "inbound",
           providerMessageId,
           contextProviderMessageId:
@@ -111,8 +129,9 @@ export function parseMetaWhatsappWebhook(
           endpointHash: endpointHashFromProviderPhone(message.from),
           isStop: isWhatsappStopCommand(body),
           hasReply: true,
-          inboundBody: body.trim().slice(0, 4096) || null,
+          inboundBody: reply?.label ?? (body.trim().slice(0, 4096) || null),
           providerErrorCode: null,
+          providerErrorEvidence: {kind: "none"},
           providerOccurredAt: timestampValue(message.timestamp),
           payloadHash,
         });
@@ -150,24 +169,39 @@ export async function ingestMetaWhatsappWebhook(params: {
     const snap = await params.db.collection("organizerSenderConnections")
       .where("provider", "==", "metaCloudApi")
       .where("phoneNumberId", "==", event.phoneNumberId)
-      .limit(1).get();
-    connectionByPhone.set(event.phoneNumberId, snap.empty ? null : {
+      .limit(2).get();
+    connectionByPhone.set(event.phoneNumberId, snap.docs.length !== 1 ? null : {
       id: snap.docs[0].id,
       value: snap.docs[0].data() as OrganizerSenderConnectionDocument,
     });
   }
   let inserted = 0;
   for (const event of parsed) {
-    const connection = event.phoneNumberId ?
+    const candidate = event.phoneNumberId ?
       connectionByPhone.get(event.phoneNumberId) ?? null : null;
+    const connection = candidate && event.providerAccountId !== null &&
+      candidate.value.wabaId === event.providerAccountId ? candidate : null;
     const eventId = `omwe_${sha256(event.providerEventId).slice(0, 48)}`;
     const receiptRef = params.db.collection("organizerCampaignWebhookReceipts")
       .doc(eventId);
     const queueRef = params.db.collection("organizerMessagingWebhookEvents")
       .doc(eventId);
-    await params.db.runTransaction(async (tx) => {
+    const created = await params.db.runTransaction(async (tx) => {
       const receipt = await tx.get(receiptRef);
-      if (receipt.exists) return;
+      if (receipt.exists) return false;
+      const commitStop = connection && event.eventKind === "inbound" &&
+        event.isStop && event.endpointHash && event.providerAccountId &&
+        event.phoneNumberId ? await prepareWhatsappStop(params.db, tx, {
+          organizerId: connection.value.organizerId,
+          connectionId: connection.id, endpointHash: event.endpointHash,
+          providerAccountId: event.providerAccountId,
+          providerPhoneNumberId: event.phoneNumberId,
+          providerEventId: event.providerEventId,
+          payloadHash: event.payloadHash,
+          occurredAt: event.providerOccurredAt?.toMillis() ?? null,
+          now: now.toMillis(),
+        }) : null;
+      commitStop?.();
       tx.create(receiptRef, {
         provider: "metaCloudApi",
         providerEventId: event.providerEventId,
@@ -186,12 +220,17 @@ export async function ingestMetaWhatsappWebhook(params: {
         eventKind: connection ? event.eventKind : "unmatched",
         providerMessageId: event.providerMessageId,
         contextProviderMessageId: event.contextProviderMessageId,
+        providerAccountId: event.providerAccountId,
+        providerPhoneNumberId: event.phoneNumberId,
+        callbackData: event.callbackData,
+        inboundReply: event.inboundReply,
         deliveryStatus: event.deliveryStatus,
         endpointHash: event.endpointHash,
         isStop: event.isStop,
         hasReply: event.hasReply,
         inboundBody: event.inboundBody,
         providerErrorCode: event.providerErrorCode,
+        providerErrorEvidence: event.providerErrorEvidence,
         providerOccurredAt: event.providerOccurredAt,
         processingStatus: "pending",
         attemptCount: 0,
@@ -199,8 +238,9 @@ export async function ingestMetaWhatsappWebhook(params: {
         processedAt: null,
         expiresAt,
       });
-      inserted += 1;
+      return true;
     });
+    if (created) inserted += 1;
   }
   return inserted;
 }
@@ -479,6 +519,40 @@ function normalizeDeliveryStatus(
     value as OrganizerMessagingWebhookEventDocument["deliveryStatus"] : null;
 }
 
+function parseNativeReply(message: Record<string, unknown>):
+  NonNullable<OrganizerMessagingWebhookEventDocument["inboundReply"]> | null {
+  if (message.type === "button") {
+    const button = recordValue(message.button);
+    const payload = boundedString(button.payload, 1024);
+    const label = boundedString(button.text, 1024);
+    return payload && label ? {kind: "templateQuickReply", payload, label} :
+      null;
+  }
+  if (message.type !== "interactive") return null;
+  const interactive = recordValue(message.interactive);
+  if (interactive.type !== "button_reply" &&
+      interactive.type !== "list_reply") return null;
+  const selected = recordValue(interactive[interactive.type]);
+  const id = boundedString(selected.id, 1024);
+  const label = boundedString(selected.title, 1024);
+  if (!id || !label) return null;
+  return interactive.type === "button_reply" ?
+    {kind: "replyButton", id, label} :
+    {kind: "listReply", id, label,
+      description: boundedString(selected.description, 4096)};
+}
+
+/** Identity and correlation are never truncated or normalized into a match. */
+function boundedString(value: unknown, maximum: number): string | null {
+  return typeof value === "string" && value.length > 0 &&
+    value.length <= maximum ? value : null;
+}
+
+function providerIdentity(value: unknown): string | null {
+  return typeof value === "string" && /^[0-9]{1,32}$/.test(value) ?
+    value : null;
+}
+
 function endpointHashFromProviderPhone(value: unknown): string | null {
   const raw = stringValue(value)?.replace(/[^0-9]/g, "");
   return raw && /^[1-9][0-9]{7,14}$/.test(raw) ? hashEndpoint(`+${raw}`) : null;
@@ -504,8 +578,21 @@ function stringValue(value: unknown): string | null {
   return typeof value === "string" && value.length > 0 ? value : null;
 }
 
-function numberValue(value: unknown): number | null {
-  return typeof value === "number" && Number.isInteger(value) ? value : null;
+function parseErrorEvidence(value: unknown):
+  ParsedWebhookEvent["providerErrorEvidence"] {
+  if (value === undefined) return {kind: "none"};
+  // Ten is our storage/processing bound, not a claimed provider maximum.
+  // Never truncate a list or discard an invalid entry into apparent success.
+  if (!Array.isArray(value) || value.length > 10) return {kind: "unusable"};
+  if (value.length === 0) return {kind: "none"};
+  const codes: number[] = [];
+  for (const entry of value) {
+    const code = recordValue(entry).code;
+    if (typeof code !== "number" || !Number.isSafeInteger(code) ||
+        code < 0 || code > 999999999) return {kind: "unusable"};
+    codes.push(code);
+  }
+  return {kind: "codes", codes};
 }
 
 function sha256(value: crypto.BinaryLike): string {

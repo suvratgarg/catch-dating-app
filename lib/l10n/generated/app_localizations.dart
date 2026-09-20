@@ -3728,12 +3728,6 @@ abstract class AppLocalizations {
   /// **'prospective attendees'**
   String get hostsHostInboxScreenTitleProspectiveAttendees;
 
-  /// Product copy used by lib/hosts/presentation/inbox/host_inbox_screen.dart (message).
-  ///
-  /// In en, this message translates to:
-  /// **'Personal questions appear here. Broadcast audience size is based on the event roster, not this thread list.'**
-  String get hostsHostInboxScreenMessagePersonalQuestionsAppearHere;
-
   /// Product copy used by lib/hosts/presentation/payments/host_payment_account_card.dart (title).
   ///
   /// In en, this message translates to:
@@ -6395,12 +6389,6 @@ abstract class AppLocalizations {
   /// **'No general inquiries'**
   String get hostsHostInboxScreenTitleNoGeneralInquiries;
 
-  /// Product copy used by lib/hosts/presentation/inbox/host_inbox_screen.dart (message).
-  ///
-  /// In en, this message translates to:
-  /// **'Questions that are not tied to one event will appear here.'**
-  String get hostsHostInboxScreenMessageQuestionsThatAreNot;
-
   /// Product copy used by lib/hosts/presentation/payments/host_payment_account_card.dart (title).
   ///
   /// In en, this message translates to:
@@ -6870,7 +6858,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/hosts/presentation/inbox/host_inbox_screen.dart (label).
   ///
   /// In en, this message translates to:
-  /// **'BOOKED · {bookedThreadCount}'**
+  /// **'Booked · {bookedThreadCount}'**
   String hostsHostInboxScreenLabelBookedBookedthreadcount({
     required Object bookedThreadCount,
   });
@@ -6878,7 +6866,7 @@ abstract class AppLocalizations {
   /// Product copy used by lib/hosts/presentation/inbox/host_inbox_screen.dart (label).
   ///
   /// In en, this message translates to:
-  /// **'PROSPECTIVE · {prospectiveThreadCount}'**
+  /// **'Prospective · {prospectiveThreadCount}'**
   String hostsHostInboxScreenLabelProspectiveProspectivethreadcount({
     required Object prospectiveThreadCount,
   });
@@ -10144,18 +10132,6 @@ abstract class AppLocalizations {
   /// **'Import CSV or XLSX; ticketing stays on your existing platform.'**
   String get hostsHostEventEntrySheetBodyImportCsvOrXlsx;
 
-  /// Product copy used by lib/hosts/presentation/host_operations/host_events_list.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'LIVE'**
-  String get hostsHostEventsListTextLive;
-
-  /// Product copy used by lib/hosts/presentation/host_operations/host_events_list.dart (Text).
-  ///
-  /// In en, this message translates to:
-  /// **'TODAY'**
-  String get hostsHostEventsListTextToday;
-
   /// Peer view containing live and upcoming events.
   ///
   /// In en, this message translates to:
@@ -10384,12 +10360,6 @@ abstract class AppLocalizations {
   /// **'expected'**
   String get hostsHostTodayLabelGoing;
 
-  /// Checked-in guest count label in the Host Today current-event focus.
-  ///
-  /// In en, this message translates to:
-  /// **'checked in'**
-  String get hostsHostTodayLabelWaiting;
-
   /// Open task count label in the Host Today current-event focus.
   ///
   /// In en, this message translates to:
@@ -10431,6 +10401,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Open live controls'**
   String get hostTodayAttentionOpenLive;
+
+  /// Body for the event-level aggregate of open practical guest-help cases on Host Today.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{One guest needs help at {eventName}.} other{{count} guests need help at {eventName}.}}'**
+  String hostTodayAttentionHelpBody({
+    required int count,
+    required Object eventName,
+  });
+
+  /// Body for the event-level aggregate of message deliveries that need a host decision on Host Today.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{One guest update needs delivery review for {eventName}.} other{{count} guest updates need delivery review for {eventName}.}}'**
+  String hostTodayAttentionDeliveryBody({
+    required int count,
+    required Object eventName,
+  });
 
   /// Body for an ordinary event waitlist task on Host Today.
   ///
@@ -21218,12 +21206,6 @@ abstract class AppLocalizations {
   /// **'WhatsApp Business · Organizer number'**
   String get hostInboxWhatsappChannel;
 
-  /// Explicit channel/sender prefix for a Catch inquiry row.
-  ///
-  /// In en, this message translates to:
-  /// **'Catch chat · Organizer · {details}'**
-  String hostInboxCatchChatPreview({required String details});
-
   /// Delivery disclosure in the event announcement composer.
   ///
   /// In en, this message translates to:
@@ -27513,12 +27495,6 @@ abstract class AppLocalizations {
     required int count,
   });
 
-  /// Summary view for every form submission.
-  ///
-  /// In en, this message translates to:
-  /// **'All responses'**
-  String get hostAudienceAllResponses;
-
   /// Response directory without a form filter.
   ///
   /// In en, this message translates to:
@@ -28061,6 +28037,3379 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{field, select, givenName{First name} familyName{Last name} displayName{Full name} dateOfBirth{Date of birth} age{Age} gender{Gender} phoneNumber{Phone number} email{Email} instagramHandle{Instagram} linkedinUrl{LinkedIn} profilePhoto{Profile photo} city{City} heightCm{Height in centimetres} occupation{Occupation} company{Company} education{Education} languages{Languages} relationshipGoal{Relationship goal} interestedInGenders{Gender preference} drinking{Drinking} smoking{Smoking} religion{Religion} workout{Exercise} diet{Diet} children{Children} other{Response only}}'**
   String hostFormPersonFieldName({required String field});
+
+  /// Practice staff configuration copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice team'**
+  String get hostEventRehearsalStaffTitle;
+
+  /// Practice staff configuration copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Try running the event with a lead, pacer or sweep. These are fictional staff, with access only to their assigned groups.'**
+  String get hostEventRehearsalStaffBody;
+
+  /// Practice staff configuration copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Add practice staff'**
+  String get hostEventRehearsalStaffAdd;
+
+  /// Practice staff configuration copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice staff {number}'**
+  String hostEventRehearsalStaffDefaultName({required int number});
+
+  /// Practice staff configuration copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get hostEventRehearsalStaffName;
+
+  /// Practice staff configuration copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Group'**
+  String get hostEventRehearsalStaffGroup;
+
+  /// Practice staff configuration copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Duty'**
+  String get hostEventRehearsalStaffDuty;
+
+  /// Practice staff configuration copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Access ends'**
+  String get hostEventRehearsalStaffExpiry;
+
+  /// Practice staff configuration copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Until {time} on the practice clock'**
+  String hostEventRehearsalStaffUntil({required String time});
+
+  /// Practice staff configuration copy.
+  ///
+  /// In en, this message translates to:
+  /// **'No group duties'**
+  String get hostEventRehearsalStaffNoDuty;
+
+  /// Practice staff configuration copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Former group'**
+  String get hostEventRehearsalStaffFormerGroup;
+
+  /// Practice staff configuration copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit duty'**
+  String get hostEventRehearsalStaffEdit;
+
+  /// Practice staff configuration copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove duty'**
+  String get hostEventRehearsalStaffRemove;
+
+  /// Practice staff configuration copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Save practice staff'**
+  String get hostEventRehearsalStaffSave;
+
+  /// Practice staff configuration copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice team updated'**
+  String get hostEventRehearsalStaffSaved;
+
+  /// Practice staff configuration copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Check this save again'**
+  String get hostEventRehearsalStaffRetry;
+
+  /// Practice staff configuration copy.
+  ///
+  /// In en, this message translates to:
+  /// **'The result is not confirmed yet. Check the same save before making another change.'**
+  String get hostEventRehearsalStaffPending;
+
+  /// Practice staff configuration copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Reload practice team'**
+  String get hostEventRehearsalStaffRefresh;
+
+  /// Practice staff configuration copy.
+  ///
+  /// In en, this message translates to:
+  /// **'This run has changed. Reload the team before editing.'**
+  String get hostEventRehearsalStaffReviewChanged;
+
+  /// Practice staff configuration copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Access ended'**
+  String get hostEventRehearsalStaffExpired;
+
+  /// Practice staff configuration copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff can be added or reassigned while this rehearsal is active. Saved duties can still be removed.'**
+  String get hostEventRehearsalStaffReadOnly;
+
+  /// Practice staff configuration copy.
+  ///
+  /// In en, this message translates to:
+  /// **'End of event'**
+  String get hostEventRehearsalStaffEndOfEvent;
+
+  /// Practice staff configuration copy.
+  ///
+  /// In en, this message translates to:
+  /// **'In {minutes} minutes'**
+  String hostEventRehearsalStaffMinutes({required int minutes});
+
+  /// Group duty label or responsibilities.
+  ///
+  /// In en, this message translates to:
+  /// **'Group lead'**
+  String get eventAssistanceDutyLead;
+
+  /// Group duty label or responsibilities.
+  ///
+  /// In en, this message translates to:
+  /// **'Pacer'**
+  String get eventAssistanceDutyPacer;
+
+  /// Group duty label or responsibilities.
+  ///
+  /// In en, this message translates to:
+  /// **'Sweep'**
+  String get eventAssistanceDutySweep;
+
+  /// Group duty label or responsibilities.
+  ///
+  /// In en, this message translates to:
+  /// **'Lead departures, hand guests over to another group, record checkpoints and account for guests.'**
+  String get eventAssistanceDutyLeadBody;
+
+  /// Group duty label or responsibilities.
+  ///
+  /// In en, this message translates to:
+  /// **'Lead this pace group, hand guests over to another group, record checkpoints and account for guests.'**
+  String get eventAssistanceDutyPacerBody;
+
+  /// Group duty label or responsibilities.
+  ///
+  /// In en, this message translates to:
+  /// **'Record checkpoints and account for guests in this group.'**
+  String get eventAssistanceDutySweepBody;
+
+  /// Shared live and rehearsal visit accountability controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Has this guest returned or left the event? Leave them unmarked if you haven’t confirmed.'**
+  String get eventAssistanceVisitBody;
+
+  /// Shared live and rehearsal visit accountability controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Recorded status'**
+  String get eventAssistanceVisitCurrent;
+
+  /// Shared live and rehearsal visit accountability controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark returned'**
+  String get eventAssistanceVisitMarkReturned;
+
+  /// Shared live and rehearsal visit accountability controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark left the event'**
+  String get eventAssistanceVisitMarkDeparted;
+
+  /// Shared live and rehearsal visit accountability controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave unmarked'**
+  String get eventAssistanceVisitMarkUnresolved;
+
+  /// Shared live and rehearsal visit accountability controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving this observation…'**
+  String get eventAssistanceVisitSaving;
+
+  /// Shared live and rehearsal visit accountability controls.
+  ///
+  /// In en, this message translates to:
+  /// **'The save is not confirmed. Retry the same observation before making another change.'**
+  String get eventAssistanceVisitUnconfirmed;
+
+  /// Shared live and rehearsal visit accountability controls.
+  ///
+  /// In en, this message translates to:
+  /// **'The visit or your access has changed. Reload and review the current status.'**
+  String get eventAssistanceVisitReviewAgain;
+
+  /// Shared live and rehearsal visit accountability controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Save confirmed. The current recorded status is shown above.'**
+  String get eventAssistanceVisitSaved;
+
+  /// Shared live and rehearsal visit accountability controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Your current role cannot update this guest’s visit.'**
+  String get eventAssistanceVisitReadOnly;
+
+  /// Shared live and rehearsal visit accountability controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Awaiting confirmation: {status}'**
+  String eventAssistanceVisitPendingChoice({required String status});
+
+  /// Shared live and rehearsal visit accountability controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry this observation'**
+  String get eventAssistanceVisitRetry;
+
+  /// Shared live and rehearsal visit accountability controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Reload visit'**
+  String get eventAssistanceVisitReload;
+
+  /// Shared live and rehearsal visit accountability controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get eventAssistanceVisitDone;
+
+  /// Shared live and rehearsal visit accountability controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Review visit'**
+  String get eventAssistanceVisitReview;
+
+  /// Shared live and rehearsal visit accountability controls.
+  ///
+  /// In en, this message translates to:
+  /// **'This event does not use a return sweep.'**
+  String get eventAssistanceVisitNotApplicable;
+
+  /// Shared live and rehearsal visit accountability controls.
+  ///
+  /// In en, this message translates to:
+  /// **'This guest is not currently checked in.'**
+  String get eventAssistanceVisitNotCheckedIn;
+
+  /// Shared live and rehearsal visit accountability controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Record the group’s departure before reviewing this checkpoint.'**
+  String get eventAssistanceVisitNoDeparture;
+
+  /// Shared live and rehearsal visit accountability controls.
+  ///
+  /// In en, this message translates to:
+  /// **'This guest was not in the recorded departure group.'**
+  String get eventAssistanceVisitNotOnDeparture;
+
+  /// Shared live and rehearsal visit accountability controls.
+  ///
+  /// In en, this message translates to:
+  /// **'This visit has changed. Close this review and open the guest again.'**
+  String get eventAssistanceVisitChanged;
+
+  /// Shared live and rehearsal visit accountability controls.
+  ///
+  /// In en, this message translates to:
+  /// **'The event setup has changed since this departure.'**
+  String get eventAssistanceVisitSetupChanged;
+
+  /// Shared live and rehearsal visit accountability controls.
+  ///
+  /// In en, this message translates to:
+  /// **'This review is for a different checkpoint.'**
+  String get eventAssistanceVisitDifferentCheckpoint;
+
+  /// Shared live and rehearsal visit accountability controls.
+  ///
+  /// In en, this message translates to:
+  /// **'This departure has no recorded destination.'**
+  String get eventAssistanceVisitNoDestination;
+
+  /// Shared live and rehearsal visit accountability controls.
+  ///
+  /// In en, this message translates to:
+  /// **'The recorded destination is not a checkpoint.'**
+  String get eventAssistanceVisitNotCheckpoint;
+
+  /// Shared live and rehearsal visit accountability controls.
+  ///
+  /// In en, this message translates to:
+  /// **'This practice guest has no recorded visit yet.'**
+  String get eventAssistanceVisitNoVisit;
+
+  /// Rehearsal role and scoped visit review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Assistance role'**
+  String get hostEventRehearsalAssistanceRole;
+
+  /// Rehearsal role and scoped visit review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Practise guest and group help with this person’s permissions. You still control the rehearsal as Host.'**
+  String get hostEventRehearsalAssistanceRoleBody;
+
+  /// Rehearsal role and scoped visit review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Host'**
+  String get hostEventRehearsalHostRole;
+
+  /// Rehearsal role and scoped visit review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Unavailable staff role'**
+  String get hostEventRehearsalUnavailableRole;
+
+  /// Rehearsal role and scoped visit review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Synthetic guests · Assistance as {name}'**
+  String hostEventRehearsalAssistanceAs({required String name});
+
+  /// Rehearsal role and scoped visit review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'This records the event visit. Use the checkpoint report to confirm arrival there.'**
+  String get eventAssistanceVisitCheckpointContext;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Review group'**
+  String get eventAssistanceGroupReview;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage who is responsible for this guest in a pace group.'**
+  String get eventAssistanceGroupBody;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Current group'**
+  String get eventAssistanceGroupCurrent;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'No accepted group'**
+  String get eventAssistanceGroupNone;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'The previous group assignment needs review.'**
+  String get eventAssistanceGroupPrevious;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Assign to a group'**
+  String get eventAssistanceGroupPlace;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Hand over to another group'**
+  String get eventAssistanceGroupPropose;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept into this group'**
+  String get eventAssistanceGroupAccept;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Decline handover'**
+  String get eventAssistanceGroupReject;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel handover'**
+  String get eventAssistanceGroupCancel;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from group'**
+  String get eventAssistanceGroupLeave;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Group'**
+  String get eventAssistanceGroupChoose;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Receiving host'**
+  String get eventAssistanceGroupReceiver;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept by'**
+  String get eventAssistanceGroupDeadline;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'The receiving host must accept before the guest’s group changes. This does not send a message.'**
+  String get eventAssistanceGroupProposeBody;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'You will take responsibility for this guest in the selected group.'**
+  String get eventAssistanceGroupPlaceBody;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'You will take responsibility for this guest in the requested group.'**
+  String get eventAssistanceGroupAcceptBody;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Decline this request without accepting responsibility for the guest.'**
+  String get eventAssistanceGroupRejectBody;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel this handover request.'**
+  String get eventAssistanceGroupCancelBody;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'This removes group responsibility. Their event attendance stays unchanged.'**
+  String get eventAssistanceGroupLeaveBody;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for acceptance into {group}.'**
+  String eventAssistanceGroupPending({required String group});
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'The handover request expired. The group assignment is unchanged.'**
+  String get eventAssistanceGroupExpired;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh the group details before continuing.'**
+  String get eventAssistanceGroupChanged;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'The receiving host accepted the handover.'**
+  String get eventAssistanceGroupClosedAccepted;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'The receiving host declined the handover.'**
+  String get eventAssistanceGroupClosedRejected;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'The handover was cancelled.'**
+  String get eventAssistanceGroupClosedCancelled;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'No group actions are available for this guest under your current access.'**
+  String get eventAssistanceGroupNoActions;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Receiving hosts are unavailable in this review. Refresh the group details to try again.'**
+  String get eventAssistanceGroupNoReceivers;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving this group action…'**
+  String get eventAssistanceGroupSaving;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'This action has not been confirmed. Retry the same action before making another change.'**
+  String get eventAssistanceGroupUnconfirmed;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Group action confirmed.'**
+  String get eventAssistanceGroupSaved;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry this group action'**
+  String get eventAssistanceGroupRetry;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh group details'**
+  String get eventAssistanceGroupRefresh;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm group action'**
+  String get eventAssistanceGroupConfirm;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose another action'**
+  String get eventAssistanceGroupChooseAgain;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'You'**
+  String get eventAssistanceGroupYou;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Organizer host'**
+  String get eventAssistanceGroupUnnamedHost;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous group'**
+  String get eventAssistanceGroupUnknown;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected action: {action}'**
+  String eventAssistanceGroupSelected({required String action});
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Group handovers apply to events with configured pace groups.'**
+  String get eventAssistanceGroupNotApplicable;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Pace groups'**
+  String get eventAssistanceGroupRosterTitle;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Review a guest’s group or hand over responsibility to another host.'**
+  String get eventAssistanceGroupRosterBody;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'No guests are available to review.'**
+  String get eventAssistanceGroupNoGuests;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest'**
+  String get eventAssistanceGroupGuest;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Receiving host: {name}'**
+  String eventAssistanceGroupReceiverValue({required String name});
+
+  /// Explains why unidentified receiving hosts are withheld from the handover selector.
+  ///
+  /// In en, this message translates to:
+  /// **'Some hosts have no name on file and can’t be selected.'**
+  String get eventAssistanceGroupMissingName;
+
+  /// Host departure and checkpoint controls shared by live events and rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Record departure'**
+  String get eventAssistanceDepartureTitle;
+
+  /// Host departure and checkpoint controls shared by live events and rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm after your group starts moving. This updates your confirmed destination; sending guest directions is a separate action.'**
+  String get eventAssistanceDepartureBody;
+
+  /// Host departure and checkpoint controls shared by live events and rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Last confirmed destination'**
+  String get eventAssistanceDepartureCurrent;
+
+  /// Host departure and checkpoint controls shared by live events and rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'No departure recorded yet'**
+  String get eventAssistanceDepartureUnrecorded;
+
+  /// Host departure and checkpoint controls shared by live events and rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'The event setup changed. Review the destination again.'**
+  String get eventAssistanceDepartureSourceChanged;
+
+  /// Host departure and checkpoint controls shared by live events and rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Where are you heading?'**
+  String get eventAssistanceDepartureDestination;
+
+  /// Host departure and checkpoint controls shared by live events and rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Record who is leaving'**
+  String get eventAssistanceDepartureRecordRoster;
+
+  /// Host departure and checkpoint controls shared by live events and rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Select only people you saw leave with this group. Their current check-in and group are checked before saving.'**
+  String get eventAssistanceDepartureRosterBody;
+
+  /// Host departure and checkpoint controls shared by live events and rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} people selected'**
+  String eventAssistanceDepartureSelected({required int count});
+
+  /// Host departure and checkpoint controls shared by live events and rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Find a guest'**
+  String get eventAssistanceDepartureSearch;
+
+  /// Host departure and checkpoint controls shared by live events and rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'No matching guests'**
+  String get eventAssistanceDepartureNoGuests;
+
+  /// Host departure and checkpoint controls shared by live events and rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous people'**
+  String get eventAssistanceDeparturePreviousPeople;
+
+  /// Host departure and checkpoint controls shared by live events and rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Next people'**
+  String get eventAssistanceDepartureNextPeople;
+
+  /// Host departure and checkpoint controls shared by live events and rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'An empty selection records that nobody left with you.'**
+  String get eventAssistanceDepartureNobody;
+
+  /// Host departure and checkpoint controls shared by live events and rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Request a checkpoint report'**
+  String get eventAssistanceDepartureRequestCheckpoint;
+
+  /// Host departure and checkpoint controls shared by live events and rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'I will check this roster at the next stop.'**
+  String get eventAssistanceDepartureReportMyself;
+
+  /// Host departure and checkpoint controls shared by live events and rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Report by'**
+  String get eventAssistanceDepartureDeadline;
+
+  /// Host departure and checkpoint controls shared by live events and rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm departure'**
+  String get eventAssistanceDepartureConfirm;
+
+  /// Host departure and checkpoint controls shared by live events and rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Departure is unavailable. Check that the event is live, a destination is configured, and you have a current group duty.'**
+  String get eventAssistanceDepartureUnavailable;
+
+  /// Host departure and checkpoint controls shared by live events and rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Checking the selected roster…'**
+  String get eventAssistanceDepartureReviewing;
+
+  /// Host departure and checkpoint controls shared by live events and rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Recording departure…'**
+  String get eventAssistanceDepartureSaving;
+
+  /// Host departure and checkpoint controls shared by live events and rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'The result is unconfirmed. Retry to check this same departure.'**
+  String get eventAssistanceDepartureUnknown;
+
+  /// Host departure and checkpoint controls shared by live events and rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'The review changed. Reload before making a new departure decision.'**
+  String get eventAssistanceDepartureChanged;
+
+  /// Host departure and checkpoint controls shared by live events and rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Departure recorded'**
+  String get eventAssistanceDepartureSaved;
+
+  /// Host departure and checkpoint controls shared by live events and rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Departure roster was not recorded'**
+  String get eventAssistanceDepartureRosterSkipped;
+
+  /// Host departure and checkpoint controls shared by live events and rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'You will report by {time}'**
+  String eventAssistanceDepartureReportAt({required String time});
+
+  /// Host departure and checkpoint controls shared by live events and rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry this departure'**
+  String get eventAssistanceDepartureRetry;
+
+  /// Host departure and checkpoint controls shared by live events and rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Reload departure details'**
+  String get eventAssistanceDepartureReload;
+
+  /// Host departure and checkpoint controls shared by live events and rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolve the original group action before recording another departure.'**
+  String get eventAssistanceDepartureOtherPending;
+
+  /// Host departure and checkpoint controls shared by live events and rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Group movement'**
+  String get eventAssistanceMovementTitle;
+
+  /// Host departure and checkpoint controls shared by live events and rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Record where your group is heading and who is travelling with you.'**
+  String get eventAssistanceMovementBody;
+
+  /// Host departure and checkpoint controls shared by live events and rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Group'**
+  String get eventAssistanceMovementGroup;
+
+  /// Host departure and checkpoint controls shared by live events and rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Everyone'**
+  String get eventAssistanceMovementEveryone;
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Checkpoint arrivals'**
+  String get eventAssistanceCheckpointTitle;
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'From departure {number}'**
+  String eventAssistanceCheckpointDeparture({required int number});
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Select guests you have seen at this checkpoint. Other guests stay unconfirmed. Event check-in is unchanged.'**
+  String get eventAssistanceCheckpointBody;
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} of {total} guests observed'**
+  String eventAssistanceCheckpointSelected({
+    required int count,
+    required int total,
+  });
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest record unavailable'**
+  String get eventAssistanceCheckpointUnknownGuest;
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Kept in this departure roster. Reload before changing this observation.'**
+  String get eventAssistanceCheckpointUnknownGuestBody;
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'The guest’s event visit changed. Earlier observations remain in this report.'**
+  String get eventAssistanceCheckpointVisitChanged;
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Observed in an earlier report'**
+  String get eventAssistanceCheckpointEarlierObservation;
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Arrival not yet confirmed'**
+  String get eventAssistanceCheckpointNotObserved;
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'This departure explicitly recorded an empty roster. You can save an empty checkpoint report.'**
+  String get eventAssistanceCheckpointEmptyRoster;
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason for correction'**
+  String get eventAssistanceCheckpointCorrection;
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Explain why you are removing an earlier arrival observation.'**
+  String get eventAssistanceCheckpointCorrectionBody;
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'No guest roster was recorded for this departure.'**
+  String get eventAssistanceCheckpointNoRoster;
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'No checkpoint destination was recorded for this departure.'**
+  String get eventAssistanceCheckpointNoDestination;
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'This destination does not have a checkpoint report.'**
+  String get eventAssistanceCheckpointNotApplicable;
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'The event setup changed. This original departure can no longer accept new arrival observations.'**
+  String get eventAssistanceCheckpointSetupChanged;
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving the checkpoint report…'**
+  String get eventAssistanceCheckpointSaving;
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'The save is unconfirmed. Retry this same report to check the result.'**
+  String get eventAssistanceCheckpointUnconfirmed;
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'The report or your access changed. Reload before making a new observation.'**
+  String get eventAssistanceCheckpointChanged;
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Checkpoint report saved. The latest recorded observations are shown above.'**
+  String get eventAssistanceCheckpointSaved;
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'This review does not allow arrival reporting.'**
+  String get eventAssistanceCheckpointReadOnly;
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Save checkpoint report'**
+  String get eventAssistanceCheckpointSave;
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry this report'**
+  String get eventAssistanceCheckpointRetry;
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Reload checkpoint'**
+  String get eventAssistanceCheckpointReload;
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Report requested by {deadline}'**
+  String eventAssistanceCheckpointDue({required String deadline});
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Report overdue · requested by {deadline}'**
+  String eventAssistanceCheckpointOverdue({required String deadline});
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'The saved report still has unconfirmed guests.'**
+  String get eventAssistanceCheckpointDiscrepancy;
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Every guest on this departure roster has an arrival observation.'**
+  String get eventAssistanceCheckpointComplete;
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'This reporting request was closed. Closure does not add arrival observations.'**
+  String get eventAssistanceCheckpointClosedOut;
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Departure rosters & checkpoints'**
+  String get eventAssistanceHistoryTitle;
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Open a recorded departure to review arrivals at its checkpoint. Reports describe that departure, even after the group moves again.'**
+  String get eventAssistanceHistoryBody;
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'No recorded departure rosters on this page.'**
+  String get eventAssistanceHistoryEmpty;
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Destination from an earlier setup'**
+  String get eventAssistanceHistoryEarlierSetup;
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Departure {number} · {date}, {time}'**
+  String eventAssistanceHistoryDepartureAt({
+    required int number,
+    required String date,
+    required String time,
+  });
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} guests recorded as leaving'**
+  String eventAssistanceHistoryRosterSize({required int count});
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Checkpoint report not yet recorded'**
+  String get eventAssistanceHistoryNoReport;
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Last report: {count} of {total} guests observed'**
+  String eventAssistanceHistoryObserved({
+    required int count,
+    required int total,
+  });
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'No checkpoint report for this destination'**
+  String get eventAssistanceHistoryNoCheckpoint;
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Earlier departures'**
+  String get eventAssistanceHistoryEarlier;
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Newer departures'**
+  String get eventAssistanceHistoryNewer;
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Reload history'**
+  String get eventAssistanceHistoryReload;
+
+  /// Checkpoint roster selection state before saving.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected for this report'**
+  String get eventAssistanceCheckpointSelectedObservation;
+
+  /// Checkpoint roster selection state before saving.
+  ///
+  /// In en, this message translates to:
+  /// **'Removing an earlier observation'**
+  String get eventAssistanceCheckpointRemovingObservation;
+
+  /// Title for a saved checkpoint reporting request.
+  ///
+  /// In en, this message translates to:
+  /// **'Checkpoint request'**
+  String get eventAssistanceCheckpointRequestTitle;
+
+  /// Opens checkpoint request closeout and reporter controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Review checkpoint request'**
+  String get eventAssistanceCheckpointRequestManage;
+
+  /// Explains which guest outcomes must be recorded before closeout.
+  ///
+  /// In en, this message translates to:
+  /// **'Close this request after every unconfirmed guest has a recorded outcome. Arrival observations stay unchanged.'**
+  String get eventAssistanceCheckpointRequestBody;
+
+  /// Empty state when the departure has no reporting request.
+  ///
+  /// In en, this message translates to:
+  /// **'No checkpoint report was requested for this departure.'**
+  String get eventAssistanceCheckpointRequestMissing;
+
+  /// Prompts a fresh review when closeout eligibility is unknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Reload to check whether this request can be closed.'**
+  String get eventAssistanceCheckpointRequestUnknown;
+
+  /// Indicates that all missing guests have a recorded disposition.
+  ///
+  /// In en, this message translates to:
+  /// **'All unconfirmed guests have been recorded as returned or departed.'**
+  String get eventAssistanceCheckpointRequestReady;
+
+  /// Explains the prerequisite arrival report for closeout.
+  ///
+  /// In en, this message translates to:
+  /// **'Save an arrival report before reviewing closeout.'**
+  String get eventAssistanceCheckpointRequestReportFirst;
+
+  /// Explains why unresolved guest dispositions prevent closeout.
+  ///
+  /// In en, this message translates to:
+  /// **'Some unconfirmed guests still need an outcome. Review their visit status before closing this request.'**
+  String get eventAssistanceCheckpointRequestResolveFirst;
+
+  /// Label for the host reason accompanying a checkpoint decision.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason for this decision'**
+  String get eventAssistanceCheckpointRequestReason;
+
+  /// Explicit action to close a reviewed checkpoint request.
+  ///
+  /// In en, this message translates to:
+  /// **'Close checkpoint request'**
+  String get eventAssistanceCheckpointRequestClose;
+
+  /// Explicit action to reopen a checkpoint request.
+  ///
+  /// In en, this message translates to:
+  /// **'Reopen checkpoint request'**
+  String get eventAssistanceCheckpointRequestReopen;
+
+  /// Explains who may close or reopen a reporting request.
+  ///
+  /// In en, this message translates to:
+  /// **'Only an organizer or the responsible reporter with current group access can close or reopen this request.'**
+  String get eventAssistanceCheckpointRequestAuthority;
+
+  /// Progress label while a checkpoint decision is being saved.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving your checkpoint decision…'**
+  String get eventAssistanceCheckpointRequestSaving;
+
+  /// Explains recovery when a checkpoint save outcome is unknown.
+  ///
+  /// In en, this message translates to:
+  /// **'The outcome is not confirmed. Retry this same decision to check its result.'**
+  String get eventAssistanceCheckpointRequestUnconfirmed;
+
+  /// Confirms the saved decision while displaying current request state.
+  ///
+  /// In en, this message translates to:
+  /// **'Your decision was saved. The latest request status is shown above.'**
+  String get eventAssistanceCheckpointRequestSaved;
+
+  /// Opens the eligible reporter selection.
+  ///
+  /// In en, this message translates to:
+  /// **'Change responsible reporter'**
+  String get eventAssistanceCheckpointRequestReassign;
+
+  /// Retries the exact unresolved checkpoint decision.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry checkpoint decision'**
+  String get eventAssistanceCheckpointRequestRetry;
+
+  /// Section of original departure guests without a checkpoint arrival observation.
+  ///
+  /// In en, this message translates to:
+  /// **'Arrival still unconfirmed'**
+  String get eventAssistanceCheckpointVisitsTitle;
+
+  /// Explains the atomic visit outcome action available from checkpoint management.
+  ///
+  /// In en, this message translates to:
+  /// **'Review a guest to record whether they returned or left the event.'**
+  String get eventAssistanceCheckpointVisitsBody;
+
+  /// Legacy checkpoint projection omits visit outcome evidence.
+  ///
+  /// In en, this message translates to:
+  /// **'Visit outcome is unavailable. Reload to review.'**
+  String get eventAssistanceCheckpointVisitUnknown;
+
+  /// Outcome before the selected departure cannot resolve its request.
+  ///
+  /// In en, this message translates to:
+  /// **'The recorded outcome predates this departure. Review their status again.'**
+  String get eventAssistanceCheckpointVisitBeforeDeparture;
+
+  /// Reopens the exact unconfirmed original departure visit decision.
+  ///
+  /// In en, this message translates to:
+  /// **'Review guest status'**
+  String get eventAssistanceCheckpointVisitReview;
+
+  /// Explains required reporter access and the unchanged deadline.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose someone with access to this group through the original reporting deadline. The deadline stays the same.'**
+  String get eventAssistanceCheckpointReporterBody;
+
+  /// Label for the checkpoint reporter selection.
+  ///
+  /// In en, this message translates to:
+  /// **'Reporter'**
+  String get eventAssistanceCheckpointReporterLabel;
+
+  /// Explains when no eligible replacement reporter is available.
+  ///
+  /// In en, this message translates to:
+  /// **'No other eligible reporter is available. Review group duties before changing this request.'**
+  String get eventAssistanceCheckpointReporterEmpty;
+
+  /// Explains why unnamed eligible hosts cannot be selected.
+  ///
+  /// In en, this message translates to:
+  /// **'Some eligible hosts have no display name. Add their name before selecting them.'**
+  String get eventAssistanceCheckpointReporterUnnamed;
+
+  /// Fallback when current reporter details are unavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Reporter details unavailable'**
+  String get eventAssistanceCheckpointReporterUnknown;
+
+  /// Shows the current responsible reporter by display name.
+  ///
+  /// In en, this message translates to:
+  /// **'Responsible reporter: {name}'**
+  String eventAssistanceCheckpointReporterCurrent({required String name});
+
+  /// Dismisses a reporter change without saving.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel reporter change'**
+  String get eventAssistanceCheckpointReporterCancel;
+
+  /// Submits a reviewed reporter reassignment.
+  ///
+  /// In en, this message translates to:
+  /// **'Save reporter change'**
+  String get eventAssistanceCheckpointReporterSave;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest help'**
+  String get eventAssistanceHelpTitle;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'Review practical requests and decide who will follow up.'**
+  String get eventAssistanceHelpBody;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get eventAssistanceHelpOpen;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'Handled'**
+  String get eventAssistanceHelpHandled;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'No open requests on this page.'**
+  String get eventAssistanceHelpEmptyOpen;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'No handled requests on this page.'**
+  String get eventAssistanceHelpEmptyHandled;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'Review requests'**
+  String get eventAssistanceHelpReview;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'This is one page of requests. Reload to check for updates.'**
+  String get eventAssistanceHelpPageBody;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous page'**
+  String get eventAssistanceHelpPrevious;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'Next page'**
+  String get eventAssistanceHelpNext;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'Reload requests'**
+  String get eventAssistanceHelpReload;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest details unavailable'**
+  String get eventAssistanceHelpUnknownGuest;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'Event logistics'**
+  String get eventAssistanceHelpLogistics;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'Accessibility help'**
+  String get eventAssistanceHelpAccessibility;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'Other practical help'**
+  String get eventAssistanceHelpOther;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'No host assigned'**
+  String get eventAssistanceHelpUnassigned;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'Assigned host details unavailable'**
+  String get eventAssistanceHelpUnknownHost;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs a new host'**
+  String get eventAssistanceHelpOwnerRemoved;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolved'**
+  String get eventAssistanceHelpResolved;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'Declined'**
+  String get eventAssistanceHelpDeclined;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'The guest record has changed. This request is read-only.'**
+  String get eventAssistanceHelpSourceChanged;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'This older request needs a source review before it can be handled.'**
+  String get eventAssistanceHelpLegacy;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'I’ll handle this'**
+  String get eventAssistanceHelpTake;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'Assign to a host'**
+  String get eventAssistanceHelpTransfer;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark resolved'**
+  String get eventAssistanceHelpResolve;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'Decline request'**
+  String get eventAssistanceHelpDecline;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'Record yourself as responsible for following up with this guest.'**
+  String get eventAssistanceHelpTakeBody;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose an existing host to follow up with this guest.'**
+  String get eventAssistanceHelpTransferBody;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm that this guest’s request has been handled.'**
+  String get eventAssistanceHelpResolveBody;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'Record that this request cannot be fulfilled.'**
+  String get eventAssistanceHelpDeclineBody;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'Responsible host'**
+  String get eventAssistanceHelpHost;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'Reload to review available hosts.'**
+  String get eventAssistanceHelpNoHosts;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'Hosts need a distinct display name to appear here.'**
+  String get eventAssistanceHelpUnnamedHosts;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'Save decision'**
+  String get eventAssistanceHelpConfirm;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose another action'**
+  String get eventAssistanceHelpChooseAgain;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving this decision…'**
+  String get eventAssistanceHelpSaving;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'The save has not been confirmed. Retry the same decision to find out whether it was saved.'**
+  String get eventAssistanceHelpUnconfirmed;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'The request or your access changed. Reload before making a new decision.'**
+  String get eventAssistanceHelpChanged;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'Decision saved.'**
+  String get eventAssistanceHelpSaved;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirmation needed'**
+  String get eventAssistanceHelpPending;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'Review this earlier decision to confirm its outcome.'**
+  String get eventAssistanceHelpPendingBody;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'This request is no longer on the current page. Reload the queue to review its latest state.'**
+  String get eventAssistanceHelpMissing;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'Some older practice help flags do not have a reviewable request.'**
+  String get eventAssistanceHelpPracticeUnknown;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch to the host role to handle practical help requests.'**
+  String get eventAssistanceHelpPracticeHost;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'Responsible: {name}'**
+  String eventAssistanceHelpAssigned({required String name});
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'Requested {date} at {time}'**
+  String eventAssistanceHelpReceived({
+    required String date,
+    required String time,
+  });
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'Decision: {action}'**
+  String eventAssistanceHelpSelected({required String action});
+
+  /// A help request is visible but the current role cannot handle it.
+  ///
+  /// In en, this message translates to:
+  /// **'Review only'**
+  String get eventAssistanceHelpReadOnly;
+
+  /// Retry the same uncertain help decision.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry this decision'**
+  String get eventAssistanceHelpRetry;
+
+  /// The host chosen for this help decision.
+  ///
+  /// In en, this message translates to:
+  /// **'Assign to {name}'**
+  String eventAssistanceHelpTransferValue({required String name});
+
+  /// Host delivery review: StatusNotSubmitted
+  ///
+  /// In en, this message translates to:
+  /// **'Not yet sent'**
+  String get eventAssistanceDeliveryStatusNotSubmitted;
+
+  /// Host delivery review: StatusReserved
+  ///
+  /// In en, this message translates to:
+  /// **'Preparing to send'**
+  String get eventAssistanceDeliveryStatusReserved;
+
+  /// Host delivery review: StatusUnknown
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery unconfirmed'**
+  String get eventAssistanceDeliveryStatusUnknown;
+
+  /// Host delivery review: StatusAccepted
+  ///
+  /// In en, this message translates to:
+  /// **'Accepted by provider'**
+  String get eventAssistanceDeliveryStatusAccepted;
+
+  /// Host delivery review: StatusDelivered
+  ///
+  /// In en, this message translates to:
+  /// **'Delivered'**
+  String get eventAssistanceDeliveryStatusDelivered;
+
+  /// Host delivery review: StatusRead
+  ///
+  /// In en, this message translates to:
+  /// **'Read'**
+  String get eventAssistanceDeliveryStatusRead;
+
+  /// Host delivery review: StatusFailed
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery failed'**
+  String get eventAssistanceDeliveryStatusFailed;
+
+  /// Host delivery review: StatusNotDispatched
+  ///
+  /// In en, this message translates to:
+  /// **'Not sent'**
+  String get eventAssistanceDeliveryStatusNotDispatched;
+
+  /// Host delivery review: StatusRevoked
+  ///
+  /// In en, this message translates to:
+  /// **'Message revoked'**
+  String get eventAssistanceDeliveryStatusRevoked;
+
+  /// Host delivery review: StatusConflictingEvidence
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery reports disagree'**
+  String get eventAssistanceDeliveryStatusConflictingEvidence;
+
+  /// Host delivery review: PurposeJoiningUpdate
+  ///
+  /// In en, this message translates to:
+  /// **'Joining update'**
+  String get eventAssistanceDeliveryPurposeJoiningUpdate;
+
+  /// Host delivery review: PurposeJoiningInstructions
+  ///
+  /// In en, this message translates to:
+  /// **'Joining instructions'**
+  String get eventAssistanceDeliveryPurposeJoiningInstructions;
+
+  /// Host delivery review: PurposePlanChanged
+  ///
+  /// In en, this message translates to:
+  /// **'Plan changed'**
+  String get eventAssistanceDeliveryPurposePlanChanged;
+
+  /// Host delivery review: PurposeGuestRequirement
+  ///
+  /// In en, this message translates to:
+  /// **'Guest requirement'**
+  String get eventAssistanceDeliveryPurposeGuestRequirement;
+
+  /// Host delivery review: PurposeAssignmentChanged
+  ///
+  /// In en, this message translates to:
+  /// **'Assignment changed'**
+  String get eventAssistanceDeliveryPurposeAssignmentChanged;
+
+  /// Host delivery review: PurposeParticipationCheck
+  ///
+  /// In en, this message translates to:
+  /// **'Participation check'**
+  String get eventAssistanceDeliveryPurposeParticipationCheck;
+
+  /// Host delivery review: PurposeEventCancelled
+  ///
+  /// In en, this message translates to:
+  /// **'Event cancelled'**
+  String get eventAssistanceDeliveryPurposeEventCancelled;
+
+  /// Host delivery review: PurposeEventFinished
+  ///
+  /// In en, this message translates to:
+  /// **'Event finished'**
+  String get eventAssistanceDeliveryPurposeEventFinished;
+
+  /// Host delivery review: PurposeFollowUp
+  ///
+  /// In en, this message translates to:
+  /// **'Follow-up'**
+  String get eventAssistanceDeliveryPurposeFollowUp;
+
+  /// Host delivery review: ReviewReasonNoEligibleRoute
+  ///
+  /// In en, this message translates to:
+  /// **'No messaging channel is available for this guest.'**
+  String get eventAssistanceDeliveryReviewReasonNoEligibleRoute;
+
+  /// Host delivery review: ReviewReasonAttemptLimit
+  ///
+  /// In en, this message translates to:
+  /// **'The automatic attempt limit was reached.'**
+  String get eventAssistanceDeliveryReviewReasonAttemptLimit;
+
+  /// Host delivery review: ReviewReasonPolicyRejected
+  ///
+  /// In en, this message translates to:
+  /// **'The messaging policy needs review.'**
+  String get eventAssistanceDeliveryReviewReasonPolicyRejected;
+
+  /// Host delivery review: ReviewReasonRecipientNeedsReview
+  ///
+  /// In en, this message translates to:
+  /// **'The recipient details need review.'**
+  String get eventAssistanceDeliveryReviewReasonRecipientNeedsReview;
+
+  /// Host delivery review: ReviewReasonProviderOwnsFallback
+  ///
+  /// In en, this message translates to:
+  /// **'The provider is managing fallback. Delivery is still unconfirmed.'**
+  String get eventAssistanceDeliveryReviewReasonProviderOwnsFallback;
+
+  /// Host delivery review: ReviewReasonConflictingDeliveryEvidence
+  ///
+  /// In en, this message translates to:
+  /// **'The provider reports disagree. Check with the guest before following up.'**
+  String get eventAssistanceDeliveryReviewReasonConflictingDeliveryEvidence;
+
+  /// Host delivery review: ReviewReasonProviderPending
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for the provider to confirm delivery.'**
+  String get eventAssistanceDeliveryReviewReasonProviderPending;
+
+  /// Host delivery review: ReviewReasonWorkerUnavailable
+  ///
+  /// In en, this message translates to:
+  /// **'The sending service is unavailable.'**
+  String get eventAssistanceDeliveryReviewReasonWorkerUnavailable;
+
+  /// Host delivery review: ReviewReasonRecoveryLimit
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic recovery reached its limit.'**
+  String get eventAssistanceDeliveryReviewReasonRecoveryLimit;
+
+  /// Host delivery review: ReviewReasonEventFactsStale
+  ///
+  /// In en, this message translates to:
+  /// **'The event details need a fresh review.'**
+  String get eventAssistanceDeliveryReviewReasonEventFactsStale;
+
+  /// Host delivery review: ReviewReasonRouteFactsStale
+  ///
+  /// In en, this message translates to:
+  /// **'The messaging channel needs a fresh review.'**
+  String get eventAssistanceDeliveryReviewReasonRouteFactsStale;
+
+  /// Host delivery review: RetryReasonRetryBackoff
+  ///
+  /// In en, this message translates to:
+  /// **'Another automatic attempt is scheduled.'**
+  String get eventAssistanceDeliveryRetryReasonRetryBackoff;
+
+  /// Host delivery review: RetryReasonEventFactsStale
+  ///
+  /// In en, this message translates to:
+  /// **'The event details need a fresh review.'**
+  String get eventAssistanceDeliveryRetryReasonEventFactsStale;
+
+  /// Host delivery review: RetryReasonRouteFactsStale
+  ///
+  /// In en, this message translates to:
+  /// **'The messaging channel needs a fresh review.'**
+  String get eventAssistanceDeliveryRetryReasonRouteFactsStale;
+
+  /// Host delivery review: RetryReasonWorkerUnavailable
+  ///
+  /// In en, this message translates to:
+  /// **'The sending service is unavailable.'**
+  String get eventAssistanceDeliveryRetryReasonWorkerUnavailable;
+
+  /// Host delivery review: StopReasonDelivered
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery confirmed.'**
+  String get eventAssistanceDeliveryStopReasonDelivered;
+
+  /// Host delivery review: StopReasonResponded
+  ///
+  /// In en, this message translates to:
+  /// **'The guest responded.'**
+  String get eventAssistanceDeliveryStopReasonResponded;
+
+  /// Host delivery review: StopReasonCancelled
+  ///
+  /// In en, this message translates to:
+  /// **'This message was cancelled.'**
+  String get eventAssistanceDeliveryStopReasonCancelled;
+
+  /// Host delivery review: StopReasonSuperseded
+  ///
+  /// In en, this message translates to:
+  /// **'A newer message replaced this one.'**
+  String get eventAssistanceDeliveryStopReasonSuperseded;
+
+  /// Host delivery review: StopReasonExpired
+  ///
+  /// In en, this message translates to:
+  /// **'The response window ended.'**
+  String get eventAssistanceDeliveryStopReasonExpired;
+
+  /// Host delivery review: StopReasonEventClosed
+  ///
+  /// In en, this message translates to:
+  /// **'The event is closed.'**
+  String get eventAssistanceDeliveryStopReasonEventClosed;
+
+  /// Host delivery review: StopReasonPermissionRevoked
+  ///
+  /// In en, this message translates to:
+  /// **'Messaging permission was withdrawn.'**
+  String get eventAssistanceDeliveryStopReasonPermissionRevoked;
+
+  /// Host delivery review: StopReasonGuestPresent
+  ///
+  /// In en, this message translates to:
+  /// **'The guest has checked in.'**
+  String get eventAssistanceDeliveryStopReasonGuestPresent;
+
+  /// Host delivery review: StopReasonGuestDeclined
+  ///
+  /// In en, this message translates to:
+  /// **'The guest is not coming.'**
+  String get eventAssistanceDeliveryStopReasonGuestDeclined;
+
+  /// Host delivery review: StopReasonNotAdmitted
+  ///
+  /// In en, this message translates to:
+  /// **'The guest is not admitted to this event.'**
+  String get eventAssistanceDeliveryStopReasonNotAdmitted;
+
+  /// Host delivery review: StopReasonHostStopped
+  ///
+  /// In en, this message translates to:
+  /// **'A host stopped automatic follow-up.'**
+  String get eventAssistanceDeliveryStopReasonHostStopped;
+
+  /// Host delivery review: StopReasonParticipationInactive
+  ///
+  /// In en, this message translates to:
+  /// **'The guest is no longer participating.'**
+  String get eventAssistanceDeliveryStopReasonParticipationInactive;
+
+  /// Host delivery review: Title
+  ///
+  /// In en, this message translates to:
+  /// **'Message delivery'**
+  String get eventAssistanceDeliveryTitle;
+
+  /// Host delivery review: Body
+  ///
+  /// In en, this message translates to:
+  /// **'Review recorded messages and take over follow-up when a guest needs a host.'**
+  String get eventAssistanceDeliveryBody;
+
+  /// Host delivery review: Review
+  ///
+  /// In en, this message translates to:
+  /// **'Review messages'**
+  String get eventAssistanceDeliveryReview;
+
+  /// Host delivery review: Pending
+  ///
+  /// In en, this message translates to:
+  /// **'Handoff needs confirmation'**
+  String get eventAssistanceDeliveryPending;
+
+  /// Host delivery review: PendingBody
+  ///
+  /// In en, this message translates to:
+  /// **'A handoff may have been saved. Confirm it before making another decision.'**
+  String get eventAssistanceDeliveryPendingBody;
+
+  /// Host delivery review: UnknownGuest
+  ///
+  /// In en, this message translates to:
+  /// **'Guest details unavailable'**
+  String get eventAssistanceDeliveryUnknownGuest;
+
+  /// Host delivery review: PageBody
+  ///
+  /// In en, this message translates to:
+  /// **'These are the messages on this page. Other pages may contain more.'**
+  String get eventAssistanceDeliveryPageBody;
+
+  /// Host delivery review: PracticeBody
+  ///
+  /// In en, this message translates to:
+  /// **'Current messages for practice guests. Earlier messages may have been replaced.'**
+  String get eventAssistanceDeliveryPracticeBody;
+
+  /// Host delivery review: Empty
+  ///
+  /// In en, this message translates to:
+  /// **'No messages on this page.'**
+  String get eventAssistanceDeliveryEmpty;
+
+  /// Host delivery review: Missing
+  ///
+  /// In en, this message translates to:
+  /// **'This message is not on the current page. Reload the list to review its latest details.'**
+  String get eventAssistanceDeliveryMissing;
+
+  /// Host delivery review: Reload
+  ///
+  /// In en, this message translates to:
+  /// **'Reload messages'**
+  String get eventAssistanceDeliveryReload;
+
+  /// Host delivery review: Previous
+  ///
+  /// In en, this message translates to:
+  /// **'Previous page'**
+  String get eventAssistanceDeliveryPrevious;
+
+  /// Host delivery review: Next
+  ///
+  /// In en, this message translates to:
+  /// **'Next page'**
+  String get eventAssistanceDeliveryNext;
+
+  /// Host delivery review: TakeOver
+  ///
+  /// In en, this message translates to:
+  /// **'I’ll handle follow-up'**
+  String get eventAssistanceDeliveryTakeOver;
+
+  /// Host delivery review: TakeOverBody
+  ///
+  /// In en, this message translates to:
+  /// **'You’ll take responsibility for following up with this guest. Future automatic attempts for this message will stop. A send already in progress may still arrive.'**
+  String get eventAssistanceDeliveryTakeOverBody;
+
+  /// Host delivery review: Retry
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm this handoff'**
+  String get eventAssistanceDeliveryRetry;
+
+  /// Host delivery review: RetryBody
+  ///
+  /// In en, this message translates to:
+  /// **'Confirmation was interrupted. Checking the same handoff will not send another message.'**
+  String get eventAssistanceDeliveryRetryBody;
+
+  /// Host delivery review: Saved
+  ///
+  /// In en, this message translates to:
+  /// **'Handoff confirmed'**
+  String get eventAssistanceDeliverySaved;
+
+  /// Host delivery review: SavedBody
+  ///
+  /// In en, this message translates to:
+  /// **'Your handoff was recorded. Delivery reports, guest replies and host responsibility can still change.'**
+  String get eventAssistanceDeliverySavedBody;
+
+  /// Host delivery review: Refresh
+  ///
+  /// In en, this message translates to:
+  /// **'Review the latest message before taking over.'**
+  String get eventAssistanceDeliveryRefresh;
+
+  /// Host delivery review: SourceChanged
+  ///
+  /// In en, this message translates to:
+  /// **'The original guest record changed. Guest details and actions are unavailable.'**
+  String get eventAssistanceDeliverySourceChanged;
+
+  /// Host delivery review: Automatic
+  ///
+  /// In en, this message translates to:
+  /// **'No host has taken over'**
+  String get eventAssistanceDeliveryAutomatic;
+
+  /// Host delivery review: Mine
+  ///
+  /// In en, this message translates to:
+  /// **'You’re handling follow-up'**
+  String get eventAssistanceDeliveryMine;
+
+  /// Host delivery review: AnotherHost
+  ///
+  /// In en, this message translates to:
+  /// **'Another host is handling follow-up'**
+  String get eventAssistanceDeliveryAnotherHost;
+
+  /// Host delivery review: RevokedOwner
+  ///
+  /// In en, this message translates to:
+  /// **'The previous host no longer has access'**
+  String get eventAssistanceDeliveryRevokedOwner;
+
+  /// Host delivery review: Evidence
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery status'**
+  String get eventAssistanceDeliveryEvidence;
+
+  /// Host delivery review: Coordination
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic follow-up'**
+  String get eventAssistanceDeliveryCoordination;
+
+  /// Host delivery review: Handling
+  ///
+  /// In en, this message translates to:
+  /// **'Host responsibility'**
+  String get eventAssistanceDeliveryHandling;
+
+  /// Host delivery review: Attempts
+  ///
+  /// In en, this message translates to:
+  /// **'Channel history'**
+  String get eventAssistanceDeliveryAttempts;
+
+  /// Host delivery review: Untracked
+  ///
+  /// In en, this message translates to:
+  /// **'No automatic follow-up schedule is recorded.'**
+  String get eventAssistanceDeliveryUntracked;
+
+  /// Host delivery review: Queued
+  ///
+  /// In en, this message translates to:
+  /// **'A follow-up check is queued.'**
+  String get eventAssistanceDeliveryQueued;
+
+  /// Host delivery review: AwaitingReceipt
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for delivery confirmation.'**
+  String get eventAssistanceDeliveryAwaitingReceipt;
+
+  /// Host delivery review: AcceptedBody
+  ///
+  /// In en, this message translates to:
+  /// **'The provider accepted this message. Delivery has not been confirmed.'**
+  String get eventAssistanceDeliveryAcceptedBody;
+
+  /// Host delivery review: UnknownBody
+  ///
+  /// In en, this message translates to:
+  /// **'The message may have arrived. Delivery has not been confirmed.'**
+  String get eventAssistanceDeliveryUnknownBody;
+
+  /// Host delivery review: RevokedBody
+  ///
+  /// In en, this message translates to:
+  /// **'The provider revoked this message. That does not prove the guest never received it.'**
+  String get eventAssistanceDeliveryRevokedBody;
+
+  /// Host delivery review: Done
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get eventAssistanceDeliveryDone;
+
+  /// Host delivery review: PracticeHost
+  ///
+  /// In en, this message translates to:
+  /// **'Switch to Host to take responsibility for follow-up.'**
+  String get eventAssistanceDeliveryPracticeHost;
+
+  /// Host delivery review: eventAssistanceDeliveryManualStopped
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic attempts are stopped for this message.'**
+  String get eventAssistanceDeliveryManualStopped;
+
+  /// Host delivery review: eventAssistanceDeliveryPracticeSending
+  ///
+  /// In en, this message translates to:
+  /// **'Message sending is simulated in this rehearsal.'**
+  String get eventAssistanceDeliveryPracticeSending;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Late arrival help'**
+  String get eventAssistanceLateJoinTitle;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose how guests can catch up when they miss the start or the group moves on.'**
+  String get eventAssistanceLateJoinBody;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'How should Catch help?'**
+  String get eventAssistanceLateJoinMode;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Use event rules'**
+  String get eventAssistanceLateJoinInherit;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Off'**
+  String get eventAssistanceLateJoinOff;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Monitor only'**
+  String get eventAssistanceLateJoinObserve;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Prepare for review'**
+  String get eventAssistanceLateJoinPrepare;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Send automatically'**
+  String get eventAssistanceLateJoinAutomatic;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Follow the event’s rules. Saving removes this group’s override.'**
+  String get eventAssistanceLateJoinInheritBody;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn off future late arrival help. Customized rules are kept for later.'**
+  String get eventAssistanceLateJoinOffBody;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow Catch to identify joining needs without preparing or sending messages.'**
+  String get eventAssistanceLateJoinObserveBody;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow Catch to prepare guidance for a host to review.'**
+  String get eventAssistanceLateJoinPrepareBody;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow Catch to send joining updates within the rules below.'**
+  String get eventAssistanceLateJoinAutomaticBody;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving rules does not turn on messaging. Sender setup and guest permission are also required.'**
+  String get eventAssistanceLateJoinDeliveryRequired;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Not configured'**
+  String get eventAssistanceLateJoinUnconfigured;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Rules saved'**
+  String get eventAssistanceLateJoinConfigured;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Turned off'**
+  String get eventAssistanceLateJoinDisabled;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Event setup changed. Review these rules.'**
+  String get eventAssistanceLateJoinSourceChanged;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Applies to the whole event'**
+  String get eventAssistanceLateJoinEventOrigin;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Uses the event’s rules'**
+  String get eventAssistanceLateJoinInheritedOrigin;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Overrides event rules for this group'**
+  String get eventAssistanceLateJoinGroupOrigin;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Customize rules'**
+  String get eventAssistanceLateJoinCustomize;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore suggested rules'**
+  String get eventAssistanceLateJoinRestore;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Where can guests join?'**
+  String get eventAssistanceLateJoinWhere;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Follow confirmed group progress'**
+  String get eventAssistanceLateJoinConfirmed;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Use the group’s latest confirmed destination. A scheduled stop alone does not move the group.'**
+  String get eventAssistanceLateJoinConfirmedBody;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Itinerary stops'**
+  String get eventAssistanceLateJoinItinerary;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Route checkpoints'**
+  String get eventAssistanceLateJoinCheckpoints;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Allowed joining points'**
+  String get eventAssistanceLateJoinPoints;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Late entry at this place'**
+  String get eventAssistanceLateJoinEntry;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Allowed'**
+  String get eventAssistanceLateJoinEntryAllowed;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Host decides'**
+  String get eventAssistanceLateJoinEntryHost;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed'**
+  String get eventAssistanceLateJoinEntryClosed;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Joining window'**
+  String get eventAssistanceLateJoinWindow;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Until the event ends'**
+  String get eventAssistanceLateJoinEventEnd;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a cutoff'**
+  String get eventAssistanceLateJoinCustomTime;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Joining cutoff'**
+  String get eventAssistanceLateJoinCutoff;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Updates per guest'**
+  String get eventAssistanceLateJoinMaximum;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'The maximum while a guest is trying to join. Zero keeps guidance available without sending updates.'**
+  String get eventAssistanceLateJoinMaximumBody;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimum minutes between updates'**
+  String get eventAssistanceLateJoinGap;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Send another update only when joining guidance changes, after this minimum gap.'**
+  String get eventAssistanceLateJoinGapBody;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'If a guest doesn’t reply'**
+  String get eventAssistanceLateJoinUnanswered;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep arrival unknown'**
+  String get eventAssistanceLateJoinKeepUnknown;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask a host to review'**
+  String get eventAssistanceLateJoinHostReview;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'No response never marks someone absent. Host review also needs a response deadline in messaging setup.'**
+  String get eventAssistanceLateJoinUnansweredBody;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Reload to get current joining options. You can still turn help off.'**
+  String get eventAssistanceLateJoinSetupUnknown;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'No suggested rules are available. Reload to try again.'**
+  String get eventAssistanceLateJoinMissingRules;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Some joining points are no longer in this event. Choose from the updated list.'**
+  String get eventAssistanceLateJoinDestinationChanged;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a time after now and no later than the event ends.'**
+  String get eventAssistanceLateJoinInvalidCutoff;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Save rules'**
+  String get eventAssistanceLateJoinSave;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get eventAssistanceLateJoinDone;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Reload rules'**
+  String get eventAssistanceLateJoinReload;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Check save result'**
+  String get eventAssistanceLateJoinRetry;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'The save result is unknown. Check the original save before making another change.'**
+  String get eventAssistanceLateJoinRetryBody;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'These rules need a fresh review before another save.'**
+  String get eventAssistanceLateJoinRefreshBody;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Your current saved rules are shown below.'**
+  String get eventAssistanceLateJoinSavedBody;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Decrease limit'**
+  String get eventAssistanceLateJoinDecrease;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Increase limit'**
+  String get eventAssistanceLateJoinIncrease;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Rules for'**
+  String get eventAssistanceLateJoinChooseScope;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Whole event'**
+  String get eventAssistanceLateJoinEveryone;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'A save needs confirmation'**
+  String get eventAssistanceLateJoinPending;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Set joining guidance, message limits and group overrides.'**
+  String get eventAssistanceLateJoinEntryBody;
+
+  /// Host late arrival settings navigation.
+  ///
+  /// In en, this message translates to:
+  /// **'Assistance settings'**
+  String get eventAssistanceLateJoinSettings;
+
+  /// Host late arrival settings navigation.
+  ///
+  /// In en, this message translates to:
+  /// **'Group overrides'**
+  String get eventAssistanceLateJoinGroupOverrides;
+
+  /// Host late arrival settings navigation.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous group'**
+  String get eventAssistanceLateJoinPreviousGroup;
+
+  /// Concise summary of reviewed late arrival rules.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide customization'**
+  String get eventAssistanceLateJoinHideRules;
+
+  /// Concise summary of reviewed late arrival rules.
+  ///
+  /// In en, this message translates to:
+  /// **'Joining points: {places}'**
+  String eventAssistanceLateJoinDestinationSummary({required String places});
+
+  /// Concise summary of reviewed late arrival rules.
+  ///
+  /// In en, this message translates to:
+  /// **'Joining until {time}'**
+  String eventAssistanceLateJoinCutoffSummary({required String time});
+
+  /// Concise summary of reviewed late arrival rules.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No message updates} =1{Up to 1 update per guest} other{Up to {count} updates per guest}}'**
+  String eventAssistanceLateJoinLimitSummary({required int count});
+
+  /// Concise summary of reviewed late arrival rules.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes, plural, =0{No minimum gap} =1{At least 1 minute between updates} other{At least {minutes} minutes between updates}}'**
+  String eventAssistanceLateJoinGapSummary({required int minutes});
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic guest updates'**
+  String get eventAssistanceRuntimeTitle;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose messaging channels, fallback order and when updates stop.'**
+  String get eventAssistanceRuntimeEntryBody;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Use these channels for late-arrival help. Each guest still needs permission for that channel, and delivery depends on sender setup and available budget.'**
+  String get eventAssistanceRuntimeBody;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Not configured'**
+  String get eventAssistanceRuntimeUnconfigured;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Paused'**
+  String get eventAssistanceRuntimePaused;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Event changed — review settings'**
+  String get eventAssistanceRuntimeChanged;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Update window ended'**
+  String get eventAssistanceRuntimeExpired;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Event closed'**
+  String get eventAssistanceRuntimeClosed;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Configured for this event'**
+  String get eventAssistanceRuntimeConfigured;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings saved. This does not confirm enrollment or message delivery. Check guest help and delivery status during the event.'**
+  String get eventAssistanceRuntimeSaved;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Automation paused. Messages already accepted by a messaging provider may still arrive.'**
+  String get eventAssistanceRuntimePauseSaved;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm your previous update'**
+  String get eventAssistanceRuntimePending;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'We did not receive a confirmed result. Retry the same update before making another change.'**
+  String get eventAssistanceRuntimeRetryBody;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Reload the current event and sender setup before changing these settings.'**
+  String get eventAssistanceRuntimeReloadBody;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Messaging order'**
+  String get eventAssistanceRuntimeChannels;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Try the first eligible channel. Fallback uses a later channel only when the delivery rules permit another attempt.'**
+  String get eventAssistanceRuntimeChannelBody;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'First choice'**
+  String get eventAssistanceRuntimeFirst;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'First fallback'**
+  String get eventAssistanceRuntimeSecond;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Second fallback'**
+  String get eventAssistanceRuntimeThird;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'No channel'**
+  String get eventAssistanceRuntimeNone;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'SMS'**
+  String get eventAssistanceRuntimeSms;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'RCS'**
+  String get eventAssistanceRuntimeRcs;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp'**
+  String get eventAssistanceRuntimeWhatsapp;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'The saved sender is unavailable. Choose a reviewed sender to save a new configuration.'**
+  String get eventAssistanceRuntimeSenderMissing;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'No eligible sender is available in these choices. Load more if available, or finish sender setup before configuring updates.'**
+  String get eventAssistanceRuntimeNoSenders;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Sender setup required'**
+  String get eventAssistanceRuntimeNeedsSetup;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Sender approval expired'**
+  String get eventAssistanceRuntimeApprovalExpired;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Joining message approval required'**
+  String get eventAssistanceRuntimeTemplateMissing;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'More SMS senders'**
+  String get eventAssistanceRuntimeMoreSms;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'More RCS senders'**
+  String get eventAssistanceRuntimeMoreRcs;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'More WhatsApp senders'**
+  String get eventAssistanceRuntimeMoreWhatsapp;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Customize timing and retries'**
+  String get eventAssistanceRuntimeCustomize;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide timing and retries'**
+  String get eventAssistanceRuntimeHide;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop updates at'**
+  String get eventAssistanceRuntimeUntil;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Use event end'**
+  String get eventAssistanceRuntimeUseEventEnd;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Review unanswered guests at'**
+  String get eventAssistanceRuntimeDeadline;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'No response deadline'**
+  String get eventAssistanceRuntimeNoDeadline;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Set a response deadline'**
+  String get eventAssistanceRuntimeSetDeadline;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'A deadline can surface unanswered guests for host review when your late-arrival rules call for it. It never marks them absent.'**
+  String get eventAssistanceRuntimeDeadlineBody;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Attempts per update'**
+  String get eventAssistanceRuntimeAttempts;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum attempts across all selected channels for one guest update.'**
+  String get eventAssistanceRuntimeAttemptsBody;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Attempts per channel'**
+  String get eventAssistanceRuntimePerChannel;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Seconds between retries'**
+  String get eventAssistanceRuntimeGap;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Wait this long before another permitted delivery attempt.'**
+  String get eventAssistanceRuntimeGapBody;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause automatic updates'**
+  String get eventAssistanceRuntimePause;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Save update settings'**
+  String get eventAssistanceRuntimeSave;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose at least one messaging channel.'**
+  String get eventAssistanceRuntimeIssueChannels;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a future stop time within this event.'**
+  String get eventAssistanceRuntimeIssueExpiry;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a future response deadline at or before the stop time.'**
+  String get eventAssistanceRuntimeIssueDeadline;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Existing later-joining choices are preserved when you change these settings.'**
+  String get eventAssistanceRuntimeRetainedChoices;
+
+  /// Pending event automation save status.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving settings'**
+  String get eventAssistanceRuntimeSaving;
+
+  /// Rehearsal event-wide update settings copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose how to deliver practice updates. After saving, choose a late-arrival rule for everyone or a group.'**
+  String get hostEventRehearsalUpdatesBody;
+
+  /// Rehearsal event-wide update settings copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose simulated channels, fallback and delivery outcomes.'**
+  String get hostEventRehearsalUpdatesEntry;
+
+  /// Rehearsal event-wide update settings copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Channels are simulated; no real messages are sent. Fallback follows the same delivery rules as a live event.'**
+  String get hostEventRehearsalUpdatesChannels;
+
+  /// Rehearsal event-wide update settings copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice delivery outcomes'**
+  String get hostEventRehearsalUpdatesScript;
+
+  /// Rehearsal event-wide update settings copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Each guest uses this sequence for their delivery attempts. An uncertain attempt waits for reconciliation; it does not trigger fallback. After the sequence ends, further attempts wait for review.'**
+  String get hostEventRehearsalUpdatesScriptBody;
+
+  /// Rehearsal event-wide update settings copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Attempt {number}'**
+  String hostEventRehearsalUpdatesAttempt({required int number});
+
+  /// Rehearsal event-wide update settings copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Already used in this run'**
+  String get hostEventRehearsalUpdatesUsed;
+
+  /// Rehearsal event-wide update settings copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Add an outcome'**
+  String get hostEventRehearsalUpdatesAddOutcome;
+
+  /// Rehearsal event-wide update settings copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove last outcome'**
+  String get hostEventRehearsalUpdatesRemoveOutcome;
+
+  /// Rehearsal event-wide update settings copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Review the channels, response deadline and practice outcomes before saving. Outcomes already used and saved joining choices must still match this run.'**
+  String get hostEventRehearsalUpdatesIssue;
+
+  /// Rehearsal event-wide update settings copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved. The settings shown below are the current settings for this rehearsal.'**
+  String get hostEventRehearsalUpdatesSaved;
+
+  /// Rehearsal event-wide update settings copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Delivered'**
+  String get hostEventRehearsalUpdatesDelivered;
+
+  /// Rehearsal event-wide update settings copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Read by guest'**
+  String get hostEventRehearsalUpdatesRead;
+
+  /// Rehearsal event-wide update settings copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Accepted, delivery pending'**
+  String get hostEventRehearsalUpdatesAccepted;
+
+  /// Rehearsal event-wide update settings copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Message revoked'**
+  String get hostEventRehearsalUpdatesRevoked;
+
+  /// Rehearsal event-wide update settings copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Technical failure'**
+  String get hostEventRehearsalUpdatesTechnical;
+
+  /// Rehearsal event-wide update settings copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Blocked by channel policy'**
+  String get hostEventRehearsalUpdatesPolicy;
+
+  /// Rehearsal event-wide update settings copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest opted out'**
+  String get hostEventRehearsalUpdatesSuppressed;
+
+  /// Rehearsal event-wide update settings copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid recipient'**
+  String get hostEventRehearsalUpdatesInvalidRecipient;
+
+  /// Rehearsal event-wide update settings copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown: request timed out'**
+  String get hostEventRehearsalUpdatesTimeout;
+
+  /// Rehearsal event-wide update settings copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown: connection lost'**
+  String get hostEventRehearsalUpdatesConnectionLost;
+
+  /// Rehearsal event-wide update settings copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown: delivery interrupted'**
+  String get hostEventRehearsalUpdatesInterrupted;
+
+  /// Consumer event message permission review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Event messages'**
+  String get eventMessagesTitle;
+
+  /// Consumer event message permission review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose SMS, WhatsApp and RCS updates for this event.'**
+  String get eventMessagesEntryBody;
+
+  /// Consumer event message permission review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the updates you want for this event. Each channel is optional and has its own permission.'**
+  String get eventMessagesIntro;
+
+  /// Consumer event message permission review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'SMS'**
+  String get eventMessagesSms;
+
+  /// Consumer event message permission review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp'**
+  String get eventMessagesWhatsapp;
+
+  /// Consumer event message permission review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'RCS'**
+  String get eventMessagesRcs;
+
+  /// Consumer event message permission review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Permission not given'**
+  String get eventMessagesNotSet;
+
+  /// Consumer event message permission review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Messages are on'**
+  String get eventMessagesEnabled;
+
+  /// Consumer event message permission review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Messages are off'**
+  String get eventMessagesDisabled;
+
+  /// Consumer event message permission review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Permission has expired'**
+  String get eventMessagesExpired;
+
+  /// Consumer event message permission review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone ending in {digits}'**
+  String eventMessagesPhoneEnding({required String digits});
+
+  /// Consumer event message permission review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Permission expires {date} at {time}'**
+  String eventMessagesUntil({required String date, required String time});
+
+  /// Consumer event message permission review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'This sender is no longer selected for this event. You can turn off an existing permission.'**
+  String get eventMessagesEarlierSender;
+
+  /// Consumer event message permission review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'A matching verified phone is required to allow messages. You can still turn off an existing permission.'**
+  String get eventMessagesVerifyPhone;
+
+  /// Consumer event message permission review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'You need a confirmed place at this event to allow messages.'**
+  String get eventMessagesNotAdmitted;
+
+  /// Consumer event message permission review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'This event is closed for new message permissions.'**
+  String get eventMessagesEventClosed;
+
+  /// Consumer event message permission review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'This sender is not available for new permissions right now.'**
+  String get eventMessagesSenderUnavailable;
+
+  /// Consumer event message permission review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'This RCS sender cannot accept a new permission right now.'**
+  String get eventMessagesSubscriptionUnavailable;
+
+  /// Consumer event message permission review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving your choice…'**
+  String get eventMessagesSaving;
+
+  /// Consumer event message permission review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'We could not confirm your choice. Retry to check the same request.'**
+  String get eventMessagesUncertain;
+
+  /// Consumer event message permission review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Reload the current permission before making another change.'**
+  String get eventMessagesReviewChanged;
+
+  /// Consumer event message permission review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Your choice is saved.'**
+  String get eventMessagesSaved;
+
+  /// Consumer event message permission review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Your permission changed elsewhere. The current choice is shown.'**
+  String get eventMessagesChanged;
+
+  /// Consumer event message permission review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow {channel} updates'**
+  String eventMessagesAllow({required String channel});
+
+  /// Consumer event message permission review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn off {channel} updates'**
+  String eventMessagesTurnOff({required String channel});
+
+  /// Consumer event message permission review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Check my previous choice'**
+  String get eventMessagesRetry;
+
+  /// Consumer event message permission review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Reload'**
+  String get eventMessagesRefresh;
+
+  /// Consumer event message permission review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Checking availability…'**
+  String get eventMessagesLoading;
+
+  /// Consumer event message permission review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'No message option is available for this event.'**
+  String get eventMessagesUnavailable;
+
+  /// Consumer event message permission review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load your permission'**
+  String get eventMessagesLoadFailed;
+
+  /// Consumer event message permission review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm your previous choice'**
+  String get eventMessagesPending;
+
+  /// Consumer event message permission review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'View current event sender'**
+  String get eventMessagesCurrentSender;
+
+  /// Consumer event message permission review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Review other senders'**
+  String get eventMessagesOtherSenders;
+
+  /// Consumer event message permission review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous permission'**
+  String get eventMessagesPreviousPermission;
+
+  /// Consumer event message permission review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Next permission'**
+  String get eventMessagesNextPermission;
+
+  /// Consumer event message permission review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Find more permissions'**
+  String get eventMessagesMorePermissions;
+
+  /// Consumer event message permission review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account is not linked to a guest record for this event yet. Ask the host for help, then reload.'**
+  String get eventMessagesUnlinked;
+
+  /// Consumer event message permission review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'More than one guest record is linked to your account. Ask the host to resolve the duplicate, then reload.'**
+  String get eventMessagesAmbiguous;
+
+  /// Lower bound for known tasks when some attention sources are incomplete.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}+'**
+  String hostTodayTaskCountPartial({required int count});
+
+  /// Explains incomplete attention coverage.
+  ///
+  /// In en, this message translates to:
+  /// **'Some tasks may be missing'**
+  String get hostTodayTaskCoverageIncomplete;
+
+  /// Event day label only for an event this evening.
+  ///
+  /// In en, this message translates to:
+  /// **'Tonight'**
+  String get hostTodayTonight;
+
+  /// Featured event currently running.
+  ///
+  /// In en, this message translates to:
+  /// **'Live now'**
+  String get hostTodayLiveNow;
+
+  /// Imminent featured event countdown.
+  ///
+  /// In en, this message translates to:
+  /// **'Starts in {minutes} min'**
+  String hostTodayStartsInMinutes({required int minutes});
+
+  /// Featured event countdown later today.
+  ///
+  /// In en, this message translates to:
+  /// **'Starts in {hours}h {minutes}m'**
+  String hostTodayStartsInHours({required int hours, required int minutes});
+
+  /// Featured event start on a later date.
+  ///
+  /// In en, this message translates to:
+  /// **'Starts {date} · {time}'**
+  String hostTodayStartsOn({required String date, required String time});
+
+  /// Actual checked-in attendance, distinct from waitlist.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} checked in'**
+  String hostTodayCheckedIn({required int count});
+
+  /// Person-based Host messaging interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'New message'**
+  String get hostInboxNewMessage;
+
+  /// Person-based Host messaging interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Find a person'**
+  String get hostInboxFindPerson;
+
+  /// Person-based Host messaging interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose someone from People or add a new person.'**
+  String get hostInboxChoosePerson;
+
+  /// Person-based Host messaging interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Add person'**
+  String get hostInboxAddPerson;
+
+  /// Person-based Host messaging interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Reply via'**
+  String get hostInboxReplyVia;
+
+  /// Person-based Host messaging interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch'**
+  String get hostInboxCatchChannel;
+
+  /// Person-based Host messaging interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Some conversations are still loading or unavailable. Available messages are shown.'**
+  String get hostInboxPartialSources;
+
+  /// Person-based Host messaging interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Load more conversations'**
+  String get hostInboxMoreConversations;
+
+  /// Person-based Host messaging interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking status is unavailable for some people. Their conversations are included below.'**
+  String get hostInboxUnclassified;
+
+  /// Person-based Host messaging interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking status unavailable'**
+  String get hostInboxUnknownBooking;
+
+  /// Person-based Host messaging interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'At least {count} unread messages. Some source read counts are unavailable.'**
+  String hostInboxPartialUnread({required int count});
+
+  /// Person-based Host messaging interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'This conversation shows available retained history. Some older messages may be missing.'**
+  String get hostInboxHistoryCoverage;
+
+  /// Person-based Host messaging interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'This source conversation also covers other events. Its messages are shown together because individual messages do not carry event labels.'**
+  String get hostInboxSharedThreadHistory;
+
+  /// Person-based Host messaging interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'This conversation is no longer available in the selected organizer and scope.'**
+  String get hostInboxSelectionUnavailable;
+
+  /// Person-based Host messaging interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'This reply route is unavailable. Choose an available route or review the person’s details.'**
+  String get hostInboxRouteUnavailable;
+
+  /// Person-based Host messaging interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a reply route before writing a message.'**
+  String get hostInboxChooseReplyRoute;
+
+  /// Person-based Host messaging interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Available ways to message'**
+  String get hostInboxAvailableRoutes;
+
+  /// Person-based Host messaging interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Open person details'**
+  String get hostInboxOpenPerson;
+
+  /// Person-based Host messaging interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'No in-app reply route is currently available. Review contact details and messaging permissions on the person’s record.'**
+  String get hostInboxNewMessageUnavailable;
+
+  /// Person-based Host messaging interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Message via {channel}'**
+  String hostInboxMessageVia({required String channel});
+
+  /// Person-based Host messaging interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Booked'**
+  String get hostInboxBookedStatus;
+
+  /// Person-based Host messaging interface copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Prospective'**
+  String get hostInboxProspectiveStatus;
+
+  /// History pagination action for a Catch conversation source.
+  ///
+  /// In en, this message translates to:
+  /// **'Load older Catch messages'**
+  String get hostInboxOlderMessages;
+
+  /// Short label for the WhatsApp reply route and transcript source.
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp'**
+  String get hostInboxWhatsappReplyChannel;
 }
 
 class _AppLocalizationsDelegate

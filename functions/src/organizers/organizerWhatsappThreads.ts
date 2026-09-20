@@ -230,7 +230,8 @@ export async function listOrganizerWhatsappThreadsHandler(
   }
   const nowMillis = deps.now().toMillis();
   const snapshot = await query.limit(limit + 1).get();
-  const retained = snapshot.docs.filter((document) =>
+  const scanned = snapshot.docs.slice(0, limit);
+  const retained = scanned.filter((document) =>
     (document.data() as OrganizerWhatsappThreadDocument)
       .expiresAt.toMillis() > nowMillis
   );
@@ -256,6 +257,7 @@ export async function listOrganizerWhatsappThreadsHandler(
     return {
       threadId: document.id,
       contactId: thread.contactId,
+      linkedUid: verifiedWhatsappContactUid(contact, data.organizerId),
       displayName: contact?.organizerId === data.organizerId ?
         contact.displayNameOverride ?? contact.displayName : "Customer",
       eventIds: thread.eventIds,
@@ -270,11 +272,11 @@ export async function listOrganizerWhatsappThreadsHandler(
       ),
     };
   });
-  const last = selected.at(-1);
+  const last = scanned.at(-1);
   return {
     organizerId: data.organizerId,
     threads,
-    nextCursor: retained.length > limit && last ? encodeCursor({
+    nextCursor: snapshot.docs.length > limit && last ? encodeCursor({
       version: 1,
       lastMessageAtMillis:
         (last.data() as OrganizerWhatsappThreadDocument)
@@ -324,6 +326,7 @@ export async function getOrganizerWhatsappThreadHandler(
     organizerId: data.organizerId,
     threadId: data.threadId,
     contactId: thread.contactId,
+    linkedUid: verifiedWhatsappContactUid(contact, data.organizerId),
     displayName: contact?.organizerId === data.organizerId ?
       contact.displayNameOverride ?? contact.displayName : "Customer",
     lastInboundAtMillis: thread.lastInboundAt.toMillis(),
@@ -791,3 +794,15 @@ export const sendOrganizerWhatsappReply = onCall(
   ),
   (request) => sendOrganizerWhatsappReplyHandler(request)
 );
+
+/** Identity is an explicit CRM assertion, never a name or phone heuristic. */
+export function verifiedWhatsappContactUid(
+  contact: OrganizerContactDocument | undefined,
+  organizerId: string,
+): string | null {
+  return contact?.organizerId === organizerId &&
+      contact.identityState === "verified" &&
+      contact.identityConfidence === "verified" &&
+      !contact.deletedAt && !contact.hiddenAt && !contact.mergedIntoContactId ?
+    contact.linkedUid : null;
+}

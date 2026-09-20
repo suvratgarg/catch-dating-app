@@ -1045,10 +1045,17 @@ class _CaptureConversationRepository implements ConversationRepository {
       '$conversationId-new-message';
 
   @override
+  Future<ConversationMessagePage> fetchMessagesPage({
+    required String conversationId,
+    ConversationMessageCursor? cursor,
+  }) async => const ConversationMessagePage(messages: []);
+
+  @override
   Future<void> sendTextMessage({
     required String conversationId,
     required String senderId,
     required String text,
+    String? messageId,
   }) async {}
 
   @override

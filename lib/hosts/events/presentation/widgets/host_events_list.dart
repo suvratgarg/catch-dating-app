@@ -1,7 +1,6 @@
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_sliver_error_state.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/events/data/event_draft_repository.dart';
@@ -13,7 +12,6 @@ import 'package:catch_dating_app/hosts/events/presentation/host_events_state.dar
 import 'package:catch_dating_app/hosts/events/presentation/host_events_timeline_controller.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_events_view_model.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
-import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -161,14 +159,14 @@ class _HostEventsClubSectionState extends State<HostEventsClubSection>
         controller: _tabs,
         groupKey: const ValueKey('host-events-tabs'),
         options: [
-          CatchOption(
-            value: HostEventsView.upcoming,
-            label: context.l10n.hostEventsUpcomingTab,
-          ),
-          CatchOption(
-            value: HostEventsView.past,
-            label: context.l10n.hostEventsPastTab,
-          ),
+          for (final view in HostEventsView.values)
+            CatchOption(
+              value: view,
+              label: switch (view) {
+                HostEventsView.upcoming => context.l10n.hostEventsUpcomingTab,
+                HostEventsView.past => context.l10n.hostEventsPastTab,
+              },
+            ),
         ],
       ),
       body: CatchRootScreenBody.paged(
@@ -242,7 +240,7 @@ class HostEventsTimelinePage extends StatelessWidget
     final loadingMore = upcoming
         ? state.loadingMoreActive
         : state.loadingMorePast;
-    return CatchRootScreenPageScrollView.standard(
+    return CatchRootScreenPageScrollView.sections(
       scrollKey: PageStorageKey('host-events-$organizerId-${view.name}'),
       children: [
         if (state.status == HostEventsWorkspaceStatus.loading ||
@@ -278,87 +276,82 @@ class HostEventsTimelinePage extends StatelessWidget
                   : null,
             ],
           )
-        else
-          SliverToBoxAdapter(
-            child: CatchSectionList(
-              emptyStateOmitted: true,
-              children: [
-                for (final section in sections)
-                  CatchSection.plain(
-                    key: ValueKey(
-                      'host-events-${section.grouping.name}-${section.key}',
-                    ),
-                    title: section.label(context.l10n),
-                    titleColor: CatchTokens.of(context).ink2,
-                    children: [
-                      for (final row in section.rows)
-                        HostEventLifecycleRow(
-                          key: ValueKey('host-event-row-${row.event.id}'),
-                          data: row,
-                          onPressed: () => onManageEvent(row.event),
-                        ),
-                    ],
-                  ),
-                if (pageError != null)
-                  CatchLocalizedErrorState(
-                    pageError,
-                    context: AppErrorContext.event,
-                    onRetry: onRetryPage,
-                    mode: CatchErrorStateMode.inline,
-                  )
-                else if (hasMore)
-                  Align(
-                    child: CatchButton(
-                      key: ValueKey(
-                        upcoming
-                            ? 'host-events-load-more-active'
-                            : 'host-events-load-more-past',
-                      ),
-                      label: upcoming
-                          ? context.l10n.hostEventsTimelineLoadMoreSchedule
-                          : context.l10n.hostEventsTimelineLoadMoreHistory,
-                      variant: CatchButtonVariant.secondary,
-                      status: (loadingMore)
-                          ? CatchButtonStatus.loading
-                          : CatchButtonStatus.idle,
-                      onPressed: loadingMore ? null : onLoadMore,
-                    ),
-                  ),
-              ],
+        else ...[
+          for (final section in sections) ...[
+            if (section != sections.first)
+              const SliverToBoxAdapter(child: gapH24),
+            CatchSection.sliverRows(
+              key: ValueKey(
+                'host-events-${section.grouping.name}-${section.key}',
+              ),
+              title: section.label(context.l10n),
+              itemCount: section.rows.length,
+              indexForKeyBuilder: (key) {
+                final index = section.rows.indexWhere(
+                  (row) => key == ValueKey('host-event-row-${row.event.id}'),
+                );
+                return index < 0 ? null : index;
+              },
+              itemBuilder: (context, index) {
+                final row = section.rows[index];
+                return CatchField.navigate(
+                  key: ValueKey('host-event-row-${row.event.id}'),
+                  content: hostEventRecordLayout(context, row),
+                  onActivate: () => onManageEvent(row.event),
+                );
+              },
             ),
-          ),
+          ],
+          if (pageError != null)
+            CatchLocalizedSliverErrorState(
+              pageError,
+              context: AppErrorContext.event,
+              onRetry: onRetryPage,
+            )
+          else if (hasMore)
+            CatchPageBody.sliver(
+              child: SliverToBoxAdapter(
+                child: Align(
+                  child: CatchButton(
+                    key: ValueKey(
+                      upcoming
+                          ? 'host-events-load-more-active'
+                          : 'host-events-load-more-past',
+                    ),
+                    label: upcoming
+                        ? context.l10n.hostEventsTimelineLoadMoreSchedule
+                        : context.l10n.hostEventsTimelineLoadMoreHistory,
+                    variant: CatchButtonVariant.secondary,
+                    status: loadingMore
+                        ? CatchButtonStatus.loading
+                        : CatchButtonStatus.idle,
+                    onPressed: loadingMore ? null : onLoadMore,
+                  ),
+                ),
+              ),
+            ),
+        ],
       ],
     );
   }
 }
 
-/// Host lifecycle semantics over the canonical record row. Both tabs use this
-/// adapter; it cannot choose its own padding, typography or interaction shape.
-class HostEventLifecycleRow extends StatelessWidget {
-  const HostEventLifecycleRow({
-    super.key,
-    required this.data,
-    required this.onPressed,
-  });
-
-  final HostEventLifecycleRowData data;
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    final activity = ActivityPalette.resolve(context, data.event.activityKind);
-    return CatchRecordRow(
-      title: data.event.title,
-      icon: activity.glyph,
-      color: activity.accent,
-      facts: data.facts(
-        context.l10n,
-        time: MaterialLocalizations.of(context).formatTimeOfDay(
-          TimeOfDay.fromDateTime(data.event.startTime),
-          alwaysUse24HourFormat: MediaQuery.alwaysUse24HourFormatOf(context),
-        ),
+/// Domain facts only. Field owns activation and Section owns the collection.
+CatchRecordLayout hostEventRecordLayout(
+  BuildContext context,
+  HostEventLifecycleRowData data,
+) {
+  final activity = ActivityPalette.resolve(context, data.event.activityKind);
+  return CatchRecordLayout(
+    title: data.event.title,
+    icon: activity.glyph,
+    color: activity.accent,
+    facts: data.facts(
+      context.l10n,
+      time: MaterialLocalizations.of(context).formatTimeOfDay(
+        TimeOfDay.fromDateTime(data.event.startTime),
+        alwaysUse24HourFormat: MediaQuery.alwaysUse24HourFormatOf(context),
       ),
-      onTap: onPressed,
-    );
-  }
+    ),
+  );
 }

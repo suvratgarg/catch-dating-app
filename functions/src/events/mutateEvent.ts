@@ -12,6 +12,7 @@ import type {
   PaymentDocument,
   OrganizerDocument,
   EventDocument,
+  EventPlanChangeDocument,
   EventConstraints,
   EventFormatSnapshot,
   EventSuccessFormatPrimitives,
@@ -103,6 +104,10 @@ import {
   createRazorpayClient,
   razorpayKeySecret,
 } from "../payments/razorpay";
+import {validateEventPlanChangeDocument} from
+  "../shared/generated/validators/eventPlanChangeDocument";
+import {EVENT_PLAN_CHANGES, eventPlanChangeFields,
+  eventPlanChangeSourceId} from "./planChangeRecords";
 
 interface EventMutationDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -502,6 +507,42 @@ export async function updateEventHandler(
         clubLocationMarketId: organizer.locationMarketId,
       }),
     };
+    const nextEvent = {...event, ...patch};
+    const changedFields = eventPlanChangeFields(event, nextEvent);
+    const occurredAt = deps.nowTimestamp?.() ??
+      admin.firestore.Timestamp.now();
+    if (changedFields.length > 0 &&
+        occurredAt.toMillis() < nextEvent.endTime.toMillis()) {
+      const revision = (event.planChangeRevision ?? 0) + 1;
+      if (revision > 2147483647) {
+        throw new HttpsError(
+          "resource-exhausted",
+          "The event plan change revision limit has been reached."
+        );
+      }
+      const sourceId = eventPlanChangeSourceId(data.eventId, revision);
+      const source: EventPlanChangeDocument = {
+        schemaVersion: 1,
+        sourceId,
+        eventId: data.eventId,
+        organizerId,
+        revision,
+        changedFields,
+        eventTitle: nextEvent.name?.trim() || "Your event",
+        startTime: nextEvent.startTime,
+        endTime: nextEvent.endTime,
+        meetingPoint: nextEvent.meetingLocation.name,
+        itineraryStopCount: nextEvent.itinerary?.length ?? 0,
+        occurredAt,
+        validUntil: nextEvent.endTime,
+        createdBy: hostUserId,
+      };
+      if (!validateEventPlanChangeDocument(source)) {
+        throw new HttpsError("internal", "Invalid event plan change source.");
+      }
+      patch.planChangeRevision = revision;
+      tx.create(db.collection(EVENT_PLAN_CHANGES).doc(sourceId), source);
+    }
     const nextPolicy = patch.eventPolicy ?? event.eventPolicy ?? null;
     if (hasScheduleTimeChange(data.fields)) {
       await replaceClubScheduleInTransaction(tx, db, {

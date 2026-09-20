@@ -1,0 +1,6 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/event_assistance_group_progress_response.schema.json",
+  "title": "EventAssistanceGroupProgressCallableResponse",
+  "$ref": "../shared/event_assistance_progress.schema.json#/definitions/Response"
+}

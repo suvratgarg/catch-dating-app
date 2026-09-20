@@ -537,6 +537,3266 @@ export interface EventPolicyDemandPricingRuleDocument {
   demandStep: number;
 }
 
+export interface EventRcsCallbackReceiptDocument {
+  schemaVersion: 1;
+  callbackId: string;
+  callbackHash: string;
+  processedAt: number;
+  outcome:
+    | {
+        kind: "delivery";
+        messageId: string;
+        attemptId: string;
+        disposition: "applied" | "duplicateOrOlder" | "conflictingEvidence";
+      }
+    | {
+        kind: "reply";
+        messageId: string;
+        attemptId: string;
+        result: "accepted" | "replayed";
+      }
+    | {
+        kind: "ignored";
+        reason:
+          | "subscription"
+          | "unstructured"
+          | "guestPage"
+          | "unknownSuggestion"
+          | "unconfirmedRevocation"
+          | "unrelatedMessage";
+      }
+    | {
+        kind: "rejected";
+        reason:
+          | "unavailable"
+          | "scopeMismatch"
+          | "staleIntent"
+          | "invalidChoice"
+          | "expired"
+          | "alreadyResponded"
+          | "noLongerNeeded"
+          | "factsStale"
+          | "guestStateChanged";
+      };
+}
+
+export interface EventRcsBudgetDocument {
+  schemaVersion: 1;
+  budgetId: string;
+  revision: number;
+  senderId: string;
+  scope:
+    | {
+        kind: "event";
+        context: {
+          mode: "live";
+          organizerId: string;
+          eventId: string;
+        };
+      }
+    | {
+        kind: "senderDay";
+        day: string;
+      };
+  status: "active" | "paused";
+  approvalId: string;
+  currency: string;
+  limitMicros: number;
+  chargedMicros: number;
+  startsAt: number;
+  endsAt: number;
+  updatedAt: number;
+  agentId: string;
+}
+
+export interface EventRcsDispatchDocument {
+  schemaVersion: 1;
+  attemptId: string;
+  messageId: string;
+  context: {
+    mode: "live";
+    organizerId: string;
+    eventId: string;
+  };
+  senderId: string;
+  agentId: string;
+  region: "asia" | "europe" | "us";
+  bindingRevision: number;
+  configHash: string;
+  permissionId: string;
+  permissionRevision: number;
+  permissionHash: string;
+  recipientEndpointId: string;
+  endpointHash: string;
+  capability: {
+    requestId: string;
+    senderId: string;
+    agentId: string;
+    recipientEndpointId: string;
+    configHash: string;
+    permissionHash: string;
+    checkedAt: number;
+    validUntil: number;
+    supportsOpenUrl: boolean;
+  };
+  grantId: string;
+  guestGrantHash: string;
+  payloadHash: string;
+  authorityHash: string;
+  providerMessageId: string;
+  expiresAt: number;
+  createdAt: number;
+  quoteRevision: number;
+  currency: string;
+  maxCostMicros: number;
+  /**
+   * @minItems 2
+   * @maxItems 2
+   */
+  budgetDebits: {
+    budgetId: string;
+    approvalId: string;
+    revisionBefore: number;
+    revisionAfter: number;
+    chargedBeforeMicros: number;
+    chargedAfterMicros: number;
+  }[];
+  attendeeId: string;
+  intentHash: string;
+  attemptScopeHash: string;
+  replyBinding: null | {
+    guestId: string;
+    episodeId: string;
+    guestRevision: number;
+    attendeeGeneration: string;
+    sourceGeneration: string;
+    subjectUid: string;
+    expiresAt: number;
+    /**
+     * @minItems 1
+     * @maxItems 10
+     */
+    choices: {
+      index: number;
+      choiceId: string;
+    }[];
+    recipientBinding?:
+      | {
+          kind: "rosterPhone";
+          subjectUid: string;
+          sourceGeneration: string;
+        }
+      | {
+          kind: "privateVerifiedPhone";
+          subjectUid: string;
+          sourceGeneration: string;
+        };
+  };
+}
+
+export interface EventRcsWithdrawalGrantDocument {
+  schemaVersion: 1;
+  linkId: string;
+  permissionId: string;
+  context: {
+    mode: "live";
+    organizerId: string;
+    eventId: string;
+  };
+  attendeeId: string;
+  attendeeGeneration: string;
+  subjectUid: string;
+  senderId: string;
+  recipientEndpointId: string;
+  guestGrantHash: string;
+  permissionRevisionAtIssue: number;
+  issuedAt: number;
+  expiresAt: number;
+  sourceGeneration: string;
+  agentId: string;
+}
+
+export interface EventRcsSenderDocument {
+  schemaVersion: 1;
+  senderId: string;
+  revision: number;
+  provider: "googleRbm";
+  senderIdentity: "catchPlatform";
+  agentId: string;
+  region: "asia" | "europe" | "us";
+  status: "inactive" | "ready" | "paused";
+  credentialVersion: string;
+  /**
+   * @minItems 1
+   * @maxItems 20
+   */
+  recipientPrefixes: string[];
+  activation: {
+    approvalId: string;
+    approvedAt: number;
+    validUntil: number;
+  };
+  quote: {
+    revision: number;
+    currency: string;
+    maxMicrosPerMessage: number;
+    validUntil: number;
+  };
+  maxQueueSeconds: number;
+  /**
+   * @minItems 1
+   * @maxItems 9
+   */
+  allowedPurposes: (
+    | "joiningUpdate"
+    | "joiningInstructions"
+    | "planChanged"
+    | "guestRequirement"
+    | "assignmentChanged"
+    | "participationCheck"
+    | "eventCancelled"
+    | "eventFinished"
+    | "followUp"
+  )[];
+  displayName: string;
+}
+
+export interface EventRcsPermissionDocument {
+  [k: string]: unknown;
+}
+
+export interface EventRcsConsentReceiptDocument {
+  [k: string]: unknown;
+}
+
+/**
+ * Authenticated RCS subscription observations scoped to a provider agent and recipient endpoint, across events. Stop observations restrict event-service messages; subscribe requests never grant event consent. No automatic retention deletion.
+ */
+export interface EventRcsSubscriptionDocument {
+  schemaVersion: 1;
+  subscriptionId: string;
+  routeId: "catchEventRcs";
+  agentId: string;
+  endpointHash: string;
+  revision: number;
+  lastStop: null | {
+    callbackId: string;
+    observedAt: number;
+  };
+  lastSubscribeRequest: null | {
+    callbackId: string;
+    observedAt: number;
+  };
+  updatedAt: number;
+}
+
+export interface EventAssistanceRcsCallbackDocument {
+  schemaVersion: 1;
+  callbackId: string;
+  evidence: {
+    agentId: string;
+    endpointHash: string;
+    providerEventId: string;
+    eventFamily: "message" | "userEvent" | "serverEvent";
+    providerOccurredAt: string | null;
+    receivedAt: number;
+    receiptKey: string;
+    payloadHash: string;
+    observation:
+      | {
+          kind: "delivery";
+          providerMessageId: string;
+          status: "delivered" | "read";
+        }
+      | {
+          kind: "expiration";
+          providerMessageId: string;
+          revocation: "confirmed" | "unconfirmed";
+        }
+      | {
+          kind: "suggestion";
+          source: "message" | "event";
+          suggestionType: "reply" | "action" | "unspecified";
+          correlation:
+            | {
+                kind: "choice";
+                attemptId: string;
+                choiceIndex: number;
+              }
+            | {
+                kind: "guestPage";
+                attemptId: string;
+              }
+            | {
+                kind: "unrecognized";
+              };
+        }
+      | {
+          kind: "subscription";
+          requested: "subscribe" | "unsubscribe";
+          source: "event" | "keyword";
+        }
+      | {
+          kind: "unstructuredMessage";
+          content: "text" | "location" | "file";
+        };
+  };
+  storedAt: number;
+}
+
+export interface EventAssistanceRcsCallbackIdentityDocument {
+  schemaVersion: 1;
+  receiptKey: string;
+  primaryCallbackId: string;
+  firstStoredAt: number;
+  conflictedAt: number | null;
+}
+
+export interface EventAssistanceDeliveryRepairDocument {
+  receiptId: string;
+  context: {
+    mode: "live";
+    eventId: string;
+    organizerId: string;
+  };
+  messageId: string;
+  intentHash: string;
+  requestHash: string;
+  actorUid: string;
+  operationId: string;
+  messageRevision: number;
+  createdAt: number;
+}
+
+export interface EventAssistanceCaseReceiptDocument {
+  receiptId: string;
+  context: {
+    mode: "live";
+    eventId: string;
+    organizerId: string;
+  };
+  caseId: string;
+  caseBindingHash: string;
+  requestHash: string;
+  revision: number;
+  actorUid: string;
+  outcome: "resolved" | "declined" | "transferred";
+  createdAt: number;
+}
+
+export interface EventAssistanceCheckpointDocument {
+  schemaVersion: 1;
+  reportId: string;
+  context: {
+    mode: "live";
+    eventId: string;
+    organizerId: string;
+  };
+  groupId: string;
+  checkpointId: string;
+  progressRevision: number;
+  rosterId: string;
+  rosterHash: string;
+  revision: number;
+  /**
+   * @maxItems 1000
+   */
+  accountedFor: string[];
+  reportedBy: string;
+  reportedAt: number;
+  correctionReason: string | null;
+  createdAt: number;
+}
+
+export interface EventAssistanceCheckpointReceiptDocument {
+  [k: string]: unknown;
+}
+
+export interface EventAssistanceAccountabilityReceiptDocument {
+  receiptId: string;
+  guestId: string;
+  requestHash: string;
+  sourceGeneration: string;
+  attendeeGeneration: string;
+  checkInHash: string;
+  episodeId: string | null;
+  revision: number;
+  disposition: "returned" | "departed" | "unresolved";
+  createdAt: number;
+  checkpoint?: {
+    checkpointId: string;
+    progressRevision: number;
+    rosterId: string;
+    rosterHash: string;
+  };
+}
+
+export interface EventAssistanceRuntimeConfigDocument {
+  [k: string]: unknown;
+}
+
+export interface EventAssistanceRuntimeConfigReceiptDocument {
+  receiptId: string;
+  runtimeId: string;
+  requestHash: string;
+  sourceGeneration: string;
+  revision: number;
+  createdAt: number;
+}
+
+export interface EventAssistanceMembershipDocument {
+  schemaVersion: 1;
+  membershipId: string;
+  context: {
+    mode: "live";
+    eventId: string;
+    organizerId: string;
+  };
+  attendeeId: string;
+  sourceGeneration: string;
+  attendeeGeneration: string;
+  episodeId: string;
+  revision: number;
+  accepted: {
+    groupId: string;
+    groupSourceHash: string;
+    responsibleOperatorId: string;
+    acceptedAt: number;
+  } | null;
+  transfer:
+    | (
+        | {
+            transferId: string;
+            from: string | null;
+            to: string;
+            targetSourceHash: string;
+            receivingOperatorId: string;
+            requestedBy: string;
+            requestedAt: number;
+            expiresAt: number;
+            status: "pending";
+            resolvedAt: null;
+            resolvedBy: null;
+          }
+        | {
+            transferId: string;
+            from: string | null;
+            to: string;
+            targetSourceHash: string;
+            receivingOperatorId: string;
+            requestedBy: string;
+            requestedAt: number;
+            expiresAt: number;
+            status: "accepted" | "rejected" | "cancelled";
+            resolvedAt: number;
+            resolvedBy: string;
+          }
+      )
+    | null;
+  createdAt: number;
+  updatedAt: number;
+}
+
+export interface EventAssistanceMembershipReceiptDocument {
+  receiptId: string;
+  membershipId: string;
+  sourceGeneration: string;
+  episodeId: string;
+  actorUid: string;
+  requestHash: string;
+  command: {
+    kind: "transferGroup";
+    context:
+      | {
+          mode: "live";
+          eventId: string;
+          organizerId: string;
+        }
+      | {
+          mode: "rehearsal";
+          rehearsalId: string;
+          virtualEventId: string;
+          clockId: string;
+        };
+    eventId: string;
+    operationId: string;
+    payload: {
+      attendeeId: string;
+      episodeId: string;
+      expectedParticipationRevision: number;
+      expectedMembershipRevision: number;
+      decision:
+        | {
+            kind: "place";
+            groupId: string;
+          }
+        | {
+            kind: "propose";
+            from: string | null;
+            to: string;
+            receivingOperatorId: string;
+            expiresAtMillis: number;
+          }
+        | {
+            kind: "accept";
+            transferId: string;
+          }
+        | {
+            kind: "reject";
+            transferId: string;
+          }
+        | {
+            kind: "cancel";
+            transferId: string;
+          }
+        | {
+            kind: "leave";
+          };
+    };
+  };
+  revision: number;
+  createdAt: number;
+}
+
+export interface EventAssistanceStaffReceiptDocument {
+  receiptId: string;
+  staffGrantId: string;
+  sourceHash: string;
+  requestHash: string;
+  revision: number;
+  createdAt: number;
+}
+
+export interface EventAttendanceDispositionDocument {
+  dispositionId: string;
+  context: {
+    mode: "live";
+    eventId: string;
+    organizerId: string;
+  };
+  attendeeId: string;
+  revision: number;
+  binding: {
+    sourceGeneration: string;
+    attendeeGeneration: string;
+    identityHash: string;
+    attendanceHash: string;
+    closureHash: string;
+  };
+  decision:
+    | {
+        kind: "record";
+        evidence:
+          | {
+              kind: "hostConfirmed";
+            }
+          | {
+              kind: "guestDeclined";
+              guestRevision: number;
+              episodeId: string;
+            };
+      }
+    | {
+        kind: "clear";
+        reason:
+          | "recordingMistake"
+          | "attendanceCorrected"
+          | "noLongerApplicable";
+      };
+  actorUid: string;
+  recordedAt: number;
+}
+
+export interface EventAttendanceDispositionReceiptDocument {
+  receiptId: string;
+  dispositionId: string;
+  context: {
+    mode: "live";
+    eventId: string;
+    organizerId: string;
+  };
+  attendeeId: string;
+  operationId: string;
+  actorUid: string;
+  requestHash: string;
+  sourceIdentityHash: string;
+  revision: number;
+  decision:
+    | {
+        kind: "record";
+        evidence:
+          | {
+              kind: "hostConfirmed";
+            }
+          | {
+              kind: "guestDeclined";
+              guestRevision: number;
+              episodeId: string;
+            };
+      }
+    | {
+        kind: "clear";
+        reason:
+          | "recordingMistake"
+          | "attendanceCorrected"
+          | "noLongerApplicable";
+      };
+  createdAt: number;
+}
+
+export interface EventAssistanceParticipationReceiptDocument {
+  receiptId: string;
+  guestId: string;
+  requestHash: string;
+  sourceGeneration: string;
+  revision: number;
+  episodeId: string;
+  createdAt: number;
+}
+
+export interface EventAssistanceSettingDocument {
+  schemaVersion: 1;
+  settingId: string;
+  context: {
+    mode: "live";
+    eventId: string;
+    organizerId: string;
+  };
+  groupId: string;
+  workflowKind:
+    | "venueReadiness"
+    | "routeReadiness"
+    | "formatReadiness"
+    | "rosterReadiness"
+    | "requiredGuestData"
+    | "resourceReadiness"
+    | "staffingReadiness"
+    | "messagingReadiness"
+    | "admissionReview"
+    | "financialReadiness"
+    | "joiningInstructions"
+    | "identityResolution"
+    | "guestAdmission"
+    | "guestCheckIn"
+    | "lateJoin"
+    | "participationChange"
+    | "guestPrerequisite"
+    | "allocationRepair"
+    | "placementConfirmation"
+    | "resourceRecovery"
+    | "fairParticipation"
+    | "roundPublication"
+    | "unitProgress"
+    | "outcomeRecording"
+    | "programmeRecovery"
+    | "departure"
+    | "checkpoint"
+    | "groupTransfer"
+    | "routeRecovery"
+    | "locationFreshness"
+    | "accountability"
+    | "planChangeCommunication"
+    | "deliveryRecovery"
+    | "replyOwnership"
+    | "guestAssistance"
+    | "comfortSafety"
+    | "attendanceSync"
+    | "concurrencyRecovery"
+    | "operationRecovery"
+    | "contextBoundary"
+    | "overrideReview"
+    | "eventClosure"
+    | "attendanceReconciliation"
+    | "financialReconciliation"
+    | "postEventFollowUp"
+    | "eventLearning";
+  revision: number;
+  preference:
+    | {
+        kind: "inherit";
+      }
+    | {
+        kind: "disabled";
+      }
+    | {
+        kind: "configured";
+        template:
+          | {
+              kind: "venueReadiness";
+              version: 1;
+              setting:
+                | {
+                    kind: "enabled";
+                    authority: "observe" | "prepare" | "executeWithinPolicy";
+                  }
+                | {
+                    kind: "disabled";
+                    reason: "hostChoice" | "organizerDefault";
+                  };
+              config: {
+                requirement: "meetingPlace";
+                dueBeforeStartMinutes: number;
+                disposition:
+                  | "blockSelectedOperation"
+                  | "hostMayAcceptException";
+              };
+            }
+          | {
+              kind: "routeReadiness";
+              version: 1;
+              setting:
+                | {
+                    kind: "enabled";
+                    authority: "observe" | "prepare" | "executeWithinPolicy";
+                  }
+                | {
+                    kind: "disabled";
+                    reason: "hostChoice" | "organizerDefault";
+                  };
+              config: {
+                requirement: "route";
+                dueBeforeStartMinutes: number;
+                disposition:
+                  | "blockSelectedOperation"
+                  | "hostMayAcceptException";
+              };
+            }
+          | {
+              kind: "formatReadiness";
+              version: 1;
+              setting:
+                | {
+                    kind: "enabled";
+                    authority: "observe" | "prepare" | "executeWithinPolicy";
+                  }
+                | {
+                    kind: "disabled";
+                    reason: "hostChoice" | "organizerDefault";
+                  };
+              config: {
+                requirement: "format";
+                dueBeforeStartMinutes: number;
+                disposition:
+                  | "blockSelectedOperation"
+                  | "hostMayAcceptException";
+              };
+            }
+          | {
+              kind: "rosterReadiness";
+              version: 1;
+              setting:
+                | {
+                    kind: "enabled";
+                    authority: "observe" | "prepare" | "executeWithinPolicy";
+                  }
+                | {
+                    kind: "disabled";
+                    reason: "hostChoice" | "organizerDefault";
+                  };
+              config: {
+                requirement: "roster";
+                dueBeforeStartMinutes: number;
+                disposition:
+                  | "blockSelectedOperation"
+                  | "hostMayAcceptException";
+              };
+            }
+          | {
+              kind: "requiredGuestData";
+              version: 1;
+              setting:
+                | {
+                    kind: "enabled";
+                    authority: "observe" | "prepare" | "executeWithinPolicy";
+                  }
+                | {
+                    kind: "disabled";
+                    reason: "hostChoice" | "organizerDefault";
+                  };
+              config: {
+                requirement: "guestData";
+                dueBeforeStartMinutes: number;
+                disposition:
+                  | "blockSelectedOperation"
+                  | "hostMayAcceptException";
+              };
+            }
+          | {
+              kind: "resourceReadiness";
+              version: 1;
+              setting:
+                | {
+                    kind: "enabled";
+                    authority: "observe" | "prepare" | "executeWithinPolicy";
+                  }
+                | {
+                    kind: "disabled";
+                    reason: "hostChoice" | "organizerDefault";
+                  };
+              config: {
+                requirement: "resources";
+                dueBeforeStartMinutes: number;
+                disposition:
+                  | "blockSelectedOperation"
+                  | "hostMayAcceptException";
+              };
+            }
+          | {
+              kind: "staffingReadiness";
+              version: 1;
+              setting:
+                | {
+                    kind: "enabled";
+                    authority: "observe" | "prepare" | "executeWithinPolicy";
+                  }
+                | {
+                    kind: "disabled";
+                    reason: "hostChoice" | "organizerDefault";
+                  };
+              config: {
+                requirement: "responsibilities";
+                dueBeforeStartMinutes: number;
+                disposition:
+                  | "blockSelectedOperation"
+                  | "hostMayAcceptException";
+              };
+            }
+          | {
+              kind: "messagingReadiness";
+              version: 1;
+              setting:
+                | {
+                    kind: "enabled";
+                    authority: "observe" | "prepare" | "executeWithinPolicy";
+                  }
+                | {
+                    kind: "disabled";
+                    reason: "hostChoice" | "organizerDefault";
+                  };
+              config: {
+                requirement: "messaging";
+                dueBeforeStartMinutes: number;
+                disposition:
+                  | "blockSelectedOperation"
+                  | "hostMayAcceptException";
+              };
+            }
+          | {
+              kind: "admissionReview";
+              version: 1;
+              setting:
+                | {
+                    kind: "enabled";
+                    authority: "observe" | "prepare" | "executeWithinPolicy";
+                  }
+                | {
+                    kind: "disabled";
+                    reason: "hostChoice" | "organizerDefault";
+                  };
+              config: {
+                offerExpiryMinutes: number;
+                admission: "existingEntitlementPolicy";
+                releaseCapacity: "confirmedOnly";
+              };
+            }
+          | {
+              kind: "financialReadiness";
+              version: 1;
+              setting:
+                | {
+                    kind: "enabled";
+                    authority: "observe" | "prepare" | "executeWithinPolicy";
+                  }
+                | {
+                    kind: "disabled";
+                    reason: "hostChoice" | "organizerDefault";
+                  };
+              config: {
+                requirement: "paymentProvider";
+                dueBeforeStartMinutes: number;
+                disposition:
+                  | "blockSelectedOperation"
+                  | "hostMayAcceptException";
+              };
+            }
+          | {
+              kind: "joiningInstructions";
+              version: 1;
+              setting:
+                | {
+                    kind: "enabled";
+                    authority: "observe" | "prepare" | "executeWithinPolicy";
+                  }
+                | {
+                    kind: "disabled";
+                    reason: "hostChoice" | "organizerDefault";
+                  };
+              config: {
+                templateIntent: "joining";
+                audience: "affectedGuests";
+                maximumPerGuest: number;
+                expiryMinutes: number;
+              };
+            }
+          | {
+              kind: "identityResolution";
+              version: 1;
+              setting:
+                | {
+                    kind: "enabled";
+                    authority: "observe" | "prepare" | "executeWithinPolicy";
+                  }
+                | {
+                    kind: "disabled";
+                    reason: "hostChoice" | "organizerDefault";
+                  };
+              config: {
+                ambiguousIdentity: "humanResolution";
+                fallback: "hostAssistedOperationalOnly";
+              };
+            }
+          | {
+              kind: "guestAdmission";
+              version: 1;
+              setting:
+                | {
+                    kind: "enabled";
+                    authority: "observe" | "prepare" | "executeWithinPolicy";
+                  }
+                | {
+                    kind: "disabled";
+                    reason: "hostChoice" | "organizerDefault";
+                  };
+              config: {
+                admission: "existingEntitlementPolicy";
+                overCapacity: "deny";
+                exception: "authorizedHost";
+              };
+            }
+          | {
+              kind: "guestCheckIn";
+              version: 1;
+              setting:
+                | {
+                    kind: "enabled";
+                    authority: "observe" | "prepare" | "executeWithinPolicy";
+                  }
+                | {
+                    kind: "disabled";
+                    reason: "hostChoice" | "organizerDefault";
+                  };
+              config: {
+                operation: "absolute";
+                conflict: "revisionFence";
+                attendanceProof: "configuredEventPolicy";
+              };
+            }
+          | {
+              kind: "lateJoin";
+              version: 1;
+              setting:
+                | {
+                    kind: "enabled";
+                    authority: "observe" | "prepare" | "executeWithinPolicy";
+                  }
+                | {
+                    kind: "disabled";
+                    reason: "hostChoice" | "organizerDefault";
+                  };
+              config: {
+                destination:
+                  | {
+                      kind: "confirmedGroupProgress";
+                    }
+                  | (
+                      | {
+                          kind: "fixedPlace";
+                          placeId: string;
+                          lateEntry: "allowed" | "hostDecision" | "closed";
+                        }
+                      | {
+                          kind: "itineraryStop";
+                          itineraryId: string;
+                          /**
+                           * @minItems 1
+                           * @maxItems 1000
+                           */
+                          permittedStopIds: string[];
+                        }
+                      | {
+                          kind: "groupCheckpoint";
+                          routeId: string;
+                          groupId: string;
+                          /**
+                           * @minItems 1
+                           * @maxItems 1000
+                           */
+                          permittedCheckpointIds: string[];
+                        }
+                    );
+                cutoff:
+                  | {
+                      kind: "eventEnd";
+                    }
+                  | {
+                      kind: "time";
+                      /**
+                       * UTC milliseconds.
+                       */
+                      at: number;
+                    };
+                maxMessagesPerEpisode: number;
+                minimumMinutesBetweenMessages: number;
+                updateOn: "materialGuidanceChange";
+                unanswered: "keepUnknownUntilCutoff" | "hostReviewAtDeadline";
+              };
+            }
+          | {
+              kind: "participationChange";
+              version: 1;
+              setting:
+                | {
+                    kind: "enabled";
+                    authority: "observe" | "prepare" | "executeWithinPolicy";
+                  }
+                | {
+                    kind: "disabled";
+                    reason: "hostChoice" | "organizerDefault";
+                  };
+              config: {
+                eligibility: "explicitParticipation";
+                reentry: "newEpisode";
+                guestOptOut: "honor";
+              };
+            }
+          | {
+              kind: "guestPrerequisite";
+              version: 1;
+              setting:
+                | {
+                    kind: "enabled";
+                    authority: "observe" | "prepare" | "executeWithinPolicy";
+                  }
+                | {
+                    kind: "disabled";
+                    reason: "hostChoice" | "organizerDefault";
+                  };
+              config: {
+                requirementsFrom: "selectedCapabilities";
+                fallback: "explicitlySupportedOnly";
+              };
+            }
+          | {
+              kind: "allocationRepair";
+              version: 1;
+              setting:
+                | {
+                    kind: "enabled";
+                    authority: "observe" | "prepare" | "executeWithinPolicy";
+                  }
+                | {
+                    kind: "disabled";
+                    reason: "hostChoice" | "organizerDefault";
+                  };
+              config: {
+                scope: "futureOnly";
+                publication: "hostConfirmed";
+                preserveCompleted: true;
+                hardConstraints: "neverRelax";
+              };
+            }
+          | {
+              kind: "placementConfirmation";
+              version: 1;
+              setting:
+                | {
+                    kind: "enabled";
+                    authority: "observe" | "prepare" | "executeWithinPolicy";
+                  }
+                | {
+                    kind: "disabled";
+                    reason: "hostChoice" | "organizerDefault";
+                  };
+              config: {
+                observation: "explicitHost";
+                assignmentIsNotObservation: true;
+              };
+            }
+          | {
+              kind: "resourceRecovery";
+              version: 1;
+              setting:
+                | {
+                    kind: "enabled";
+                    authority: "observe" | "prepare" | "executeWithinPolicy";
+                  }
+                | {
+                    kind: "disabled";
+                    reason: "hostChoice" | "organizerDefault";
+                  };
+              config: {
+                scope: "futureOnly";
+                publication: "hostConfirmed";
+                preserveCompleted: true;
+                hardConstraints: "neverRelax";
+                resourceChange: "hostConfirmed";
+              };
+            }
+          | {
+              kind: "fairParticipation";
+              version: 1;
+              setting:
+                | {
+                    kind: "enabled";
+                    authority: "observe" | "prepare" | "executeWithinPolicy";
+                  }
+                | {
+                    kind: "disabled";
+                    reason: "hostChoice" | "organizerDefault";
+                  };
+              config: {
+                objective: "minimizeRepeatedExclusion";
+                hardConstraints: "neverRelax";
+                publication: "hostConfirmed";
+              };
+            }
+          | {
+              kind: "roundPublication";
+              version: 1;
+              setting:
+                | {
+                    kind: "enabled";
+                    authority: "observe" | "prepare" | "executeWithinPolicy";
+                  }
+                | {
+                    kind: "disabled";
+                    reason: "hostChoice" | "organizerDefault";
+                  };
+              config: {
+                futureDrafts: "private";
+                publication: "hostConfirmed";
+                publishedHistory: "immutableWithCorrections";
+              };
+            }
+          | {
+              kind: "unitProgress";
+              version: 1;
+              setting:
+                | {
+                    kind: "enabled";
+                    authority: "observe" | "prepare" | "executeWithinPolicy";
+                  }
+                | {
+                    kind: "disabled";
+                    reason: "hostChoice" | "organizerDefault";
+                  };
+              config: {
+                clock: "perUnit";
+                progress: "hostConfirmed";
+                completedResults: "preserve";
+              };
+            }
+          | {
+              kind: "outcomeRecording";
+              version: 1;
+              setting:
+                | {
+                    kind: "enabled";
+                    authority: "observe" | "prepare" | "executeWithinPolicy";
+                  }
+                | {
+                    kind: "disabled";
+                    reason: "hostChoice" | "organizerDefault";
+                  };
+              config: {
+                kind: "completion" | "score" | "rank";
+                correction: "revisionedFullRound";
+                publication: "existingRevealGate";
+              };
+            }
+          | {
+              kind: "programmeRecovery";
+              version: 1;
+              setting:
+                | {
+                    kind: "enabled";
+                    authority: "observe" | "prepare" | "executeWithinPolicy";
+                  }
+                | {
+                    kind: "disabled";
+                    reason: "hostChoice" | "organizerDefault";
+                  };
+              config: {
+                scope: "remainingProgramme";
+                publication: "hostConfirmed";
+                alreadyPublished: "correctExplicitly";
+              };
+            }
+          | {
+              kind: "departure";
+              version: 1;
+              setting:
+                | {
+                    kind: "enabled";
+                    authority: "observe" | "prepare" | "executeWithinPolicy";
+                  }
+                | {
+                    kind: "disabled";
+                    reason: "hostChoice" | "organizerDefault";
+                  };
+              config: {
+                confirmation: "responsibleOperator";
+                scope: "perMovingGroup";
+                plannedTimeIsNotProof: true;
+              };
+            }
+          | {
+              kind: "checkpoint";
+              version: 1;
+              setting:
+                | {
+                    kind: "enabled";
+                    authority: "observe" | "prepare" | "executeWithinPolicy";
+                  }
+                | {
+                    kind: "disabled";
+                    reason: "hostChoice" | "organizerDefault";
+                  };
+              config: {
+                reportBy: "responsibleOperator";
+                scope: "departureRoster";
+                reportDeadlineMinutes: number;
+              };
+            }
+          | {
+              kind: "groupTransfer";
+              version: 1;
+              setting:
+                | {
+                    kind: "enabled";
+                    authority: "observe" | "prepare" | "executeWithinPolicy";
+                  }
+                | {
+                    kind: "disabled";
+                    reason: "hostChoice" | "organizerDefault";
+                  };
+              config: {
+                handover: "receivingOperatorAcknowledges";
+                membership: "singleActiveGroup";
+              };
+            }
+          | {
+              kind: "routeRecovery";
+              version: 1;
+              setting:
+                | {
+                    kind: "enabled";
+                    authority: "observe" | "prepare" | "executeWithinPolicy";
+                  }
+                | {
+                    kind: "disabled";
+                    reason: "hostChoice" | "organizerDefault";
+                  };
+              config: {
+                scope: "remainingProgramme";
+                publication: "hostConfirmed";
+                alreadyPublished: "correctExplicitly";
+                alternative: "hostApproved";
+              };
+            }
+          | {
+              kind: "locationFreshness";
+              version: 1;
+              setting:
+                | {
+                    kind: "enabled";
+                    authority: "observe" | "prepare" | "executeWithinPolicy";
+                  }
+                | {
+                    kind: "disabled";
+                    reason: "hostChoice" | "organizerDefault";
+                  };
+              config: {
+                staleAfterSeconds: number;
+                fallback: "confirmedJoiningPoint";
+                tracking: "authorizedOperatorOnly";
+              };
+            }
+          | {
+              kind: "accountability";
+              version: 1;
+              setting:
+                | {
+                    kind: "enabled";
+                    authority: "observe" | "prepare" | "executeWithinPolicy";
+                  }
+                | {
+                    kind: "disabled";
+                    reason: "hostChoice" | "organizerDefault";
+                  };
+              config: {
+                mode: "rollCall" | "sweep";
+                evidence: "explicitDisposition";
+                unknownIsNotIncident: true;
+              };
+            }
+          | {
+              kind: "planChangeCommunication";
+              version: 1;
+              setting:
+                | {
+                    kind: "enabled";
+                    authority: "observe" | "prepare" | "executeWithinPolicy";
+                  }
+                | {
+                    kind: "disabled";
+                    reason: "hostChoice" | "organizerDefault";
+                  };
+              config: {
+                templateIntent: "planChange";
+                audience: "affectedGuests";
+                maximumPerGuest: number;
+                expiryMinutes: number;
+                delivery: {
+                  /**
+                   * @minItems 1
+                   * @maxItems 3
+                   */
+                  routes: (
+                    | {
+                        routeId: "catchEventSms";
+                        senderId: string;
+                      }
+                    | {
+                        routeId: "organizerEventWhatsapp";
+                        senderId: string;
+                      }
+                    | {
+                        routeId: "catchEventRcs";
+                        senderId: string;
+                      }
+                  )[];
+                  policy: {
+                    maxAttempts: number;
+                    maxAttemptsPerRoute: number;
+                    minimumRetrySeconds: number;
+                  };
+                };
+              };
+            }
+          | {
+              kind: "deliveryRecovery";
+              version: 1;
+              setting:
+                | {
+                    kind: "enabled";
+                    authority: "observe" | "prepare" | "executeWithinPolicy";
+                  }
+                | {
+                    kind: "disabled";
+                    reason: "hostChoice" | "organizerDefault";
+                  };
+              config: {
+                maximumAttempts: number;
+                onUnknown: "reconcileBeforeRetry";
+                expiresAfterMinutes: number;
+              };
+            }
+          | {
+              kind: "replyOwnership";
+              version: 1;
+              setting:
+                | {
+                    kind: "enabled";
+                    authority: "observe" | "prepare" | "executeWithinPolicy";
+                  }
+                | {
+                    kind: "disabled";
+                    reason: "hostChoice" | "organizerDefault";
+                  };
+              config: {
+                owner:
+                  | "eventLead"
+                  | "groupLead"
+                  | "sweep"
+                  | "checkIn"
+                  | "specialist";
+                visibility: "operational" | "restricted";
+                dueMinutes: number;
+              };
+            }
+          | {
+              kind: "guestAssistance";
+              version: 1;
+              setting:
+                | {
+                    kind: "enabled";
+                    authority: "observe" | "prepare" | "executeWithinPolicy";
+                  }
+                | {
+                    kind: "disabled";
+                    reason: "hostChoice" | "organizerDefault";
+                  };
+              config: {
+                owner:
+                  | "eventLead"
+                  | "groupLead"
+                  | "sweep"
+                  | "checkIn"
+                  | "specialist";
+                visibility: "operational" | "restricted";
+                dueMinutes: number;
+              };
+            }
+          | {
+              kind: "comfortSafety";
+              version: 1;
+              setting:
+                | {
+                    kind: "enabled";
+                    authority: "observe" | "prepare" | "executeWithinPolicy";
+                  }
+                | {
+                    kind: "disabled";
+                    reason: "hostChoice" | "organizerDefault";
+                  };
+              config: {
+                owner:
+                  | "eventLead"
+                  | "groupLead"
+                  | "sweep"
+                  | "checkIn"
+                  | "specialist";
+                visibility: "restricted";
+                dueMinutes: number;
+              };
+            }
+          | {
+              kind: "attendanceSync";
+              version: 1;
+              setting:
+                | {
+                    kind: "enabled";
+                    authority: "observe" | "prepare" | "executeWithinPolicy";
+                  }
+                | {
+                    kind: "disabled";
+                    reason: "hostChoice" | "organizerDefault";
+                  };
+              config: {
+                maximumAttempts: number;
+                onUnknown: "reconcileBeforeRetry";
+                expiresAfterMinutes: number;
+              };
+            }
+          | {
+              kind: "concurrencyRecovery";
+              version: 1;
+              setting:
+                | {
+                    kind: "enabled";
+                    authority: "observe" | "prepare" | "executeWithinPolicy";
+                  }
+                | {
+                    kind: "disabled";
+                    reason: "hostChoice" | "organizerDefault";
+                  };
+              config: {
+                staleWrite: "reject";
+                retry: "revalidateIntent";
+              };
+            }
+          | {
+              kind: "operationRecovery";
+              version: 1;
+              setting:
+                | {
+                    kind: "enabled";
+                    authority: "observe" | "prepare" | "executeWithinPolicy";
+                  }
+                | {
+                    kind: "disabled";
+                    reason: "hostChoice" | "organizerDefault";
+                  };
+              config: {
+                maximumAttempts: number;
+                onUnknown: "reconcileBeforeRetry";
+                expiresAfterMinutes: number;
+              };
+            }
+          | {
+              kind: "contextBoundary";
+              version: 1;
+              setting:
+                | {
+                    kind: "enabled";
+                    authority: "observe" | "prepare" | "executeWithinPolicy";
+                  }
+                | {
+                    kind: "disabled";
+                    reason: "hostChoice" | "organizerDefault";
+                  };
+              config: {
+                context: "eventAndModeBound";
+                crossContext: "deny";
+              };
+            }
+          | {
+              kind: "overrideReview";
+              version: 1;
+              setting:
+                | {
+                    kind: "enabled";
+                    authority: "observe" | "prepare" | "executeWithinPolicy";
+                  }
+                | {
+                    kind: "disabled";
+                    reason: "hostChoice" | "organizerDefault";
+                  };
+              config: {
+                hardLimits: "neverOverride";
+                permittedOverride: "scopedReasonedExpiring";
+              };
+            }
+          | {
+              kind: "eventClosure";
+              version: 1;
+              setting:
+                | {
+                    kind: "enabled";
+                    authority: "observe" | "prepare" | "executeWithinPolicy";
+                  }
+                | {
+                    kind: "disabled";
+                    reason: "hostChoice" | "organizerDefault";
+                  };
+              config: {
+                pendingLiveWork: "cancel";
+                survivingObligations: "handoff";
+                unresolvedAccountability: "explicitPolicy";
+              };
+            }
+          | {
+              kind: "attendanceReconciliation";
+              version: 1;
+              setting:
+                | {
+                    kind: "enabled";
+                    authority: "observe" | "prepare" | "executeWithinPolicy";
+                  }
+                | {
+                    kind: "disabled";
+                    reason: "hostChoice" | "organizerDefault";
+                  };
+              config: {
+                silence: "notEvidence";
+                corrections: "revisioned";
+                pendingSync: "retain";
+              };
+            }
+          | {
+              kind: "financialReconciliation";
+              version: 1;
+              setting:
+                | {
+                    kind: "enabled";
+                    authority: "observe" | "prepare" | "executeWithinPolicy";
+                  }
+                | {
+                    kind: "disabled";
+                    reason: "hostChoice" | "organizerDefault";
+                  };
+              config: {
+                owner: "paymentProviderWorkflow";
+                moneyMovement: "separatelyAuthorized";
+              };
+            }
+          | {
+              kind: "postEventFollowUp";
+              version: 1;
+              setting:
+                | {
+                    kind: "enabled";
+                    authority: "observe" | "prepare" | "executeWithinPolicy";
+                  }
+                | {
+                    kind: "disabled";
+                    reason: "hostChoice" | "organizerDefault";
+                  };
+              config: {
+                templateIntent: "followUp";
+                audience: "affectedGuests";
+                maximumPerGuest: number;
+                expiryMinutes: number;
+                delivery: {
+                  /**
+                   * @minItems 1
+                   * @maxItems 3
+                   */
+                  routes: (
+                    | {
+                        routeId: "catchEventSms";
+                        senderId: string;
+                      }
+                    | {
+                        routeId: "organizerEventWhatsapp";
+                        senderId: string;
+                      }
+                    | {
+                        routeId: "catchEventRcs";
+                        senderId: string;
+                      }
+                  )[];
+                  policy: {
+                    maxAttempts: number;
+                    maxAttemptsPerRoute: number;
+                    minimumRetrySeconds: number;
+                  };
+                };
+              };
+            }
+          | {
+              kind: "eventLearning";
+              version: 1;
+              setting:
+                | {
+                    kind: "enabled";
+                    authority: "observe" | "prepare" | "executeWithinPolicy";
+                  }
+                | {
+                    kind: "disabled";
+                    reason: "hostChoice" | "organizerDefault";
+                  };
+              config: {
+                metrics: "observedOutcomes";
+                missingCoverage: "explicit";
+                sensitiveDetails: "excluded";
+              };
+            };
+      };
+  sourceHash: string;
+  updatedBy: string;
+  createdAt: number;
+  updatedAt: number;
+}
+
+export interface EventAssistanceSettingReceiptDocument {
+  receiptId: string;
+  settingId: string;
+  requestHash: string;
+  revision: number;
+  createdAt: number;
+}
+
+export interface EventAssistanceDepartureRosterDocument {
+  schemaVersion: 1;
+  rosterId: string;
+  context: {
+    mode: "live";
+    eventId: string;
+    organizerId: string;
+  };
+  groupId: string;
+  progressId: string;
+  progressRevision: number;
+  sourceHash: string;
+  confirmedBy: string;
+  confirmedAt: number;
+  /**
+   * @maxItems 1000
+   */
+  members: {
+    attendeeId: string;
+    sourceGeneration: string;
+    attendeeGeneration: string;
+    checkInHash: string;
+    episodeId: string | null;
+    membershipHash: string | null;
+  }[];
+  destination?:
+    | {
+        kind: "fixedPlace";
+        placeId: string;
+        lateEntry: "allowed" | "hostDecision" | "closed";
+      }
+    | {
+        kind: "itineraryStop";
+        itineraryId: string;
+        stopId: string;
+      }
+    | {
+        kind: "groupCheckpoint";
+        routeId: string;
+        groupId: string;
+        checkpointId: string;
+      };
+  checkpointRequest?: {
+    responsibleOperatorId: string;
+    dueAt: number;
+  };
+}
+
+export interface EventAssistanceProgressReceiptDocument {
+  receiptId: string;
+  progressId: string;
+  requestHash: string;
+  revision: number;
+  createdAt: number;
+  commandKind?: "confirmDeparture" | "changeRoute";
+  decisionId?: string;
+}
+
+export interface EventAssistanceGroupProgressDocument {
+  schemaVersion: 1;
+  progressId: string;
+  context: {
+    mode: "live";
+    eventId: string;
+    organizerId: string;
+  };
+  groupId: string;
+  revision: number;
+  destination:
+    | {
+        kind: "fixedPlace";
+        placeId: string;
+        lateEntry: "allowed" | "hostDecision" | "closed";
+      }
+    | {
+        kind: "itineraryStop";
+        itineraryId: string;
+        stopId: string;
+      }
+    | {
+        kind: "groupCheckpoint";
+        routeId: string;
+        groupId: string;
+        checkpointId: string;
+      };
+  sourceHash: string;
+  confirmedBy: string;
+  confirmedAt: number;
+  operationId: string;
+  requestHash: string;
+  createdAt: number;
+  updatedAt: number;
+  departureRosterId?: string;
+  routeDecisionId?: string;
+}
+
+export interface EventWhatsappWithdrawalGrantDocument {
+  schemaVersion: 1;
+  linkId: string;
+  permissionId: string;
+  context: {
+    mode: "live";
+    organizerId: string;
+    eventId: string;
+  };
+  attendeeId: string;
+  attendeeGeneration: string;
+  subjectUid: string;
+  senderId: string;
+  recipientEndpointId: string;
+  guestGrantHash: string;
+  permissionRevisionAtIssue: number;
+  issuedAt: number;
+  expiresAt: number;
+  providerAccountId: string;
+  providerPhoneNumberId: string;
+}
+
+/**
+ * Reviewed event and UTC sender-day spending ceilings. Conservative debits are reserved costs, not provider billing receipts.
+ */
+export interface EventWhatsappBudgetDocument {
+  schemaVersion: 1;
+  budgetId: string;
+  revision: number;
+  senderId: string;
+  scope:
+    | {
+        kind: "event";
+        context: {
+          mode: "live";
+          organizerId: string;
+          eventId: string;
+        };
+      }
+    | {
+        kind: "senderDay";
+        day: string;
+      };
+  status: "active" | "paused";
+  approvalId: string;
+  currency: string;
+  limitMicros: number;
+  chargedMicros: number;
+  startsAt: number;
+  endsAt: number;
+  updatedAt: number;
+}
+
+/**
+ * Immutable debit and material identity committed with one outbox dispatch claim. No credentials, body, guest secret or recipient phone.
+ */
+export interface EventWhatsappDispatchDocument {
+  schemaVersion: 1;
+  attemptId: string;
+  messageId: string;
+  context: {
+    mode: "live";
+    organizerId: string;
+    eventId: string;
+  };
+  senderId: string;
+  bindingRevision: number;
+  providerAccountId: string;
+  providerPhoneNumberId: string;
+  senderHash: string;
+  policyHash: string;
+  policyRevision: number;
+  permissionId: string;
+  permissionRevision: number;
+  permissionHash: string;
+  recipientEndpointId: string;
+  endpointHash: string;
+  templateDocumentId: string;
+  templateHash: string;
+  payloadHash: string;
+  quoteRevision: number;
+  grantId: string;
+  currency: string;
+  maxCostMicros: number;
+  /**
+   * @minItems 2
+   * @maxItems 2
+   */
+  budgetIds: string[];
+  replyBindingId: null | string;
+  stopRecordHash: null | string;
+  createdAt: number;
+}
+
+/**
+ * Latest authenticated text STOP for an organizer and WhatsApp endpoint, independent of CRM contact resolution. No TTL until suppression and consent retention are reconciled.
+ */
+export interface OrganizerWhatsappEndpointStopDocument {
+  schemaVersion: 1;
+  stopId: string;
+  organizerId: string;
+  endpointHash: string;
+  connectionId: string;
+  providerAccountId: string;
+  providerPhoneNumberId: string;
+  providerEventId: string;
+  payloadHash: string;
+  stoppedAt: number;
+  observedAt: number;
+  revision: number;
+}
+
+export interface EventWhatsappPermissionDocument {
+  [k: string]: unknown;
+}
+
+export interface EventWhatsappConsentReceiptDocument {
+  [k: string]: unknown;
+}
+
+/**
+ * Reviewed event-service template and spend policy for one existing organizer-owned WhatsApp sender. This policy alone grants no guest consent or send authority.
+ */
+export interface EventWhatsappPolicyDocument {
+  schemaVersion: 1;
+  senderId: string;
+  organizerId: string;
+  revision: number;
+  maxTemplateAgeSeconds: number;
+  status: "inactive" | "ready" | "paused";
+  providerAccountId: string;
+  providerPhoneNumberId: string;
+  activation: {
+    approvalId: string;
+    approvedAt: number;
+    validUntil: number;
+  };
+  quote: {
+    revision: number;
+    currency: string;
+    /**
+     * @minItems 1
+     * @maxItems 250
+     */
+    recipientPrefixes: string[];
+    maxMicrosPerMessage: number;
+    validUntil: number;
+  };
+  /**
+   * @minItems 1
+   * @maxItems 32
+   */
+  templates: {
+    templateDocumentId: string;
+    purpose:
+      | "joiningUpdate"
+      | "joiningInstructions"
+      | "planChanged"
+      | "guestRequirement"
+      | "assignmentChanged"
+      | "participationCheck"
+      | "eventCancelled"
+      | "eventFinished"
+      | "followUp";
+    templateHash: string;
+    /**
+     * @minItems 1
+     * @maxItems 20
+     */
+    variables: {
+      providerName: string;
+      source:
+        | "eventTitle"
+        | "instruction"
+        | "responseUrl"
+        | "responseUrlSuffix";
+      maxCharacters: number;
+    }[];
+    /**
+     * @maxItems 10
+     */
+    quickReplies: {
+      buttonIndex: number;
+      choiceId: string;
+      label: string;
+      action:
+        | "onMyWay"
+        | "notComing"
+        | "joinLater"
+        | "helpLogistics"
+        | "helpAccessibility"
+        | "helpSafety"
+        | "helpOther"
+        | "acknowledge";
+    }[];
+  }[];
+}
+
+/**
+ * Private immutable choice mapping committed with one live outbox dispatch claim. Native IDs provide correlation, never bearer authentication. A signed queued reply must match the original sender, recipient and confirmed provider message before the shared guest-action transaction can apply its stored choice.
+ */
+export interface EventWhatsappReplyBindingDocument {
+  schemaVersion: 1;
+  attemptId: string;
+  messageId: string;
+  context: {
+    mode: "live";
+    eventId: string;
+    organizerId: string;
+  };
+  guestId: string;
+  attendeeId: string;
+  episodeId: string;
+  attendeeGeneration: string;
+  guestRevision: number;
+  attemptScopeHash: string;
+  senderId: string;
+  bindingRevision: number;
+  providerAccountId: string;
+  providerPhoneNumberId: string;
+  recipientEndpointId: string;
+  endpointHash: string;
+  replyKind: "templateQuickReply" | "replyButton" | "listReply";
+  /**
+   * @minItems 1
+   * @maxItems 20
+   */
+  choices: {
+    nativeId: string;
+    choiceId: string;
+  }[];
+  createdAt: number;
+  expiresAt: number;
+  intentHash: string;
+  recipientBinding?:
+    | {
+        kind: "rosterPhone";
+        subjectUid: string;
+        sourceGeneration: string;
+      }
+    | {
+        kind: "privateVerifiedPhone";
+        subjectUid: string;
+        sourceGeneration: string;
+      };
+}
+
+export interface EventAssistanceSmsWithdrawalGrantDocument {
+  schemaVersion: 1;
+  linkId: string;
+  permissionId: string;
+  context: {
+    mode: "live";
+    organizerId: string;
+    eventId: string;
+  };
+  attendeeId: string;
+  attendeeGeneration: string;
+  subjectUid: string;
+  senderId: string;
+  recipientEndpointId: string;
+  guestGrantHash: string;
+  permissionRevisionAtIssue: number;
+  issuedAt: number;
+  expiresAt: number;
+}
+
+export interface EventAssistanceSmsConsentReceiptDocument {
+  [k: string]: unknown;
+}
+
+export interface EventAssistanceSmsSenderDocument {
+  schemaVersion: 1;
+  senderId: string;
+  revision: number;
+  provider: "gupshup";
+  senderIdentity: "catchPlatform";
+  country: "IN";
+  status: "inactive" | "ready" | "paused";
+  mask: string;
+  principalEntityId: string;
+  credentialVersion: string;
+  activation: {
+    useCaseApprovalId: string;
+    senderApprovalId: string;
+    approvedAt: number;
+    validUntil: number;
+  };
+  maxSegments: number;
+  quote: {
+    revision: number;
+    currency: "INR";
+    maxMicrosPerSegment: number;
+    validUntil: number;
+  };
+  /**
+   * @minItems 1
+   * @maxItems 32
+   */
+  templates: {
+    templateId: string;
+    revision: number;
+    purpose:
+      | "joiningUpdate"
+      | "joiningInstructions"
+      | "planChanged"
+      | "guestRequirement"
+      | "assignmentChanged"
+      | "participationCheck"
+      | "eventCancelled"
+      | "eventFinished"
+      | "followUp";
+    dltTemplateId: string;
+    status: "pending" | "approved" | "paused";
+    /**
+     * @minItems 1
+     * @maxItems 16
+     */
+    parts: (
+      | {
+          kind: "literal";
+          text: string;
+        }
+      | {
+          kind: "variable";
+          name: "eventTitle" | "instruction" | "responseUrl";
+          maxCharacters: number;
+        }
+    )[];
+  }[];
+}
+
+export interface EventAssistanceSmsPermissionDocument {
+  [k: string]: unknown;
+}
+
+export interface EventAssistanceSmsBudgetDocument {
+  schemaVersion: 1;
+  budgetId: string;
+  revision: number;
+  senderId: string;
+  scope:
+    | {
+        kind: "event";
+        context: {
+          mode: "live";
+          organizerId: string;
+          eventId: string;
+        };
+      }
+    | {
+        kind: "senderDay";
+        day: string;
+      };
+  status: "active" | "paused";
+  approvalId: string;
+  currency: "INR";
+  limitMicros: number;
+  chargedMicros: number;
+  startsAt: number;
+  endsAt: number;
+  updatedAt: number;
+}
+
+export interface EventAssistanceSmsDispatchDocument {
+  schemaVersion: 1;
+  attemptId: string;
+  messageId: string;
+  senderId: string;
+  bindingRevision: number;
+  configHash: string;
+  permissionId: string;
+  permissionRevision: number;
+  recipientEndpointId: string;
+  payloadHash: string;
+  templateId: string;
+  templateRevision: number;
+  quoteRevision: number;
+  grantId: string;
+  encoding: "gsm7" | "unicode";
+  segments: number;
+  maxCostMicros: number;
+  /**
+   * @minItems 2
+   * @maxItems 2
+   */
+  budgetIds: string[];
+  createdAt: number;
+  reportTokenHash: string;
+  senderMask: string;
+}
+
+/**
+ * Latest finance review decision for one event, route, sender, and purpose. This record grants no spending authority and is not a dispatch budget.
+ */
+export interface EventMessagingBudgetDecisionDocument {
+  schemaVersion: 1;
+  decisionId: string;
+  revision: number;
+  requestId: string;
+  requestHash: string;
+  context: {
+    mode: "live";
+    eventId: string;
+    organizerId: string;
+  };
+  routeId: "catchEventSms" | "catchEventRcs" | "organizerEventWhatsapp";
+  senderId: string;
+  purpose:
+    | "joiningUpdate"
+    | "joiningInstructions"
+    | "planChanged"
+    | "eventCancelled"
+    | "eventFinished"
+    | "guestRequirement"
+    | "assignmentChanged"
+    | "participationCheck"
+    | "followUp";
+  decision:
+    | {
+        kind: "approve";
+        currency: string;
+        eventLimitMicros: number;
+        senderDayLimitMicros: number;
+        validUntil: number;
+      }
+    | {
+        kind: "hold";
+      }
+    | {
+        kind: "reject";
+      };
+  decisionStatus: "approved" | "held" | "rejected";
+  reviewEvidence: {
+    observedAt: number;
+    completedAt: number;
+    eventEnd: number;
+    runtimeSourceHash: string;
+    senderReviewHash: string;
+    budgetSourceHash: string;
+    setupReviewHash: string;
+    eventBudget: {
+      budgetId: string;
+      revision: number | null;
+      reviewHash: string | null;
+      chargedMicros: number;
+    };
+    senderDayBudget: {
+      budgetId: string;
+      revision: number | null;
+      reviewHash: string | null;
+      chargedMicros: number;
+    };
+  };
+  reviewedByUid: string;
+  note: string;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  effect: "decision_only_no_spending_authority";
+  grantsSpendingAuthority: false;
+}
+
+/**
+ * Immutable request receipt for an event-messaging budget decision. It preserves exact replay without granting spending authority.
+ */
+export interface EventMessagingBudgetDecisionReceiptDocument {
+  schemaVersion: 1;
+  receiptId: string;
+  decisionId: string;
+  requestId: string;
+  requestHash: string;
+  revision: number;
+  decisionStatus: "approved" | "held" | "rejected";
+  decisionPath: string;
+  effect: "decision_only_no_spending_authority";
+  grantsSpendingAuthority: false;
+  createdAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Immutable evidence that one still-current approved decision staged both channel spending ceilings in paused state. The receipt and budgets grant no spending or dispatch authority until a separate live activation boundary succeeds.
+ */
+export interface EventMessagingBudgetApplicationReceiptDocument {
+  schemaVersion: 1;
+  receiptId: string;
+  requestId: string;
+  requestHash: string;
+  decisionId: string;
+  decisionRevision: number;
+  decisionReviewHash: string;
+  context: {
+    mode: "live";
+    eventId: string;
+    organizerId: string;
+  };
+  routeId: "catchEventSms" | "catchEventRcs" | "organizerEventWhatsapp";
+  senderId: string;
+  purpose:
+    | "joiningUpdate"
+    | "joiningInstructions"
+    | "planChanged"
+    | "eventCancelled"
+    | "eventFinished"
+    | "guestRequirement"
+    | "assignmentChanged"
+    | "participationCheck"
+    | "followUp";
+  budgetSourceHash: string;
+  eventBudget: {
+    budgetId: string;
+    path: string;
+    revision: number;
+    currency: string;
+    limitMicros: number;
+    chargedMicros: number;
+    startsAt: number;
+    endsAt: number;
+    reviewHash: string;
+    status: "paused";
+  };
+  senderDayBudget: {
+    budgetId: string;
+    path: string;
+    revision: number;
+    currency: string;
+    limitMicros: number;
+    chargedMicros: number;
+    startsAt: number;
+    endsAt: number;
+    reviewHash: string;
+    status: "paused";
+  };
+  appliedByUid: string;
+  note: string;
+  effect: "budgets_staged_paused_no_spending_or_dispatch_authority";
+  stagesSpendingCeilings: true;
+  grantsSpendingAuthority: false;
+  grantsDispatchAuthority: false;
+  providerContacted: false;
+  workerActivated: false;
+  createdAt: FirebaseFirestore.Timestamp;
+}
+
+export interface EventAssistanceGuestDocument {
+  schemaVersion: 1;
+  guestId: string;
+  context: {
+    mode: "live";
+    eventId: string;
+    organizerId: string;
+  };
+  attendeeId: string;
+  attendeeGeneration: string;
+  episodeId: string;
+  revision: number;
+  lifecycle: "active" | "closed";
+  intention:
+    | {
+        kind: "unknown";
+      }
+    | {
+        kind: "onMyWay";
+        claimedEta: number | null;
+      }
+    | {
+        kind: "joinLater";
+        target:
+          | {
+              kind: "fixedPlace";
+              placeId: string;
+              lateEntry: "allowed" | "hostDecision" | "closed";
+            }
+          | {
+              kind: "itineraryStop";
+              itineraryId: string;
+              stopId: string;
+            }
+          | {
+              kind: "groupCheckpoint";
+              routeId: string;
+              groupId: string;
+              checkpointId: string;
+            };
+      }
+    | {
+        kind: "notComing";
+      };
+  createdAt: number;
+  updatedAt: number;
+  sourceGeneration: string;
+  participation:
+    | {
+        state: "active";
+        resumeAtUnit: null;
+      }
+    | {
+        state: "temporaryBreak";
+        resumeAtUnit: string | null;
+      }
+    | {
+        state: "departed";
+        resumeAtUnit: null;
+      };
+}
+
+export interface EventAssistanceThreadDocument {
+  schemaVersion: 1;
+  threadId: string;
+  guestId: string;
+  context: {
+    mode: "live";
+    eventId: string;
+    organizerId: string;
+  };
+  attendeeId: string;
+  episodeId: string;
+  workflow: {
+    kind:
+      | "venueReadiness"
+      | "routeReadiness"
+      | "formatReadiness"
+      | "rosterReadiness"
+      | "requiredGuestData"
+      | "resourceReadiness"
+      | "staffingReadiness"
+      | "messagingReadiness"
+      | "admissionReview"
+      | "financialReadiness"
+      | "joiningInstructions"
+      | "identityResolution"
+      | "guestAdmission"
+      | "guestCheckIn"
+      | "lateJoin"
+      | "participationChange"
+      | "guestPrerequisite"
+      | "allocationRepair"
+      | "placementConfirmation"
+      | "resourceRecovery"
+      | "fairParticipation"
+      | "roundPublication"
+      | "unitProgress"
+      | "outcomeRecording"
+      | "programmeRecovery"
+      | "departure"
+      | "checkpoint"
+      | "groupTransfer"
+      | "routeRecovery"
+      | "locationFreshness"
+      | "accountability"
+      | "planChangeCommunication"
+      | "deliveryRecovery"
+      | "replyOwnership"
+      | "guestAssistance"
+      | "comfortSafety"
+      | "attendanceSync"
+      | "concurrencyRecovery"
+      | "operationRecovery"
+      | "contextBoundary"
+      | "overrideReview"
+      | "eventClosure"
+      | "attendanceReconciliation"
+      | "financialReconciliation"
+      | "postEventFollowUp"
+      | "eventLearning";
+    occurrenceId: string;
+  };
+  messageId: string;
+  revision: number;
+  createdAt: number;
+  updatedAt: number;
+}
+
+export interface EventAssistanceGuestGrantDocument {
+  schemaVersion: 1;
+  linkId: string;
+  threadId: string;
+  guestId: string;
+  context: {
+    mode: "live";
+    eventId: string;
+    organizerId: string;
+  };
+  attendeeId: string;
+  episodeId: string;
+  tokenHash: string;
+  signingKeyId: string;
+  issuedAt: number;
+  expiresAt: number;
+  revokedAt: number | null;
+}
+
+export interface EventAssistanceCaseDocument {
+  [k: string]: unknown;
+}
+
+/**
+ * Private durable event-service outbox. The immutable intent and bounded attempt history survive workflow completion and delayed callbacks. Recipient endpoints are references; transport credentials and guest bearer grants belong to their own private stores.
+ */
+export interface EventAssistanceMessageDocument {
+  schemaVersion: 1;
+  messageId: string;
+  revision: number;
+  intent:
+    | {
+        schemaVersion: 1;
+        intentId: string;
+        revision: number;
+        context:
+          | {
+              mode: "live";
+              eventId: string;
+              organizerId: string;
+            }
+          | {
+              mode: "rehearsal";
+              rehearsalId: string;
+              virtualEventId: string;
+              clockId: string;
+            };
+        eventId: string;
+        attendeeId: string;
+        episodeId: string;
+        workflow: {
+          kind:
+            | "venueReadiness"
+            | "routeReadiness"
+            | "formatReadiness"
+            | "rosterReadiness"
+            | "requiredGuestData"
+            | "resourceReadiness"
+            | "staffingReadiness"
+            | "messagingReadiness"
+            | "admissionReview"
+            | "financialReadiness"
+            | "joiningInstructions"
+            | "identityResolution"
+            | "guestAdmission"
+            | "guestCheckIn"
+            | "lateJoin"
+            | "participationChange"
+            | "guestPrerequisite"
+            | "allocationRepair"
+            | "placementConfirmation"
+            | "resourceRecovery"
+            | "fairParticipation"
+            | "roundPublication"
+            | "unitProgress"
+            | "outcomeRecording"
+            | "programmeRecovery"
+            | "departure"
+            | "checkpoint"
+            | "groupTransfer"
+            | "routeRecovery"
+            | "locationFreshness"
+            | "accountability"
+            | "planChangeCommunication"
+            | "deliveryRecovery"
+            | "replyOwnership"
+            | "guestAssistance"
+            | "comfortSafety"
+            | "attendanceSync"
+            | "concurrencyRecovery"
+            | "operationRecovery"
+            | "contextBoundary"
+            | "overrideReview"
+            | "eventClosure"
+            | "attendanceReconciliation"
+            | "financialReconciliation"
+            | "postEventFollowUp"
+            | "eventLearning";
+          occurrenceId: string;
+        };
+        createdAt: number;
+        expiresAt: number;
+        /**
+         * @minItems 1
+         * @maxItems 3
+         */
+        permittedRoutes: (
+          | "catchEventSms"
+          | "catchEventRcs"
+          | "organizerEventWhatsapp"
+        )[];
+        deliveryPolicy: {
+          maxAttempts: number;
+          maxAttemptsPerRoute: number;
+          minimumRetrySeconds: number;
+        };
+        kind: "joiningUpdate";
+        guidance: {
+          /**
+           * Nonnegative safe integer revision.
+           */
+          revision: number;
+          destination:
+            | {
+                kind: "fixedPlace";
+                placeId: string;
+                lateEntry: "allowed" | "hostDecision" | "closed";
+              }
+            | {
+                kind: "itineraryStop";
+                itineraryId: string;
+                stopId: string;
+              }
+            | {
+                kind: "groupCheckpoint";
+                routeId: string;
+                groupId: string;
+                checkpointId: string;
+              };
+          materialKey: string;
+          text: string;
+          /**
+           * UTC milliseconds.
+           */
+          validUntil: number;
+        };
+        /**
+         * @minItems 1
+         * @maxItems 20
+         */
+        choices: {
+          choiceId: string;
+          label: string;
+          value:
+            | {
+                kind: "joinIntent";
+                intention:
+                  | {
+                      kind: "onMyWay";
+                      claimedEta: number | null;
+                    }
+                  | {
+                      kind: "joinLater";
+                      target:
+                        | {
+                            kind: "fixedPlace";
+                            placeId: string;
+                            lateEntry: "allowed" | "hostDecision" | "closed";
+                          }
+                        | {
+                            kind: "itineraryStop";
+                            itineraryId: string;
+                            stopId: string;
+                          }
+                        | {
+                            kind: "groupCheckpoint";
+                            routeId: string;
+                            groupId: string;
+                            checkpointId: string;
+                          };
+                    }
+                  | {
+                      kind: "notComing";
+                    };
+              }
+            | {
+                kind: "requestHelp";
+                category:
+                  | "eventLogistics"
+                  | "accessibility"
+                  | "comfortSafety"
+                  | "other";
+              };
+        }[];
+        /**
+         * Trusted live publisher binding. Queued delivery rechecks the saved policy, current group and episode outreach budget. Absence denotes the pre-existing trusted explicit publisher path, never automatic execution authority.
+         */
+        automation?: {
+          kind: "lateJoin";
+          policyVersion: string;
+          groupId: string;
+          settingId: string;
+          settingRevision: number;
+          /**
+           * @minItems 1
+           * @maxItems 3
+           */
+          routes: (
+            | {
+                routeId: "catchEventSms";
+                senderId: string;
+              }
+            | {
+                routeId: "organizerEventWhatsapp";
+                senderId: string;
+              }
+            | {
+                routeId: "catchEventRcs";
+                senderId: string;
+              }
+          )[];
+          responseDeadline: number | null;
+          runtimeBinding?: {
+            runtimeId: string;
+            revision: number;
+          };
+        };
+      }
+    | {
+        schemaVersion: 1;
+        intentId: string;
+        revision: number;
+        context:
+          | {
+              mode: "live";
+              eventId: string;
+              organizerId: string;
+            }
+          | {
+              mode: "rehearsal";
+              rehearsalId: string;
+              virtualEventId: string;
+              clockId: string;
+            };
+        eventId: string;
+        attendeeId: string;
+        episodeId: string;
+        workflow: {
+          kind:
+            | "venueReadiness"
+            | "routeReadiness"
+            | "formatReadiness"
+            | "rosterReadiness"
+            | "requiredGuestData"
+            | "resourceReadiness"
+            | "staffingReadiness"
+            | "messagingReadiness"
+            | "admissionReview"
+            | "financialReadiness"
+            | "joiningInstructions"
+            | "identityResolution"
+            | "guestAdmission"
+            | "guestCheckIn"
+            | "lateJoin"
+            | "participationChange"
+            | "guestPrerequisite"
+            | "allocationRepair"
+            | "placementConfirmation"
+            | "resourceRecovery"
+            | "fairParticipation"
+            | "roundPublication"
+            | "unitProgress"
+            | "outcomeRecording"
+            | "programmeRecovery"
+            | "departure"
+            | "checkpoint"
+            | "groupTransfer"
+            | "routeRecovery"
+            | "locationFreshness"
+            | "accountability"
+            | "planChangeCommunication"
+            | "deliveryRecovery"
+            | "replyOwnership"
+            | "guestAssistance"
+            | "comfortSafety"
+            | "attendanceSync"
+            | "concurrencyRecovery"
+            | "operationRecovery"
+            | "contextBoundary"
+            | "overrideReview"
+            | "eventClosure"
+            | "attendanceReconciliation"
+            | "financialReconciliation"
+            | "postEventFollowUp"
+            | "eventLearning";
+          occurrenceId: string;
+        };
+        createdAt: number;
+        expiresAt: number;
+        /**
+         * @minItems 1
+         * @maxItems 3
+         */
+        permittedRoutes: (
+          | "catchEventSms"
+          | "catchEventRcs"
+          | "organizerEventWhatsapp"
+        )[];
+        deliveryPolicy: {
+          maxAttempts: number;
+          maxAttemptsPerRoute: number;
+          minimumRetrySeconds: number;
+        };
+        kind: "operationalNotice";
+        noticeKind:
+          | "joiningInstructions"
+          | "planChanged"
+          | "eventCancelled"
+          | "eventFinished"
+          | "guestRequirement"
+          | "assignmentChanged"
+          | "participationCheck"
+          | "followUp";
+        title: string;
+        body: string;
+        instructionRevision: number;
+        /**
+         * @minItems 0
+         * @maxItems 20
+         */
+        choices: {
+          choiceId: string;
+          label: string;
+          value:
+            | {
+                kind: "acknowledge";
+                instructionRevision: number;
+              }
+            | {
+                kind: "requestHelp";
+                category:
+                  | "eventLogistics"
+                  | "accessibility"
+                  | "comfortSafety"
+                  | "other";
+              };
+        }[];
+        /**
+         * Trusted live publisher binding for plan-change and follow-up notices. The delivery worker rechecks the saved assistance setting and every channel permission before sending. Absence denotes an explicit publisher path without automatic delivery authority.
+         */
+        automation?: {
+          kind: "operationalNotice";
+          noticeKind: "planChanged" | "followUp";
+          policyVersion: string;
+          groupId: string;
+          settingId: string;
+          settingRevision: number;
+          sourceId: string;
+          sourceRevision: number;
+          contentHash: string;
+          /**
+           * @minItems 1
+           * @maxItems 3
+           */
+          routes: (
+            | {
+                routeId: "catchEventSms";
+                senderId: string;
+              }
+            | {
+                routeId: "organizerEventWhatsapp";
+                senderId: string;
+              }
+            | {
+                routeId: "catchEventRcs";
+                senderId: string;
+              }
+          )[];
+        };
+      };
+  lifecycle: "active" | "cancelled" | "superseded" | "responded";
+  /**
+   * @maxItems 6
+   */
+  attempts: (
+    | {
+        schemaVersion: 1;
+        attemptId: string;
+        intentId: string;
+        intentRevision: number;
+        ordinal: number;
+        createdAt: number;
+        state:
+          | {
+              kind: "reserved";
+              at: number;
+              reconcileAfter: number;
+            }
+          | {
+              kind: "unknown";
+              at: number;
+              providerMessageId: string | null;
+              reason: "timeout" | "connectionLost" | "workerInterrupted";
+              reconcileAfter: number;
+            }
+          | {
+              kind: "accepted";
+              at: number;
+              providerMessageId: string;
+            }
+          | {
+              kind: "delivered";
+              at: number;
+              providerMessageId: string;
+            }
+          | {
+              kind: "read";
+              at: number;
+              providerMessageId: string;
+            }
+          | {
+              kind: "failed";
+              at: number;
+              providerMessageId: string | null;
+              classification:
+                | "technical"
+                | "invalidRecipient"
+                | "policy"
+                | "suppressed";
+              evidenceId: string;
+            }
+          | {
+              kind: "revoked";
+              at: number;
+              providerMessageId: string;
+              evidenceId: string;
+            }
+          | {
+              kind: "notDispatched";
+              at: number;
+              reason:
+                | "superseded"
+                | "eventClosed"
+                | "responded"
+                | "expired"
+                | "permissionRevoked"
+                | "hostStopped"
+                | "reservationExpired"
+                | "permitExpired";
+            };
+        mode: "live";
+        context: {
+          mode: "live";
+          eventId: string;
+          organizerId: string;
+        };
+        binding:
+          | {
+              routeId: "catchEventSms";
+              transport: "sms";
+              senderIdentity: "catchPlatform";
+              provider: "sinch" | "gupshup";
+              senderId: string;
+              bindingRevision: number;
+              recipientEndpointId: string;
+              fallbackOwner: "catch" | "provider";
+            }
+          | {
+              routeId: "catchEventRcs";
+              transport: "rcs";
+              senderIdentity: "catchPlatform";
+              provider: "sinch" | "gupshup" | "googleRbm";
+              senderId: string;
+              bindingRevision: number;
+              recipientEndpointId: string;
+              fallbackOwner: "catch" | "provider";
+            }
+          | {
+              routeId: "organizerEventWhatsapp";
+              transport: "whatsapp";
+              senderIdentity: "organizerManaged";
+              provider: "meta";
+              senderId: string;
+              bindingRevision: number;
+              recipientEndpointId: string;
+              fallbackOwner: "catch" | "provider";
+            };
+        authorization: {
+          permissionRevision: string;
+          checkedAt: number;
+          validUntil: number;
+          instructionRevision: number;
+        };
+      }
+    | {
+        schemaVersion: 1;
+        attemptId: string;
+        intentId: string;
+        intentRevision: number;
+        ordinal: number;
+        createdAt: number;
+        state:
+          | {
+              kind: "reserved";
+              at: number;
+              reconcileAfter: number;
+            }
+          | {
+              kind: "unknown";
+              at: number;
+              providerMessageId: string | null;
+              reason: "timeout" | "connectionLost" | "workerInterrupted";
+              reconcileAfter: number;
+            }
+          | {
+              kind: "accepted";
+              at: number;
+              providerMessageId: string;
+            }
+          | {
+              kind: "delivered";
+              at: number;
+              providerMessageId: string;
+            }
+          | {
+              kind: "read";
+              at: number;
+              providerMessageId: string;
+            }
+          | {
+              kind: "failed";
+              at: number;
+              providerMessageId: string | null;
+              classification:
+                | "technical"
+                | "invalidRecipient"
+                | "policy"
+                | "suppressed";
+              evidenceId: string;
+            }
+          | {
+              kind: "revoked";
+              at: number;
+              providerMessageId: string;
+              evidenceId: string;
+            }
+          | {
+              kind: "notDispatched";
+              at: number;
+              reason:
+                | "superseded"
+                | "eventClosed"
+                | "responded"
+                | "expired"
+                | "permissionRevoked"
+                | "hostStopped"
+                | "reservationExpired"
+                | "permitExpired";
+            };
+        mode: "rehearsal";
+        context: {
+          mode: "rehearsal";
+          rehearsalId: string;
+          virtualEventId: string;
+          clockId: string;
+        };
+        routeId: "catchEventSms" | "catchEventRcs" | "organizerEventWhatsapp";
+        authorization: {
+          permissionRevision: string;
+          checkedAt: number;
+          validUntil: number;
+          instructionRevision: number;
+        };
+      }
+  )[];
+  deliveryConflict: boolean;
+  createdAt: number;
+  updatedAt: number;
+  response:
+    | (
+        | {
+            schemaVersion: 1;
+            responseId: string;
+            intentId: string;
+            intentRevision: number;
+            eventId: string;
+            attendeeId: string;
+            episodeId: string;
+            choiceId: string;
+            receivedAt: number;
+            value:
+              | {
+                  kind: "joinIntent";
+                  intention:
+                    | {
+                        kind: "onMyWay";
+                        claimedEta: number | null;
+                      }
+                    | {
+                        kind: "joinLater";
+                        target:
+                          | {
+                              kind: "fixedPlace";
+                              placeId: string;
+                              lateEntry: "allowed" | "hostDecision" | "closed";
+                            }
+                          | {
+                              kind: "itineraryStop";
+                              itineraryId: string;
+                              stopId: string;
+                            }
+                          | {
+                              kind: "groupCheckpoint";
+                              routeId: string;
+                              groupId: string;
+                              checkpointId: string;
+                            };
+                      }
+                    | {
+                        kind: "notComing";
+                      };
+                }
+              | {
+                  kind: "acknowledge";
+                  instructionRevision: number;
+                }
+              | {
+                  kind: "requestHelp";
+                  category:
+                    | "eventLogistics"
+                    | "accessibility"
+                    | "comfortSafety"
+                    | "other";
+                };
+            context: {
+              mode: "live";
+              eventId: string;
+              organizerId: string;
+            };
+            source: {
+              kind: "guestWeb";
+              linkId: string;
+            };
+          }
+        | {
+            schemaVersion: 1;
+            responseId: string;
+            intentId: string;
+            intentRevision: number;
+            eventId: string;
+            attendeeId: string;
+            episodeId: string;
+            choiceId: string;
+            receivedAt: number;
+            value:
+              | {
+                  kind: "joinIntent";
+                  intention:
+                    | {
+                        kind: "onMyWay";
+                        claimedEta: number | null;
+                      }
+                    | {
+                        kind: "joinLater";
+                        target:
+                          | {
+                              kind: "fixedPlace";
+                              placeId: string;
+                              lateEntry: "allowed" | "hostDecision" | "closed";
+                            }
+                          | {
+                              kind: "itineraryStop";
+                              itineraryId: string;
+                              stopId: string;
+                            }
+                          | {
+                              kind: "groupCheckpoint";
+                              routeId: string;
+                              groupId: string;
+                              checkpointId: string;
+                            };
+                      }
+                    | {
+                        kind: "notComing";
+                      };
+                }
+              | {
+                  kind: "acknowledge";
+                  instructionRevision: number;
+                }
+              | {
+                  kind: "requestHelp";
+                  category:
+                    | "eventLogistics"
+                    | "accessibility"
+                    | "comfortSafety"
+                    | "other";
+                };
+            context: {
+              mode: "live";
+              eventId: string;
+              organizerId: string;
+            };
+            source: {
+              kind: "provider";
+              attemptId: string;
+              providerEventId: string;
+            };
+          }
+        | {
+            schemaVersion: 1;
+            responseId: string;
+            intentId: string;
+            intentRevision: number;
+            eventId: string;
+            attendeeId: string;
+            episodeId: string;
+            choiceId: string;
+            receivedAt: number;
+            value:
+              | {
+                  kind: "joinIntent";
+                  intention:
+                    | {
+                        kind: "onMyWay";
+                        claimedEta: number | null;
+                      }
+                    | {
+                        kind: "joinLater";
+                        target:
+                          | {
+                              kind: "fixedPlace";
+                              placeId: string;
+                              lateEntry: "allowed" | "hostDecision" | "closed";
+                            }
+                          | {
+                              kind: "itineraryStop";
+                              itineraryId: string;
+                              stopId: string;
+                            }
+                          | {
+                              kind: "groupCheckpoint";
+                              routeId: string;
+                              groupId: string;
+                              checkpointId: string;
+                            };
+                      }
+                    | {
+                        kind: "notComing";
+                      };
+                }
+              | {
+                  kind: "acknowledge";
+                  instructionRevision: number;
+                }
+              | {
+                  kind: "requestHelp";
+                  category:
+                    | "eventLogistics"
+                    | "accessibility"
+                    | "comfortSafety"
+                    | "other";
+                };
+            context: {
+              mode: "rehearsal";
+              rehearsalId: string;
+              virtualEventId: string;
+              clockId: string;
+            };
+            source: {
+              kind: "simulation";
+              actionId: string;
+            };
+          }
+      )
+    | null;
+  handoff?: {
+    actorUid: string;
+    at: number;
+    operationId: string;
+  };
+}
+
+export interface EventAssistanceOperationalNoticeQuotaDocument {
+  schemaVersion: 1;
+  quotaId: string;
+  context:
+    | {
+        mode: "live";
+        eventId: string;
+        organizerId: string;
+      }
+    | {
+        mode: "rehearsal";
+        rehearsalId: string;
+        virtualEventId: string;
+        clockId: string;
+      };
+  eventId: string;
+  attendeeId: string;
+  attendeeGeneration: string;
+  sourceGeneration: string;
+  workflowKind: "planChangeCommunication" | "postEventFollowUp";
+  count: number;
+  revision: number;
+  createdAt: number;
+  updatedAt: number;
+}
+
+export interface EventAssistanceOperationalNoticePublicationDocument {
+  schemaVersion: 1;
+  publicationId: string;
+  quotaId: string;
+  context:
+    | {
+        mode: "live";
+        eventId: string;
+        organizerId: string;
+      }
+    | {
+        mode: "rehearsal";
+        rehearsalId: string;
+        virtualEventId: string;
+        clockId: string;
+      };
+  eventId: string;
+  attendeeId: string;
+  episodeId: string;
+  sourceKind: "planChange" | "followUp";
+  workflowKind: "planChangeCommunication" | "postEventFollowUp";
+  sourceId: string;
+  sourceRevision: number;
+  messageId: string;
+  threadId: string;
+  ordinal: number;
+  contentHash: string;
+  intentHash: string;
+  sourceOccurredAt: number;
+  createdAt: number;
+}
+
 /**
  * Immutable idempotency and audit receipt for a dry-run or applied external-event publication/takedown action.
  */
@@ -2018,6 +5278,8 @@ export interface OrganizerAttentionItemDocument {
   organizerId: string;
   kind:
     | "eventLiveOperations"
+    | "eventAssistanceCaseReview"
+    | "eventAssistanceDeliveryReview"
     | "eventWaitlistReview"
     | "eventJoinRequestReview"
     | "applicationReview"
@@ -2041,6 +5303,8 @@ export interface OrganizerAttentionItemDocument {
     | "organizerFormAutomationRuns"
     | "hostPaymentAccounts"
     | "hostAttendanceOutbox"
+    | "eventAssistanceCases"
+    | "operationWorkItems"
     | "eventSuccessPlans"
     | "eventRehearsals"
     | "eventStaffGrants"
@@ -3748,6 +7012,16 @@ export interface OrganizerMessageTemplateDocument {
     | "COPY_CODE"
     | "UNKNOWN"
   )[];
+  /**
+   * @maxItems 10
+   */
+  buttonLabels?: (string | null)[];
+  parameterFormat?: "NAMED" | "POSITIONAL" | "UNKNOWN";
+  /**
+   * @maxItems 10
+   */
+  buttonUrls?: (string | null)[];
+  contentHash?: string;
   providerUpdatedAt: FirebaseFirestore.Timestamp | null;
   syncedAt: FirebaseFirestore.Timestamp;
 }
@@ -3990,7 +7264,7 @@ export interface OrganizerCampaignWebhookReceiptDocument {
 }
 
 /**
- * Sanitized durable provider event queued after signature verification. Inbound text is retained here for at most 30 days and copied into the organizer thread store for at most 12 months.
+ * Sanitized durable provider event queued after signature verification. Text and native reply labels follow the existing 30-day queue and 12-month Inbox retention. Native reply identifiers and provider correlation remain in the private queue and never authorize an action by themselves. Optional fields preserve compatibility with previously queued events.
  */
 export interface OrganizerMessagingWebhookEventDocument {
   provider: "metaCloudApi";
@@ -4006,13 +7280,94 @@ export interface OrganizerMessagingWebhookEventDocument {
     | "unmatched";
   providerMessageId: string | null;
   contextProviderMessageId: string | null;
+  providerAccountId?: string | null;
+  providerPhoneNumberId?: string | null;
+  callbackData?: string | null;
+  inboundReply?:
+    | null
+    | {
+        kind: "templateQuickReply";
+        payload: string;
+        label: string;
+      }
+    | {
+        kind: "replyButton";
+        id: string;
+        label: string;
+      }
+    | {
+        kind: "listReply";
+        id: string;
+        label: string;
+        description: string | null;
+      };
   deliveryStatus: null | "sent" | "delivered" | "read" | "failed";
   endpointHash: string | null;
   isStop: boolean;
   hasReply: boolean;
   inboundBody: string | null;
   providerErrorCode: number | null;
+  /**
+   * Complete bounded error-code evidence from signed ingress. Missing legacy evidence is unknown, never proof of an error-free status. Error text and details are not retained.
+   */
+  providerErrorEvidence?:
+    | {
+        kind: "none";
+      }
+    | {
+        kind: "codes";
+        /**
+         * @minItems 1
+         * @maxItems 10
+         */
+        codes: number[];
+      }
+    | {
+        kind: "unusable";
+      };
   providerOccurredAt: FirebaseFirestore.Timestamp | null;
+  /**
+   * Event Assistance consumer checkpoint, independent from campaign and Inbox processing. Waiting outcomes retry; other outcomes are terminal for this signed event.
+   */
+  assistanceProcessing?: {
+    sourceHash: string;
+    attemptCount: number;
+    updatedAt: FirebaseFirestore.Timestamp;
+    outcome:
+      | {
+          kind: "delivery";
+          disposition:
+            | "applied"
+            | "duplicateOrOlder"
+            | "conflictingEvidence"
+            | "unconfirmed";
+        }
+      | {
+          kind: "reply";
+          disposition: "accepted" | "replayed";
+        }
+      | {
+          kind: "waiting";
+          reason: "deliveryUnconfirmed";
+        }
+      | {
+          kind: "ignored";
+        }
+      | {
+          kind: "rejected";
+          reason:
+            | "unavailable"
+            | "deliveryScope"
+            | "scopeMismatch"
+            | "staleIntent"
+            | "invalidChoice"
+            | "expired"
+            | "alreadyResponded"
+            | "noLongerNeeded"
+            | "factsStale"
+            | "guestStateChanged";
+        };
+  };
   processingStatus: "pending" | "processed" | "unmatched" | "failed";
   attemptCount: number;
   createdAt: FirebaseFirestore.Timestamp;
@@ -4331,6 +7686,41 @@ export interface EventDocument {
     updatedAt: FirebaseFirestore.Timestamp;
     updatedBySource: "adminUpdateEventDetails" | "adminEventSearchBackfill";
   };
+  updatedAt?: FirebaseFirestore.Timestamp;
+  /**
+   * Monotonic revision for immutable attendee-relevant plan change records. Missing legacy values read as zero.
+   */
+  planChangeRevision?: number;
+}
+
+/**
+ * Immutable server-authored event plan change stored at eventPlanChanges/{sourceId}. Each revision captures the attendee-relevant event facts after one committed host edit.
+ */
+export interface EventPlanChangeDocument {
+  schemaVersion: 1;
+  sourceId: string;
+  eventId: string;
+  organizerId: string;
+  revision: number;
+  /**
+   * @minItems 1
+   * @maxItems 5
+   */
+  changedFields: (
+    | "name"
+    | "schedule"
+    | "meetingLocation"
+    | "itinerary"
+    | "format"
+  )[];
+  eventTitle: string;
+  startTime: FirebaseFirestore.Timestamp;
+  endTime: FirebaseFirestore.Timestamp;
+  meetingPoint: string;
+  itineraryStopCount: number;
+  occurredAt: FirebaseFirestore.Timestamp;
+  validUntil: FirebaseFirestore.Timestamp;
+  createdBy: string;
 }
 
 /**
@@ -4711,6 +8101,10 @@ export interface EventAttendeeDocument {
   inviteLinkId?: string | null;
   inviteCapturedAt?: FirebaseFirestore.Timestamp | null;
   /**
+   * Monotonic revision shared by all accountability writers. Missing legacy values read as zero.
+   */
+  accountabilityRevision?: number;
+  /**
    * Monotonic revision for absolute Host attendance operations. Missing legacy values read as zero.
    */
   attendanceRevision?: number;
@@ -4745,7 +8139,7 @@ export interface EventAttendeeDocument {
 }
 
 /**
- * Server-owned, expiring least-privilege access to one event's operational roster. It never grants organizer, CRM, provider, campaign, analytics, or event-edit authority.
+ * Server-owned, expiring event staff access. Event-wide operator permissions and group duties have independent expiry and authority; neither grants organizer or CRM access.
  */
 export interface EventStaffGrantDocument {
   organizerId: string;
@@ -4753,9 +8147,9 @@ export interface EventStaffGrantDocument {
   uid: string;
   displayName: string;
   phoneLastFour: string;
-  role: "checkInOperator";
+  role: "checkInOperator" | "eventOperator";
   /**
-   * @minItems 4
+   * @minItems 0
    * @maxItems 4
    */
   permissions: (
@@ -4772,6 +8166,23 @@ export interface EventStaffGrantDocument {
   revokedAt: FirebaseFirestore.Timestamp | null;
   updatedAt: FirebaseFirestore.Timestamp;
   revision: number;
+  /**
+   * Independent event-wide permission expiry. Missing legacy values use expiresAt; null grants no event-wide permissions.
+   */
+  operatorExpiresAt?: FirebaseFirestore.Timestamp | null;
+  /**
+   * At most one independently expiring duty per configured event/group. No implied event-wide roster or check-in permission.
+   *
+   * @maxItems 20
+   */
+  groupDuties?: {
+    groupId: string;
+    duty: "lead" | "pacer" | "sweep";
+    expiresAtMillis: number;
+    sourceHash: string;
+    grantedBy: string;
+    grantedAtMillis: number;
+  }[];
 }
 
 /**
@@ -4898,6 +8309,10 @@ export interface EventRuntimeParticipantDocument {
     | "questionnaireAnswerIds"
     | "teamName"
   )[];
+  /**
+   * Monotonic accepted runtime-profile submission revision. Legacy documents omit it and read as zero.
+   */
+  profileRevision?: number;
   runtimeProfile: {
     displayName: string;
     gender: ("man" | "woman" | "nonBinary" | "other") | null;
@@ -4932,6 +8347,95 @@ export interface EventRuntimeParticipantDocument {
   revokedAt: FirebaseFirestore.Timestamp | null;
   createdAt: FirebaseFirestore.Timestamp;
   updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Current source-fenced request for missing event-scoped runtime profile data.
+ */
+export interface EventRuntimeDataRequestDocument {
+  schemaVersion: 1;
+  requestId: string;
+  eventId: string;
+  organizerId: string;
+  attendeeId: string;
+  uid: string;
+  revision: number;
+  profileRevision: number;
+  sourceHash: string;
+  operationId: string;
+  /**
+   * @minItems 1
+   * @maxItems 10
+   */
+  fieldIds: (
+    | "displayName"
+    | "gender"
+    | "interestedInGenders"
+    | "relationshipGoal"
+    | "dateOfBirth"
+    | "paceBand"
+    | "skillBand"
+    | "dietaryAndSeatingNotes"
+    | "questionnaireAnswerIds"
+    | "teamName"
+  )[];
+  /**
+   * @maxItems 10
+   */
+  completedFieldIds: (
+    | "displayName"
+    | "gender"
+    | "interestedInGenders"
+    | "relationshipGoal"
+    | "dateOfBirth"
+    | "paceBand"
+    | "skillBand"
+    | "dietaryAndSeatingNotes"
+    | "questionnaireAnswerIds"
+    | "teamName"
+  )[];
+  status: "pending" | "completed";
+  requestedBy: "systemWithinPolicy";
+  requestedAt: FirebaseFirestore.Timestamp;
+  expiresAt: FirebaseFirestore.Timestamp;
+  completedAt: FirebaseFirestore.Timestamp | null;
+  updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Immutable idempotency receipt for one required-data command.
+ */
+export interface EventRuntimeDataRequestReceiptDocument {
+  schemaVersion: 1;
+  receiptId: string;
+  requestId: string;
+  eventId: string;
+  organizerId: string;
+  attendeeId: string;
+  uid: string;
+  operationId: string;
+  requestHash: string;
+  requestRevision: number;
+  profileRevision: number;
+  sourceHash: string;
+  /**
+   * @minItems 1
+   * @maxItems 10
+   */
+  fieldIds: (
+    | "displayName"
+    | "gender"
+    | "interestedInGenders"
+    | "relationshipGoal"
+    | "dateOfBirth"
+    | "paceBand"
+    | "skillBand"
+    | "dietaryAndSeatingNotes"
+    | "questionnaireAnswerIds"
+    | "teamName"
+  )[];
+  expiresAt: FirebaseFirestore.Timestamp;
+  createdAt: FirebaseFirestore.Timestamp;
 }
 
 /**
@@ -5009,6 +8513,149 @@ export interface EventSuccessLateArrivalDocument {
 }
 
 /**
+ * An immutable synthetic departure manifest with a separately revised checkpoint observation.
+ */
+export interface EventRehearsalMovementDocument {
+  sessionId: string;
+  clockId: string;
+  groupId: string;
+  progressRevision: number;
+  departure: {
+    sourceHash: string;
+    destination:
+      | {
+          kind: "fixedPlace";
+          placeId: string;
+          lateEntry: "allowed" | "hostDecision" | "closed";
+        }
+      | {
+          kind: "itineraryStop";
+          itineraryId: string;
+          stopId: string;
+        }
+      | {
+          kind: "groupCheckpoint";
+          routeId: string;
+          groupId: string;
+          checkpointId: string;
+        };
+    confirmedAt: number;
+    confirmedBy: string;
+    operationId: string;
+    roster: {
+      /**
+       * @maxItems 50
+       */
+      members: {
+        attendeeId: string;
+        displayName: string;
+        visitHash: string;
+        episodeId: string | null;
+        membershipHash: string | null;
+      }[];
+      selectionHash: string;
+    } | null;
+    checkpointRequest: {
+      responsibleOperatorId: string;
+      dueAt: number;
+    } | null;
+  };
+  report: {
+    revision: number;
+    rosterHash: string;
+    /**
+     * @maxItems 50
+     */
+    accountedFor: string[];
+    reportedAt: number;
+    reportedBy: string;
+    correctionReason: string | null;
+  } | null;
+  assignment?: {
+    revision: number;
+    responsibleOperatorId: string;
+    previousResponsibleOperatorId: string;
+    assignedBy: string;
+    assignedAt: number;
+    reason: string;
+    operationId: string;
+  };
+  closeout?: {
+    revision: number;
+    previousRevision: number;
+    changedBy: string;
+    changedAt: number;
+    reason: string;
+    decision:
+      | {
+          kind: "close";
+          report: {
+            revision: number;
+            rosterHash: string;
+            /**
+             * @maxItems 50
+             */
+            accountedFor: string[];
+            reportedAt: number;
+            reportedBy: string;
+            correctionReason: string | null;
+          };
+          /**
+           * @maxItems 50
+           */
+          dispositions: {
+            kind: "resolved";
+            disposition: "returned" | "departed";
+            revision: number;
+            resolvedAt: number;
+            resolvedBy: string;
+            sourceHash: string;
+            attendeeId: string;
+          }[];
+        }
+      | {
+          kind: "reopen";
+        };
+    operationId: string;
+  };
+}
+
+/**
+ * An immutable synthetic route override layered on a recorded rehearsal departure.
+ */
+export interface EventRehearsalRouteDecisionDocument {
+  sessionId: string;
+  clockId: string;
+  groupId: string;
+  progressRevision: number;
+  previousRevision: number;
+  departureRevision: number;
+  sourceHash: string;
+  alternativeId: string;
+  destination:
+    | {
+        kind: "fixedPlace";
+        placeId: string;
+        lateEntry: "allowed" | "hostDecision" | "closed";
+      }
+    | {
+        kind: "itineraryStop";
+        itineraryId: string;
+        stopId: string;
+      }
+    | {
+        kind: "groupCheckpoint";
+        routeId: string;
+        groupId: string;
+        checkpointId: string;
+      };
+  decisionId: string;
+  operationId: string;
+  decidedBy: string;
+  decidedAt: number;
+}
+
+/**
  * Server-owned isolated Host rehearsal session stored at eventRehearsals/{sessionId}.
  */
 export interface EventRehearsalDocument {
@@ -5055,6 +8702,7 @@ export interface EventRehearsalDocument {
       | "afterglow"
       | "accountability"
     )[];
+    unitOutcome?: "none" | "completion" | "score" | "rank";
     /**
      * Frozen, synthetic-only movement truth used by dress rehearsal. It never reads or writes a real person's live position.
      */
@@ -5171,6 +8819,408 @@ export interface EventRehearsalDocument {
   updatedAt: FirebaseFirestore.Timestamp;
   expiresAt: FirebaseFirestore.Timestamp;
   completedAt: FirebaseFirestore.Timestamp | null;
+  staff?: {
+    clockId: string;
+    revision: number;
+    /**
+     * @maxItems 50
+     */
+    operators: {
+      operatorId: string;
+      displayName: string;
+      /**
+       * @maxItems 20
+       */
+      duties: {
+        groupId: string;
+        duty: "lead" | "pacer" | "sweep";
+        expiresAtMillis: number;
+        sourceHash: string;
+        grantedBy: string;
+        grantedAtMillis: number;
+      }[];
+    }[];
+  };
+  assistanceSettings?: {
+    clockId: string;
+    runtime: {
+      status: "enabled" | "paused";
+      configuration: {
+        /**
+         * @minItems 1
+         * @maxItems 3
+         */
+        routes: (
+          | "catchEventSms"
+          | "catchEventRcs"
+          | "organizerEventWhatsapp"
+        )[];
+        deliveryPolicy: {
+          maxAttempts: number;
+          maxAttemptsPerRoute: number;
+          minimumRetrySeconds: number;
+        };
+        responseDeadline: number | null;
+        /**
+         * @maxItems 17
+         */
+        laterChoices?: {
+          label: string;
+          target:
+            | {
+                kind: "fixedPlace";
+                placeId: string;
+                lateEntry: "allowed" | "hostDecision" | "closed";
+              }
+            | {
+                kind: "itineraryStop";
+                itineraryId: string;
+                stopId: string;
+              }
+            | {
+                kind: "groupCheckpoint";
+                routeId: string;
+                groupId: string;
+                checkpointId: string;
+              };
+        }[];
+        /**
+         * @minItems 1
+         * @maxItems 6
+         */
+        outcomes: (
+          | {
+              kind: "accepted" | "delivered" | "read" | "revoked";
+            }
+          | {
+              kind: "failed";
+              classification:
+                | "technical"
+                | "policy"
+                | "suppressed"
+                | "invalidRecipient";
+            }
+          | {
+              kind: "unknown";
+              reason: "timeout" | "connectionLost" | "workerInterrupted";
+            }
+        )[];
+      };
+    } | null;
+    /**
+     * @maxItems 41
+     */
+    preferences: {
+      groupId: string;
+      preference:
+        | {
+            kind: "inherit";
+          }
+        | {
+            kind: "disabled";
+          }
+        | {
+            kind: "configured";
+            template: {
+              kind: "lateJoin";
+              version: 1;
+              setting:
+                | {
+                    kind: "enabled";
+                    authority: "observe" | "prepare" | "executeWithinPolicy";
+                  }
+                | {
+                    kind: "disabled";
+                    reason: "hostChoice" | "organizerDefault";
+                  };
+              config: {
+                destination:
+                  | {
+                      kind: "confirmedGroupProgress";
+                    }
+                  | (
+                      | {
+                          kind: "fixedPlace";
+                          placeId: string;
+                          lateEntry: "allowed" | "hostDecision" | "closed";
+                        }
+                      | {
+                          kind: "itineraryStop";
+                          itineraryId: string;
+                          /**
+                           * @minItems 1
+                           * @maxItems 1000
+                           */
+                          permittedStopIds: string[];
+                        }
+                      | {
+                          kind: "groupCheckpoint";
+                          routeId: string;
+                          groupId: string;
+                          /**
+                           * @minItems 1
+                           * @maxItems 1000
+                           */
+                          permittedCheckpointIds: string[];
+                        }
+                    );
+                cutoff:
+                  | {
+                      kind: "eventEnd";
+                    }
+                  | {
+                      kind: "time";
+                      /**
+                       * UTC milliseconds.
+                       */
+                      at: number;
+                    };
+                maxMessagesPerEpisode: number;
+                minimumMinutesBetweenMessages: number;
+                updateOn: "materialGuidanceChange";
+                unanswered: "keepUnknownUntilCutoff" | "hostReviewAtDeadline";
+              };
+            };
+          };
+    }[];
+  };
+  unitOutcomes?: {
+    unitOutcome: "completion" | "score" | "rank";
+    revision: number;
+    /**
+     * @maxItems 500
+     */
+    records: {
+      unitId: string;
+      round: number;
+      outcome:
+        | {
+            kind: "completion";
+            completed: boolean;
+          }
+        | {
+            kind: "score";
+            score: number;
+          }
+        | {
+            kind: "rank";
+            rank: number;
+          };
+      stateRevision: number;
+      operationId: string;
+      recordedBy: string;
+      recordedAt: FirebaseFirestore.Timestamp;
+    }[];
+  };
+  revealControl?: {
+    revision: number;
+    status: "idle" | "countingDown" | "revealed";
+    publishedRound: number;
+    pendingRound: number | null;
+    startedAt: FirebaseFirestore.Timestamp | null;
+    countdownSeconds: number;
+    lastDecisionId: string | null;
+    lastAction: ("startCountdown" | "cancelPending" | "publish") | null;
+  };
+  allocationState?: {
+    revision: number;
+    /**
+     * @maxItems 100
+     */
+    proposals: {
+      proposalId: string;
+      /**
+       * @minItems 1
+       * @maxItems 50
+       */
+      attendeeIds: string[];
+      targetUnitId: string;
+      baseRevision: number;
+      status: "pending" | "published" | "stale";
+      decisionId: string | null;
+      publishedRevision: number | null;
+      proposedBy: string;
+      operationId: string;
+      proposedAt: FirebaseFirestore.Timestamp;
+      publishedAt: FirebaseFirestore.Timestamp | null;
+    }[];
+  };
+  rosterReconciliation?: {
+    sourceId: string;
+    sourceRevision: number;
+    /**
+     * @minItems 2
+     * @maxItems 52
+     */
+    rows: {
+      rowId: string;
+      outcome: "imported" | "duplicate" | "ambiguous" | "failed";
+      actorId: string | null;
+    }[];
+    status: "pending" | "reconciled";
+    reconciliationRevision: number;
+    lastOperationId: string | null;
+    reconciledBy: string | null;
+    reconciledAt: FirebaseFirestore.Timestamp | null;
+  };
+}
+
+/**
+ * Synthetic practical help requests, retained until rehearsal reset or expiry. No live guest or safety case is written.
+ */
+export interface EventRehearsalCaseDocument {
+  [k: string]: unknown;
+}
+
+/**
+ * Synthetic message evidence isolated from the live outbox; deleted with its rehearsal session.
+ */
+export interface EventRehearsalMessageDocument {
+  sessionId: string;
+  actorId: string;
+  plan: {
+    /**
+     * Explicit observe, prepare, execute or disabled practice mode. Absence preserves earlier executable recipes.
+     */
+    setting?:
+      | {
+          kind: "enabled";
+          authority: "observe" | "prepare" | "executeWithinPolicy";
+        }
+      | {
+          kind: "disabled";
+          reason: "hostChoice" | "organizerDefault";
+        };
+    policy: {
+      destination:
+        | {
+            kind: "fixedPlace";
+            placeId: string;
+            lateEntry: "allowed" | "hostDecision" | "closed";
+          }
+        | {
+            kind: "itineraryStop";
+            itineraryId: string;
+            /**
+             * @minItems 1
+             * @maxItems 1000
+             */
+            permittedStopIds: string[];
+          }
+        | {
+            kind: "groupCheckpoint";
+            routeId: string;
+            groupId: string;
+            /**
+             * @minItems 1
+             * @maxItems 1000
+             */
+            permittedCheckpointIds: string[];
+          };
+      cutoff:
+        | {
+            kind: "eventEnd";
+          }
+        | {
+            kind: "time";
+            /**
+             * UTC milliseconds.
+             */
+            at: number;
+          };
+      maxMessagesPerEpisode: number;
+      minimumMinutesBetweenMessages: number;
+      updateOn: "materialGuidanceChange";
+      unanswered: "keepUnknownUntilCutoff" | "hostReviewAtDeadline";
+    };
+    guidance: {
+      /**
+       * Nonnegative safe integer revision.
+       */
+      revision: number;
+      destination:
+        | {
+            kind: "fixedPlace";
+            placeId: string;
+            lateEntry: "allowed" | "hostDecision" | "closed";
+          }
+        | {
+            kind: "itineraryStop";
+            itineraryId: string;
+            stopId: string;
+          }
+        | {
+            kind: "groupCheckpoint";
+            routeId: string;
+            groupId: string;
+            checkpointId: string;
+          };
+      materialKey: string;
+      text: string;
+      /**
+       * UTC milliseconds.
+       */
+      validUntil: number;
+    };
+    departureConfirmed: boolean;
+    responseDeadline: number | null;
+    /**
+     * @minItems 1
+     * @maxItems 3
+     */
+    routes: ("catchEventSms" | "catchEventRcs" | "organizerEventWhatsapp")[];
+    deliveryPolicy: {
+      maxAttempts: number;
+      maxAttemptsPerRoute: number;
+      minimumRetrySeconds: number;
+    };
+    /**
+     * @maxItems 17
+     */
+    laterChoices?: {
+      label: string;
+      target:
+        | {
+            kind: "fixedPlace";
+            placeId: string;
+            lateEntry: "allowed" | "hostDecision" | "closed";
+          }
+        | {
+            kind: "itineraryStop";
+            itineraryId: string;
+            stopId: string;
+          }
+        | {
+            kind: "groupCheckpoint";
+            routeId: string;
+            groupId: string;
+            checkpointId: string;
+          };
+    }[];
+  };
+  record: EventAssistanceMessageDocument;
+  handoff?: {
+    actorUid: string;
+    at: number;
+    operationId: string;
+  };
+  /**
+   * Server-derived accepted-group proof for a group checkpoint instruction. Unbound historical group messages remain evidence only.
+   */
+  membershipBinding?: {
+    episodeId: string;
+    groupId: string;
+    groupSourceHash: string;
+    assignmentRevision: number;
+  };
+  /**
+   * Server-derived confirmed departure proof. Historical messages without this proof remain evidence only.
+   */
+  movementBinding?: {
+    groupId: string;
+    progressRevision: number;
+    sourceHash: string;
+  };
 }
 
 /**
@@ -5199,6 +9249,7 @@ export interface EventRehearsalActorDocument {
     | "disconnected"
     | "walkIn"
     | "ambiguousClaim";
+  connectionState?: "connected" | "disconnected";
   guestMoment:
     | "welcome"
     | "checkIn"
@@ -5221,6 +9272,478 @@ export interface EventRehearsalActorDocument {
   lastActionAt: FirebaseFirestore.Timestamp | null;
   createdAt: FirebaseFirestore.Timestamp;
   updatedAt: FirebaseFirestore.Timestamp;
+  assistance?: {
+    intention:
+      | {
+          kind: "unknown";
+        }
+      | {
+          kind: "onMyWay";
+          claimedEta: number | null;
+        }
+      | {
+          kind: "joinLater";
+          target:
+            | {
+                kind: "fixedPlace";
+                placeId: string;
+                lateEntry: "allowed" | "hostDecision" | "closed";
+              }
+            | {
+                kind: "itineraryStop";
+                itineraryId: string;
+                stopId: string;
+              }
+            | {
+                kind: "groupCheckpoint";
+                routeId: string;
+                groupId: string;
+                checkpointId: string;
+              };
+        }
+      | {
+          kind: "notComing";
+        };
+    latestMessageId: string | null;
+  };
+  assistanceAutomation?: {
+    clockId: string;
+    status: "enabled" | "paused";
+    plan: {
+      /**
+       * Explicit observe, prepare, execute or disabled practice mode. Absence preserves earlier executable recipes.
+       */
+      setting?:
+        | {
+            kind: "enabled";
+            authority: "observe" | "prepare" | "executeWithinPolicy";
+          }
+        | {
+            kind: "disabled";
+            reason: "hostChoice" | "organizerDefault";
+          };
+      policy: {
+        destination:
+          | {
+              kind: "fixedPlace";
+              placeId: string;
+              lateEntry: "allowed" | "hostDecision" | "closed";
+            }
+          | {
+              kind: "itineraryStop";
+              itineraryId: string;
+              /**
+               * @minItems 1
+               * @maxItems 1000
+               */
+              permittedStopIds: string[];
+            }
+          | {
+              kind: "groupCheckpoint";
+              routeId: string;
+              groupId: string;
+              /**
+               * @minItems 1
+               * @maxItems 1000
+               */
+              permittedCheckpointIds: string[];
+            };
+        cutoff:
+          | {
+              kind: "eventEnd";
+            }
+          | {
+              kind: "time";
+              /**
+               * UTC milliseconds.
+               */
+              at: number;
+            };
+        maxMessagesPerEpisode: number;
+        minimumMinutesBetweenMessages: number;
+        updateOn: "materialGuidanceChange";
+        unanswered: "keepUnknownUntilCutoff" | "hostReviewAtDeadline";
+      };
+      guidance: {
+        /**
+         * Nonnegative safe integer revision.
+         */
+        revision: number;
+        destination:
+          | {
+              kind: "fixedPlace";
+              placeId: string;
+              lateEntry: "allowed" | "hostDecision" | "closed";
+            }
+          | {
+              kind: "itineraryStop";
+              itineraryId: string;
+              stopId: string;
+            }
+          | {
+              kind: "groupCheckpoint";
+              routeId: string;
+              groupId: string;
+              checkpointId: string;
+            };
+        materialKey: string;
+        text: string;
+        /**
+         * UTC milliseconds.
+         */
+        validUntil: number;
+      };
+      departureConfirmed: boolean;
+      responseDeadline: number | null;
+      /**
+       * @minItems 1
+       * @maxItems 3
+       */
+      routes: ("catchEventSms" | "catchEventRcs" | "organizerEventWhatsapp")[];
+      deliveryPolicy: {
+        maxAttempts: number;
+        maxAttemptsPerRoute: number;
+        minimumRetrySeconds: number;
+      };
+      /**
+       * @maxItems 17
+       */
+      laterChoices?: {
+        label: string;
+        target:
+          | {
+              kind: "fixedPlace";
+              placeId: string;
+              lateEntry: "allowed" | "hostDecision" | "closed";
+            }
+          | {
+              kind: "itineraryStop";
+              itineraryId: string;
+              stopId: string;
+            }
+          | {
+              kind: "groupCheckpoint";
+              routeId: string;
+              groupId: string;
+              checkpointId: string;
+            };
+      }[];
+    };
+    /**
+     * @minItems 1
+     * @maxItems 6
+     */
+    outcomes: (
+      | {
+          kind: "accepted" | "delivered" | "read" | "revoked";
+        }
+      | {
+          kind: "failed";
+          classification:
+            | "technical"
+            | "policy"
+            | "suppressed"
+            | "invalidRecipient";
+        }
+      | {
+          kind: "unknown";
+          reason: "timeout" | "connectionLost" | "workerInterrupted";
+        }
+    )[];
+    nextOutcomeIndex: number;
+    evaluation: {
+      at: number;
+      policy:
+        | (
+            | {
+                kind: "resolved";
+                reason: "joined" | "declined";
+              }
+            | {
+                kind: "cancelled";
+                reason:
+                  | "eventClosed"
+                  | "notAdmitted"
+                  | "policyDisabled"
+                  | "participationInactive";
+              }
+            | {
+                kind: "expired";
+                reason: "cutoff" | "lateEntryClosed";
+              }
+            | {
+                kind: "wait";
+                reason:
+                  | "departureUnconfirmed"
+                  | "attendanceUnknown"
+                  | "guidanceUnavailable"
+                  | "throttled"
+                  | "unchanged"
+                  | "participationUnknown";
+              }
+            | {
+                kind: "hostDecision";
+                reason: "unreachable" | "entryDecision" | "missingInformation";
+                guidance: {
+                  /**
+                   * Nonnegative safe integer revision.
+                   */
+                  revision: number;
+                  destination:
+                    | {
+                        kind: "fixedPlace";
+                        placeId: string;
+                        lateEntry: "allowed" | "hostDecision" | "closed";
+                      }
+                    | {
+                        kind: "itineraryStop";
+                        itineraryId: string;
+                        stopId: string;
+                      }
+                    | {
+                        kind: "groupCheckpoint";
+                        routeId: string;
+                        groupId: string;
+                        checkpointId: string;
+                      };
+                  materialKey: string;
+                  text: string;
+                  /**
+                   * UTC milliseconds.
+                   */
+                  validUntil: number;
+                } | null;
+              }
+            | {
+                kind: "update";
+                guidance: {
+                  /**
+                   * Nonnegative safe integer revision.
+                   */
+                  revision: number;
+                  destination:
+                    | {
+                        kind: "fixedPlace";
+                        placeId: string;
+                        lateEntry: "allowed" | "hostDecision" | "closed";
+                      }
+                    | {
+                        kind: "itineraryStop";
+                        itineraryId: string;
+                        stopId: string;
+                      }
+                    | {
+                        kind: "groupCheckpoint";
+                        routeId: string;
+                        groupId: string;
+                        checkpointId: string;
+                      };
+                  materialKey: string;
+                  text: string;
+                  /**
+                   * UTC milliseconds.
+                   */
+                  validUntil: number;
+                };
+                messageKey: string;
+                shouldSend: boolean;
+                nextEvaluationAt: number | null;
+              }
+          )
+        | null;
+      delivery:
+        | {
+            kind: "paused";
+          }
+        | {
+            kind: "notApplicable";
+          }
+        | {
+            kind: "scriptExhausted";
+          }
+        | {
+            kind: "stop";
+            reason:
+              | "responded"
+              | "cancelled"
+              | "superseded"
+              | "expired"
+              | "eventClosed"
+              | "permissionRevoked"
+              | "guestPresent"
+              | "guestDeclined"
+              | "notAdmitted"
+              | "hostStopped"
+              | "participationInactive";
+          }
+        | {
+            kind: "delivered";
+            /**
+             * @maxItems 6
+             */
+            attemptIds: string[];
+          }
+        | {
+            kind: "reconcile";
+            /**
+             * @maxItems 6
+             */
+            attemptIds: string[];
+            notBefore: number;
+          }
+        | {
+            kind: "refreshFacts";
+            reason: "eventFactsStale" | "routeFactsStale";
+          }
+        | {
+            kind: "wait";
+            notBefore: number;
+            reason: "retryBackoff";
+          }
+        | {
+            kind: "hostDecision";
+            reason:
+              | "noEligibleRoute"
+              | "attemptLimit"
+              | "policyRejected"
+              | "recipientNeedsReview"
+              | "providerOwnsFallback"
+              | "conflictingDeliveryEvidence"
+              | "historyUnavailable"
+              | "configurationUnavailable";
+          };
+    } | null;
+    /**
+     * Server-owned event configuration enrollment. Absence preserves the explicitly configured per-guest recipe.
+     */
+    origin?: "eventSettings";
+  };
+  /**
+   * Preserves a pre-existing help flag without fabricating a typed request. New actors initialize false.
+   */
+  untrackedHelpRequested?: boolean;
+  visit?: {
+    attendanceRevision: number;
+    checkedInAtMillis: number | null;
+    accountabilityRevision: number;
+    resolution: {
+      disposition: "returned" | "departed";
+      visitRevision: number;
+      checkedInAtMillis: number;
+      resolvedAtMillis: number;
+      resolvedBy: string;
+    } | null;
+  };
+  participation?: {
+    revision: number;
+    episodeRevision: number;
+    state: "active" | "departed" | "pending";
+  };
+  groupMembership?: {
+    clockId: string;
+    episodeId: string;
+    revision: number;
+    accepted: {
+      groupId: string;
+      groupSourceHash: string;
+      responsibleOperatorId: string;
+      acceptedAt: number;
+    } | null;
+    transfer:
+      | (
+          | {
+              transferId: string;
+              from: string | null;
+              to: string;
+              targetSourceHash: string;
+              receivingOperatorId: string;
+              requestedBy: string;
+              requestedAt: number;
+              expiresAt: number;
+              status: "pending";
+              resolvedAt: null;
+              resolvedBy: null;
+            }
+          | {
+              transferId: string;
+              from: string | null;
+              to: string;
+              targetSourceHash: string;
+              receivingOperatorId: string;
+              requestedBy: string;
+              requestedAt: number;
+              expiresAt: number;
+              status: "accepted" | "rejected" | "cancelled";
+              resolvedAt: number;
+              resolvedBy: string;
+            }
+        )
+      | null;
+    createdAt: number;
+    updatedAt: number;
+    /**
+     * Membership revision of the last placement, accepted transfer or removal. Proposals preserve it; absent legacy evidence cannot authorize group directions.
+     */
+    assignmentRevision?: number;
+  };
+  requiredData?: {
+    profileRevision: number;
+    /**
+     * @maxItems 10
+     */
+    completedFieldIds: (
+      | "displayName"
+      | "gender"
+      | "interestedInGenders"
+      | "relationshipGoal"
+      | "dateOfBirth"
+      | "paceBand"
+      | "skillBand"
+      | "dietaryAndSeatingNotes"
+      | "questionnaireAnswerIds"
+      | "teamName"
+    )[];
+    requestRevision: number;
+    request: {
+      revision: number;
+      sourceHash: string;
+      /**
+       * @minItems 1
+       * @maxItems 10
+       */
+      fieldIds: (
+        | "displayName"
+        | "gender"
+        | "interestedInGenders"
+        | "relationshipGoal"
+        | "dateOfBirth"
+        | "paceBand"
+        | "skillBand"
+        | "dietaryAndSeatingNotes"
+        | "questionnaireAnswerIds"
+        | "teamName"
+      )[];
+      /**
+       * @maxItems 10
+       */
+      completedFieldIds: (
+        | "displayName"
+        | "gender"
+        | "interestedInGenders"
+        | "relationshipGoal"
+        | "dateOfBirth"
+        | "paceBand"
+        | "skillBand"
+        | "dietaryAndSeatingNotes"
+        | "questionnaireAnswerIds"
+        | "teamName"
+      )[];
+      status: "pending" | "completed";
+      requestedAt: FirebaseFirestore.Timestamp;
+      expiresAt: FirebaseFirestore.Timestamp;
+      completedAt: FirebaseFirestore.Timestamp | null;
+    } | null;
+  };
 }
 
 /**
@@ -5236,6 +9759,7 @@ export interface EventRehearsalActionDocument {
   runtimeRevision: number;
   virtualNow: FirebaseFirestore.Timestamp;
   createdAt: FirebaseFirestore.Timestamp;
+  requestHash?: string;
 }
 
 /**

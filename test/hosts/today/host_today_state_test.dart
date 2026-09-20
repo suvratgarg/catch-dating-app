@@ -166,6 +166,8 @@ void main() {
     final now = DateTime(2026, 6, 15, 12);
     final kinds = [
       HostAttentionKind.eventLiveOperations,
+      HostAttentionKind.eventAssistanceCaseReview,
+      HostAttentionKind.eventAssistanceDeliveryReview,
       HostAttentionKind.eventWaitlistReview,
       HostAttentionKind.eventJoinRequestReview,
       HostAttentionKind.applicationReview,

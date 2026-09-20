@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_event_manage.feature.json",
   "generatedFor": "2026-08-17",
   "sourceDigest": "sha256:09d9c1a550a82890442f2d1ade2b2dfd908ccee68c7dad529e8357ac475510ec",
-  "resolvedDigest": "sha256:e2ab03e76b2c1e78a477766eb686db23357ffa56c92c58ae3908809e2c68c757",
+  "resolvedDigest": "sha256:22de126e515d0f6ab3b63dc8a9d0c6833af0f8e3169f2232527d6e9c1af03c38",
   "feature": {
     "id": "feature.host_event_manage",
     "name": "Host Event Manage",
@@ -3486,6 +3486,7 @@
               "file": "packages/catch_ui/lib/src/components/catch_field.dart",
               "constructors": [
                 "CatchField.read",
+                "CatchField.navigate",
                 "CatchField.content",
                 "CatchField.nav",
                 "CatchField.sortable",
@@ -5349,6 +5350,7 @@
               "file": "packages/catch_ui/lib/src/components/catch_field.dart",
               "constructors": [
                 "CatchField.read",
+                "CatchField.navigate",
                 "CatchField.content",
                 "CatchField.nav",
                 "CatchField.sortable",

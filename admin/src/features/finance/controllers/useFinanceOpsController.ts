@@ -14,7 +14,7 @@ import {
 
 export type FinanceIssueKind = "all" | "payment" | "event" | "payout";
 export type FinanceSourceId = "overview" | "hostAnalytics";
-export type FinanceSourceStatus = "loading" | "ready" | "error";
+export type FinanceSourceStatus = "loading" | "ready" | "error" | "restricted";
 export type FinanceEvidenceState = "source" | "inferred" | "unknown";
 
 export interface FinanceIssueRow {
@@ -106,14 +106,18 @@ const emptyFinanceMetrics: FinanceMetrics = {
 };
 
 export function useFinanceOpsController({
+  adminRoles,
   onError,
   onSelectIssueId,
   selectedIssueId = null,
 }: {
+  adminRoles?: string[];
   onError: (message: string | null) => void;
   onSelectIssueId?: (issueId: string) => void;
   selectedIssueId?: string | null;
 }): FinanceOpsController {
+  const canLoadHostAnalytics = adminRoles === undefined ||
+    adminRoles.some((role) => role === "adminOwner" || role === "analyticsViewer");
   const overviewQuery = useQuery({
     queryKey: adminQueryKeys.finance.overview(),
     queryFn: loadFinanceOverview,
@@ -121,6 +125,7 @@ export function useFinanceOpsController({
   const hostAnalyticsQuery = useQuery({
     queryKey: adminQueryKeys.finance.hostAnalytics(),
     queryFn: loadFinanceHostAnalytics,
+    enabled: canLoadHostAnalytics,
   });
   const [kindFilter, setKindFilter] = useState<FinanceIssueKind>("all");
   const [query, setQuery] = useState("");
@@ -144,6 +149,7 @@ export function useFinanceOpsController({
       scope: "Current capped overview preview and current payout restriction metrics",
     }),
     sourceState({
+      enabled: canLoadHostAnalytics,
       dataUpdatedAt: hostAnalyticsQuery.dataUpdatedAt,
       error: hostAnalyticsQuery.error,
       generatedAt: hostAnalyticsQuery.data?.generatedAt ?? null,
@@ -153,6 +159,7 @@ export function useFinanceOpsController({
       scope: "30-day host analytics, weekly granularity",
     }),
   ], [
+    canLoadHostAnalytics,
     hostAnalyticsQuery.data?.generatedAt,
     hostAnalyticsQuery.dataUpdatedAt,
     hostAnalyticsQuery.error,
@@ -163,9 +170,13 @@ export function useFinanceOpsController({
     overviewQuery.isPending,
   ]);
   const isLoading = sources.some((source) => source.status === "loading");
-  const isPartial = sources.some((source) => source.status === "error") &&
-    sources.some((source) => source.status === "ready");
-  const isUnavailable = sources.every((source) => source.status === "error");
+  const availableSources = sources.filter((source) =>
+    source.status !== "restricted"
+  );
+  const isPartial = availableSources.some((source) => source.status === "error") &&
+    availableSources.some((source) => source.status === "ready");
+  const isUnavailable = availableSources.length > 0 &&
+    availableSources.every((source) => source.status === "error");
 
   useEffect(() => {
     if (isUnavailable) {
@@ -176,19 +187,19 @@ export function useFinanceOpsController({
   }, [isUnavailable, onError]);
 
   const retrySource = useCallback(async (sourceId: FinanceSourceId) => {
+    if (sourceId === "hostAnalytics" && !canLoadHostAnalytics) return false;
     const result = sourceId === "overview" ?
       await overviewQuery.refetch() :
       await hostAnalyticsQuery.refetch();
     return !result.error;
-  }, [hostAnalyticsQuery, overviewQuery]);
+  }, [canLoadHostAnalytics, hostAnalyticsQuery, overviewQuery]);
 
   const refresh = useCallback(async () => {
-    const [overviewResult, analyticsResult] = await Promise.all([
-      overviewQuery.refetch(),
-      hostAnalyticsQuery.refetch(),
-    ]);
+    const overviewResult = await overviewQuery.refetch();
+    if (!canLoadHostAnalytics) return !overviewResult.error;
+    const analyticsResult = await hostAnalyticsQuery.refetch();
     return !overviewResult.error || !analyticsResult.error;
-  }, [hostAnalyticsQuery, overviewQuery]);
+  }, [canLoadHostAnalytics, hostAnalyticsQuery, overviewQuery]);
 
   const filteredRows = useMemo(
     () => filterRows(rows, kindFilter, query),
@@ -420,6 +431,7 @@ function buildFinanceMetrics({
 
 function sourceState({
   dataUpdatedAt,
+  enabled = true,
   error,
   generatedAt,
   id,
@@ -428,6 +440,7 @@ function sourceState({
   scope,
 }: {
   dataUpdatedAt: number;
+  enabled?: boolean;
   error: unknown;
   generatedAt: string | null;
   id: FinanceSourceId;
@@ -439,10 +452,11 @@ function sourceState({
     id,
     label,
     scope,
-    status: isPending ? "loading" : error ? "error" : "ready",
+    status: !enabled ? "restricted" : isPending ? "loading" : error ? "error" : "ready",
     generatedAt,
     loadedAt: dataUpdatedAt > 0 ? new Date(dataUpdatedAt).toISOString() : null,
-    error: error ? messageFromError(error, "Source unavailable") : null,
+    error: !enabled ? "Your Finance role can manage messaging budgets without host analytics access." :
+      error ? messageFromError(error, "Source unavailable") : null,
   };
 }
 
