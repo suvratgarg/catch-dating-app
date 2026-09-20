@@ -72,7 +72,7 @@ final class EventRehearsalSettingsControllerProvider
 }
 
 String _$eventRehearsalSettingsControllerHash() =>
-    r'b57dadbcd11826c8141c1098385ed303d680470d';
+    r'429ef64ab98332e565b85090c14b04831920876d';
 
 /// One rehearsal owns one unresolved event rule or simulated runtime decision.
 /// Refresh, dismissal and a different selection cannot replace its frozen request.

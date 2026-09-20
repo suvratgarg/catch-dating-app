@@ -70,7 +70,7 @@ final class EventAssistanceGroupStaffControllerProvider
 }
 
 String _$eventAssistanceGroupStaffControllerHash() =>
-    r'14d53d3ab3e25b25ac3febfb5ec3933d50b4fe7e';
+    r'95ef3f4e45c07f354d8ab1f0b8ac12e29bae7b88';
 
 /// One verified staff account owns one pending group duty decision across lookup refresh and closure.
 

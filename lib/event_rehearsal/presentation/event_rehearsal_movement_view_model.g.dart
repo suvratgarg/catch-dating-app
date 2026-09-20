@@ -66,7 +66,7 @@ final class EventRehearsalMovementProvider
 }
 
 String _$eventRehearsalMovementHash() =>
-    r'e53ea4950db483fc55d4297b1415662c9e7bc1d6';
+    r'217c04eec975a32af170e45f3e2e3b8dc2905bb3';
 
 final class EventRehearsalMovementFamily extends $Family
     with

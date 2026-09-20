@@ -72,7 +72,7 @@ final class EventAssistanceMembershipProvider
 }
 
 String _$eventAssistanceMembershipHash() =>
-    r'9c2d23e9c19dec985c68f22b69e75bc86c73971e';
+    r'b089c440cee73859bc0dbd984bc47b710876e866';
 
 /// The route consumes this outer provider; old-account data is never rendered.
 

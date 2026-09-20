@@ -69,7 +69,7 @@ final class EventParticipantContextReaderProvider
 }
 
 String _$eventParticipantContextReaderHash() =>
-    r'bd9bbd32e242dcb1e9d7d7abc8708bd16383554c';
+    r'a7e768796ab5873fb80a3bb75ba60f227b0c0e08';
 
 /// Account changes and explicit refresh hide prior identity, including same-UID re-entry.
 

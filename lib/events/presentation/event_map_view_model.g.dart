@@ -72,4 +72,4 @@ final class EventMapViewModelProvider
   }
 }
 
-String _$eventMapViewModelHash() => r'fbe47965e73bc4ffd418d5d12786a41689244b84';
+String _$eventMapViewModelHash() => r'0ee802c699aad0a2134c9e2cd122e009cd7d66f9';

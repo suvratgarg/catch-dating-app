@@ -139,7 +139,7 @@ final class DashboardFullViewModelProvider
 }
 
 String _$dashboardFullViewModelHash() =>
-    r'46df5951fa2922a6cd7cca358977b6370a71ad1f';
+    r'd52230700a68c21de28d079cc55f7e3951d16876';
 
 /// Combines signed-up and attended events into the live-layer home model.
 
@@ -247,4 +247,4 @@ final class DashboardHomeScreenStateProvider
 }
 
 String _$dashboardHomeScreenStateHash() =>
-    r'78954ae2db9869be1b1f5cdfbc2d3f866ffa4fac';
+    r'9826ffd9e8acedd059f5b6909be5c4bdc0b51c45';

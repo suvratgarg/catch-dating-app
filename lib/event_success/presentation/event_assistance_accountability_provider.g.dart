@@ -73,7 +73,7 @@ final class EventAssistanceAccountabilityProvider
 }
 
 String _$eventAssistanceAccountabilityHash() =>
-    r'130121d893509991b7f8422dc943c84e2a9a376c';
+    r'91449c653ea2bcca87c493303abd71552db67750';
 
 /// The route consumes this outer provider; old-account data is never rendered.
 
@@ -213,7 +213,7 @@ final class EventAssistanceAccountabilityForAccountProvider
 }
 
 String _$eventAssistanceAccountabilityForAccountHash() =>
-    r'5c3eb1fc8dea10259779a71d990d3ed593fdcf44';
+    r'6072be36f9587bee2fcdbc17d1dd05d1a70b990f';
 
 final class EventAssistanceAccountabilityForAccountFamily extends $Family
     with

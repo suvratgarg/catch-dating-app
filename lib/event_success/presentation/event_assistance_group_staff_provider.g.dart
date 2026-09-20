@@ -72,7 +72,7 @@ final class EventAssistanceGroupStaffProvider
 }
 
 String _$eventAssistanceGroupStaffHash() =>
-    r'4fa504099c9c267c1dd62aaefebd484e9c3783b6';
+    r'4f67f89d5e8bcd08e271bf82aa072e3f67b895b1';
 
 /// The route consumes this outer provider; old-account data is never rendered.
 

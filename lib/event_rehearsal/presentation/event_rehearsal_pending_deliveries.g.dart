@@ -56,7 +56,7 @@ final class EventRehearsalPendingDeliveriesProvider
 }
 
 String _$eventRehearsalPendingDeliveriesHash() =>
-    r'1dce154f9947d7ef1abe2e9346033a25b150ee43';
+    r'8705facdce46c5f417f4952d467086f1afd98989';
 
 /// Discovery references only. Each delivery controller owns its command and retry.
 /// A server page may omit a message whose handoff succeeded without confirmation.

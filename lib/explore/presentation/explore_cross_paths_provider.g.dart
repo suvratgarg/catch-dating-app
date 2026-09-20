@@ -123,4 +123,4 @@ final class ExploreCrossPathsSuggestionsProvider
 }
 
 String _$exploreCrossPathsSuggestionsHash() =>
-    r'f7b5808bc385decb724e2dc1bb21fe04ca23c219';
+    r'a7370787c57d8f8ded49fcd101574d170f2842ae';

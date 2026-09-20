@@ -70,7 +70,7 @@ final class EventAssistanceLateJoinSettingEditorProvider
 }
 
 String _$eventAssistanceLateJoinSettingEditorHash() =>
-    r'73c52e74bd8e92e02b0a2936b2f6461efa443e00';
+    r'b20926cfcedd40240a1a277f74397e1a9bc3d9bd';
 
 /// One event or group owns one pending late arrival preference across page refresh and sheet closure.
 
