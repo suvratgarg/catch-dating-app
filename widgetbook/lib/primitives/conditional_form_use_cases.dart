@@ -1,12 +1,13 @@
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
+import 'package:catch_ui/src/components/catch_dependent_row_section.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
 @widgetbook.UseCase(
   name: 'Dependent configuration',
-  type: CatchSection,
+  type: CatchDependentRowSection,
   path: '[Core catalog]/Grouping',
 )
 Widget catchDependentConfigurationUseCase(BuildContext context) =>
