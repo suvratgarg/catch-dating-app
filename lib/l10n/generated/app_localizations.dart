@@ -5753,30 +5753,6 @@ abstract class AppLocalizations {
   /// **'Photos'**
   String get userProfileProfileTabSkeletonTitlePhotos;
 
-  /// Product copy used by lib/clubs/presentation/detail/widgets/club_detail_skeleton.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'About'**
-  String get clubsClubDetailSkeletonTitleAbout;
-
-  /// Product copy used by lib/clubs/presentation/detail/widgets/club_detail_skeleton.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'What we do'**
-  String get clubsClubDetailSkeletonTitleWhatWeDo;
-
-  /// Product copy used by lib/clubs/presentation/detail/widgets/club_detail_skeleton.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'Your hosts'**
-  String get clubsClubDetailSkeletonTitleYourHosts;
-
-  /// Product copy used by lib/clubs/presentation/detail/widgets/club_detail_skeleton.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'Schedule'**
-  String get clubsClubDetailSkeletonTitleSchedule;
-
   /// Product copy used by lib/clubs/presentation/detail/widgets/club_hero_app_bar.dart (title).
   ///
   /// In en, this message translates to:
