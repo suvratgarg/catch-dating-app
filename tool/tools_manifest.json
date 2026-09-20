@@ -7116,6 +7116,30 @@
       "checks": [
         "node --check tool/demo/rsvp_escape/vite.config.mjs"
       ]
+    },
+    {
+      "id": "demo:rsvp-import-api",
+      "category": "demo",
+      "path": "tool/demo/rsvp_escape/import_server.cjs",
+      "command": "node tool/demo/rsvp_escape/import_server.cjs --verify",
+      "safety": "local-writes-build-artifacts",
+      "status": "internal",
+      "description": "Runs normal roster import and CRM projection against an isolated synthetic store; never initializes Firebase Admin.",
+      "checks": [
+        "node --check tool/demo/rsvp_escape/import_server.cjs"
+      ]
+    },
+    {
+      "id": "demo:rsvp-import-ui",
+      "category": "demo",
+      "path": "tool/demo/rsvp_escape/import_main.dart",
+      "command": "flutter build web --target=tool/demo/rsvp_escape/import_main.dart --output=build/rsvp-import-web",
+      "safety": "local-writes-build-artifacts",
+      "status": "internal",
+      "description": "Renders the production spreadsheet parser and mapping sheet for a local synthetic XLSX fixture.",
+      "checks": [
+        "dart format --output=none --set-exit-if-changed tool/demo/rsvp_escape/import_main.dart"
+      ]
     }
   ]
 }
