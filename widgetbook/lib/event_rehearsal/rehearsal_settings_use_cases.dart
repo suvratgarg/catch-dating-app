@@ -73,7 +73,7 @@ class _PreviewState extends State<_Preview> {
     future: _future,
     builder: (context, async) {
       if (async.hasError) return Text('Preview unavailable: ${async.error}');
-      if (!async.hasData) return const CatchSkeleton.rows();
+      if (!async.hasData) return const CatchLoadingIndicator();
       final snapshot = async.requireData;
       final draft =
           _draft ??

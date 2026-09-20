@@ -110,7 +110,7 @@ class _PreviewState extends State<_Preview> {
     future: _fixtures,
     builder: (context, value) {
       if (value.hasError) return Text('Preview unavailable: ${value.error}');
-      if (!value.hasData) return const CatchSkeleton.rows();
+      if (!value.hasData) return const CatchLoadingIndicator();
       final data = value.requireData;
       final live = HelpPreviewLiveRepository(data[0]);
       final practice = HelpPreviewPracticeRepository(data[1]);
