@@ -94,12 +94,11 @@ void main() {
     'first quiet visit opens full-screen focus and close persists skip',
     (tester) async {
       final router = await mount(tester);
-      expect(
-        router.state.uri.path,
-        '/host/today/focus',
-      );
+      expect(router.state.uri.path, '/host/today/focus');
       expect(find.byType(HostTodayFocusScreen), findsOneWidget);
-      await tester.ensureVisible(find.byKey(const ValueKey('host-today-focus-skip')));
+      await tester.ensureVisible(
+        find.byKey(const ValueKey('host-today-focus-skip')),
+      );
       await tester.tap(find.byKey(const ValueKey('host-today-focus-skip')));
       await pumpFeatureUi(tester);
       expect(preferences.values[scope], const HostTodayPreference.skipped());

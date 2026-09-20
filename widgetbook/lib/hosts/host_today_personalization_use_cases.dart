@@ -1,3 +1,5 @@
+import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_focus_screen.dart';
+import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_personalized_view.dart';
 import 'package:catch_dating_app/hosts/today/personalization/domain/host_today_preference.dart';
 import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_focus_body.dart';
 import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_personalization_panel.dart';
@@ -7,6 +9,11 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
+@widgetbook.UseCase(
+  name: 'Covered by focus choice',
+  type: HostTodayFocusScreen,
+  path: '[P1 product surfaces]/Host Today',
+)
 @widgetbook.UseCase(
   name: 'Choose a focus',
   type: HostTodayFocusBody,
@@ -25,6 +32,11 @@ Widget hostTodayFocusChoices(BuildContext context) => CatchRouteScaffold(
   ),
 );
 
+@widgetbook.UseCase(
+  name: 'Covered by quiet roadmap',
+  type: HostTodayPersonalizedView,
+  path: '[P1 product surfaces]/Host Today',
+)
 @widgetbook.UseCase(
   name: 'Quiet day roadmap',
   type: HostTodayPersonalizationPanel,

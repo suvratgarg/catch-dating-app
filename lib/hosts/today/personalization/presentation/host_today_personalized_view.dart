@@ -46,9 +46,9 @@ class _HostTodayPersonalizedViewState
   bool _wasTodayRoute = false;
   bool _orientationScheduled = false;
   bool _focusRouteOpen = false;
+  bool _operationalReturnScheduled = false;
 
-  bool get _isTodayRoute =>
-      _router?.state.name == Routes.hostTodayScreen.name;
+  bool get _isTodayRoute => _router?.state.name == Routes.hostTodayScreen.name;
 
   @override
   void didChangeDependencies() {
@@ -88,6 +88,7 @@ class _HostTodayPersonalizedViewState
     final accountId = ref.watch(uidProvider).asData?.value;
     if (accountId != widget.scope.accountId ||
         !isHostTodayQuiet(widget.today)) {
+      _returnToOperationalWork();
       return widget.operationalSurface;
     }
 
@@ -136,6 +137,29 @@ class _HostTodayPersonalizedViewState
         ),
       ],
     );
+  }
+
+  void _returnToOperationalWork() {
+    if (!_focusRouteOpen ||
+        _operationalReturnScheduled ||
+        _router?.state.name != Routes.hostTodayFocusScreen.name)
+      return;
+    _operationalReturnScheduled = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _operationalReturnScheduled = false;
+      if (!mounted ||
+          !_hasCurrentAccount ||
+          isHostTodayQuiet(widget.today) ||
+          _router?.state.name != Routes.hostTodayFocusScreen.name)
+        return;
+      // Operational work appeared while the optional choice was open. Leave
+      // the preference unanswered; interruption is not the user's skip choice.
+      _offeredScopes.remove(widget.scope);
+      _router?.goNamed(
+        Routes.hostTodayScreen.name,
+        queryParameters: {'organizerId': widget.scope.organizerId},
+      );
+    });
   }
 
   void _scheduleOrientation() {
