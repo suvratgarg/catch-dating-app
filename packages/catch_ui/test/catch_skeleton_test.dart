@@ -44,40 +44,43 @@ void main() {
     tester,
   ) async {
     final semantics = tester.ensureSemantics();
-    addTearDown(semantics.dispose);
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: CatchTheme.light,
-        home: Scaffold(
-          body: CatchSection.loadingRows(
-            layouts: [
-              CatchRecordLayout.placeholder(
-                icon: CatchIcons.eventOutlined,
-                hasMetadata: true,
-                factCount: 1,
-                hasDescription: true,
-              ),
-              const CatchPersonLayout.placeholder(
-                hasSupportingText: true,
-                hasContext: true,
-                hasBadge: true,
-              ),
-              const CatchConversationLayout.placeholder(
-                hasTimestamp: true,
-                hasContext: true,
-                hasActivity: true,
-              ),
-            ],
+    try {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CatchTheme.light,
+          home: Scaffold(
+            body: CatchSection.loadingRows(
+              layouts: [
+                CatchRecordLayout.placeholder(
+                  icon: CatchIcons.eventOutlined,
+                  hasMetadata: true,
+                  factCount: 1,
+                  hasDescription: true,
+                ),
+                const CatchPersonLayout.placeholder(
+                  hasSupportingText: true,
+                  hasContext: true,
+                  hasBadge: true,
+                ),
+                const CatchConversationLayout.placeholder(
+                  hasTimestamp: true,
+                  hasContext: true,
+                  hasActivity: true,
+                ),
+              ],
+            ),
           ),
         ),
-      ),
-    );
-    await tester.pump();
-    expect(find.text(CatchSkeleton.sampleRecordTitle), findsOneWidget);
-    expect(find.text(CatchSkeleton.samplePersonName), findsOneWidget);
-    expect(find.text(CatchSkeleton.sampleConversationName), findsOneWidget);
-    expect(find.bySemanticsLabel(RegExp('Loading')), findsNothing);
-    expect(tester.takeException(), isNull);
+      );
+      await tester.pump();
+      expect(find.text(CatchSkeleton.sampleRecordTitle), findsOneWidget);
+      expect(find.text(CatchSkeleton.samplePersonName), findsOneWidget);
+      expect(find.text(CatchSkeleton.sampleConversationName), findsOneWidget);
+      expect(find.bySemanticsLabel(RegExp('Loading')), findsNothing);
+      expect(tester.takeException(), isNull);
+    } finally {
+      semantics.dispose();
+    }
   });
 
   testWidgets('loading hides placeholder labels and blocks their actions', (
