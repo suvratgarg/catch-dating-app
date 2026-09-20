@@ -13,6 +13,9 @@ final class CreateEventRehearsalCallableRequest {
     required this.scenarioId,
     required this.seed,
     required this.actorCount,
+    this.setup,
+    this.guestSource,
+    this.startImmediately,
   });
 
   final String organizerId;
@@ -20,6 +23,9 @@ final class CreateEventRehearsalCallableRequest {
   final String scenarioId;
   final int seed;
   final int actorCount;
+  final Map<String, Object?>? setup;
+  final String? guestSource;
+  final bool? startImmediately;
 
   Map<String, Object?> toJson() => {
     'organizerId': organizerId,
@@ -27,5 +33,8 @@ final class CreateEventRehearsalCallableRequest {
     'scenarioId': scenarioId,
     'seed': seed,
     'actorCount': actorCount,
+    'setup': ?setup,
+    'guestSource': ?guestSource,
+    'startImmediately': ?startImmediately,
   };
 }

@@ -1,6 +1,22 @@
 {
   "indexes": [
     {
+      "collectionGroup": "eventRehearsals",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "organizerId", "mode": "ASCENDING"},
+        {"fieldPath": "status", "mode": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "eventAttendees",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "eventId", "mode": "ASCENDING"},
+        {"fieldPath": "status", "mode": "ASCENDING"}
+      ]
+    },
+    {
       "collectionGroup": "eventAssistanceSmsPermissions",
       "queryScope": "COLLECTION",
       "fields": [

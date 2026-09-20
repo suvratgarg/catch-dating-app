@@ -136,6 +136,7 @@ export {
   getEventAssistanceGuestView,
   submitEventAssistanceGuestChoice,
 } from "./eventSuccess/operations/guestHandlers";
+export {getEventRehearsalSummary} from "./eventRehearsal/summary";
 export {
   completeEventRehearsal,
   controlEventRehearsal,

@@ -2819,6 +2819,28 @@
         "recordEventAssistanceCheckpoint",
         "listEventAssistanceDepartureRosters"
       ]
+    },
+    {
+      "id": "eventRehearsalMilestones",
+      "path": "eventRehearsalMilestones/{organizerId}",
+      "rulesMatch": "/eventRehearsalMilestones/{organizerId}",
+      "typescriptInterface": "EventRehearsalMilestoneDocument",
+      "dartModel": "lib/event_rehearsal/data/event_rehearsal_repository.dart",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps all dress rehearsal collections callable-only"
+      ],
+      "owner": "event rehearsal completion callable",
+      "read": "server only; manager-authorized completion boolean via callable",
+      "write": "server only; completion transaction",
+      "exportedFunctions": [
+        "controlEventRehearsal",
+        "completeEventRehearsal",
+        "getEventRehearsalSummary"
+      ],
+      "migrationNotes": [
+        "Permanent completion survives session expiry, reset and fork. Legacy completed sessions are a bounded read-only fallback while retained."
+      ]
     }
   ]
 }

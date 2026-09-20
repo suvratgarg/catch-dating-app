@@ -22,6 +22,22 @@ class EventRehearsalRepository {
 
   final FirebaseFunctions _functions;
 
+  /// Server evidence only; failures remain errors rather than false completion.
+  Future<bool> hasCompletedRehearsal(String organizerId) => _call(
+    name: 'getEventRehearsalSummary',
+    payload: GetEventRehearsalSummaryCallableRequest(
+      organizerId: organizerId,
+    ).toJson(),
+    action: 'load rehearsal completion',
+    parse: (data) {
+      if (data is Map<Object?, Object?> &&
+          data['hasCompletedRehearsal'] is bool) {
+        return data['hasCompletedRehearsal']! as bool;
+      }
+      throw const FormatException('Rehearsal completion must be a boolean.');
+    },
+  );
+
   Future<EventRehearsalCreated> create({
     required String organizerId,
     required String? sourceEventId,

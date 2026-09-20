@@ -1162,6 +1162,7 @@ server-only collections:
 
 | Collection | Purpose | Limits and authority |
 |---|---|---|
+| `eventRehearsalMilestones/{organizerId}` | Durable completed-rehearsal evidence | Server-only; stamped atomically with successful completion and unaffected by session reset, fork or expiry |
 | `eventRehearsals/{sessionId}` | Frozen source snapshot, editable pre-start setup, scenario/seed, virtual clock, lifecycle and revisions | Organizer manager reads through Host callables only; 24-hour expiry; at most five active sessions per owner |
 | `eventRehearsalActors/{sessionId_actorId}` | Deterministically generated synthetic people, visit-bound accountability, attendance/status, independent connection state, guest moment, Room placement/confirmation, opt-out/help/prompt flags, keep-apart ids and synthetic required-data completion | At most 50 actors; required-data state stores canonical field identifiers, revisions and virtual-time prompt status without profile values. No participant UID, phone, email, booking, payment, match, chat, or production attendee id. A resolving Host UID is private audit evidence only. |
 | `eventRehearsalActions/{sessionId_actionKey}` | Idempotent Host/guest controls and deterministic replay history | At most 500 actions; a stable hash of session plus client action id deduplicates delivery |
@@ -1181,9 +1182,23 @@ The schemas under `contracts/firestore/event_rehearsal_*.schema.json` and
 `contracts/callables/*event_rehearsal*.schema.json` are authoritative.
 Functions may read `events/{sourceEventId}` exactly once during creation to
 copy a bounded title, location, duration, and supported playbook shape after
-verifying organizer authority. No rehearsal handler may write a production
-collection. Firestore rules deny every direct client read and write to these
+verifying organizer authority. Explicit event guest selection also reads at most
+51 registered/checked-in attendee documents, rejecting rosters outside 2–50.
+Only names and attendance enter the private frozen snapshot; production attendee
+IDs, linked identities, contacts, and payment state do not. Reset and fork reuse
+that snapshot without reading the live roster. Public guest projections replace
+copied names with synthetic labels. Custom setup strips production layout IDs
+and arbitrary activity metadata before persistence. No rehearsal handler may
+write a production collection. Firestore rules deny every direct client read and write to these
 collections; App-Check-protected callables own all Host access.
+
+`getEventRehearsalSummary` rechecks organizer-manager authority and returns only
+`hasCompletedRehearsal`. Missing evidence returns false; failed authorization,
+transport, or malformed evidence remains an error. A bounded one-session query
+recognizes legacy completion while the session is retained, but cannot reconstruct
+completions that expired before durable evidence was introduced. The summary
+never writes completion; the existing revision- and action-ID-fenced completion
+transaction is its only writer.
 
 Host writes carry the expected setup or runtime revision. Mutating controls and
 guest actions carry a bounded client action id, exact replays return the same
