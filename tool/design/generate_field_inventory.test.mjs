@@ -95,9 +95,13 @@ test("extracts every current facade and semantic slot", () => {
     "plain",
     "horizontal",
     "rows",
+    "loadingRows",
+    "controls",
     "containedRows",
+    "containedLoadingRows",
     "content",
     "sliverRows",
+    "sliverLoadingRows",
   ]);
   assert.deepEqual(extractCatchSectionContract(sectionSource).slots, [
     "title",
