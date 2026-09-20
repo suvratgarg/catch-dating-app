@@ -6,10 +6,10 @@ import {fileURLToPath} from "node:url";
 
 import {createFunctionsRequire} from "../lib/repo_paths.mjs";
 
-const ts = createFunctionsRequire()("typescript");
-
 import {materializedNonSecretParams} from
   "./prepare_functions_params_for_deploy.mjs";
+
+const ts = createFunctionsRequire()("typescript");
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
@@ -68,6 +68,28 @@ export function discoverDeclaredParams(functionsDir) {
       }
     }
     const visit = (node) => {
+      if (ts.isImportDeclaration(node)) return;
+      if (ts.isIdentifier(node) && factories.has(node.text)) {
+        const directCall = ts.isCallExpression(node.parent) &&
+          node.parent.expression === node;
+        const namespaceMember = ts.isPropertyAccessExpression(node.parent) &&
+          node.parent.name === node && ts.isIdentifier(node.parent.expression) &&
+          namespaces.has(node.parent.expression.text) &&
+          ts.isCallExpression(node.parent.parent) &&
+          node.parent.parent.expression === node.parent;
+        assert(directCall || namespaceMember,
+          `Non-secret param factories must be called directly: ${relative}`);
+      }
+      if (ts.isIdentifier(node) && namespaces.has(node.text)) {
+        assert(ts.isPropertyAccessExpression(node.parent) &&
+          node.parent.expression === node,
+        `Firebase params namespace must use explicit members: ${relative}`);
+        if (parameterFactories.has(node.parent.name.text)) {
+          assert(ts.isCallExpression(node.parent.parent) &&
+            node.parent.parent.expression === node.parent,
+          `Non-secret param factories must be called directly: ${relative}`);
+        }
+      }
       if (ts.isCallExpression(node)) {
         const callee = node.expression;
         const direct = ts.isIdentifier(callee) && factories.has(callee.text);

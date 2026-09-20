@@ -133,3 +133,15 @@ test("empty dotenv values fail coverage and duplicate keys fail closed", () => {
   fs.writeFileSync(envFile, 'ALGOLIA_APPLICATION_ID="valid"\nALGOLIA_APPLICATION_ID=\n');
   assert.throws(() => checkParamsCoverage({functionsDir, envFile}), /Duplicate dotenv/);
 });
+
+
+test("indirect factory references cannot silently escape coverage", () => {
+  for (const source of [
+    'import {defineBoolean as flag} from "firebase-functions/params"; const factory = flag;',
+    'import * as params from "firebase-functions/params"; const factory = params.defineString;',
+    'import * as params from "firebase-functions/params"; params["defineString"]("HIDDEN");',
+  ]) {
+    assert.throws(() => discoverDeclaredParams(fixture({"params.ts": source})),
+      /called directly|explicit members/);
+  }
+});
