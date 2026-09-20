@@ -18,7 +18,7 @@ import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
 @widgetbook.UseCase(
   name: 'Upcoming event and optional settings',
-  type: EventRehearsalEntryView,
+  type: EventRehearsalEntryScaffold,
   path: '[P1 product surfaces]/Dress rehearsal',
 )
 Widget rehearsalUpcomingEntry(BuildContext context) =>
@@ -26,7 +26,7 @@ Widget rehearsalUpcomingEntry(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Organizer defaults and optional settings',
-  type: EventRehearsalEntryView,
+  type: EventRehearsalEntryScaffold,
   path: '[P1 product surfaces]/Dress rehearsal',
 )
 Widget rehearsalSampleEntry(BuildContext context) =>
@@ -91,7 +91,7 @@ class _EntryPreviewState extends State<_EntryPreview> {
       );
 
   @override
-  Widget build(BuildContext context) => EventRehearsalEntryView(
+  Widget build(BuildContext context) => EventRehearsalEntryScaffold(
     configuration: configuration,
     onStart: () {},
     onCustomise: () async {
@@ -144,11 +144,11 @@ class _EntryPreviewState extends State<_EntryPreview> {
 
 @widgetbook.UseCase(
   name: 'Loading source defaults',
-  type: EventRehearsalEntryLoadState,
+  type: EventRehearsalEntryStateScaffold,
   path: '[P1 product surfaces]/Dress rehearsal',
 )
 Widget rehearsalLoadingEntry(BuildContext context) =>
-    const EventRehearsalEntryLoadState(child: CatchLoadingIndicator());
+    const EventRehearsalEntryStateScaffold(child: CatchLoadingIndicator());
 
 @widgetbook.UseCase(
   name: 'Configuration sheet',
@@ -167,7 +167,7 @@ Widget rehearsalConfigInputPreview(BuildContext context) =>
     _rehearsalEditorLauncher(context);
 
 Widget _rehearsalEditorLauncher(BuildContext context) => Scaffold(
-  body: EventRehearsalChoice(
+  body: EventRehearsalChoiceTile(
     title: context.l10n.hostRehearsalCustomise,
     description: context.l10n.hostRehearsalCustomiseSummary,
     onTap: () => showCatchBottomSheet<EventRehearsalConfiguration>(
@@ -183,7 +183,7 @@ Widget _rehearsalEditorLauncher(BuildContext context) => Scaffold(
 
 @widgetbook.UseCase(
   name: 'Wrapping choice explanation',
-  type: EventRehearsalChoice,
+  type: EventRehearsalChoiceTile,
   path: '[P1 product surfaces]/Dress rehearsal',
 )
 Widget rehearsalChoicePreview(BuildContext context) =>
@@ -191,7 +191,7 @@ Widget rehearsalChoicePreview(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Content with organizer defaults',
-  type: EventRehearsalEntryContent,
+  type: EventRehearsalEntryPageBody,
   path: '[P1 product surfaces]/Dress rehearsal',
 )
 Widget rehearsalContentPreview(BuildContext context) =>
@@ -203,7 +203,7 @@ Widget rehearsalContentPreview(BuildContext context) =>
   path: '[P1 product surfaces]/Dress rehearsal',
 )
 Widget rehearsalSourcePreview(BuildContext context) => Scaffold(
-  body: EventRehearsalChoice(
+  body: EventRehearsalChoiceTile(
     title: context.l10n.hostRehearsalSampleTitle(activity: 'Social run'),
     description: context.l10n.hostRehearsalSampleDescription,
     onTap: () => showCatchBottomSheet<EventRehearsalSourceChoice>(

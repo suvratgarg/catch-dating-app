@@ -194,7 +194,7 @@ class _HarnessState extends State<_Harness> {
   late EventRehearsalConfiguration configuration = widget.configuration;
 
   @override
-  Widget build(BuildContext context) => EventRehearsalEntryView(
+  Widget build(BuildContext context) => EventRehearsalEntryScaffold(
     configuration: configuration,
     onChooseSource: () {},
     onChooseScenario: () {},

@@ -6,8 +6,8 @@ import 'package:flutter/material.dart';
 
 /// The rehearsal entry view, with a single start action and optional editors.
 /// The route controller supplies source loading, persistence and navigation.
-class EventRehearsalEntryView extends StatelessWidget {
-  const EventRehearsalEntryView({
+class EventRehearsalEntryScaffold extends StatelessWidget {
+  const EventRehearsalEntryScaffold({
     super.key,
     required this.configuration,
     required this.onChooseSource,
@@ -48,7 +48,7 @@ class EventRehearsalEntryView extends StatelessWidget {
               CatchSectionListItem(
                 child: CatchSection.plain(
                   padding: EdgeInsets.zero,
-                  child: EventRehearsalEntryContent(
+                  child: EventRehearsalEntryPageBody(
                     configuration: configuration,
                     onChooseSource: isPending ? null : onChooseSource,
                     onChooseScenario: isPending ? null : onChooseScenario,

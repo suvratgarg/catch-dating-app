@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 
 /// A destination with its explanation attached, rather than a field value
 /// squeezed into a trailing lane. All copy wraps at its natural height.
-class EventRehearsalChoice extends StatelessWidget {
-  const EventRehearsalChoice({
+class EventRehearsalChoiceTile extends StatelessWidget {
+  const EventRehearsalChoiceTile({
     super.key,
     required this.title,
     required this.description,

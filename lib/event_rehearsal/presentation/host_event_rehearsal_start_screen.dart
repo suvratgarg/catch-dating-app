@@ -56,8 +56,8 @@ class _HostEventRehearsalStartScreenState
       errorContext: AppErrorContext.event,
       onRetry: () => ref.invalidate(provider),
       loadingBuilder: (_) =>
-          const EventRehearsalEntryLoadState(child: CatchLoadingIndicator()),
-      errorBuilder: (_, error, stack, retry) => EventRehearsalEntryLoadState(
+          const EventRehearsalEntryStateScaffold(child: CatchLoadingIndicator()),
+      errorBuilder: (_, error, stack, retry) => EventRehearsalEntryStateScaffold(
         child: CatchLocalizedErrorState(
           error,
           context: AppErrorContext.event,
@@ -72,7 +72,7 @@ class _HostEventRehearsalStartScreenState
                     organizerDefaults: data.organizerDefaults,
                   )
                 : data.initialConfiguration);
-        return EventRehearsalEntryView(
+        return EventRehearsalEntryScaffold(
           configuration: configuration,
           isPending: _loadingSource || mutation.isPending,
           onChooseSource: () => _chooseSource(data, configuration),
@@ -197,8 +197,8 @@ class _HostEventRehearsalStartScreenState
   }
 }
 
-class EventRehearsalEntryLoadState extends StatelessWidget {
-  const EventRehearsalEntryLoadState({super.key, required this.child});
+class EventRehearsalEntryStateScaffold extends StatelessWidget {
+  const EventRehearsalEntryStateScaffold({super.key, required this.child});
   final Widget child;
 
   @override

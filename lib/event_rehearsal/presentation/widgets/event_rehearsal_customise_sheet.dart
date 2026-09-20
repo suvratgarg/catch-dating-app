@@ -96,7 +96,7 @@ class _EventRehearsalCustomiseSheetState
               CatchSection.plain(
                 title: l10n.hostRehearsalEventType,
                 padding: EdgeInsets.zero,
-                child: EventRehearsalChoice(
+                child: EventRehearsalChoiceTile(
                   title: _draft.format.activityKind.label,
                   description: l10n.hostRehearsalEventTypeDescription,
                   onTap: _chooseActivity,
@@ -151,7 +151,7 @@ class _EventRehearsalCustomiseSheetState
               ],
               gapH16,
               const CatchDivider.section(),
-              EventRehearsalChoice(
+              EventRehearsalChoiceTile(
                 title: l10n.hostRehearsalEventDetails,
                 description: l10n.hostRehearsalEventDetailsDescription,
                 expanded: _detailsOpen,
@@ -221,7 +221,7 @@ class _EventRehearsalCustomiseSheetState
                 gapH16,
               ],
               const CatchDivider.section(),
-              EventRehearsalChoice(
+              EventRehearsalChoiceTile(
                 title: l10n.hostRehearsalPlaybook,
                 description: l10n.hostRehearsalPlaybookDescription,
                 expanded: _playbookOpen,

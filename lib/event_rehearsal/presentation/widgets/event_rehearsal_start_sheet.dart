@@ -21,7 +21,7 @@ class EventRehearsalStartSheet extends StatelessWidget {
     child: Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        EventRehearsalChoice(
+        EventRehearsalChoiceTile(
           key: const ValueKey<String>('rehearsal-start-upcoming'),
           title: context.l10n.hostRehearsalStartUpcoming(title: event.title),
           description: context.l10n.hostRehearsalStartUpcomingDescription(
@@ -33,7 +33,7 @@ class EventRehearsalStartSheet extends StatelessWidget {
           ).pop(EventRehearsalStartChoice.upcomingEvent),
         ),
         const CatchDivider.section(),
-        EventRehearsalChoice(
+        EventRehearsalChoiceTile(
           key: const ValueKey<String>('rehearsal-start-custom'),
           title: context.l10n.hostRehearsalStartCustom,
           description: context.l10n.hostRehearsalStartCustomDescription,
