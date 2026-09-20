@@ -54,12 +54,12 @@ class _HostTodayPersonalizedViewState
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final router = GoRouter.of(context);
+    final router = GoRouter.maybeOf(context);
     if (identical(router, _router)) return;
     _router?.routeInformationProvider.removeListener(_onRouteChanged);
     _router = router;
     _wasTodayRoute = _isTodayRoute;
-    router.routeInformationProvider.addListener(_onRouteChanged);
+    router?.routeInformationProvider.addListener(_onRouteChanged);
   }
 
   @override
@@ -75,6 +75,7 @@ class _HostTodayPersonalizedViewState
       // CRM summaries are callable snapshots; unlike organizer and payment
       // streams they need a refresh after work in another feature.
       ref.invalidate(hostCrmSummaryProvider(widget.scope.organizerId));
+      ref.invalidate(hostTodayRehearsalCompletionProvider(widget.scope));
     }
     _wasTodayRoute = isToday;
     setState(() {});
@@ -205,6 +206,9 @@ class _HostTodayPersonalizedViewState
             Routes.hostEventRehearsalStartScreen.name,
             pathParameters: {'clubId': organizerId},
           );
+          if (mounted && _hasCurrentAccount && widget.scope.organizerId == organizerId) {
+            ref.invalidate(hostTodayRehearsalCompletionProvider(widget.scope));
+          }
         case HostTodaySuggestedAction.openOrganizerPage:
           context.goNamed(
             Routes.hostOrganizerScreen.name,

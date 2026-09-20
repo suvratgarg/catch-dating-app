@@ -2,6 +2,7 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
+import 'package:catch_dating_app/event_rehearsal/data/event_rehearsal_repository.dart';
 import 'package:catch_dating_app/hosts/today/personalization/domain/host_today_preference.dart';
 import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_personalization_state.dart';
 import 'package:catch_dating_app/payments/data/host_payment_account_repository.dart';
@@ -25,6 +26,7 @@ HostTodayRoadmapEvidence hostTodayRoadmap(
       .firstOrNull;
   if (organizer == null) return const HostTodayRoadmapEvidence();
   final audience = ref.watch(hostCrmSummaryProvider(scope.organizerId));
+  final rehearsal = ref.watch(hostTodayRehearsalCompletionProvider(scope));
   final accounts = organizer.isOwnedBy(scope.accountId)
       ? ref.watch(watchHostPaymentAccountsProvider(scope.accountId))
       : const AsyncValue<List<HostPaymentAccount>>.data([]);
@@ -33,7 +35,27 @@ HostTodayRoadmapEvidence hostTodayRoadmap(
     accountId: scope.accountId,
     audience: audience.asData?.value,
     paymentAccounts: accounts.asData?.value,
+    hasCompletedRehearsal: rehearsal.asData?.value,
   );
+}
+
+/// A failed or unavailable summary stays unknown in the roadmap. Completion is
+/// read from rehearsal's durable milestone, never inferred from opening a route.
+@riverpod
+Future<bool> hostTodayRehearsalCompletion(
+  Ref ref,
+  HostTodayPreferenceScope scope,
+) {
+  final uid = ref.watch(uidProvider).asData?.value;
+  final organizers = uid == scope.accountId
+      ? ref.watch(hostOperableClubsProvider(scope.accountId)).asData?.value
+      : null;
+  if (organizers == null ||
+      !organizers.any((organizer) => organizer.id == scope.organizerId)) {
+    throw StateError('Organizer access is unavailable.');
+  }
+  return ref.watch(eventRehearsalRepositoryProvider)
+      .hasCompletedRehearsal(scope.organizerId);
 }
 
 HostTodayRoadmapEvidence buildHostTodayRoadmapEvidence({

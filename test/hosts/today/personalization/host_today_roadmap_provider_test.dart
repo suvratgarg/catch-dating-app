@@ -90,6 +90,7 @@ void main() {
         final container = ProviderContainer(
           overrides: [
             uidProvider.overrideWithValue(const AsyncData('cohost')),
+            hostTodayRehearsalCompletionProvider(cohostScope).overrideWith((ref) async => false),
             hostOperableClubsProvider(
               'cohost',
             ).overrideWithValue(AsyncData([club])),
@@ -124,6 +125,7 @@ void main() {
         final container = ProviderContainer(
           overrides: [
             uidProvider.overrideWith((ref) => identity.stream),
+            hostTodayRehearsalCompletionProvider(scope).overrideWith((ref) async => false),
             hostOperableClubsProvider(
               'owner',
             ).overrideWithValue(AsyncData([club])),
@@ -167,6 +169,27 @@ void main() {
         expect(evidence.canManagePayouts, isFalse);
       },
     );
+  });
+
+  test('rehearsal summary failures stay unknown and success is authoritative', () async {
+    final scope = HostTodayPreferenceScope(accountId: 'owner', organizerId: club.id);
+    for (final result in [true, false, null]) {
+      final container = ProviderContainer(overrides: [
+        uidProvider.overrideWithValue(const AsyncData('owner')),
+        hostOperableClubsProvider('owner').overrideWithValue(AsyncData([club])),
+        hostCrmSummaryProvider(club.id).overrideWith((ref) async => _summary(club.id, count: 0)),
+        watchHostPaymentAccountsProvider('owner').overrideWith((ref) => Stream.value([])),
+        hostTodayRehearsalCompletionProvider(scope).overrideWith((ref) async {
+          if (result == null) throw StateError('Summary unavailable');
+          return result;
+        }),
+      ]);
+      container.listen(hostTodayRoadmapProvider(scope), (_, _) {});
+      try { await container.read(hostTodayRehearsalCompletionProvider(scope).future); } on StateError { /* Expected unavailable evidence. */ }
+      expect(container.read(hostTodayRoadmapProvider(scope)).rehearsal,
+        result == null ? HostTodayMilestoneProgress.unknown : result ? HostTodayMilestoneProgress.complete : HostTodayMilestoneProgress.incomplete);
+      container.dispose();
+    }
   });
 
   test('unknown dependencies are not treated as completed or empty', () {
