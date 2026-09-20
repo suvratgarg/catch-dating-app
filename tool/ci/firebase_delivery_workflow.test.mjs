@@ -1222,3 +1222,88 @@ process.stdout.write(JSON.stringify(input[endpoint]));
     fs.rmSync(directory, {recursive: true, force: true});
   }
 });
+
+
+test("Functions param coverage checks the approved source and deploy copy before any mutation", (t) => {
+  const promotion = workflow("_firebase-promote.yml");
+  const name = "Gate Functions param coverage before any deploy mutation";
+  const gate = extractSteps(promotion).find((step) => step.name === name);
+  assert.ok(gate?.run);
+  const offset = promotion.indexOf(name);
+  assert.ok(promotion.indexOf("Materialize non-secret Functions params") < offset);
+  assert.ok(offset < promotion.indexOf("Preflight the whole backend plan"));
+  assert.ok(offset < promotion.indexOf("Resume ordered backend stages"));
+  assert.match(gate.run, /--functions-dir build\/delivery\/source-checkout\/functions/);
+  assert.match(gate.run, /--env-file "\$functions_dir\/\.env\.\$PROJECT_ID"/);
+  assert.match(workflow("functions-ci.yml"), /node tool\/run\.mjs check firebase:params-coverage/);
+  for (const flag of ["EVENT_ASSISTANCE_RCS_ENABLED", "EVENT_ASSISTANCE_RCS_WEBHOOK_ENABLED", "EVENT_ASSISTANCE_SMS_REPORTS_ENABLED"]) {
+    assert.ok(promotion.includes(`${flag}: \${{ vars.${flag} }}`));
+  }
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), "catch-param-workflow-"));
+  t.after(() => fs.rmSync(directory, {recursive: true, force: true}));
+  fs.mkdirSync(path.join(directory, "tool/firebase"), {recursive: true});
+  fs.symlinkSync(path.join(repoRoot, "tool/lib"), path.join(directory, "tool/lib"));
+  fs.symlinkSync(path.join(repoRoot, "tool/firebase/prepare_functions_params_for_deploy.mjs"),
+    path.join(directory, "tool/firebase/prepare_functions_params_for_deploy.mjs"));
+  fs.copyFileSync(path.join(repoRoot, "tool/firebase/check_functions_params_coverage.mjs"),
+    path.join(directory, "tool/firebase/check_functions_params_coverage.mjs"));
+  const sourceDir = path.join(directory, "build/delivery/source-checkout/functions/src");
+  const deployDir = path.join(directory, "build/delivery/deploy-tree/functions");
+  fs.mkdirSync(sourceDir, {recursive: true});
+  fs.mkdirSync(deployDir, {recursive: true});
+  fs.writeFileSync(path.join(sourceDir, "params.ts"),
+    'const flag = defineBoolean("EVENT_ASSISTANCE_RCS_ENABLED", {default: false});\n');
+  const sentinel = path.join(directory, "mutation");
+  for (const [value, success] of [[null, false], ["", false], ['EVENT_ASSISTANCE_RCS_ENABLED="false"\n', true]]) {
+    fs.rmSync(sentinel, {force: true});
+    const envFile = path.join(deployDir, ".env.demo-project");
+    if (value === null) fs.rmSync(envFile, {force: true});
+    else fs.writeFileSync(envFile, value);
+    const result = spawnSync("bash", ["-euo", "pipefail", "-c", gate.run + '\ntouch "$SENTINEL"'], {
+      cwd: directory, encoding: "utf8", env: {...process.env, PROJECT_ID: "demo-project", SENTINEL: sentinel},
+    });
+    assert.equal(result.status === 0, success, result.stderr);
+    assert.equal(fs.existsSync(sentinel), success);
+  }
+  fs.rmSync(deployDir, {recursive: true});
+  const absent = spawnSync("bash", ["-euo", "pipefail", "-c", gate.run], {
+    cwd: directory, encoding: "utf8", env: {...process.env, PROJECT_ID: "demo-project"},
+  });
+  assert.equal(absent.status, 0, absent.stderr);
+  assert.match(absent.stdout, /no Functions payload/);
+});
+
+test("Functions retries stop on missing params or secrets and retain transient retries", (t) => {
+  const executor = fs.readFileSync(path.join(repoRoot, "tool/deploy_firebase_targets.sh"), "utf8");
+  const body = executor.slice(executor.lastIndexOf("while IFS=$'\\t' read -r phase deploy_only; do"));
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), "catch-param-retry-"));
+  t.after(() => fs.rmSync(directory, {recursive: true, force: true}));
+  const calls = path.join(directory, "calls");
+  const sleepCalls = path.join(directory, "sleeps");
+  const prelude = `
+    deploy_target() { echo called >> "$CALLS"; echo "$DEPLOY_ERROR"; return "$DEPLOY_STATUS"; }
+    sleep() { echo "$1" >> "$SLEEPS"; }
+    plan_output=$'functions\\tfunctions:alpha'
+    function_batches=functions:alpha
+    functions_mode=deploy
+  `;
+  const cases = [
+    ["In non-interactive mode but have no value for the following environment variables: MISSING", "1", 1, 0],
+    ["In non-interactive mode but have no value for the secret: MISSING", "1", 1, 0],
+    ["Temporary quota limit", "1", 3, 2],
+    ["Deployed", "0", 1, 1],
+  ];
+  for (const [message, status, attempts, sleeps] of cases) {
+    fs.rmSync(calls, {force: true});
+    fs.rmSync(sleepCalls, {force: true});
+    const result = spawnSync("bash", ["-euo", "pipefail", "-c", prelude + body], {
+      encoding: "utf8", env: {...process.env, TMPDIR: directory, CALLS: calls, SLEEPS: sleepCalls,
+        DEPLOY_ERROR: message, DEPLOY_STATUS: status},
+    });
+    assert.equal(result.status, Number(status), result.stderr);
+    assert.equal(fs.readFileSync(calls, "utf8").trim().split("\n").length, attempts);
+    assert.equal(fs.existsSync(sleepCalls) ? fs.readFileSync(sleepCalls, "utf8").trim().split("\n").length : 0, sleeps);
+    assert.match(result.stdout, new RegExp(message));
+    assert.deepEqual(fs.readdirSync(directory).filter((name) => name.startsWith("catch-functions-deploy.")), []);
+  }
+});

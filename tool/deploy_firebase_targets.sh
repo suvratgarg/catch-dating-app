@@ -172,8 +172,18 @@ while IFS=$'\t' read -r phase deploy_only; do
         function_batch_status=1
         for function_batch_attempt in 1 2 3; do
           function_batch_status=0
-          deploy_target "$phase" "$function_batch" "$@" || \
-            function_batch_status=$?
+          function_batch_log="$(mktemp "${TMPDIR:-/tmp}/catch-functions-deploy.XXXXXX")"
+          deploy_target "$phase" "$function_batch" "$@" 2>&1 | \
+            tee "$function_batch_log" || function_batch_status=$?
+          if [[ "$function_batch_status" != "0" ]] && grep -q \
+              -e "In non-interactive mode but have no value for the following environment variables" \
+              -e "In non-interactive mode but have no value for the secret" \
+              "$function_batch_log"; then
+            rm -f "$function_batch_log"
+            echo "::error::Firebase parameter configuration is missing; retrying cannot repair it. Materialize non-secret values with tool/firebase/prepare_functions_params_for_deploy.mjs and verify coverage with tool/firebase/check_functions_params_coverage.mjs. Missing secret values require the environment's Secret Manager readiness check before retrying this delivery." >&2
+            exit "$function_batch_status"
+          fi
+          rm -f "$function_batch_log"
           if [[ "$function_batch_status" == "0" ]]; then
             break
           fi
