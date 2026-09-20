@@ -1083,7 +1083,7 @@
         "repositoryView": "full",
         "setup": [
           "node",
-          "functions-npm"
+          "root-npm"
         ]
       },
       "impactPaths": [
