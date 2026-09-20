@@ -48,7 +48,7 @@ class EventAssistanceSweepSection extends StatelessWidget {
           if (error != null)
             CatchLocalizedErrorBanner(error!, onRetry: onReload),
           if (loading)
-            const CatchSkeleton.rows(count: 2)
+            const CatchLoadingIndicator()
           else if (guests.isEmpty)
             Text(
               l10n.eventSuccessAccountabilityEmpty,

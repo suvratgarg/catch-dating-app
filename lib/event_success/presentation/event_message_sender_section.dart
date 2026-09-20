@@ -30,7 +30,7 @@ class EventMessageSenderSection extends ConsumerWidget {
     switch (state) {
       case EventSenderPreferenceLoading():
         summary = l.eventMessagesLoading;
-        child = const CatchSkeleton.rows();
+        child = const CatchLoadingIndicator();
       case EventSenderPreferenceHidden():
         summary = l.eventMessagesUnavailable;
         child = CatchButton(
