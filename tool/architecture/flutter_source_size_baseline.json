@@ -19,7 +19,7 @@
     },
     {
       "path": "lib/routing/go_router.dart",
-      "maxLines": 1395
+      "maxLines": 1385
     },
     {
       "path": "packages/catch_tokens/lib/src/semantic/catch_layout.dart",
@@ -31,7 +31,7 @@
     },
     {
       "path": "packages/catch_ui/lib/src/components/catch_field.dart",
-      "maxLines": 1090
+      "maxLines": 1053
     }
   ]
 }
