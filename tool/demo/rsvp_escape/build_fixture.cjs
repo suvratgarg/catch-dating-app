@@ -65,8 +65,9 @@ const {projectEventAttendeeToOrganizerAudience} = from('organizers/organizerAudi
  const fixture={label:'LOCAL PREVIEW — synthetic data; no production writes or messages',organizerId,eventId,formId,editor,listing,details,applicationDetails,records,cities,contacts:Object.entries(store.docs).filter(([key])=>key.startsWith('organizerContacts/')).map(([key,value])=>({id:key.split('/')[1],...value})),attendees:Object.entries(store.docs).filter(([key])=>key.startsWith('eventAttendees/')).map(([key,value])=>({id:key.split('/')[1],...value}))};
  fs.writeFileSync(path.join(__dirname,'fixture.json'),JSON.stringify(fixture,null,2)+'\n');
  console.log({forms:1,responses:listing.items.length,applications:Object.keys(applicationDetails).length,contacts:fixture.contacts.length,attendees:fixture.attendees.length});
- if (process.argv.includes('--serve')) {
+ if (process.argv.some(arg=>['--serve','--verify'].includes(arg))) {
   let publicSequence = 0;
+  const publicActors = new Map();
   const handlers = {
    fixture:async()=>fixture,
    submitPublic:async request => {
@@ -84,9 +85,14 @@ const {projectEventAttendeeToOrganizerAudience} = from('organizers/organizerAudi
     const saved = await responses.saveOrganizerFormResponseDraftHandler(guest({draftId:started.draftId,draftToken:null,expectedRevision:started.revision,answers,consentAccepted:request.data.consentAccepted}),deps);
     const receipt = await responses.submitOrganizerFormResponseHandler(guest({draftId:started.draftId,draftToken:null,expectedRevision:saved.revision,requestId:`rsvp-public-submit-${sequence}`}),deps);
     await projectApplicationPurposeResponse(receipt.responseId,undefined,store.docs[`organizerFormResponses/${receipt.responseId}`],deps);
+    publicActors.set(receipt.responseId,uid);
     return receipt;
    },
-   withdrawPublic:async request => responses.withdrawOrganizerFormResponseHandler({data:{responseId:request.data.responseId,withdrawalToken:request.data.withdrawalToken,requestId:`rsvp-withdraw-${request.data.responseId}`}},deps),
+   withdrawPublic:async request => {
+    const uid=publicActors.get(request.data.responseId);
+    if(!uid)throw Error('Only this local public demo session can withdraw its responses');
+    return responses.withdrawOrganizerFormResponseHandler({auth:{uid,token:{}},data:{responseId:request.data.responseId,withdrawalToken:request.data.withdrawalToken,requestId:`rsvp-withdraw-${request.data.responseId}`}},deps);
+   },
    rehearsalSnapshot:async()=>JSON.parse(fs.readFileSync(path.join(__dirname,'rehearsal_fixture.json'))),
    contactDetail:from('organizers/organizerContacts').getOrganizerContactDetailHandler,
    getEditor:forms.getOrganizerFormEditorHandler,
@@ -107,6 +113,16 @@ const {projectEventAttendeeToOrganizerAudience} = from('organizers/organizerAudi
     return result;
    },
   };
+  if(process.argv.includes('--verify')) {
+   const assert=require('node:assert/strict');
+   const receipt=await handlers.submitPublic(host({organizerId,answers:records[0].answers,consentAccepted:true}));
+   const withdrawn=await handlers.withdrawPublic(host({organizerId,responseId:receipt.responseId,withdrawalToken:receipt.withdrawalToken}));
+   assert.equal(withdrawn.status,'withdrawn');
+   assert.equal(store.docs[`organizerFormResponses/${receipt.responseId}`].status,'withdrawn');
+   await assert.rejects(handlers.withdrawPublic(host({organizerId,responseId:records[0].responseId,withdrawalToken:null})),/Only this local public demo session/);
+   console.log('Public submit and same-identity withdrawal passed; unrelated fixture withdrawal rejected.');
+   return;
+  }
   require('node:http').createServer(async(req,res)=>{
    const origin=req.headers.origin;
    if(origin && !/^http:\/\/(127\.0\.0\.1|localhost):(8788|5173)$/.test(origin)){res.writeHead(403);res.end();return;}
