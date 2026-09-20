@@ -91,7 +91,7 @@ import {requireOrganizerManager} from
   "../shared/organizerManagerAuthority";
 import {checkRateLimit} from "../shared/rateLimit";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
-import {answersForSubmission} from "./organizerFormLogic";
+import {answersForSubmission, reachableFormSections} from "./organizerFormLogic";
 import {incrementOrganizerFormFunnel} from "./organizerFormAggregates";
 
 type FormDefinition = OrganizerFormVersionDocument["definition"];
@@ -1188,7 +1188,9 @@ export function validateAnswerShape(
     validateQuestionAnswer(question, answer);
   }
   if (requireComplete) {
-    for (const question of questions) {
+    const reachableQuestions = reachableFormSections(definition, answers)
+      .flatMap((section) => section.questions);
+    for (const question of reachableQuestions) {
       if (question.required && isEmptyAnswer(answers[question.questionId])) {
         throw invalidAnswer(`${question.label} is required.`);
       }

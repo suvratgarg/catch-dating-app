@@ -46,6 +46,7 @@ class _HostFormResponsesPanelState
   HostFormResponseStatus? _status;
   bool _oldestFirst = false;
   final Map<String, String> _answerFilters = {};
+  List<HostFormResponseFilterOption> _filterOptions = const [];
 
   @override
   void didUpdateWidget(covariant HostFormResponsesPanel oldWidget) {
@@ -53,6 +54,7 @@ class _HostFormResponsesPanelState
     if (oldWidget.formId != widget.formId ||
         oldWidget.organizerId != widget.organizerId) {
       _answerFilters.clear();
+      _filterOptions = const [];
     }
   }
 
@@ -67,9 +69,9 @@ class _HostFormResponsesPanelState
       oldestFirst: _oldestFirst,
     );
     final responses = ref.watch(hostFormResponsesControllerProvider(request));
-    final filterOptions =
-        catchAsyncStateFromAsyncValue(responses).value?.answerFilterOptions ??
-        const <HostFormResponseFilterOption>[];
+    final loaded = catchAsyncStateFromAsyncValue(responses).value;
+    if (loaded != null) _filterOptions = loaded.answerFilterOptions;
+    final filterOptions = _filterOptions;
     final statusControl = CatchButton.command(
       label: switch (_status) {
         HostFormResponseStatus.submitted =>
@@ -120,13 +122,20 @@ class _HostFormResponsesPanelState
         ),
         SliverToBoxAdapter(
           child: CatchSection.controls(
-            leading: formControl ?? statusControl,
-            trailing: formControl == null ? null : statusControl,
-          ),
-        ),
-        SliverToBoxAdapter(
-          child: CatchSection.controls(
-            leading: CatchButton.command(
+            leading: Wrap(
+              children: [
+                if (formControl != null) formControl,
+                statusControl,
+                for (final filter in filterOptions.take(5))
+                  CatchButton.command(
+                    label:
+                        '${filter.label}: ${filter.options[_answerFilters[filter.questionId]] ?? context.l10n.hostFormsFilterAll}',
+                    leading: Icon(CatchIcons.tune),
+                    onPressed: () => _selectAnswer(filter),
+                  ),
+              ],
+            ),
+            trailing: CatchButton.command(
               label: _oldestFirst
                   ? context.l10n.hostApplicationsSortOldest
                   : context.l10n.hostApplicationsSortNewest,
@@ -135,22 +144,6 @@ class _HostFormResponsesPanelState
             ),
           ),
         ),
-        if (filterOptions.isNotEmpty)
-          SliverToBoxAdapter(
-            child: CatchSection.fieldRows(
-              children: [
-                for (final filter in filterOptions.take(5))
-                  CatchField.nav(
-                    copy: catchFieldCopy(context.l10n),
-                    title: filter.label,
-                    body:
-                        filter.options[_answerFilters[filter.questionId]] ??
-                        context.l10n.hostFormsFilterAll,
-                    onTap: () => _selectAnswer(filter),
-                  ),
-              ],
-            ),
-          ),
         CatchAsyncBoundary<HostFormResponsesState>.sliver(
           value: responses,
           onRetry: () =>
@@ -214,6 +207,11 @@ class _HostFormResponsesPanelState
                         supportingText: response.highlights.isEmpty
                             ? response.formTitle
                             : response.highlights
+                                  .where(
+                                    (highlight) =>
+                                        highlight.answer !=
+                                        response.identity.primaryLabel,
+                                  )
                                   .map(
                                     (highlight) =>
                                         '${highlight.label}: ${highlight.answer is List ? (highlight.answer as List).join(', ') : highlight.answer ?? ''}',

@@ -32,20 +32,29 @@ class Ref {
 
 class Query {
   constructor(readonly store: AudienceTestStore, readonly path: string,
-    readonly filters: Filter[] = [], readonly cap = Infinity) {}
+    readonly filters: Filter[] = [], readonly cap = Infinity,
+    readonly ordering: Array<[string, "asc" | "desc"]> = [],
+    readonly after: unknown[] = []) {}
   doc(id = "auto-id") {
     return new Ref(this.store, `${this.path}/${id}`);
   }
   where(field: string, op: string, value: unknown) {
     return new Query(this.store, this.path, [...this.filters, [field, op,
       value]],
-    this.cap);
+    this.cap, this.ordering, this.after);
   }
-  orderBy() {
-    return this;
+  orderBy(field: string | object, direction: "asc" | "desc" = "asc") {
+    return new Query(this.store, this.path, this.filters, this.cap,
+      [...this.ordering, [typeof field === "string" ? field : "__name__",
+        direction]], this.after);
+  }
+  startAfter(...values: unknown[]) {
+    return new Query(this.store, this.path, this.filters, this.cap,
+      this.ordering, values);
   }
   limit(cap: number) {
-    return new Query(this.store, this.path, this.filters, cap);
+    return new Query(this.store, this.path, this.filters, cap,
+      this.ordering, this.after);
   }
   count() {
     return {get: async () => {
@@ -54,6 +63,29 @@ class Query {
     }};
   }
   async get() {
+    const scalar = (value: unknown): string | number =>
+      value != null && typeof (value as {toMillis?: unknown}).toMillis ===
+        "function" ? (value as {toMillis: () => number}).toMillis() :
+        value as string | number;
+    const order = this.ordering.length ? this.ordering :
+      [["__name__", "asc"]] as Array<[string, "asc" | "desc"]>;
+    const values = ([path, data]: [string, Data]) => order.map(([field]) =>
+      scalar(field === "__name__" ? path.split("/").at(-1) : data[field]));
+    const compare = (a: unknown[], b: unknown[]) => {
+      for (let index = 0; index < order.length; index++) {
+        const left = scalar(a[index]);
+        const right = scalar(b[index]);
+        const compared = left < right ? -1 : left > right ? 1 : 0;
+        if (compared) return order[index][1] === "desc" ? -compared : compared;
+      }
+      return 0;
+    };
+    let after = this.after;
+    if (after.length === 1 && typeof (after[0] as {data?: unknown}).data ===
+        "function") {
+      const doc = after[0] as {id: string; data: () => Data};
+      after = values([doc.id, doc.data()]);
+    }
     const docs = Object.entries(this.store.docs)
       .filter(([path, data]) => path.startsWith(this.path + "/") &&
         path.split("/").length === this.path.split("/").length + 1 &&
@@ -70,7 +102,8 @@ class Query {
           assert.equal(op, "==", "Unsupported test-store query operator");
           return actual === value;
         }))
-      .sort(([a], [b]) => a.localeCompare(b)).slice(0, this.cap)
+      .filter((entry) => after.length === 0 || compare(values(entry), after) > 0)
+      .sort((a, b) => compare(values(a), values(b))).slice(0, this.cap)
       .map(([path]) => this.store.snapshot(new Ref(this.store, path)));
     return {docs, size: docs.length, empty: docs.length === 0};
   }

@@ -33,7 +33,7 @@ export function buildRsvpFormDefinition() {
     identityPolicy: 'emailOrPhoneVerified',
     sections: [
       section('welcome', 'Your city & contact details', 'Choose the city where you would like to join an experience. The team reviews each application before inviting guests.', [
-        question('eventCity', 'Which city would you like to attend in?', 'singleChoice', {choices: cities, hostPresentation: 'filterable'}),
+        question('eventCity', 'Event city', 'singleChoice', {choices: cities, hostPresentation: 'filterable'}),
         question('fullName', 'Full name', 'shortText', {canonicalFieldId: 'displayName', privacyClass: 'contact', hostPresentation: 'sortable', validation: {maxLength: 160}}),
         question('email', 'Email address', 'email', {canonicalFieldId: 'email', privacyClass: 'contact'}),
         question('phone', 'Phone number', 'phone', {canonicalFieldId: 'phoneNumber', privacyClass: 'contact', helpText: 'Include your country code, for example +91.'}),
@@ -51,7 +51,7 @@ export function buildRsvpFormDefinition() {
         question('photo', 'A full-length photo of you', 'file', {privacyClass: 'sensitive', helpText: 'Use a recent photo, not an AI-generated image. Demo records use synthetic data.', validation: {maxFileCount: 1, maxFileSizeBytes: 10485760, allowedMimeTypes: ['image/jpeg', 'image/png', 'image/webp']}}),
       ]),
       section('intent', 'What brings you here?', 'Help the team understand the connections you are looking for.', [
-        question('intent', 'What are you looking for?', 'singleChoice', {choices: ['Life Partner', 'Fun Experience', 'Romantic Relationship', 'Friendship', 'Networking', 'Other'], hostPresentation: 'filterable'}),
+        question('intent', 'Looking for', 'singleChoice', {choices: ['Life Partner', 'Fun Experience', 'Romantic Relationship', 'Friendship', 'Networking', 'Other'], hostPresentation: 'filterable'}),
         question('relationshipStatus', 'Current relationship status', 'singleChoice', {choices: ['Divorced', 'Filed for Divorce', 'Never Been Married', 'Separated', 'Legally Separated', 'Widowed', 'Other'], privacyClass: 'sensitive'}),
         question('hasChildren', 'Do you have children?', 'boolean', {privacyClass: 'sensitive'}),
         question('futureChildren', 'Would you like children in the future?', 'singleChoice', {choices: ['Yes', 'No', 'Maybe'], privacyClass: 'sensitive'}),
