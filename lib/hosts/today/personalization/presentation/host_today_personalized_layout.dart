@@ -156,9 +156,10 @@ class _HostTodayPersonalizedLayoutState
   }
 
   void _returnToOperationalWork() {
-    if (!_focusRouteOpen ||
-        _operationalReturnScheduled ||
-        _router?.state.name != Routes.hostTodayFocusScreen.name)
+    if (_operationalReturnScheduled ||
+        _router?.state.name != Routes.hostTodayFocusScreen.name ||
+        _router?.state.uri.queryParameters['organizerId'] !=
+            widget.scope.organizerId)
       return;
     _operationalReturnScheduled = true;
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -166,7 +167,9 @@ class _HostTodayPersonalizedLayoutState
       if (!mounted ||
           !_hasCurrentAccount ||
           isHostTodayQuiet(widget.today) ||
-          _router?.state.name != Routes.hostTodayFocusScreen.name)
+          _router?.state.name != Routes.hostTodayFocusScreen.name ||
+          _router?.state.uri.queryParameters['organizerId'] !=
+              widget.scope.organizerId)
         return;
       // Operational work appeared while the optional choice was open. Leave
       // the preference unanswered; interruption is not the user's skip choice.
@@ -254,7 +257,7 @@ class _HostTodayPersonalizedLayoutState
         case HostTodaySuggestedAction.openOrganizerPage:
           context.goNamed(
             Routes.hostOrganizerScreen.name,
-            queryParameters: {'organizerId': organizerId},
+            queryParameters: {'clubId': organizerId},
           );
         case HostTodaySuggestedAction.managePayouts:
           if (!ref

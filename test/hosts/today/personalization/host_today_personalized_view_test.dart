@@ -10,6 +10,8 @@ import 'package:catch_dating_app/hosts/today/personalization/presentation/host_t
 import 'package:catch_dating_app/hosts/today/presentation/host_today_state.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/route_contract.dart';
+import 'package:catch_dating_app/routing/go_router.dart'
+    show hostOrganizerScreenForUri;
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -31,11 +33,12 @@ void main() {
     WidgetTester tester, {
     HostTodayStatus status = HostTodayStatus.empty,
     ValueNotifier<HostTodayStatus>? statusChanges,
+    String initialLocation = '/host/today',
   }) async {
     final statuses = statusChanges ?? ValueNotifier(status);
     if (statusChanges == null) addTearDown(statuses.dispose);
     final router = GoRouter(
-      initialLocation: '/host/today',
+      initialLocation: initialLocation,
       routes: [
         GoRoute(
           path: '/host/today',
@@ -63,6 +66,15 @@ void main() {
               builder: (_, _) => const HostTodayFocusScreen(organizerId: 'org'),
             ),
           ],
+        ),
+        GoRoute(
+          path: '/host/organizer',
+          name: Routes.hostOrganizerScreen.name,
+          builder: (_, state) => Scaffold(
+            body: Text(
+              'Organizer ${hostOrganizerScreenForUri(state.uri).initialClubId}',
+            ),
+          ),
         ),
         GoRoute(
           path: '/host/events',
@@ -138,6 +150,19 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('organizer presence action retains the selected organizer', (
+    tester,
+  ) async {
+    preferences.values[scope] = const HostTodayPreference.selected(
+      HostTodayFocus.organizerPresence,
+    );
+    final router = await mount(tester);
+    await tester.tap(find.byKey(const ValueKey('host-today-suggested-action')));
+    await pumpFeatureUi(tester);
+    expect(router.state.uri.queryParameters['clubId'], scope.organizerId);
+    expect(find.text('Organizer ${scope.organizerId}'), findsOneWidget);
+  });
+
   testWidgets('operational uncertainty does not read or offer optional focus', (
     tester,
   ) async {
@@ -161,6 +186,17 @@ void main() {
       expect(preferences.values, isEmpty);
     },
   );
+
+  testWidgets('direct focus route yields to operational work', (tester) async {
+    final router = await mount(
+      tester,
+      status: HostTodayStatus.content,
+      initialLocation: '/host/today/focus?organizerId=org',
+    );
+    expect(router.state.uri.path, '/host/today');
+    expect(find.text('Operational work'), findsOneWidget);
+    expect(preferences.values, isEmpty);
+  });
 
   testWidgets('system back persists the first-run skip', (tester) async {
     final router = await mount(tester);

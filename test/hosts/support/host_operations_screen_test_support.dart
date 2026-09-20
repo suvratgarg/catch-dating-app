@@ -83,7 +83,7 @@ void registerHostEventEntryTests() {
     );
 
     final rehearsalAction = find.byKey(
-      const ValueKey<String>('host-today-start-dress-rehearsal'),
+      const ValueKey<String>('host-today-suggested-action'),
     );
     expect(rehearsalAction, findsOneWidget);
     await tester.tap(rehearsalAction);
@@ -130,6 +130,7 @@ void registerHostEventEntryTests() {
       const ValueKey<String>('host-today-create-event'),
     );
     expect(createEvent, findsOneWidget);
+    await tester.ensureVisible(createEvent);
     await tester.tap(createEvent);
     await pumpFeatureUi(tester);
 
