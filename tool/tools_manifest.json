@@ -1098,7 +1098,7 @@
         "node tool/firebase/check_functions_params_coverage.mjs",
         "node --test tool/firebase/check_functions_params_coverage.test.mjs"
       ],
-      "role": "scanner",
+      "role": "gate",
       "vacuityProof": {
         "type": "test",
         "path": "tool/firebase/check_functions_params_coverage.test.mjs",
