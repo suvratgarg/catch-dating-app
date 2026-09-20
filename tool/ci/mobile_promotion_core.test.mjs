@@ -302,3 +302,18 @@ test("promotion receipt binds immutable exact package and uploaded store result"
   assert.throws(() => validateMobilePromotionReceipt(circular),
     /fresh upload/u);
 });
+
+test("platform authorities preserve legacy selection and reject cross-platform substitution", () => {
+  for (const platform of ["ios", "android"]) {
+    const releaseTarget = `host-${platform}`;
+    const authority = {...buildAuthority({releaseTarget}),
+      schema: "catch.mobile-build-authority/v2", platform};
+    assert.equal(select(authority, releaseTarget).authorityArtifactName,
+      `mobile-build-authority-v2-${platform}-77-91-9001-2-${SOURCE_SHA}-7001-3`);
+    assert.throws(() => select({...authority, platform: platform === "ios" ? "android" : "ios"}, releaseTarget),
+      /only its declared platform/u);
+    assert.throws(() => select({...authority, platform: undefined}, releaseTarget), /declared platform/u);
+    assert.throws(() => select({...authority, packages: []}, releaseTarget), /exactly match/u);
+    assert.throws(() => select({...authority, producerRunAttempt: "4"}, releaseTarget), /attempt does not match/u);
+  }
+});
