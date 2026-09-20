@@ -65,6 +65,34 @@ class HostFormQuestionSection extends StatelessWidget {
               notifier.updateQuestion(sectionIndex, questionIndex, kind: value),
         ),
       ),
+      for (final optionEntry in question.options.indexed)
+        CatchFieldLanes.single(
+          child: CatchField.input(
+            copy: catchFieldCopy(context.l10n),
+            key: ValueKey(
+              'question-option-${question.questionId}-${optionEntry.$2.optionId}',
+            ),
+            title: context.l10n.hostFormOptionNumber(
+              number: optionEntry.$1 + 1,
+            ),
+            initialValue: optionEntry.$2.label,
+            contractExemption: 'The backend validates form choice options.',
+            onBlur: (value) => notifier.updateOption(
+              sectionIndex,
+              questionIndex,
+              optionEntry.$1,
+              label: value.trim(),
+            ),
+          ),
+        ),
+      if (question.options.isNotEmpty)
+        CatchFieldLanes.single(
+          child: CatchField.add(
+            copy: catchFieldCopy(context.l10n),
+            title: context.l10n.hostFormAddOption,
+            onTap: () => notifier.addOption(sectionIndex, questionIndex),
+          ),
+        ),
       if (question.availablePersonFieldIds.isNotEmpty)
         CatchFieldLanes.single(
           child: CatchField<String>.select(
@@ -215,34 +243,6 @@ class HostFormQuestionSection extends StatelessWidget {
           ),
         ),
       ),
-      for (final optionEntry in question.options.indexed)
-        CatchFieldLanes.single(
-          child: CatchField.input(
-            copy: catchFieldCopy(context.l10n),
-            key: ValueKey(
-              'question-option-${question.questionId}-${optionEntry.$2.optionId}',
-            ),
-            title: context.l10n.hostFormOptionNumber(
-              number: optionEntry.$1 + 1,
-            ),
-            initialValue: optionEntry.$2.label,
-            contractExemption: 'The backend validates form choice options.',
-            onBlur: (value) => notifier.updateOption(
-              sectionIndex,
-              questionIndex,
-              optionEntry.$1,
-              label: value.trim(),
-            ),
-          ),
-        ),
-      if (question.options.isNotEmpty)
-        CatchFieldLanes.single(
-          child: CatchField.add(
-            copy: catchFieldCopy(context.l10n),
-            title: context.l10n.hostFormAddOption,
-            onTap: () => notifier.addOption(sectionIndex, questionIndex),
-          ),
-        ),
       HostFormValidationFieldLanes(
         sectionIndex: sectionIndex,
         questionIndex: questionIndex,

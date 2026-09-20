@@ -98,6 +98,122 @@ class ExampleScreen {
     expect(failures, isEmpty);
   });
 
+  test('accepts both standard route-body branches of a conditional', () {
+    expect(
+      _evaluateRouteBody(
+        'loading '
+        '? CatchRouteBody.standardViewport(child: Center(child: content)) '
+        ': CatchRouteBody.standardConstrained(child: content)',
+      ),
+      isEmpty,
+    );
+  });
+
+  test('proves conditional route bodies through local values and helpers', () {
+    expect(
+      _evaluateRouteBody(
+        'body',
+        localDeclarations: 'final body = _body(loading);',
+        helperDeclarations: '''
+  Object _body(bool loading) => switch (loading) {
+    true => CatchRouteBody.standardViewport(child: content),
+    false => CatchRouteBody.standardConstrained(child: content),
+  };
+''',
+      ),
+      isEmpty,
+    );
+  });
+
+  for (final invalidBody in <String>[
+    'CatchRouteBody.fullBleed(child: content)',
+    'const SizedBox()',
+    'UnknownWrapper(child: CatchRouteBody.standard(child: content))',
+    'unknownBody',
+    'external.buildBody()',
+  ]) {
+    for (final invalidFirst in <bool>[true, false]) {
+      test('rejects conditional standard route body $invalidBody '
+          'in the ${invalidFirst ? 'first' : 'second'} branch', () {
+        const standard = 'CatchRouteBody.standard(child: content)';
+        final body = invalidFirst
+            ? 'loading ? $invalidBody : $standard'
+            : 'loading ? $standard : $invalidBody';
+        expect(
+          _evaluateRouteBody(body),
+          contains(contains('CatchRouteBody typed constructor')),
+        );
+      });
+    }
+  }
+
+  test('accepts conditional full-bleed route bodies', () {
+    expect(
+      _evaluateRouteBody(
+        'loading ? CatchRouteBody.fullBleed(child: loadingContent) '
+        ': CatchRouteBody.fullBleed(child: content)',
+        geometry: 'full-bleed',
+      ),
+      isEmpty,
+    );
+  });
+
+  test('rejects one standard branch in a full-bleed route', () {
+    expect(
+      _evaluateRouteBody(
+        'loading ? CatchRouteBody.fullBleed(child: loadingContent) '
+        ': CatchRouteBody.standard(child: content)',
+        geometry: 'full-bleed',
+      ),
+      contains(contains('CatchRouteBody typed constructor')),
+    );
+  });
+
+  test('accepts conditional typed geometry in a mixed route', () {
+    expect(
+      _evaluateRouteBody(
+        'loading ? CatchRouteBody.standardViewport(child: content) '
+        ': CatchRouteBody.fullBleed(child: content)',
+        geometry: 'mixed',
+      ),
+      isEmpty,
+    );
+  });
+
+  test('rejects an unknown branch in a mixed route', () {
+    expect(
+      _evaluateRouteBody(
+        'loading ? CatchRouteBody.standardViewport(child: content) '
+        ': unknownBody',
+        geometry: 'mixed',
+      ),
+      contains(contains('CatchRouteBody typed constructor')),
+    );
+  });
+
+  test(
+    'retains standard paged-body geometry checks per conditional branch',
+    () {
+      const prefix =
+          'loading ? CatchRouteBody.standardViewport(child: content) : ';
+      expect(
+        _evaluateRouteBody(
+          '${prefix}CatchRouteBody.paged(pages: ['
+          'CatchRouteBody.standard(child: content)])',
+        ),
+        isEmpty,
+      );
+      expect(
+        _evaluateRouteBody(
+          '${prefix}CatchRouteBody.paged(pages: ['
+          'CatchRouteBody.standard(child: content), '
+          'CatchRouteBody.fullBleed(child: content)])',
+        ),
+        contains(contains('CatchRouteBody typed constructor')),
+      );
+    },
+  );
+
   test('rejects nested page geometry inside a standard route body', () {
     final failures = evaluateLayoutOwnerContract(
       screenId: 'screen.fixture',
@@ -1021,3 +1137,29 @@ class ExampleScreen {
 ''',
   );
 }
+
+List<String> _evaluateRouteBody(
+  String bodyExpression, {
+  String geometry = 'standard',
+  String localDeclarations = '',
+  String helperDeclarations = '',
+}) => evaluateLayoutOwnerContract(
+  screenId: 'screen.fixture',
+  owner: <String, Object?>{
+    'symbol': 'ExampleScreen',
+    'family': 'pushed-route',
+    'expression': 'CatchRouteScaffold',
+    'bodyGeometry': geometry,
+    'topEdge': 'route-chrome',
+  },
+  declarationSource:
+      '''
+class ExampleScreen {
+  Object build(bool loading) {
+    $localDeclarations
+    return CatchRouteScaffold(body: $bodyExpression);
+  }
+  $helperDeclarations
+}
+''',
+);

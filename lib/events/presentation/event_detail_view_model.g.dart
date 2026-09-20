@@ -106,7 +106,7 @@ final class EventDetailViewModelProvider
 }
 
 String _$eventDetailViewModelHash() =>
-    r'1c044f9c131a0d90ac60b6628a2e5124ff36dc8e';
+    r'2cda2182dc1d0b8764fd6c880045ec5a22d18d30';
 
 /// **Pattern D: View-model provider**
 ///

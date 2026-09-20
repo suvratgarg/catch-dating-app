@@ -72,7 +72,7 @@ final class EventAssistanceDeliveryControllerProvider
 }
 
 String _$eventAssistanceDeliveryControllerHash() =>
-    r'128b7f4f4b41152f6d8d753fb56ad7681b451a00';
+    r'd81cb9a72a15a67a8c3890a57a5724270c9437db';
 
 /// One message owns one pending request across page refreshes and sheet closure.
 

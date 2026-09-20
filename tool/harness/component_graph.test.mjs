@@ -898,7 +898,11 @@ test("coverage summary quantifies unknown and ambiguous ownership", () => {
 });
 
 test("every tracked path has exactly one terminal classification or component owner", () => {
-  const paths = execFileSync("git", ["ls-files"], {encoding: "utf8"})
+  const paths = execFileSync("git", ["ls-files"], {
+    encoding: "utf8",
+    // Keep the complete repository inventory within the Harness Git budget.
+    maxBuffer: 32 * 1024 * 1024,
+  })
     .split(/\r?\n/)
     .filter(Boolean);
   const summary = summarizeCoverage({paths, graph});

@@ -68,7 +68,7 @@ final class EventAssistanceDepartureEditorProvider
 }
 
 String _$eventAssistanceDepartureEditorHash() =>
-    r'9a8febac1b90e7a4f43783f373e1bfad25d6c74a';
+    r'ff6bd64f3a4a6343d90ceb8c4ac5ae3068c238c3';
 
 /// One group owns its unresolved departure across review refresh and closure.
 

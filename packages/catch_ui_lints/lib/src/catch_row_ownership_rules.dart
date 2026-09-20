@@ -91,7 +91,9 @@ class _RowVisitor extends SimpleAstVisitor<void> {
         '/lib/src/patterns/catch_master_detail_viewport.dart',
         '/lib/src/patterns/catch_section_list.dart',
       },
-      'CatchRowSection' => const {'/lib/src/components/catch_section.dart'},
+      'CatchRowSection' || 'CatchDependentRowSection' => const {
+        '/lib/src/components/catch_section.dart',
+      },
       'CatchRowViewportScope' => const {
         '/lib/src/patterns/catch_row_viewport.dart',
       },
@@ -137,6 +139,7 @@ class _RowVisitor extends SimpleAstVisitor<void> {
                   !const {
                     'rows',
                     'containedRows',
+                    'dependentFieldRows',
                     'sliverRows',
                   }.contains(section)) {
             rule.reportAtNode(

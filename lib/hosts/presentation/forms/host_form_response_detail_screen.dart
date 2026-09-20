@@ -178,11 +178,13 @@ class _HostFormResponseDetailScreenState
     HostFormResponseDetail detail,
     HostFormConversionKind kind,
   ) async {
+    Event? selectedEvent;
     String? eventId;
     if (kind == HostFormConversionKind.eventAttendeeProposal) {
       final event = await _selectEvent();
       if (event == null || !mounted) return;
       eventId = event.id;
+      selectedEvent = event;
     }
     setState(() => _converting = kind);
     try {
@@ -194,7 +196,10 @@ class _HostFormResponseDetailScreenState
         eventId: eventId,
       );
       if (!mounted) return;
-      final confirmed = await _showConversionPreview(preview);
+      final confirmed = await _showConversionPreview(
+        preview,
+        event: selectedEvent,
+      );
       if (confirmed != true || !mounted) return;
       await controller.convertResponse(
         organizerId: widget.organizerId,
@@ -218,83 +223,89 @@ class _HostFormResponseDetailScreenState
     }
   }
 
-  Future<bool?> _showConversionPreview(HostFormConversionPreview preview) =>
-      showDialog<bool>(
-        context: context,
-        builder: (dialogContext) => CatchDialog(
-          title: context.l10n.hostFormConversionReviewTitle,
-          actions: [
-            CatchButton(
-              label: context.l10n.coreCatchAdaptiveDialogVisiblecopyCancel,
-              variant: CatchButtonVariant.ghost,
-              onPressed: () => Navigator.of(dialogContext).pop(false),
-            ),
-            CatchButton(
-              label: preview.allowed
-                  ? context.l10n.hostFormConversionConfirm
-                  : context.l10n.hostFormConversionUnavailable,
-              onPressed: preview.allowed
-                  ? () => Navigator.of(dialogContext).pop(true)
-                  : null,
-            ),
-          ],
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxHeight: 420),
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text(
-                    context.l10n.hostFormConversionReviewBody,
-                    style: CatchTextStyles.supporting(
-                      context,
-                      color: CatchTokens.of(context).ink2,
-                    ),
+  Future<bool?> _showConversionPreview(
+    HostFormConversionPreview preview, {
+    Event? event,
+  }) => showDialog<bool>(
+    context: context,
+    builder: (dialogContext) => CatchDialog(
+      title: context.l10n.hostFormConversionReviewTitle,
+      actions: [
+        CatchButton(
+          label: context.l10n.coreCatchAdaptiveDialogVisiblecopyCancel,
+          variant: CatchButtonVariant.ghost,
+          onPressed: () => Navigator.of(dialogContext).pop(false),
+        ),
+        CatchButton(
+          label: preview.allowed
+              ? context.l10n.hostFormConversionConfirm
+              : context.l10n.hostFormConversionUnavailable,
+          onPressed: preview.allowed
+              ? () => Navigator.of(dialogContext).pop(true)
+              : null,
+        ),
+      ],
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxHeight: 420),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                context.l10n.hostFormConversionReviewBody,
+                style: CatchTextStyles.supporting(
+                  context,
+                  color: CatchTokens.of(context).ink2,
+                ),
+              ),
+              if (preview.existingResultId != null) ...[
+                gapH12,
+                Text(
+                  context.l10n.hostFormConversionExisting,
+                  style: CatchTextStyles.supporting(
+                    context,
+                    color: CatchTokens.of(context).warning,
                   ),
-                  if (preview.existingResultId != null) ...[
-                    gapH12,
-                    Text(
-                      context.l10n.hostFormConversionExisting,
+                ),
+              ],
+              if (preview.warnings.isNotEmpty) ...[
+                gapH12,
+                for (final warning in preview.warnings)
+                  Padding(
+                    padding: CatchInsets.detailInlineRowBottomGap,
+                    child: Text(
+                      warning,
                       style: CatchTextStyles.supporting(
                         context,
                         color: CatchTokens.of(context).warning,
                       ),
                     ),
-                  ],
-                  if (preview.warnings.isNotEmpty) ...[
-                    gapH12,
-                    for (final warning in preview.warnings)
-                      Padding(
-                        padding: CatchInsets.detailInlineRowBottomGap,
-                        child: Text(
-                          warning,
-                          style: CatchTextStyles.supporting(
-                            context,
-                            color: CatchTokens.of(context).warning,
-                          ),
-                        ),
-                      ),
-                  ],
-                  gapH16,
-                  CatchSection.containedFieldRows(
-                    children: [
-                      for (final field in preview.fields)
-                        CatchField.read(
-                          copy: catchFieldCopy(context.l10n),
-                          title: field.label,
-                          valueText:
-                              field.value?.toString() ??
-                              context.l10n.hostFormResponseNotProvided,
-                          body: field.conflict,
-                        ),
-                    ],
                   ),
+              ],
+              gapH16,
+              CatchSection.containedFieldRows(
+                children: [
+                  for (final field in preview.fields)
+                    CatchField.read(
+                      copy: catchFieldCopy(context.l10n),
+                      title: field.label,
+                      valueText:
+                          field.destinationField == 'eventId' &&
+                              event != null &&
+                              field.value == event.id
+                          ? event.name
+                          : field.value?.toString() ??
+                                context.l10n.hostFormResponseNotProvided,
+                      body: field.conflict,
+                    ),
                 ],
               ),
-            ),
+            ],
           ),
         ),
-      );
+      ),
+    ),
+  );
 
   Future<Event?> _selectEvent() async {
     try {

@@ -2,11 +2,11 @@
   "version": 1,
   "source": "test/ui_captures/catalog/screen_capture_catalog.dart",
   "coverage": {
-    "routes": 71,
-    "captures": 670,
+    "routes": 72,
+    "captures": 671,
     "statusCounts": {
       "excluded": 2,
-      "captured": 53,
+      "captured": 54,
       "alias": 10,
       "planned": 6
     }
@@ -1787,6 +1787,23 @@
         "dark": "dark/host_home_dashboard.png"
       },
       "whatItIs": "Host Home Dashboard",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_today_focus",
+      "routes": [
+        "hostTodayFocusScreen"
+      ],
+      "device": "claude-phone-390x812",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_today_focus.png",
+        "dark": "dark/host_today_focus.png"
+      },
+      "whatItIs": "Host Today Focus",
       "keepChangeNotes": ""
     },
     {

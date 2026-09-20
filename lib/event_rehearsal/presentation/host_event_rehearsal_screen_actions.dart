@@ -2,6 +2,33 @@ part of 'host_event_rehearsal_screen.dart';
 
 mixin _HostEventRehearsalScreenActions
     on ConsumerState<HostEventRehearsalScreen> {
+  Future<void> _showGuests(EventRehearsalBootstrap rehearsal) =>
+      showCatchBottomSheet<void>(
+        context: context,
+        builder: (_) => CatchSheet(
+          title: context.l10n.eventSuccessLiveWorkspaceGuests,
+          badge: context.l10n.hostEventRehearsalBadge,
+          badgeTone: CatchBadgeTone.danger,
+          mode: CatchSheetMode.scrollable,
+          child: EventRehearsalRosterSection(rehearsal: rehearsal),
+        ),
+      );
+
+  Future<void> _showCoachWhy(EventRehearsalBootstrap rehearsal) async {
+    await showCatchAdaptiveDialog<void>(
+      context: context,
+      title: context.l10n.hostEventRehearsalCoachWhyTitle,
+      message: context.l10n.hostEventRehearsalCoachWhyBody,
+      actions: [
+        CatchDialogAction(
+          label: context.l10n.hostEventRehearsalCoachGotIt,
+          value: null,
+          isDefault: true,
+        ),
+      ],
+    );
+  }
+
   Future<void> _retryRuntimeOperation(String sessionId) async {
     try {
       await ref

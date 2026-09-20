@@ -9,15 +9,19 @@ import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/hosts/data/host_analytics_repository.dart';
 import 'package:catch_dating_app/hosts/data/crm/host_contacts_repository.dart';
-import 'package:catch_dating_app/hosts/domain/crm/host_crm_summary.dart';
+import 'package:catch_dating_app/hosts/data/host_analytics_repository.dart';
 import 'package:catch_dating_app/hosts/data/host_profile_repository.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_crm_summary.dart';
 import 'package:catch_dating_app/hosts/domain/host_profile.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_events_timeline_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/host_club_edit_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller.dart';
 import 'package:catch_dating_app/hosts/today/domain/host_attention_item.dart';
+import 'package:catch_dating_app/hosts/today/personalization/domain/host_today_preference.dart';
+import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_personalization_state.dart';
+import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_preference_controller.dart';
+import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_roadmap_provider.dart';
 import 'package:catch_dating_app/hosts/today/presentation/host_today_feed_controller.dart';
 import 'package:catch_dating_app/payments/data/host_payment_account_repository.dart';
 import 'package:catch_dating_app/payments/domain/host_payment_account.dart';
@@ -75,6 +79,12 @@ class WidgetbookHostShellScope extends StatelessWidget {
       for (final club in effectiveOwnedClubs) club.id: club,
     };
     final overrides = [
+      hostTodayPreferenceProvider.overrideWith(
+        (ref, scope) async => const HostTodayPreference.skipped(),
+      ),
+      hostTodayRoadmapProvider.overrideWith(
+        (ref, scope) => const HostTodayRoadmapEvidence(),
+      ),
       hostTodayFeedControllerProvider.overrideWith2(
         (_) => _WidgetbookHostTodayFeedController(clubEventStreams),
       ),

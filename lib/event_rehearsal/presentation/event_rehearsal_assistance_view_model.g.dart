@@ -68,7 +68,7 @@ final class EventRehearsalAssistanceProvider
 }
 
 String _$eventRehearsalAssistanceHash() =>
-    r'a13cfd967e4af6e410e539ee63dd73a6c590c700';
+    r'89bbaa1a314c5238f577a1c47b7a8e2d9bbb32e9';
 
 /// A deliberate review fetch, separate from the constantly polling runtime.
 

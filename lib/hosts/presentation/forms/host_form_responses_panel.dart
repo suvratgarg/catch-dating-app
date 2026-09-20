@@ -44,6 +44,19 @@ class HostFormResponsesPanel extends ConsumerStatefulWidget {
 class _HostFormResponsesPanelState
     extends ConsumerState<HostFormResponsesPanel> {
   HostFormResponseStatus? _status;
+  bool _oldestFirst = false;
+  final Map<String, String> _answerFilters = {};
+  List<HostFormResponseFilterOption> _filterOptions = const [];
+
+  @override
+  void didUpdateWidget(covariant HostFormResponsesPanel oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.formId != widget.formId ||
+        oldWidget.organizerId != widget.organizerId) {
+      _answerFilters.clear();
+      _filterOptions = const [];
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,8 +65,13 @@ class _HostFormResponsesPanelState
       formId: widget.formId,
       statuses: _status == null ? const {} : {_status!},
       query: widget.query,
+      answerFilters: Map.unmodifiable(_answerFilters),
+      oldestFirst: _oldestFirst,
     );
     final responses = ref.watch(hostFormResponsesControllerProvider(request));
+    final loaded = catchAsyncStateFromAsyncValue(responses).value;
+    if (loaded != null) _filterOptions = loaded.answerFilterOptions;
+    final filterOptions = _filterOptions;
     final statusControl = CatchButton.command(
       label: switch (_status) {
         HostFormResponseStatus.submitted =>
@@ -104,8 +122,32 @@ class _HostFormResponsesPanelState
         ),
         SliverToBoxAdapter(
           child: CatchSection.controls(
-            leading: formControl ?? statusControl,
-            trailing: formControl == null ? null : statusControl,
+            leading: Wrap(
+              spacing: CatchSpacing.s4,
+              runSpacing: CatchSpacing.s2,
+              children: [
+                ?formControl,
+                statusControl,
+                for (final filter in filterOptions)
+                  CatchButton.command(
+                    label:
+                        '${filter.label}: ${filter.options[_answerFilters[filter.questionId]] ?? context.l10n.hostFormsFilterAll}',
+                    leading: Icon(CatchIcons.tune),
+                    onPressed:
+                        _answerFilters.containsKey(filter.questionId) ||
+                            _answerFilters.length < 5
+                        ? () => _selectAnswer(filter)
+                        : null,
+                  ),
+              ],
+            ),
+            trailing: CatchButton.command(
+              label: _oldestFirst
+                  ? context.l10n.hostApplicationsSortOldest
+                  : context.l10n.hostApplicationsSortNewest,
+              leading: Icon(CatchIcons.sort),
+              onPressed: () => setState(() => _oldestFirst = !_oldestFirst),
+            ),
           ),
         ),
         CatchAsyncBoundary<HostFormResponsesState>.sliver(
@@ -128,8 +170,14 @@ class _HostFormResponsesPanelState
                 onRetry: onBoundaryRetry,
               ),
           builder: (context, state) {
-            if (state.responses.isEmpty) {
-              final filtered = widget.query != null || _status != null;
+            if (state.responses.isEmpty &&
+                !state.canLoadMore &&
+                !state.loadingMore &&
+                state.loadMoreError == null) {
+              final filtered =
+                  widget.query != null ||
+                  _status != null ||
+                  _answerFilters.isNotEmpty;
               return CatchSliverEmptyState(
                 icon: CatchIcons.descriptionOutlined,
                 title: filtered
@@ -162,7 +210,19 @@ class _HostFormResponsesPanelState
                         name:
                             response.identity.primaryLabel ??
                             context.l10n.hostFormResponsesAnonymous,
-                        supportingText: response.formTitle,
+                        supportingText: response.highlights.isEmpty
+                            ? response.formTitle
+                            : response.highlights
+                                  .where(
+                                    (highlight) =>
+                                        highlight.answer !=
+                                        response.identity.primaryLabel,
+                                  )
+                                  .map(
+                                    (highlight) =>
+                                        '${highlight.label}: ${highlight.answer is List ? (highlight.answer as List).join(', ') : highlight.answer ?? ''}',
+                                  )
+                                  .join(' · '),
                         context:
                             '${AppTimeFormatters.compactRelativeTime(response.submittedAt)} · ${response.sourceLabel ?? context.l10n.hostFormResponseDirectSource}',
                         badges: [
@@ -223,6 +283,35 @@ class _HostFormResponsesPanelState
         ),
       ],
     );
+  }
+
+  Future<void> _selectAnswer(HostFormResponseFilterOption filter) async {
+    final selected = await showCatchSelectionSheet<String>(
+      context: context,
+      title: filter.label,
+      value: _answerFilters[filter.questionId] ?? '',
+      items: [
+        CatchSelectionMenuItem(
+          value: '',
+          label: context.l10n.hostFormsFilterAll,
+        ),
+        for (final entry in filter.options.entries)
+          CatchSelectionMenuItem(value: entry.key, label: entry.value),
+      ],
+    );
+    if (selected == null || !mounted) return;
+    if (selected.isNotEmpty &&
+        !_answerFilters.containsKey(filter.questionId) &&
+        _answerFilters.length >= 5) {
+      return;
+    }
+    setState(() {
+      if (selected.isEmpty) {
+        _answerFilters.remove(filter.questionId);
+      } else {
+        _answerFilters[filter.questionId] = selected;
+      }
+    });
   }
 
   Future<void> _selectStatus() async {

@@ -17,6 +17,21 @@ class SchemaContractDefinition {
 
 const schemaContractDefinitions = <SchemaContractDefinition>[
   SchemaContractDefinition(
+    name: 'EventRehearsalMilestoneDocument',
+    source: 'firestore/event_rehearsal_milestones.schema.json',
+    schema: schemaEventRehearsalMilestoneDocumentSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'GetEventRehearsalSummaryCallablePayload',
+    source: 'callables/get_event_rehearsal_summary_payload.schema.json',
+    schema: schemaGetEventRehearsalSummaryCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'EventRehearsalSummaryCallableResponse',
+    source: 'callable_responses/event_rehearsal_summary_response.schema.json',
+    schema: schemaEventRehearsalSummaryCallableResponseSchema,
+  ),
+  SchemaContractDefinition(
     name: 'GetEventAssistanceParticipantContextCallablePayload',
     source: 'callables/get_event_assistance_participant_context_payload.schema.json',
     schema: schemaGetEventAssistanceParticipantContextCallablePayloadSchema,
@@ -3459,6 +3474,9 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
 ];
 
 const schemaContractsByName = <String, Map<String, Object?>>{
+  'EventRehearsalMilestoneDocument': schemaEventRehearsalMilestoneDocumentSchema,
+  'GetEventRehearsalSummaryCallablePayload': schemaGetEventRehearsalSummaryCallablePayloadSchema,
+  'EventRehearsalSummaryCallableResponse': schemaEventRehearsalSummaryCallableResponseSchema,
   'GetEventAssistanceParticipantContextCallablePayload': schemaGetEventAssistanceParticipantContextCallablePayloadSchema,
   'EventAssistanceParticipantContextCallableResponse': schemaEventAssistanceParticipantContextCallableResponseSchema,
   'ListEventAssistanceDepartureRostersCallablePayload': schemaListEventAssistanceDepartureRostersCallablePayloadSchema,
@@ -4150,6 +4168,9 @@ const schemaContractsByName = <String, Map<String, Object?>>{
 };
 
 const schemaContractsBySource = <String, Map<String, Object?>>{
+  'firestore/event_rehearsal_milestones.schema.json': schemaEventRehearsalMilestoneDocumentSchema,
+  'callables/get_event_rehearsal_summary_payload.schema.json': schemaGetEventRehearsalSummaryCallablePayloadSchema,
+  'callable_responses/event_rehearsal_summary_response.schema.json': schemaEventRehearsalSummaryCallableResponseSchema,
   'callables/get_event_assistance_participant_context_payload.schema.json': schemaGetEventAssistanceParticipantContextCallablePayloadSchema,
   'callable_responses/event_assistance_participant_context_response.schema.json': schemaEventAssistanceParticipantContextCallableResponseSchema,
   'callables/list_event_assistance_departure_rosters_payload.schema.json': schemaListEventAssistanceDepartureRostersCallablePayloadSchema,

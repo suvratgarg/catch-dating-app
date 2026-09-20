@@ -22,12 +22,31 @@ class EventRehearsalRepository {
 
   final FirebaseFunctions _functions;
 
+  /// Server evidence only; failures remain errors rather than false completion.
+  Future<bool> hasCompletedRehearsal(String organizerId) => _call(
+    name: 'getEventRehearsalSummary',
+    payload: GetEventRehearsalSummaryCallableRequest(
+      organizerId: organizerId,
+    ).toJson(),
+    action: 'load rehearsal completion',
+    parse: (data) {
+      if (data is Map<Object?, Object?> &&
+          data['hasCompletedRehearsal'] is bool) {
+        return data['hasCompletedRehearsal']! as bool;
+      }
+      throw const FormatException('Rehearsal completion must be a boolean.');
+    },
+  );
+
   Future<EventRehearsalCreated> create({
     required String organizerId,
     required String? sourceEventId,
     required EventRehearsalScenario scenario,
     required int seed,
     required int actorCount,
+    EventRehearsalSetup? setup,
+    String guestSource = 'simulated',
+    bool startImmediately = false,
   }) => _call(
     name: 'createEventRehearsal',
     payload: CreateEventRehearsalCallableRequest(
@@ -36,6 +55,9 @@ class EventRehearsalRepository {
       scenarioId: scenario.name,
       seed: seed,
       actorCount: actorCount,
+      setup: setup?.toJson(),
+      guestSource: guestSource,
+      startImmediately: startImmediately,
     ).toJson(),
     action: 'create an event dress rehearsal',
     parse: EventRehearsalCreated.fromCallableData,

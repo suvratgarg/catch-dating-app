@@ -177,6 +177,14 @@
     "rosterReconciliation": {
       "$ref": "../shared/event_rehearsal_roster_reconciliation.schema.json#/definitions/State",
       "x-catch-ownership": "callable-owned"
+    },
+    "guestSource": {
+      "$ref": "../shared/event_rehearsal_common.schema.json#/definitions/guestSource",
+      "x-catch-ownership": "callable-owned"
+    },
+    "rosterSnapshot": {
+      "$ref": "../shared/event_rehearsal_common.schema.json#/definitions/rosterSnapshot",
+      "x-catch-ownership": "callable-owned"
     }
   }
 }

@@ -73,7 +73,7 @@ final class EventRehearsalAssistanceEditorProvider
 }
 
 String _$eventRehearsalAssistanceEditorHash() =>
-    r'3aaed7c4bcabf0a54ed3b50e1cee85ae301b0257';
+    r'82225f7209b1edf321735141fdcf3702c3391871';
 
 /// One unresolved command per rehearsal. Applied means its receipt was verified;
 /// it never promotes an accepted send or reported intention into delivery/arrival.

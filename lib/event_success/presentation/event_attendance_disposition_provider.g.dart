@@ -69,7 +69,7 @@ final class EventAttendanceDispositionProvider
 }
 
 String _$eventAttendanceDispositionHash() =>
-    r'3850c7c89b9958551b533c339e85b63ca3aa8d86';
+    r'5a09a0304b55ee69e504a948a756aba2bef87fe7';
 
 final class EventAttendanceDispositionFamily extends $Family
     with

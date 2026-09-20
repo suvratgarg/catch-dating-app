@@ -74,7 +74,7 @@ final class PublicProfileScreenStateProvider
 }
 
 String _$publicProfileScreenStateHash() =>
-    r'98b4331e2b238516e7556a3581e5d3eceded4d42';
+    r'0bf8bd79812646fbe8e2aa02a045fa2d37c4f2cc';
 
 final class PublicProfileScreenStateFamily extends $Family
     with

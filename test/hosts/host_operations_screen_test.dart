@@ -69,6 +69,10 @@ import 'package:catch_dating_app/hosts/presentation/payments/host_payment_accoun
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller_card.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeletons.dart';
 import 'package:catch_dating_app/hosts/today/domain/host_attention_item.dart';
+import 'package:catch_dating_app/hosts/today/personalization/domain/host_today_preference.dart';
+import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_personalization_state.dart';
+import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_preference_controller.dart';
+import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_roadmap_provider.dart';
 import 'package:catch_dating_app/hosts/today/presentation/host_today_feed_controller.dart';
 import 'package:catch_dating_app/hosts/today/presentation/host_today_screen.dart';
 import 'package:catch_dating_app/hosts/today/presentation/host_today_state.dart';
@@ -291,7 +295,15 @@ Future<void> _pumpHostScreen(
   await tester.pumpWidget(
     ProviderScope(
       key: resetProviderScope ? UniqueKey() : null,
-      overrides: overrides.cast(),
+      overrides: [
+        hostTodayPreferenceProvider.overrideWith(
+          (ref, scope) async => const HostTodayPreference.skipped(),
+        ),
+        hostTodayRoadmapProvider.overrideWith(
+          (ref, scope) => const HostTodayRoadmapEvidence(),
+        ),
+        ...overrides,
+      ].cast(),
       child: MaterialApp.router(theme: AppTheme.light, routerConfig: router),
     ),
   );

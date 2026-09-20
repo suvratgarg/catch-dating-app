@@ -35,6 +35,9 @@ class EventRehearsalController extends _$EventRehearsalController {
     required String? sourceEventId,
     required EventRehearsalScenario scenario,
     required int actorCount,
+    EventRehearsalSetup? setup,
+    String guestSource = 'simulated',
+    bool startImmediately = false,
   }) => ref
       .read(eventRehearsalRepositoryProvider)
       .create(
@@ -43,6 +46,9 @@ class EventRehearsalController extends _$EventRehearsalController {
         scenario: scenario,
         seed: DateTime.now().millisecondsSinceEpoch.remainder(2147483646) + 1,
         actorCount: actorCount,
+        setup: setup,
+        guestSource: guestSource,
+        startImmediately: startImmediately,
       );
 
   Future<void> updateSetup({

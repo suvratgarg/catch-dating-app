@@ -238,6 +238,46 @@ const schemaListOrganizerFormResponsesCallableResponseSchema = <String, Object?>
         },
       },
     },
+    'answerFilterOptions': <String, Object?>{
+      'type': 'array',
+      'maxItems': 100,
+      'items': <String, Object?>{
+        'type': 'object',
+        'additionalProperties': false,
+        'required': <Object?>[
+          'questionId',
+          'label',
+          'options',
+        ],
+        'properties': <String, Object?>{
+          'questionId': <String, Object?>{
+            'type': 'string',
+          },
+          'label': <String, Object?>{
+            'type': 'string',
+          },
+          'options': <String, Object?>{
+            'type': 'array',
+            'items': <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'value',
+                'label',
+              ],
+              'properties': <String, Object?>{
+                'value': <String, Object?>{
+                  'type': 'string',
+                },
+                'label': <String, Object?>{
+                  'type': 'string',
+                },
+              },
+            },
+          },
+        },
+      },
+    },
     'nextCursor': <String, Object?>{
       'type': <Object?>[
         'string',

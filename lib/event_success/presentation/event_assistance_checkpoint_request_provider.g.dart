@@ -74,7 +74,7 @@ final class EventAssistanceCheckpointRequestProvider
 }
 
 String _$eventAssistanceCheckpointRequestHash() =>
-    r'3e30b5f9abb0d7b6b9df9df260d707bbf23e55ee';
+    r'4b9185dbb7ddc53437cf66ef6704ebc92e8b34e4';
 
 /// The route consumes this outer provider; old-account data is never rendered.
 
@@ -207,7 +207,7 @@ final class EventAssistanceCheckpointRequestForAccountProvider
 }
 
 String _$eventAssistanceCheckpointRequestForAccountHash() =>
-    r'db6e5eb0b5372aff918889a5203cf355c23a4039';
+    r'2ac5051f6a2c81224b7b4eeb4289c513205c402a';
 
 final class EventAssistanceCheckpointRequestForAccountFamily extends $Family
     with

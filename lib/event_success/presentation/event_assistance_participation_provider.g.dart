@@ -71,7 +71,7 @@ final class EventAssistanceParticipationReviewProvider
 }
 
 String _$eventAssistanceParticipationReviewHash() =>
-    r'85a30a6efb6a51fc1650ea6df38f596a6ed7e598';
+    r'1fe84022986fb52f8a72eb50d3ec25af8548789d';
 
 /// The route consumes this outer provider; old-account data is never rendered.
 

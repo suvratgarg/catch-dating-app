@@ -15,6 +15,7 @@ class HostTodayEventSection extends StatelessWidget {
     required this.taskCount,
     this.taskCountIsComplete = true,
     required this.onPressed,
+    this.onRehearse,
     this.contained = true,
   });
 
@@ -23,6 +24,7 @@ class HostTodayEventSection extends StatelessWidget {
   final int taskCount;
   final bool taskCountIsComplete;
   final VoidCallback onPressed;
+  final VoidCallback? onRehearse;
   final bool contained;
 
   @override
@@ -95,6 +97,18 @@ class HostTodayEventSection extends StatelessWidget {
           borderColor: Colors.transparent,
           onPressed: onPressed,
         ),
+        if (onRehearse != null) ...[
+          gapH8,
+          CatchButton(
+            key: const ValueKey<String>('host-today-rehearse-event'),
+            label: context.l10n.hostTodayRehearseThisEvent,
+            leading: Icon(CatchIcons.scienceOutlined, size: CatchIcon.sm),
+            fullWidth: true,
+            mode: CatchButtonMode.rounded,
+            variant: CatchButtonVariant.secondary,
+            onPressed: onRehearse,
+          ),
+        ],
       ],
     );
     return !contained
