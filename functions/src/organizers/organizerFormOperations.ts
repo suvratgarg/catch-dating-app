@@ -513,10 +513,14 @@ async function completedConversionKinds(
   const snapshot = await db.collection("organizerFormConversionReceipts")
     .where("responseId", "==", responseId)
     .where("status", "==", "completed")
-    .limit(4)
+    .limit(200)
     .get();
-  return snapshot.docs.map((doc) =>
-    (doc.data() as OrganizerFormConversionReceiptDocument).kind);
+  if (snapshot.size === 200) {
+    throw new HttpsError("resource-exhausted",
+      "This response has too many conversions to summarize safely.");
+  }
+  return [...new Set(snapshot.docs.map((doc) =>
+    (doc.data() as OrganizerFormConversionReceiptDocument).kind))];
 }
 
 async function completedConversionKindsForResponses(

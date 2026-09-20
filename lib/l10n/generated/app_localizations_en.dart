@@ -3313,18 +3313,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get userProfileProfileTabSkeletonTitlePhotos => 'Photos';
 
   @override
-  String get clubsClubDetailSkeletonTitleAbout => 'About';
-
-  @override
-  String get clubsClubDetailSkeletonTitleWhatWeDo => 'What we do';
-
-  @override
-  String get clubsClubDetailSkeletonTitleYourHosts => 'Your hosts';
-
-  @override
-  String get clubsClubDetailSkeletonTitleSchedule => 'Schedule';
-
-  @override
   String get clubsClubHeroAppBarTitleClubDetailCollapsedTitle =>
       'club-detail-collapsed-title';
 

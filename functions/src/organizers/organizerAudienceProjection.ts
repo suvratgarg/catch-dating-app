@@ -37,6 +37,8 @@ import {
   organizerContactOriginId,
 } from "../shared/organizerContactOrigins";
 
+import {formAdmissionContactId} from "./organizerFormAdmissionIdentity";
+
 const projectionReceiptTtlMillis = 30 * 24 * 60 * 60 * 1000;
 
 export interface AudienceProjectionDeps {
@@ -106,7 +108,9 @@ export async function projectEventAttendeeToOrganizerAudience(
   const claimRefs = verifiedEvidence.map((item) => db
     .collection("organizerContactIdentityClaims")
     .doc(organizerIdentityClaimId(item.identityHash)));
-  const fallbackContactId = existingEdge?.contactId ??
+  const admissionContactId = existingEdge ? null :
+    await formAdmissionContactId({db, attendeeId, attendee: after});
+  const fallbackContactId = existingEdge?.contactId ?? admissionContactId ??
     organizerContactId(after.organizerId, attendeeId);
   const proposedCandidateIds = new Set<string>();
   for (const item of verifiedEvidence) {
@@ -678,6 +682,7 @@ function buildOrganizerContact(params: {
     createdAt: existing?.createdAt ?? now,
     updatedAt: now,
     deletedAt: null,
+    manualTagIds: existing?.manualTagIds ?? [],
     displayNameOverride: existing?.displayNameOverride ?? null,
     hiddenAt: existing?.hiddenAt ?? null,
     hiddenBy: existing?.hiddenBy ?? null,

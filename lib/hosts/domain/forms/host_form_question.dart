@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/schema_contracts/generated/profile_schema_contracts.g.dart';
 import 'package:catch_dating_app/hosts/domain/forms/form_definition_fields.dart';
 import 'package:meta/meta.dart';
 
@@ -97,6 +98,21 @@ class HostFormQuestion {
     formDefinitionStringValue(_json['kind']),
     'form question kind',
   );
+  String? get canonicalFieldId =>
+      formDefinitionNullableString(_json['canonicalFieldId']);
+
+  static bool supportsPersonField(String fieldId, HostFormQuestionKind kind) {
+    final field = schemaPersonFieldForId(fieldId);
+    return field?.questionKind == kind.name ||
+        (fieldId == 'instagramHandle' && kind == HostFormQuestionKind.url);
+  }
+
+  List<String> get availablePersonFieldIds => [
+    for (final field in schemaPersonFieldCatalog)
+      if (supportsPersonField(field.id, kind) || field.id == canonicalFieldId)
+        field.id,
+  ];
+
   bool get required => _json['required'] == true;
   HostFormPrivacyClass get privacyClass => formDefinitionEnumByName(
     HostFormPrivacyClass.values,
@@ -132,6 +148,8 @@ class HostFormQuestion {
     bool clearHelpText = false,
     HostFormQuestionKind? kind,
     bool? required,
+    String? canonicalFieldId,
+    bool clearCanonicalField = false,
     HostFormPrivacyClass? privacyClass,
     HostFormPrefillPolicy? prefillPolicy,
     HostFormPresentation? hostPresentation,
@@ -143,6 +161,21 @@ class HostFormQuestion {
       next['helpText'] = clearHelpText ? null : helpText;
     }
     if (required != null) next['required'] = required;
+    if (canonicalFieldId != null || clearCanonicalField) {
+      final field = clearCanonicalField
+          ? null
+          : schemaPersonFieldForId(canonicalFieldId!);
+      if (!clearCanonicalField &&
+          (field == null ||
+              !supportsPersonField(field.id, kind ?? this.kind))) {
+        throw ArgumentError.value(canonicalFieldId, 'canonicalFieldId');
+      }
+      next['canonicalFieldId'] = field?.id;
+      if (field != null) {
+        next['privacyClass'] = field.privacyClass;
+        next['hostPresentation'] = 'detailOnly';
+      }
+    }
     if (privacyClass != null) next['privacyClass'] = privacyClass.name;
     if (prefillPolicy != null) next['prefillPolicy'] = prefillPolicy.name;
     if (hostPresentation != null) {
@@ -151,6 +184,11 @@ class HostFormQuestion {
     if (validation != null) next['validation'] = validation.toJson();
     if (kind != null && kind != this.kind) {
       next['kind'] = kind.name;
+      final mapped = next['canonicalFieldId'] as String?;
+      if (mapped != null && !supportsPersonField(mapped, kind)) {
+        next['canonicalFieldId'] = null;
+        next['prefillPolicy'] = 'never';
+      }
       final choice =
           kind == HostFormQuestionKind.singleChoice ||
           kind == HostFormQuestionKind.multiChoice;

@@ -34,6 +34,9 @@ test("disabled legacy Meta params remain visibly unconfigured", () => {
     "META_WHATSAPP_EMBEDDED_SIGNUP_CONFIG_ID=\" \"",
     "META_WHATSAPP_GRAPH_VERSION=\"v23.0\"",
     "META_WHATSAPP_ENABLED=\"false\"",
+    'EVENT_ASSISTANCE_RCS_ENABLED="false"',
+    'EVENT_ASSISTANCE_RCS_WEBHOOK_ENABLED="false"',
+    'EVENT_ASSISTANCE_SMS_REPORTS_ENABLED="false"',
     "",
   ].join("\n"));
   assert.equal(fs.statSync(result.outputPath).mode & 0o777, 0o600);
@@ -60,6 +63,9 @@ test("empty GitHub repository variables default Meta to disabled", () => {
     "META_WHATSAPP_EMBEDDED_SIGNUP_CONFIG_ID=\" \"",
     "META_WHATSAPP_GRAPH_VERSION=\"v23.0\"",
     "META_WHATSAPP_ENABLED=\"false\"",
+    'EVENT_ASSISTANCE_RCS_ENABLED="false"',
+    'EVENT_ASSISTANCE_RCS_WEBHOOK_ENABLED="false"',
+    'EVENT_ASSISTANCE_SMS_REPORTS_ENABLED="false"',
     "",
   ].join("\n"));
 });
@@ -141,4 +147,35 @@ test("missing or unsafe public provider ids fail before writing deployment confi
     assert.equal(fs.existsSync(path.join(functionsDir, ".env.catchdates-dev")),
       false);
   }
+});
+
+test("event assistance flags default false and accept explicit enablement", () => {
+  const functionsDir = fixture();
+  const result = prepareFunctionsParamsForDeploy({
+    functionsDir,
+    projectId: "catchdates-dev",
+    environment: {
+      ...publicIds,
+      EVENT_ASSISTANCE_RCS_ENABLED: " TRUE ",
+      EVENT_ASSISTANCE_RCS_WEBHOOK_ENABLED: "true",
+    },
+  });
+  const contents = fs.readFileSync(result.outputPath, "utf8");
+  assert.match(contents, /EVENT_ASSISTANCE_RCS_ENABLED="true"/);
+  assert.match(contents, /EVENT_ASSISTANCE_RCS_WEBHOOK_ENABLED="true"/);
+  assert.match(contents, /EVENT_ASSISTANCE_SMS_REPORTS_ENABLED="false"/);
+});
+
+test("event assistance flags reject non-boolean values before writing", () => {
+  const functionsDir = fixture();
+  assert.throws(() => prepareFunctionsParamsForDeploy({
+    functionsDir,
+    projectId: "catchdates-dev",
+    environment: {
+      ...publicIds,
+      EVENT_ASSISTANCE_SMS_REPORTS_ENABLED: "1",
+    },
+  }), /EVENT_ASSISTANCE_SMS_REPORTS_ENABLED must be true or false/);
+  assert.equal(fs.existsSync(path.join(functionsDir, ".env.catchdates-dev")),
+    false);
 });
