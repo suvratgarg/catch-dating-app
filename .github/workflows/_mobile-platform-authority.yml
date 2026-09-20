@@ -79,7 +79,7 @@ jobs:
         run: |
           set -euo pipefail
           partial_attempt() {
-            echo "::error::This mobile producer attempt is incomplete. Partial job reruns cannot mix evidence across attempts."
+            echo "::error::${1:-Artifact completeness or binding check failed}. This mobile producer attempt is incomplete. Partial job reruns cannot mix evidence across attempts."
             echo "::error::Use Re-run all jobs for Mobile Internal Release."
             exit 64
           }
@@ -95,8 +95,26 @@ jobs:
               .repository.full_name == $repository and
               (.id | tostring) == $run_id and
               .run_attempt == $run_attempt and
-              .status == "in_progress"
-            ' <<< "$current_run" > /dev/null || partial_attempt
+              (.status == "in_progress" or .status == "queued") and
+              .conclusion == null
+            ' <<< "$current_run" > /dev/null || partial_attempt \
+              "Producer identity, current attempt, or active status rejected: $(jq -c '{id,run_attempt,status,conclusion,name,path,event}' <<< "$current_run")"
+
+          # GitHub can report queued while this platform is executing. Prove
+          # completion from its exact-attempt jobs, never the aggregate status.
+          jobs="$(gh api --paginate --slurp \
+            "repos/$GITHUB_REPOSITORY/actions/runs/$PRODUCER_RUN_ID/attempts/$PRODUCER_RUN_ATTEMPT/jobs?per_page=100")"
+          jq -e --arg run_id "$PRODUCER_RUN_ID" \
+            --argjson run_attempt "$PRODUCER_RUN_ATTEMPT" \
+            --argjson targets "$RELEASE_TARGETS" '
+              [.[].jobs[]] as $jobs |
+              all($targets[]; . as $target |
+                [$jobs[] | select(.name == ("Build signed package (" + $target + ")"))] as $selected |
+                ($selected | length) == 1 and
+                ($selected[0] | (.run_id | tostring) == $run_id and
+                  .run_attempt == $run_attempt and .status == "completed" and .conclusion == "success"))
+            ' <<< "$jobs" > /dev/null || partial_attempt \
+              "Selected platform package jobs are missing, duplicated, unsuccessful, or from another attempt"
 
           suffix="${SOURCE_CI_RUN_ID}-${SOURCE_CI_RUN_ATTEMPT}-${PRODUCER_RUN_ID}-${PRODUCER_RUN_ATTEMPT}"
           source_bundle_name="mobile-source-v1-${SOURCE_CI_RUN_ID}-${SOURCE_CI_RUN_ATTEMPT}-${PRODUCER_RUN_ID}-${PRODUCER_RUN_ATTEMPT}"
@@ -319,7 +337,7 @@ jobs:
         run: |
           set -euo pipefail
           partial_attempt() {
-            echo "::error::This mobile producer attempt is incomplete. Partial job reruns cannot mix evidence across attempts."
+            echo "::error::${1:-Artifact completeness or binding check failed}. This mobile producer attempt is incomplete. Partial job reruns cannot mix evidence across attempts."
             echo "::error::Use Re-run all jobs for Mobile Internal Release."
             exit 64
           }
@@ -334,8 +352,26 @@ jobs:
               .repository.full_name == $repository and
               (.id | tostring) == $run_id and
               .run_attempt == $run_attempt and
-              .status == "in_progress"
-            ' <<< "$current_run" > /dev/null || partial_attempt
+              (.status == "in_progress" or .status == "queued") and
+              .conclusion == null
+            ' <<< "$current_run" > /dev/null || partial_attempt \
+              "Producer identity, current attempt, or active status rejected: $(jq -c '{id,run_attempt,status,conclusion,name,path,event}' <<< "$current_run")"
+
+          # GitHub can report queued while this platform is executing. Prove
+          # completion from its exact-attempt jobs, never the aggregate status.
+          jobs="$(gh api --paginate --slurp \
+            "repos/$GITHUB_REPOSITORY/actions/runs/$PRODUCER_RUN_ID/attempts/$PRODUCER_RUN_ATTEMPT/jobs?per_page=100")"
+          jq -e --arg run_id "$PRODUCER_RUN_ID" \
+            --argjson run_attempt "$PRODUCER_RUN_ATTEMPT" \
+            --argjson targets "$RELEASE_TARGETS" '
+              [.[].jobs[]] as $jobs |
+              all($targets[]; . as $target |
+                [$jobs[] | select(.name == ("Build signed package (" + $target + ")"))] as $selected |
+                ($selected | length) == 1 and
+                ($selected[0] | (.run_id | tostring) == $run_id and
+                  .run_attempt == $run_attempt and .status == "completed" and .conclusion == "success"))
+            ' <<< "$jobs" > /dev/null || partial_attempt \
+              "Selected platform package jobs are missing, duplicated, unsuccessful, or from another attempt"
 
           mkdir -p \
             build/mobile/final/attempt \

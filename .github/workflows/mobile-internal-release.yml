@@ -1013,8 +1013,12 @@ jobs:
               .event == "workflow_run" and
               .head_branch == "main" and
               .head_repository.full_name == $repository and
-              .status == "in_progress"
-            ' <<< "$current_run" > /dev/null
+              (.status == "in_progress" or .status == "queued") and
+              .conclusion == null
+            ' <<< "$current_run" > /dev/null || {
+              echo "::error::Automatic promotion rejected producer identity, attempt, or active status: $(jq -c '{id,run_attempt,status,conclusion}' <<< "$current_run")"
+              exit 64
+            }
           authority="$(gh api \
             -H "X-GitHub-Api-Version: 2026-03-10" \
             "repos/$GITHUB_REPOSITORY/actions/artifacts/$AUTHORITY_ARTIFACT_ID")"
