@@ -27,5 +27,17 @@ export interface ListOrganizerFormResponsesCallablePayload {
   fromMillis: number | null;
   toMillis: number | null;
   cursor: string | null;
+  sortDirection?: "asc" | "desc";
+  /**
+   * @maxItems 5
+   */
+  answerFilters?: {
+    questionId: string;
+    /**
+     * @minItems 1
+     * @maxItems 20
+     */
+    values: string[];
+  }[];
   limit: number;
 }

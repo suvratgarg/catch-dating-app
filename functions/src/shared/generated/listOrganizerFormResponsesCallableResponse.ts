@@ -51,5 +51,16 @@ export interface ListOrganizerFormResponsesCallableResponse {
       | "followUp"
     )[];
   }[];
+  /**
+   * @maxItems 100
+   */
+  answerFilterOptions?: {
+    questionId: string;
+    label: string;
+    options: {
+      value: string;
+      label: string;
+    }[];
+  }[];
   nextCursor: string | null;
 }

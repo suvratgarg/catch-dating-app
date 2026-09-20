@@ -18,6 +18,8 @@ final class ListOrganizerFormResponsesCallableRequest {
     required this.fromMillis,
     required this.toMillis,
     required this.cursor,
+    this.sortDirection,
+    this.answerFilters,
     required this.limit,
   });
 
@@ -31,6 +33,8 @@ final class ListOrganizerFormResponsesCallableRequest {
   final int? fromMillis;
   final int? toMillis;
   final String? cursor;
+  final String? sortDirection;
+  final List<Map<String, Object?>>? answerFilters;
   final int limit;
 
   Map<String, Object?> toJson() => {
@@ -44,6 +48,8 @@ final class ListOrganizerFormResponsesCallableRequest {
     'fromMillis': fromMillis,
     'toMillis': toMillis,
     'cursor': cursor,
+    'sortDirection': ?sortDirection,
+    'answerFilters': ?answerFilters,
     'limit': limit,
   };
 }
