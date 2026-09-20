@@ -21289,7 +21289,7 @@
   "@hostsHostAudienceSenderDegraded": {"description": "Degraded WhatsApp sender state.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_audience"},
   "hostsHostAudienceSenderNeedsAttention": "Reconnect required",
   "@hostsHostAudienceSenderNeedsAttention": {"description": "Blocked WhatsApp sender state.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_audience"},
-  "hostCustomersCompactEventCount": "{count, plural, =0{No events} =1{1 event} other{{count} events}}",
+  "hostCustomersCompactEventCount": "{count, plural, =0{No events attended} =1{1 event attended} other{{count} events attended}}",
   "@hostCustomersCompactEventCount": {"description": "Compact attended event count in a customer directory row.", "placeholders": {"count": {"type": "int"}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.customers"},
   "hostsHostAudienceLastSeen": "Last seen {date}",
   "@hostsHostAudienceLastSeen": {"description": "Contact last attended date.", "placeholders": {"date": {"type": "String"}}, "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.host_operations.host_audience"},

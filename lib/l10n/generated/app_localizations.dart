@@ -19967,7 +19967,7 @@ abstract class AppLocalizations {
   /// Compact attended event count in a customer directory row.
   ///
   /// In en, this message translates to:
-  /// **'{count, plural, =0{No events} =1{1 event} other{{count} events}}'**
+  /// **'{count, plural, =0{No events attended} =1{1 event attended} other{{count} events attended}}'**
   String hostCustomersCompactEventCount({required int count});
 
   /// Contact last attended date.
