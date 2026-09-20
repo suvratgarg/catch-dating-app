@@ -315,7 +315,7 @@ class _HostEventRehearsalScreenState
                         isChangingStep: controlMutation.isPending,
                         isCompleting: controlMutation.isPending,
                       ),
-                      onOpenGuests: () => _showPracticeTools(rehearsal, busy),
+                      onOpenGuests: () => _showGuests(rehearsal),
                       onSetLiveStep: (stepIndex) =>
                           _setCanonicalLiveStep(rehearsal.session, stepIndex),
                       onCompleteLiveGuide: (_) => _control(
@@ -485,6 +485,18 @@ class _HostEventRehearsalScreenState
             onControl: (action, minutes) =>
                 _control(rehearsal.session, action, minutes),
           ),
+        ),
+      );
+
+  Future<void> _showGuests(EventRehearsalBootstrap rehearsal) =>
+      showCatchBottomSheet<void>(
+        context: context,
+        builder: (_) => CatchSheet(
+          title: context.l10n.eventSuccessLiveWorkspaceGuests,
+          badge: context.l10n.hostEventRehearsalBadge,
+          badgeTone: CatchBadgeTone.danger,
+          mode: CatchSheetMode.scrollable,
+          child: EventRehearsalRosterSection(rehearsal: rehearsal),
         ),
       );
 

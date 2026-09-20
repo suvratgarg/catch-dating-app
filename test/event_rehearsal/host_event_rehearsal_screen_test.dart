@@ -8,10 +8,13 @@ import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_configur
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_operations.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_entry_view_model.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_runtime_operation_controller.dart';
+import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_staff_controller.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/host_event_rehearsal_screen.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/host_event_rehearsal_start_screen.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_link_and_run.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_simulator.dart';
+import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_setup_section.dart';
+import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_staff_section.dart';
 import 'package:catch_dating_app/event_success/event_success.dart';
 import 'package:catch_dating_app/events/domain/event_itinerary.dart';
 import 'package:catch_dating_app/events/domain/route_event_plan.dart';
@@ -158,6 +161,37 @@ void main() {
     await tester.tap(find.text('Room'));
     await tester.pump();
     expect(find.text('Room'), findsOneWidget);
+
+    final container = ProviderScope.containerOf(
+      tester.element(find.byType(HostEventRehearsalScreen)),
+    );
+    await tester.tap(find.text('Guests'));
+    await pumpFeatureUi(tester);
+
+    final guestSheet = find.byType(CatchSheet);
+    expect(guestSheet, findsOneWidget);
+    expect(tester.widget<CatchSheet>(guestSheet).title, 'Guests');
+    expect(
+      find.descendant(
+        of: guestSheet,
+        matching: find.byType(EventRehearsalRosterSection),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(of: guestSheet, matching: find.text('Rhea')),
+      findsOneWidget,
+    );
+    expect(find.text('Practice tools'), findsNothing);
+    expect(find.byType(EventRehearsalSetupSection), findsNothing);
+    expect(find.byType(EventRehearsalStaffSection), findsNothing);
+    expect(find.byType(EventRehearsalSimulator), findsNothing);
+    expect(
+      container.exists(eventRehearsalStaffControllerProvider('session-1')),
+      isFalse,
+    );
+    Navigator.of(tester.element(guestSheet)).pop();
+    await pumpFeatureUi(tester);
 
     await tester.tap(find.byIcon(CatchIcons.more));
     await pumpFeatureUi(tester);
