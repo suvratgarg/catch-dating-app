@@ -1,9 +1,12 @@
 import 'dart:async';
-
+import '../test_pump_helpers.dart';
+import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/event_rehearsal/data/event_rehearsal_repository.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
+import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_configuration.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_operations.dart';
+import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_entry_view_model.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_runtime_operation_controller.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/host_event_rehearsal_screen.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/host_event_rehearsal_start_screen.dart';
@@ -19,17 +22,29 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../test_pump_helpers.dart';
-
 void main() {
   testWidgets('start screen makes the practice boundary and choices explicit', (
     tester,
   ) async {
     await tester.pumpWidget(
-      _app(const HostEventRehearsalStartScreen(clubId: 'club-1')),
+      _app(
+        const HostEventRehearsalStartScreen(clubId: 'club-1'),
+        overrides: [
+          eventRehearsalEntryProvider('club-1', null).overrideWith(
+            (ref) async => EventRehearsalEntryData(
+              organizerDefaults: const ClubHostDefaults(),
+              events: const [],
+              initialConfiguration: EventRehearsalConfiguration.defaults(
+                organizerDefaults: const ClubHostDefaults(),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
     await tester.pump();
 
+    await pumpFeatureUi(tester);
     expect(find.text('Dress rehearsal'), findsWidgets);
     expect(find.byType(CatchTopBar), findsOneWidget);
     final topBar = tester.widget<CatchTopBar>(find.byType(CatchTopBar));
@@ -58,16 +73,16 @@ void main() {
     expect(find.byType(CatchPageBody), findsOneWidget);
     expect(find.byType(SingleChildScrollView), findsOneWidget);
     expect(
-      find.textContaining('No real guests, messages, payments'),
+      find.text('Your real event and attendees stay unchanged.'),
       findsOneWidget,
     );
-    expect(find.text('Smooth run'), findsOneWidget);
+    expect(find.text('Normal flow'), findsOneWidget);
     await tester.drag(
       find.byType(SingleChildScrollView),
       const Offset(0, -500),
     );
     await tester.pump();
-    expect(find.text('Create rehearsal'), findsOneWidget);
+    expect(find.text('Start rehearsal'), findsOneWidget);
   });
 
   testWidgets('host console renders an isolated live rehearsal projection', (
@@ -94,7 +109,7 @@ void main() {
     await tester.pump();
     await tester.pump();
 
-    expect(find.text('Courtyard practice'), findsOneWidget);
+    expect(find.text('Courtyard practice'), findsWidgets);
     expect(find.text('REHEARSAL'), findsOneWidget);
     final topBar = tester.widget<CatchTopBar>(find.byType(CatchTopBar));
     expect(topBar.title, 'Courtyard practice');
@@ -111,7 +126,7 @@ void main() {
         color: CatchTokens.of(titleContext).ink,
       ),
     );
-    expect(find.text('Synthetic guests'), findsOneWidget);
+    expect(find.text('Practice guests'), findsOneWidget);
     final strip = tester.widget<CatchBanner>(
       find.byWidgetPredicate(
         (widget) =>
