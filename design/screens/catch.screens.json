@@ -320,6 +320,17 @@
           "expression": "CatchRootScreenScaffold.withPrimaryRail",
           "bodyGeometry": "full-bleed",
           "topEdge": "safe-area"
+        },
+        {
+          "routes": [
+            "hostTodayFocusScreen"
+          ],
+          "file": "lib/hosts/today/personalization/presentation/host_today_focus_screen.dart",
+          "symbol": "_HostTodayFocusScreenState",
+          "family": "pushed-route",
+          "expression": "CatchRouteScaffold",
+          "bodyGeometry": "standard",
+          "topEdge": "route-chrome"
         }
       ],
       "reason": "Host Today and Events use the same root composition in loading, error, empty, and populated states."
@@ -1016,17 +1027,6 @@
       "owners": [
         {
           "routes": [
-            "hostEventRehearsalStartScreen"
-          ],
-          "file": "lib/event_rehearsal/presentation/host_event_rehearsal_start_screen.dart",
-          "symbol": "_HostEventRehearsalStartScreenState",
-          "family": "pushed-route",
-          "expression": "CatchRouteScaffold",
-          "bodyGeometry": "standard",
-          "topEdge": "route-chrome"
-        },
-        {
-          "routes": [
             "hostEventRehearsalScreen"
           ],
           "file": "lib/event_rehearsal/presentation/host_event_rehearsal_screen.dart",
@@ -1034,6 +1034,28 @@
           "family": "pushed-route",
           "expression": "CatchRouteScaffold",
           "bodyGeometry": "mixed",
+          "topEdge": "route-chrome"
+        },
+        {
+          "routes": [
+            "hostEventRehearsalStartScreen"
+          ],
+          "file": "lib/event_rehearsal/presentation/widgets/event_rehearsal_entry_view.dart",
+          "symbol": "EventRehearsalEntryView",
+          "family": "pushed-route",
+          "expression": "CatchRouteScaffold",
+          "bodyGeometry": "mixed",
+          "topEdge": "route-chrome"
+        },
+        {
+          "routes": [
+            "hostEventRehearsalStartScreen"
+          ],
+          "file": "lib/event_rehearsal/presentation/host_event_rehearsal_start_screen.dart",
+          "symbol": "EventRehearsalEntryLoadState",
+          "family": "pushed-route",
+          "expression": "CatchRouteScaffold",
+          "bodyGeometry": "standard",
           "topEdge": "route-chrome"
         }
       ],
@@ -9773,6 +9795,11 @@
           "id": "hostEventsScreen",
           "path": "/host/events",
           "role": "primary"
+        },
+        {
+          "id": "hostTodayFocusScreen",
+          "path": "/host/today/focus",
+          "role": "secondary"
         }
       ],
       "source": {
@@ -9808,7 +9835,7 @@
           }
         ],
         "mutationOwners": [],
-        "notes": "HostTodayScreen and HostEventsScreen are independent route edges with separate route state and controllers. Today owns its bounded command-centre feed, live-first spotlight, event-identified attention, and Later projection. Events owns paginated schedule/history inventory through HostEventsTimelineController. Both consume shared event and organizer repositories without importing each other's presentation controller."
+        "notes": "HostTodayScreen and HostEventsScreen are independent route edges with separate route state and controllers. Today owns its bounded command-centre feed, live-first spotlight, event-identified attention, and Later projection. Events owns paginated schedule/history inventory through HostEventsTimelineController. Both consume shared event and organizer repositories without importing each other's presentation controller. Quiet Today uses account-and-organizer-scoped device-local focus preferences; authoritative audience, rehearsal, public-page and payout evidence remains distinct from preference and navigation."
       },
       "designRefs": [
         {

@@ -4,7 +4,7 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
-import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
+import 'package:catch_dating_app/hosts/data/crm/host_contacts_repository.dart';
 import 'package:catch_dating_app/hosts/today/personalization/domain/host_today_preference.dart';
 import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_personalization_panel.dart';
 import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_personalization_state.dart';
@@ -48,23 +48,22 @@ class _HostTodayPersonalizedViewState
   bool _focusRouteOpen = false;
 
   bool get _isTodayRoute =>
-      _router?.routeInformationProvider.value.uri.path ==
-      Routes.hostTodayScreen.path;
+      _router?.state.name == Routes.hostTodayScreen.name;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     final router = GoRouter.maybeOf(context);
     if (identical(router, _router)) return;
-    _router?.routeInformationProvider.removeListener(_onRouteChanged);
+    _router?.routerDelegate.removeListener(_onRouteChanged);
     _router = router;
     _wasTodayRoute = _isTodayRoute;
-    router?.routeInformationProvider.addListener(_onRouteChanged);
+    router?.routerDelegate.addListener(_onRouteChanged);
   }
 
   @override
   void dispose() {
-    _router?.routeInformationProvider.removeListener(_onRouteChanged);
+    _router?.routerDelegate.removeListener(_onRouteChanged);
     super.dispose();
   }
 
@@ -205,8 +204,11 @@ class _HostTodayPersonalizedViewState
           await context.pushNamed<void>(
             Routes.hostEventRehearsalStartScreen.name,
             pathParameters: {'clubId': organizerId},
+            queryParameters: const {'source': 'custom'},
           );
-          if (mounted && _hasCurrentAccount && widget.scope.organizerId == organizerId) {
+          if (mounted &&
+              _hasCurrentAccount &&
+              widget.scope.organizerId == organizerId) {
             ref.invalidate(hostTodayRehearsalCompletionProvider(widget.scope));
           }
         case HostTodaySuggestedAction.openOrganizerPage:

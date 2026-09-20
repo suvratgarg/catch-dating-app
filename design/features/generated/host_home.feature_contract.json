@@ -1890,6 +1890,11 @@
               "id": "hostEventsScreen",
               "path": "/host/events",
               "role": "primary"
+            },
+            {
+              "id": "hostTodayFocusScreen",
+              "path": "/host/today/focus",
+              "role": "secondary"
             }
           ]
         },

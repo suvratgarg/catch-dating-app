@@ -1,7 +1,8 @@
+import 'package:catch_dating_app/hosts/domain/crm/host_crm_summary.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
-import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
+import 'package:catch_dating_app/hosts/data/crm/host_contacts_repository.dart';
 import 'package:catch_dating_app/event_rehearsal/data/event_rehearsal_repository.dart';
 import 'package:catch_dating_app/hosts/today/personalization/domain/host_today_preference.dart';
 import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_personalization_state.dart';
@@ -54,7 +55,8 @@ Future<bool> hostTodayRehearsalCompletion(
       !organizers.any((organizer) => organizer.id == scope.organizerId)) {
     throw StateError('Organizer access is unavailable.');
   }
-  return ref.watch(eventRehearsalRepositoryProvider)
+  return ref
+      .watch(eventRehearsalRepositoryProvider)
       .hasCompletedRehearsal(scope.organizerId);
 }
 

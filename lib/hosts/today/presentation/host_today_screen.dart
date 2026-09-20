@@ -11,6 +11,7 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_sliver_error_state.dart';
 import 'package:catch_dating_app/events/data/event_draft_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_start_sheet.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_flow.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_sheet.dart';
@@ -142,16 +143,35 @@ class _HostTodayScreenState extends ConsumerState<HostTodayScreen> {
             onOpenAttention: _openAttention,
             onViewEvents: () => context.goNamed(Routes.hostEventsScreen.name),
             onStartRehearsal: _startRehearsal,
+            onStartEventRehearsal: _showRehearsalStart,
           ),
         },
       ],
     );
   }
 
-  void _startRehearsal(Club organizer) {
+  Future<void> _showRehearsalStart(Club organizer, Event event) async {
+    final choice = await showCatchBottomSheet<EventRehearsalStartChoice>(
+      context: context,
+      builder: (_) => EventRehearsalStartSheet(event: event),
+    );
+    if (!mounted || choice == null) return;
+    _startRehearsal(
+      organizer,
+      sourceEventId: choice == EventRehearsalStartChoice.upcomingEvent
+          ? event.id
+          : null,
+    );
+  }
+
+  void _startRehearsal(Club organizer, {String? sourceEventId}) {
     context.pushNamed(
       Routes.hostEventRehearsalStartScreen.name,
       pathParameters: {'clubId': organizer.id},
+      queryParameters: {
+        'eventId': ?sourceEventId,
+        if (sourceEventId == null) 'source': 'custom',
+      },
     );
   }
 
@@ -248,6 +268,7 @@ class HostTodayLoadedRoute extends ConsumerWidget {
     required this.onOpenAttention,
     required this.onViewEvents,
     required this.onStartRehearsal,
+    this.onStartEventRehearsal,
     this.initialOrganizerId,
   });
 
@@ -259,6 +280,7 @@ class HostTodayLoadedRoute extends ConsumerWidget {
   final void Function(Club organizer, HostAttentionItem item) onOpenAttention;
   final VoidCallback onViewEvents;
   final ValueChanged<Club> onStartRehearsal;
+  final void Function(Club organizer, Event event)? onStartEventRehearsal;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -325,6 +347,9 @@ class HostTodayLoadedRoute extends ConsumerWidget {
         ),
         onViewEvents: onViewEvents,
         onStartRehearsal: () => onStartRehearsal(organizer),
+        onStartEventRehearsal: onStartEventRehearsal == null
+            ? null
+            : (event) => onStartEventRehearsal!(organizer, event),
       ),
     );
   }

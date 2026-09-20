@@ -28,7 +28,7 @@ class HostTodayFocusBody extends StatelessWidget {
       children: [
         Text(
           l10n.hostTodayFocusHeading,
-          style: CatchTextStyles.headlineL(context),
+          style: CatchTextStyles.titleL(context),
         ),
         const SizedBox(height: CatchSpacing.s3),
         Text(
@@ -61,7 +61,7 @@ class HostTodayFocusBody extends StatelessWidget {
         CatchButton(
           key: const ValueKey('host-today-focus-continue'),
           label: l10n.hostTodayFocusContinue,
-          isLoading: pending,
+          status: pending ? CatchButtonStatus.loading : CatchButtonStatus.idle,
           onPressed: pending || selected == null ? null : onContinue,
         ),
         const SizedBox(height: CatchSpacing.s2),

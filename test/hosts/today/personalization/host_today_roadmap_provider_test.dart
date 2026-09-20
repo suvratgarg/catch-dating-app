@@ -1,9 +1,10 @@
+import 'package:catch_dating_app/hosts/domain/crm/host_crm_summary.dart';
 import 'dart:async';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
-import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
+import 'package:catch_dating_app/hosts/data/crm/host_contacts_repository.dart';
 import 'package:catch_dating_app/hosts/today/personalization/domain/host_today_preference.dart';
 import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_personalization_state.dart';
 import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_roadmap_provider.dart';
@@ -90,7 +91,9 @@ void main() {
         final container = ProviderContainer(
           overrides: [
             uidProvider.overrideWithValue(const AsyncData('cohost')),
-            hostTodayRehearsalCompletionProvider(cohostScope).overrideWith((ref) async => false),
+            hostTodayRehearsalCompletionProvider(
+              cohostScope,
+            ).overrideWith((ref) async => false),
             hostOperableClubsProvider(
               'cohost',
             ).overrideWithValue(AsyncData([club])),
@@ -125,7 +128,9 @@ void main() {
         final container = ProviderContainer(
           overrides: [
             uidProvider.overrideWith((ref) => identity.stream),
-            hostTodayRehearsalCompletionProvider(scope).overrideWith((ref) async => false),
+            hostTodayRehearsalCompletionProvider(
+              scope,
+            ).overrideWith((ref) async => false),
             hostOperableClubsProvider(
               'owner',
             ).overrideWithValue(AsyncData([club])),
@@ -171,26 +176,54 @@ void main() {
     );
   });
 
-  test('rehearsal summary failures stay unknown and success is authoritative', () async {
-    final scope = HostTodayPreferenceScope(accountId: 'owner', organizerId: club.id);
-    for (final result in [true, false, null]) {
-      final container = ProviderContainer(overrides: [
-        uidProvider.overrideWithValue(const AsyncData('owner')),
-        hostOperableClubsProvider('owner').overrideWithValue(AsyncData([club])),
-        hostCrmSummaryProvider(club.id).overrideWith((ref) async => _summary(club.id, count: 0)),
-        watchHostPaymentAccountsProvider('owner').overrideWith((ref) => Stream.value([])),
-        hostTodayRehearsalCompletionProvider(scope).overrideWith((ref) async {
-          if (result == null) throw StateError('Summary unavailable');
-          return result;
-        }),
-      ]);
-      container.listen(hostTodayRoadmapProvider(scope), (_, _) {});
-      try { await container.read(hostTodayRehearsalCompletionProvider(scope).future); } on StateError { /* Expected unavailable evidence. */ }
-      expect(container.read(hostTodayRoadmapProvider(scope)).rehearsal,
-        result == null ? HostTodayMilestoneProgress.unknown : result ? HostTodayMilestoneProgress.complete : HostTodayMilestoneProgress.incomplete);
-      container.dispose();
-    }
-  });
+  test(
+    'rehearsal summary failures stay unknown and success is authoritative',
+    () async {
+      final scope = HostTodayPreferenceScope(
+        accountId: 'owner',
+        organizerId: club.id,
+      );
+      for (final result in [true, false, null]) {
+        final container = ProviderContainer(
+          overrides: [
+            uidProvider.overrideWithValue(const AsyncData('owner')),
+            hostOperableClubsProvider(
+              'owner',
+            ).overrideWithValue(AsyncData([club])),
+            hostCrmSummaryProvider(
+              club.id,
+            ).overrideWith((ref) async => _summary(club.id, count: 0)),
+            watchHostPaymentAccountsProvider(
+              'owner',
+            ).overrideWith((ref) => Stream.value([])),
+            hostTodayRehearsalCompletionProvider(scope).overrideWith((
+              ref,
+            ) async {
+              if (result == null) throw StateError('Summary unavailable');
+              return result;
+            }),
+          ],
+        );
+        container.listen(hostTodayRoadmapProvider(scope), (_, _) {});
+        try {
+          await container.read(
+            hostTodayRehearsalCompletionProvider(scope).future,
+          );
+        } on StateError {
+          /* Expected unavailable evidence. */
+        }
+        expect(
+          container.read(hostTodayRoadmapProvider(scope)).rehearsal,
+          result == null
+              ? HostTodayMilestoneProgress.unknown
+              : result
+              ? HostTodayMilestoneProgress.complete
+              : HostTodayMilestoneProgress.incomplete,
+        );
+        container.dispose();
+      }
+    },
+  );
 
   test('unknown dependencies are not treated as completed or empty', () {
     final evidence = buildHostTodayRoadmapEvidence(

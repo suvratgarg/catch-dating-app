@@ -23,6 +23,7 @@ class HostTodayOverview extends StatelessWidget {
     required this.onOpenAttention,
     required this.onViewEvents,
     required this.onStartRehearsal,
+    this.onStartEventRehearsal,
   });
 
   final HostTodayState state;
@@ -32,6 +33,7 @@ class HostTodayOverview extends StatelessWidget {
   final ValueChanged<HostAttentionItem> onOpenAttention;
   final VoidCallback onViewEvents;
   final VoidCallback onStartRehearsal;
+  final ValueChanged<Event>? onStartEventRehearsal;
 
   @override
   Widget build(BuildContext context) {
@@ -50,6 +52,7 @@ class HostTodayOverview extends StatelessWidget {
       onOpenEvent: onOpenEvent,
       onViewEvents: onViewEvents,
       onStartRehearsal: onStartRehearsal,
+      onStartEventRehearsal: onStartEventRehearsal,
     );
     final attention = HostTodayAttentionSection(
       state: state,
@@ -71,6 +74,11 @@ class HostTodayOverview extends StatelessWidget {
                 taskCount: taskCount,
                 taskCountIsComplete: state.attentionCountIsComplete,
                 onPressed: () => onOpenEvent(event),
+                onRehearse:
+                    event.startTime.isAfter(now) &&
+                        onStartEventRehearsal != null
+                    ? () => onStartEventRehearsal!(event)
+                    : null,
               ),
             ),
           if (event != null && attentionVisible) gapH28,
@@ -80,7 +88,12 @@ class HostTodayOverview extends StatelessWidget {
             state: state,
             onOpenEvent: onOpenEvent,
             onViewEvents: onViewEvents,
-            onStartRehearsal: onStartRehearsal,
+            onStartRehearsal:
+                event != null &&
+                    event.startTime.isAfter(now) &&
+                    onStartEventRehearsal != null
+                ? null
+                : onStartRehearsal,
           ),
         ],
       ),
@@ -152,6 +165,7 @@ class _HostTodayPrimaryPane extends StatelessWidget {
     required this.onOpenEvent,
     required this.onViewEvents,
     required this.onStartRehearsal,
+    this.onStartEventRehearsal,
   });
 
   final HostTodayState state;
@@ -162,6 +176,7 @@ class _HostTodayPrimaryPane extends StatelessWidget {
   final ValueChanged<Event> onOpenEvent;
   final VoidCallback onViewEvents;
   final VoidCallback onStartRehearsal;
+  final ValueChanged<Event>? onStartEventRehearsal;
 
   @override
   Widget build(BuildContext context) {
@@ -177,6 +192,10 @@ class _HostTodayPrimaryPane extends StatelessWidget {
               taskCountIsComplete: state.attentionCountIsComplete,
               contained: false,
               onPressed: () => onOpenEvent(event!),
+              onRehearse:
+                  event!.startTime.isAfter(now) && onStartEventRehearsal != null
+                  ? () => onStartEventRehearsal!(event!)
+                  : null,
             ),
           ),
           gapH28,
@@ -185,7 +204,12 @@ class _HostTodayPrimaryPane extends StatelessWidget {
           state: state,
           onOpenEvent: onOpenEvent,
           onViewEvents: onViewEvents,
-          onStartRehearsal: onStartRehearsal,
+          onStartRehearsal:
+              event != null &&
+                  event.startTime.isAfter(now) &&
+                  onStartEventRehearsal != null
+              ? null
+              : onStartRehearsal,
         ),
       ],
     );
@@ -203,7 +227,7 @@ class _HostTodayHorizonAndActions extends StatelessWidget {
   final HostTodayState state;
   final ValueChanged<Event> onOpenEvent;
   final VoidCallback onViewEvents;
-  final VoidCallback onStartRehearsal;
+  final VoidCallback? onStartRehearsal;
 
   @override
   Widget build(BuildContext context) {
@@ -236,14 +260,17 @@ class _HostTodayHorizonAndActions extends StatelessWidget {
                 size: CatchButtonSize.sm,
                 onPressed: onViewEvents,
               ),
-              CatchButton(
-                key: const ValueKey<String>('host-today-start-dress-rehearsal'),
-                label: context.l10n.hostEventRehearsalEntryTitle,
-                leading: Icon(CatchIcons.scienceOutlined, size: CatchIcon.sm),
-                variant: CatchButtonVariant.ghost,
-                size: CatchButtonSize.sm,
-                onPressed: onStartRehearsal,
-              ),
+              if (onStartRehearsal != null)
+                CatchButton(
+                  key: const ValueKey<String>(
+                    'host-today-start-dress-rehearsal',
+                  ),
+                  label: context.l10n.hostEventRehearsalEntryTitle,
+                  leading: Icon(CatchIcons.scienceOutlined, size: CatchIcon.sm),
+                  variant: CatchButtonVariant.ghost,
+                  size: CatchButtonSize.sm,
+                  onPressed: onStartRehearsal,
+                ),
             ],
           ),
         ),
