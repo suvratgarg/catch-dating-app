@@ -12,6 +12,9 @@ Do not edit it by hand.
 
 | Generated Type | Source Schema | Output |
 |---|---|---|
+| EventRehearsalMilestoneDocument | `firestore/event_rehearsal_milestones.schema.json` | `functions/src/shared/generated/eventRehearsalMilestoneDocument.ts` |
+| GetEventRehearsalSummaryCallablePayload | `callables/get_event_rehearsal_summary_payload.schema.json` | `functions/src/shared/generated/getEventRehearsalSummaryCallablePayload.ts` |
+| EventRehearsalSummaryCallableResponse | `callable_responses/event_rehearsal_summary_response.schema.json` | `functions/src/shared/generated/eventRehearsalSummaryCallableResponse.ts` |
 | GetEventAssistanceParticipantContextCallablePayload | `callables/get_event_assistance_participant_context_payload.schema.json` | `functions/src/shared/generated/getEventAssistanceParticipantContextCallablePayload.ts` |
 | EventAssistanceParticipantContextCallableResponse | `callable_responses/event_assistance_participant_context_response.schema.json` | `functions/src/shared/generated/eventAssistanceParticipantContextCallableResponse.ts` |
 | ListEventAssistanceDepartureRostersCallablePayload | `callables/list_event_assistance_departure_rosters_payload.schema.json` | `functions/src/shared/generated/listEventAssistanceDepartureRostersCallablePayload.ts` |
@@ -705,6 +708,9 @@ Do not edit it by hand.
 
 | Dart Constant | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| `schemaEventRehearsalMilestoneDocumentSchema` | EventRehearsalMilestoneDocument | `firestore/event_rehearsal_milestones.schema.json` | `lib/core/schema_contracts/generated/schemas/event_rehearsal_milestone_document.g.dart` |
+| `schemaGetEventRehearsalSummaryCallablePayloadSchema` | GetEventRehearsalSummaryCallablePayload | `callables/get_event_rehearsal_summary_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/get_event_rehearsal_summary_callable_payload.g.dart` |
+| `schemaEventRehearsalSummaryCallableResponseSchema` | EventRehearsalSummaryCallableResponse | `callable_responses/event_rehearsal_summary_response.schema.json` | `lib/core/schema_contracts/generated/schemas/event_rehearsal_summary_callable_response.g.dart` |
 | `schemaGetEventAssistanceParticipantContextCallablePayloadSchema` | GetEventAssistanceParticipantContextCallablePayload | `callables/get_event_assistance_participant_context_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/get_event_assistance_participant_context_callable_payload.g.dart` |
 | `schemaEventAssistanceParticipantContextCallableResponseSchema` | EventAssistanceParticipantContextCallableResponse | `callable_responses/event_assistance_participant_context_response.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_participant_context_callable_response.g.dart` |
 | `schemaListEventAssistanceDepartureRostersCallablePayloadSchema` | ListEventAssistanceDepartureRostersCallablePayload | `callables/list_event_assistance_departure_rosters_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/list_event_assistance_departure_rosters_callable_payload.g.dart` |
@@ -1398,6 +1404,7 @@ Do not edit it by hand.
 
 | Generated Class | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| GetEventRehearsalSummaryCallableRequest | GetEventRehearsalSummaryCallablePayload | `callables/get_event_rehearsal_summary_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_event_rehearsal_summary_callable_request.g.dart` |
 | GetEventAssistanceParticipantContextCallableRequest | GetEventAssistanceParticipantContextCallablePayload | `callables/get_event_assistance_participant_context_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_event_assistance_participant_context_callable_request.g.dart` |
 | ListEventAssistanceDepartureRostersCallableRequest | ListEventAssistanceDepartureRostersCallablePayload | `callables/list_event_assistance_departure_rosters_payload.schema.json` | `lib/core/schema_contracts/generated/callables/list_event_assistance_departure_rosters_callable_request.g.dart` |
 | ListEventSmsPreferencesCallableRequest | ListEventSmsPreferencesCallablePayload | `callables/list_event_sms_preferences_payload.schema.json` | `lib/core/schema_contracts/generated/callables/list_event_sms_preferences_callable_request.g.dart` |

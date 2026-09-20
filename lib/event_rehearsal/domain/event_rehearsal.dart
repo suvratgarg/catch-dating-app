@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_accountability.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_assistance_automation.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_assistance_view.dart';
@@ -8,6 +9,7 @@ import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_movement
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_operations.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_settings.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_staff.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
 import 'package:catch_dating_app/events/domain/event_itinerary.dart';
 import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 
@@ -125,6 +127,8 @@ class EventRehearsalSetup {
     required this.modules,
     this.unitOutcome,
     this.movementSimulation,
+    this.eventFormat,
+    this.successDefaults,
   });
 
   factory EventRehearsalSetup.fromMap(Map<Object?, Object?> map) =>
@@ -137,6 +141,18 @@ class EventRehearsalSetup {
         modules: _stringList(map['moduleIds'])
             .map((value) => EventRehearsalModule.values.byName(value))
             .toList(growable: false),
+        eventFormat: map['eventFormat'] == null
+            ? null
+            : EventFormatSnapshot.fromJson(
+                _stringMap(_requiredMap(map['eventFormat'], 'eventFormat')),
+              ),
+        successDefaults: map['successDefaults'] == null
+            ? null
+            : EventSuccessDefaults.fromJson(
+                _stringMap(
+                  _requiredMap(map['successDefaults'], 'successDefaults'),
+                ),
+              ),
         unitOutcome: map['unitOutcome'] == null
             ? null
             : RehearsalOutcomeKind.values.byName(
@@ -155,6 +171,8 @@ class EventRehearsalSetup {
   final String hostGoal;
   final String attendeePrompt;
   final List<EventRehearsalModule> modules;
+  final EventFormatSnapshot? eventFormat;
+  final EventSuccessDefaults? successDefaults;
   final RehearsalOutcomeKind? unitOutcome;
   final EventRehearsalMovementSimulation? movementSimulation;
 
@@ -176,6 +194,8 @@ class EventRehearsalSetup {
     'hostGoal': hostGoal,
     'attendeePrompt': attendeePrompt,
     'moduleIds': modules.map((module) => module.name).toList(growable: false),
+    if (eventFormat != null) 'eventFormat': eventFormat!.toJson(),
+    if (successDefaults != null) 'successDefaults': successDefaults!.toJson(),
     if (unitOutcome != null) 'unitOutcome': unitOutcome!.name,
     if (movementSimulation != null)
       'movementSimulation': movementSimulation!.toJson(),
@@ -188,6 +208,8 @@ class EventRehearsalSetup {
     String? hostGoal,
     String? attendeePrompt,
     List<EventRehearsalModule>? modules,
+    EventFormatSnapshot? eventFormat,
+    EventSuccessDefaults? successDefaults,
     RehearsalOutcomeKind? unitOutcome,
     EventRehearsalMovementSimulation? movementSimulation,
   }) => EventRehearsalSetup(
@@ -197,6 +219,8 @@ class EventRehearsalSetup {
     hostGoal: hostGoal ?? this.hostGoal,
     attendeePrompt: attendeePrompt ?? this.attendeePrompt,
     modules: modules ?? this.modules,
+    eventFormat: eventFormat ?? this.eventFormat,
+    successDefaults: successDefaults ?? this.successDefaults,
     unitOutcome: unitOutcome ?? this.unitOutcome,
     movementSimulation: movementSimulation ?? this.movementSimulation,
   );
@@ -285,6 +309,7 @@ class EventRehearsalSession {
     this.virtualStartedAt,
     required this.fault,
     required this.expiresAt,
+    this.guestSource = 'simulated',
   });
 
   factory EventRehearsalSession.fromMap(
@@ -293,6 +318,7 @@ class EventRehearsalSession {
     id: _requiredString(map, 'id'),
     organizerId: _requiredString(map, 'organizerId'),
     sourceEventId: map['sourceEventId'] as String?,
+    guestSource: map['guestSource'] as String? ?? 'simulated',
     scenario: EventRehearsalScenario.fromWire(
       _requiredString(map, 'scenarioId'),
     ),
@@ -321,6 +347,7 @@ class EventRehearsalSession {
   final String id;
   final String organizerId;
   final String? sourceEventId;
+  final String guestSource;
   final EventRehearsalScenario scenario;
   final int seed;
   final int actorCount;

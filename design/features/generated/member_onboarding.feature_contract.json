@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/member_onboarding.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:2a4c07467ec877e90d27858cfe15ddd868ce4674fcd5857c042d194127732cc3",
-  "resolvedDigest": "sha256:3225d0d35f4da412d78781d7303349f7bc408e85dcf24d7b2d755cdd3b9663d5",
+  "resolvedDigest": "sha256:b03fdf6a5a9e8d25d2367c5c610ad966ddbbceb56db4e27c686623369e59532c",
   "feature": {
     "id": "feature.member_onboarding",
     "name": "Member Onboarding",
@@ -2379,7 +2379,8 @@
                 "CatchSection.sliverRows",
                 "CatchSection.sliverLoadingRows",
                 "CatchSection.content",
-                "CatchSection.formRows"
+                "CatchSection.formRows",
+                "CatchSection.dependentFieldRows"
               ]
             }
           }

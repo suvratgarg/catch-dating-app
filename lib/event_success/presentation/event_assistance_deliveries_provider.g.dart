@@ -69,7 +69,7 @@ final class EventAssistanceDeliveriesProvider
 }
 
 String _$eventAssistanceDeliveriesHash() =>
-    r'97c336e06b56c4a86d4931f250190dcdc887bf3b';
+    r'71a752e6fcdc57c90fdff7f54f42f743bdf87527';
 
 final class EventAssistanceDeliveriesFamily extends $Family
     with

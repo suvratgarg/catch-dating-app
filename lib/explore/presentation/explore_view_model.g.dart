@@ -415,7 +415,7 @@ final class ExploreSourceClubsProvider
 }
 
 String _$exploreSourceClubsHash() =>
-    r'b3bccd3685e1f5c0d1259f3ec5237402bfa20a22';
+    r'e6b94ed26a266a55eabd8e5ad4b893e37c4b35c1';
 
 @ProviderFor(filteredExploreClubs)
 final filteredExploreClubsProvider = FilteredExploreClubsProvider._();
@@ -463,7 +463,7 @@ final class FilteredExploreClubsProvider
 }
 
 String _$filteredExploreClubsHash() =>
-    r'b6504f122012bf040d43df60a48b1723f6fde5fd';
+    r'4666125803063efcbdd84afa114dc8c5ad874f2d';
 
 /// **Pattern D: View-model provider**
 ///
@@ -531,4 +531,4 @@ final class ExploreClubsViewModelProvider
 }
 
 String _$exploreClubsViewModelHash() =>
-    r'6ae37ef02a0a31fa393f2ac3d711bef2e99881ba';
+    r'8639ff8d04b339ecc3cf411d5c03f15e377a7949';

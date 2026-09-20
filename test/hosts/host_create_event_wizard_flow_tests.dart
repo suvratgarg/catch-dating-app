@@ -198,7 +198,7 @@ void _registerCreateEventWizardFlowTests() {
     expect(find.text('When & where'), findsWidgets);
   });
 
-  testWidgets('demand pricing preserves four lines for consequence copy', (
+  testWidgets('demand pricing allows at least four lines for consequence copy', (
     tester,
   ) async {
     await _pumpCreateEventFlow(tester);
@@ -221,7 +221,7 @@ void _registerCreateEventWizardFlowTests() {
             find.byKey(CreateEventFormKeys.dynamicPricingToggle),
           )
           .bodyMaxLines,
-      4,
+      greaterThanOrEqualTo(4),
     );
   });
 

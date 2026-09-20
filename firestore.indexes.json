@@ -1,6 +1,22 @@
 {
   "indexes": [
     {
+      "collectionGroup": "eventRehearsals",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "organizerId", "mode": "ASCENDING"},
+        {"fieldPath": "status", "mode": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "eventAttendees",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "eventId", "mode": "ASCENDING"},
+        {"fieldPath": "status", "mode": "ASCENDING"}
+      ]
+    },
+    {
       "collectionGroup": "eventAssistanceSmsPermissions",
       "queryScope": "COLLECTION",
       "fields": [
@@ -513,8 +529,26 @@
       "queryScope": "COLLECTION",
       "fields": [
         {"fieldPath": "organizerId", "mode": "ASCENDING"},
+        {"fieldPath": "submittedAt", "mode": "ASCENDING"},
+        {"fieldPath": "__name__", "mode": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "organizerFormResponses",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "organizerId", "mode": "ASCENDING"},
         {"fieldPath": "submittedAt", "mode": "DESCENDING"},
         {"fieldPath": "__name__", "mode": "DESCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "organizerFormResponses",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "organizerId", "mode": "ASCENDING"},
+        {"fieldPath": "submittedAt", "mode": "ASCENDING"},
+        {"fieldPath": "__name__", "mode": "ASCENDING"}
       ]
     },
     {

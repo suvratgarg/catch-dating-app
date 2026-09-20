@@ -236,6 +236,46 @@ export const listOrganizerFormResponsesCallableResponseSchema: Record<string, un
         }
       }
     },
+    "answerFilterOptions": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "questionId",
+          "label",
+          "options"
+        ],
+        "properties": {
+          "questionId": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "value",
+                "label"
+              ],
+              "properties": {
+                "value": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "nextCursor": {
       "type": [
         "string",

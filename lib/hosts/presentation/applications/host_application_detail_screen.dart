@@ -150,6 +150,71 @@ class _HostApplicationDetailScreenState
                       style: CatchTextStyles.supporting(context),
                     ),
                     gapH24,
+                    _HostApplicationOutreachSection(
+                      outreach: application.outreach,
+                      onOpen: _openUri,
+                    ),
+                    gapH16,
+                    if (application.reviewStatus !=
+                            HostApplicationReviewStatus.withdrawn &&
+                        application.dataAccessState !=
+                            'revokedParticipantGrant') ...[
+                      Wrap(
+                        spacing: CatchSpacing.s2,
+                        runSpacing: CatchSpacing.s2,
+                        children: [
+                          CatchButton(
+                            label: context.l10n.hostApplicationMarkInReview,
+                            variant: CatchButtonVariant.secondary,
+                            size: CatchButtonSize.sm,
+                            status:
+                                (_savingStatus ==
+                                    HostApplicationReviewStatus.inReview)
+                                ? CatchButtonStatus.loading
+                                : CatchButtonStatus.idle,
+                            onPressed: _savingStatus == null
+                                ? () => _review(
+                                    application,
+                                    HostApplicationReviewStatus.inReview,
+                                  )
+                                : null,
+                          ),
+                          CatchButton(
+                            label: context.l10n.hostApplicationWaitlist,
+                            variant: CatchButtonVariant.secondary,
+                            size: CatchButtonSize.sm,
+                            status:
+                                (_savingStatus ==
+                                    HostApplicationReviewStatus.waitlisted)
+                                ? CatchButtonStatus.loading
+                                : CatchButtonStatus.idle,
+                            onPressed: _savingStatus == null
+                                ? () => _review(
+                                    application,
+                                    HostApplicationReviewStatus.waitlisted,
+                                  )
+                                : null,
+                          ),
+                          CatchButton(
+                            label: context.l10n.hostApplicationDecline,
+                            variant: CatchButtonVariant.danger,
+                            size: CatchButtonSize.sm,
+                            status:
+                                (_savingStatus ==
+                                    HostApplicationReviewStatus.declined)
+                                ? CatchButtonStatus.loading
+                                : CatchButtonStatus.idle,
+                            onPressed: _savingStatus == null
+                                ? () => _review(
+                                    application,
+                                    HostApplicationReviewStatus.declined,
+                                  )
+                                : null,
+                          ),
+                        ],
+                      ),
+                      gapH24,
+                    ],
                     CatchPageTabBar<bool>(
                       options: [
                         CatchOption(
@@ -251,12 +316,6 @@ class _HostApplicationDetailScreenState
                         ],
                       ),
                     ],
-                    gapH24,
-                    _HostApplicationOutreachSection(
-                      outreach: application.outreach,
-                      onOpen: _openUri,
-                    ),
-                    gapH24,
                     if (application.reviewStatus !=
                             HostApplicationReviewStatus.withdrawn &&
                         application.dataAccessState !=
@@ -265,16 +324,9 @@ class _HostApplicationDetailScreenState
                       CatchFieldLanes.single(
                         child: CatchField.control(
                           copy: catchFieldCopy(context.l10n),
-                          title: context.l10n.hostApplicationReviewTitle,
+                          title: context.l10n.hostApplicationReviewNote,
                           contractExemption:
-                              'Disclosure for review actions; the nested note uses the generated review payload binding.',
-                          disclosureMode:
-                              application.reviewStatus ==
-                                      HostApplicationReviewStatus.submitted ||
-                                  application.reviewStatus ==
-                                      HostApplicationReviewStatus.inReview
-                              ? CatchFieldMode.localExpanded
-                              : CatchFieldMode.localCollapsed,
+                              'Disclosure for the optional review note, using its generated payload binding.',
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
@@ -290,68 +342,6 @@ class _HostApplicationDetailScreenState
                                 maxLines: 3,
                               ),
                               gapH12,
-                              Wrap(
-                                spacing: CatchSpacing.s2,
-                                runSpacing: CatchSpacing.s2,
-                                children: [
-                                  CatchButton(
-                                    label: context
-                                        .l10n
-                                        .hostApplicationMarkInReview,
-                                    variant: CatchButtonVariant.secondary,
-                                    size: CatchButtonSize.sm,
-                                    status:
-                                        (_savingStatus ==
-                                            HostApplicationReviewStatus
-                                                .inReview)
-                                        ? CatchButtonStatus.loading
-                                        : CatchButtonStatus.idle,
-                                    onPressed: _savingStatus == null
-                                        ? () => _review(
-                                            application,
-                                            HostApplicationReviewStatus
-                                                .inReview,
-                                          )
-                                        : null,
-                                  ),
-                                  CatchButton(
-                                    label: context.l10n.hostApplicationWaitlist,
-                                    variant: CatchButtonVariant.secondary,
-                                    size: CatchButtonSize.sm,
-                                    status:
-                                        (_savingStatus ==
-                                            HostApplicationReviewStatus
-                                                .waitlisted)
-                                        ? CatchButtonStatus.loading
-                                        : CatchButtonStatus.idle,
-                                    onPressed: _savingStatus == null
-                                        ? () => _review(
-                                            application,
-                                            HostApplicationReviewStatus
-                                                .waitlisted,
-                                          )
-                                        : null,
-                                  ),
-                                  CatchButton(
-                                    label: context.l10n.hostApplicationDecline,
-                                    variant: CatchButtonVariant.danger,
-                                    size: CatchButtonSize.sm,
-                                    status:
-                                        (_savingStatus ==
-                                            HostApplicationReviewStatus
-                                                .declined)
-                                        ? CatchButtonStatus.loading
-                                        : CatchButtonStatus.idle,
-                                    onPressed: _savingStatus == null
-                                        ? () => _review(
-                                            application,
-                                            HostApplicationReviewStatus
-                                                .declined,
-                                          )
-                                        : null,
-                                  ),
-                                ],
-                              ),
                             ],
                           ),
                         ),
@@ -401,6 +391,14 @@ class _HostApplicationDetailScreenState
             reviewNote: _reviewNoteController.text,
           );
       _invalidateDetail();
+      if (application.sourceResponseId case final responseId?) {
+        ref.invalidate(
+          hostFormResponseDetailProvider(
+            organizerId: widget.organizerId,
+            responseId: responseId,
+          ),
+        );
+      }
       ref.invalidate(hostApplicationsDirectoryControllerProvider);
       if (mounted) {
         showCatchSnackBar(context, context.l10n.hostApplicationReviewUpdated);

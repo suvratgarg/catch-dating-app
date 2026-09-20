@@ -70,7 +70,7 @@ final class EventAssistanceMembershipControllerProvider
 }
 
 String _$eventAssistanceMembershipControllerHash() =>
-    r'e85940cc18a22ce97338c48326323136ece95d1b';
+    r'8460bc4ba9dc4c76ffbeab549dc0786b24af551c';
 
 /// One guest owns one pending group decision across review refresh and closure.
 

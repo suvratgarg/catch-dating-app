@@ -111,7 +111,7 @@ final class ExploreViewerCohortIdProvider
 }
 
 String _$exploreViewerCohortIdHash() =>
-    r'6836f1992c7ab636cfe78817bc28ffe4b1b45823';
+    r'64043ba379df476dc5d53ecb74fa738f3fa29a17';
 
 @ProviderFor(exploreFeedViewModel)
 final exploreFeedViewModelProvider = ExploreFeedViewModelProvider._();
@@ -161,7 +161,7 @@ final class ExploreFeedViewModelProvider
 }
 
 String _$exploreFeedViewModelHash() =>
-    r'1c3e917ff8f5af21587f953c938c1a3fbc9e0fa3';
+    r'56f277bdd1a3f7834d3f56badbf1dea04ef28e1b';
 
 @ProviderFor(exploreRecommendations)
 final exploreRecommendationsProvider = ExploreRecommendationsProvider._();
@@ -214,4 +214,4 @@ final class ExploreRecommendationsProvider
 }
 
 String _$exploreRecommendationsHash() =>
-    r'8a1d78eceb2d9b596797bce2e761e1c132f07d51';
+    r'0b3e61191f704a7c2260a0c9f4ffc39617ad9b62';

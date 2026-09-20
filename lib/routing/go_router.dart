@@ -47,6 +47,7 @@ import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart'
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_messaging_setup_screen.dart';
+import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_focus_screen.dart';
 import 'package:catch_dating_app/hosts/today/presentation/host_today_screen.dart';
 import 'package:catch_dating_app/launch_access/presentation/launch_access_application_screen.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_screen.dart';
@@ -77,6 +78,7 @@ export 'route_contract.dart';
 
 part 'go_router.g.dart';
 
+part 'detail_route_pages.dart';
 part 'host_inbox_route.dart';
 
 HostEventManageSection _hostManageSectionFromState(GoRouterState state) {
@@ -117,117 +119,6 @@ Widget hostAudienceScreenForUri(Uri uri, {String? initialContactDisplayName}) {
       initialContactDisplayName: initialContactDisplayName,
     ),
   };
-}
-
-Event? _eventDetailInitialEvent(GoRouterState state) {
-  return switch (state.extra) {
-    EventDetailRouteExtra(:final initialEvent) => initialEvent,
-    final Event event => event,
-    _ => null,
-  };
-}
-
-EventDetailRouteTransition _eventDetailTransition(GoRouterState state) {
-  return switch (state.extra) {
-    EventDetailRouteExtra(:final transition) => transition,
-    _ => EventDetailRouteTransition.platform,
-  };
-}
-
-EventDetailPresentationMode _eventDetailPresentationMode(GoRouterState state) {
-  return switch (state.extra) {
-    EventDetailRouteExtra(:final presentationMode) => presentationMode,
-    _ => EventDetailPresentationMode.standard,
-  };
-}
-
-Object? _eventDetailHeroTag(GoRouterState state) {
-  return switch (state.extra) {
-    EventDetailRouteExtra(:final heroTag) => heroTag,
-    _ => null,
-  };
-}
-
-EventDetailAttribution? _eventDetailAttribution(GoRouterState state) {
-  return switch (state.extra) {
-    EventDetailRouteExtra(:final attribution) => attribution,
-    _ => null,
-  };
-}
-
-EventDetailScreen _eventDetailScreen(GoRouterState state) {
-  return EventDetailScreen(
-    clubId: state.pathParameters['clubId']!,
-    eventId: state.pathParameters['eventId']!,
-    inviteCode: state.uri.queryParameters['invite'],
-    inviteLinkId:
-        state.uri.queryParameters['il'] ??
-        state.uri.queryParameters['inviteLinkId'],
-    initialEvent: _eventDetailInitialEvent(state),
-    presentationMode: _eventDetailPresentationMode(state),
-    heroTag: _eventDetailHeroTag(state),
-    attribution: _eventDetailAttribution(state),
-  );
-}
-
-Club? _clubDetailInitialClub(GoRouterState state) {
-  return switch (state.extra) {
-    final Club club => club,
-    _ => null,
-  };
-}
-
-ClubDetailScreen _clubDetailScreen(GoRouterState state) {
-  return ClubDetailScreen(
-    clubId: state.pathParameters['clubId']!,
-    initialClub: _clubDetailInitialClub(state),
-  );
-}
-
-Page<void> _clubDetailPage(BuildContext _, GoRouterState state) {
-  return CustomTransitionPage<void>(
-    key: state.pageKey,
-    name: state.name,
-    child: _clubDetailScreen(state),
-    transitionDuration: CatchMotion.calendarScroll,
-    reverseTransitionDuration: CatchMotion.base,
-    transitionsBuilder: (context, animation, secondaryAnimation, child) =>
-        CatchRevealViewport(animation: animation, child: child),
-  );
-}
-
-Page<void> _exploreMapPage(BuildContext _, GoRouterState state) {
-  return CustomTransitionPage<void>(
-    key: state.pageKey,
-    name: state.name,
-    child: const ExploreMapScreen(),
-    transitionDuration: CatchMotion.slow,
-    reverseTransitionDuration: CatchMotion.base,
-    transitionsBuilder: (context, animation, secondaryAnimation, child) {
-      return CatchRevealViewport.stationary(animation: animation, child: child);
-    },
-  );
-}
-
-Page<void> _eventDetailPage(BuildContext _, GoRouterState state) {
-  final child = _eventDetailScreen(state);
-  if (_eventDetailTransition(state) == EventDetailRouteTransition.platform) {
-    return MaterialPage<void>(
-      key: state.pageKey,
-      name: state.name,
-      child: child,
-    );
-  }
-
-  return CustomTransitionPage<void>(
-    key: state.pageKey,
-    name: state.name,
-    child: child,
-    transitionDuration: CatchMotion.slow,
-    reverseTransitionDuration: CatchMotion.base,
-    transitionsBuilder: (context, animation, secondaryAnimation, child) =>
-        CatchRevealViewport(animation: animation, child: child),
-  );
 }
 
 /// Navigator identity belongs to one [GoRouter] lifecycle. Keeping these keys
@@ -701,6 +592,8 @@ List<RouteBase> _hostUtilityRoutes(GlobalKey<NavigatorState> rootNavigatorKey) {
               builder: (context, state) => HostEventRehearsalStartScreen(
                 clubId: state.pathParameters['clubId']!,
                 sourceEventId: state.uri.queryParameters['eventId'],
+                startFromOrganizerDefaults:
+                    state.uri.queryParameters['source'] == 'custom',
               ),
             ),
             GoRoute(
@@ -1029,6 +922,16 @@ StatefulShellRoute _hostShellRoute(
                   state.uri.queryParameters['organizerId'] ??
                   state.uri.queryParameters['clubId'],
             ),
+            routes: [
+              GoRoute(
+                path: 'focus',
+                name: Routes.hostTodayFocusScreen.name,
+                parentNavigatorKey: keys.root,
+                builder: (context, state) => HostTodayFocusScreen(
+                  organizerId: state.uri.queryParameters['organizerId'] ?? '',
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -1378,6 +1281,28 @@ bool _isTransientRoute(String path) =>
 bool _isHostRoute(String? path) =>
     path == Routes.hostHomeScreen.path ||
     (path?.startsWith('${Routes.hostHomeScreen.path}/') ?? false);
+
+EventDetailScreen _eventDetailScreen(GoRouterState state) {
+  return EventDetailScreen(
+    clubId: state.pathParameters['clubId']!,
+    eventId: state.pathParameters['eventId']!,
+    inviteCode: state.uri.queryParameters['invite'],
+    inviteLinkId:
+        state.uri.queryParameters['il'] ??
+        state.uri.queryParameters['inviteLinkId'],
+    initialEvent: _eventDetailInitialEvent(state),
+    presentationMode: _eventDetailPresentationMode(state),
+    heroTag: _eventDetailHeroTag(state),
+    attribution: _eventDetailAttribution(state),
+  );
+}
+
+ClubDetailScreen _clubDetailScreen(GoRouterState state) {
+  return ClubDetailScreen(
+    clubId: state.pathParameters['clubId']!,
+    initialClub: _clubDetailInitialClub(state),
+  );
+}
 
 // Minimal ChangeNotifier used as GoRouter's refreshListenable.
 class _RouterRefreshNotifier extends ChangeNotifier {

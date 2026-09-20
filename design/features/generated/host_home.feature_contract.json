@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_home.feature.json",
   "generatedFor": "2026-09-04",
   "sourceDigest": "sha256:46e17bff40eb59bcfbac1f3f2227c3b5ca700427ab3253529b15658693e93e70",
-  "resolvedDigest": "sha256:0418a5e6421c1ffe1ea8bf6c22593222de8e124ee6e67f28e9a4cd26e545c11a",
+  "resolvedDigest": "sha256:cd041519e5ad0c1e0c883faab7702933dccc478badbba00a07109046a9fd1f4d",
   "feature": {
     "id": "feature.host_home",
     "name": "Host Today and Events",
@@ -1890,6 +1890,11 @@
               "id": "hostEventsScreen",
               "path": "/host/events",
               "role": "primary"
+            },
+            {
+              "id": "hostTodayFocusScreen",
+              "path": "/host/today/focus",
+              "role": "host"
             }
           ]
         },
@@ -2001,7 +2006,8 @@
                 "CatchSection.sliverRows",
                 "CatchSection.sliverLoadingRows",
                 "CatchSection.content",
-                "CatchSection.formRows"
+                "CatchSection.formRows",
+                "CatchSection.dependentFieldRows"
               ]
             }
           },

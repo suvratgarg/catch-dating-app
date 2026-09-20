@@ -83,7 +83,7 @@ void registerHostEventEntryTests() {
     );
 
     final rehearsalAction = find.byKey(
-      const ValueKey<String>('host-today-start-dress-rehearsal'),
+      const ValueKey<String>('host-today-suggested-action'),
     );
     expect(rehearsalAction, findsOneWidget);
     await tester.tap(rehearsalAction);
@@ -128,6 +128,11 @@ void registerHostEventEntryTests() {
 
     final createEvent = find.byKey(
       const ValueKey<String>('host-today-create-event'),
+    );
+    await tester.scrollUntilVisible(
+      createEvent,
+      400,
+      scrollable: find.byType(Scrollable).first,
     );
     expect(createEvent, findsOneWidget);
     await tester.tap(createEvent);

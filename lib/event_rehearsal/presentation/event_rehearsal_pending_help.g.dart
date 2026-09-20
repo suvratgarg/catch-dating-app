@@ -52,7 +52,7 @@ final class EventRehearsalPendingHelpProvider
 }
 
 String _$eventRehearsalPendingHelpHash() =>
-    r'a5dc5857b5d797706e82bf8469e4354279aabe9c';
+    r'ffefbe07a1b513f65093dda4460232151d6b7f55';
 
 /// Discovery references only. Each case editor owns its command and retry.
 /// A server page may omit a case whose save succeeded without confirmation.

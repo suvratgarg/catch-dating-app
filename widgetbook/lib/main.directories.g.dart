@@ -79,6 +79,8 @@ import 'package:widgetbook_workspace/dashboard/catalog/recommendations.dart'
     as _widgetbook_workspace_dashboard_catalog_recommendations;
 import 'package:widgetbook_workspace/dashboard/catalog/screen.dart'
     as _widgetbook_workspace_dashboard_catalog_screen;
+import 'package:widgetbook_workspace/event_rehearsal/event_rehearsal_entry_use_cases.dart'
+    as _widgetbook_workspace_event_rehearsal_event_rehearsal_entry_use_cases;
 import 'package:widgetbook_workspace/event_rehearsal/rehearsal_settings_use_cases.dart'
     as _widgetbook_workspace_event_rehearsal_rehearsal_settings_use_cases;
 import 'package:widgetbook_workspace/event_success/companion/feedback.dart'
@@ -245,6 +247,8 @@ import 'package:widgetbook_workspace/hosts/host_saved_audience_use_cases.dart'
     as _widgetbook_workspace_hosts_host_saved_audience_use_cases;
 import 'package:widgetbook_workspace/hosts/host_send_intent_use_cases.dart'
     as _widgetbook_workspace_hosts_host_send_intent_use_cases;
+import 'package:widgetbook_workspace/hosts/host_today_personalization_use_cases.dart'
+    as _widgetbook_workspace_hosts_host_today_personalization_use_cases;
 import 'package:widgetbook_workspace/hosts/operations/analytics.dart'
     as _widgetbook_workspace_hosts_operations_analytics;
 import 'package:widgetbook_workspace/hosts/operations/audiences.dart'
@@ -367,6 +371,8 @@ import 'package:widgetbook_workspace/primitives/catalog/sections.dart'
     as _widgetbook_workspace_primitives_catalog_sections;
 import 'package:widgetbook_workspace/primitives/catalog/typography.dart'
     as _widgetbook_workspace_primitives_catalog_typography;
+import 'package:widgetbook_workspace/primitives/conditional_form_use_cases.dart'
+    as _widgetbook_workspace_primitives_conditional_form_use_cases;
 import 'package:widgetbook_workspace/primitives/contracts/activity_media.dart'
     as _widgetbook_workspace_primitives_contracts_activity_media;
 import 'package:widgetbook_workspace/primitives/contracts/analytics.dart'
@@ -1422,6 +1428,22 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Validated arrival interaction',
                 builder: _widgetbook_workspace_primitives_catalog_feedback
                     .foregroundNotificationListenerPreview,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
+        name: 'Grouping',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchDependentRowSection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Dependent configuration',
+                builder:
+                    _widgetbook_workspace_primitives_conditional_form_use_cases
+                        .catchDependentConfigurationUseCase,
               ),
             ],
           ),
@@ -6250,6 +6272,105 @@ final directories = <_widgetbook.WidgetbookNode>[
         ],
       ),
       _widgetbook.WidgetbookFolder(
+        name: 'Dress rehearsal',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'EventRehearsalChoiceTile',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Wrapping choice explanation',
+                builder:
+                    _widgetbook_workspace_event_rehearsal_event_rehearsal_entry_use_cases
+                        .rehearsalChoicePreview,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventRehearsalConfigInput',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Event detail inputs in configuration',
+                builder:
+                    _widgetbook_workspace_event_rehearsal_event_rehearsal_entry_use_cases
+                        .rehearsalConfigInputPreview,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventRehearsalCustomiseSheet',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Configuration sheet',
+                builder:
+                    _widgetbook_workspace_event_rehearsal_event_rehearsal_entry_use_cases
+                        .rehearsalCustomisePreview,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventRehearsalEntryPageBody',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Content with organizer defaults',
+                builder:
+                    _widgetbook_workspace_event_rehearsal_event_rehearsal_entry_use_cases
+                        .rehearsalContentPreview,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventRehearsalEntryScaffold',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Organizer defaults and optional settings',
+                builder:
+                    _widgetbook_workspace_event_rehearsal_event_rehearsal_entry_use_cases
+                        .rehearsalSampleEntry,
+              ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'Upcoming event and optional settings',
+                builder:
+                    _widgetbook_workspace_event_rehearsal_event_rehearsal_entry_use_cases
+                        .rehearsalUpcomingEntry,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventRehearsalEntryStateScaffold',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Loading source defaults',
+                builder:
+                    _widgetbook_workspace_event_rehearsal_event_rehearsal_entry_use_cases
+                        .rehearsalLoadingEntry,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventRehearsalSourceSheet',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Source and event type picker',
+                builder:
+                    _widgetbook_workspace_event_rehearsal_event_rehearsal_entry_use_cases
+                        .rehearsalSourcePreview,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventRehearsalStartSheet',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Starting point sheet',
+                builder:
+                    _widgetbook_workspace_event_rehearsal_event_rehearsal_entry_use_cases
+                        .rehearsalStartSheet,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
         name: 'Event Success',
         children: [
           _widgetbook.WidgetbookFolder(
@@ -9100,6 +9221,55 @@ final directories = <_widgetbook.WidgetbookNode>[
                             .hostRosterMappingFieldStates,
                   ),
                 ],
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
+        name: 'Host Today',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'HostTodayFocusPageBody',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Choose a focus',
+                builder:
+                    _widgetbook_workspace_hosts_host_today_personalization_use_cases
+                        .hostTodayFocusChoices,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'HostTodayFocusScreen',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Covered by focus choice',
+                builder:
+                    _widgetbook_workspace_hosts_host_today_personalization_use_cases
+                        .hostTodayFocusScreenPreview,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'HostTodayPersonalizationSection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Quiet day roadmap',
+                builder:
+                    _widgetbook_workspace_hosts_host_today_personalization_use_cases
+                        .hostTodayQuietRoadmap,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'HostTodayPersonalizedLayout',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Covered by quiet roadmap',
+                builder:
+                    _widgetbook_workspace_hosts_host_today_personalization_use_cases
+                        .hostTodayPersonalizedLayoutPreview,
               ),
             ],
           ),

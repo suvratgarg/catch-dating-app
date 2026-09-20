@@ -3,6 +3,9 @@
 
 import {createRequire} from "node:module";
 import {
+  eventRehearsalMilestoneDocumentSchema,
+  getEventRehearsalSummaryCallablePayloadSchema,
+  eventRehearsalSummaryCallableResponseSchema,
   getEventAssistanceParticipantContextCallablePayloadSchema,
   eventAssistanceParticipantContextCallableResponseSchema,
   listEventAssistanceDepartureRostersCallablePayloadSchema,
@@ -715,6 +718,9 @@ const addFormats = requireContractDependency("ajv-formats");
 const ajv = new Ajv({allErrors: true, strict: false});
 addFormats(ajv);
 
+export const validateEventRehearsalMilestoneDocument = ajv.compile(eventRehearsalMilestoneDocumentSchema);
+export const validateGetEventRehearsalSummaryCallablePayload = ajv.compile(getEventRehearsalSummaryCallablePayloadSchema);
+export const validateEventRehearsalSummaryCallableResponse = ajv.compile(eventRehearsalSummaryCallableResponseSchema);
 export const validateGetEventAssistanceParticipantContextCallablePayload = ajv.compile(getEventAssistanceParticipantContextCallablePayloadSchema);
 export const validateEventAssistanceParticipantContextCallableResponse = ajv.compile(eventAssistanceParticipantContextCallableResponseSchema);
 export const validateListEventAssistanceDepartureRostersCallablePayload = ajv.compile(listEventAssistanceDepartureRostersCallablePayloadSchema);

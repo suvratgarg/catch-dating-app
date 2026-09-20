@@ -25,10 +25,12 @@ import {upsertOrganizerSavedAudienceHandler,
 import {upsertOrganizerCampaignHandler, evaluateAudienceRows}
   from "./organizerCampaigns";
 import type {OrganizerContactDocument, OrganizerContactTraitDocument,
-  OrganizerFormResponseDocument, EventAttendeeDocument} from
+  OrganizerFormResponseDocument, EventAttendeeDocument,
+  OrganizerFormVersionDocument} from
   "../shared/generated/firestoreAdminTypes";
 import {eventAttendeeId} from "../events/eventAttendees";
 import {formAdmissionContactId} from "./organizerFormAdmissionIdentity";
+import {listOrganizerFormResponsesHandler} from "./organizerFormOperations";
 import {AudienceTestStore} from "./organizerAudienceTestStore";
 import type {UpdateOrganizerFormDraftCallablePayload} from
   "../shared/generated/updateOrganizerFormDraftCallablePayload";
@@ -302,3 +304,55 @@ test("admission preview refuses an existing roster edge for another contact",
     assert.equal(Object.keys(h.store.docs).some((p) =>
       p.startsWith("organizerContacts/")), false);
   });
+
+
+test("answer-filtered inbox scans across pages and binds cursors", async () => {
+  const h = await submittedPilot(false);
+  const version = h.store.docs[
+    `organizerFormVersions/${h.response.versionId}`
+  ] as unknown as OrganizerFormVersionDocument;
+  const city = version.definition.sections[0].questions.find(
+    (q) => q.questionId === "city")!;
+  city.kind = "singleChoice";
+  city.hostPresentation = "filterable";
+  city.options = ["Mumbai", "Dubai"].map((value) =>
+    ({optionId: value, value, label: value}));
+  delete h.store.docs[`organizerFormResponses/${h.responseId}`];
+  for (let index = 0; index < 520; index++) {
+    const id = `response-${String(index).padStart(3, "0")}`;
+    h.store.docs[`organizerFormResponses/${id}`] = {
+      ...h.response,
+      submittedAt: Timestamp.fromMillis(now.toMillis() + index),
+      answerSnapshots: h.response.answerSnapshots.map((answer) =>
+        answer.questionId === "city" ?
+          {...answer, answer: index < 500 ? "Dubai" : "Mumbai"} : answer),
+    };
+  }
+  const payload = {organizerId: "org-1", formId: h.response.formId,
+    versionId: null, statuses: [], identityKinds: [], sourceLinkId: null,
+    query: null, fromMillis: null, toMillis: null, cursor: null,
+    limit: 2, sortDirection: "asc",
+    answerFilters: [{questionId: "city", values: ["Mumbai"]}]};
+  const first = await listOrganizerFormResponsesHandler(host(payload), h.deps);
+  assert.equal(first.items.length, 0);
+  assert.ok(first.nextCursor, "scan exhaustion must allow continuation");
+  const second = await listOrganizerFormResponsesHandler(host(
+    {...payload, cursor: first.nextCursor}), h.deps);
+  assert.deepEqual(second.items.map((row) => row.responseId),
+    ["response-500", "response-501"]);
+  const third = await listOrganizerFormResponsesHandler(host(
+    {...payload, cursor: second.nextCursor}), h.deps);
+  assert.deepEqual(third.items.map((row) => row.responseId),
+    ["response-502", "response-503"]);
+  const newest = await listOrganizerFormResponsesHandler(host(
+    {...payload, sortDirection: "desc"}), h.deps);
+  assert.deepEqual(newest.items.map((row) => row.responseId),
+    ["response-519", "response-518"]);
+  await assert.rejects(listOrganizerFormResponsesHandler(host({...payload,
+    sortDirection: "desc", cursor: second.nextCursor}), h.deps),
+  {code: "invalid-argument"});
+  await assert.rejects(listOrganizerFormResponsesHandler(host({...payload,
+    cursor: second.nextCursor,
+    answerFilters: [{questionId: "city", values: ["Dubai"]}]}), h.deps),
+  {code: "invalid-argument"});
+});

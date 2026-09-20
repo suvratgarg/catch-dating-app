@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/hosts/data/host_application_repository.dart';
 import 'package:catch_dating_app/hosts/presentation/applications/host_applications_controller.dart';
@@ -7,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../test_pump_helpers.dart';
 
@@ -68,6 +70,55 @@ void main() {
     expect(find.text('Person person-1 org-1'), findsOneWidget);
   });
 
+  testWidgets(
+    'contact links and review actions precede long answers on mobile',
+    (tester) async {
+      await tester.binding.setSurfaceSize(const Size(390, 844));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      final opened = <Uri>[];
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            externalUrlLauncherProvider.overrideWithValue((
+              uri, {
+              mode = LaunchMode.platformDefault,
+            }) async {
+              opened.add(uri);
+              return true;
+            }),
+            hostApplicationDetailProvider(
+              'org-1',
+              'app-1',
+            ).overrideWith((ref) async => _detail(false, contacts: true)),
+          ],
+          child: MaterialApp(
+            theme: AppTheme.light,
+            home: const HostApplicationDetailScreen(
+              organizerId: 'org-1',
+              applicationId: 'app-1',
+            ),
+          ),
+        ),
+      );
+      await pumpFeatureUi(tester);
+      for (final label in ['Call', 'Instagram', 'Waitlist', 'Decline']) {
+        expect(find.text(label).hitTestable(), findsOneWidget);
+        expect(
+          tester.getTopLeft(find.text(label)).dy,
+          lessThan(tester.getTopLeft(find.text('Answers')).dy),
+        );
+      }
+      await tester.tap(find.text('Call'));
+      await tester.tap(find.text('Instagram'));
+      await pumpFeatureUi(tester);
+      expect(opened.map((uri) => uri.toString()).toList(), [
+        'tel:+12025550101',
+        'https://www.instagram.com/synthetic_demo/',
+      ]);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
   testWidgets('revoked application cannot expose review actions', (
     tester,
   ) async {
@@ -93,36 +144,39 @@ void main() {
   });
 }
 
-HostApplicationDetail _detail(bool accepted, {bool revoked = false}) =>
-    HostApplicationDetail(
-      organizerId: 'org-1',
-      applicationId: 'app-1',
-      formId: 'form-1',
-      formVersionId: 'version-1',
-      targetKind: 'organizer',
-      targetId: null,
-      applicantDisplayName: revoked ? 'Withdrawn applicant' : 'Ada',
-      reviewStatus: accepted
-          ? HostApplicationReviewStatus.approved
-          : HostApplicationReviewStatus.submitted,
-      answers: const [],
-      outreach: const HostApplicationOutreach(
-        phoneE164: null,
-        email: null,
-        instagramUrl: null,
-        linkedinUrl: null,
-      ),
-      reviewNote: null,
-      assignedReviewerUid: null,
-      submittedAt: DateTime(2026, 9),
-      reviewedAt: null,
-      revision: accepted ? 2 : 1,
-      contactId: accepted ? 'person-1' : null,
-      sourceResponseId: revoked ? null : 'response-1',
-      dataAccessState: revoked
-          ? 'revokedParticipantGrant'
-          : 'submittedFormResponse',
-    );
+HostApplicationDetail _detail(
+  bool accepted, {
+  bool revoked = false,
+  bool contacts = false,
+}) => HostApplicationDetail(
+  organizerId: 'org-1',
+  applicationId: 'app-1',
+  formId: 'form-1',
+  formVersionId: 'version-1',
+  targetKind: 'organizer',
+  targetId: null,
+  applicantDisplayName: revoked ? 'Withdrawn applicant' : 'Ada',
+  reviewStatus: accepted
+      ? HostApplicationReviewStatus.approved
+      : HostApplicationReviewStatus.submitted,
+  answers: const [],
+  outreach: HostApplicationOutreach(
+    phoneE164: contacts ? '+12025550101' : null,
+    email: null,
+    instagramUrl: contacts ? 'https://www.instagram.com/synthetic_demo/' : null,
+    linkedinUrl: null,
+  ),
+  reviewNote: null,
+  assignedReviewerUid: null,
+  submittedAt: DateTime(2026, 9),
+  reviewedAt: null,
+  revision: accepted ? 2 : 1,
+  contactId: accepted ? 'person-1' : null,
+  sourceResponseId: revoked ? null : 'response-1',
+  dataAccessState: revoked
+      ? 'revokedParticipantGrant'
+      : 'submittedFormResponse',
+);
 
 class _ReviewController extends Fake implements HostApplicationsController {
   bool accepted = false;

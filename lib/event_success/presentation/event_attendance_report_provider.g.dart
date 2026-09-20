@@ -67,7 +67,7 @@ final class EventAttendanceReportProvider
 }
 
 String _$eventAttendanceReportHash() =>
-    r'2e67aad430465504652163bf9d342a1954d6239f';
+    r'232d9b849e9f2ee11bd0511fa221004aaa6c38a0';
 
 /// Loading, refresh and errors expose no previous report or invented zero totals.
 

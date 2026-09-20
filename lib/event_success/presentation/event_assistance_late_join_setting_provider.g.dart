@@ -67,7 +67,7 @@ final class EventAssistanceLateJoinSettingProvider
 }
 
 String _$eventAssistanceLateJoinSettingHash() =>
-    r'08e993a3abdf3e1fa2da64c119854b0199f485fe';
+    r'3c6ca871d10465776720b04842d9f1480d007d09';
 
 final class EventAssistanceLateJoinSettingFamily extends $Family
     with

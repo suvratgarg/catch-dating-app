@@ -315,7 +315,7 @@ class _HostEventRehearsalScreenState
                         isChangingStep: controlMutation.isPending,
                         isCompleting: controlMutation.isPending,
                       ),
-                      onOpenGuests: () => _showPracticeTools(rehearsal, busy),
+                      onOpenGuests: () => _showGuests(rehearsal),
                       onSetLiveStep: (stepIndex) =>
                           _setCanonicalLiveStep(rehearsal.session, stepIndex),
                       onCompleteLiveGuide: (_) => _control(
@@ -556,21 +556,6 @@ class _HostEventRehearsalScreenState
       ),
     ),
   );
-
-  Future<void> _showCoachWhy(EventRehearsalBootstrap rehearsal) async {
-    await showCatchAdaptiveDialog<void>(
-      context: context,
-      title: context.l10n.hostEventRehearsalCoachWhyTitle,
-      message: context.l10n.hostEventRehearsalCoachWhyBody,
-      actions: [
-        CatchDialogAction(
-          label: context.l10n.hostEventRehearsalCoachGotIt,
-          value: null,
-          isDefault: true,
-        ),
-      ],
-    );
-  }
 
   Future<void> _leaveRehearsal(EventRehearsalSession? session) async {
     if (session?.hasStarted == true) {

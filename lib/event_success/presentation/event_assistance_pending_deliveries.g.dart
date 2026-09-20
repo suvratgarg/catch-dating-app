@@ -59,7 +59,7 @@ final class EventAssistancePendingDeliveriesProvider
 }
 
 String _$eventAssistancePendingDeliveriesHash() =>
-    r'35522fd31856a6e2de2f9656816422a43b492a5c';
+    r'43bd550a837b37715008d41b5078aec8bbffa18d';
 
 /// Discovery references only. Each delivery controller owns its command and retry.
 /// A server page may omit a message whose handoff succeeded without confirmation.

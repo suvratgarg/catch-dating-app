@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "867dcdc25160692ce74e087535db2cfbf638284c6939f0d7ab1a6a7b0e9cd372",
+  "sourceDigest": "4c4c60ed85d808cbf08aa1e64742d669837a34236eb23a5e33ea250a91f1ad71",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "867dcdc25160692ce74e087535db2cfbf638284c6939f0d7ab1a6a7b0e9cd372",
-    "contractDigest": "867dcdc25160692ce74e087535db2cfbf638284c6939f0d7ab1a6a7b0e9cd372"
+    "digest": "4c4c60ed85d808cbf08aa1e64742d669837a34236eb23a5e33ea250a91f1ad71",
+    "contractDigest": "4c4c60ed85d808cbf08aa1e64742d669837a34236eb23a5e33ea250a91f1ad71"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "684375245121b6eb95fef9df0060f91ab135e125766787c834d4a29ec592a9d7",
+    "handoffRequestDigest": "1abd8b92493839e71c1300419135afb1c4a5ff6bf30cda2dcfbe8215bdab7176",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -83,15 +83,15 @@
   },
   "metrics": {
     "contractCount": 68,
-    "publicClassCount": 226,
+    "publicClassCount": 227,
     "conceptCount": 60,
-    "memberCount": 148,
-    "membersPerConcept": 2.47,
+    "memberCount": 149,
+    "membersPerConcept": 2.48,
     "unclassifiedCount": 0,
     "byConceptRole": {
       "composition": 3,
       "concept": 60,
-      "member": 148,
+      "member": 149,
       "screen": 15
     },
     "collisionCount": 29,
@@ -345,6 +345,7 @@
           "CatchContentSectionHeader",
           "CatchCountText",
           "CatchDaySectionHeader",
+          "CatchDependentRowSection",
           "CatchDivider",
           "CatchHorizontalScrollView",
           "CatchRowSection",
@@ -852,7 +853,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Section",
       "claudeAllowed": true,
-      "contractDigest": "3eb0520efc6bf4a36a272c1f75b806851015e55b93ff38ce84abb5002949c4ad"
+      "contractDigest": "158d52e95037bdd57f76a2882e12b33dd2f6c2534e3a02f9202d81593a195cce"
     },
     {
       "contractId": "catch.skeleton",

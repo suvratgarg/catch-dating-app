@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-09-06",
+  "updated": "2026-09-21",
   "generatedAgainst": "tool/ui_capture/route_inventory.json",
   "description": "Phase 1 UI capture coverage policy. Every route from go_router.dart must be captured, aliased to a canonical capture surface, planned, or explicitly excluded.",
   "routes": [
@@ -648,6 +648,15 @@
         "host_home_dashboard"
       ],
       "reason": "The first-class Today branch has a deterministic full-shell capture of its cross-event operational spotlight and later schedule."
+    },
+    {
+      "routeId": "hostTodayFocusScreen",
+      "status": "captured",
+      "priority": "P1",
+      "captureIds": [
+        "host_today_focus"
+      ],
+      "reason": "The real Focus screen uses a deterministic authorized organizer, proven quiet operational feed and unanswered preference. The standard harness captures both themes and supports text-scale overrides; interaction tests cover save and navigation."
     },
     {
       "routeId": "hostEventsScreen",

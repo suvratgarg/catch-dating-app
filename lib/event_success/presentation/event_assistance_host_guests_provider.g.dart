@@ -69,7 +69,7 @@ final class EventAssistanceHostGuestsProvider
 }
 
 String _$eventAssistanceHostGuestsHash() =>
-    r'a7283bfdc6d12858276510fcfcdf8cd67036fd3e';
+    r'45e65353e4a229ac170ffe02cddc8f93151a43e5';
 
 final class EventAssistanceHostGuestsFamily extends $Family
     with

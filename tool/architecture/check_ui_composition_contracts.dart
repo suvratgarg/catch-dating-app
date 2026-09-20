@@ -585,12 +585,23 @@ List<String> _evaluateBodyGeometryContract({
   );
 
   if (expression == 'CatchRouteScaffold') {
+    bool everyRouteBody(bool Function(String body) predicate) => everyBody(
+      (body) => terminalExpressionUsesInDeclaration(
+        declarationSource: declarationSource,
+        expressionSource: body,
+        acceptedSignatures: _typedRouteBodyExpressions,
+        allowTransparentWrappers: false,
+        terminalPredicate: (terminal) =>
+            predicate(_normalizeDartExpression(terminal)),
+      ),
+    );
+
     final valid = switch (bodyGeometry) {
-      'standard' => everyBody(_isStandardRouteBody),
-      'full-bleed' => everyBody(
+      'standard' => everyRouteBody(_isStandardRouteBody),
+      'full-bleed' => everyRouteBody(
         (body) => _hasConstructor(body, 'CatchRouteBody.fullBleed'),
       ),
-      'mixed' => everyBody(_isTypedRouteBody),
+      'mixed' => everyRouteBody(_isTypedRouteBody),
       _ => true,
     };
     if (!valid) {
@@ -728,7 +739,7 @@ List<String> _evaluateBodyGeometryContract({
   return failures;
 }
 
-bool _isTypedRouteBody(String body) => const <String>{
+const _typedRouteBodyExpressions = <String>{
   'CatchRouteBody.standard',
   'CatchRouteBody.standardViewport',
   'CatchRouteBody.standardConstrained',
@@ -737,7 +748,11 @@ bool _isTypedRouteBody(String body) => const <String>{
   'CatchRouteBody.standardSections',
   'CatchRouteBody.paged',
   'CatchRouteBody.fullBleed',
-}.any((constructor) => _hasConstructor(body, constructor));
+};
+
+bool _isTypedRouteBody(String body) => _typedRouteBodyExpressions.any(
+  (constructor) => _hasConstructor(body, constructor),
+);
 
 bool _isStandardRouteBody(String body) {
   if (_hasConstructor(body, 'CatchRouteBody.standard') ||
@@ -908,10 +923,16 @@ bool terminalLayoutOwnerOnEveryBranch(
 /// Proves a rendered expression through local values, switches, and helpers
 /// declared by the same owner. Unresolved parameters or qualified helpers fail
 /// closed rather than inheriting a typed role from a dead sibling declaration.
+/// [terminalPredicate], when provided, must also accept each matched constructor
+/// independently; finding an accepted signature alone is not sufficient.
+/// Disable [allowTransparentWrappers] when the value itself must be typed, as
+/// with route bodies, rather than a widget containing the accepted owner.
 bool terminalExpressionUsesInDeclaration({
   required String declarationSource,
   required String expressionSource,
   required Set<String> acceptedSignatures,
+  bool Function(String expressionSource)? terminalPredicate,
+  bool allowTransparentWrappers = true,
 }) {
   final declarationUnit = parseString(
     content: declarationSource,
@@ -928,6 +949,8 @@ bool terminalExpressionUsesInDeclaration({
   if (body is! ExpressionFunctionBody) return false;
   return _LayoutOwnerTerminalGraph(
     declarationUnit.declarations.first,
+    terminalPredicate: terminalPredicate,
+    allowTransparentWrappers: allowTransparentWrappers,
   ).expressionEveryTerminalUses(body.expression, acceptedSignatures);
 }
 
@@ -1058,7 +1081,11 @@ String _methodInvocationSignature(MethodInvocation node) {
 }
 
 final class _LayoutOwnerTerminalGraph {
-  _LayoutOwnerTerminalGraph(this.declaration) {
+  _LayoutOwnerTerminalGraph(
+    this.declaration, {
+    this.terminalPredicate,
+    this.allowTransparentWrappers = true,
+  }) {
     if (declaration case final ClassDeclaration classDeclaration) {
       for (final member in classDeclaration.body.members) {
         if (member case final MethodDeclaration method) {
@@ -1075,6 +1102,8 @@ final class _LayoutOwnerTerminalGraph {
   }
 
   final CompilationUnitMember declaration;
+  final bool Function(String expressionSource)? terminalPredicate;
+  final bool allowTransparentWrappers;
   final Map<String, FunctionBody> _executables = <String, FunctionBody>{};
   final Map<String, List<AstNode>> _values = <String, List<AstNode>>{};
   final Set<FunctionBody> _indexedBodies = <FunctionBody>{};
@@ -1185,7 +1214,9 @@ final class _LayoutOwnerTerminalGraph {
       }
       if (node case final InstanceCreationExpression creation) {
         final signature = _instanceCreationSignature(creation);
-        if (acceptedSignatures.contains(signature)) return true;
+        if (acceptedSignatures.contains(signature)) {
+          return terminalPredicate?.call(node.toSource()) ?? true;
+        }
         if (signature == 'Stack') {
           return _stackRootPlanesUse(
             creation.argumentList,
@@ -1202,7 +1233,9 @@ final class _LayoutOwnerTerminalGraph {
       }
       if (node case final MethodInvocation invocation) {
         final signature = _methodInvocationSignature(invocation);
-        if (acceptedSignatures.contains(signature)) return true;
+        if (acceptedSignatures.contains(signature)) {
+          return terminalPredicate?.call(node.toSource()) ?? true;
+        }
         if (signature == 'Stack') {
           return _stackRootPlanesUse(
             invocation.argumentList,
@@ -1260,6 +1293,7 @@ final class _LayoutOwnerTerminalGraph {
     Set<String> acceptedSignatures, {
     required Set<AstNode> visiting,
   }) {
+    if (!allowTransparentWrappers) return false;
     final named = arguments.arguments.whereType<NamedExpression>().toList();
     final builders = named
         .where(
@@ -1296,6 +1330,7 @@ final class _LayoutOwnerTerminalGraph {
     Set<String> acceptedSignatures, {
     required Set<AstNode> visiting,
   }) {
+    if (!allowTransparentWrappers) return false;
     final children = _namedArgumentExpression(arguments, 'children');
     if (children is! ListLiteral || children.elements.isEmpty) return false;
     final first = children.elements.first;

@@ -65,7 +65,7 @@ final class EventAssistanceRuntimeProvider
 }
 
 String _$eventAssistanceRuntimeHash() =>
-    r'f84d0a9a48139e8960ee314d3118108c86b9b12e';
+    r'f8b0d49963f171cf6000ff4c227551e6ba6a4f3f';
 
 final class EventAssistanceRuntimeFamily extends $Family
     with

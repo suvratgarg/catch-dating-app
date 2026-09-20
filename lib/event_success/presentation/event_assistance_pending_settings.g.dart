@@ -58,7 +58,7 @@ final class EventAssistancePendingSettingsProvider
 }
 
 String _$eventAssistancePendingSettingsHash() =>
-    r'943a2673c65b4a07da155d3b048fcde6e798c983';
+    r'bad8b8043e5bb67e5ac9f3dd1ea5f1977946c42e';
 
 /// Discovery references only. Each settings editor owns its command and retry.
 /// Current event setup may omit a group whose setting save remains unconfirmed.

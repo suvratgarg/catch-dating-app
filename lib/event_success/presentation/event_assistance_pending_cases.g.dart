@@ -58,7 +58,7 @@ final class EventAssistancePendingCasesProvider
 }
 
 String _$eventAssistancePendingCasesHash() =>
-    r'8a4f44a888be576c14012ca267e29bcf6c24a86f';
+    r'00862a779690f6f49e3192c4434cc4bd00b3238d';
 
 /// Discovery references only. Each case editor owns its command and retry.
 /// A server page may omit a case whose save succeeded without confirmation.

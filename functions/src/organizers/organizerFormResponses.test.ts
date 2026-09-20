@@ -214,3 +214,20 @@ function assertHttpsCode(action: () => void, code: HttpsError["code"]): void {
   assert.throws(action, (error: unknown) =>
     error instanceof HttpsError && error.code === code);
 }
+
+test("complete submission requires only reachable conditional answers", () => {
+  const value = definition([
+    question("city", "City", "singleChoice", true,
+      [["Mumbai", "Mumbai"], ["Dubai", "Dubai"]]),
+    question("dubaiYears", "Years in Dubai", "shortText", true),
+  ]);
+  value.logicRules = [{ruleId: "dubai-only", conditionMode: "all",
+    conditions: [{questionId: "city", operator: "equals",
+      expectedValues: ["Dubai"]}], action: "showQuestion",
+    targetQuestionId: "dubaiYears", targetSectionId: null}];
+  assert.doesNotThrow(() => validateAnswerShape(value, {city: "Mumbai"}, true));
+  assertHttpsCode(() => validateAnswerShape(value, {city: "Dubai"}, true),
+    "invalid-argument");
+  assert.doesNotThrow(() => validateAnswerShape(value,
+    {city: "Dubai", dubaiYears: "4"}, true));
+});

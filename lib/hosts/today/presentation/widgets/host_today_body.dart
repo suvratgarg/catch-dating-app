@@ -22,6 +22,7 @@ class HostTodayBody extends StatelessWidget {
     required this.onCreateEvent,
     required this.onViewEvents,
     required this.onStartRehearsal,
+    this.onStartEventRehearsal,
   });
 
   final Club organizer;
@@ -33,6 +34,7 @@ class HostTodayBody extends StatelessWidget {
   final VoidCallback onCreateEvent;
   final VoidCallback onViewEvents;
   final VoidCallback onStartRehearsal;
+  final ValueChanged<Event>? onStartEventRehearsal;
 
   @override
   Widget build(BuildContext context) {
@@ -63,6 +65,7 @@ class HostTodayBody extends StatelessWidget {
               onOpenAttention: onOpenAttention,
               onViewEvents: onViewEvents,
               onStartRehearsal: onStartRehearsal,
+              onStartEventRehearsal: onStartEventRehearsal,
             ),
           ),
         },
