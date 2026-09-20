@@ -440,6 +440,9 @@ jobs:
           META_WHATSAPP_EMBEDDED_SIGNUP_CONFIG_ID: ${{ vars.META_WHATSAPP_EMBEDDED_SIGNUP_CONFIG_ID }}
           META_WHATSAPP_GRAPH_VERSION: ${{ vars.META_WHATSAPP_GRAPH_VERSION }}
           META_WHATSAPP_ENABLED: ${{ vars.META_WHATSAPP_ENABLED }}
+          EVENT_ASSISTANCE_RCS_ENABLED: ${{ vars.EVENT_ASSISTANCE_RCS_ENABLED }}
+          EVENT_ASSISTANCE_RCS_WEBHOOK_ENABLED: ${{ vars.EVENT_ASSISTANCE_RCS_WEBHOOK_ENABLED }}
+          EVENT_ASSISTANCE_SMS_REPORTS_ENABLED: ${{ vars.EVENT_ASSISTANCE_SMS_REPORTS_ENABLED }}
         run: |
           set -euo pipefail
           functions_dir=build/delivery/deploy-tree/functions
@@ -449,6 +452,20 @@ jobs:
               --project "${{ steps.verify.outputs.project_id }}"
           else
             echo "Verified package has no Functions payload; skipping Functions parameter materialization."
+          fi
+
+      - name: Gate Functions param coverage before any deploy mutation
+        env:
+          PROJECT_ID: ${{ steps.verify.outputs.project_id }}
+        run: |
+          set -euo pipefail
+          functions_dir=build/delivery/deploy-tree/functions
+          if [[ -d "$functions_dir" ]]; then
+            node tool/firebase/check_functions_params_coverage.mjs \
+              --functions-dir build/delivery/source-checkout/functions \
+              --env-file "$functions_dir/.env.$PROJECT_ID"
+          else
+            echo "Verified package has no Functions payload; skipping Functions parameter coverage gate."
           fi
 
       - name: Preflight the whole backend plan before any deployment
