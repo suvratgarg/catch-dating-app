@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
@@ -7,11 +9,12 @@ import 'package:catch_dating_app/hosts/today/personalization/presentation/host_t
 import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_personalization_state.dart';
 import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_personalized_layout.dart';
 import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_roadmap_provider.dart';
+import 'package:catch_dating_app/hosts/today/presentation/host_today_feed_controller.dart';
 import 'package:catch_dating_app/hosts/today/presentation/host_today_state.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
-import 'package:catch_dating_app/routing/route_contract.dart';
 import 'package:catch_dating_app/routing/go_router.dart'
     show hostOrganizerScreenForUri;
+import 'package:catch_dating_app/routing/route_contract.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -19,6 +22,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../clubs/clubs_test_helpers.dart' show buildClub;
+import '../../../events/events_test_helpers.dart' show buildEvent;
 import '../../../test_pump_helpers.dart';
 
 void main() {
@@ -86,12 +90,16 @@ void main() {
     addTearDown(router.dispose);
     await tester.pumpWidget(
       ProviderScope(
+        retry: (_, _) => null,
         overrides: [
           uidProvider.overrideWithValue(const AsyncData('owner')),
           hostOperableClubsProvider('owner').overrideWithValue(
             AsyncData([buildClub(id: 'org', ownerUserId: 'owner')]),
           ),
           hostTodayPreferenceRepositoryProvider.overrideWithValue(preferences),
+          hostTodayFeedControllerProvider.overrideWith(
+            () => _TestTodayFeed(statuses),
+          ),
           hostTodayRoadmapProvider(
             scope,
           ).overrideWithValue(const HostTodayRoadmapEvidence()),
@@ -104,7 +112,12 @@ void main() {
         ),
       ),
     );
-    await pumpFeatureUi(tester);
+    if (statuses.value == HostTodayStatus.loading &&
+        initialLocation.startsWith('/host/today/focus')) {
+      await pumpUntilFound(tester, find.byType(CatchLoadingIndicator));
+    } else {
+      await pumpFeatureUi(tester);
+    }
     return router;
   }
 
@@ -198,9 +211,47 @@ void main() {
     expect(preferences.values, isEmpty);
   });
 
+  testWidgets(
+    'direct focus route waits for known quiet without reading preferences',
+    (tester) async {
+      final status = ValueNotifier(HostTodayStatus.loading);
+      addTearDown(status.dispose);
+      final router = await mount(
+        tester,
+        statusChanges: status,
+        initialLocation: '/host/today/focus?organizerId=org',
+      );
+      expect(router.state.uri.path, '/host/today/focus');
+      expect(find.byType(CatchLoadingIndicator), findsOneWidget);
+      expect(preferences.loads, 0);
+      expect(preferences.values, isEmpty);
+      status.value = HostTodayStatus.empty;
+      await pumpFeatureUi(tester);
+      expect(
+        find.byKey(const ValueKey('host-today-focus-skip')),
+        findsOneWidget,
+      );
+      expect(preferences.values, isEmpty);
+    },
+  );
+
+  testWidgets('direct focus route yields to a failed operational feed', (
+    tester,
+  ) async {
+    final router = await mount(
+      tester,
+      status: HostTodayStatus.error,
+      initialLocation: '/host/today/focus?organizerId=org',
+    );
+    expect(router.state.uri.path, '/host/today');
+    expect(find.text('Operational work'), findsOneWidget);
+    expect(preferences.loads, 0);
+    expect(preferences.values, isEmpty);
+  });
+
   testWidgets('system back persists the first-run skip', (tester) async {
     final router = await mount(tester);
-    router.pop();
+    await tester.binding.handlePopRoute();
     await pumpFeatureUi(tester);
     expect(preferences.values[scope], const HostTodayPreference.skipped());
     expect(router.state.uri.path, '/host/today');
@@ -236,4 +287,39 @@ class _MemoryPreferences implements HostTodayPreferenceRepository {
   ) async {
     values[scope] = preference;
   }
+}
+
+class _TestTodayFeed extends HostTodayFeedController {
+  _TestTodayFeed(this.statuses);
+
+  final ValueNotifier<HostTodayStatus> statuses;
+
+  @override
+  Future<HostTodayFeedData> build(HostTodayFeedRequest request) {
+    void update() {
+      state = switch (statuses.value) {
+        HostTodayStatus.loading => const AsyncLoading(),
+        HostTodayStatus.error => AsyncError(
+          StateError('Feed unavailable'),
+          StackTrace.current,
+        ),
+        _ => AsyncData(_data()),
+      };
+    }
+
+    statuses.addListener(update);
+    ref.onDispose(() => statuses.removeListener(update));
+    return switch (statuses.value) {
+      HostTodayStatus.loading => Completer<HostTodayFeedData>().future,
+      HostTodayStatus.error => Future.error(StateError('Feed unavailable')),
+      _ => Future.value(_data()),
+    };
+  }
+
+  HostTodayFeedData _data() => HostTodayFeedData(
+    activeEvents: [
+      if (statuses.value == HostTodayStatus.content) buildEvent(clubId: 'org'),
+    ],
+    pastEvents: const [],
+  );
 }

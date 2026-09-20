@@ -10,6 +10,7 @@ import 'package:catch_dating_app/hosts/today/personalization/domain/host_today_p
 import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_focus_screen.dart';
 import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_personalization_section.dart';
 import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_personalization_state.dart';
+import 'package:catch_dating_app/hosts/today/presentation/host_today_feed_controller.dart';
 import 'package:catch_dating_app/hosts/today/presentation/host_today_state.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/route_contract.dart';
@@ -69,6 +70,7 @@ void main() {
             key: _captureKey,
             child: ProviderScope(
               overrides: [
+                hostTodayFeedControllerProvider.overrideWith2((_) => _QuietFeed()),
                 uidProvider.overrideWithValue(const AsyncData('owner')),
                 hostOperableClubsProvider('owner').overrideWithValue(
                   AsyncData([buildClub(id: 'org', ownerUserId: 'owner')]),
@@ -160,6 +162,20 @@ void main() {
         );
         await pumpFeatureUi(tester);
         _expectReadable(tester);
+        // A mono header must not namespace its command's platform font as a
+        // catch_ui asset. The real font loader deliberately registers only
+        // the production platform family, so capture cannot hide this leak.
+        final changeFocus = find.byKey(
+          const ValueKey('host-today-change-focus'),
+        );
+        final commandParagraph = tester.renderObject<RenderParagraph>(
+          find.descendant(of: changeFocus, matching: find.byType(RichText)),
+        );
+        expect(
+          commandParagraph.text.style?.fontFamily,
+          CatchTextStyles.control(tester.element(changeFocus)).fontFamily,
+          reason: 'Header typography must not alter the command font family.',
+        );
         await _capture(tester, 'quiet-$variant-top');
         await _tapVisible(
           tester,
@@ -285,4 +301,10 @@ class _VisualPreferences implements HostTodayPreferenceRepository {
     writes++;
     value = preference;
   }
+}
+
+class _QuietFeed extends HostTodayFeedController {
+  @override
+  Future<HostTodayFeedData> build(HostTodayFeedRequest request) async =>
+      const HostTodayFeedData(activeEvents: [], pastEvents: []);
 }

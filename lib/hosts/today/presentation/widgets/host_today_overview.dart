@@ -194,7 +194,8 @@ class _HostTodayPrimaryPane extends StatelessWidget {
               contained: false,
               onPressed: () => onOpenEvent(featuredEvent),
               onRehearse:
-                  featuredEvent.startTime.isAfter(now) && onStartEventRehearsal != null
+                  featuredEvent.startTime.isAfter(now) &&
+                      onStartEventRehearsal != null
                   ? () => onStartEventRehearsal!(featuredEvent)
                   : null,
             ),

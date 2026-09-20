@@ -1,14 +1,18 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
-
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/hosts/today/personalization/domain/host_today_preference.dart';
 import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_focus_page_body.dart';
+import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_personalization_state.dart';
 import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_preference_controller.dart';
+import 'package:catch_dating_app/hosts/today/presentation/host_today_feed_controller.dart';
+import 'package:catch_dating_app/hosts/today/presentation/host_today_state.dart';
+import 'package:catch_dating_app/hosts/today/presentation/host_today_view_model.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/route_contract.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -30,24 +34,56 @@ class _HostTodayFocusScreenState extends ConsumerState<HostTodayFocusScreen> {
   HostTodayFocus? _selected;
   HostTodayPreferenceScope? _selectionScope;
   bool _allowRoutePop = false;
+  bool _operationalReturnScheduled = false;
+  late final DateTime _sessionBoundary = DateTime.now();
 
   @override
   Widget build(BuildContext context) {
-    final uid = ref.watch(uidProvider);
-    final accountId = uid.asData?.value;
+    final uid = catchAsyncStateFromAsyncValue(ref.watch(uidProvider));
+    final accountId = uid.value;
     final organizers = accountId == null
         ? null
-        : ref.watch(hostOperableClubsProvider(accountId));
-    final organizer = organizers?.asData?.value
-        .where((club) => club.id == widget.organizerId)
+        : catchAsyncStateFromAsyncValue(
+            ref.watch(hostOperableClubsProvider(accountId)),
+          );
+    final organizer = organizers?.value
+        ?.where((club) => club.id == widget.organizerId)
         .firstOrNull;
-    final scope = organizer == null || accountId == null
+    final scope =
+        uid.isLoading ||
+            uid.hasError ||
+            organizers?.isLoading == true ||
+            organizers?.hasError == true ||
+            organizer == null ||
+            accountId == null
         ? null
         : HostTodayPreferenceScope(
             accountId: accountId,
             organizerId: organizer.id,
           );
-    final preference = scope == null
+    // A restored/deep-linked Focus route may mount without the Today layout.
+    // Use the same operational feed and projection before offering a choice.
+    final request = scope == null
+        ? null
+        : HostTodayFeedRequest(
+            organizerId: scope.organizerId,
+            accountId: scope.accountId,
+            sessionBoundary: _sessionBoundary,
+          );
+    final today = request == null
+        ? null
+        : buildHostTodayState(
+            catchAsyncStateFromAsyncValue(
+              ref.watch(hostTodayFeedControllerProvider(request)),
+            ),
+            now: DateTime.now(),
+            l10n: context.l10n,
+          );
+    final quiet = today != null && isHostTodayQuiet(today);
+    if (today != null && today.status != HostTodayStatus.loading && !quiet) {
+      _returnToTodayForOperationalWork(request!);
+    }
+    final preference = scope == null || !quiet
         ? null
         : ref.watch(hostTodayPreferenceProvider(scope));
     final pending =
@@ -57,6 +93,7 @@ class _HostTodayFocusScreenState extends ConsumerState<HostTodayFocusScreen> {
     final selected = _selectionScope == scope ? _selected : saved?.focus;
 
     Widget content;
+    var loading = false;
     if (uid.hasError ||
         organizers?.hasError == true ||
         preference?.hasError == true) {
@@ -75,7 +112,9 @@ class _HostTodayFocusScreenState extends ConsumerState<HostTodayFocusScreen> {
       );
     } else if (uid.isLoading ||
         organizers?.isLoading == true ||
-        preference?.isLoading == true) {
+        preference?.isLoading == true ||
+        (scope != null && !quiet)) {
+      loading = true;
       content = const CatchLoadingIndicator();
     } else if (accountId == null) {
       content = CatchErrorState(
@@ -127,9 +166,39 @@ class _HostTodayFocusScreenState extends ConsumerState<HostTodayFocusScreen> {
             },
           ),
         ),
-        body: CatchRouteBody.standardConstrained(child: content),
+        body: loading
+            ? CatchRouteBody.standardViewport(child: Center(child: content))
+            : CatchRouteBody.standardConstrained(child: content),
       ),
     );
+  }
+
+  void _returnToTodayForOperationalWork(HostTodayFeedRequest request) {
+    if (_operationalReturnScheduled) return;
+    _operationalReturnScheduled = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _operationalReturnScheduled = false;
+      if (!mounted ||
+          ref.read(uidProvider).asData?.value != request.accountId ||
+          widget.organizerId != request.organizerId) {
+        return;
+      }
+      final today = buildHostTodayState(
+        catchAsyncStateFromAsyncValue(
+          ref.read(hostTodayFeedControllerProvider(request)),
+        ),
+        now: DateTime.now(),
+        l10n: context.l10n,
+      );
+      if (today.status == HostTodayStatus.loading || isHostTodayQuiet(today)) {
+        return;
+      }
+      // An operational interruption is not a choice to skip orientation.
+      context.goNamed(
+        Routes.hostTodayScreen.name,
+        queryParameters: {'organizerId': request.organizerId},
+      );
+    });
   }
 
   Future<void> _save(
