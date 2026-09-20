@@ -24,8 +24,8 @@ class HostTeamHostedClubsSection extends StatelessWidget {
             child: CatchSkeleton.content(
               child: CatchField.nav(
                 copy: catchFieldCopy(context.l10n),
-                title: 'Loading host role',
-                valueText: 'Loading club',
+                title: CatchSkeleton.sampleRoleTitle,
+                valueText: CatchSkeleton.sampleClubName,
                 icon: CatchIcons.groupOutlined,
                 onTap: () {},
               ),

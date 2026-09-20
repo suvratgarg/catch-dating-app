@@ -35,12 +35,12 @@ final class CatchRecordLayout extends CatchFieldLayout {
   }) {
     assert(factCount >= 0);
     return CatchRecordLayout(
-      title: 'Loading record',
+      title: CatchSkeleton.sampleRecordTitle,
       icon: icon,
       color: color,
-      metadata: hasMetadata ? 'Loading metadata' : null,
-      facts: List.filled(factCount, 'Loading fact'),
-      description: hasDescription ? 'Loading description' : null,
+      metadata: hasMetadata ? CatchSkeleton.sampleMetadataText : null,
+      facts: List.filled(factCount, CatchSkeleton.sampleFactText),
+      description: hasDescription ? CatchSkeleton.sampleDescriptionText : null,
     );
   }
 
@@ -122,15 +122,20 @@ final class CatchPersonLayout extends CatchFieldLayout {
     bool hasContext = false,
     bool hasBadge = false,
     this.avatarShape = CatchAvatarVariant.circle,
-  }) : name = 'Loading person',
+  }) : name = CatchSkeleton.samplePersonName,
        imageUrl = null,
        avatarColors = null,
-       supportingText = hasSupportingText ? 'Loading supporting text' : null,
-       context = hasContext ? 'Loading context' : null,
+       supportingText = hasSupportingText
+           ? CatchSkeleton.sampleSupportingText
+           : null,
+       context = hasContext ? CatchSkeleton.sampleContextText : null,
        facts = const [],
        badges = hasBadge
            ? const [
-               CatchRowBadge(label: 'Loading', tone: CatchBadgeTone.neutral),
+               CatchRowBadge(
+                 label: CatchSkeleton.sampleBadgeText,
+                 tone: CatchBadgeTone.neutral,
+               ),
              ]
            : const [];
 
@@ -238,13 +243,15 @@ final class CatchConversationLayout extends CatchFieldLayout {
     bool hasContext = false,
     bool hasActivity = false,
     this.avatarShape = CatchAvatarVariant.circle,
-  }) : name = 'Loading conversation',
-       preview = 'Loading message preview',
+  }) : name = CatchSkeleton.sampleConversationName,
+       preview = CatchSkeleton.sampleMessagePreview,
        imageUrl = null,
-       timestamp = hasTimestamp ? 'Loading time' : null,
-       context = hasContext ? 'Loading context' : null,
-       activityLabel = hasActivity ? 'Loading activity' : null,
-       activitySemantics = hasActivity ? 'Loading activity' : null;
+       timestamp = hasTimestamp ? CatchSkeleton.sampleTimestampText : null,
+       context = hasContext ? CatchSkeleton.sampleContextText : null,
+       activityLabel = hasActivity ? CatchSkeleton.sampleActivityText : null,
+       activitySemantics = hasActivity
+           ? CatchSkeleton.sampleActivityText
+           : null;
 
   final String name;
   final String preview;

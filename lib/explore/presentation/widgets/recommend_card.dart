@@ -29,18 +29,18 @@ class RecommendCard extends StatelessWidget {
     : event = Event(
         id: 'loading',
         clubId: 'loading',
-        name: 'Loading recommendation',
+        name: CatchSkeleton.sampleRecommendationTitle,
         startTime: DateTime.now().add(const Duration(days: 1)),
         endTime: DateTime.now().add(const Duration(days: 1, hours: 2)),
-        meetingPoint: 'Loading location',
+        meetingPoint: CatchSkeleton.sampleLocationText,
         distanceKm: 0,
         pace: PaceLevel.easy,
         capacityLimit: 0,
         description: '',
         priceInPaise: 0,
       ),
-      clubName = 'Loading organizer',
-      reasonLabel = 'Loading reason',
+      clubName = CatchSkeleton.sampleOrganizerName,
+      reasonLabel = CatchSkeleton.sampleReasonText,
       _loading = true;
 
   factory RecommendCard.fromRecommendation({
