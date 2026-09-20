@@ -315,11 +315,12 @@ test("actual producer predicates allow sibling failure but reject stale or cance
   for (const query of runPredicates) {
     for (const platformAuthority of [true, false]) {
       for (const [status, conclusion] of [["completed", "success"], ["completed", "failure"],
-        ["completed", "cancelled"], ["in_progress", null], ["queued", null]]) {
+        ["completed", "cancelled"], ["in_progress", null], ["queued", null],
+        ["queued", "cancelled"], ["waiting", null], ["pending", null], ["requested", null]]) {
         const result = spawnSync("jq", [...args, "--argjson", "platform_authority",
           String(platformAuthority), query], {input: JSON.stringify({...valid, status, conclusion}), encoding: "utf8"});
         assert.equal(result.status === 0, conclusion === "success" ||
-          (platformAuthority && (conclusion === "failure" || status === "in_progress")), result.stderr);
+          (platformAuthority && (conclusion === "failure" || (["in_progress", "queued"].includes(status) && conclusion === null))), result.stderr);
       }
     }
     for (const bad of [{run_attempt: 4}, {head_branch: "feature"},

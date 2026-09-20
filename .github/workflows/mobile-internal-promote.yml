@@ -149,7 +149,8 @@ jobs:
                 .head_repository.full_name == $repository and
                 (.head_sha | test("^[0-9a-f]{40}$")) and
                 ((.status == "completed" and .conclusion == "success") or
-                 ($platform_authority and (.status == "in_progress" or
+                 ($platform_authority and (
+                 ((.status == "in_progress" or .status == "queued") and .conclusion == null) or
                    (.status == "completed" and .conclusion == "failure")))) and
                 (.run_number | type == "number" and . > 0 and floor == .)
               ) |
@@ -180,7 +181,8 @@ jobs:
               .head_branch == "main" and
               .head_repository.full_name == $repository and
               ((.status == "completed" and .conclusion == "success") or
-               ($platform_authority and (.status == "in_progress" or
+               ($platform_authority and (
+                 ((.status == "in_progress" or .status == "queued") and .conclusion == null) or
                  (.status == "completed" and .conclusion == "failure"))))
             ' <<< "$exact_attempt" > /dev/null
           {
@@ -508,7 +510,8 @@ jobs:
               .head_branch == "main" and
               .head_repository.full_name == $repository and
               ((.status == "completed" and .conclusion == "success") or
-               ($platform_authority and (.status == "in_progress" or
+               ($platform_authority and (
+                 ((.status == "in_progress" or .status == "queued") and .conclusion == null) or
                  (.status == "completed" and .conclusion == "failure"))))
             ' <<< "$current_run" > /dev/null
 

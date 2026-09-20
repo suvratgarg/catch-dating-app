@@ -260,3 +260,99 @@ test("Android failures cannot skip iOS authority or promotion, and vice versa", 
   assert.match(platformWorkflow, /pattern: mobile-package-receipt-v1-\*-\$\{\{ inputs.platform \}\}-/u);
   assert.match(platformWorkflow, /--arg suffix "-\$\{\{ inputs.platform \}\}-\$suffix"/u);
 });
+
+test("queued producer verifies both selected packages but rejects incomplete or stale evidence", async () => {
+  const {spawnSync} = await import("node:child_process");
+  const {tmpdir} = await import("node:os");
+  const path = await import("node:path");
+  const root = fs.mkdtempSync(path.join(tmpdir(), "mobile-producer-guard-"));
+  const section = platformWorkflow.slice(
+    platformWorkflow.indexOf("Require a complete current producer attempt"),
+    platformWorkflow.indexOf("      - name: Download exact package receipt artifacts"),
+  );
+  const script = section.slice(section.indexOf("        run: |\n") + "        run: |\n".length)
+    .split("\n").map((line) => line.replace(/^ {10}/u, "")).join("\n");
+  const targets = ["consumer-ios", "host-ios"];
+  const suffix = "42-1-7001-3";
+  const sourceName = `mobile-source-v1-${suffix}`;
+  const run = {id: 7001, run_attempt: 3, name: "Mobile Internal Release",
+    path: ".github/workflows/mobile-internal-release.yml", event: "workflow_run",
+    repository: {full_name: "catch/repo"}, status: "queued", conclusion: null};
+  const jobs = targets.map((target) => ({name: `Build signed package (${target})`,
+    run_id: 7001, run_attempt: 3, status: "completed", conclusion: "success"}));
+  // The failed sibling must not participate in the selected iOS proof.
+  jobs.push({name: "Build signed package (host-android)", run_id: 7001,
+    run_attempt: 3, status: "completed", conclusion: "failure"});
+  const names = [sourceName, ...targets.flatMap((target) => [
+    `mobile-package-v1-${target}-${suffix}`, `mobile-package-receipt-v1-${target}-${suffix}`])];
+  const artifacts = names.map((name, index) => ({id: index + 10, name,
+    expired: false, digest: `sha256:${"a".repeat(64)}`}));
+  try {
+    fs.writeFileSync(path.join(root, "gh"), `#!${process.execPath}\n` +
+      'const f=JSON.parse(process.env.GUARD_FIXTURE); const endpoint=process.argv.at(-1);\n' +
+      'if(endpoint.endsWith("/attempts/3/jobs?per_page=100")) console.log(JSON.stringify([{jobs:f.jobs}]));\n' +
+      'else if(endpoint.endsWith("/artifacts?per_page=100")) console.log(JSON.stringify([{artifacts:f.artifacts}]));\n' +
+      'else if(endpoint.endsWith("/runs/7001")) console.log(JSON.stringify(f.run));\n' +
+      'else process.exit(99);\n', {mode: 0o755});
+    const cases = [
+      {label: "queued with both role jobs and receipts", allowed: true},
+      {label: "in progress", run: {...run, status: "in_progress"}, allowed: true},
+      ...["completed", "waiting", "pending", "requested", "cancelled"].map((status) =>
+        ({label: `unsupported ${status}`, run: {...run, status}, reason: "Producer identity"})),
+      {label: "cancelled conclusion", run: {...run, conclusion: "cancelled"}, reason: "Producer identity"},
+      {label: "new attempt", run: {...run, run_attempt: 4}, reason: "Producer identity"},
+      {label: "foreign repository", run: {...run, repository: {full_name: "fork/repo"}}, reason: "Producer identity"},
+      {label: "wrong workflow", run: {...run, path: ".github/workflows/other.yml"}, reason: "Producer identity"},
+      {label: "missing role job", jobs: jobs.slice(1), reason: "Selected platform package jobs"},
+      {label: "duplicate role job", jobs: [...jobs, jobs[0]], reason: "Selected platform package jobs"},
+      ...[{run_attempt: 2}, {run_id: 7002}, {conclusion: "failure"}, {status: "in_progress"}]
+        .map((change) => ({label: `invalid job ${JSON.stringify(change)}`,
+          jobs: [{...jobs[0], ...change}, ...jobs.slice(1)], reason: "Selected platform package jobs"})),
+      {label: "missing receipt", artifacts: artifacts.slice(0, -1), reason: "Artifact completeness"},
+      {label: "duplicate receipt", artifacts: [...artifacts, artifacts.at(-1)], reason: "Artifact completeness"},
+      {label: "old receipt attempt", artifacts: artifacts.map((a, i) => i === 4 ? {...a, name: a.name.replace(/-3$/u, "-2")} : a), reason: "Artifact completeness"},
+      {label: "expired package", artifacts: artifacts.map((a, i) => i === 1 ? {...a, expired: true} : a), reason: "Artifact completeness"},
+      {label: "invalid digest", artifacts: artifacts.map((a, i) => i === 1 ? {...a, digest: "invalid"} : a), reason: "Artifact completeness"},
+    ];
+    for (const fixture of cases) {
+      fs.rmSync(path.join(root, "build"), {recursive: true, force: true});
+      const result = spawnSync("bash", ["-c", script], {cwd: root, encoding: "utf8", env: {
+        ...process.env, PATH: `${root}:${process.env.PATH}`,
+        GUARD_FIXTURE: JSON.stringify({run, jobs, artifacts, ...fixture}),
+        GITHUB_REPOSITORY: "catch/repo", PRODUCER_RUN_ID: "7001", PRODUCER_RUN_ATTEMPT: "3",
+        SOURCE_CI_RUN_ID: "42", SOURCE_CI_RUN_ATTEMPT: "1", SOURCE_SHA: "b".repeat(40),
+        EXPECTED_SOURCE_BUNDLE_NAME: sourceName, RELEASE_TARGETS: JSON.stringify(targets),
+      }});
+      assert.equal(result.status, fixture.allowed ? 0 : 64, `${fixture.label}: ${result.stdout}\n${result.stderr}`);
+      if (fixture.allowed) {
+        assert.deepEqual(fs.readdirSync(path.join(root, "build/mobile/attempt/entries")).sort(),
+          targets.map((target) => `${target}.json`));
+      } else assert.ok(result.stdout.includes(fixture.reason), fixture.label);
+    }
+  } finally { fs.rmSync(root, {recursive: true, force: true}); }
+});
+
+test("publication and handoff use the same bounded active producer status", async () => {
+  const {spawnSync} = await import("node:child_process");
+  const queries = [...(platformWorkflow + producer).matchAll(/'\n(\s+[^']+?)\n\s+' <<< "\$current_run"/gu)]
+    .map((match) => match[1]).filter((query) => query.includes('.status == "queued"'));
+  assert.equal(queries.length, 3, "compare, publish, and automatic dispatch");
+  const packageProofs = [...platformWorkflow.matchAll(/'\n(\s+\[\.\[\]\.jobs\[\]\] as \$jobs[^']+?)\n\s+' <<< "\$jobs"/gu)]
+    .map((match) => match[1]);
+  assert.equal(packageProofs.length, 2, "compare and publish both prove selected package jobs");
+  assert.equal(packageProofs[0], packageProofs[1]);
+  const valid = {id: 7001, run_attempt: 3, name: "Mobile Internal Release",
+    path: ".github/workflows/mobile-internal-release.yml", event: "workflow_run",
+    repository: {full_name: "catch/repo"}, head_repository: {full_name: "catch/repo"},
+    head_branch: "main", status: "queued", conclusion: null};
+  for (const query of queries) {
+    for (const [change, allowed] of [[{}, true], [{status: "in_progress"}, true],
+      [{status: "completed", conclusion: "cancelled"}, false], [{run_attempt: 4}, false],
+      [{status: "queued", conclusion: "cancelled"}, false], [{status: "waiting"}, false]]) {
+      const result = spawnSync("jq", ["-e", "--arg", "repository", "catch/repo",
+        "--arg", "run_id", "7001", "--argjson", "run_attempt", "3", query],
+      {input: JSON.stringify({...valid, ...change}), encoding: "utf8"});
+      assert.equal(result.status === 0, allowed, result.stderr);
+    }
+  }
+});
