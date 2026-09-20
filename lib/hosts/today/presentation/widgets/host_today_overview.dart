@@ -180,21 +180,22 @@ class _HostTodayPrimaryPane extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final featuredEvent = event;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (event != null) ...[
+        if (featuredEvent != null) ...[
           CatchSection.content(
             child: HostTodayEventSection(
-              event: event!,
+              event: featuredEvent,
               now: now,
               taskCount: taskCount,
               taskCountIsComplete: state.attentionCountIsComplete,
               contained: false,
-              onPressed: () => onOpenEvent(event!),
+              onPressed: () => onOpenEvent(featuredEvent),
               onRehearse:
-                  event!.startTime.isAfter(now) && onStartEventRehearsal != null
-                  ? () => onStartEventRehearsal!(event!)
+                  featuredEvent.startTime.isAfter(now) && onStartEventRehearsal != null
+                  ? () => onStartEventRehearsal!(featuredEvent)
                   : null,
             ),
           ),
@@ -205,8 +206,8 @@ class _HostTodayPrimaryPane extends StatelessWidget {
           onOpenEvent: onOpenEvent,
           onViewEvents: onViewEvents,
           onStartRehearsal:
-              event != null &&
-                  event.startTime.isAfter(now) &&
+              featuredEvent != null &&
+                  featuredEvent.startTime.isAfter(now) &&
                   onStartEventRehearsal != null
               ? null
               : onStartRehearsal,
