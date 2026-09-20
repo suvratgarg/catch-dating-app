@@ -58,6 +58,7 @@ mixin _CatchFieldProperties implements CatchFieldDividerGeometry {
   String? get valueText => _rowConfig?.valueText;
   int get valueMaxLines => _rowConfig?.valueMaxLines ?? 1;
   int get titleMaxLines => switch (_config) {
+    final _EditConfig config => config.titleMaxLines,
     final _RowConfig config => config.titleMaxLines,
     final _ToggleConfig config => config.titleMaxLines,
     final _ControlConfig config => config.titleMaxLines,
