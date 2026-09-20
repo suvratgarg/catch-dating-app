@@ -12,8 +12,8 @@ import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_st
 import 'package:catch_dating_app/event_rehearsal/presentation/host_event_rehearsal_screen.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/host_event_rehearsal_start_screen.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_link_and_run.dart';
-import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_simulator.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_setup_section.dart';
+import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_simulator.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_staff_section.dart';
 import 'package:catch_dating_app/event_success/event_success.dart';
 import 'package:catch_dating_app/events/domain/event_itinerary.dart';

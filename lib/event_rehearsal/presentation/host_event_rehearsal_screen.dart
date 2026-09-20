@@ -488,18 +488,6 @@ class _HostEventRehearsalScreenState
         ),
       );
 
-  Future<void> _showGuests(EventRehearsalBootstrap rehearsal) =>
-      showCatchBottomSheet<void>(
-        context: context,
-        builder: (_) => CatchSheet(
-          title: context.l10n.eventSuccessLiveWorkspaceGuests,
-          badge: context.l10n.hostEventRehearsalBadge,
-          badgeTone: CatchBadgeTone.danger,
-          mode: CatchSheetMode.scrollable,
-          child: EventRehearsalRosterSection(rehearsal: rehearsal),
-        ),
-      );
-
   Future<void> _showPracticeTools(
     EventRehearsalBootstrap rehearsal,
     bool busy,
@@ -568,21 +556,6 @@ class _HostEventRehearsalScreenState
       ),
     ),
   );
-
-  Future<void> _showCoachWhy(EventRehearsalBootstrap rehearsal) async {
-    await showCatchAdaptiveDialog<void>(
-      context: context,
-      title: context.l10n.hostEventRehearsalCoachWhyTitle,
-      message: context.l10n.hostEventRehearsalCoachWhyBody,
-      actions: [
-        CatchDialogAction(
-          label: context.l10n.hostEventRehearsalCoachGotIt,
-          value: null,
-          isDefault: true,
-        ),
-      ],
-    );
-  }
 
   Future<void> _leaveRehearsal(EventRehearsalSession? session) async {
     if (session?.hasStarted == true) {

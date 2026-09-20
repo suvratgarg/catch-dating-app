@@ -48,7 +48,7 @@ void main() {
       await tester.tap(find.text('Event city: All'));
       await pumpFeatureUi(tester);
       await tester.tap(find.text('Mumbai'));
-      await tester.pump(const Duration(milliseconds: 500));
+      await pumpUntilFound(tester, find.text('Event city: Mumbai'));
       expect(requests.last.answerFilters, {'city': 'Mumbai'});
       expect(find.text('Event city: Mumbai'), findsOneWidget);
       pending.complete(_page);
@@ -110,7 +110,12 @@ void main() {
       );
       await tester.tap(find.text('Filter 6: Selected'));
       await pumpFeatureUi(tester);
-      await tester.tap(find.text('All').last);
+      await tester.tap(
+        find.descendant(
+          of: find.byType(CatchSheet),
+          matching: find.text('All'),
+        ),
+      );
       await pumpFeatureUi(tester);
       expect(requests.last.answerFilters.length, 4);
       expect(

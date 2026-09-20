@@ -1,38 +1,39 @@
+// Local-only visual QA of production Host widgets with handler-backed fixtures.
+import 'dart:convert';
+
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/event_rehearsal/data/event_rehearsal_repository.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/host_event_rehearsal_screen.dart';
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
-import 'package:catch_dating_app/hosts/data/crm/host_contacts_repository.dart';
+import 'package:catch_dating_app/events/data/event_repository.dart';
+import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/hosts/data/crm/host_communication_repository.dart';
+import 'package:catch_dating_app/hosts/data/crm/host_contacts_repository.dart';
+import 'package:catch_dating_app/hosts/data/crm/host_saved_audience_repository.dart';
+import 'package:catch_dating_app/hosts/data/host_application_repository.dart';
+import 'package:catch_dating_app/hosts/data/host_forms_repository.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_audience_contact_detail.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_communication_plan.dart';
-import 'package:catch_dating_app/hosts/presentation/customers/host_customer_detail_screen.dart';
-// Local-only visual QA of production Host widgets with handler-backed fixtures.
-import 'dart:convert';
-import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/hosts/data/host_forms_repository.dart';
-import 'package:catch_dating_app/hosts/data/host_application_repository.dart';
-import 'package:catch_dating_app/hosts/data/crm/host_saved_audience_repository.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_saved_audience_filter_options.dart';
+import 'package:catch_dating_app/hosts/domain/forms/host_form_conversion.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_definition.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_editor.dart';
-import 'package:catch_dating_app/hosts/domain/forms/host_form_summary.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_response.dart';
-import 'package:catch_dating_app/hosts/domain/forms/host_form_conversion.dart';
+import 'package:catch_dating_app/hosts/domain/forms/host_form_summary.dart';
+import 'package:catch_dating_app/hosts/presentation/applications/host_applications_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/customers/host_customer_detail_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_builder_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_form_workspace_state.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_preview_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_detail_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/applications/host_applications_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_workspace_state.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
-import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
-import 'package:catch_dating_app/events/data/event_repository.dart';
-import 'package:catch_dating_app/events/domain/event.dart';
 
 late final Map<String, dynamic> fixture;
 late final String organizerId;
@@ -44,8 +45,13 @@ Future<Object?> call(String action, Map<String, Object?> payload) async {
     headers: {'Content-Type': 'application/json'},
     body: jsonEncode({'action': action, 'payload': payload}),
   );
-  final result = jsonDecode(response.body);
-  if (response.statusCode != 200) throw StateError(result['error'] as String);
+  final Object? result = jsonDecode(response.body);
+  if (response.statusCode != 200) {
+    final error = result is Map ? result['error'] as String? : null;
+    throw StateError(
+      error ?? 'Local handler returned HTTP ${response.statusCode}',
+    );
+  }
   return result;
 }
 
@@ -178,7 +184,9 @@ Future<void> main() async {
             forms: [
               HostAudienceSourceOption(
                 id: formId,
-                title: fixture['editor']['form']['title'] as String,
+                title: HostFormEditor.fromCallableData(
+                  fixture['editor'],
+                ).form.title,
               ),
             ],
             questions: const [],

@@ -24,7 +24,7 @@ void main() {
     (tester) async {
       final controller = _Controller();
       final completion = Completer<EventRehearsalCreated>();
-      controller.completion = completion;
+      controller._completion = completion;
       final router = _router();
       addTearDown(router.dispose);
       await tester.pumpWidget(_app(router, controller));
@@ -33,13 +33,13 @@ void main() {
       expect(find.byType(TextField), findsNothing);
       await tester.tap(find.text('Start rehearsal'));
       await tester.pump();
-      expect(controller.calls, 1);
-      expect(controller.guestSource, 'event');
-      expect(controller.sourceEventId, 'event-1');
-      expect(controller.actorCount, 18);
-      expect(controller.startImmediately, isTrue);
-      expect(controller.setup?.title, 'Saturday singles mixer');
-      expect(controller.setup?.successDefaults, isNotNull);
+      expect(controller._calls, 1);
+      expect(controller._guestSource, 'event');
+      expect(controller._sourceEventId, 'event-1');
+      expect(controller._actorCount, 18);
+      expect(controller._startImmediately, isTrue);
+      expect(controller._setup?.title, 'Saturday singles mixer');
+      expect(controller._setup?.successDefaults, isNotNull);
       final button = tester.widget<CatchButton>(
         find.byWidgetPredicate(
           (widget) =>
@@ -56,7 +56,7 @@ void main() {
   testWidgets(
     'custom guest count and event details reach creation and survive a failure',
     (tester) async {
-      final controller = _Controller()..failFirst = true;
+      final controller = _Controller().._failFirst = true;
       final router = _router();
       addTearDown(router.dispose);
       await tester.pumpWidget(_app(router, controller));
@@ -85,9 +85,9 @@ void main() {
       await pumpFeatureUi(tester);
       await tester.tap(find.text('Start rehearsal'));
       await pumpFeatureUi(tester);
-      expect(controller.guestSource, 'simulated');
-      expect(controller.actorCount, 31);
-      expect(controller.setup?.title, 'Only this practice copy');
+      expect(controller._guestSource, 'simulated');
+      expect(controller._actorCount, 31);
+      expect(controller._setup?.title, 'Only this practice copy');
       expect(find.text('Custom settings · Edit or reset'), findsOneWidget);
       ScaffoldMessenger.of(
         tester.element(find.byType(HostEventRehearsalStartScreen)),
@@ -106,8 +106,8 @@ void main() {
       );
       await tester.tap(find.text('Start rehearsal'));
       await pumpFeatureUi(tester);
-      expect(controller.calls, 2);
-      expect(controller.setup?.title, 'Only this practice copy');
+      expect(controller._calls, 2);
+      expect(controller._setup?.title, 'Only this practice copy');
       expect(find.text('runtime: session-new'), findsOneWidget);
     },
   );
@@ -148,7 +148,10 @@ GoRouter _router({bool custom = false}) => GoRouter(
 
 Widget _app(GoRouter router, _Controller controller) => ProviderScope(
   overrides: [
+    // Root test fixtures replace dependencies without creating app scopes.
+    // ignore: riverpod_lint/scoped_providers_should_specify_dependencies
     eventRehearsalControllerProvider.overrideWith(() => controller),
+    // ignore: riverpod_lint/scoped_providers_should_specify_dependencies
     eventRehearsalEntryProvider('club-1', null).overrideWith(
       (ref) async => EventRehearsalEntryData(
         organizerDefaults: const ClubHostDefaults(),
@@ -182,14 +185,14 @@ class _Controller extends EventRehearsalController {
     ref.keepAlive();
   }
 
-  int calls = 0;
-  bool failFirst = false;
-  Completer<EventRehearsalCreated>? completion;
-  EventRehearsalSetup? setup;
-  String? guestSource;
-  String? sourceEventId;
-  int? actorCount;
-  bool? startImmediately;
+  int _calls = 0;
+  bool _failFirst = false;
+  Completer<EventRehearsalCreated>? _completion;
+  EventRehearsalSetup? _setup;
+  String? _guestSource;
+  String? _sourceEventId;
+  int? _actorCount;
+  bool? _startImmediately;
   @override
   Future<EventRehearsalCreated> create({
     required String organizerId,
@@ -200,13 +203,13 @@ class _Controller extends EventRehearsalController {
     String guestSource = 'simulated',
     bool startImmediately = false,
   }) async {
-    calls++;
-    this.setup = setup;
-    this.guestSource = guestSource;
-    this.sourceEventId = sourceEventId;
-    this.actorCount = actorCount;
-    this.startImmediately = startImmediately;
-    if (failFirst && calls == 1) throw StateError('Try again');
-    return completion?.future ?? Future.value(_created);
+    _calls++;
+    _setup = setup;
+    _guestSource = guestSource;
+    _sourceEventId = sourceEventId;
+    _actorCount = actorCount;
+    _startImmediately = startImmediately;
+    if (_failFirst && _calls == 1) throw StateError('Try again');
+    return _completion?.future ?? Future.value(_created);
   }
 }
