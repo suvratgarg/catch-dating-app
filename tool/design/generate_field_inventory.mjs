@@ -128,6 +128,7 @@ const sectionSlotByParameter = Object.freeze({
   children: "children",
   itemBuilder: "children",
   child: "child",
+  leading: "leading",
 });
 
 const sectionSlotOrder = Object.freeze([
@@ -139,6 +140,7 @@ const sectionSlotOrder = Object.freeze([
   "groups",
   "children",
   "child",
+  "leading",
 ]);
 
 export function extractCatchFieldFacades(source, {useWhen = facadeUseWhen} = {}) {

@@ -497,6 +497,7 @@ final class CatchField<T> extends StatefulWidget
     required CatchFieldCopy copy,
     super.key,
     required String this.title,
+    int titleMaxLines = 1,
     this.contract,
     String? contractExemption,
     String? placeholder,
@@ -559,6 +560,7 @@ final class CatchField<T> extends StatefulWidget
        child = null,
        meta = null,
        _config = (
+         titleMaxLines: titleMaxLines,
          controller: controller,
          contractExemption: contractExemption,
          initialValue: initialValue,
@@ -889,6 +891,7 @@ final class CatchField<T> extends StatefulWidget
        leadingExtent = null,
        trailing = null,
        _config = (
+         titleMaxLines: 1,
          controller: controller,
          contractExemption: contractExemption,
          onChanged: onChanged,

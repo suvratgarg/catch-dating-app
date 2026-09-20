@@ -3,6 +3,7 @@
 
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/components/catch_content_section.dart';
+import 'package:catch_ui/src/components/catch_dependent_row_section.dart';
 import 'package:catch_ui/src/components/catch_divided_field_interaction_scope.dart';
 import 'package:catch_ui/src/components/catch_divided_field_interaction_scope_mode.dart';
 import 'package:catch_ui/src/components/catch_field.dart';
@@ -416,6 +417,29 @@ class CatchSection extends StatelessWidget {
         for (final layout in layouts)
           CatchField.loading(content: layout, navigable: navigable),
       ],
+    ),
+  );
+
+  /// A decision and its applicable configuration inside one rounded perimeter.
+  ///
+  /// The section occupies its form lane. The dependent area attaches with a
+  /// subtle tint, without sibling dividers, indentation, or another outline.
+  /// Callers provide only applicable fields; draft values and persistence stay
+  /// feature-owned. Unlike a disclosure, collapsing the control's editor does
+  /// not hide an applicable dependent branch.
+  factory CatchSection.dependentFieldRows({
+    Key? key,
+    required CatchField leading,
+    List<CatchField> children = const [],
+    Widget? footer,
+    Set<WidgetState> states = const {},
+  }) => CatchSection._rows(
+    key: key,
+    rowSection: CatchDependentRowSection(
+      leading: leading,
+      children: children,
+      footer: footer,
+      states: states,
     ),
   );
 

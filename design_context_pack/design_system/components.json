@@ -71,12 +71,13 @@
         "horizontal",
         "rows",
         "loadingRows",
+        "controls",
         "containedRows",
         "containedLoadingRows",
+        "dependentFieldRows",
         "content",
         "sliverRows",
-        "sliverLoadingRows",
-        "controls"
+        "sliverLoadingRows"
       ],
       "slots": [
         "title",
@@ -86,13 +87,15 @@
         "footer",
         "groups",
         "children",
-        "child"
+        "child",
+        "leading"
       ],
       "rules": [
         "The section owns grouping, dividers, contained chrome, header composition, and field-row focus or error treatment.",
         "Contained field-row titles, counts, and trailing actions sit outside the row-group outline; generic contained content-card titles remain inside their surface.",
         "Product surfaces keep route layout and domain state outside the section contract.",
-        "Use field sections for data entry and management surfaces, never as a generic storytelling container."
+        "Use field sections for data entry and management surfaces, never as a generic storytelling container.",
+        "Dependent fields attach to their controlling field through a tint inside one rounded perimeter. Applicability is feature-owned; no nested outlines, automatic modal depth, or dividers that imply peers."
       ]
     }
   },
@@ -4445,6 +4448,12 @@
             "itemCount",
             "layoutBuilder",
             "navigable"
+          ],
+          "CatchSection.dependentFieldRows": [
+            "leading",
+            "children",
+            "footer",
+            "states"
           ]
         },
         "props": [
@@ -4671,7 +4680,7 @@
             "type": "widget",
             "required": false,
             "dartType": "Widget",
-            "notes": "controls only; the Section owns both boundaries and content gutter."
+            "notes": "controls accepts a Widget; dependentFieldRows requires the controlling CatchField. The Section owns geometry for both recipes."
           },
           {
             "name": "navigable",
@@ -4806,6 +4815,14 @@
               "catch.field"
             ],
             "notes": "Use CatchSectionFieldGroup descriptors when one contained choice collection needs labelled internal groups without nested per-group outlines."
+          },
+          {
+            "name": "leading",
+            "kind": "dependency-control",
+            "allowedComponents": [
+              "catch.field"
+            ],
+            "notes": "The control above applicable children; both share one perimeter."
           }
         ],
         "tokens": [
@@ -5124,6 +5141,31 @@
               ],
               "reason": "Shared section title and content-width rule for both row and non-row recipes."
             }
+          },
+          {
+            "id": "catch.section.dependent_rows",
+            "symbol": "CatchDependentRowSection",
+            "file": "packages/catch_ui/lib/src/components/catch_dependent_row_section.dart",
+            "summary": "Internal conditional-field renderer: one rounded perimeter, control surface and attached configuration tint, with exact rectangular child hit bounds.",
+            "states": [
+              "default"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.section",
+              "parentConceptId": "catch.section",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.section"
+            },
+            "level": "L3",
+            "roleNoun": "Section",
+            "naming": {
+              "useCase": "DependentRow",
+              "comparedWith": [
+                "catch.section"
+              ],
+              "reason": "Owns attachment and a single perimeter for a controlling decision and its applicable configuration."
+            }
           }
         ],
         "accessibility": {
@@ -5189,7 +5231,8 @@
           "CatchSection.sliverRows",
           "CatchSection.sliverLoadingRows",
           "CatchSection.content",
-          "CatchSection.formRows"
+          "CatchSection.formRows",
+          "CatchSection.dependentFieldRows"
         ]
       },
       "surfaces": {

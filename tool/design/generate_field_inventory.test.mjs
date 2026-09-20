@@ -99,6 +99,7 @@ test("extracts every current facade and semantic slot", () => {
     "controls",
     "containedRows",
     "containedLoadingRows",
+    "dependentFieldRows",
     "content",
     "sliverRows",
     "sliverLoadingRows",
@@ -112,6 +113,7 @@ test("extracts every current facade and semantic slot", () => {
     "groups",
     "children",
     "child",
+    "leading",
   ]);
 });
 
