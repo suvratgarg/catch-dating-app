@@ -154,24 +154,26 @@ class HostCustomerApplicationSnapshot extends ConsumerWidget {
         child: CatchSection.fieldRows(
           title: context.l10n.hostCustomersLatestSubmittedDetails,
           footer: Text(
-            context.l10n.hostCustomersSubmittedOn(date: 'Loading date'),
+            context.l10n.hostCustomersSubmittedOn(
+              date: CatchSkeleton.sampleDateText,
+            ),
             style: CatchTextStyles.recordContext(context),
           ),
           children: [
             CatchField.read(
               copy: catchFieldCopy(context.l10n),
-              title: 'Loading question',
-              body: 'Loading answer',
+              title: CatchSkeleton.sampleQuestionText,
+              body: CatchSkeleton.sampleAnswerText,
             ),
             CatchField.read(
               copy: catchFieldCopy(context.l10n),
-              title: 'Loading question',
-              body: 'Loading answer',
+              title: CatchSkeleton.sampleQuestionText,
+              body: CatchSkeleton.sampleAnswerText,
             ),
             CatchField.nav(
               copy: catchFieldCopy(context.l10n),
               title: context.l10n.hostCustomersOpenApplication,
-              body: 'Loading status',
+              body: CatchSkeleton.sampleStatusText,
               onTap: () {},
             ),
           ],
