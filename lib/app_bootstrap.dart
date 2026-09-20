@@ -307,13 +307,9 @@ Future<void> _initializeDefaultFirebaseApp() async {
 }
 
 bool _hasDefaultFirebaseApp() {
-  try {
-    Firebase.app();
-    return true;
-  } on FirebaseException catch (error) {
-    if (error.code == 'no-app' || error.code == 'not-initialized') return false;
-    rethrow;
-  }
+  // The web app lookup requires the JS SDK to have loaded. The app inventory
+  // is safe before initialization and also distinguishes named secondary apps.
+  return Firebase.apps.any((app) => app.name == '[DEFAULT]');
 }
 
 Future<void> _configureFirebaseAuthTestingSettings() async {
