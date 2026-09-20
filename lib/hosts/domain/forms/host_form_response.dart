@@ -32,6 +32,8 @@ class HostFormResponseListRequest {
     this.to,
     this.cursor,
     this.limit = 25,
+    this.answerFilters = const {},
+    this.oldestFirst = false,
   });
 
   final String organizerId;
@@ -45,6 +47,8 @@ class HostFormResponseListRequest {
   final DateTime? to;
   final String? cursor;
   final int limit;
+  final Map<String, String> answerFilters;
+  final bool oldestFirst;
 
   HostFormResponseListRequest copyWith({String? cursor}) =>
       HostFormResponseListRequest(
@@ -59,6 +63,8 @@ class HostFormResponseListRequest {
         to: to,
         cursor: cursor,
         limit: limit,
+        answerFilters: answerFilters,
+        oldestFirst: oldestFirst,
       );
 
   @override
@@ -74,7 +80,12 @@ class HostFormResponseListRequest {
       from == other.from &&
       to == other.to &&
       cursor == other.cursor &&
-      limit == other.limit;
+      limit == other.limit &&
+      oldestFirst == other.oldestFirst &&
+      answerFilters.length == other.answerFilters.length &&
+      answerFilters.entries.every(
+        (entry) => other.answerFilters[entry.key] == entry.value,
+      );
 
   @override
   int get hashCode => Object.hash(
@@ -89,6 +100,10 @@ class HostFormResponseListRequest {
     to,
     cursor,
     limit,
+    oldestFirst,
+    Object.hashAllUnordered(
+      answerFilters.entries.map((entry) => Object.hash(entry.key, entry.value)),
+    ),
   );
 }
 
@@ -210,8 +225,36 @@ class HostFormResponseSummary {
 }
 
 @immutable
+class HostFormResponseFilterOption {
+  const HostFormResponseFilterOption({
+    required this.questionId,
+    required this.label,
+    required this.options,
+  });
+
+  factory HostFormResponseFilterOption.fromMap(Map<Object?, Object?> map) =>
+      HostFormResponseFilterOption(
+        questionId: formOperationRequiredString(map, 'questionId'),
+        label: formOperationRequiredString(map, 'label'),
+        options: {
+          for (final option in formOperationMapList(
+            map['options'],
+            'filter options',
+          ))
+            formOperationRequiredString(option, 'value'):
+                formOperationRequiredString(option, 'label'),
+        },
+      );
+
+  final String questionId;
+  final String label;
+  final Map<String, String> options;
+}
+
+@immutable
 class HostFormResponsePage {
   const HostFormResponsePage({
+    this.answerFilterOptions = const [],
     required this.organizerId,
     required this.items,
     required this.nextCursor,
@@ -226,11 +269,16 @@ class HostFormResponsePage {
         'form responses',
       ).map(HostFormResponseSummary.fromMap).toList(growable: false),
       nextCursor: formOperationNullableString(map['nextCursor']),
+      answerFilterOptions: formOperationMapList(
+        map['answerFilterOptions'] ?? const [],
+        'answer filter options',
+      ).map(HostFormResponseFilterOption.fromMap).toList(growable: false),
     );
   }
 
   final String organizerId;
   final List<HostFormResponseSummary> items;
+  final List<HostFormResponseFilterOption> answerFilterOptions;
   final String? nextCursor;
 }
 

@@ -342,6 +342,53 @@ void main() {
     expect(first.hashCode, second.hashCode);
   });
 
+  test(
+    'answer selections and sort participate in request identity and cursors',
+    () {
+      const first = HostFormResponseListRequest(
+        organizerId: 'org_1',
+        formId: 'form_1',
+        answerFilters: {'city': 'Mumbai', 'intent': 'Friendship'},
+        oldestFirst: true,
+      );
+      const reordered = HostFormResponseListRequest(
+        organizerId: 'org_1',
+        formId: 'form_1',
+        answerFilters: {'intent': 'Friendship', 'city': 'Mumbai'},
+        oldestFirst: true,
+      );
+      const different = HostFormResponseListRequest(
+        organizerId: 'org_1',
+        formId: 'form_1',
+        answerFilters: {'city': 'Dubai', 'intent': 'Friendship'},
+        oldestFirst: true,
+      );
+      expect(first, reordered);
+      expect(first.hashCode, reordered.hashCode);
+      expect(first, isNot(different));
+      final next = first.copyWith(cursor: 'next');
+      expect(next.answerFilters, first.answerFilters);
+      expect(next.oldestFirst, isTrue);
+      expect(next.cursor, 'next');
+      final page = HostFormResponsePage.fromCallableData(const {
+        'organizerId': 'org_1',
+        'items': [],
+        'nextCursor': 'scan-next',
+        'answerFilterOptions': [
+          {
+            'questionId': 'city',
+            'label': 'Event city',
+            'options': [
+              {'value': 'Mumbai', 'label': 'Mumbai'},
+            ],
+          },
+        ],
+      });
+      expect(page.answerFilterOptions.single.options, {'Mumbai': 'Mumbai'});
+      expect(page.nextCursor, 'scan-next');
+    },
+  );
+
   test('analytics and automation projections parse required state', () {
     final analytics = HostFormAnalytics.fromCallableData(const {
       'formId': 'form_1',
