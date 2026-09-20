@@ -129,8 +129,12 @@ void registerHostEventEntryTests() {
     final createEvent = find.byKey(
       const ValueKey<String>('host-today-create-event'),
     );
+    await tester.scrollUntilVisible(
+      createEvent,
+      400,
+      scrollable: find.byType(Scrollable).first,
+    );
     expect(createEvent, findsOneWidget);
-    await tester.ensureVisible(createEvent);
     await tester.tap(createEvent);
     await pumpFeatureUi(tester);
 
