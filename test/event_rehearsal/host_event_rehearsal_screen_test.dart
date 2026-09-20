@@ -259,7 +259,7 @@ void main() {
     );
     await pumpFeatureUi(tester);
 
-    expect(find.text('Sunday Morning Singles Mixer'), findsOneWidget);
+    expect(find.text('Sunday Morning Singles Mixer'), findsNWidgets(2));
     expect(find.text('REHEARSAL'), findsOneWidget);
     expect(find.text('Room'), findsOneWidget);
     expect(find.text('Show Coach'), findsOneWidget);
