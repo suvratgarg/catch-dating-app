@@ -19291,7 +19291,7 @@ abstract class AppLocalizations {
   /// Unknown roster status error.
   ///
   /// In en, this message translates to:
-  /// **'Row {row}: status \'{status}\' needs review and will not be imported.'**
+  /// **'Row {row}: status {status} needs review and will not be imported.'**
   String hostsOperationalRosterIssueUnknownStatus({
     required int row,
     required String status,
@@ -19300,7 +19300,7 @@ abstract class AppLocalizations {
   /// Excluded roster status explanation.
   ///
   /// In en, this message translates to:
-  /// **'Row {row}: status \'{status}\' is excluded from the active guest list.'**
+  /// **'Row {row}: status {status} is excluded from the active guest list.'**
   String hostsOperationalRosterIssueExcludedStatus({
     required int row,
     required String status,
@@ -23131,12 +23131,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This form did not grant a usable phone, email, Instagram, or LinkedIn destination.'**
   String get hostApplicationNoOutreach;
-
-  /// Application detail review section title.
-  ///
-  /// In en, this message translates to:
-  /// **'Review decision'**
-  String get hostApplicationReviewTitle;
 
   /// Organizer-only application review note label.
   ///

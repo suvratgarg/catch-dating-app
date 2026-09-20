@@ -12372,7 +12372,7 @@ class AppLocalizationsEn extends AppLocalizations {
     required int row,
     required String status,
   }) {
-    return 'Row $row: status {status} needs review and will not be imported.';
+    return 'Row $row: status $status needs review and will not be imported.';
   }
 
   @override
@@ -12380,7 +12380,7 @@ class AppLocalizationsEn extends AppLocalizations {
     required int row,
     required String status,
   }) {
-    return 'Row $row: status {status} is excluded from the active guest list.';
+    return 'Row $row: status $status is excluded from the active guest list.';
   }
 
   @override
@@ -14888,9 +14888,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hostApplicationNoOutreach =>
       'This form did not grant a usable phone, email, Instagram, or LinkedIn destination.';
-
-  @override
-  String get hostApplicationReviewTitle => 'Review decision';
 
   @override
   String get hostApplicationReviewNote => 'Private review note';

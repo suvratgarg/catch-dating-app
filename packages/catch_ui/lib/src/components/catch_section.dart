@@ -437,9 +437,9 @@ class CatchSection extends StatelessWidget {
     key: key,
     rowSection: CatchDependentRowSection(
       leading: leading,
-      children: children,
       footer: footer,
       states: states,
+      children: children,
     ),
   );
 
