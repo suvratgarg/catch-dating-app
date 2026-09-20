@@ -663,6 +663,27 @@ const route = '/events';
       findings.length != 2) {
     throw StateError('Mobile copy scanner self-test failed: $findings');
   }
+  // Shared geometry data is referenced, never granted a subtree copy waiver.
+  const loadingSource = '''
+Widget build() => CatchSkeleton.content(
+  child: Column(children: [
+    Text(CatchSkeleton.sampleQuestionText),
+    Text('Unowned loading question'),
+    CatchField.read(title: 'Unowned loading title'),
+  ]),
+);
+''';
+  final loadingTexts = scanDartSource(
+    'lib/example_loading.dart',
+    loadingSource,
+  ).map((finding) => finding.text).toSet();
+  if (loadingTexts.length != 2 ||
+      !loadingTexts.containsAll({
+        'Unowned loading question',
+        'Unowned loading title',
+      })) {
+    throw StateError('A loading subtree bypassed display-copy ownership.');
+  }
   const shareAdapterSource = '''
 Widget share() => CatchExternalShareSheet(
   buttonLabel: 'Share this card',

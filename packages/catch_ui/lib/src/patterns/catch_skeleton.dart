@@ -10,6 +10,36 @@ import 'package:skeletonizer/skeletonizer.dart';
 /// Generic repeated-shape recipes are intentionally absent, so they cannot
 /// create a loading geometry that differs from the loaded screen.
 class CatchSkeleton extends StatelessWidget {
+  /// Representative text for measuring unresolved content, never product copy.
+  ///
+  /// Use only inside an enabled [CatchSkeleton.content] or a Section loading
+  /// row. Skeletonizer paints its geometry; the loading owner excludes all
+  /// sample semantics and interaction. Replace samples with real content before
+  /// disabling loading. Const data keeps passive layout constructors const.
+  static const sampleRecordTitle = 'Loading record';
+  static const sampleMetadataText = 'Loading metadata';
+  static const sampleFactText = 'Loading fact';
+  static const sampleDescriptionText = 'Loading description';
+  static const samplePersonName = 'Loading person';
+  static const sampleSupportingText = 'Loading supporting text';
+  static const sampleContextText = 'Loading context';
+  static const sampleBadgeText = 'Loading';
+  static const sampleConversationName = 'Loading conversation';
+  static const sampleMessagePreview = 'Loading message preview';
+  static const sampleTimestampText = 'Loading time';
+  static const sampleActivityText = 'Loading activity';
+  static const sampleRecommendationTitle = 'Loading recommendation';
+  static const sampleLocationText = 'Loading location';
+  static const sampleOrganizerName = 'Loading organizer';
+  static const sampleReasonText = 'Loading reason';
+  static const sampleDateText = 'Loading date';
+  static const sampleQuestionText = 'Loading question';
+  static const sampleAnswerText = 'Loading answer';
+  static const sampleStatusText = 'Loading status';
+  static const sampleFormTitle = 'Loading form';
+  static const sampleRoleTitle = 'Loading host role';
+  static const sampleClubName = 'Loading club';
+
   const CatchSkeleton._({required this.child})
     : variant = CatchSkeletonVariant.shape,
       enabled = true;
