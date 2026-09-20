@@ -1,13 +1,13 @@
 import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_configuration.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_copy.dart';
-import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_choice.dart';
+import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_choice_tile.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
-class EventRehearsalEntryContent extends StatelessWidget {
-  const EventRehearsalEntryContent({
+class EventRehearsalEntryPageBody extends StatelessWidget {
+  const EventRehearsalEntryPageBody({
     super.key,
     required this.configuration,
     required this.onChooseSource,
@@ -52,7 +52,7 @@ class EventRehearsalEntryContent extends StatelessWidget {
               ? l10n.hostRehearsalSampleLabel
               : l10n.hostRehearsalUpcomingLabel,
           padding: EdgeInsets.zero,
-          child: EventRehearsalChoice(
+          child: EventRehearsalChoiceTile(
             title: eventRehearsalConfigurationTitle(l10n, configuration),
             description: source == null
                 ? sourceDescription
@@ -64,7 +64,7 @@ class EventRehearsalEntryContent extends StatelessWidget {
         CatchSection.plain(
           title: l10n.hostRehearsalScenarioLabel,
           padding: EdgeInsets.zero,
-          child: EventRehearsalChoice(
+          child: EventRehearsalChoiceTile(
             title: eventRehearsalScenarioTitle(l10n, configuration.scenario),
             description: eventRehearsalScenarioBody(
               l10n,
@@ -74,7 +74,7 @@ class EventRehearsalEntryContent extends StatelessWidget {
           ),
         ),
         gapH24,
-        EventRehearsalChoice(
+        EventRehearsalChoiceTile(
           title: l10n.hostRehearsalCustomise,
           description: configuration.isCustom
               ? l10n.hostRehearsalCustomisedSummary

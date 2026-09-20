@@ -3,7 +3,7 @@ import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_configuration.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_copy.dart';
-import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_choice.dart';
+import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_choice_tile.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -96,7 +96,7 @@ class _EventRehearsalCustomiseSheetState
               CatchSection.plain(
                 title: l10n.hostRehearsalEventType,
                 padding: EdgeInsets.zero,
-                child: EventRehearsalChoice(
+                child: EventRehearsalChoiceTile(
                   title: _draft.format.activityKind.label,
                   description: l10n.hostRehearsalEventTypeDescription,
                   onTap: _chooseActivity,
@@ -151,7 +151,7 @@ class _EventRehearsalCustomiseSheetState
               ],
               gapH16,
               const CatchDivider.section(),
-              EventRehearsalChoice(
+              EventRehearsalChoiceTile(
                 title: l10n.hostRehearsalEventDetails,
                 description: l10n.hostRehearsalEventDetailsDescription,
                 expanded: _detailsOpen,
@@ -221,7 +221,7 @@ class _EventRehearsalCustomiseSheetState
                 gapH16,
               ],
               const CatchDivider.section(),
-              EventRehearsalChoice(
+              EventRehearsalChoiceTile(
                 title: l10n.hostRehearsalPlaybook,
                 description: l10n.hostRehearsalPlaybookDescription,
                 expanded: _playbookOpen,

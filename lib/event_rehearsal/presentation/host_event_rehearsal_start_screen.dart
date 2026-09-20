@@ -8,7 +8,7 @@ import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_co
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_copy.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_entry_view_model.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_customise_sheet.dart';
-import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_entry_view.dart';
+import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_entry_scaffold.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_source_sheet.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/route_contract.dart';
@@ -56,8 +56,8 @@ class _HostEventRehearsalStartScreenState
       errorContext: AppErrorContext.event,
       onRetry: () => ref.invalidate(provider),
       loadingBuilder: (_) =>
-          const EventRehearsalEntryLoadState(child: CatchLoadingIndicator()),
-      errorBuilder: (_, error, stack, retry) => EventRehearsalEntryLoadState(
+          const EventRehearsalEntryStateScaffold(child: CatchLoadingIndicator()),
+      errorBuilder: (_, error, stack, retry) => EventRehearsalEntryStateScaffold(
         child: CatchLocalizedErrorState(
           error,
           context: AppErrorContext.event,
@@ -72,7 +72,7 @@ class _HostEventRehearsalStartScreenState
                     organizerDefaults: data.organizerDefaults,
                   )
                 : data.initialConfiguration);
-        return EventRehearsalEntryView(
+        return EventRehearsalEntryScaffold(
           configuration: configuration,
           isPending: _loadingSource || mutation.isPending,
           onChooseSource: () => _chooseSource(data, configuration),
@@ -197,8 +197,8 @@ class _HostEventRehearsalStartScreenState
   }
 }
 
-class EventRehearsalEntryLoadState extends StatelessWidget {
-  const EventRehearsalEntryLoadState({super.key, required this.child});
+class EventRehearsalEntryStateScaffold extends StatelessWidget {
+  const EventRehearsalEntryStateScaffold({super.key, required this.child});
   final Widget child;
 
   @override

@@ -63,7 +63,9 @@ Future<EventRehearsalEntryData> eventRehearsalEntry(
   if (sourceEventId != null && explicitSource == null) {
     throw const DocumentNotFoundException('rehearsal source event');
   }
-  final source = explicitSource ?? events.firstOrNull;
+  // Event practice is an explicit entry choice. Custom practice must not
+  // depend on the first upcoming event's plan or roster being readable.
+  final source = explicitSource;
   if (source != null && source.organizerId != organizerId) {
     throw const PermissionException(
       'This event does not belong to the rehearsal organizer.',

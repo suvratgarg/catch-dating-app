@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_choice.dart';
+import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_choice_tile.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -21,7 +21,7 @@ class EventRehearsalStartSheet extends StatelessWidget {
     child: Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        EventRehearsalChoice(
+        EventRehearsalChoiceTile(
           key: const ValueKey<String>('rehearsal-start-upcoming'),
           title: context.l10n.hostRehearsalStartUpcoming(title: event.title),
           description: context.l10n.hostRehearsalStartUpcomingDescription(
@@ -33,7 +33,7 @@ class EventRehearsalStartSheet extends StatelessWidget {
           ).pop(EventRehearsalStartChoice.upcomingEvent),
         ),
         const CatchDivider.section(),
-        EventRehearsalChoice(
+        EventRehearsalChoiceTile(
           key: const ValueKey<String>('rehearsal-start-custom'),
           title: context.l10n.hostRehearsalStartCustom,
           description: context.l10n.hostRehearsalStartCustomDescription,

@@ -1,13 +1,13 @@
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_configuration.dart';
-import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_entry_content.dart';
+import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_entry_page_body.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
 /// The rehearsal entry view, with a single start action and optional editors.
 /// The route controller supplies source loading, persistence and navigation.
-class EventRehearsalEntryView extends StatelessWidget {
-  const EventRehearsalEntryView({
+class EventRehearsalEntryScaffold extends StatelessWidget {
+  const EventRehearsalEntryScaffold({
     super.key,
     required this.configuration,
     required this.onChooseSource,
@@ -48,7 +48,7 @@ class EventRehearsalEntryView extends StatelessWidget {
               CatchSectionListItem(
                 child: CatchSection.plain(
                   padding: EdgeInsets.zero,
-                  child: EventRehearsalEntryContent(
+                  child: EventRehearsalEntryPageBody(
                     configuration: configuration,
                     onChooseSource: isPending ? null : onChooseSource,
                     onChooseScenario: isPending ? null : onChooseScenario,
