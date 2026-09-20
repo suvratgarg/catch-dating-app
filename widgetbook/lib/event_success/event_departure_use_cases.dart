@@ -88,7 +88,7 @@ class _DeparturePreviewState extends State<_DeparturePreview> {
     future: _fixtures,
     builder: (context, value) {
       if (value.hasError) return Text('Preview unavailable: ${value.error}');
-      if (!value.hasData) return const CatchSkeleton.rows();
+      if (!value.hasData) return const CatchLoadingIndicator();
       final repository = DeparturePreviewPracticeRepository(value.requireData);
       final rehearsal = repository.snapshot;
       final runtime = buildEventRehearsalRuntimeProjection(

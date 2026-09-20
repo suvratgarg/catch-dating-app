@@ -6,18 +6,27 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
 class Recommendations extends StatelessWidget {
-  const Recommendations({super.key, required this.recommendations, this.title});
+  const Recommendations({super.key, required this.recommendations, this.title})
+    : _loading = false;
+
+  const Recommendations.loading({super.key, this.title})
+    : recommendations = const [],
+      _loading = true;
 
   final List<ExploreEventRecommendation> recommendations;
   final String? title;
+  final bool _loading;
 
   @override
   Widget build(BuildContext context) {
     return CatchSection.horizontal(
       title: title ?? context.l10n.exploreRecommendationsTitleForYou,
-      itemCount: recommendations.length,
-      itemBuilder: (context, i) =>
-          RecommendCard.fromRecommendation(recommendation: recommendations[i]),
+      itemCount: _loading ? 2 : recommendations.length,
+      itemBuilder: (context, i) => _loading
+          ? RecommendCard.loading()
+          : RecommendCard.fromRecommendation(
+              recommendation: recommendations[i],
+            ),
       height: null,
       spacing: CatchLayout.recommendationRailGap,
       itemWidth: const CatchRailItemWidth.fractional(

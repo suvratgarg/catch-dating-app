@@ -1,14 +1,9 @@
 part of '../host_operations_screen.dart';
 
 class HostLoadingScreen extends StatelessWidget {
-  const HostLoadingScreen({
-    super.key,
-    required this.title,
-    this.showTabRail = false,
-  });
+  const HostLoadingScreen({super.key, required this.title});
 
   final String title;
-  final bool showTabRail;
 
   @override
   Widget build(BuildContext context) {
@@ -19,11 +14,8 @@ class HostLoadingScreen extends StatelessWidget {
             ? CatchTopBarEmphasis.divided
             : CatchTopBarEmphasis.plain,
       ),
-      body: CatchRouteBody.standardViewport(
-        child: HostRouteLoadingBody(
-          showTabRail: showTabRail,
-          padding: EdgeInsets.zero,
-        ),
+      body: const CatchRouteBody.standardViewport(
+        child: CatchStateViewport.loading(accountForBottomOverlay: false),
       ),
     );
   }

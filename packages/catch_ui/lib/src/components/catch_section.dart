@@ -323,6 +323,58 @@ class CatchSection extends StatelessWidget {
     ),
   );
 
+  /// Box placeholders with the same Field and Section geometry as [rows].
+  factory CatchSection.loadingRows({
+    Key? key,
+    String? title,
+    Object? count,
+    Widget? trailing,
+    required List<CatchFieldLayout> layouts,
+    bool navigable = true,
+  }) => CatchSection._rows(
+    key: key,
+    title: title,
+    rowSection: CatchRowSection(
+      title: title,
+      count: count,
+      trailing: trailing,
+      loading: true,
+      children: [
+        for (final layout in layouts)
+          CatchField.loading(content: layout, navigable: navigable),
+      ],
+    ),
+  );
+
+  /// Collection sort/filter controls with both section-owned boundary rules.
+  factory CatchSection.controls({
+    Key? key,
+    required Widget leading,
+    Widget? trailing,
+  }) => CatchSection._rows(
+    key: key,
+    rowSection: CatchContentSection(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const CatchDivider.section(),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: CatchSpacing.s3),
+            child: Wrap(
+              alignment: WrapAlignment.spaceBetween,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              spacing: CatchSpacing.s4,
+              runSpacing: CatchSpacing.s2,
+              children: [leading, ?trailing],
+            ),
+          ),
+          const CatchDivider.section(),
+        ],
+      ),
+    ),
+  );
+
   /// One rounded exterior containing full-width internal row bands.
   factory CatchSection.containedRows({
     Key? key,
@@ -339,6 +391,31 @@ class CatchSection extends StatelessWidget {
       trailing: trailing,
       contained: true,
       children: children,
+    ),
+  );
+
+  /// Rounded collection placeholders with the same Section and Field
+  /// geometry as [containedRows]. The value layout is the only variable.
+  factory CatchSection.containedLoadingRows({
+    Key? key,
+    String? title,
+    Object? count,
+    Widget? trailing,
+    required List<CatchFieldLayout> layouts,
+    bool navigable = true,
+  }) => CatchSection._rows(
+    key: key,
+    title: title,
+    rowSection: CatchRowSection(
+      title: title,
+      count: count,
+      trailing: trailing,
+      contained: true,
+      loading: true,
+      children: [
+        for (final layout in layouts)
+          CatchField.loading(content: layout, navigable: navigable),
+      ],
     ),
   );
 
@@ -398,6 +475,32 @@ class CatchSection extends StatelessWidget {
       itemCount: itemCount,
       itemBuilder: itemBuilder,
       indexForKeyBuilder: indexForKeyBuilder,
+    ),
+  );
+
+  /// Lazy placeholders rendered through the same Field and Section geometry
+  /// as [sliverRows]. Only the passive value layout is caller-configurable.
+  factory CatchSection.sliverLoadingRows({
+    Key? key,
+    String? title,
+    Object? count,
+    Widget? trailing,
+    int itemCount = 3,
+    required CatchFieldLayout Function(BuildContext, int) layoutBuilder,
+    bool navigable = true,
+  }) => CatchSection._rows(
+    key: key,
+    title: title,
+    rowSection: CatchRowSection.sliver(
+      title: title,
+      count: count,
+      trailing: trailing,
+      itemCount: itemCount,
+      loading: true,
+      itemBuilder: (context, index) => CatchField.loading(
+        content: layoutBuilder(context, index),
+        navigable: navigable,
+      ),
     ),
   );
 

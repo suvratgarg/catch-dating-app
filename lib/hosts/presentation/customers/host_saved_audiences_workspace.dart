@@ -104,8 +104,20 @@ class _HostSavedAudiencesDirectoryState
           onRetry: () =>
               ref.invalidate(hostAllSavedAudiencesProvider(organizerId)),
           initialLoadTimeout: null,
-          loadingBuilder: (_) =>
-              const SliverToBoxAdapter(child: CatchSkeleton.rows(count: 4)),
+          loadingBuilder: (_) => CatchSection.sliverLoadingRows(
+            title: context.l10n.hostSavedAudiencesManage,
+            trailing: CatchButton.text(
+              key: const ValueKey('host-saved-audience-create'),
+              label: context.l10n.hostSavedAudienceNew,
+              onPressed: onCreate,
+            ),
+            itemCount: 4,
+            layoutBuilder: (_, _) => CatchRecordLayout.placeholder(
+              icon: CatchIcons.groupsOutlined,
+              hasMetadata: true,
+              factCount: 1,
+            ),
+          ),
           errorBuilder: (_, error, _, onBoundaryRetry) =>
               CatchLocalizedSliverErrorState(
                 error,

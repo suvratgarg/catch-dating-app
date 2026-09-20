@@ -228,7 +228,7 @@ class _AssistancePreviewState extends State<_AssistancePreview> {
       if (value.hasError) {
         return Text('Could not load assistance preview: ${value.error}');
       }
-      if (!value.hasData) return const CatchSkeleton.rows();
+      if (!value.hasData) return const CatchLoadingIndicator();
       final repository = AssistancePreviewPracticeRepository(value.requireData);
       final rehearsal = repository.snapshot;
       final event = EventSuccessCompanionFixtures.socialEvent;

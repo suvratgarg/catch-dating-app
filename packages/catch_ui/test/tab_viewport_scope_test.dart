@@ -93,4 +93,53 @@ void main() {
       EdgeInsets.zero,
     );
   });
+
+  testWidgets('loading centers in the unobstructed bounded body', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: SizedBox(
+          height: 600,
+          child: CatchTabViewportScope(
+            index: 0,
+            bottomBarPlacement: CatchTabViewportScopePlacement.floating,
+            bottomOverlayInset: 80,
+            child: const CatchStateViewport.loading(),
+          ),
+        ),
+      ),
+    );
+
+    final viewport = tester.getRect(find.byType(CatchStateViewport));
+    final progress = tester.getCenter(find.byType(CircularProgressIndicator));
+    expect(progress.dy, closeTo(viewport.top + (viewport.height - 80) / 2, 1));
+  });
+
+  testWidgets('sliver loading centers below persistent content', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: CatchTabViewportScope(
+          index: 0,
+          bottomBarPlacement: CatchTabViewportScopePlacement.floating,
+          bottomOverlayInset: 80,
+          child: CustomScrollView(
+            slivers: const [
+              SliverToBoxAdapter(child: SizedBox(height: 100)),
+              CatchStateViewport.sliverLoading(),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    final viewport = tester.getRect(find.byType(CustomScrollView));
+    final progress = tester.getCenter(find.byType(CircularProgressIndicator));
+    expect(
+      progress.dy,
+      closeTo(viewport.top + 100 + (viewport.height - 100 - 80) / 2, 1),
+    );
+  });
 }

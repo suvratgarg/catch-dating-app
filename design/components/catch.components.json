@@ -70,9 +70,13 @@
         "plain",
         "horizontal",
         "rows",
+        "loadingRows",
         "containedRows",
+        "containedLoadingRows",
         "content",
-        "sliverRows"
+        "sliverRows",
+        "sliverLoadingRows",
+        "controls"
       ],
       "slots": [
         "title",
@@ -2538,7 +2542,7 @@
               {
                 "name": "Optional Label",
                 "type": "TEXT",
-                "defaultValue": " \u00b7 Optional",
+                "defaultValue": " · Optional",
                 "sourceProps": [
                   "labelMode"
                 ]
@@ -4210,7 +4214,7 @@
           "Press feedback begins on header pointer down; disclosure ownership transfers once on pointer up. The full-row disclosure drawer is a sibling below that header, so nested chips, steppers, and commit buttons cannot trigger header press tint and retain complete hit/focus geometry. Coordinated pressed and active layers use one contextual silhouette: standalone and divided fields paint a rounded tint plus outline, while contained rows paint rectangular internal bands beneath one section-owned group clip. CatchFieldGeometryScope separately publishes content-gutter ownership, interaction bleed, and interaction-shape ownership; divided rows retain their tile overlap, while contained edge rows overlap the section's consumed border inset by exactly one hairline so both primitives paint one shared left/right edge. Explicit-save tap-away cancels on pointer up only when movement remains within touch slop, while drag/scroll leaves the field open and loading blocks Cancel or Escape. Ordinary inputs retain Flutter's shared EditableText tap group for affiliated actions and place the native cursor during the first gesture. A closed explicit-save input transfers native focus when its drawer reveal completes so keyboard viewport relayout cannot compete with disclosure motion; an editor built already open focuses immediately, and a direct input tap during reveal may still focus intentionally. Disclosure content stays mounted behind a clipped height-factor plus opacity reveal, uses CatchMotion.base, and becomes instantaneous when reduced motion is enabled.",
           "CatchField.content always owns title/supporting-copy typography. Its default body emphasis preserves the React handoff's top-aligned leading/trailing slots; callers may opt into title emphasis when a combined content block and trailing action should center together.",
           "Choice chips compose CatchChip.selectable in a full-width wrapping group with an 8 px gap between allocated targets. Labels wrap naturally and compact visuals can sit within larger platform hit boxes. Explicit-save choices preserve staged selection until Done; a single choice without a save bar closes after 180 ms. Steppers center fieldRowTitle values between platform-sized repeat targets while preserving the 16 px visual circle-to-value gap. Toggle tracks remain 44 by 26 px inside platform-sized targets and stay visible but disabled while saving.",
-          "CatchField.choices owns collapsed choice summaries when body is omitted: selected values are filtered in source option order and joined with ' \u00b7 '. An explicit body remains the compatibility override for custom formatting.",
+          "CatchField.choices owns collapsed choice summaries when body is omitted: selected values are filtered in source option order and joined with ' · '. An explicit body remains the compatibility override for custom formatting.",
           "CatchField.optionCards is the single-select explanatory counterpart to choices: the collapsed row derives the selected title, while every expanded option keeps its title and description inside one full-width CatchChoiceTile target. Use chips only when labels are terse and do not need per-option explanation.",
           "isOptional is visible and semantic copy only. allowEmptySelection independently governs whether the final selected option may be removed for single- and multi-choice controls.",
           "Every empty inactive editable row uses one canonical value lane: primary 14/600 'Add {field}' plus an optional inline ink3/500 suffix, with no separate caption. Direct and explicit-save text paths keep the same native editable mounted behind that presentation; focus restores the caption, input-only hint, and input-only units without a second tap or cursor reset. Addable disclosures use the same typography, row height, and icon alignment.",
@@ -4390,11 +4394,29 @@
             "trailing",
             "children"
           ],
+          "CatchSection.loadingRows": [
+            "title",
+            "count",
+            "trailing",
+            "layouts",
+            "navigable"
+          ],
+          "CatchSection.controls": [
+            "leading",
+            "trailing"
+          ],
           "CatchSection.containedRows": [
             "title",
             "count",
             "trailing",
             "children"
+          ],
+          "CatchSection.containedLoadingRows": [
+            "title",
+            "count",
+            "trailing",
+            "layouts",
+            "navigable"
           ],
           "CatchSection.formRows": [
             "title",
@@ -4415,6 +4437,14 @@
             "itemCount",
             "itemBuilder",
             "indexForKeyBuilder"
+          ],
+          "CatchSection.sliverLoadingRows": [
+            "title",
+            "count",
+            "trailing",
+            "itemCount",
+            "layoutBuilder",
+            "navigable"
           ]
         },
         "props": [
@@ -4621,6 +4651,35 @@
             "required": false,
             "dartType": "IndexedWidgetBuilder",
             "notes": "sliverRows requires a CatchField return; horizontal accepts arbitrary bounded rail content."
+          },
+          {
+            "name": "layoutBuilder",
+            "type": "callback",
+            "required": false,
+            "dartType": "CatchFieldLayout Function(BuildContext, int)",
+            "notes": "sliverLoadingRows supplies only passive row anatomy; Section and Field own loading paint and geometry."
+          },
+          {
+            "name": "layouts",
+            "type": "list",
+            "required": false,
+            "dartType": "List<CatchFieldLayout>",
+            "notes": "loadingRows supplies passive row anatomy, never a second placeholder tree."
+          },
+          {
+            "name": "leading",
+            "type": "widget",
+            "required": false,
+            "dartType": "Widget",
+            "notes": "controls only; the Section owns both boundaries and content gutter."
+          },
+          {
+            "name": "navigable",
+            "type": "bool",
+            "required": false,
+            "default": true,
+            "dartType": "bool",
+            "notes": "Loading rows reserve a disclosure slot without enabling interaction."
           },
           {
             "name": "height",
@@ -5123,8 +5182,12 @@
           "CatchSection.plain",
           "CatchSection.horizontal",
           "CatchSection.rows",
+          "CatchSection.loadingRows",
+          "CatchSection.controls",
           "CatchSection.containedRows",
+          "CatchSection.containedLoadingRows",
           "CatchSection.sliverRows",
+          "CatchSection.sliverLoadingRows",
           "CatchSection.content",
           "CatchSection.formRows"
         ]
@@ -5148,7 +5211,7 @@
       "name": "CatchSkeleton",
       "status": "active",
       "kind": "pattern",
-      "summary": "Content-shaped placeholder concept for known loading layouts, including structure-derived content and list/screen/sliver placement adapters.",
+      "summary": "Content-shaped loading paint derived from the real composition, with leaf placeholders for unresolved values.",
       "dart": {
         "symbol": "CatchSkeleton",
         "file": "packages/catch_ui/lib/src/patterns/catch_skeleton.dart",
@@ -5159,13 +5222,7 @@
           "CatchSkeleton.textBlock",
           "CatchSkeleton.circle",
           "CatchSkeleton.custom",
-          "CatchSkeleton.content",
-          "CatchSkeleton.cards",
-          "CatchSkeleton.rows",
-          "CatchSkeleton.boxes",
-          "CatchSkeleton.chips",
-          "CatchSkeleton.mediaRows",
-          "CatchSkeleton.iconRows"
+          "CatchSkeleton.content"
         ]
       },
       "design": {
@@ -5212,20 +5269,6 @@
             "type": "number",
             "required": false,
             "dartType": "double"
-          },
-          {
-            "name": "count",
-            "type": "number",
-            "required": false,
-            "default": 3,
-            "dartType": "int"
-          },
-          {
-            "name": "scrollable",
-            "type": "bool",
-            "required": false,
-            "default": true,
-            "dartType": "bool"
           }
         ],
         "states": [
@@ -5235,13 +5278,7 @@
           "text-block",
           "circle",
           "custom",
-          "derived-content",
-          "list",
-          "rows",
-          "box-row",
-          "chips",
-          "async-screen",
-          "async-sliver"
+          "derived-content"
         ],
         "slots": [
           {
@@ -5266,78 +5303,10 @@
           "CatchSkeleton.textBlock",
           "CatchSkeleton.circle",
           "CatchSkeleton.custom",
-          "CatchSkeleton.content",
-          "CatchSkeleton.cards",
-          "CatchSkeleton.rows",
-          "CatchSkeleton.boxes",
-          "CatchSkeleton.chips",
-          "CatchScreenSkeleton",
-          "CatchSliverSkeleton",
-          "CatchPageBody.screen",
-          "CatchPageBody.sliver",
-          "CatchSkeleton.mediaRows",
-          "CatchSkeleton.iconRows"
+          "CatchSkeleton.content"
         ],
         "goldens": [],
-        "members": [
-          {
-            "id": "catch.skeleton.async_screen",
-            "symbol": "CatchScreenSkeleton",
-            "file": "packages/catch_ui/lib/src/patterns/catch_screen_skeleton.dart",
-            "summary": "Screen-body placement adapter that composes CatchSkeleton.cards with CatchPageBody.screen.",
-            "states": [
-              "async-screen",
-              "scrollable",
-              "non-scroll",
-              "custom-count",
-              "custom-height"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.skeleton",
-              "parentConceptId": "catch.skeleton",
-              "qualifier": "adapter",
-              "decisionRef": "pattern-family:loading-concept-decompression"
-            },
-            "level": "L4",
-            "roleNoun": "Skeleton",
-            "naming": {
-              "useCase": "Screen",
-              "comparedWith": [
-                "catch.skeleton"
-              ],
-              "reason": "Owns the screen-body scroll and content inset protocol around card placeholders; the base skeleton supplies no page geometry."
-            }
-          },
-          {
-            "id": "catch.skeleton.async_sliver",
-            "symbol": "CatchSliverSkeleton",
-            "file": "packages/catch_ui/lib/src/patterns/catch_sliver_skeleton.dart",
-            "summary": "Sliver placement adapter that composes CatchSkeleton.cards with CatchPageBody.sliver.",
-            "states": [
-              "async-sliver",
-              "custom-padding",
-              "custom-count",
-              "custom-height"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.skeleton",
-              "parentConceptId": "catch.skeleton",
-              "qualifier": "adapter",
-              "decisionRef": "pattern-family:loading-concept-decompression"
-            },
-            "level": "L4",
-            "roleNoun": "Skeleton",
-            "naming": {
-              "useCase": "Sliver",
-              "comparedWith": [
-                "catch.skeleton"
-              ],
-              "reason": "Supplies a RenderSliver through the page-body sliver protocol with caller padding; the base skeleton produces box content."
-            }
-          }
-        ],
+        "members": [],
         "accessibility": {
           "largeText": {
             "minimumScale": 2,
@@ -5361,7 +5330,7 @@
           "Prefer content-shaped skeletons when the eventual layout is known.",
           "Both explicit shapes and derived layouts use the same Skeletonizer effect, token colors, motion duration, static reduced-motion fallback, and loading semantics.",
           "Prefer CatchSkeleton.content for detail or form layouts whose loaded composition can be rendered with representative placeholder data.",
-          "Async screen and sliver loading are placement adapters over CatchSkeleton.cards, not separate visual concepts."
+          "Repeated content loads through CatchSection and its real Field layout; unresolved page structure uses CatchStateViewport.loading or sliverLoading."
         ]
       },
       "governance": {

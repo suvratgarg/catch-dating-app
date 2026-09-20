@@ -4,7 +4,7 @@
   "source": {
     "path": "lib/routing/route_contract.dart",
     "runtimePath": "lib/routing/go_router.dart",
-    "normalizedFileSha256": "5ae8091efe6e0b91e7e012f069b3baa0eeab4d57576ef639aad68f811322047a",
+    "normalizedFileSha256": "ef21c8efca9bd232c91ccec3d293307fb1cb03ff9c60e2ff7d78d45110faeab3",
     "routeContractSha256": "201100c69a1d9af09e2701ec817a5abe998e8d9171d1634df6cbf75922c6c234",
     "goRouteCount": 86,
     "shellBranchCount": 9,

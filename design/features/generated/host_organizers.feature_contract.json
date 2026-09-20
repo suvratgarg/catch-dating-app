@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_organizers.feature.json",
   "generatedFor": "2026-09-14",
   "sourceDigest": "sha256:6c41a73eac567f3d8d4bce13909d58c1fb028049c7c73ee0f1c393a13aa8ea5e",
-  "resolvedDigest": "sha256:03f4ec0b66d85f91f4a340f989df7f76ec7f3d5afbbade921013c1f218ab4cb5",
+  "resolvedDigest": "sha256:244b8032050450e7837929b423c3d2b4f3eba66cfebfc0c89964f701770f2883",
   "feature": {
     "id": "feature.host_organizers",
     "name": "Host Organizers",
@@ -5293,8 +5293,12 @@
                 "CatchSection.plain",
                 "CatchSection.horizontal",
                 "CatchSection.rows",
+                "CatchSection.loadingRows",
+                "CatchSection.controls",
                 "CatchSection.containedRows",
+                "CatchSection.containedLoadingRows",
                 "CatchSection.sliverRows",
+                "CatchSection.sliverLoadingRows",
                 "CatchSection.content",
                 "CatchSection.formRows"
               ]
@@ -5324,13 +5328,7 @@
                 "CatchSkeleton.textBlock",
                 "CatchSkeleton.circle",
                 "CatchSkeleton.custom",
-                "CatchSkeleton.content",
-                "CatchSkeleton.cards",
-                "CatchSkeleton.rows",
-                "CatchSkeleton.boxes",
-                "CatchSkeleton.chips",
-                "CatchSkeleton.mediaRows",
-                "CatchSkeleton.iconRows"
+                "CatchSkeleton.content"
               ]
             }
           },

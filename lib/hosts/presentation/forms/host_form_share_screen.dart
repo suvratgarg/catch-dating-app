@@ -54,169 +54,184 @@ class _HostFormShareScreenState extends ConsumerState<HostFormShareScreen> {
             ? CatchTopBarEmphasis.divided
             : CatchTopBarEmphasis.plain,
       ),
-      body: CatchRouteBody.standardConstrained(
-        child: CatchAsyncBoundary<HostFormShareAssets>(
-          value: ref.watch(provider),
-          onRetry: () => ref.invalidate(provider),
-          initialLoadTimeout: null,
-          loadingBuilder: (_) => const CatchSkeleton.rows(count: 5),
-          errorBuilder: (_, error, _, onBoundaryRetry) =>
-              CatchLocalizedErrorState(
-                error,
-                context: AppErrorContext.forms,
-                onRetry: onBoundaryRetry,
-              ),
-          builder: (context, assets) => Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              CatchAsyncBoundary<HostFormEditorState>(
-                value: ref.watch(editorProvider),
-                onRetry: () => ref.read(editorProvider.notifier).reload(),
-                loadingBuilder: (_) => const CatchSkeleton.rows(count: 1),
-                errorBuilder: (_, error, _, onBoundaryRetry) =>
-                    CatchLocalizedErrorState(
-                      error,
-                      context: AppErrorContext.forms,
-                      mode: CatchErrorStateMode.compact,
-                      onRetry: onBoundaryRetry,
-                    ),
-                builder: (context, editor) => Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      editor.editor.definition.title,
-                      style: CatchTextStyles.headline(context),
-                    ),
-                    gapH8,
-                    CatchBadge.status(
-                      label: hostFormStatusLabel(
-                        context,
-                        editor.editor.form.status,
-                      ),
-                      tone:
-                          editor.editor.form.status ==
-                              HostFormLifecycleStatus.published
-                          ? CatchBadgeTone.success
-                          : CatchBadgeTone.neutral,
-                    ),
-                  ],
-                ),
-              ),
-              gapH32,
-              CatchSection.divided(
-                title: context.l10n.hostFormCanonicalLink,
-                first: true,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    SelectableText(
-                      assets.canonicalUrl,
-                      style: CatchTextStyles.recordBody(context),
-                    ),
-                    gapH16,
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Builder(
-                            builder: (originContext) => CatchButton(
-                              label: context.l10n.hostFormShareLink,
-                              mode: CatchButtonMode.rounded,
-                              fullWidth: true,
-                              onPressed: () =>
-                                  _share(originContext, assets.canonicalUrl),
-                            ),
-                          ),
-                        ),
-                        gapW12,
-                        Expanded(
-                          child: CatchButton(
-                            label: context.l10n.hostFormCopyLink,
-                            mode: CatchButtonMode.rounded,
-                            fullWidth: true,
-                            variant: CatchButtonVariant.secondary,
-                            onPressed: () => _copy(
-                              assets.canonicalUrl,
-                              context.l10n.hostFormLinkCopied,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              gapH32,
-              CatchSection.fieldRows(
+      body: CatchRouteBody.standardConstrainedSlivers(
+        slivers: [
+          CatchAsyncBoundary<HostFormShareAssets>.sliver(
+            value: ref.watch(provider),
+            onRetry: () => ref.invalidate(provider),
+            initialLoadTimeout: null,
+            errorContext: AppErrorContext.forms,
+            builder: (context, assets) => SliverToBoxAdapter(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  CatchField.nav(
-                    copy: catchFieldCopy(context.l10n),
-                    title: context.l10n.hostAudienceShowQr,
-                    icon: CatchIcons.qrCode2Outlined,
-                    emphasis: CatchFieldEmphasis.title,
-                    onTap: () => _showQr(assets),
-                  ),
-                  CatchField.nav(
-                    copy: catchFieldCopy(context.l10n),
-                    title: _creatingLink
-                        ? context.l10n.hostAudienceCreatingLink
-                        : context.l10n.hostFormCreateTrackedLink,
-                    icon: CatchIcons.linkOutlined,
-                    emphasis: CatchFieldEmphasis.title,
-                    onTap: _creatingLink ? null : _createTrackedLink,
-                  ),
-                  CatchField.nav(
-                    copy: catchFieldCopy(context.l10n),
-                    title: context.l10n.hostFormEmbed,
-                    icon: CatchIcons.languageOutlined,
-                    emphasis: CatchFieldEmphasis.title,
-                    onTap: () => _showEmbed(assets),
-                  ),
-                ],
-              ),
-              if (_trackedLink case final link?) ...[
-                gapH24,
-                CatchSection.divided(
-                  title: link.label,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      SelectableText(
-                        link.url,
-                        style: CatchTextStyles.recordBody(context),
-                      ),
-                      gapH8,
-                      Wrap(
-                        spacing: CatchSpacing.s4,
-                        runSpacing: CatchSpacing.s2,
+                  CatchAsyncBoundary<HostFormEditorState>(
+                    value: ref.watch(editorProvider),
+                    onRetry: () => ref.read(editorProvider.notifier).reload(),
+                    loadingBuilder: (_) => CatchSkeleton.content(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          CatchButton.command(
-                            label: context.l10n.hostFormCopyLink,
-                            onPressed: () => _copy(
-                              link.url,
-                              context.l10n.hostFormLinkCopied,
-                            ),
+                          Text(
+                            context.l10n.hostFormShare,
+                            style: CatchTextStyles.headline(context),
                           ),
-                          Builder(
-                            builder: (originContext) => CatchButton.command(
-                              label: context.l10n.hostFormShareLink,
-                              onPressed: () => _share(originContext, link.url),
-                            ),
+                          gapH8,
+                          CatchBadge.status(
+                            label: context.l10n.hostFormShare,
                           ),
                         ],
                       ),
+                    ),
+                    errorBuilder: (_, error, _, onBoundaryRetry) =>
+                        CatchLocalizedErrorState(
+                          error,
+                          context: AppErrorContext.forms,
+                          mode: CatchErrorStateMode.compact,
+                          onRetry: onBoundaryRetry,
+                        ),
+                    builder: (context, editor) => Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          editor.editor.definition.title,
+                          style: CatchTextStyles.headline(context),
+                        ),
+                        gapH8,
+                        CatchBadge.status(
+                          label: hostFormStatusLabel(
+                            context,
+                            editor.editor.form.status,
+                          ),
+                          tone:
+                              editor.editor.form.status ==
+                                  HostFormLifecycleStatus.published
+                              ? CatchBadgeTone.success
+                              : CatchBadgeTone.neutral,
+                        ),
+                      ],
+                    ),
+                  ),
+                  gapH32,
+                  CatchSection.divided(
+                    title: context.l10n.hostFormCanonicalLink,
+                    first: true,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        SelectableText(
+                          assets.canonicalUrl,
+                          style: CatchTextStyles.recordBody(context),
+                        ),
+                        gapH16,
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: Builder(
+                                builder: (originContext) => CatchButton(
+                                  label: context.l10n.hostFormShareLink,
+                                  mode: CatchButtonMode.rounded,
+                                  fullWidth: true,
+                                  onPressed: () => _share(
+                                    originContext,
+                                    assets.canonicalUrl,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            gapW12,
+                            Expanded(
+                              child: CatchButton(
+                                label: context.l10n.hostFormCopyLink,
+                                mode: CatchButtonMode.rounded,
+                                fullWidth: true,
+                                variant: CatchButtonVariant.secondary,
+                                onPressed: () => _copy(
+                                  assets.canonicalUrl,
+                                  context.l10n.hostFormLinkCopied,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  gapH32,
+                  CatchSection.fieldRows(
+                    children: [
+                      CatchField.nav(
+                        copy: catchFieldCopy(context.l10n),
+                        title: context.l10n.hostAudienceShowQr,
+                        icon: CatchIcons.qrCode2Outlined,
+                        emphasis: CatchFieldEmphasis.title,
+                        onTap: () => _showQr(assets),
+                      ),
+                      CatchField.nav(
+                        copy: catchFieldCopy(context.l10n),
+                        title: _creatingLink
+                            ? context.l10n.hostAudienceCreatingLink
+                            : context.l10n.hostFormCreateTrackedLink,
+                        icon: CatchIcons.linkOutlined,
+                        emphasis: CatchFieldEmphasis.title,
+                        onTap: _creatingLink ? null : _createTrackedLink,
+                      ),
+                      CatchField.nav(
+                        copy: catchFieldCopy(context.l10n),
+                        title: context.l10n.hostFormEmbed,
+                        icon: CatchIcons.languageOutlined,
+                        emphasis: CatchFieldEmphasis.title,
+                        onTap: () => _showEmbed(assets),
+                      ),
                     ],
                   ),
-                ),
-              ],
-              gapH24,
-              Text(
-                context.l10n.hostFormCanonicalLinkHelp,
-                style: CatchTextStyles.supporting(context),
+                  if (_trackedLink case final link?) ...[
+                    gapH24,
+                    CatchSection.divided(
+                      title: link.label,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          SelectableText(
+                            link.url,
+                            style: CatchTextStyles.recordBody(context),
+                          ),
+                          gapH8,
+                          Wrap(
+                            spacing: CatchSpacing.s4,
+                            runSpacing: CatchSpacing.s2,
+                            children: [
+                              CatchButton.command(
+                                label: context.l10n.hostFormCopyLink,
+                                onPressed: () => _copy(
+                                  link.url,
+                                  context.l10n.hostFormLinkCopied,
+                                ),
+                              ),
+                              Builder(
+                                builder: (originContext) => CatchButton.command(
+                                  label: context.l10n.hostFormShareLink,
+                                  onPressed: () =>
+                                      _share(originContext, link.url),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                  gapH24,
+                  Text(
+                    context.l10n.hostFormCanonicalLinkHelp,
+                    style: CatchTextStyles.supporting(context),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }

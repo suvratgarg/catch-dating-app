@@ -587,17 +587,7 @@ class _RouteLoadingScreen extends StatelessWidget {
 
     return CatchScaffold.standalone(
       backgroundColor: t.bg,
-      body: CatchPageBody.screen(
-        variant: CatchPageBodyVariant.fixed,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            CatchSkeleton.text(width: CatchLayout.skeletonTextPageTitleWidth),
-            const SizedBox(height: CatchSpacing.s5),
-            const CatchSkeleton.mediaRows(divided: true),
-          ],
-        ),
-      ),
+      body: const CatchStateViewport.loading(accountForBottomOverlay: false),
     );
   }
 }

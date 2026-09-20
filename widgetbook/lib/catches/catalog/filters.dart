@@ -9,17 +9,17 @@ import 'preview.dart';
 
 @widgetbook.UseCase(
   name: 'Filters loading composition',
-  type: FiltersContentSkeleton,
+  type: FiltersContent,
   path: '[P1 product surfaces]/Catches/Sections',
 )
 Widget filtersContentSkeletonStates(BuildContext context) {
   return const WidgetbookPageCatalogFrame(
-    title: 'FiltersContentSkeleton',
+    title: 'FiltersContent.loading',
     contractId: 'screen.catches.filters.loading',
     children: [
       WidgetbookPageStateCard(
         label: 'loading',
-        child: WidgetbookCatchesDeviceFrame(child: FiltersContentSkeleton()),
+        child: WidgetbookCatchesDeviceFrame(child: FiltersContent.loading()),
       ),
     ],
   );

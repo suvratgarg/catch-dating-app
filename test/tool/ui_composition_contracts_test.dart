@@ -53,6 +53,29 @@ void main() {
     );
   });
 
+  test('accepts a section root with full-width section geometry', () {
+    final failures = evaluateLayoutOwnerContract(
+      screenId: 'screen.fixture',
+      owner: <String, Object?>{
+        'symbol': 'ExampleScreen',
+        'family': 'root',
+        'expression': 'CatchRootScreenScaffold.sections',
+        'bodyGeometry': 'fullBleed',
+        'topEdge': 'safe-area',
+      },
+      declarationSource: '''
+class ExampleScreen {
+  Object build() => CatchRootScreenScaffold.sections(
+    title: const Header(),
+    children: const [Rows()],
+  );
+}
+''',
+    );
+
+    expect(failures, isEmpty);
+  });
+
   test('accepts a governed standard route owner', () {
     final failures = evaluateLayoutOwnerContract(
       screenId: 'screen.fixture',

@@ -61,7 +61,16 @@ class _HostFormTemplatesScreenState
                       hostFormTemplatesProvider(widget.organizerId),
                     ),
                     initialLoadTimeout: null,
-                    loadingBuilder: (_) => const CatchSkeleton.rows(count: 7),
+                    loadingBuilder: (_) => CatchSection.containedLoadingRows(
+                      layouts: List.generate(
+                        7,
+                        (_) => CatchRecordLayout.placeholder(
+                          icon: CatchIcons.descriptionOutlined,
+                          hasMetadata: true,
+                          hasDescription: true,
+                        ),
+                      ),
+                    ),
                     errorBuilder: (_, error, _, onBoundaryRetry) =>
                         CatchLocalizedErrorState(
                           error,

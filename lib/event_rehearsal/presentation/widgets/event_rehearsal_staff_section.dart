@@ -72,7 +72,7 @@ class EventRehearsalStaffSection extends ConsumerWidget {
         value: page,
         initialLoadTimeout: null,
         onRetry: () => ref.read(query.notifier).reload(),
-        loadingBuilder: (_) => const CatchSkeleton.rows(count: 2),
+        loadingBuilder: (_) => const CatchLoadingIndicator(),
         errorBuilder: (_, error, _, retry) =>
             CatchLocalizedErrorBanner(error, onRetry: retry),
         builder: (context, review) {

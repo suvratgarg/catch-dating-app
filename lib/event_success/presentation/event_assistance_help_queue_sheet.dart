@@ -72,7 +72,7 @@ class _EventAssistanceHelpQueueSheetState
             value: ref.watch(provider),
             initialLoadTimeout: null,
             onRetry: () => ref.read(provider.notifier).reload(),
-            loadingBuilder: (_) => const CatchSkeleton.rows(),
+            loadingBuilder: (_) => const CatchLoadingIndicator(),
             errorBuilder: (_, error, _, retry) =>
                 CatchLocalizedErrorBanner(error, onRetry: retry),
             builder: (_, session) => EventAssistanceHelpQueueSection(

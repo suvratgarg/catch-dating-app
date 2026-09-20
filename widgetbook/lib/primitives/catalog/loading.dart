@@ -15,27 +15,6 @@ import '../../support/widgetbook_harness.dart';
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CatchSkeleton,
-  path: '[Core catalog]/Loading',
-)
-Widget catchSkeletonListCatalogStates(BuildContext context) {
-  return WidgetbookCatalogFrame(
-    title: 'CatchSkeleton.cards',
-    catalogId: 'core.widgets.catch_skeleton_list',
-    children: [
-      WidgetbookCatalogStateCard(
-        label: 'list',
-        child: CatchSkeleton.cards(
-          count: 3,
-          height: WidgetbookPreviewLayout.skeletonListItemHeight,
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Catalog states',
   type: CatchLoadingIndicator,
   path: '[Core catalog]/Loading',
 )
@@ -174,58 +153,6 @@ Widget catchAsyncValueSliverCatalogStates(BuildContext context) {
                     widgetbookCatalogSliverTextData(value),
                 onRetry: widgetbookNoop,
                 fillRemaining: false,
-              ),
-            ],
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Catalog states',
-  type: CatchScreenSkeleton,
-  path: '[Core catalog]/Loading',
-)
-Widget catchAsyncScreenLoadingCatalogStates(BuildContext context) {
-  return WidgetbookCatalogFrame(
-    title: 'CatchScreenSkeleton',
-    catalogId: 'core.widgets.catch_screen_skeleton',
-    children: const [
-      WidgetbookCatalogStateCard(
-        label: 'screen skeleton',
-        child: WidgetbookCatalogPhoneFrame(
-          height: WidgetbookPreviewLayout.startupViewportHeight,
-          child: CatchScreenSkeleton(
-            count: 4,
-            itemHeight: CatchLayout.skeletonCardCompactHeight,
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Catalog states',
-  type: CatchSliverSkeleton,
-  path: '[Core catalog]/Loading',
-)
-Widget catchAsyncSliverLoadingCatalogStates(BuildContext context) {
-  return WidgetbookCatalogFrame(
-    title: 'CatchSliverSkeleton',
-    catalogId: 'core.widgets.catch_sliver_skeleton',
-    children: const [
-      WidgetbookCatalogStateCard(
-        label: 'sliver skeleton',
-        child: SizedBox(
-          height: WidgetbookPreviewLayout.startupViewportHeight,
-          child: CustomScrollView(
-            slivers: [
-              CatchSliverSkeleton(
-                count: 4,
-                itemHeight: CatchLayout.skeletonCardCompactHeight,
               ),
             ],
           ),

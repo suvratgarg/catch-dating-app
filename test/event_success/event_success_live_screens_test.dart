@@ -26,7 +26,7 @@ import 'package:catch_dating_app/event_success/presentation/event_success_host_s
 import 'package:catch_dating_app/event_success/presentation/event_success_host_workspace_page_body.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_live_effects_controller.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_setup_body.dart';
-import 'package:catch_dating_app/event_success/presentation/host_components/event_success_host_section_skeleton.dart';
+import 'package:catch_dating_app/event_success/presentation/host_components/event_success_host_section_loading_page_body.dart';
 import 'package:catch_dating_app/event_success/presentation/host_components/event_success_host_tab_bar.dart';
 import 'package:catch_dating_app/event_success/presentation/host_live/event_success_host_live_page_body.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';

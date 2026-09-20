@@ -30,12 +30,6 @@ Widget catchSkeletonContractStates(BuildContext context) {
       'circle',
       'custom',
       'derived-content',
-      'list',
-      'rows',
-      'box-row',
-      'chips',
-      'async-screen',
-      'async-sliver',
     ],
     children: [
       WidgetbookContractStateCard(
@@ -95,54 +89,6 @@ Widget catchSkeletonContractStates(BuildContext context) {
                 copy: catchFieldCopy(context.l10n),
                 title: 'Mobile number',
                 body: '+919876543210',
-              ),
-            ],
-          ),
-        ),
-      ),
-      const WidgetbookContractStateCard(
-        label: 'list',
-        child: CatchSkeleton.cards(
-          count: 3,
-          height: WidgetbookPreviewLayout.skeletonListItemHeight,
-        ),
-      ),
-      const WidgetbookContractStateCard(
-        label: 'rows',
-        child: CatchSkeleton.rows(count: 2),
-      ),
-      const WidgetbookContractStateCard(
-        label: 'box-row',
-        child: CatchSkeleton.boxes(
-          count: 3,
-          height: CatchLayout.controlCompactMinHeight,
-          radius: CatchRadius.sm,
-          gap: CatchSpacing.s2,
-        ),
-      ),
-      const WidgetbookContractStateCard(
-        label: 'chips',
-        child: CatchSkeleton.chips(),
-      ),
-      const WidgetbookContractStateCard(
-        label: 'async-screen',
-        child: SizedBox(
-          height: WidgetbookPreviewLayout.routeViewportHeight,
-          child: CatchScreenSkeleton(
-            count: 2,
-            itemHeight: WidgetbookPreviewLayout.skeletonListItemHeight,
-          ),
-        ),
-      ),
-      const WidgetbookContractStateCard(
-        label: 'async-sliver',
-        child: SizedBox(
-          height: WidgetbookPreviewLayout.routeViewportHeight,
-          child: CustomScrollView(
-            slivers: [
-              CatchSliverSkeleton(
-                count: 2,
-                itemHeight: WidgetbookPreviewLayout.skeletonListItemHeight,
               ),
             ],
           ),

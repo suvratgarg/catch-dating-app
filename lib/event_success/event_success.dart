@@ -63,7 +63,7 @@ export 'presentation/host_components/event_success_activity_field_lanes.dart'; /
 export 'presentation/host_components/event_success_compatibility_section.dart'; // public-api: shared presentation contract used outside this feature
 export 'presentation/host_components/event_success_host_help_section.dart'; // public-api: shared presentation contract used outside this feature
 export 'presentation/host_components/event_success_host_resource_error_state.dart'; // public-api: shared presentation contract used outside this feature
-export 'presentation/host_components/event_success_host_section_skeleton.dart'; // public-api: Host presentation contract used outside this feature
+export 'presentation/host_components/event_success_host_section_loading_page_body.dart'; // public-api: Host presentation contract used outside this feature
 export 'presentation/host_components/event_success_host_tab_bar.dart'; // public-api: shared presentation contract used outside this feature
 export 'presentation/host_components/event_success_host_tab_page_body.dart'; // public-api: shared presentation contract used outside this feature
 export 'presentation/host_components/event_success_live_workspace_tab_bar.dart'; // public-api: shared presentation contract used outside this feature

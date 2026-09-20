@@ -54,7 +54,8 @@ class CatchAsyncBoundary<T> extends StatefulWidget {
   final Set<CatchAsyncBoundaryMode> retainDataOn;
   final Duration? initialLoadTimeout;
 
-  /// Applies only to the default sliver error, not caller-owned sliver builders.
+  /// Applies to default sliver loading and error states, not caller-owned
+  /// builders.
   final bool fillRemaining;
   final bool _sliver;
 
@@ -125,9 +126,10 @@ class _CatchAsyncBoundaryState<T> extends State<CatchAsyncBoundary<T>> {
       case CatchAsyncBoundaryStatus.loading:
         final custom = widget.loadingBuilder?.call(context);
         if (custom != null) return custom;
-        return widget._sliver
-            ? const SliverToBoxAdapter(child: CatchLoadingIndicator())
-            : const CatchLoadingIndicator();
+        if (!widget._sliver) return const CatchLoadingIndicator();
+        return widget.fillRemaining
+            ? const CatchStateViewport.sliverLoading()
+            : const SliverToBoxAdapter(child: CatchLoadingIndicator());
       case CatchAsyncBoundaryStatus.error:
         final error = _timedOut
             ? catchAsyncInitialLoadTimeoutException

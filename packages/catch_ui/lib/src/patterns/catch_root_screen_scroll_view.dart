@@ -40,6 +40,7 @@ class CatchRootScreenScrollView extends StatelessWidget {
   }) : _title = title,
        _primaryRailHeader = null,
        bodyLayout = CatchPageBodyMode.standard,
+       _sectionRhythm = false,
        children = children,
        actions = null,
        body = null,
@@ -62,6 +63,31 @@ class CatchRootScreenScrollView extends StatelessWidget {
   }) : _title = title,
        _primaryRailHeader = null,
        bodyLayout = CatchPageBodyMode.fullBleed,
+       _sectionRhythm = false,
+       children = children,
+       actions = null,
+       body = null,
+       constrainToContentWidth = false,
+       maxContentExtent = CatchLayout.screenPageMaxExtent,
+       assert(children.length > 0);
+
+  /// Section-composed root: full-width rows with the standard title-to-body gap.
+  const CatchRootScreenScrollView.sections({
+    super.key,
+    required Widget title,
+    required List<Widget> children,
+    this.scrollKey,
+    this.controller,
+    this.physics,
+    this.primary,
+    this.onRefresh,
+    this.semanticsLabel,
+    this.semanticsHint,
+    this.topEdge = CatchRootScreenScrollViewPlacement.safeArea,
+  }) : _title = title,
+       _primaryRailHeader = null,
+       bodyLayout = CatchPageBodyMode.fullBleed,
+       _sectionRhythm = true,
        children = children,
        actions = null,
        body = null,
@@ -86,6 +112,7 @@ class CatchRootScreenScrollView extends StatelessWidget {
        _primaryRailHeader = header,
        actions = actions,
        bodyLayout = null,
+       _sectionRhythm = false,
        children = null,
        primary = null,
        onRefresh = null,
@@ -95,6 +122,7 @@ class CatchRootScreenScrollView extends StatelessWidget {
   final Widget? _title;
   final CatchRootScreenHeader? _primaryRailHeader;
   final CatchPageBodyMode? bodyLayout;
+  final bool _sectionRhythm;
 
   /// Sliver children of the standard/fullBleed recipes; the rail recipe uses body.
   final List<Widget>? children;
@@ -128,6 +156,10 @@ class CatchRootScreenScrollView extends StatelessWidget {
           SliverToBoxAdapter(child: _title!),
           if (statuses.isNotEmpty)
             PinnedHeaderSliver(child: CatchBanner.statuses(statuses: statuses)),
+          if (_sectionRhythm)
+            const SliverToBoxAdapter(
+              child: SizedBox(height: CatchSpacing.screenPt),
+            ),
           CatchPageBody.slivers(
             mode: bodyLayout!,
             constrainToContentWidth: constrainToContentWidth,

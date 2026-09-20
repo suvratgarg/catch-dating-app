@@ -10,6 +10,35 @@ import 'package:flutter_test/flutter_test.dart';
 import '../test_pump_helpers.dart';
 
 void main() {
+  for (final fillRemaining in [true, false]) {
+    testWidgets('default sliver loading honors fillRemaining: $fillRemaining', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: CustomScrollView(
+              slivers: [
+                CatchAsyncBoundary<int>.sliver(
+                  value: const AsyncLoading<int>(),
+                  initialLoadTimeout: null,
+                  fillRemaining: fillRemaining,
+                  builder: (_, value) =>
+                      SliverToBoxAdapter(child: Text('$value')),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+      expect(
+        find.byType(CatchStateViewport),
+        fillRemaining ? findsOneWidget : findsNothing,
+      );
+      expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    });
+  }
+
   test('retention conditions preserve each async branch independently', () {
     final error = StateError('Failed');
     const data = AsyncData<int>(7);

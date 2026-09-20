@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
@@ -15,6 +17,29 @@ import 'package:flutter_test/flutter_test.dart';
 import '../events/events_test_helpers.dart';
 
 void main() {
+  testWidgets('Catches loading preserves its header and centers progress', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(390, 844);
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final uid = StreamController<String?>();
+    addTearDown(uid.close);
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [uidProvider.overrideWith((ref) => uid.stream)],
+        child: MaterialApp(theme: AppTheme.light, home: const SwipeHubScreen()),
+      ),
+    );
+
+    final header = tester.getRect(find.byType(CatchScreenHeader));
+    final progress = tester.getCenter(find.byType(CircularProgressIndicator));
+    expect(find.byType(CatchStateViewport), findsOneWidget);
+    expect(progress.dy, closeTo((header.bottom + 844) / 2, 36));
+  });
+
   test('CatchesHubScreenState maps provider waves into route states', () {
     final now = DateTime(2026, 6, 22, 12);
     final user = const AsyncData<String?>('runner-1');

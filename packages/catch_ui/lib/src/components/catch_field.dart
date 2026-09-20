@@ -6,6 +6,7 @@ import 'dart:async';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:catch_ui/src/components/catch_field_activity_notification.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
@@ -230,6 +231,52 @@ final class CatchField<T> extends StatefulWidget
          labelMode: CatchFieldLabelTextMode.visible,
          add: false,
          navigation: true,
+       );
+
+  /// Inert row with the same layout and disclosure geometry as a live Field.
+  ///
+  /// Use through a loading Section, which applies the skeleton effect while
+  /// retaining the real row gutter, divider, and interaction-plane geometry.
+  @internal
+  const CatchField.loading({
+    super.key,
+    required CatchFieldLayout content,
+    bool navigable = true,
+  }) : _copy = null,
+       title = null,
+       body = null,
+       actions = null,
+       contract = null,
+       variant = CatchFieldVariant.row,
+       child = null,
+       meta = null,
+       trailing = null,
+       emphasis = CatchFieldEmphasis.body,
+       tone = CatchFieldTone.normal,
+       icon = null,
+       iconColor = null,
+       leading = null,
+       leadingExtent = null,
+       status = CatchFieldStatus.idle,
+       states = const {},
+       _config = (
+         layout: content,
+         secondaryAction: null,
+         titleMaxLines: 1,
+         bodyMaxLines: 2,
+         valueText: null,
+         valueMaxLines: 1,
+         showChevron: navigable,
+         placeholder: null,
+         error: null,
+         errorText: null,
+         valid: false,
+         onTap: null,
+         contentRow: false,
+         inlineMetadata: null,
+         labelMode: CatchFieldLabelTextMode.visible,
+         add: false,
+         navigation: navigable,
        );
 
   const CatchField.nav({

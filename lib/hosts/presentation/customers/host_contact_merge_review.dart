@@ -74,7 +74,9 @@ class _HostContactMergeReviewSheetState
           if (snapshot.connectionState != ConnectionState.done &&
               _active.isEmpty &&
               _dismissed.isEmpty) {
-            return const CatchSkeleton.rows();
+            return const CatchStateViewport.loading(
+              accountForBottomOverlay: false,
+            );
           }
           if (snapshot.hasError && _active.isEmpty && _dismissed.isEmpty) {
             return CatchLocalizedErrorState(

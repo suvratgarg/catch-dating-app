@@ -36,7 +36,6 @@ import 'package:catch_dating_app/hosts/presentation/host_event_edit_screen_state
 import 'package:catch_dating_app/hosts/presentation/host_event_edit_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/hosted_event_policy_section.dart';
 import 'package:catch_dating_app/hosts/presentation/hosted_event_schedule_section.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeletons.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_ui/catch_ui.dart';

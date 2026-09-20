@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_customers.feature.json",
   "generatedFor": "2026-09-03",
   "sourceDigest": "sha256:ef2ae59e811119e576bb73983ea0504ee5389eb3037618c08f53cc919fa017dd",
-  "resolvedDigest": "sha256:2055ef6b8b1e30a9eda29ff748ef77d0026426b02b00706288c0e8ec20a749de",
+  "resolvedDigest": "sha256:41c15aded82971a601e100f775b7148a65525e5d4f99c48eab064a4892aaa7cf",
   "feature": {
     "id": "feature.host_customers",
     "name": "Host Audience CRM",
@@ -6236,8 +6236,12 @@
                 "CatchSection.plain",
                 "CatchSection.horizontal",
                 "CatchSection.rows",
+                "CatchSection.loadingRows",
+                "CatchSection.controls",
                 "CatchSection.containedRows",
+                "CatchSection.containedLoadingRows",
                 "CatchSection.sliverRows",
+                "CatchSection.sliverLoadingRows",
                 "CatchSection.content",
                 "CatchSection.formRows"
               ]
@@ -6256,13 +6260,7 @@
                 "CatchSkeleton.textBlock",
                 "CatchSkeleton.circle",
                 "CatchSkeleton.custom",
-                "CatchSkeleton.content",
-                "CatchSkeleton.cards",
-                "CatchSkeleton.rows",
-                "CatchSkeleton.boxes",
-                "CatchSkeleton.chips",
-                "CatchSkeleton.mediaRows",
-                "CatchSkeleton.iconRows"
+                "CatchSkeleton.content"
               ]
             }
           },

@@ -73,11 +73,12 @@ class _EventMessagePreferencesSheetState
         value: page,
         retainDataOn: const {},
         onRetry: reload,
+        loadingBuilder: (_) => const CatchLoadingIndicator(),
         errorBuilder: (_, error, _, retry) =>
             CatchLocalizedErrorBanner(error, onRetry: retry),
         builder: (_, review) {
           final identity = review.view.identity;
-          if (!review.isCurrent) return const CatchSkeleton.rows();
+          if (!review.isCurrent) return const CatchLoadingIndicator();
           return switch (identity) {
             EventParticipantUnlinked() => Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,

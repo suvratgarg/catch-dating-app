@@ -7,7 +7,6 @@ import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/clubs/domain/club_membership.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_detail_screen.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/club_detail_view_model.dart';
-import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_detail_skeleton.dart';
 import 'package:catch_dating_app/clubs/presentation/discovery/widgets/club_discover_list.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
@@ -188,9 +187,9 @@ void main() {
         await tester.pump();
 
         expect(find.byType(CatchScaffold), findsOneWidget);
-        expect(find.byType(ClubDetailLoadingBody), findsOneWidget);
-        expect(find.byType(CatchSkeleton), findsWidgets);
-        expect(find.byType(CircularProgressIndicator), findsNothing);
+        expect(find.byType(CatchStateViewport), findsOneWidget);
+        expect(find.byType(CatchSkeleton), findsNothing);
+        expect(find.byType(CircularProgressIndicator), findsOneWidget);
         expect(find.text('Club not found'), findsNothing);
       },
     );

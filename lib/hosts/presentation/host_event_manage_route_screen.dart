@@ -47,7 +47,7 @@ class HostEventManageRouteScreen extends ConsumerWidget {
               : CatchTopBarEmphasis.plain,
         ),
         body: const CatchRouteBody.standardViewport(
-          child: HostRouteLoadingBody(padding: EdgeInsets.zero),
+          child: CatchStateViewport.loading(accountForBottomOverlay: false),
         ),
       ),
       errorBuilder: (_, error, _, onBoundaryRetry) => CatchRouteScaffold(

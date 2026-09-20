@@ -10,7 +10,6 @@ import 'package:catch_dating_app/clubs/presentation/detail/club_host_contact_con
 import 'package:catch_dating_app/clubs/presentation/detail/club_membership_controller.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_detail_body.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_detail_dock.dart';
-import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_detail_skeleton.dart';
 import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_share_card.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
@@ -191,7 +190,9 @@ class ClubDetailScreen extends ConsumerWidget {
 
     return CatchScaffold.workspace(
       body: switch (screenState) {
-        HostClubDetailLoading() => const ClubDetailLoadingBody(),
+        HostClubDetailLoading() => const CatchStateViewport.loading(
+          accountForBottomOverlay: false,
+        ),
         HostClubDetailError(:final error, :final retryIntent) =>
           CatchLocalizedErrorState(
             error,
@@ -227,6 +228,3 @@ String _eventDetailRouteName(ClubDetailEventRouteTarget target) {
 CatchAsyncState<T> _catchAsyncState<T>(AsyncValue<T> value) {
   return catchAsyncStateFromAsyncValue(value);
 }
-
-// ClubDetailLoadingBody and skeleton widget classes have been extracted to
-// club_detail_skeleton.dart.

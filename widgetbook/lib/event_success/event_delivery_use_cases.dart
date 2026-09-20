@@ -110,7 +110,7 @@ class _PreviewState extends State<_Preview> {
           if (value.hasError) {
             return Text('Preview unavailable: ${value.error}');
           }
-          if (!value.hasData) return const CatchSkeleton.rows();
+          if (!value.hasData) return const CatchLoadingIndicator();
           final data = value.requireData;
           final live = DeliveryPreviewLiveRepository(data[0]);
           final practice = DeliveryPreviewPracticeRepository(data[1]);

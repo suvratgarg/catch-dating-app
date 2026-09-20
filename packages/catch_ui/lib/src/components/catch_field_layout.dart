@@ -25,6 +25,25 @@ final class CatchRecordLayout extends CatchFieldLayout {
     this.description,
   });
 
+  /// Representative content for a loading Field with the same record slots.
+  factory CatchRecordLayout.placeholder({
+    required IconData icon,
+    bool hasMetadata = false,
+    int factCount = 0,
+    bool hasDescription = false,
+    Color? color,
+  }) {
+    assert(factCount >= 0);
+    return CatchRecordLayout(
+      title: 'Loading record',
+      icon: icon,
+      color: color,
+      metadata: hasMetadata ? 'Loading metadata' : null,
+      facts: List.filled(factCount, 'Loading fact'),
+      description: hasDescription ? 'Loading description' : null,
+    );
+  }
+
   final String title;
   final IconData icon;
   final Color? color;
@@ -93,6 +112,27 @@ final class CatchPersonLayout extends CatchFieldLayout {
     this.facts = const [],
     this.badges = const [],
   });
+
+  /// Representative data for the same identity layout while a row is loading.
+  ///
+  /// Slot choices describe the eventual row anatomy; Section and Field still
+  /// own every inset, divider, and interaction shape.
+  const CatchPersonLayout.placeholder({
+    bool hasSupportingText = false,
+    bool hasContext = false,
+    bool hasBadge = false,
+    this.avatarShape = CatchAvatarVariant.circle,
+  }) : name = 'Loading person',
+       imageUrl = null,
+       avatarColors = null,
+       supportingText = hasSupportingText ? 'Loading supporting text' : null,
+       context = hasContext ? 'Loading context' : null,
+       facts = const [],
+       badges = hasBadge
+           ? const [
+               CatchRowBadge(label: 'Loading', tone: CatchBadgeTone.neutral),
+             ]
+           : const [];
 
   final String name;
   final String? imageUrl;
@@ -191,6 +231,20 @@ final class CatchConversationLayout extends CatchFieldLayout {
     this.activityLabel,
     this.activitySemantics,
   }) : assert(activityLabel == null || activitySemantics != null);
+
+  /// Representative content for a loading Field with conversation anatomy.
+  const CatchConversationLayout.placeholder({
+    bool hasTimestamp = false,
+    bool hasContext = false,
+    bool hasActivity = false,
+    this.avatarShape = CatchAvatarVariant.circle,
+  }) : name = 'Loading conversation',
+       preview = 'Loading message preview',
+       imageUrl = null,
+       timestamp = hasTimestamp ? 'Loading time' : null,
+       context = hasContext ? 'Loading context' : null,
+       activityLabel = hasActivity ? 'Loading activity' : null,
+       activitySemantics = hasActivity ? 'Loading activity' : null;
 
   final String name;
   final String preview;

@@ -36,14 +36,10 @@ class HostTodayBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchRootScreenScaffold.fullBleed(
-      scrollKey: const ValueKey<String>('host-today-scroll-view'),
-      title: HostTodayHeader(now: now),
-      children: [
+    return SliverMainAxisGroup(
+      slivers: [
         switch (state.status) {
-          HostTodayStatus.loading => const SliverToBoxAdapter(
-            child: CatchSkeleton.mediaRows(count: 4),
-          ),
+          HostTodayStatus.loading => const CatchStateViewport.sliverLoading(),
           HostTodayStatus.error => CatchLocalizedSliverErrorState(
             state.error!,
             context: AppErrorContext.event,
@@ -87,14 +83,11 @@ class HostTodayHeader extends StatelessWidget {
         : MaterialLocalizations.of(context).formatFullDate(now!);
     return CatchViewport.atWidth(
       breakpoint: CatchLayout.hostTodayTwoPaneBreakpoint,
-      compactBuilder: (_) => CatchScreenHeader.block(
-        title: context.l10n.hostNavigationToday,
-        titleStyle: CatchTextStyles.eventTitle(context),
-      ),
+      compactBuilder: (_) =>
+          CatchScreenHeader.block(title: context.l10n.hostNavigationToday),
       expandedBuilder: (_) => CatchScreenHeader.block(
         title: context.l10n.hostNavigationToday,
         kicker: date,
-        titleStyle: CatchTextStyles.eventTitle(context),
       ),
     );
   }

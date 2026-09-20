@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/hosts/data/crm/host_communication_repository.dart';
@@ -42,6 +44,13 @@ class _Directory extends HostCustomersDirectoryController {
   );
 }
 
+class _PendingDirectory extends HostCustomersDirectoryController {
+  @override
+  Future<HostCustomersDirectoryState> build(
+    HostCustomersDirectoryRequest request,
+  ) => Completer<HostCustomersDirectoryState>().future;
+}
+
 class _Actions extends Fake implements HostCustomersController {
   final opened = <String>[];
   @override
@@ -84,6 +93,35 @@ HostCommunicationPlan _plan(bool available) => HostCommunicationPlan(
 );
 
 void main() {
+  testWidgets('new-message loading uses the eventual full-width person row', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          hostCustomersDirectoryControllerProvider.overrideWith2(
+            (_) => _PendingDirectory(),
+          ),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: const HostNewMessageScreen(organizerId: 'org'),
+        ),
+      ),
+    );
+    await tester.pump();
+    expect(find.byType(CatchSkeleton), findsNWidgets(3));
+    for (final skeleton in find.byType(CatchSkeleton).evaluate()) {
+      final loadingField = find.descendant(
+        of: find.byWidget(skeleton.widget),
+        matching: find.byType(CatchField),
+      );
+      expect(tester.getRect(loadingField).width, 800);
+    }
+    expect(find.bySemanticsLabel('Loading person'), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
   for (final available in [true, false]) {
     testWidgets(
       'new message resolves a person and respects route availability $available',

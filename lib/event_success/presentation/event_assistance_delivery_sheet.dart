@@ -63,7 +63,7 @@ class EventAssistanceDeliverySheet extends ConsumerWidget {
                     : AsyncData(form.review.session),
                 initialLoadTimeout: null,
                 onRetry: reload,
-                loadingBuilder: (_) => const CatchSkeleton.rows(),
+                loadingBuilder: (_) => const CatchLoadingIndicator(),
                 errorBuilder: (_, error, _, retry) =>
                     CatchLocalizedErrorBanner(error, onRetry: retry),
                 builder: (_, session) {

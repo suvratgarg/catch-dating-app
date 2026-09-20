@@ -18,6 +18,10 @@ import 'package:go_router/go_router.dart';
 
 export 'package:catch_dating_app/swipes/presentation/filters_screen_state.dart';
 
+void _ignoreAgeRange(RangeValues _) {}
+
+void _ignoreGender(Gender _) {}
+
 class FiltersScreen extends ConsumerStatefulWidget {
   const FiltersScreen({super.key});
 
@@ -136,10 +140,12 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
             ? CatchDockSurface(
                 includeSafeArea: false,
                 padding: CatchInsets.formActionDock,
-                child: CatchSkeleton.box(
-                  width: double.infinity,
-                  height: CatchLayout.buttonLgHeight,
-                  radius: CatchRadius.pill,
+                child: CatchSkeleton.content(
+                  child: CatchButton(
+                    label: context.l10n.swipesFiltersScreenLabelApplyFilters,
+                    onPressed: null,
+                    fullWidth: true,
+                  ),
                 ),
               )
             : preferencesState == null
@@ -161,7 +167,7 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
               ),
         body: CatchRouteBody.standard(
           child: profileAsync.when(
-            loading: () => const FiltersContentSkeleton._route(),
+            loading: () => const FiltersContent.loading(),
             error: (error, _) => CatchLocalizedErrorState(
               error,
               context: AppErrorContext.profile,
@@ -218,7 +224,19 @@ class FiltersContent extends StatelessWidget {
     required this.onAgeRangeChanged,
     required this.onGenderToggled,
     required this.onApply,
-  }) : _routeOwned = false;
+  }) : _routeOwned = false,
+       _loading = false;
+
+  /// Uses this screen's real controls and section layout as its loading shape.
+  const FiltersContent.loading({super.key})
+    : ageRange = const RangeValues(18, 40),
+      interestedIn = const {},
+      saving = true,
+      onAgeRangeChanged = _ignoreAgeRange,
+      onGenderToggled = _ignoreGender,
+      onApply = null,
+      _routeOwned = true,
+      _loading = true;
 
   FiltersContent.fromState({
     super.key,
@@ -229,7 +247,8 @@ class FiltersContent extends StatelessWidget {
   }) : ageRange = state.ageRange,
        interestedIn = state.interestedIn,
        saving = state.saving,
-       _routeOwned = false;
+       _routeOwned = false,
+       _loading = false;
 
   FiltersContent._routeFromState({
     required FiltersContentState state,
@@ -239,7 +258,8 @@ class FiltersContent extends StatelessWidget {
        interestedIn = state.interestedIn,
        saving = state.saving,
        onApply = null,
-       _routeOwned = true;
+       _routeOwned = true,
+       _loading = false;
 
   final RangeValues ageRange;
   final Set<Gender> interestedIn;
@@ -248,6 +268,7 @@ class FiltersContent extends StatelessWidget {
   final ValueChanged<Gender> onGenderToggled;
   final VoidCallback? onApply;
   final bool _routeOwned;
+  final bool _loading;
 
   @override
   Widget build(BuildContext context) {
@@ -310,7 +331,9 @@ class FiltersContent extends StatelessWidget {
         ),
       ],
     );
-    if (_routeOwned) return fields;
+    if (_routeOwned) {
+      return _loading ? CatchSkeleton.content(child: fields) : fields;
+    }
     return Column(
       children: [
         Expanded(
@@ -331,87 +354,6 @@ class FiltersContent extends StatelessWidget {
                 : CatchButtonStatus.idle,
             fullWidth: true,
           ),
-        ),
-      ],
-    );
-  }
-}
-
-class FiltersContentSkeleton extends StatelessWidget {
-  const FiltersContentSkeleton({super.key}) : _routeOwned = false;
-
-  const FiltersContentSkeleton._route() : _routeOwned = true;
-
-  final bool _routeOwned;
-
-  @override
-  Widget build(BuildContext context) {
-    final fields = CatchSectionList.responsive(
-      emptyStateOmitted: true,
-      items: [
-        CatchSectionListItem(
-          child: FiltersSection(
-            title: context.l10n.swipesFiltersScreenTitleAge,
-            child: const AgeFilterSkeleton(),
-          ),
-        ),
-        CatchSectionListItem(
-          child: FiltersSection(
-            title: context.l10n.swipesFiltersScreenTitleInterestedIn,
-            child: const CatchSkeleton.chips(),
-          ),
-        ),
-      ],
-    );
-    if (_routeOwned) return fields;
-    return Column(
-      children: [
-        Expanded(
-          child: CatchPageBody.screen(pb: CatchSpacing.s5, child: fields),
-        ),
-        CatchDockSurface(
-          includeSafeArea: false,
-          padding: CatchInsets.pageBody.copyWith(
-            top: CatchSpacing.s3,
-            bottom: CatchSpacing.s5,
-          ),
-          child: CatchSkeleton.box(
-            width: double.infinity,
-            height: CatchLayout.buttonLgHeight,
-            radius: CatchRadius.pill,
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class AgeFilterSkeleton extends StatelessWidget {
-  const AgeFilterSkeleton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        CatchSkeleton.text(width: CatchLayout.skeletonTextTitleWidth),
-        gapH16,
-        Stack(
-          alignment: Alignment.center,
-          children: [
-            CatchSkeleton.box(
-              width: double.infinity,
-              height: CatchStroke.selection,
-              radius: CatchRadius.pill,
-            ),
-            Row(
-              children: [
-                CatchSkeleton.circle(size: CatchSpacing.s6),
-                const Spacer(),
-                CatchSkeleton.circle(size: CatchSpacing.s6),
-              ],
-            ),
-          ],
         ),
       ],
     );
