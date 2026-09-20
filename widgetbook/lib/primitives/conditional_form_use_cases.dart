@@ -35,59 +35,66 @@ class _DependentConfigurationState extends State<_DependentConfiguration> {
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    body: SingleChildScrollView(
-      child: CatchSectionList.inset(
-        emptyStateOmitted: true,
-        children: [
-          CatchSection.dependentFieldRows(
-            leading: CatchField.toggle(
-              copy: catchFieldCopy(context.l10n),
-              title: 'Reserve places for pairs',
-              emphasis: CatchFieldEmphasis.title,
-              titleMaxLines: 4,
-              body:
-                  'Keep part of the capacity available for people booking together.',
-              bodyMaxLines: 8,
-              value: _pairs,
-              contractExemption: 'Catalog-only local decision; no persistence.',
-              onChanged: (value) => setState(() => _pairs = value),
+  Widget build(BuildContext context) {
+    final dependencies = CatchFormDependencies([
+      const CatchFormDependency(id: 'pairs'),
+      CatchFormDependency(id: 'capacity', parent: 'pairs', when: _pairs),
+    ]);
+    return Scaffold(
+      body: SingleChildScrollView(
+        child: CatchSectionList.inset(
+          emptyStateOmitted: true,
+          children: [
+            CatchSection.dependentFieldRows(
+              leading: CatchField.toggle(
+                copy: catchFieldCopy(context.l10n),
+                title: 'Reserve places for pairs',
+                emphasis: CatchFieldEmphasis.title,
+                titleMaxLines: 4,
+                body:
+                    'Keep part of the capacity available for people booking together.',
+                bodyMaxLines: 8,
+                value: _pairs,
+                contractExemption:
+                    'Catalog-only local decision; no persistence.',
+                onChanged: (value) => setState(() => _pairs = value),
+              ),
+              children: [
+                if (dependencies.isApplicable('capacity'))
+                  CatchField.input(
+                    copy: catchFieldCopy(context.l10n),
+                    title: 'Reserved places',
+                    helperText:
+                        'Out of 20 total places. Each pair uses two places.',
+                    controller: _capacity,
+                    contractExemption:
+                        'Catalog-only local amount; no persistence.',
+                    keyboardType: TextInputType.number,
+                  ),
+              ],
             ),
-            children: [
-              if (_pairs)
+            CatchSection.dependentFieldRows(
+              states: const {WidgetState.error},
+              leading: CatchField.read(
+                content: CatchRecordLayout(
+                  title: 'Require an invitation',
+                  icon: CatchIcons.lockOutlineRounded,
+                  facts: const ['Only guests with the code can apply.'],
+                ),
+              ),
+              children: [
                 CatchField.input(
                   copy: catchFieldCopy(context.l10n),
-                  title: 'Reserved places',
-                  helperText:
-                      'Out of 20 total places. Each pair uses two places.',
-                  controller: _capacity,
-                  contractExemption:
-                      'Catalog-only local amount; no persistence.',
-                  keyboardType: TextInputType.number,
+                  title: 'Invitation code',
+                  initialValue: 'WEEKEND',
+                  contractExemption: 'Catalog invitation example.',
+                  errorText: 'Choose a code that is not already in use.',
                 ),
-            ],
-          ),
-          CatchSection.dependentFieldRows(
-            states: const {WidgetState.error},
-            leading: CatchField.read(
-              content: CatchRecordLayout(
-                title: 'Require an invitation',
-                icon: CatchIcons.lockOutlineRounded,
-                facts: const ['Only guests with the code can apply.'],
-              ),
+              ],
             ),
-            children: [
-              CatchField.input(
-                copy: catchFieldCopy(context.l10n),
-                title: 'Invitation code',
-                initialValue: 'WEEKEND',
-                contractExemption: 'Catalog invitation example.',
-                errorText: 'Choose a code that is not already in use.',
-              ),
-            ],
-          ),
-        ],
+          ],
+        ),
       ),
-    ),
-  );
+    );
+  }
 }
