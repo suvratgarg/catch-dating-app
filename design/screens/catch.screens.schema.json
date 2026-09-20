@@ -65,9 +65,11 @@
       "description": "Canonical layout expressions understood by the executable UI composition checker.",
       "enum": [
         "CatchRootScreenScaffold.standard",
+        "CatchRootScreenScaffold.sections",
         "CatchRootScreenScaffold.fullBleed",
         "CatchRootScreenScaffold.withPrimaryRail",
         "CatchRootScreenScrollView.standard",
+        "CatchRootScreenScrollView.sections",
         "CatchRootScreenScrollView.fullBleed",
         "CatchRootScreenScrollView.withPrimaryRail",
         "CatchRouteScaffold",

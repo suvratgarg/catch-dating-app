@@ -41,12 +41,14 @@ const _canonicalRootScreenPageOwnerPath =
 
 const _rootScaffoldExpressions = <String>{
   'CatchRootScreenScaffold.standard',
+  'CatchRootScreenScaffold.sections',
   'CatchRootScreenScaffold.fullBleed',
   'CatchRootScreenScaffold.withPrimaryRail',
 };
 
 const _rootScrollExpressions = <String>{
   'CatchRootScreenScrollView.standard',
+  'CatchRootScreenScrollView.sections',
   'CatchRootScreenScrollView.fullBleed',
   'CatchRootScreenScrollView.withPrimaryRail',
 };
@@ -120,8 +122,10 @@ const _rootPageScrollRoles = <String, String>{
 
 const _rootScreenRoles = <String, String>{
   'CatchRootScreenScaffold.standard': 'CatchPageBodyMode.standard',
+  'CatchRootScreenScaffold.sections': 'CatchPageBodyMode.fullBleed',
   'CatchRootScreenScaffold.fullBleed': 'CatchPageBodyMode.fullBleed',
   'CatchRootScreenScrollView.standard': 'CatchPageBodyMode.standard',
+  'CatchRootScreenScrollView.sections': 'CatchPageBodyMode.fullBleed',
   'CatchRootScreenScrollView.fullBleed': 'CatchPageBodyMode.fullBleed',
 };
 
