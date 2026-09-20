@@ -26464,5 +26464,333 @@
   "hostInboxOlderMessages": "Load older Catch messages",
   "@hostInboxOlderMessages": {"description": "History pagination action for a Catch conversation source.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.inbox.host_person_conversation"},
   "hostInboxWhatsappReplyChannel": "WhatsApp",
-  "@hostInboxWhatsappReplyChannel": {"description": "Short label for the WhatsApp reply route and transcript source.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.inbox"}
+  "@hostInboxWhatsappReplyChannel": {"description": "Short label for the WhatsApp reply route and transcript source.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.inbox"},
+  "hostTodayAddCustomerAction": "Add a contact",
+  "@hostTodayAddCustomerAction": {
+    "description": "Host Today focus and roadmap copy: Add Customer Action.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.today",
+    "x-max-chars": 25
+  },
+  "hostTodayAddCustomerTitle": "Start with someone you know",
+  "@hostTodayAddCustomerTitle": {
+    "description": "Host Today focus and roadmap copy: Add Customer Title.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.today",
+    "x-max-chars": 39
+  },
+  "hostTodayAudienceAction": "Open People",
+  "@hostTodayAudienceAction": {
+    "description": "Host Today focus and roadmap copy: Audience Action.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.today",
+    "x-max-chars": 24
+  },
+  "hostTodayAudienceBody": "Keep your community in one place. Add contacts, review their history, and build an audience for your next event.",
+  "@hostTodayAudienceBody": {
+    "description": "Host Today focus and roadmap copy: Audience Body.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.today",
+    "x-max-chars": 124
+  },
+  "hostTodayAudienceTitle": "Get to know your audience",
+  "@hostTodayAudienceTitle": {
+    "description": "Host Today focus and roadmap copy: Audience Title.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.today",
+    "x-max-chars": 37
+  },
+  "hostTodayChangeFocus": "Change",
+  "@hostTodayChangeFocus": {
+    "description": "Host Today focus and roadmap copy: Change Focus.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.today",
+    "x-max-chars": 24
+  },
+  "hostTodayExploreFocus": "Explore at your own pace",
+  "@hostTodayExploreFocus": {
+    "description": "Host Today focus and roadmap copy: Explore Focus.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.today",
+    "x-max-chars": 36
+  },
+  "hostTodayFocusAudienceBody": "Organize contacts and learn who comes back.",
+  "@hostTodayFocusAudienceBody": {
+    "description": "Host Today focus and roadmap copy: Focus Audience Body.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.today",
+    "x-max-chars": 55
+  },
+  "hostTodayFocusAudienceTitle": "Grow and understand my audience",
+  "@hostTodayFocusAudienceTitle": {
+    "description": "Host Today focus and roadmap copy: Focus Audience Title.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.today",
+    "x-max-chars": 43
+  },
+  "hostTodayFocusBackToToday": "Back to Today",
+  "@hostTodayFocusBackToToday": {
+    "description": "Host Today focus and roadmap copy: Focus Back To Today.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.today",
+    "x-max-chars": 25
+  },
+  "hostTodayFocusContinue": "Continue",
+  "@hostTodayFocusContinue": {
+    "description": "Host Today focus and roadmap copy: Focus Continue.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.today",
+    "x-max-chars": 24
+  },
+  "hostTodayFocusHeading": "What would you like to work on?",
+  "@hostTodayFocusHeading": {
+    "description": "Host Today focus and roadmap copy: Focus Heading.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.today",
+    "x-max-chars": 43
+  },
+  "hostTodayFocusIntroduction": "Choose a focus for Today. You can change it whenever you like.",
+  "@hostTodayFocusIntroduction": {
+    "description": "Host Today focus and roadmap copy: Focus Introduction.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.today",
+    "x-max-chars": 74
+  },
+  "hostTodayFocusPresenceBody": "Shape your public page and prepare to welcome guests.",
+  "@hostTodayFocusPresenceBody": {
+    "description": "Host Today focus and roadmap copy: Focus Presence Body.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.today",
+    "x-max-chars": 65
+  },
+  "hostTodayFocusPresenceTitle": "Build my organizer presence",
+  "@hostTodayFocusPresenceTitle": {
+    "description": "Host Today focus and roadmap copy: Focus Presence Title.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.today",
+    "x-max-chars": 39
+  },
+  "hostTodayFocusRehearsalBody": "Practice with a rehearsal before your next live event.",
+  "@hostTodayFocusRehearsalBody": {
+    "description": "Host Today focus and roadmap copy: Focus Rehearsal Body.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.today",
+    "x-max-chars": 66
+  },
+  "hostTodayFocusRehearsalTitle": "Get confident running events",
+  "@hostTodayFocusRehearsalTitle": {
+    "description": "Host Today focus and roadmap copy: Focus Rehearsal Title.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.today",
+    "x-max-chars": 40
+  },
+  "hostTodayFocusSafety": "Live events and anything needing attention always come first.",
+  "@hostTodayFocusSafety": {
+    "description": "Host Today focus and roadmap copy: Focus Safety.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.today",
+    "x-max-chars": 73
+  },
+  "hostTodayFocusScreenTitle": "Your focus",
+  "@hostTodayFocusScreenTitle": {
+    "description": "Host Today focus and roadmap copy: Focus Screen Title.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.today",
+    "x-max-chars": 24
+  },
+  "hostTodayFocusSkip": "Explore for now",
+  "@hostTodayFocusSkip": {
+    "description": "Host Today focus and roadmap copy: Focus Skip.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.today",
+    "x-max-chars": 27
+  },
+  "hostTodayFocusUnavailable": "Organizer unavailable",
+  "@hostTodayFocusUnavailable": {
+    "description": "Host Today focus and roadmap copy: Focus Unavailable.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.today",
+    "x-max-chars": 33
+  },
+  "hostTodayFocusUnavailableBody": "Return to Today and choose an organizer you can manage.",
+  "@hostTodayFocusUnavailableBody": {
+    "description": "Host Today focus and roadmap copy: Focus Unavailable Body.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.today",
+    "x-max-chars": 67
+  },
+  "hostTodayMilestoneAudience": "Audience established",
+  "@hostTodayMilestoneAudience": {
+    "description": "Host Today focus and roadmap copy: Milestone Audience.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.today",
+    "x-max-chars": 32
+  },
+  "hostTodayMilestoneAvailable": "Ready to explore",
+  "@hostTodayMilestoneAvailable": {
+    "description": "Host Today focus and roadmap copy: Milestone Available.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.today",
+    "x-max-chars": 28
+  },
+  "hostTodayMilestoneComplete": "Completed",
+  "@hostTodayMilestoneComplete": {
+    "description": "Host Today focus and roadmap copy: Milestone Complete.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.today",
+    "x-max-chars": 24
+  },
+  "hostTodayMilestoneOwnerOnly": "Organizer owner only",
+  "@hostTodayMilestoneOwnerOnly": {
+    "description": "Host Today focus and roadmap copy: Milestone Owner Only.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.today",
+    "x-max-chars": 32
+  },
+  "hostTodayMilestonePage": "Public organizer page",
+  "@hostTodayMilestonePage": {
+    "description": "Host Today focus and roadmap copy: Milestone Page.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.today",
+    "x-max-chars": 33
+  },
+  "hostTodayMilestonePayouts": "Payouts ready",
+  "@hostTodayMilestonePayouts": {
+    "description": "Host Today focus and roadmap copy: Milestone Payouts.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.today",
+    "x-max-chars": 25
+  },
+  "hostTodayMilestoneRehearsal": "Rehearsal completed",
+  "@hostTodayMilestoneRehearsal": {
+    "description": "Host Today focus and roadmap copy: Milestone Rehearsal.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.today",
+    "x-max-chars": 31
+  },
+  "hostTodayMilestoneUnknown": "Not yet verified",
+  "@hostTodayMilestoneUnknown": {
+    "description": "Host Today focus and roadmap copy: Milestone Unknown.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.today",
+    "x-max-chars": 28
+  },
+  "hostTodayPayoutsAction": "Manage payouts",
+  "@hostTodayPayoutsAction": {
+    "description": "Host Today focus and roadmap copy: Payouts Action.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.today",
+    "x-max-chars": 26
+  },
+  "hostTodayPayoutsBody": "Set up payouts when you are ready to take payments. This is optional for organizers running free events.",
+  "@hostTodayPayoutsBody": {
+    "description": "Host Today focus and roadmap copy: Payouts Body.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.today",
+    "x-max-chars": 116
+  },
+  "hostTodayPracticeAction": "Run a dress rehearsal",
+  "@hostTodayPracticeAction": {
+    "description": "Host Today focus and roadmap copy: Practice Action.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.today",
+    "x-max-chars": 33
+  },
+  "hostTodayPracticeBody": "Try the event controls with practice guests. Build confidence without changing a live event.",
+  "@hostTodayPracticeBody": {
+    "description": "Host Today focus and roadmap copy: Practice Body.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.today",
+    "x-max-chars": 104
+  },
+  "hostTodayPracticeTitle": "Practice before event day",
+  "@hostTodayPracticeTitle": {
+    "description": "Host Today focus and roadmap copy: Practice Title.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.today",
+    "x-max-chars": 37
+  },
+  "hostTodayPresenceAction": "Open organizer page",
+  "@hostTodayPresenceAction": {
+    "description": "Host Today focus and roadmap copy: Presence Action.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.today",
+    "x-max-chars": 31
+  },
+  "hostTodayPresenceBody": "Help guests understand your community and find your events. Review your public page and choose when to publish it.",
+  "@hostTodayPresenceBody": {
+    "description": "Host Today focus and roadmap copy: Presence Body.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.today",
+    "x-max-chars": 126
+  },
+  "hostTodayPresenceTitle": "Make your organizer page yours",
+  "@hostTodayPresenceTitle": {
+    "description": "Host Today focus and roadmap copy: Presence Title.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.today",
+    "x-max-chars": 42
+  },
+  "hostTodayRoadmapIntroduction": "Explore what is useful for your community. Progress reflects verified activity; every feature is optional.",
+  "@hostTodayRoadmapIntroduction": {
+    "description": "Host Today focus and roadmap copy: Roadmap Introduction.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.today",
+    "x-max-chars": 118
+  },
+  "hostTodayRoadmapTitle": "Your roadmap",
+  "@hostTodayRoadmapTitle": {
+    "description": "Host Today focus and roadmap copy: Roadmap Title.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.today",
+    "x-max-chars": 24
+  },
+  "hostTodayYourFocus": "Your focus",
+  "@hostTodayYourFocus": {
+    "description": "Host Today focus and roadmap copy: Your Focus.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "host.today",
+    "x-max-chars": 24
+  }
 }
