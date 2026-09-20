@@ -9230,13 +9230,35 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Host Today',
         children: [
           _widgetbook.WidgetbookComponent(
+            name: 'HostTodayFocusPageBody',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Choose a focus',
+                builder:
+                    _widgetbook_workspace_hosts_host_today_personalization_use_cases
+                        .hostTodayFocusChoices,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'HostTodayFocusScreen',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Covered by focus choice',
                 builder:
                     _widgetbook_workspace_hosts_host_today_personalization_use_cases
-                        .hostTodayFocusChoices,
+                        .hostTodayFocusScreenPreview,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'HostTodayPersonalizationSection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Quiet day roadmap',
+                builder:
+                    _widgetbook_workspace_hosts_host_today_personalization_use_cases
+                        .hostTodayQuietRoadmap,
               ),
             ],
           ),
@@ -9247,7 +9269,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Covered by quiet roadmap',
                 builder:
                     _widgetbook_workspace_hosts_host_today_personalization_use_cases
-                        .hostTodayQuietRoadmap,
+                        .hostTodayPersonalizedLayoutPreview,
               ),
             ],
           ),

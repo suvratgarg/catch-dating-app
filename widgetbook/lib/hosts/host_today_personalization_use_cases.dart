@@ -1,9 +1,9 @@
-import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_focus_screen.dart';
-import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_personalized_layout.dart';
 import 'package:catch_dating_app/hosts/today/personalization/domain/host_today_preference.dart';
 import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_focus_page_body.dart';
+import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_focus_screen.dart';
 import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_personalization_section.dart';
 import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_personalization_state.dart';
+import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_personalized_layout.dart';
 import 'package:catch_dating_app/hosts/today/presentation/host_today_state.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +14,9 @@ import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
   type: HostTodayFocusScreen,
   path: '[P1 product surfaces]/Host Today',
 )
+Widget hostTodayFocusScreenPreview(BuildContext context) =>
+    hostTodayFocusChoices(context);
+
 @widgetbook.UseCase(
   name: 'Choose a focus',
   type: HostTodayFocusPageBody,
@@ -37,6 +40,9 @@ Widget hostTodayFocusChoices(BuildContext context) => CatchRouteScaffold(
   type: HostTodayPersonalizedLayout,
   path: '[P1 product surfaces]/Host Today',
 )
+Widget hostTodayPersonalizedLayoutPreview(BuildContext context) =>
+    hostTodayQuietRoadmap(context);
+
 @widgetbook.UseCase(
   name: 'Quiet day roadmap',
   type: HostTodayPersonalizationSection,
