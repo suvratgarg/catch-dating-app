@@ -1,7 +1,8 @@
 import 'package:catch_ui/src/patterns/catch_tab_viewport_scope.dart';
+import 'package:catch_ui/src/primitives/catch_loading_indicator.dart';
 import 'package:flutter/widgets.dart';
 
-/// Removes the floating shell obstruction from terminal-state placement.
+/// Removes the floating shell obstruction from state placement.
 ///
 /// The caller owns empty/error content and its alignment. Box and sliver
 /// recipes share the same visible viewport; the sliver recipe fills the
@@ -18,6 +19,22 @@ class CatchStateViewport extends StatelessWidget {
     required this.child,
     this.accountForBottomOverlay = true,
   }) : _sliver = true;
+
+  /// Centers progress in a bounded body while its data-dependent layout is
+  /// unknown. Use [CatchStateViewport.sliverLoading] inside scrollable slivers.
+  const CatchStateViewport.loading({
+    super.key,
+    this.accountForBottomOverlay = true,
+  }) : child = const CatchLoadingIndicator(),
+       _sliver = false;
+
+  /// Fills the remaining scroll viewport below any persistent header or
+  /// controls, then centers progress above the floating bottom navigation.
+  const CatchStateViewport.sliverLoading({
+    super.key,
+    this.accountForBottomOverlay = true,
+  }) : child = const CatchLoadingIndicator(),
+       _sliver = true;
 
   final Widget child;
   final bool accountForBottomOverlay;

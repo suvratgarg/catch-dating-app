@@ -17,7 +17,7 @@ Widget eventSuccessCompanionLoadingBodyState(BuildContext context) {
     contractId: 'state.event_success.companion.loading',
     children: [
       WidgetbookPageStateCard(
-        label: 'route skeleton',
+        label: 'unresolved plan',
         child: WidgetbookCompanionDeviceFrame(
           child: Builder(
             builder: (context) {
@@ -29,42 +29,6 @@ Widget eventSuccessCompanionLoadingBodyState(BuildContext context) {
             },
           ),
         ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Stage loading',
-  type: EventSuccessCompanionStageSkeleton,
-  path: '[P1 product surfaces]/Event Success companion',
-)
-Widget eventSuccessCompanionStageSkeletonState(BuildContext context) {
-  return const WidgetbookPageCatalogFrame(
-    title: 'EventSuccessCompanionStageSkeleton',
-    contractId: 'state.event_success.companion.loading',
-    children: [
-      WidgetbookPageStateCard(
-        label: 'moment stage',
-        child: EventSuccessCompanionStageSkeleton(),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Primary action loading',
-  type: EventSuccessCompanionPrimaryActionSkeleton,
-  path: '[P1 product surfaces]/Event Success companion',
-)
-Widget eventSuccessCompanionPrimaryActionSkeletonState(BuildContext context) {
-  return const WidgetbookPageCatalogFrame(
-    title: 'EventSuccessCompanionPrimaryActionSkeleton',
-    contractId: 'state.event_success.companion.loading',
-    children: [
-      WidgetbookPageStateCard(
-        label: 'primary action',
-        child: EventSuccessCompanionPrimaryActionSkeleton(),
       ),
     ],
   );

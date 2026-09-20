@@ -220,6 +220,49 @@ void _registerHostOperationsClubWorkspaceTests() {
     expect(find.text('Section live'), findsOneWidget);
   });
 
+  testWidgets('Host Today loading uses the loaded card and root title rhythm', (
+    tester,
+  ) async {
+    final now = DateTime(2026, 6, 15, 12);
+    final club = buildClub(id: 'today-loading-club', ownerUserId: _hostUid);
+    await _pumpHostScreen(
+      tester,
+      CatchRootScreenScaffold.sections(
+        title: HostTodayHeader(now: now),
+        children: [
+          HostTodayBody(
+            organizer: club,
+            state: const HostTodayState(status: HostTodayStatus.loading),
+            now: now,
+            onRetry: () {},
+            onOpenEvent: (_) {},
+            onOpenAttention: (_) {},
+            onViewEvents: () {},
+            onStartRehearsal: () {},
+          ),
+        ],
+      ),
+      settle: false,
+    );
+    expect(
+      tester
+          .widget<CatchRootScreenScaffold>(find.byType(CatchRootScreenScaffold))
+          .bodyLayout,
+      CatchPageBodyMode.fullBleed,
+    );
+    expect(
+      tester
+          .widget<CatchScreenHeader>(find.byType(CatchScreenHeader))
+          .titleStyle,
+      isNull,
+    );
+    expect(find.byType(HostTodayEventSection), findsOneWidget);
+    expect(find.byType(CatchSkeleton), findsOneWidget);
+    final headerBottom = tester.getRect(find.byType(CatchScreenHeader)).bottom;
+    final cardTop = tester.getRect(find.byType(HostTodayEventSection)).top;
+    expect(cardTop - headerBottom, closeTo(CatchSpacing.screenPt, 1));
+  });
+
   testWidgets(
     'Host Today error stays in the root state viewport without a club subtitle',
     (tester) async {
@@ -231,19 +274,24 @@ void _registerHostOperationsClubWorkspaceTests() {
 
       await _pumpHostScreen(
         tester,
-        HostTodayBody(
-          organizer: club,
-          state: HostTodayState(
-            status: HostTodayStatus.error,
-            error: StateError('Event not found'),
-          ),
-          now: DateTime(2026, 6, 15, 12),
-          onRetry: () {},
-          onOpenEvent: (_) {},
-          onOpenAttention: (_) {},
-          onCreateEvent: () {},
-          onViewEvents: () {},
-          onStartRehearsal: () {},
+        CatchRootScreenScaffold.sections(
+          title: const HostTodayHeader(),
+          children: [
+            HostTodayBody(
+              organizer: club,
+              state: HostTodayState(
+                status: HostTodayStatus.error,
+                error: StateError('Event not found'),
+              ),
+              now: DateTime(2026, 6, 15, 12),
+              onRetry: () {},
+              onOpenEvent: (_) {},
+              onOpenAttention: (_) {},
+              onCreateEvent: () {},
+              onViewEvents: () {},
+              onStartRehearsal: () {},
+            ),
+          ],
         ),
       );
 
@@ -308,6 +356,37 @@ void _registerHostOperationsClubWorkspaceTests() {
       findsOneWidget,
     );
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('Today metric value and label share one wrapping text flow', (
+    tester,
+  ) async {
+    Future<void> mount(double width) => _pumpHostScreen(
+      tester,
+      Scaffold(
+        body: SizedBox(
+          width: width,
+          child: const HostTodayEventMetricTile(
+            value: '1+',
+            label: 'things to finish',
+          ),
+        ),
+      ),
+    );
+    final text = find.byWidgetPredicate(
+      (widget) =>
+          widget is Text &&
+          widget.textSpan?.toPlainText() == '1+ things to finish',
+    );
+    await mount(340);
+    final wideHeight = tester.getSize(text).height;
+    expect(wideHeight, lessThan(60));
+    await mount(135);
+    final paragraph = tester.renderObject<RenderParagraph>(
+      find.descendant(of: text, matching: find.byType(RichText)),
+    );
+    expect(tester.getSize(text).height, greaterThan(wideHeight));
+    expect(paragraph.didExceedMaxLines, isFalse);
   });
 
   testWidgets(

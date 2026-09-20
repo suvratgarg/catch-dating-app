@@ -27,11 +27,7 @@ class HostClubsScreen extends ConsumerWidget {
         scrollKey: const PageStorageKey<String>(
           'host-organizer-auth-route-state',
         ),
-        slivers: const [
-          CatchStateViewport.sliver(
-            child: HostRouteLoadingBody(padding: EdgeInsets.zero),
-          ),
-        ],
+        slivers: const [CatchStateViewport.sliverLoading()],
       ),
       errorBuilder: (_, error, _, onRetry) => HostOrganizerStateScaffold(
         selectedTab: selectedTab,
@@ -77,11 +73,7 @@ class HostClubsScreen extends ConsumerWidget {
             scrollKey: const PageStorageKey<String>(
               'host-organizer-data-route-state',
             ),
-            slivers: const [
-              CatchStateViewport.sliver(
-                child: HostRouteLoadingBody(padding: EdgeInsets.zero),
-              ),
-            ],
+            slivers: const [CatchStateViewport.sliverLoading()],
           ),
           errorBuilder: (_, error, _, onRetry) => HostOrganizerStateScaffold(
             selectedTab: selectedTab,

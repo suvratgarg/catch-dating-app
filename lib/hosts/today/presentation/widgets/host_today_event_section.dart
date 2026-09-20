@@ -16,7 +16,31 @@ class HostTodayEventSection extends StatelessWidget {
     this.taskCountIsComplete = true,
     required this.onPressed,
     this.contained = true,
-  });
+  }) : _loading = false;
+
+  /// Reserve the same event card and metric slots used by loaded content.
+  /// The representative values are never exposed to input or accessibility.
+  HostTodayEventSection.loading({super.key, required this.now})
+    : event = Event(
+        id: 'loading',
+        clubId: 'loading',
+        name: 'Upcoming event name',
+        startTime: now.add(const Duration(hours: 2)),
+        endTime: now.add(const Duration(hours: 4)),
+        meetingPoint: 'Event location',
+        distanceKm: 0,
+        pace: PaceLevel.easy,
+        capacityLimit: 0,
+        description: '',
+        priceInPaise: 0,
+      ),
+      taskCount = 0,
+      taskCountIsComplete = true,
+      onPressed = _ignoreLoadingActivation,
+      contained = true,
+      _loading = true;
+
+  static void _ignoreLoadingActivation() {}
 
   final Event event;
   final DateTime now;
@@ -24,6 +48,7 @@ class HostTodayEventSection extends StatelessWidget {
   final bool taskCountIsComplete;
   final VoidCallback onPressed;
   final bool contained;
+  final bool _loading;
 
   @override
   Widget build(BuildContext context) {
@@ -97,15 +122,17 @@ class HostTodayEventSection extends StatelessWidget {
         ),
       ],
     );
-    if (!contained) return content;
-    return CatchSurface(
-      borderColor: t.line,
-      backgroundColor: t.surface,
-      borderRadius: BorderRadius.circular(CatchRadius.md),
-      clipBehavior: Clip.antiAlias,
-      padding: CatchInsets.contentRelaxed,
-      child: content,
-    );
+    final rendered = !contained
+        ? content
+        : CatchSurface(
+            borderColor: t.line,
+            backgroundColor: t.surface,
+            borderRadius: BorderRadius.circular(CatchRadius.md),
+            clipBehavior: Clip.antiAlias,
+            padding: CatchInsets.contentRelaxed,
+            child: content,
+          );
+    return _loading ? CatchSkeleton.content(child: rendered) : rendered;
   }
 }
 
@@ -122,36 +149,19 @@ class HostTodayEventMetadataRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final largeText = MediaQuery.textScalerOf(context).scale(1) >= 1.6;
     final metadataStyle = CatchTextStyles.supporting(context, color: t.ink2);
     final time = Text(
       context.l10n.hostsHostTodayTextEventdaylabelTime(
         eventDayLabel: _eventDayLabel(context, event, now),
         time: EventFormatters.time(event.startTime),
       ),
-      maxLines: largeText ? 2 : 1,
-      overflow: TextOverflow.ellipsis,
       style: metadataStyle,
     );
-    final location = Text(
-      event.locationName,
-      maxLines: largeText ? 2 : 1,
-      overflow: TextOverflow.ellipsis,
-      textAlign: largeText ? TextAlign.start : TextAlign.right,
-      style: metadataStyle,
-    );
-    if (largeText) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [time, gapH4, location],
-      );
-    }
-    return Row(
-      children: [
-        Expanded(child: time),
-        gapW12,
-        Expanded(child: location),
-      ],
+    final location = Text(event.locationName, style: metadataStyle);
+    return Wrap(
+      spacing: CatchSpacing.s3,
+      runSpacing: CatchSpacing.s1,
+      children: [time, location],
     );
   }
 }
@@ -180,12 +190,23 @@ class HostTodayEventMetricTile extends StatelessWidget {
     final metric = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          value,
-          style: CatchTextStyles.titleL(context, color: valueColor ?? t.ink),
+        Text.rich(
+          TextSpan(
+            children: [
+              TextSpan(
+                text: value,
+                style: CatchTextStyles.titleL(
+                  context,
+                  color: valueColor ?? t.ink,
+                ),
+              ),
+              TextSpan(
+                text: ' $label',
+                style: CatchTextStyles.name(context, color: t.ink),
+              ),
+            ],
+          ),
         ),
-        gapH2,
-        Text(label, style: CatchTextStyles.name(context, color: t.ink)),
         if (supporting != null) ...[
           gapH2,
           Text(

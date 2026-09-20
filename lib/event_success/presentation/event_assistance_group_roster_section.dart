@@ -48,7 +48,7 @@ class _EventAssistanceGroupRosterSectionState
           if (widget.error != null)
             CatchLocalizedErrorBanner(widget.error!, onRetry: widget.onReload),
           if (widget.loading)
-            const CatchSkeleton.rows(count: 1)
+            const CatchLoadingIndicator()
           else if (widget.guests.isEmpty)
             Text(
               l10n.eventAssistanceGroupNoGuests,

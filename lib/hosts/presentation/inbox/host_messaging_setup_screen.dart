@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -25,17 +26,14 @@ class HostMessagingSetupScreen extends ConsumerWidget {
           mode: CatchTopBarNavigationMode.back,
         ),
       ),
-      body: CatchRouteBody.standardSections(
-        sections: [
-          CatchSectionListItem(
-            child: club.when(
-              loading: () => const CatchSkeleton.rows(),
-              error: (error, _) => CatchLocalizedErrorState(
-                error,
-                context: AppErrorContext.club,
-                onRetry: () => ref.invalidate(watchClubProvider(clubId)),
-              ),
-              data: (value) => value == null
+      body: CatchRouteBody.standardSlivers(
+        slivers: [
+          CatchAsyncBoundary.sliver(
+            value: club,
+            onRetry: () => ref.invalidate(watchClubProvider(clubId)),
+            errorContext: AppErrorContext.club,
+            builder: (context, value) => SliverToBoxAdapter(
+              child: value == null
                   ? CatchLocalizedErrorState(
                       StateError('Organizer not found.'),
                       context: AppErrorContext.club,

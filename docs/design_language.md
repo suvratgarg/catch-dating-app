@@ -551,6 +551,22 @@ not rebuild the family as local `Row`, `Stack`, padding, or divider recipes.
   A native text/choice control, message bubble, map canvas, media, chart or
   global navigation rail is not an ordinary row. Those keep their own semantic
   primitive, with non-row section content supplied through `.content`.
+- `CatchSection.controls` owns the content gutter and both full content-width
+  rules around collection sort/filter controls. People and Responses pass only
+  their controls; neither can omit the upper boundary or add a mismatched
+  lower rule. The rules are distinct from row sibling dividers, which start at
+  the text lane.
+- `CatchSection.loadingRows` and `.sliverLoadingRows` render passive
+  `CatchFieldLayout` values through the same Field and Section as loaded rows.
+  Loading cannot add a surrounding container, change row bleed, or expose
+  placeholder actions or labels. `CatchSkeleton.content` wraps an actual
+  content composition when a card or form is already known; only unknown leaf
+  assets use explicit box/text/circle skeleton shapes.
+- `CatchRootScreenScaffold.sections` and
+  `CatchRootScreenScrollView.sections` keep the standard title-to-body rhythm
+  while ordinary rows remain full width. One screen chooses that scaffold
+  outside its async branches, so loaded, loading, empty, and error use the
+  same horizontal plane and starting rhythm.
 - A typed form section owns one text-commit model for all of its sibling rows.
   Explicit confirmation with Cancel and Done is the default for new
   `CatchFormRowList` sections. An existing surface may opt the complete section

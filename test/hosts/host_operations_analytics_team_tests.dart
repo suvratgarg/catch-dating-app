@@ -819,25 +819,24 @@ void _registerHostOperationsAnalyticsTeamTests() {
     expect(find.byType(CatchSection), findsOneWidget);
   });
 
-  testWidgets('Host analytics loading uses canonical section rhythm', (
+  testWidgets('Host analytics loading does not invent report sections', (
     tester,
   ) async {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.light,
-        home: const Scaffold(
-          body: SingleChildScrollView(child: HostAnalyticsReportSkeleton()),
+        home: Scaffold(
+          body: SingleChildScrollView(
+            child: CatchSection.content(
+              child: const HostAnalyticsReportLoadingIndicator(),
+            ),
+          ),
         ),
       ),
     );
 
-    final sections = find.byType(CatchSection);
-    expect(sections, findsNWidgets(4));
-    for (var index = 1; index < 4; index++) {
-      expect(
-        tester.getBottomLeft(sections.at(index - 1)).dy,
-        tester.getTopLeft(sections.at(index)).dy,
-      );
-    }
+    expect(find.byType(CatchSection), findsOneWidget);
+    expect(find.byType(CatchSkeleton), findsNothing);
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
   });
 }

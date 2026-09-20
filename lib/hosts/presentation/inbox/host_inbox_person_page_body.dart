@@ -99,7 +99,7 @@ class HostInboxPersonPageBody extends ConsumerWidget {
                       ref.invalidate(watchEventsForClubProvider(organizerId)),
                 )
               : waitingForScope || inbox.isLoading || whatsapp.isLoading
-              ? const CatchSkeleton.rows()
+              ? const CatchStateViewport.loading()
               : CatchEmptyState(
                   icon: CatchIcons.chatBubbleOutlineRounded,
                   title: context.l10n.hostInboxSelectionUnavailable,

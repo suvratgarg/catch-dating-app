@@ -14,12 +14,12 @@ import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_shee
 import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_state.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_events_state.dart';
 import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeletons.dart';
 import 'package:catch_dating_app/hosts/today/domain/host_attention_item.dart';
 import 'package:catch_dating_app/hosts/today/presentation/host_today_feed_controller.dart';
 import 'package:catch_dating_app/hosts/today/presentation/host_today_state.dart';
 import 'package:catch_dating_app/hosts/today/presentation/host_today_view_model.dart';
 import 'package:catch_dating_app/hosts/today/presentation/widgets/host_today_body.dart';
+import 'package:catch_dating_app/hosts/today/presentation/widgets/host_today_event_section.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_tokens/catch_tokens.dart';
@@ -99,11 +99,12 @@ class _HostTodayScreenState extends ConsumerState<HostTodayScreen> {
       organizers: organizersState,
     );
 
-    return switch (routeState.status) {
-      HostTodayRouteStatus.authRequired => CatchRootScreenScaffold.standard(
-        title: HostTodayHeader(now: _clockNow),
-        children: [
-          CatchSliverErrorState(
+    return CatchRootScreenScaffold.sections(
+      scrollKey: const ValueKey<String>('host-today-scroll-view'),
+      title: HostTodayHeader(now: _clockNow),
+      children: [
+        switch (routeState.status) {
+          HostTodayRouteStatus.authRequired => CatchSliverErrorState(
             title: context.l10n.hostsHostAuthRequiredScreenTitleSignInRequired,
             message:
                 context.l10n.hostsHostAuthRequiredScreenMessageSignInToManage,
@@ -111,20 +112,12 @@ class _HostTodayScreenState extends ConsumerState<HostTodayScreen> {
                 context.l10n.hostsHostAuthRequiredScreenVisiblecopySignIn,
             onRetry: () => context.go(Routes.authScreen.path),
           ),
-        ],
-      ),
-      HostTodayRouteStatus.loading => CatchRootScreenScaffold.standard(
-        title: HostTodayHeader(now: _clockNow),
-        children: const [
-          CatchStateViewport.sliver(
-            child: HostRouteLoadingBody(padding: EdgeInsets.zero),
+          HostTodayRouteStatus.loading => SliverToBoxAdapter(
+            child: CatchSection.content(
+              child: HostTodayEventSection.loading(now: _clockNow),
+            ),
           ),
-        ],
-      ),
-      HostTodayRouteStatus.error => CatchRootScreenScaffold.standard(
-        title: HostTodayHeader(now: _clockNow),
-        children: [
-          CatchLocalizedSliverErrorState(
+          HostTodayRouteStatus.error => CatchLocalizedSliverErrorState(
             routeState.error!,
             context: routeState.errorContext,
             onRetry: () {
@@ -137,23 +130,23 @@ class _HostTodayScreenState extends ConsumerState<HostTodayScreen> {
               ref.invalidate(hostOperableClubsProvider(currentUid));
             },
           ),
-        ],
-      ),
-      HostTodayRouteStatus.empty => HostTodayOrganizerEmptyState(
-        onCreateOrganizer: () =>
-            context.pushNamed(Routes.hostCreateClubScreen.name),
-      ),
-      HostTodayRouteStatus.loaded => HostTodayLoadedRoute(
-        routeState: routeState,
-        initialOrganizerId: widget.initialOrganizerId,
-        clockNow: _clockNow,
-        sessionBoundary: _sessionBoundary,
-        onOpenEvent: _openEvent,
-        onOpenAttention: _openAttention,
-        onViewEvents: () => context.goNamed(Routes.hostEventsScreen.name),
-        onStartRehearsal: _startRehearsal,
-      ),
-    };
+          HostTodayRouteStatus.empty => HostTodayOrganizerEmptyState(
+            onCreateOrganizer: () =>
+                context.pushNamed(Routes.hostCreateClubScreen.name),
+          ),
+          HostTodayRouteStatus.loaded => HostTodayLoadedRoute(
+            routeState: routeState,
+            initialOrganizerId: widget.initialOrganizerId,
+            clockNow: _clockNow,
+            sessionBoundary: _sessionBoundary,
+            onOpenEvent: _openEvent,
+            onOpenAttention: _openAttention,
+            onViewEvents: () => context.goNamed(Routes.hostEventsScreen.name),
+            onStartRehearsal: _startRehearsal,
+          ),
+        },
+      ],
+    );
   }
 
   void _startRehearsal(Club organizer) {
@@ -364,21 +357,16 @@ class HostTodayOrganizerEmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchRootScreenScaffold.standard(
-      title: const HostTodayHeader(),
-      children: [
-        CatchSliverEmptyState(
-          icon: CatchIcons.groupsOutlined,
-          title: context.l10n.hostsHostEventsScaffoldTitleCreateYourFirstClub,
-          message: context.l10n.hostsHostEventsScaffoldBodyCreateAClubTo,
-          actions: [
-            CatchButton(
-              label: context.l10n.hostsHostEventsScaffoldLabelCreateClub,
-              leading: Icon(CatchIcons.addRounded, size: CatchIcon.md),
-              size: CatchButtonSize.sm,
-              onPressed: onCreateOrganizer,
-            ),
-          ],
+    return CatchSliverEmptyState(
+      icon: CatchIcons.groupsOutlined,
+      title: context.l10n.hostsHostEventsScaffoldTitleCreateYourFirstClub,
+      message: context.l10n.hostsHostEventsScaffoldBodyCreateAClubTo,
+      actions: [
+        CatchButton(
+          label: context.l10n.hostsHostEventsScaffoldLabelCreateClub,
+          leading: Icon(CatchIcons.addRounded, size: CatchIcon.md),
+          size: CatchButtonSize.sm,
+          onPressed: onCreateOrganizer,
         ),
       ],
     );

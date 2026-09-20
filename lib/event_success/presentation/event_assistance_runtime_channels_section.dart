@@ -138,7 +138,7 @@ class EventAssistanceRuntimeChannelsSection extends StatelessWidget {
                 ? () => onMore(route)
                 : null,
           ),
-        if (loadingRoute != null) const CatchSkeleton.rows(count: 1),
+        if (loadingRoute != null) const CatchLoadingIndicator(),
       ],
     );
   }

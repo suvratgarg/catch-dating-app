@@ -242,19 +242,8 @@ void main() {
       ],
     );
 
-    expect(
-      find.byWidgetPredicate(
-        (widget) =>
-            widget is CatchSkeleton &&
-            {
-              CatchSkeletonVariant.rows,
-              CatchSkeletonVariant.mediaRows,
-              CatchSkeletonVariant.iconRows,
-            }.contains(widget.variant),
-      ),
-      findsOneWidget,
-    );
-    expect(find.byType(CircularProgressIndicator), findsNothing);
+    expect(find.byType(CatchSkeleton), findsNothing);
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
   });
 
   testWidgets('shows branded error when attendance data fails', (tester) async {

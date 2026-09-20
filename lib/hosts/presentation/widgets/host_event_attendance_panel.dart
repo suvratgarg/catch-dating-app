@@ -116,10 +116,7 @@ class _HostEventParticipantsPanelState
         ref.invalidate(watchEventParticipationsForEventProvider(eventId));
         ref.invalidate(attendanceSheetViewModelProvider(eventId));
       },
-      loadingBuilder: (_) => const CatchSkeleton.rows(
-        count: 4,
-        titleWidth: CatchLayout.skeletonTextSectionWidth,
-      ),
+      loadingBuilder: (_) => const CatchLoadingIndicator(),
       errorBuilder: (_, error, _, onBoundaryRetry) => Padding(
         padding: CatchInsets.content,
         child: CatchLocalizedErrorState(

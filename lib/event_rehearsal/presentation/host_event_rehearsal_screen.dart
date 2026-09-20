@@ -193,8 +193,9 @@ class _HostEventRehearsalScreenState
             onRetry: () =>
                 ref.invalidate(eventRehearsalProvider(widget.sessionId)),
             initialLoadTimeout: null,
-            loadingBuilder: (_) =>
-                const CatchPageBody(child: CatchSkeleton.rows(count: 9)),
+            loadingBuilder: (_) => const CatchStateViewport.loading(
+              accountForBottomOverlay: false,
+            ),
             errorBuilder: (_, error, _, onBoundaryRetry) => CatchPageBody(
               child: CatchLocalizedErrorState(
                 error,

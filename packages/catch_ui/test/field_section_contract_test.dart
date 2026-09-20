@@ -268,6 +268,33 @@ void main() {
     );
   });
 
+  testWidgets('contained loading rows preserve the rounded perimeter', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      host(
+        CatchSection.containedLoadingRows(
+          title: 'Members',
+          layouts: const [
+            CatchPersonLayout.placeholder(),
+            CatchPersonLayout.placeholder(),
+          ],
+        ),
+      ),
+    );
+    await tester.pump();
+    final clip = find.byKey(CatchSectionSurface.rowGroupClipKey);
+    expect(clip, findsOneWidget);
+    expect(tester.getRect(clip).left, 20);
+    expect(tester.getRect(clip).right, 370);
+    expect(
+      tester.widget<ClipRRect>(clip).borderRadius,
+      isNot(BorderRadius.zero),
+    );
+    expect(find.byType(CatchSkeleton), findsNWidgets(2));
+    expect(find.bySemanticsLabel('Loading person'), findsNothing);
+  });
+
   testWidgets('Field keeps secondary targets separate and disables both', (
     tester,
   ) async {
@@ -336,6 +363,101 @@ void main() {
     expect(built.length, lessThan(30));
     expect(built, contains(0));
     expect(built, isNot(contains(999)));
+  });
+
+  testWidgets('collection controls keep both content-width boundaries', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      host(
+        CatchSection.controls(
+          leading: Text('Sort: Last seen'),
+          trailing: Text('Filters'),
+        ),
+      ),
+    );
+    final rules = find.byType(CatchDivider);
+    expect(rules, findsNWidgets(2));
+    final upper = tester.getRect(rules.first);
+    final lower = tester.getRect(rules.last);
+    expect(upper.left, 20);
+    expect(upper.right, 370);
+    expect(lower.left, upper.left);
+    expect(lower.right, upper.right);
+    expect(upper.bottom, lessThan(tester.getRect(find.text('Filters')).top));
+    expect(lower.top, greaterThan(tester.getRect(find.text('Filters')).bottom));
+  });
+
+  testWidgets('loading rows reuse field and section geometry', (tester) async {
+    Widget screen({required bool loading}) => host(
+      CustomScrollView(
+        slivers: [
+          if (loading)
+            CatchSection.sliverLoadingRows(
+              title: 'People',
+              itemCount: 2,
+              layoutBuilder: (_, _) =>
+                  const CatchPersonLayout.placeholder(hasSupportingText: true),
+            )
+          else
+            CatchSection.sliverRows(
+              title: 'People',
+              itemCount: 2,
+              itemBuilder: (_, index) => CatchField.navigate(
+                content: CatchPersonLayout(
+                  name: 'Person $index',
+                  supportingText: 'One event',
+                ),
+                onActivate: () {},
+              ),
+            ),
+        ],
+      ),
+    );
+    await tester.pumpWidget(screen(loading: false));
+    await tester.pumpAndSettle();
+    final loaded = tester.getRect(find.byType(CatchField).first);
+    final loadedHeaderRule = tester.getRect(find.byType(CatchDivider).first);
+    final loadedRule = tester.getRect(find.byType(CatchDivider).last);
+    await tester.pumpWidget(screen(loading: true));
+    await tester.pump(const Duration(milliseconds: 50));
+    final placeholder = tester.getRect(find.byType(CatchField).first);
+    final placeholderHeaderRule = tester.getRect(
+      find.byType(CatchDivider).first,
+    );
+    final placeholderRule = tester.getRect(find.byType(CatchDivider).last);
+    expect(placeholder.left, loaded.left);
+    expect(placeholder.right, loaded.right);
+    expect(placeholderRule.left, loadedRule.left);
+    expect(placeholderRule.right, loadedRule.right);
+    expect(placeholderHeaderRule.left, loadedHeaderRule.left);
+    expect(placeholderHeaderRule.right, loadedHeaderRule.right);
+    expect(find.byType(CatchSurface), findsNothing);
+    expect(find.byType(CatchSkeleton), findsNWidgets(2));
+    expect(find.bySemanticsLabel('Loading person'), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('box loading rows derive record slots through the Field', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      host(
+        CatchSection.loadingRows(
+          layouts: [
+            CatchRecordLayout.placeholder(
+              icon: CatchIcons.eventOutlined,
+              factCount: 2,
+            ),
+          ],
+        ),
+      ),
+    );
+    expect(find.byType(CatchField), findsOneWidget);
+    expect(find.byType(CatchSkeleton), findsOneWidget);
+    expect(find.bySemanticsLabel('Loading record'), findsNothing);
+    expect(tester.getRect(find.byType(CatchField)).width, 390);
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('record and person text stays readable at 2x', (tester) async {

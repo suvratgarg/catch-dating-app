@@ -12,7 +12,6 @@ import 'package:catch_dating_app/explore/presentation/widgets/explore_event_type
 import 'package:catch_dating_app/explore/presentation/widgets/explore_events_section.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/recommendations.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
-import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart'
@@ -111,10 +110,7 @@ List<Widget> buildExploreBodySlivers({
         AsyncLoading() => const SliverToBoxAdapter(
           child: Padding(
             padding: CatchInsets.pageBody,
-            child: CatchSkeleton.cards(
-              count: 2,
-              height: CatchLayout.dashboardRecommendedEventSkeletonHeight,
-            ),
+            child: Recommendations.loading(),
           ),
         ),
         AsyncError(:final error) => SliverToBoxAdapter(

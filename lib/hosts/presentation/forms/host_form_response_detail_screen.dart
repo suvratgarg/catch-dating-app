@@ -65,80 +65,79 @@ class _HostFormResponseDetailScreenState
               onConvert: (kind) => _reviewConversion(loadedDetail, kind),
             )
           : null,
-      body: CatchRouteBody.standardConstrained(
-        child: CatchAsyncBoundary<HostFormResponseDetail>(
-          value: detail,
-          onRetry: () => ref.invalidate(provider),
-          initialLoadTimeout: null,
-          loadingBuilder: (_) => const CatchSkeleton.rows(count: 8),
-          errorBuilder: (_, error, _, onBoundaryRetry) =>
-              CatchLocalizedErrorState(
-                error,
-                context: AppErrorContext.formResponses,
-                onRetry: onBoundaryRetry,
-              ),
-          builder: (context, value) => Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              _ResponseIdentityHeader(detail: value),
-              if (value.response.identity.phoneE164 != null ||
-                  value.response.identity.email != null) ...[
-                gapH20,
-                _ResponseContactActions(
-                  identity: value.response.identity,
-                  onOpen: _openContact,
-                ),
-              ],
-              gapH32,
-              CatchSection.divided(
-                title: context.l10n.hostFormResponseAnswersSection,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    for (final answer in value.answers) ...[
-                      _ResponseAnswerBlock(
-                        label: answer.label,
-                        answer: _answerText(context, answer.answer),
-                        origin: _originLabel(context, answer.origin),
-                      ),
-                      for (final asset in answer.assetDownloads)
-                        CatchField.nav(
-                          copy: catchFieldCopy(context.l10n),
-                          title: context.l10n.hostFormResponseDownloadFile(
-                            fileName: asset.fileName,
-                          ),
-                          body: asset.contentType,
-                          icon: CatchIcons.downloadRounded,
-                          onTap: () => _openAsset(asset),
-                        ),
-                    ],
+      body: CatchRouteBody.standardConstrainedSlivers(
+        slivers: [
+          CatchAsyncBoundary<HostFormResponseDetail>.sliver(
+            value: detail,
+            onRetry: () => ref.invalidate(provider),
+            initialLoadTimeout: null,
+            errorContext: AppErrorContext.formResponses,
+            builder: (context, value) => SliverToBoxAdapter(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  _ResponseIdentityHeader(detail: value),
+                  if (value.response.identity.phoneE164 != null ||
+                      value.response.identity.email != null) ...[
+                    gapH20,
+                    _ResponseContactActions(
+                      identity: value.response.identity,
+                      onOpen: _openContact,
+                    ),
                   ],
-                ),
+                  gapH32,
+                  CatchSection.divided(
+                    title: context.l10n.hostFormResponseAnswersSection,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        for (final answer in value.answers) ...[
+                          _ResponseAnswerBlock(
+                            label: answer.label,
+                            answer: _answerText(context, answer.answer),
+                            origin: _originLabel(context, answer.origin),
+                          ),
+                          for (final asset in answer.assetDownloads)
+                            CatchField.nav(
+                              copy: catchFieldCopy(context.l10n),
+                              title: context.l10n.hostFormResponseDownloadFile(
+                                fileName: asset.fileName,
+                              ),
+                              body: asset.contentType,
+                              icon: CatchIcons.downloadRounded,
+                              onTap: () => _openAsset(asset),
+                            ),
+                        ],
+                      ],
+                    ),
+                  ),
+                  gapH24,
+                  CatchFieldLanes.single(
+                    child: CatchField.control(
+                      copy: catchFieldCopy(context.l10n),
+                      title: context.l10n.hostAudienceSubmissionDetails,
+                      contractExemption:
+                          'Read-only disclosure of server-owned response metadata; no scalar value is persisted.',
+                      child: _ResponseTechnicalDetails(detail: value),
+                    ),
+                  ),
+                  if (value.response.status ==
+                          HostFormResponseStatus.submitted ||
+                      value.contactId != null ||
+                      value.applicationId != null) ...[
+                    gapH24,
+                    HostFormResponseRelatedActions(
+                      detail: value,
+                      organizerId: widget.organizerId,
+                      converting: _converting,
+                      onConvert: (kind) => _reviewConversion(value, kind),
+                    ),
+                  ],
+                ],
               ),
-              gapH24,
-              CatchFieldLanes.single(
-                child: CatchField.control(
-                  copy: catchFieldCopy(context.l10n),
-                  title: context.l10n.hostAudienceSubmissionDetails,
-                  contractExemption:
-                      'Read-only disclosure of server-owned response metadata; no scalar value is persisted.',
-                  child: _ResponseTechnicalDetails(detail: value),
-                ),
-              ),
-              if (value.response.status == HostFormResponseStatus.submitted ||
-                  value.contactId != null ||
-                  value.applicationId != null) ...[
-                gapH24,
-                HostFormResponseRelatedActions(
-                  detail: value,
-                  organizerId: widget.organizerId,
-                  converting: _converting,
-                  onConvert: (kind) => _reviewConversion(value, kind),
-                ),
-              ],
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }

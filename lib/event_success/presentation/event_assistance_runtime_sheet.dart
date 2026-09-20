@@ -67,7 +67,7 @@ class EventAssistanceRuntimeSheet extends ConsumerWidget {
                 value: form == null || denied ? page : AsyncData(form.review),
                 initialLoadTimeout: null,
                 onRetry: reload,
-                loadingBuilder: (_) => const CatchSkeleton.rows(),
+                loadingBuilder: (_) => const CatchLoadingIndicator(),
                 errorBuilder: (_, error, _, retry) =>
                     CatchLocalizedErrorBanner(error, onRetry: retry),
                 builder: (_, session) {

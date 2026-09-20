@@ -42,7 +42,6 @@ import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart'
 import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_campaign_composer.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_screen.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeletons.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_tokens/catch_tokens.dart';
@@ -167,11 +166,7 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
       return HostAudienceStateScaffold(
         selected: _view,
         scrollKey: const PageStorageKey<String>('host-customers-route-state'),
-        slivers: const [
-          CatchStateViewport.sliver(
-            child: HostRouteLoadingBody(padding: EdgeInsets.zero),
-          ),
-        ],
+        slivers: const [CatchStateViewport.sliverLoading()],
       );
     }
     if (uid == null) {
@@ -210,11 +205,7 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
       return HostAudienceStateScaffold(
         selected: _view,
         scrollKey: const PageStorageKey<String>('host-customers-route-state'),
-        slivers: const [
-          CatchStateViewport.sliver(
-            child: HostRouteLoadingBody(padding: EdgeInsets.zero),
-          ),
-        ],
+        slivers: const [CatchStateViewport.sliverLoading()],
       );
     }
     final clubs = clubsState.value ?? const <Club>[];
@@ -430,9 +421,13 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
                             }),
                           ),
                           gapH8,
-                          const CatchDivider.section(),
-                          directoryControls,
-                          const CatchDivider.section(),
+                        ],
+                      ),
+                    ),
+                    SliverToBoxAdapter(child: directoryControls),
+                    CatchPageBody.sliver(
+                      child: SliverList.list(
+                        children: [
                           if (directoryState != null &&
                               (effectiveFilter != HostCustomerFilter.all ||
                                   _manualTag != null ||
@@ -480,14 +475,18 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
                         hostCustomersDirectoryControllerProvider(request),
                       ),
                       initialLoadTimeout: null,
-                      loadingBuilder: (_) => const SliverToBoxAdapter(
-                        child: CatchSkeleton.rows(count: 5),
+                      loadingBuilder: (_) => CatchSection.sliverLoadingRows(
+                        itemCount: 5,
+                        layoutBuilder: (_, _) =>
+                            const CatchPersonLayout.placeholder(
+                              hasSupportingText: true,
+                              hasBadge: true,
+                            ),
                       ),
                       errorBuilder: (_, error, _, onBoundaryRetry) =>
                           CatchLocalizedSliverErrorState(
                             error,
                             context: AppErrorContext.customers,
-                            fillRemaining: false,
                             onRetry: onBoundaryRetry,
                           ),
                       builder: (context, state) => HostCustomersDirectory(

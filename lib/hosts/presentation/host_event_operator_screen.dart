@@ -3,7 +3,6 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/hosts/data/host_event_staff_repository.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeletons.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_operational_roster_panel.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -32,7 +31,7 @@ class HostEventOperatorScreen extends ConsumerWidget {
           ),
         ),
         body: const CatchRouteBody.standardViewport(
-          child: HostRouteLoadingBody(padding: EdgeInsets.zero),
+          child: CatchStateViewport.loading(accountForBottomOverlay: false),
         ),
       ),
       errorBuilder: (_, error, _, onBoundaryRetry) => CatchRouteScaffold(
