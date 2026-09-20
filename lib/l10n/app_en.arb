@@ -24243,6 +24243,32 @@
     "x-owner": "product",
     "x-surface": "event_create"
   },
+  "hostFormPersonField": "Use this answer as",
+  "@hostFormPersonField": {
+    "description": "Person-field mapping in the Host form builder.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.forms"
+  },
+  "hostFormPersonFieldHelp": "Identify contact and profile answers for review. Other answers stay with this response.",
+  "@hostFormPersonFieldHelp": {
+    "description": "Person-field mapping in the Host form builder.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.forms"
+  },
+  "hostFormPersonFieldName": "{field, select, givenName{First name} familyName{Last name} displayName{Full name} dateOfBirth{Date of birth} age{Age} gender{Gender} phoneNumber{Phone number} email{Email} instagramHandle{Instagram} linkedinUrl{LinkedIn} profilePhoto{Profile photo} city{City} heightCm{Height in centimetres} occupation{Occupation} company{Company} education{Education} languages{Languages} relationshipGoal{Relationship goal} interestedInGenders{Gender preference} drinking{Drinking} smoking{Smoking} religion{Religion} workout{Exercise} diet{Diet} children{Children} other{Response only}}",
+  "@hostFormPersonFieldName": {
+    "description": "Person-field mapping in the Host form builder.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "hosts.presentation.forms",
+    "placeholders": {
+      "field": {
+        "type": "String"
+      }
+    }
+  },
   "hostEventRehearsalStaffTitle": "Practice team",
   "@hostEventRehearsalStaffTitle": {"description": "Practice staff configuration copy.", "x-audience": "host", "x-owner": "product", "x-surface": "event_rehearsal.presentation.widgets.event_rehearsal_staff_section"},
   "hostEventRehearsalStaffBody": "Try running the event with a lead, pacer or sweep. These are fictional staff, with access only to their assigned groups.",

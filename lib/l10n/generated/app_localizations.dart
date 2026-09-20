@@ -28020,6 +28020,24 @@ abstract class AppLocalizations {
   /// **'Create event'**
   String get hostsCreateEventCreateAction;
 
+  /// Person-field mapping in the Host form builder.
+  ///
+  /// In en, this message translates to:
+  /// **'Use this answer as'**
+  String get hostFormPersonField;
+
+  /// Person-field mapping in the Host form builder.
+  ///
+  /// In en, this message translates to:
+  /// **'Identify contact and profile answers for review. Other answers stay with this response.'**
+  String get hostFormPersonFieldHelp;
+
+  /// Person-field mapping in the Host form builder.
+  ///
+  /// In en, this message translates to:
+  /// **'{field, select, givenName{First name} familyName{Last name} displayName{Full name} dateOfBirth{Date of birth} age{Age} gender{Gender} phoneNumber{Phone number} email{Email} instagramHandle{Instagram} linkedinUrl{LinkedIn} profilePhoto{Profile photo} city{City} heightCm{Height in centimetres} occupation{Occupation} company{Company} education{Education} languages{Languages} relationshipGoal{Relationship goal} interestedInGenders{Gender preference} drinking{Drinking} smoking{Smoking} religion{Religion} workout{Exercise} diet{Diet} children{Children} other{Response only}}'**
+  String hostFormPersonFieldName({required String field});
+
   /// Practice staff configuration copy.
   ///
   /// In en, this message translates to:

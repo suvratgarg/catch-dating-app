@@ -17720,6 +17720,46 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsCreateEventCreateAction => 'Create event';
 
   @override
+  String get hostFormPersonField => 'Use this answer as';
+
+  @override
+  String get hostFormPersonFieldHelp =>
+      'Identify contact and profile answers for review. Other answers stay with this response.';
+
+  @override
+  String hostFormPersonFieldName({required String field}) {
+    String _temp0 = intl.Intl.selectLogic(field, {
+      'givenName': 'First name',
+      'familyName': 'Last name',
+      'displayName': 'Full name',
+      'dateOfBirth': 'Date of birth',
+      'age': 'Age',
+      'gender': 'Gender',
+      'phoneNumber': 'Phone number',
+      'email': 'Email',
+      'instagramHandle': 'Instagram',
+      'linkedinUrl': 'LinkedIn',
+      'profilePhoto': 'Profile photo',
+      'city': 'City',
+      'heightCm': 'Height in centimetres',
+      'occupation': 'Occupation',
+      'company': 'Company',
+      'education': 'Education',
+      'languages': 'Languages',
+      'relationshipGoal': 'Relationship goal',
+      'interestedInGenders': 'Gender preference',
+      'drinking': 'Drinking',
+      'smoking': 'Smoking',
+      'religion': 'Religion',
+      'workout': 'Exercise',
+      'diet': 'Diet',
+      'children': 'Children',
+      'other': 'Response only',
+    });
+    return '$_temp0';
+  }
+
+  @override
   String get hostEventRehearsalStaffTitle => 'Practice team';
 
   @override

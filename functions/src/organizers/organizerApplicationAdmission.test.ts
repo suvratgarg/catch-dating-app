@@ -257,3 +257,23 @@ test("customer queue includes verified-account applications before admission",
     h.store.docs["organizerContacts/customer-1"].identityState = "ambiguous";
     assert.equal((await list()).applications.length, 0);
   });
+
+
+test("review contact actions use authorized identity endpoints before approval",
+  async () => {
+    const h = harness();
+    h.store.docs["organizerApplicationResponses/response-1"].answers = [];
+    h.store.docs["organizerFormResponses/response-1"].identity = {
+      phoneE164: "+919876543210", email: "ADA@example.com",
+    };
+    const detail = await getOrganizerApplicationDetailHandler(h.request({}),
+      h.deps);
+    assert.equal(detail.outreach.phoneE164, "+919876543210");
+    assert.equal(detail.outreach.email, "ada@example.com");
+    assert.equal(detail.contactId, null);
+    h.store.docs["organizerFormResponses/response-1"].status = "withdrawn";
+    const withdrawn = await getOrganizerApplicationDetailHandler(h.request({}),
+      h.deps);
+    assert.equal(withdrawn.outreach.phoneE164, null);
+    assert.equal(withdrawn.outreach.email, null);
+  });

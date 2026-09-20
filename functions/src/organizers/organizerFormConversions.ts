@@ -46,7 +46,8 @@ import {
   normalizeRosterPhone,
 } from "../events/eventAttendees";
 
-type ConversionKind = PreviewOrganizerFormConversionCallablePayload["kind"];
+import {formConversionReceiptId} from "./organizerFormAdmissionIdentity";
+
 type ConversionFields =
   PreviewOrganizerFormConversionCallableResponse["fields"];
 type ConversionField = ConversionFields[number];
@@ -144,7 +145,8 @@ export async function convertOrganizerFormResponseHandler(
       context.warnings[0] ?? "This response cannot be converted."
     );
   }
-  const receiptId = conversionReceiptId(data.responseId, data.kind);
+  const receiptId = formConversionReceiptId(
+    data.responseId, data.kind, data.eventId);
   const receiptRef = db.collection("organizerFormConversionReceipts")
     .doc(receiptId);
   let receipt = await db.runTransaction(async (tx) => {
@@ -251,7 +253,8 @@ async function conversionContext(
     db.collection("organizerForms").doc(response.formId).get(),
     db.collection("organizerFormVersions").doc(response.versionId).get(),
     db.collection("organizerFormConversionReceipts")
-      .doc(conversionReceiptId(data.responseId, data.kind)).get(),
+      .doc(formConversionReceiptId(
+        data.responseId, data.kind, data.eventId)).get(),
   ]);
   const form = requireDoc<OrganizerFormDocument>(
     formSnap,
@@ -267,6 +270,10 @@ async function conversionContext(
     throw new HttpsError("not-found", "Form response not found.");
   }
   const fields = conversionFields(response, version, data.overrides);
+  if (data.kind === "eventAttendeeProposal" && data.eventId) {
+    fields.push({destinationField: "eventId", label: "Event",
+      value: data.eventId, origin: "hostOverride", conflict: null});
+  }
   const warnings: string[] = [];
   let allowed = response.status === "submitted";
   if (!allowed) warnings.push("Withdrawn responses cannot be converted.");
@@ -290,6 +297,12 @@ async function conversionContext(
     allowed = false;
   }
   if (data.kind === "eventAttendeeProposal") {
+    const crm = await conversionContext(db, {...data,
+      kind: "crmContact", eventId: null});
+    if (!crm.allowed) {
+      allowed = false;
+      warnings.push(...crm.warnings);
+    }
     if (!data.eventId) {
       warnings.push("Choose an event for this attendee proposal.");
       allowed = false;
@@ -300,6 +313,23 @@ async function conversionContext(
           eventSnap.data()?.clubId !== data.organizerId) {
         warnings.push("The selected event is not managed by this organizer.");
         allowed = false;
+      } else {
+        const phone = normalizeRosterPhone(
+          stringField(fields, "phoneNumber")).value;
+        const email = stringField(fields, "email")?.trim().toLowerCase();
+        const key = phone ? `phone:${phone}` : email ? `email:${email}` :
+          `external:${data.responseId.toLowerCase()}`;
+        const edge = await db.collection("organizerContactEventEdges")
+          .doc(eventAttendeeId(data.eventId, key)).get();
+        const target = crmContactConversionTarget({
+          existingResultId: crm.existingResultId, responseId: data.responseId,
+          formId: response.formId, submittedAt: response.submittedAt,
+        });
+        if (edge.exists && edge.data()?.contactId !== target.contactId) {
+          warnings.push("This roster entry belongs to another CRM contact. " +
+            "Review and merge the duplicate contacts before admission.");
+          allowed = false;
+        }
       }
     }
   }
@@ -307,7 +337,7 @@ async function conversionContext(
     (receiptSnap.data() as OrganizerFormConversionReceiptDocument).resultId :
     null;
   if (!existingResultId && data.kind === "crmContact") {
-    existingResultId = await findExistingContact(db, response);
+    existingResultId = await findExistingContact(db, response, fields);
     if (existingResultId) {
       warnings.push("An existing CRM contact matches this response.");
     }
@@ -409,9 +439,20 @@ async function applyEventAttendeeConversion(params: {
   db: FirebaseFirestore.Firestore;
   data: ConvertOrganizerFormResponseCallablePayload;
   actorUid: string;
+  identitySecret: string;
   context: ConversionContext;
   now: FirebaseFirestore.Timestamp;
 }): Promise<string> {
+  // Resolve/create the reviewed person before the attendee trigger can run.
+  await convertOrganizerFormResponseHandler({
+    auth: {uid: params.actorUid, token: {}},
+    data: {...params.data, kind: "crmContact", eventId: null},
+  } as CallableRequest<unknown>, {
+    firestore: () => params.db,
+    checkRateLimit: async () => undefined,
+    timestamp: () => params.now,
+    identitySecret: () => params.identitySecret,
+  });
   const eventId = params.data.eventId!;
   const displayName = String(
     fieldValue(params.context.fields, "displayName") ??
@@ -594,27 +635,42 @@ function conversionFields(
 
 async function findExistingContact(
   db: FirebaseFirestore.Firestore,
-  response: OrganizerFormResponseDocument
+  response: OrganizerFormResponseDocument,
+  fields: ConversionFields
 ): Promise<string | null> {
   const clauses: ["phoneE164" | "email", string][] = [];
-  if (response.identity.phoneE164) {
-    clauses.push(["phoneE164", response.identity.phoneE164]);
-  }
-  if (response.identity.email) clauses.push(["email", response.identity.email]);
+  const phone = normalizeRosterPhone(stringField(fields, "phoneNumber")).value;
+  const email = stringField(fields, "email")?.trim().toLowerCase();
+  if (phone) clauses.push(["phoneE164", phone]);
+  if (email) clauses.push(["email", email]);
+  const candidates = new Set<string>();
   for (const [field, value] of clauses) {
     const snapshot = await db.collection("organizerContacts")
       .where("organizerId", "==", response.organizerId)
       .where(field, "==", value)
-      .limit(2)
+      .limit(10)
       .get();
-    const candidate = snapshot.docs.find((doc) => {
+    if (snapshot.size === 10) {
+      throw new HttpsError("failed-precondition",
+        "Review duplicate contacts before converting this response.");
+    }
+    for (const doc of snapshot.docs) {
       const contact = doc.data() as OrganizerContactDocument;
-      return contact.deletedAt === null && contact.hiddenAt === null &&
-        contact.mergedIntoContactId === null;
-    });
-    if (candidate) return candidate.id;
+      if (contact.deletedAt !== null || contact.hiddenAt !== null ||
+          contact.mergedIntoContactId !== null) continue;
+      if (contact.linkedUid && response.respondentUid &&
+          contact.linkedUid !== response.respondentUid) {
+        throw new HttpsError("failed-precondition",
+          "The matching customer belongs to another account.");
+      }
+      candidates.add(doc.id);
+    }
   }
-  return null;
+  if (candidates.size > 1) {
+    throw new HttpsError("failed-precondition",
+      "The response matches conflicting contacts. Review duplicates first.");
+  }
+  return [...candidates][0] ?? null;
 }
 
 function compatibilityQuestionKind(
@@ -700,10 +756,6 @@ function normalizeConversionPayload(value: unknown): unknown {
     stringFields: ["organizerId", "responseId"],
     nullableStringFields: ["eventId"],
   });
-}
-
-function conversionReceiptId(responseId: string, kind: ConversionKind): string {
-  return deterministicResultId("formconversion", responseId, kind);
 }
 
 function deterministicResultId(prefix: string, ...parts: string[]): string {
