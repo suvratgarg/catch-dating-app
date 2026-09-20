@@ -16105,10 +16105,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostEventRehearsalTitle => 'Dress rehearsal';
 
   @override
-  String get hostEventRehearsalPracticeBanner =>
-      'Practice mode · No real guests, messages, payments, matches, or event records are changed';
-
-  @override
   String get hostEventRehearsalManageSubtitle => 'Host · Manage';
 
   @override
@@ -16222,16 +16218,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostEventRehearsalLeaveAction => 'Leave rehearsal';
 
   @override
-  String get hostEventRehearsalStartSubtitle =>
-      'Choose a room to practice. You can change the rehearsal copy and playbook before starting.';
-
-  @override
-  String get hostEventRehearsalSourceEvent => 'Practice this event';
-
-  @override
-  String get hostEventRehearsalSourceSample => 'Catch sample event';
-
-  @override
   String get hostEventRehearsalScenario => 'Practice scenario';
 
   @override
@@ -16244,17 +16230,6 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return '$_temp0';
   }
-
-  @override
-  String get hostEventRehearsalActorCountBody =>
-      'Use a realistic roster. Rehearsals are capped at 50 synthetic guests.';
-
-  @override
-  String get hostEventRehearsalCreate => 'Create rehearsal';
-
-  @override
-  String get hostEventRehearsalExpiry =>
-      'This rehearsal and its guest link expire after 24 hours.';
 
   @override
   String get hostEventRehearsalScenarioSmoothRun => 'Normal flow';
