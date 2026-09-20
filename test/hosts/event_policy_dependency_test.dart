@@ -5,11 +5,38 @@ import 'package:catch_dating_app/hosts/presentation/event_management/widgets/eve
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../support/catch_test_fonts.dart';
 import '../test_pump_helpers.dart';
 
 void main() {
+  setUpAll(loadCatchTestFonts);
+  testWidgets('applicable field labels remain readable at large text', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(390, 1600);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final fixture = _PolicyFixture();
+    addTearDown(fixture.dispose);
+    for (final preset in EventAdmissionPreset.values) {
+      await tester.pumpWidget(fixture.app(preset: preset, scale: 2));
+      await pumpFeatureUi(tester);
+      for (final paragraph in tester.renderObjectList<RenderParagraph>(
+        find.byType(RichText),
+      )) {
+        expect(
+          paragraph.didExceedMaxLines,
+          isFalse,
+          reason: paragraph.text.toPlainText(),
+        );
+      }
+      expect(tester.takeException(), isNull);
+    }
+  });
   testWidgets('admission and pair controls own their applicable children', (
     tester,
   ) async {
@@ -138,8 +165,15 @@ class _PolicyFixture {
     required EventAdmissionPreset preset,
     bool enabled = true,
     bool external = false,
+    double scale = 1,
   }) => MaterialApp(
     theme: CatchTheme.light,
+    builder: (context, child) => MediaQuery(
+      data: MediaQuery.of(
+        context,
+      ).copyWith(textScaler: TextScaler.linear(scale)),
+      child: child!,
+    ),
     localizationsDelegates: AppLocalizations.localizationsDelegates,
     supportedLocales: AppLocalizations.supportedLocales,
     home: Scaffold(

@@ -157,6 +157,7 @@ class EventPolicyStep extends StatelessWidget {
             CatchSection.fieldRows(
               children: [
                 CatchField.input(
+                  titleMaxLines: 4,
                   copy: catchFieldCopy(context.l10n),
                   key: CreateEventFormKeys.capacity,
                   title: context.l10n.hostsEventPolicyStepTitleMaxAttendees,
@@ -196,6 +197,7 @@ class EventPolicyStep extends StatelessWidget {
                 ),
                 if (dependencies.isApplicable(_PolicyField.catchBooking))
                   CatchField.input(
+                    titleMaxLines: 4,
                     copy: catchFieldCopy(context.l10n),
                     key: CreateEventFormKeys.price,
                     title: context.l10n
@@ -259,6 +261,7 @@ class EventPolicyStep extends StatelessWidget {
                     children: [
                       if (dependencies.isApplicable(_PolicyField.inviteCode))
                         CatchField.input(
+                          titleMaxLines: 4,
                           copy: catchFieldCopy(context.l10n),
                           key: CreateEventFormKeys.inviteCode,
                           title:
@@ -312,6 +315,7 @@ class EventPolicyStep extends StatelessWidget {
                           _PolicyField.cohortLimits,
                         )) ...[
                           CatchField.input(
+                            titleMaxLines: 4,
                             copy: catchFieldCopy(context.l10n),
                             key: CreateEventFormKeys.maxMen,
                             title: context
@@ -338,6 +342,7 @@ class EventPolicyStep extends StatelessWidget {
                                 : null,
                           ),
                           CatchField.input(
+                            titleMaxLines: 4,
                             copy: catchFieldCopy(context.l10n),
                             key: CreateEventFormKeys.maxWomen,
                             title: context
@@ -374,7 +379,7 @@ class EventPolicyStep extends StatelessWidget {
                           body: context
                               .l10n
                               .hostsEventPolicyStepTextRequestsAppearInHost,
-                          bodyMaxLines: 3,
+                          bodyMaxLines: 8,
                           icon: CatchIcons.howToRegOutlined,
                         ),
                       if (dependencies.isApplicable(
@@ -401,6 +406,7 @@ class EventPolicyStep extends StatelessWidget {
                           _PolicyField.demandAdjustments,
                         )) ...[
                           CatchField.input(
+                            titleMaxLines: 4,
                             copy: catchFieldCopy(context.l10n),
                             key: CreateEventFormKeys.dynamicPricingStep,
                             title: context.l10n
@@ -425,6 +431,7 @@ class EventPolicyStep extends StatelessWidget {
                                 : null,
                           ),
                           CatchField.input(
+                            titleMaxLines: 4,
                             copy: catchFieldCopy(context.l10n),
                             key: CreateEventFormKeys.dynamicPricingMax,
                             title: context.l10n
@@ -474,6 +481,7 @@ class EventPolicyStep extends StatelessWidget {
                         _PolicyField.pairCapacity,
                       )) ...[
                         CatchField.input(
+                          titleMaxLines: 4,
                           copy: catchFieldCopy(context.l10n),
                           key: CreateEventFormKeys.crossPathsPairCapacity,
                           title: context

@@ -30,50 +30,53 @@ class CatchDependentRowSection extends StatelessWidget {
     return Semantics(
       container: true,
       explicitChildNodes: true,
-      child: CatchSectionSurface.fieldRows(
-        padding: EdgeInsets.zero,
-        states: states,
-        child: CatchFieldGeometryScope(
-          gutterOwnership: CatchFieldGeometryScopeMode.field,
-          contentInsets: const EdgeInsets.symmetric(
-            horizontal: CatchFieldTokens.rowHorizontalPadding,
-          ),
-          interactionOutsets: EdgeInsets.zero,
-          exactBounds: true,
-          interactionShape: CatchFieldGeometryScopeVariant.sectionClipped,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              leading,
-              if (children.isNotEmpty || footer != null)
-                ColoredBox(
-                  color: tokens.bg,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      ...children,
-                      if (footer case final footer?)
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(
-                            CatchFieldTokens.rowHorizontalPadding,
-                            CatchFieldTokens.containedSectionFooterTopPadding,
-                            CatchFieldTokens.rowHorizontalPadding,
-                            CatchFieldTokens.rowVerticalPadding,
-                          ),
-                          child: DefaultTextStyle.merge(
-                            style: CatchTextStyles.supporting(
-                              context,
-                              color: tokens.ink2,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: CatchSpacing.s2),
+        child: CatchSectionSurface.fieldRows(
+          padding: EdgeInsets.zero,
+          states: states,
+          child: CatchFieldGeometryScope(
+            gutterOwnership: CatchFieldGeometryScopeMode.field,
+            contentInsets: const EdgeInsets.symmetric(
+              horizontal: CatchFieldTokens.rowHorizontalPadding,
+            ),
+            interactionOutsets: EdgeInsets.zero,
+            exactBounds: true,
+            interactionShape: CatchFieldGeometryScopeVariant.sectionClipped,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                leading,
+                if (children.isNotEmpty || footer != null)
+                  ColoredBox(
+                    color: tokens.bg,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        ...children,
+                        if (footer case final footer?)
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(
+                              CatchFieldTokens.rowHorizontalPadding,
+                              CatchFieldTokens.containedSectionFooterTopPadding,
+                              CatchFieldTokens.rowHorizontalPadding,
+                              CatchFieldTokens.rowVerticalPadding,
                             ),
-                            child: footer,
+                            child: DefaultTextStyle.merge(
+                              style: CatchTextStyles.supporting(
+                                context,
+                                color: tokens.ink2,
+                              ),
+                              child: footer,
+                            ),
                           ),
-                        ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

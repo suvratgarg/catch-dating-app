@@ -32,6 +32,7 @@ typedef _ToggleConfig = ({
 });
 
 typedef _EditConfig = ({
+  int titleMaxLines,
   TextEditingController? controller,
   String? contractExemption,
   String? initialValue,
