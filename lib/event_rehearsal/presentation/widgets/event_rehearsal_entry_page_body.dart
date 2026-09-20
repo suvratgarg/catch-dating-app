@@ -38,7 +38,7 @@ class EventRehearsalEntryPageBody extends StatelessWidget {
               : l10n.hostRehearsalEntryUpcoming,
           style: CatchTextStyles.eventDisplay(
             context,
-            step: CatchDisplayStep.l,
+            step: CatchTextStylesSize.l,
           ),
         ),
         gapH8,
