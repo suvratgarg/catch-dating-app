@@ -361,7 +361,7 @@ class _HostFormResponsesPanelState
                       for (var index = 0; index < 3; index++)
                         CatchField.nav(
                           copy: catchFieldCopy(context.l10n),
-                          title: 'Loading form',
+                          title: CatchSkeleton.sampleFormTitle,
                         ),
                     ],
                   ),
