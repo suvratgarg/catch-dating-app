@@ -175,7 +175,7 @@
         "hostGoal": {
           "type": "string",
           "minLength": 1,
-          "maxLength": 240
+          "maxLength": 300
         },
         "attendeePrompt": {
           "type": "string",
@@ -269,6 +269,47 @@
               ],
               "maxLength": 320
             }
+          }
+        },
+        "eventFormat": {
+          "$ref": "event_common.schema.json#/definitions/eventFormatSnapshot"
+        },
+        "successDefaults": {
+          "$ref": "event_common.schema.json#/definitions/eventSuccessDefaults"
+        }
+      }
+    },
+    "guestSource": {
+      "type": "string",
+      "enum": [
+        "simulated",
+        "event"
+      ]
+    },
+    "rosterSnapshot": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 50,
+      "description": "Private frozen roster names and attendance only. No production identity or contact fields.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "displayName",
+          "status"
+        ],
+        "properties": {
+          "displayName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "expected",
+              "present"
+            ]
           }
         }
       }

@@ -1,5 +1,75 @@
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
+import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_configuration.dart';
+import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_operations.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_activity_profile.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations.dart';
+
+EventRehearsalSetup eventRehearsalConfigurationSetup(
+  AppLocalizations l10n,
+  EventRehearsalConfiguration configuration,
+) {
+  final goal =
+      (configuration.hostGoal ?? configuration.successDefaults.hostGoal).trim();
+  final prompt = eventRehearsalConfigurationPrompt(l10n, configuration).trim();
+  return EventRehearsalSetup(
+    title: eventRehearsalConfigurationTitle(l10n, configuration).trim(),
+    locationName: eventRehearsalConfigurationVenue(l10n, configuration).trim(),
+    durationMinutes: configuration.effectiveDurationMinutes,
+    hostGoal: goal,
+    attendeePrompt: prompt,
+    modules: configuration.selectedModules.toList(),
+    unitOutcome: RehearsalOutcomeKind.values.byName(
+      EventSuccessActivityProfile.forFormat(
+        configuration.format,
+      ).unitOutcome.name,
+    ),
+    eventFormat: configuration.format,
+    successDefaults: configuration.configuredSuccessDefaults.copyWith(
+      hostGoal: goal,
+      attendeePrompt: prompt,
+    ),
+  );
+}
+
+String eventRehearsalConfigurationTitle(
+  AppLocalizations l10n,
+  EventRehearsalConfiguration configuration,
+) =>
+    configuration.title ??
+    configuration.sourceEvent?.title ??
+    l10n.hostRehearsalSampleTitle(
+      activity: configuration.format.activityKind.label,
+    );
+
+String eventRehearsalConfigurationVenue(
+  AppLocalizations l10n,
+  EventRehearsalConfiguration configuration,
+) =>
+    configuration.locationName ??
+    configuration.sourceEvent?.locationName ??
+    l10n.hostRehearsalSampleVenue;
+
+String eventRehearsalConfigurationPrompt(
+  AppLocalizations l10n,
+  EventRehearsalConfiguration configuration,
+) =>
+    configuration.attendeePrompt ??
+    configuration.successDefaults.attendeePrompt ??
+    l10n.hostRehearsalSamplePrompt;
+
+String eventRehearsalConfigurationModuleLabel(
+  AppLocalizations l10n,
+  EventRehearsalModule module,
+) => switch (module) {
+  EventRehearsalModule.arrival => l10n.hostRehearsalModuleArrival,
+  EventRehearsalModule.firstHello => l10n.hostRehearsalModuleFirstHello,
+  EventRehearsalModule.pods => l10n.hostRehearsalModulePods,
+  EventRehearsalModule.rotations => l10n.hostRehearsalModuleRotations,
+  EventRehearsalModule.conversationCues => l10n.hostRehearsalModuleCues,
+  EventRehearsalModule.reveal => l10n.hostRehearsalModuleReveal,
+  EventRehearsalModule.afterglow => l10n.hostRehearsalModuleAfterglow,
+  EventRehearsalModule.accountability => l10n.hostRehearsalModuleAccountability,
+};
 
 String eventRehearsalScenarioTitle(
   AppLocalizations l10n,

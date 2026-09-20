@@ -4449,6 +4449,7 @@ describe("firestore.rules", () => {
 
     it("keeps all dress rehearsal collections callable-only", async () => {
       const collections = [
+        "eventRehearsalMilestones",
         "eventRehearsals",
         "eventRehearsalActors",
         "eventRehearsalActions",

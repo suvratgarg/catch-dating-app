@@ -127,6 +127,7 @@ export 'callables/get_event_rcs_withdrawal_callable_request.g.dart';
 export 'callables/get_event_rehearsal_bootstrap_callable_request.g.dart';
 export 'callables/get_event_rehearsal_guest_bootstrap_callable_request.g.dart';
 export 'callables/get_event_rehearsal_movement_callable_request.g.dart';
+export 'callables/get_event_rehearsal_summary_callable_request.g.dart';
 export 'callables/get_event_roster_insights_callable_request.g.dart';
 export 'callables/get_event_runtime_bootstrap_callable_request.g.dart';
 export 'callables/get_event_success_spatial_layout_callable_request.g.dart';
