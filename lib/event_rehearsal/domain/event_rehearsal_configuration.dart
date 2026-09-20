@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';

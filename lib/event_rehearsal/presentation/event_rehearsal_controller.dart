@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:catch_dating_app/core/clipboard.dart';
 import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/event_rehearsal/data/event_rehearsal_repository.dart';

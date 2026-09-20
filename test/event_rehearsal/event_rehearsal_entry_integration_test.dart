@@ -1,6 +1,5 @@
 import 'dart:async';
-import '../test_pump_helpers.dart';
-import 'event_rehearsal_configuration_test.dart' show rehearsalSourceEvent;
+
 import 'package:catch_dating_app/clubs/domain/club_host_defaults.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
@@ -15,6 +14,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+
+import '../test_pump_helpers.dart';
+import 'event_rehearsal_configuration_test.dart' show rehearsalSourceEvent;
 
 void main() {
   testWidgets(
