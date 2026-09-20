@@ -55,3 +55,18 @@ test("host rehearsal bootstrap retains its measured memory ceiling", () => {
   ].join("\n");
   assert.equal(source.includes(bootstrapExport), true);
 });
+
+// This is the only production roster read seam; handler tests assert writes.
+test("configuration permits only a bounded, read-only roster snapshot", () => {
+  const source = readFileSync(
+    resolve(process.cwd(), "src/eventRehearsal/configuration.ts"), "utf8"
+  );
+  assert.equal(source.match(/collection\("eventAttendees"\)/gu)?.length, 1);
+  assert.match(source, /\.limit\(REHEARSAL_MAX_ACTORS \+ 1\)/u);
+  assert.doesNotMatch(source, /\.(?:set|update|create|delete|batch)\(/u);
+  for (const collection of forbiddenLiveCollections) {
+    if (collection !== "eventAttendees") {
+      assert.ok(!source.includes(`"${collection}"`));
+    }
+  }
+});

@@ -48,7 +48,7 @@ const schemaEventRehearsalActorDocumentSchema = <String, Object?>{
     'displayName': <String, Object?>{
       'type': 'string',
       'minLength': 1,
-      'maxLength': 80,
+      'maxLength': 120,
       'x-catch-ownership': 'callable-owned',
     },
     'persona': <String, Object?>{

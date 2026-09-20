@@ -1181,8 +1181,14 @@ The schemas under `contracts/firestore/event_rehearsal_*.schema.json` and
 `contracts/callables/*event_rehearsal*.schema.json` are authoritative.
 Functions may read `events/{sourceEventId}` exactly once during creation to
 copy a bounded title, location, duration, and supported playbook shape after
-verifying organizer authority. No rehearsal handler may write a production
-collection. Firestore rules deny every direct client read and write to these
+verifying organizer authority. Explicit event guest selection also reads at most
+51 registered/checked-in attendee documents, rejecting rosters outside 2–50.
+Only names and attendance enter the private frozen snapshot; production attendee
+IDs, linked identities, contacts, and payment state do not. Reset and fork reuse
+that snapshot without reading the live roster. Public guest projections replace
+copied names with synthetic labels. Custom setup strips production layout IDs
+and arbitrary activity metadata before persistence. No rehearsal handler may
+write a production collection. Firestore rules deny every direct client read and write to these
 collections; App-Check-protected callables own all Host access.
 
 Host writes carry the expected setup or runtime revision. Mutating controls and
