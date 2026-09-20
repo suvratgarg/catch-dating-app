@@ -3,10 +3,16 @@ import fs from "node:fs";
 import test from "node:test";
 import {runInNewContext} from "node:vm";
 
-const source = fs.readFileSync(
+const producer = fs.readFileSync(
   new URL("../../.github/workflows/mobile-internal-release.yml", import.meta.url),
   "utf8",
 );
+const platformWorkflow = fs.readFileSync(
+  new URL("../../.github/workflows/_mobile-platform-authority.yml", import.meta.url),
+  "utf8",
+);
+const dispatchIndex = producer.indexOf("  dispatch-promotions:");
+const source = producer.slice(0, dispatchIndex) + platformWorkflow + producer.slice(dispatchIndex);
 const consumerGradleWrapper = fs.readFileSync(
   new URL("../../android/gradle/wrapper/gradle-wrapper.properties", import.meta.url),
   "utf8",
@@ -89,7 +95,7 @@ test("exact releaseTargets select role-platform builds without Cartesian widenin
 
 test("each signed artifact is source-bound, packaged, and retained for promotion", () => {
   const exactCheckouts = source.match(
-    /ref: \$\{\{ needs\.authorize\.outputs\.source_sha \}\}/gu,
+    /ref: \$\{\{ (?:needs\.authorize\.outputs|inputs)\.source_sha \}\}/gu,
   ) ?? [];
   assert.ok(exactCheckouts.length >= 4);
   assert.match(source, /package_mobile_release\.mjs prepare[\s\S]*?--ci-authority/u);
@@ -130,9 +136,9 @@ test("partial producer reruns fail closed with a current-attempt completeness au
 
 test("cross-role comparison passes before the aggregate build authority is published", () => {
   assert.match(source, /compare-role-packages:[\s\S]*?check_mobile_package\.mjs --compare/u);
-  assert.match(source, /publish-authority:[\s\S]*?needs: \[authorize, compare-role-packages\]/u);
-  assert.match(source, /needs\.compare-role-packages\.result == 'success'/u);
-  assert.match(source, /schema: "catch\.mobile-build-authority\/v1"/u);
+  assert.match(source, /publish-authority:[\s\S]*?needs: compare-role-packages/u);
+
+  assert.match(source, /schema: "catch\.mobile-build-authority\/v2"/u);
   assert.match(source, /package_mobile_release\.mjs verify-authority/u);
   assert.match(source, /Upload post-comparison mobile build authority/u);
   const compareIndex = source.indexOf("  compare-role-packages:");
@@ -167,7 +173,7 @@ test("finalizer downloads and re-verifies exact package bytes before authority",
   assert.match(publish, /cmp "\$package_root\/package-receipt\.sorted\.json"/u);
   const packageDownload = publish.indexOf("actions/artifacts/$package_id/zip");
   const packageVerify = publish.indexOf("package_mobile_release.mjs verify \\");
-  const authority = publish.indexOf('schema: "catch.mobile-build-authority/v1"');
+  const authority = publish.indexOf('schema: "catch.mobile-build-authority/v2"');
   assert.ok(packageDownload >= 0 && packageVerify > packageDownload && authority > packageVerify);
 });
 
@@ -227,4 +233,30 @@ test("producer performs no App Store, Play, or legacy-owner mutation", () => {
   ]) {
     assert.doesNotMatch(source, forbidden);
   }
+});
+
+test("Android failures cannot skip iOS authority or promotion, and vice versa", () => {
+  const job = (name) => producer.match(new RegExp(`^  ${name}:\\n[\\s\\S]*?(?=^  [a-z][a-z-]*:|(?![\\s\\S]))`, "mu"))?.[0];
+  for (const platform of ["ios", "android"]) {
+    const authority = job(`${platform}-authority`);
+    assert.ok(authority);
+    assert.ok(authority.includes(`needs: [authorize, prod-${platform}]`));
+    assert.ok(authority.includes("release_targets: ${{ needs.authorize.outputs." + platform + "_targets }}"));
+    const expression = authority.match(/if: >-\n([\s\S]*?)    uses:/u)[1].trim();
+    for (const result of ["success", "failure", "cancelled", "skipped"]) {
+      const needs = {
+        authorize: {result: "success", outputs: {[`has_${platform}_targets`]: "true"}},
+        [`prod-${platform}`]: {result},
+        [`prod-${platform === "ios" ? "android" : "ios"}`]: {result: "failure"},
+      };
+      assert.equal(runInNewContext(expression.replaceAll(`needs.prod-${platform}`, `needs["prod-${platform}"]`),
+        {needs, always: () => true}), result === "success");
+    }
+  }
+  const dispatch = job("dispatch-promotions");
+  assert.match(dispatch, /needs: \[authorize, ios-authority\]/u);
+  assert.match(dispatch, /always\(\)/u);
+  assert.doesNotMatch(dispatch, /prod-android|android-authority/u);
+  assert.match(platformWorkflow, /pattern: mobile-package-receipt-v1-\*-\$\{\{ inputs.platform \}\}-/u);
+  assert.match(platformWorkflow, /--arg suffix "-\$\{\{ inputs.platform \}\}-\$suffix"/u);
 });

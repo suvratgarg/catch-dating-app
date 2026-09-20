@@ -343,7 +343,7 @@ function unifiedReleaseManifest() {
 const unifiedWorkflow = fs.readFileSync(
   new URL("../../.github/workflows/mobile-internal-release.yml", import.meta.url),
   "utf8",
-);
+) + fs.readFileSync(new URL("../../.github/workflows/_mobile-platform-authority.yml", import.meta.url), "utf8");
 
 test("release ownership accepts the exact-target producer and separate promoter", () => {
   const manifest = unifiedReleaseManifest();
