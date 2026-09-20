@@ -68,6 +68,11 @@ class _HostSavedAudiencesDirectoryState
   @override
   Widget build(BuildContext context) {
     final audiences = ref.watch(hostAllSavedAudiencesProvider(organizerId));
+    final createAction = CatchButton.text(
+      key: const ValueKey('host-saved-audience-create'),
+      label: context.l10n.hostSavedAudienceNew,
+      onPressed: onCreate,
+    );
     return SliverMainAxisGroup(
       slivers: [
         CatchPageBody.sliver(
@@ -106,11 +111,7 @@ class _HostSavedAudiencesDirectoryState
           initialLoadTimeout: null,
           loadingBuilder: (_) => CatchSection.sliverLoadingRows(
             title: context.l10n.hostSavedAudiencesManage,
-            trailing: CatchButton.text(
-              key: const ValueKey('host-saved-audience-create'),
-              label: context.l10n.hostSavedAudienceNew,
-              onPressed: onCreate,
-            ),
+            trailing: createAction,
             itemCount: 4,
             layoutBuilder: (_, _) => CatchRecordLayout.placeholder(
               icon: CatchIcons.groupsOutlined,
@@ -151,11 +152,7 @@ class _HostSavedAudiencesDirectoryState
                   key: const ValueKey('host-saved-audiences-directory'),
                   title: context.l10n.hostSavedAudiencesManage,
                   count: visible.length,
-                  trailing: CatchButton.text(
-                    key: const ValueKey('host-saved-audience-create'),
-                    label: context.l10n.hostSavedAudienceNew,
-                    onPressed: onCreate,
-                  ),
+                  trailing: createAction,
                   itemCount: visible.length,
                   indexForKeyBuilder: (key) {
                     final index = visible.indexWhere(
