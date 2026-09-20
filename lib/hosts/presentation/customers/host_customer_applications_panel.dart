@@ -41,7 +41,19 @@ class HostCustomerApplicationsPanel extends ConsumerWidget {
     return CatchAsyncBoundary<HostApplicationsDirectoryState>(
       value: ref.watch(provider),
       onRetry: () => ref.invalidate(provider),
-      loadingBuilder: (_) => const CatchSkeleton.rows(count: 2),
+      loadingBuilder: (_) => CatchSection.containedLoadingRows(
+        title: context.l10n.hostApplicationsTitle,
+        layouts: [
+          CatchRecordLayout.placeholder(
+            icon: CatchIcons.tabForms,
+            hasMetadata: true,
+          ),
+          CatchRecordLayout.placeholder(
+            icon: CatchIcons.tabForms,
+            hasMetadata: true,
+          ),
+        ],
+      ),
       builder: (context, state) => Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -138,7 +150,35 @@ class HostCustomerApplicationSnapshot extends ConsumerWidget {
     return CatchAsyncBoundary<HostApplicationDetail>(
       value: ref.watch(provider),
       onRetry: () => ref.invalidate(provider),
-      loadingBuilder: (_) => const CatchSkeleton.rows(count: 2),
+      loadingBuilder: (_) => CatchSkeleton.content(
+        child: CatchSection.fieldRows(
+          title: context.l10n.hostCustomersLatestSubmittedDetails,
+          footer: Text(
+            context.l10n.hostCustomersSubmittedOn(
+              date: CatchSkeleton.sampleDateText,
+            ),
+            style: CatchTextStyles.recordContext(context),
+          ),
+          children: [
+            CatchField.read(
+              copy: catchFieldCopy(context.l10n),
+              title: CatchSkeleton.sampleQuestionText,
+              body: CatchSkeleton.sampleAnswerText,
+            ),
+            CatchField.read(
+              copy: catchFieldCopy(context.l10n),
+              title: CatchSkeleton.sampleQuestionText,
+              body: CatchSkeleton.sampleAnswerText,
+            ),
+            CatchField.nav(
+              copy: catchFieldCopy(context.l10n),
+              title: context.l10n.hostCustomersOpenApplication,
+              body: CatchSkeleton.sampleStatusText,
+              onTap: () {},
+            ),
+          ],
+        ),
+      ),
       builder: (context, detail) => CatchSection.fieldRows(
         key: const ValueKey('host-customer-submitted-fields'),
         title: context.l10n.hostCustomersLatestSubmittedDetails,

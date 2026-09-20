@@ -1,7 +1,7 @@
 ---
 doc_id: release_operations
-version: 2.7.13
-updated: 2026-09-06
+version: 2.7.14
+updated: 2026-09-21
 owner: recursive_audit_loop
 status: active
 ---
@@ -443,7 +443,7 @@ The current workflows are:
 | `.github/workflows/admin-website.yml` | Validates Admin source and live callable dependencies, then calls the exact build/promote adapters for the production `admin` target. |
 | `.github/workflows/host-website.yml` | Validates the Host target, standalone roster tests, and Host-owned Flutter surfaces, then builds and promotes the independent production `host` target. |
 | `.github/workflows/release-readiness.yml` | Manual staging/prod release gate. |
-| `.github/workflows/mobile-internal-release.yml` | Signed package matrix and automatic iOS handoff. It consumes a successful `main` CI authority, builds only exact role/platform targets, publishes 90-day IPA/AAB packages plus a post-comparison build authority, and dispatches one exact promoter for every authorized iOS target without mutating either store itself. |
+| `.github/workflows/mobile-internal-release.yml` | Signed package matrix and automatic iOS handoff. It consumes a successful `main` CI authority, builds only exact role/platform targets, publishes 90-day IPA/AAB packages plus separate post-comparison platform authorities, and dispatches one exact promoter for every authorized iOS target without mutating either store itself. |
 | `.github/workflows/mobile-internal-promote.yml` | Exact-artifact promoter. Automatic iOS dispatches and manual recovery dispatches both verify the current producer and authority/package ids, digests, provenance, and target before uploading the already-signed IPA to TestFlight or AAB to Play `qa`; it never rebuilds or resigns. After an iOS upload claim is durable, it grants the VALID build to existing internal groups that already contain testers. |
 | `.github/workflows/observability-evidence.yml` | Manual Crashlytics and Analytics evidence capture. |
 | `.github/workflows/website-production-observability.yml` | Scheduled and manual production website status, canonical-metadata, and launch-content probes. |
@@ -716,6 +716,22 @@ GitHub environment variables for `dev`, `staging`, `prod`, and `prod-backend`
 (the last two use the same production values). The backend workflow writes
 validated values into the disposable Functions `.env.<project-id>` before
 Firebase discovers its parameters. Missing or invalid IDs fail deployment.
+
+The deploy materializer also writes `EVENT_ASSISTANCE_RCS_ENABLED`,
+`EVENT_ASSISTANCE_RCS_WEBHOOK_ENABLED`, and
+`EVENT_ASSISTANCE_SMS_REPORTS_ENABLED` from the selected GitHub environment's
+variables, defaulting each to `false`. Source `default: false` declarations do
+not satisfy non-interactive Firebase parameter discovery. These values neither
+activate dormant exports nor establish messaging consent, sender authority, or
+provider readiness. Enabling a channel remains a separate reviewed operation.
+
+`firebase:params-coverage` parses every authored non-secret Functions parameter
+and rejects declarations missing from the materializer. Functions CI runs this
+check and its regression tests. Promotion additionally checks the exact approved
+source against the generated deploy-copy dotenv file before the first ordered
+mutation, including when draining historical immutable packages. SecretParams
+remain in Secret Manager. Missing parameter or secret errors stop immediately;
+only other Function batch failures retain the bounded retry policy.
 
 The parameter names deliberately differ from the older `ALGOLIA_APP_ID` and
 `RAZORPAY_KEY_ID` SecretParams, allowing historical immutable packages to run
@@ -1126,16 +1142,21 @@ which verifies CI authority v3 and consumes only the exact
 plan. The approval-free, main-only `prod-mobile` environment supplies signing
 credentials. The producer builds, signs, verifies, size-audits, and retains each
 selected IPA/AAB plus its identity, policy, provenance, and immutable upload
-receipt for 90 days. Cross-role comparisons finish before it publishes the
-aggregate mobile build authority. The producer performs no TestFlight or Play
-mutation.
+receipt for 90 days. Each platform finishes its own cross-role comparisons and
+publishes a separate `catch.mobile-build-authority/v2` containing only that
+platform's selected targets. A failed Android build or size gate does not block
+iOS authority publication or TestFlight handoff; iOS failures likewise do not
+invalidate Android packages. The producer performs no TestFlight or Play mutation.
 
 Store mutation remains a separate exact-artifact operation in
-`.github/workflows/mobile-internal-promote.yml`. After the aggregate authority is
-published, the producer uses its narrowly scoped `actions: write` job to dispatch
+`.github/workflows/mobile-internal-promote.yml`. After the iOS platform authority
+is published, the producer uses its narrowly scoped `actions: write` job to dispatch
 one promoter for every authorized iOS target, passing the current producer
 run/attempt and exact authority artifact id/digest. GitHub runs the promoter from
-`main`; it waits for the dispatching producer to reach terminal success, then
+`main`; v2 promotion requires the selected platform's verification job to have
+succeeded in the exact current producer attempt. It can proceed while the other
+platform is running or after that platform fails. Legacy v1 aggregate authorities
+still require the entire producer run to finish successfully. The promoter
 derives the package artifact only from that authority, downloads it by immutable
 id, verifies the GitHub digest and every packaged byte, and freshly re-extracts it
 for final verification before credentials are created. Manual dispatch accepts
@@ -2078,12 +2099,12 @@ store mutation are separate authorities:
 
 - `Mobile Internal Release` is a signed-package `workflow_run` consumer. It
   accepts a successful same-repository `main` CI authority, builds only exact
-  role/platform targets, and publishes verified 90-day packages plus a strict
-  aggregate build authority, then automatically hands authorized iOS targets to
+  role/platform targets, and publishes verified 90-day packages plus independent
+  platform v2 build authorities, then automatically hands authorized iOS targets to
   the separate promoter. It has no manual dispatch and no store mutation.
 - `Mobile Internal Exact Promotion` receives an automatic dispatch for every
   authorized iOS target. It accepts one exact target and current producer
-  attempt, derives the package id/digest from the verified aggregate authority,
+  attempt, derives the package id/digest from the verified platform authority,
   then uploads those already-signed bytes to TestFlight without rebuilding or
   resigning. Manual exact dispatch remains available for iOS or Play recovery.
 
@@ -2141,8 +2162,9 @@ The same wrapper applies a separate CI-only retry to Android `apk` and
 `appbundle` builds when the output contains both a transient Java socket
 failure and the Gradle wrapper download stack. The ordinary wrapper default is
 three attempts; the protected mobile producer allows five attempts with a
-20-second delay because one failed matrix runner invalidates the aggregate
-release authority. Consumer and Host use the same smaller binary-only Gradle
+20-second delay to keep the selected Android package lane resilient. A failed
+Android runner blocks Android authority publication without withholding iOS
+packages or distribution. Consumer and Host use the same smaller binary-only Gradle
 distribution from Gradle's immutable GitHub release and pin its published
 SHA-256. The wrapper does not retry Gradle compilation, signing, Android
 configuration, or unrelated network-looking errors. This keeps signed-package

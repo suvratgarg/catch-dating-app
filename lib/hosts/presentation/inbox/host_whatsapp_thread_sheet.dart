@@ -70,7 +70,7 @@ class _HostWhatsappThreadSheetState
         child: switch (snapshot.connectionState) {
           ConnectionState.none || ConnectionState.waiting
               when snapshot.data == null =>
-            const CatchSkeleton.rows(),
+            const CatchStateViewport.loading(accountForBottomOverlay: false),
           _ when snapshot.hasError => CatchLocalizedErrorState(
             snapshot.error!,
             context: AppErrorContext.chat,

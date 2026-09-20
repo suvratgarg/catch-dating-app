@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/profile_self.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:f34f97e784f0e6c20d8367e020a2878d1b3bf618e21d1bbb7911c9c00613561e",
-  "resolvedDigest": "sha256:5494784ef2d2fb603995985e37a9863c0d3ad859f6d1f7853646a35322e7376a",
+  "resolvedDigest": "sha256:0a3cebb9a917c9ad4e20e95582ebf9a29ae9f3c41a0ec73a18985b1f57c01e8f",
   "feature": {
     "id": "feature.profile_self",
     "name": "Self Profile",
@@ -1240,8 +1240,12 @@
                 "CatchSection.plain",
                 "CatchSection.horizontal",
                 "CatchSection.rows",
+                "CatchSection.loadingRows",
+                "CatchSection.controls",
                 "CatchSection.containedRows",
+                "CatchSection.containedLoadingRows",
                 "CatchSection.sliverRows",
+                "CatchSection.sliverLoadingRows",
                 "CatchSection.content",
                 "CatchSection.formRows"
               ]

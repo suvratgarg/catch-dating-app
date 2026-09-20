@@ -84,274 +84,285 @@ class _HostApplicationDetailScreenState
                     },
             )
           : null,
-      body: CatchRouteBody.standardConstrained(
-        child: CatchAsyncBoundary<HostApplicationDetail>(
-          value: detail,
-          onRetry: _invalidateDetail,
-          initialLoadTimeout: null,
-          loadingBuilder: (_) => const CatchSkeleton.rows(count: 6),
-          errorBuilder: (_, error, _, onBoundaryRetry) =>
-              CatchLocalizedErrorState(
-                error,
-                context: AppErrorContext.applications,
-                onRetry: onBoundaryRetry,
-              ),
-          builder: (context, application) {
-            if (_loadedRevision != application.revision) {
-              _loadedRevision = application.revision;
-              _reviewNoteController.text = application.reviewNote ?? '';
-            }
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                CatchSection.containedRows(
+      body: CatchRouteBody.standardConstrainedSlivers(
+        slivers: [
+          CatchAsyncBoundary<HostApplicationDetail>.sliver(
+            value: detail,
+            onRetry: _invalidateDetail,
+            initialLoadTimeout: null,
+            errorContext: AppErrorContext.applications,
+            builder: (context, application) {
+              if (_loadedRevision != application.revision) {
+                _loadedRevision = application.revision;
+                _reviewNoteController.text = application.reviewNote ?? '';
+              }
+              return SliverToBoxAdapter(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    CatchField.read(
-                      content: CatchPersonLayout(
-                        name: application.applicantDisplayName,
-                        supportingText: hostApplicationContextLabel(
-                          context,
-                          formId: application.formId,
-                          targetKind: application.targetKind,
-                          targetId: application.targetId,
-                          sources: sources.value,
-                        ),
-                        context: context.l10n.hostApplicationsSubmittedOn(
-                          date: DateFormat.yMMMd().format(
-                            application.submittedAt,
-                          ),
-                        ),
-                        badges: [
-                          CatchRowBadge(
-                            label: hostApplicationStatusLabel(
-                              context,
-                              application.reviewStatus,
-                            ),
-                            tone: _applicationStatusTone(
-                              application.reviewStatus,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                if (sources.isTerminalError)
-                  CatchButton.command(
-                    label: context.l10n.hostAudienceRetrySourceNames,
-                    onPressed: () => ref.invalidate(sourcesProvider),
-                  ),
-                gapH16,
-                Text(
-                  application.reviewStatus ==
-                          HostApplicationReviewStatus.approved
-                      ? application.contactId != null
-                            ? context.l10n.hostAudienceApplicationAccepted
-                            : context
-                                  .l10n
-                                  .hostAudienceApplicationApprovedUnlinked
-                      : context.l10n.hostAudienceApplicationAdmission,
-                  style: CatchTextStyles.supporting(context),
-                ),
-                gapH24,
-                CatchPageTabBar<bool>(
-                  options: [
-                    CatchOption(
-                      value: false,
-                      label: context.l10n.hostApplicationAnswersTitle,
-                    ),
-                    CatchOption(
-                      value: true,
-                      label: context.l10n.hostAudienceApplicationActivity,
-                    ),
-                  ],
-                  selected: _activity,
-                  onChanged: (value) => setState(() => _activity = value),
-                ),
-                gapH16,
-                if (_activity) ...[
-                  CatchSection.fieldRows(
-                    children: [
-                      CatchField.read(
-                        copy: catchFieldCopy(context.l10n),
-                        title: context.l10n.hostFormResponseSubmittedAt,
-                        valueText: DateFormat.yMMMd().add_jm().format(
-                          application.submittedAt,
-                        ),
-                      ),
-                      if (application.reviewedAt case final date?)
+                    CatchSection.containedRows(
+                      children: [
                         CatchField.read(
-                          copy: catchFieldCopy(context.l10n),
-                          title: hostApplicationStatusLabel(
-                            context,
-                            application.reviewStatus,
-                          ),
-                          valueText: DateFormat.yMMMd().add_jm().format(date),
-                        ),
-                    ],
-                  ),
-                ] else ...[
-                  CatchSection.divided(
-                    first: true,
-                    children: [
-                      for (final answer in application.answers)
-                        Padding(
-                          padding: CatchInsets.contentVerticalCompact,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                answer.questionLabel,
-                                style: CatchTextStyles.recordTitle(context),
+                          content: CatchPersonLayout(
+                            name: application.applicantDisplayName,
+                            supportingText: hostApplicationContextLabel(
+                              context,
+                              formId: application.formId,
+                              targetKind: application.targetKind,
+                              targetId: application.targetId,
+                              sources: sources.value,
+                            ),
+                            context: context.l10n.hostApplicationsSubmittedOn(
+                              date: DateFormat.yMMMd().format(
+                                application.submittedAt,
                               ),
-                              gapH8,
-                              Text(
-                                _answerText(context, answer.value),
-                                style: CatchTextStyles.recordBody(context),
+                            ),
+                            badges: [
+                              CatchRowBadge(
+                                label: hostApplicationStatusLabel(
+                                  context,
+                                  application.reviewStatus,
+                                ),
+                                tone: _applicationStatusTone(
+                                  application.reviewStatus,
+                                ),
                               ),
                             ],
                           ),
                         ),
-                    ],
-                  ),
-                ],
-                if (application.contactId != null ||
-                    application.sourceResponseId != null) ...[
-                  gapH24,
-                  CatchSection.fieldRows(
-                    children: [
-                      if (application.contactId case final contactId?
-                          when application.reviewStatus !=
-                              HostApplicationReviewStatus.approved)
-                        CatchField.nav(
-                          copy: catchFieldCopy(context.l10n),
-                          key: const ValueKey('host-application-open-person'),
-                          title: context.l10n.hostApplicationOpenPerson,
-                          onTap: () => context.pushNamed(
-                            Routes.hostCustomerDetailScreen.name,
-                            pathParameters: {'contactId': contactId},
-                            queryParameters: {
-                              'organizerId': widget.organizerId,
-                            },
-                          ),
+                      ],
+                    ),
+                    if (sources.isTerminalError)
+                      CatchButton.command(
+                        label: context.l10n.hostAudienceRetrySourceNames,
+                        onPressed: () => ref.invalidate(sourcesProvider),
+                      ),
+                    gapH16,
+                    Text(
+                      application.reviewStatus ==
+                              HostApplicationReviewStatus.approved
+                          ? application.contactId != null
+                                ? context.l10n.hostAudienceApplicationAccepted
+                                : context
+                                      .l10n
+                                      .hostAudienceApplicationApprovedUnlinked
+                          : context.l10n.hostAudienceApplicationAdmission,
+                      style: CatchTextStyles.supporting(context),
+                    ),
+                    gapH24,
+                    CatchPageTabBar<bool>(
+                      options: [
+                        CatchOption(
+                          value: false,
+                          label: context.l10n.hostApplicationAnswersTitle,
                         ),
-                      if (application.sourceResponseId case final responseId?)
-                        CatchField.nav(
-                          copy: catchFieldCopy(context.l10n),
-                          title: context.l10n.hostApplicationOpenResponse,
-                          onTap: () => context.pushNamed(
-                            Routes.hostFormResponseDetailScreen.name,
-                            pathParameters: {'responseId': responseId},
-                            queryParameters: {
-                              'organizerId': widget.organizerId,
-                            },
-                          ),
+                        CatchOption(
+                          value: true,
+                          label: context.l10n.hostAudienceApplicationActivity,
                         ),
-                    ],
-                  ),
-                ],
-                gapH24,
-                _HostApplicationOutreachSection(
-                  outreach: application.outreach,
-                  onOpen: _openUri,
-                ),
-                gapH24,
-                if (application.reviewStatus !=
-                        HostApplicationReviewStatus.withdrawn &&
-                    application.dataAccessState !=
-                        'revokedParticipantGrant') ...[
-                  gapH24,
-                  CatchFieldLanes.single(
-                    child: CatchField.control(
-                      copy: catchFieldCopy(context.l10n),
-                      title: context.l10n.hostApplicationReviewTitle,
-                      contractExemption:
-                          'Disclosure for review actions; the nested note uses the generated review payload binding.',
-                      disclosureMode:
-                          application.reviewStatus ==
-                                  HostApplicationReviewStatus.submitted ||
-                              application.reviewStatus ==
-                                  HostApplicationReviewStatus.inReview
-                          ? CatchFieldMode.localExpanded
-                          : CatchFieldMode.localCollapsed,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                      ],
+                      selected: _activity,
+                      onChanged: (value) => setState(() => _activity = value),
+                    ),
+                    gapH16,
+                    if (_activity) ...[
+                      CatchSection.fieldRows(
                         children: [
-                          CatchField.input(
+                          CatchField.read(
                             copy: catchFieldCopy(context.l10n),
-                            title: context.l10n.hostApplicationReviewNote,
-                            inputHint:
-                                context.l10n.hostApplicationReviewNoteHint,
-                            controller: _reviewNoteController,
-                            contract: CatchContractConstraints
-                                .reviewOrganizerApplicationCallablePayloadReviewNote,
-                            labelMode: CatchFieldLabelTextMode.optional,
-                            maxLines: 3,
+                            title: context.l10n.hostFormResponseSubmittedAt,
+                            valueText: DateFormat.yMMMd().add_jm().format(
+                              application.submittedAt,
+                            ),
                           ),
-                          gapH12,
-                          Wrap(
-                            spacing: CatchSpacing.s2,
-                            runSpacing: CatchSpacing.s2,
-                            children: [
-                              CatchButton(
-                                label: context.l10n.hostApplicationMarkInReview,
-                                variant: CatchButtonVariant.secondary,
-                                size: CatchButtonSize.sm,
-                                status:
-                                    (_savingStatus ==
-                                        HostApplicationReviewStatus.inReview)
-                                    ? CatchButtonStatus.loading
-                                    : CatchButtonStatus.idle,
-                                onPressed: _savingStatus == null
-                                    ? () => _review(
-                                        application,
-                                        HostApplicationReviewStatus.inReview,
-                                      )
-                                    : null,
+                          if (application.reviewedAt case final date?)
+                            CatchField.read(
+                              copy: catchFieldCopy(context.l10n),
+                              title: hostApplicationStatusLabel(
+                                context,
+                                application.reviewStatus,
                               ),
-                              CatchButton(
-                                label: context.l10n.hostApplicationWaitlist,
-                                variant: CatchButtonVariant.secondary,
-                                size: CatchButtonSize.sm,
-                                status:
-                                    (_savingStatus ==
-                                        HostApplicationReviewStatus.waitlisted)
-                                    ? CatchButtonStatus.loading
-                                    : CatchButtonStatus.idle,
-                                onPressed: _savingStatus == null
-                                    ? () => _review(
-                                        application,
-                                        HostApplicationReviewStatus.waitlisted,
-                                      )
-                                    : null,
+                              valueText: DateFormat.yMMMd().add_jm().format(
+                                date,
                               ),
-                              CatchButton(
-                                label: context.l10n.hostApplicationDecline,
-                                variant: CatchButtonVariant.danger,
-                                size: CatchButtonSize.sm,
-                                status:
-                                    (_savingStatus ==
-                                        HostApplicationReviewStatus.declined)
-                                    ? CatchButtonStatus.loading
-                                    : CatchButtonStatus.idle,
-                                onPressed: _savingStatus == null
-                                    ? () => _review(
-                                        application,
-                                        HostApplicationReviewStatus.declined,
-                                      )
-                                    : null,
-                              ),
-                            ],
-                          ),
+                            ),
                         ],
                       ),
+                    ] else ...[
+                      CatchSection.divided(
+                        first: true,
+                        children: [
+                          for (final answer in application.answers)
+                            Padding(
+                              padding: CatchInsets.contentVerticalCompact,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    answer.questionLabel,
+                                    style: CatchTextStyles.recordTitle(context),
+                                  ),
+                                  gapH8,
+                                  Text(
+                                    _answerText(context, answer.value),
+                                    style: CatchTextStyles.recordBody(context),
+                                  ),
+                                ],
+                              ),
+                            ),
+                        ],
+                      ),
+                    ],
+                    if (application.contactId != null ||
+                        application.sourceResponseId != null) ...[
+                      gapH24,
+                      CatchSection.fieldRows(
+                        children: [
+                          if (application.contactId case final contactId?
+                              when application.reviewStatus !=
+                                  HostApplicationReviewStatus.approved)
+                            CatchField.nav(
+                              copy: catchFieldCopy(context.l10n),
+                              key: const ValueKey(
+                                'host-application-open-person',
+                              ),
+                              title: context.l10n.hostApplicationOpenPerson,
+                              onTap: () => context.pushNamed(
+                                Routes.hostCustomerDetailScreen.name,
+                                pathParameters: {'contactId': contactId},
+                                queryParameters: {
+                                  'organizerId': widget.organizerId,
+                                },
+                              ),
+                            ),
+                          if (application.sourceResponseId
+                              case final responseId?)
+                            CatchField.nav(
+                              copy: catchFieldCopy(context.l10n),
+                              title: context.l10n.hostApplicationOpenResponse,
+                              onTap: () => context.pushNamed(
+                                Routes.hostFormResponseDetailScreen.name,
+                                pathParameters: {'responseId': responseId},
+                                queryParameters: {
+                                  'organizerId': widget.organizerId,
+                                },
+                              ),
+                            ),
+                        ],
+                      ),
+                    ],
+                    gapH24,
+                    _HostApplicationOutreachSection(
+                      outreach: application.outreach,
+                      onOpen: _openUri,
                     ),
-                  ),
-                ],
-              ],
-            );
-          },
-        ),
+                    gapH24,
+                    if (application.reviewStatus !=
+                            HostApplicationReviewStatus.withdrawn &&
+                        application.dataAccessState !=
+                            'revokedParticipantGrant') ...[
+                      gapH24,
+                      CatchFieldLanes.single(
+                        child: CatchField.control(
+                          copy: catchFieldCopy(context.l10n),
+                          title: context.l10n.hostApplicationReviewTitle,
+                          contractExemption:
+                              'Disclosure for review actions; the nested note uses the generated review payload binding.',
+                          disclosureMode:
+                              application.reviewStatus ==
+                                      HostApplicationReviewStatus.submitted ||
+                                  application.reviewStatus ==
+                                      HostApplicationReviewStatus.inReview
+                              ? CatchFieldMode.localExpanded
+                              : CatchFieldMode.localCollapsed,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              CatchField.input(
+                                copy: catchFieldCopy(context.l10n),
+                                title: context.l10n.hostApplicationReviewNote,
+                                inputHint:
+                                    context.l10n.hostApplicationReviewNoteHint,
+                                controller: _reviewNoteController,
+                                contract: CatchContractConstraints
+                                    .reviewOrganizerApplicationCallablePayloadReviewNote,
+                                labelMode: CatchFieldLabelTextMode.optional,
+                                maxLines: 3,
+                              ),
+                              gapH12,
+                              Wrap(
+                                spacing: CatchSpacing.s2,
+                                runSpacing: CatchSpacing.s2,
+                                children: [
+                                  CatchButton(
+                                    label: context
+                                        .l10n
+                                        .hostApplicationMarkInReview,
+                                    variant: CatchButtonVariant.secondary,
+                                    size: CatchButtonSize.sm,
+                                    status:
+                                        (_savingStatus ==
+                                            HostApplicationReviewStatus
+                                                .inReview)
+                                        ? CatchButtonStatus.loading
+                                        : CatchButtonStatus.idle,
+                                    onPressed: _savingStatus == null
+                                        ? () => _review(
+                                            application,
+                                            HostApplicationReviewStatus
+                                                .inReview,
+                                          )
+                                        : null,
+                                  ),
+                                  CatchButton(
+                                    label: context.l10n.hostApplicationWaitlist,
+                                    variant: CatchButtonVariant.secondary,
+                                    size: CatchButtonSize.sm,
+                                    status:
+                                        (_savingStatus ==
+                                            HostApplicationReviewStatus
+                                                .waitlisted)
+                                        ? CatchButtonStatus.loading
+                                        : CatchButtonStatus.idle,
+                                    onPressed: _savingStatus == null
+                                        ? () => _review(
+                                            application,
+                                            HostApplicationReviewStatus
+                                                .waitlisted,
+                                          )
+                                        : null,
+                                  ),
+                                  CatchButton(
+                                    label: context.l10n.hostApplicationDecline,
+                                    variant: CatchButtonVariant.danger,
+                                    size: CatchButtonSize.sm,
+                                    status:
+                                        (_savingStatus ==
+                                            HostApplicationReviewStatus
+                                                .declined)
+                                        ? CatchButtonStatus.loading
+                                        : CatchButtonStatus.idle,
+                                    onPressed: _savingStatus == null
+                                        ? () => _review(
+                                            application,
+                                            HostApplicationReviewStatus
+                                                .declined,
+                                          )
+                                        : null,
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              );
+            },
+          ),
+        ],
       ),
     );
   }

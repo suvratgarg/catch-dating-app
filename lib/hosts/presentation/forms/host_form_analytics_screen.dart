@@ -59,245 +59,249 @@ class _HostFormAnalyticsScreenState
             ? CatchTopBarEmphasis.divided
             : CatchTopBarEmphasis.plain,
       ),
-      body: CatchRouteBody.standardConstrained(
-        child: CatchAsyncBoundary<HostFormAnalytics>(
-          value: analytics,
-          onRetry: () => ref.invalidate(provider),
-          initialLoadTimeout: null,
-          loadingBuilder: (_) => const CatchSkeleton.rows(count: 8),
-          errorBuilder: (_, error, _, onBoundaryRetry) =>
-              CatchLocalizedErrorState(
-                error,
-                context: AppErrorContext.forms,
-                onRetry: onBoundaryRetry,
-              ),
-          builder: (context, value) => Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              CatchAsyncBoundary<HostFormEditorState>(
-                value: ref.watch(editorProvider),
-                onRetry: () => ref.read(editorProvider.notifier).reload(),
-                loadingBuilder: (_) => const CatchSkeleton.rows(count: 1),
-                errorBuilder: (_, error, _, onBoundaryRetry) =>
-                    CatchLocalizedErrorState(
-                      error,
-                      context: AppErrorContext.forms,
-                      mode: CatchErrorStateMode.compact,
-                      onRetry: onBoundaryRetry,
+      body: CatchRouteBody.standardConstrainedSlivers(
+        slivers: [
+          CatchAsyncBoundary<HostFormAnalytics>.sliver(
+            value: analytics,
+            onRetry: () => ref.invalidate(provider),
+            initialLoadTimeout: null,
+            errorContext: AppErrorContext.forms,
+            builder: (context, value) => SliverToBoxAdapter(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  CatchAsyncBoundary<HostFormEditorState>(
+                    value: ref.watch(editorProvider),
+                    onRetry: () => ref.read(editorProvider.notifier).reload(),
+                    loadingBuilder: (_) => CatchSkeleton.content(
+                      child: Text(
+                        context.l10n.hostFormAnalyticsTitle,
+                        style: CatchTextStyles.headline(context),
+                      ),
                     ),
-                builder: (context, editor) => Text(
-                  editor.editor.definition.title,
-                  style: CatchTextStyles.headline(context),
-                ),
-              ),
-              gapH8,
-              Text(
-                context.l10n.hostAudienceResultsVersion(version: value.version),
-                style: CatchTextStyles.supporting(context),
-              ),
-              gapH24,
-              HostFormMetrics(
-                items: [
-                  (
-                    value: '${value.opens}',
-                    label: context.l10n.hostFormAnalyticsOpens,
-                  ),
-                  (
-                    value: '${value.starts}',
-                    label: context.l10n.hostFormAnalyticsStarts,
-                  ),
-                  (
-                    value: '${value.submissions}',
-                    label: context.l10n.hostFormAnalyticsSubmissions,
-                  ),
-                ],
-              ),
-              gapH24,
-              CatchSection.divided(
-                title: context.l10n.hostFormAnalyticsCompletionRate,
-                first: true,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Text(
-                      value.starts == 0
-                          ? '—'
-                          : '${(value.completionRate * 100).round()}%',
+                    errorBuilder: (_, error, _, onBoundaryRetry) =>
+                        CatchLocalizedErrorState(
+                          error,
+                          context: AppErrorContext.forms,
+                          mode: CatchErrorStateMode.compact,
+                          onRetry: onBoundaryRetry,
+                        ),
+                    builder: (context, editor) => Text(
+                      editor.editor.definition.title,
                       style: CatchTextStyles.headline(context),
                     ),
-                    gapH8,
-                    Text(
-                      context.l10n.hostAudienceCompletionDenominator(
-                        submissions: value.submissions,
-                        starts: value.starts,
-                      ),
-                      style: CatchTextStyles.supporting(context),
+                  ),
+                  gapH8,
+                  Text(
+                    context.l10n.hostAudienceResultsVersion(
+                      version: value.version,
                     ),
-                    if (value.medianCompletionMillis
-                        case final milliseconds?) ...[
-                      gapH8,
-                      Text(
-                        context.l10n.hostAudienceMedianCompletion(
-                          duration: _duration(milliseconds),
-                        ),
-                        style: CatchTextStyles.supporting(context),
+                    style: CatchTextStyles.supporting(context),
+                  ),
+                  gapH24,
+                  HostFormMetrics(
+                    items: [
+                      (
+                        value: '${value.opens}',
+                        label: context.l10n.hostFormAnalyticsOpens,
                       ),
-                    ],
-                  ],
-                ),
-              ),
-              gapH24,
-              Text(
-                context.l10n.hostFormAnalyticsPrivacyNotice,
-                style: CatchTextStyles.supporting(context),
-              ),
-              for (final question in value.questions) ...[
-                gapH24,
-                CatchSection.divided(
-                  first: true,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Text(
-                        question.label,
-                        style: CatchTextStyles.recordTitle(context),
+                      (
+                        value: '${value.starts}',
+                        label: context.l10n.hostFormAnalyticsStarts,
                       ),
-                      gapH8,
-                      Text(
-                        context.l10n.hostFormAnalyticsQuestionSummary(
-                          count: question.responseCount,
-                        ),
-                        style: CatchTextStyles.recordContext(context),
+                      (
+                        value: '${value.submissions}',
+                        label: context.l10n.hostFormAnalyticsSubmissions,
                       ),
-                      if (question.kind == 'multiChoice') ...[
-                        gapH8,
-                        Text(
-                          context.l10n.hostAudienceMultipleChoiceResults,
-                          style: CatchTextStyles.supporting(context),
-                        ),
-                      ],
-                      for (final choice in question.choiceCounts) ...[
-                        gapH16,
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              child: Text(
-                                choice.label,
-                                style: CatchTextStyles.recordBody(context),
-                              ),
-                            ),
-                            gapW12,
-                            Text(
-                              '${choice.count}',
-                              style: CatchTextStyles.recordTitle(context),
-                            ),
-                          ],
-                        ),
-                        gapH8,
-                        LinearProgressIndicator(
-                          value: question.responseCount == 0
-                              ? 0
-                              : (choice.count / question.responseCount).clamp(
-                                  0,
-                                  1,
-                                ),
-                          backgroundColor: CatchTokens.of(context).line,
-                          valueColor: AlwaysStoppedAnimation(
-                            CatchTokens.of(context).ink,
-                          ),
-                          minHeight: CatchSpacing.s1,
-                          semanticsLabel: context.l10n
-                              .hostAudienceChoiceDenominator(
-                                count: choice.count,
-                                total: question.responseCount,
-                              ),
-                        ),
-                      ],
-                      if (question.numericCount > 0) ...[
-                        gapH16,
-                        Text(
-                          context.l10n.hostAudienceNumericResult(
-                            average:
-                                (question.numericSum / question.numericCount)
-                                    .toStringAsFixed(1),
-                            count: question.numericCount,
-                          ),
-                          style: CatchTextStyles.recordBody(context),
-                        ),
-                      ],
                     ],
                   ),
-                ),
-              ],
-              gapH24,
-              CatchButton.command(
-                label: context.l10n.hostAudienceViewAllResponses,
-                leading: Icon(CatchIcons.forwardArrow),
-                onPressed: () => context.pushNamed(
-                  Routes.hostFormBuilderScreen.name,
-                  pathParameters: {'formId': widget.formId},
-                  queryParameters: {
-                    'organizerId': widget.organizerId,
-                    'view': 'responses',
-                  },
-                ),
-              ),
-              Text(
-                context.l10n.hostAudienceResponsesAllVersions,
-                style: CatchTextStyles.recordContext(context),
-              ),
-              if (value.sources.isNotEmpty) ...[
-                gapH24,
-                CatchSection.containedRows(
-                  title: context.l10n.hostFormAnalyticsSources,
-                  children: [
-                    for (final source in value.sources)
-                      CatchField.read(
-                        content: CatchRecordLayout(
-                          title: source.label,
-                          icon: CatchIcons.linkOutlined,
-                          facts: [
-                            context.l10n.hostFormAnalyticsSourceSummary(
-                              opens: source.opens,
-                              starts: source.starts,
-                              submissions: source.submissions,
+                  gapH24,
+                  CatchSection.divided(
+                    title: context.l10n.hostFormAnalyticsCompletionRate,
+                    first: true,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text(
+                          value.starts == 0
+                              ? '—'
+                              : '${(value.completionRate * 100).round()}%',
+                          style: CatchTextStyles.headline(context),
+                        ),
+                        gapH8,
+                        Text(
+                          context.l10n.hostAudienceCompletionDenominator(
+                            submissions: value.submissions,
+                            starts: value.starts,
+                          ),
+                          style: CatchTextStyles.supporting(context),
+                        ),
+                        if (value.medianCompletionMillis
+                            case final milliseconds?) ...[
+                          gapH8,
+                          Text(
+                            context.l10n.hostAudienceMedianCompletion(
+                              duration: _duration(milliseconds),
+                            ),
+                            style: CatchTextStyles.supporting(context),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                  gapH24,
+                  Text(
+                    context.l10n.hostFormAnalyticsPrivacyNotice,
+                    style: CatchTextStyles.supporting(context),
+                  ),
+                  for (final question in value.questions) ...[
+                    gapH24,
+                    CatchSection.divided(
+                      first: true,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Text(
+                            question.label,
+                            style: CatchTextStyles.recordTitle(context),
+                          ),
+                          gapH8,
+                          Text(
+                            context.l10n.hostFormAnalyticsQuestionSummary(
+                              count: question.responseCount,
+                            ),
+                            style: CatchTextStyles.recordContext(context),
+                          ),
+                          if (question.kind == 'multiChoice') ...[
+                            gapH8,
+                            Text(
+                              context.l10n.hostAudienceMultipleChoiceResults,
+                              style: CatchTextStyles.supporting(context),
                             ),
                           ],
-                        ),
+                          for (final choice in question.choiceCounts) ...[
+                            gapH16,
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    choice.label,
+                                    style: CatchTextStyles.recordBody(context),
+                                  ),
+                                ),
+                                gapW12,
+                                Text(
+                                  '${choice.count}',
+                                  style: CatchTextStyles.recordTitle(context),
+                                ),
+                              ],
+                            ),
+                            gapH8,
+                            LinearProgressIndicator(
+                              value: question.responseCount == 0
+                                  ? 0
+                                  : (choice.count / question.responseCount)
+                                        .clamp(0, 1),
+                              backgroundColor: CatchTokens.of(context).line,
+                              valueColor: AlwaysStoppedAnimation(
+                                CatchTokens.of(context).ink,
+                              ),
+                              minHeight: CatchSpacing.s1,
+                              semanticsLabel: context.l10n
+                                  .hostAudienceChoiceDenominator(
+                                    count: choice.count,
+                                    total: question.responseCount,
+                                  ),
+                            ),
+                          ],
+                          if (question.numericCount > 0) ...[
+                            gapH16,
+                            Text(
+                              context.l10n.hostAudienceNumericResult(
+                                average:
+                                    (question.numericSum /
+                                            question.numericCount)
+                                        .toStringAsFixed(1),
+                                count: question.numericCount,
+                              ),
+                              style: CatchTextStyles.recordBody(context),
+                            ),
+                          ],
+                        ],
                       ),
-                  ],
-                ),
-              ],
-              if (value.sources.isNotEmpty) ...[
-                gapH8,
-                Text(
-                  context.l10n.hostAudienceSourceTotalsScope,
-                  style: CatchTextStyles.recordContext(context),
-                ),
-              ],
-              gapH24,
-              Wrap(
-                spacing: CatchSpacing.s4,
-                runSpacing: CatchSpacing.s2,
-                children: [
-                  for (final format in HostFormExportFormat.values)
-                    CatchButton.command(
-                      label: _exporting == format
-                          ? context.l10n.hostAudiencePreparingExport
-                          : format == HostFormExportFormat.csv
-                          ? context.l10n.hostFormExportCsv
-                          : context.l10n.hostFormExportXlsx,
-                      leading: Icon(CatchIcons.downloadRounded),
-                      onPressed: _exporting == null
-                          ? () => _export(format, value.versionId)
-                          : null,
                     ),
+                  ],
+                  gapH24,
+                  CatchButton.command(
+                    label: context.l10n.hostAudienceViewAllResponses,
+                    leading: Icon(CatchIcons.forwardArrow),
+                    onPressed: () => context.pushNamed(
+                      Routes.hostFormBuilderScreen.name,
+                      pathParameters: {'formId': widget.formId},
+                      queryParameters: {
+                        'organizerId': widget.organizerId,
+                        'view': 'responses',
+                      },
+                    ),
+                  ),
+                  Text(
+                    context.l10n.hostAudienceResponsesAllVersions,
+                    style: CatchTextStyles.recordContext(context),
+                  ),
+                  if (value.sources.isNotEmpty) ...[
+                    gapH24,
+                    CatchSection.containedRows(
+                      title: context.l10n.hostFormAnalyticsSources,
+                      children: [
+                        for (final source in value.sources)
+                          CatchField.read(
+                            content: CatchRecordLayout(
+                              title: source.label,
+                              icon: CatchIcons.linkOutlined,
+                              facts: [
+                                context.l10n.hostFormAnalyticsSourceSummary(
+                                  opens: source.opens,
+                                  starts: source.starts,
+                                  submissions: source.submissions,
+                                ),
+                              ],
+                            ),
+                          ),
+                      ],
+                    ),
+                  ],
+                  if (value.sources.isNotEmpty) ...[
+                    gapH8,
+                    Text(
+                      context.l10n.hostAudienceSourceTotalsScope,
+                      style: CatchTextStyles.recordContext(context),
+                    ),
+                  ],
+                  gapH24,
+                  Wrap(
+                    spacing: CatchSpacing.s4,
+                    runSpacing: CatchSpacing.s2,
+                    children: [
+                      for (final format in HostFormExportFormat.values)
+                        CatchButton.command(
+                          label: _exporting == format
+                              ? context.l10n.hostAudiencePreparingExport
+                              : format == HostFormExportFormat.csv
+                              ? context.l10n.hostFormExportCsv
+                              : context.l10n.hostFormExportXlsx,
+                          leading: Icon(CatchIcons.downloadRounded),
+                          onPressed: _exporting == null
+                              ? () => _export(format, value.versionId)
+                              : null,
+                        ),
+                    ],
+                  ),
                 ],
               ),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }

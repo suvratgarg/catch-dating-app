@@ -25,7 +25,7 @@ class EventMessageSmsSection extends ConsumerWidget {
     switch (state) {
       case EventSmsPreferenceLoading():
         summary = l.eventMessagesLoading;
-        child = const CatchSkeleton.rows();
+        child = const CatchLoadingIndicator();
       case EventSmsPreferenceHidden():
         summary = l.eventMessagesUnavailable;
         child = CatchButton(

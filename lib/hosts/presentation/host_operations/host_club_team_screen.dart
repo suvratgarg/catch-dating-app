@@ -61,7 +61,7 @@ class _HostClubTeamScreenState extends ConsumerState<HostClubTeamScreen>
       );
     }
     if (uidState.isLoading) {
-      return HostLoadingScreen(title: routeTitle, showTabRail: true);
+      return HostLoadingScreen(title: routeTitle);
     }
 
     final uid = uidState.value;
@@ -114,7 +114,7 @@ class _HostClubTeamScreenState extends ConsumerState<HostClubTeamScreen>
       );
     }
     if (clubsState.isLoading) {
-      return HostLoadingScreen(title: routeTitle, showTabRail: true);
+      return HostLoadingScreen(title: routeTitle);
     }
     final clubs = clubsState.value ?? const <Club>[];
     final club = clubs.where((item) => item.id == widget.clubId).firstOrNull;
@@ -350,10 +350,7 @@ class HostTeamProfessionalProfilePreview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return switch (state) {
-      HostTeamProfileLoading() => const CatchSkeleton.rows(
-        count: 4,
-        divided: true,
-      ),
+      HostTeamProfileLoading() => const CatchLoadingIndicator(),
       HostTeamProfileError(:final error) => CatchLocalizedErrorState(
         error,
         context: AppErrorContext.profile,
@@ -484,7 +481,7 @@ class HostTeamProfileSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return switch (state) {
-      HostTeamProfileLoading() => const CatchSkeleton.iconRows(divided: true),
+      HostTeamProfileLoading() => const CatchLoadingIndicator(),
       HostTeamProfileError(:final error) => CatchLocalizedErrorState(
         error,
         context: AppErrorContext.profile,

@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/dashboard_home.feature.json",
   "generatedFor": "2026-08-18",
   "sourceDigest": "sha256:d53a70ef5535bb95521a8031cda5c0eb7f84385b04314d9ebaf4c0a58372f134",
-  "resolvedDigest": "sha256:2986983e43512707f245e66a85aa7eab000d54169dd2383dc2f94b412f5fc532",
+  "resolvedDigest": "sha256:0437bc6658ba69e5e75501db1b11e20d18c20daf9abd00e5242c3c63ab834510",
   "feature": {
     "id": "feature.dashboard_home",
     "name": "Dashboard Home",
@@ -1642,13 +1642,7 @@
                 "CatchSkeleton.textBlock",
                 "CatchSkeleton.circle",
                 "CatchSkeleton.custom",
-                "CatchSkeleton.content",
-                "CatchSkeleton.cards",
-                "CatchSkeleton.rows",
-                "CatchSkeleton.boxes",
-                "CatchSkeleton.chips",
-                "CatchSkeleton.mediaRows",
-                "CatchSkeleton.iconRows"
+                "CatchSkeleton.content"
               ]
             }
           },

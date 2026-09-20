@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "updated": "2026-09-16",
+  "updated": "2026-09-20",
   "sourceOfTruth": {
     "behavior": "Flutter sources named by design/components/catch.components.json",
     "componentContracts": "design/components/catch.components.json",
@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "c1831a627e46bd9d890b97d4238b9d3ef3e0d5a1e6ce8fe38d01af0a93fc7118",
+  "sourceDigest": "867dcdc25160692ce74e087535db2cfbf638284c6939f0d7ab1a6a7b0e9cd372",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "c1831a627e46bd9d890b97d4238b9d3ef3e0d5a1e6ce8fe38d01af0a93fc7118",
-    "contractDigest": "c1831a627e46bd9d890b97d4238b9d3ef3e0d5a1e6ce8fe38d01af0a93fc7118"
+    "digest": "867dcdc25160692ce74e087535db2cfbf638284c6939f0d7ab1a6a7b0e9cd372",
+    "contractDigest": "867dcdc25160692ce74e087535db2cfbf638284c6939f0d7ab1a6a7b0e9cd372"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "7b8ff3f599ac9778a12d6b8b065455b5b4ead46cb72d77d661e3f0fc2d9c0e63",
+    "handoffRequestDigest": "684375245121b6eb95fef9df0060f91ab135e125766787c834d4a29ec592a9d7",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -83,18 +83,18 @@
   },
   "metrics": {
     "contractCount": 68,
-    "publicClassCount": 228,
+    "publicClassCount": 226,
     "conceptCount": 60,
-    "memberCount": 150,
-    "membersPerConcept": 2.5,
+    "memberCount": 148,
+    "membersPerConcept": 2.47,
     "unclassifiedCount": 0,
     "byConceptRole": {
       "composition": 3,
       "concept": 60,
-      "member": 150,
+      "member": 148,
       "screen": 15
     },
-    "collisionCount": 30,
+    "collisionCount": 29,
     "collisions": [
       {
         "key": "catch.badge",
@@ -372,14 +372,6 @@
           "CatchSheetDragIndicator",
           "CatchSheetHeader",
           "CatchWheelPickerSheet"
-        ]
-      },
-      {
-        "key": "catch.skeleton",
-        "symbols": [
-          "CatchScreenSkeleton",
-          "CatchSkeleton",
-          "CatchSliverSkeleton"
         ]
       },
       {
@@ -851,8 +843,8 @@
       "figmaVariableBindingCount": 0,
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
-      "figmaExpectedPropertyCount": 18,
-      "figmaExpectedPropertyDigest": "a90c3ec95dfc32af45e99a41bea85ef23acdc3cbf44942cc2d015291f92af42f",
+      "figmaExpectedPropertyCount": 19,
+      "figmaExpectedPropertyDigest": "2bbffbce5dcdc64d101d8d953190556a1cfc4cbcca2d8cb0ad853131141065f1",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
@@ -860,7 +852,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Section",
       "claudeAllowed": true,
-      "contractDigest": "3045d6f01eae45902f1926b1206edc72a09f0ad990933dd43827207d69daec9c"
+      "contractDigest": "3eb0520efc6bf4a36a272c1f75b806851015e55b93ff38ce84abb5002949c4ad"
     },
     {
       "contractId": "catch.skeleton",
@@ -883,8 +875,8 @@
       "figmaVariableBindingCount": 0,
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
-      "figmaExpectedPropertyCount": 6,
-      "figmaExpectedPropertyDigest": "fd5247beb952a5d9590cfb00dfe461a258c968222a235d2088cd853275f74d6d",
+      "figmaExpectedPropertyCount": 4,
+      "figmaExpectedPropertyDigest": "8e5cdff2a90c1f9abfd1ff5a1299e162b4a507efc9479da7c6fe40177a883375",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
@@ -892,7 +884,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Skeleton",
       "claudeAllowed": true,
-      "contractDigest": "a7dd78d2f8600709eb8ffefc228bbda77d848d3c6d4c98f8eecf7f53e678537f"
+      "contractDigest": "b13feae8516e2c190b3547e4ad542c7f1ded0db46aca76c662c149ec8d596133"
     },
     {
       "contractId": "catch.loading_indicator",

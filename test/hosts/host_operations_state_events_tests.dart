@@ -1,13 +1,6 @@
 part of 'host_operations_screen_test.dart';
 
 void _registerHostOperationsStateEventsTests() {
-  test('HostRouteLoadingBody delegates page geometry to its parent', () {
-    expect(
-      const HostRouteLoadingBody(padding: EdgeInsets.zero).padding,
-      EdgeInsets.zero,
-    );
-  });
-
   test(
     'HostTeamWorkspaceState uses club fallback while profile is loading',
     () {
@@ -239,10 +232,12 @@ void _registerHostOperationsStateEventsTests() {
       {HostClubTab.edit},
     );
     expect(find.text('Sign in required'), findsNothing);
-    final sectionBounds = tester.getRect(find.byType(CatchSectionList));
-    final summaryBounds = tester.getRect(find.byType(HostSummarySkeleton));
-    expect(summaryBounds.left, sectionBounds.left);
-    expect(summaryBounds.right, sectionBounds.right);
+    final tabsBottom = tester
+        .getRect(find.byKey(const ValueKey('host-club-tab-rail')))
+        .bottom;
+    final progress = tester.getCenter(find.byType(CircularProgressIndicator));
+    expect(progress.dy, greaterThan(tabsBottom));
+    expect(find.byType(CatchSkeleton), findsNothing);
     expect(
       tester
           .widget<CatchRootScreenPageScrollView>(

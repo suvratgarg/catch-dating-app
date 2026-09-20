@@ -34,10 +34,7 @@ class EditHostedEventRouteScreen extends ConsumerWidget {
               : CatchTopBarEmphasis.plain,
         ),
         body: const CatchRouteBody.standardViewport(
-          child: HostRouteLoadingBody(
-            showTabRail: true,
-            padding: EdgeInsets.zero,
-          ),
+          child: CatchStateViewport.loading(accountForBottomOverlay: false),
         ),
       ),
       HostEventEditRouteStatus.error => CatchRouteScaffold(

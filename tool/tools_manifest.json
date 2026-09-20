@@ -1073,6 +1073,43 @@
       }
     },
     {
+      "id": "firebase:params-coverage",
+      "category": "firebase",
+      "path": "tool/firebase/check_functions_params_coverage.mjs",
+      "command": "node tool/firebase/check_functions_params_coverage.mjs",
+      "safety": "local-readonly",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node",
+          "root-npm"
+        ]
+      },
+      "impactPaths": [
+        "functions/src/**",
+        ".github/workflows/_firebase-promote.yml",
+        ".github/workflows/functions-ci.yml",
+        "tool/firebase/check_functions_params_coverage.test.mjs",
+        "tool/firebase/prepare_functions_params_for_deploy.mjs"
+      ],
+      "description": "Parses non-secret Functions parameter declarations without executing source and rejects gaps in the deploy materializer or the exact deployment dotenv file before mutation.",
+      "checks": [
+        "node tool/firebase/check_functions_params_coverage.mjs",
+        "node --test tool/firebase/check_functions_params_coverage.test.mjs"
+      ],
+      "role": "gate",
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/firebase/check_functions_params_coverage.test.mjs",
+        "contains": [
+          "a declared param missing from the materialized set fails",
+          "dynamic names and invalid source fail closed",
+          "empty dotenv values fail coverage and duplicate keys fail closed"
+        ]
+      }
+    },
+    {
       "id": "agent:context-pack",
       "category": "agent",
       "path": "tool/agent/context_pack.mjs",
@@ -7005,6 +7042,38 @@
       "vacuityProof": {
         "type": "self-test",
         "command": "node --test tool/firebase_functions.test.mjs"
+      }
+    },
+    {
+      "id": "design:loading-composition",
+      "category": "design",
+      "path": "tool/design/check_loading_composition.mjs",
+      "command": "node tool/design/check_loading_composition.mjs",
+      "safety": "local",
+      "status": "active",
+      "description": "Rejects removed generic row and collection skeleton recipes in app source and screen-local root title typography overrides.",
+      "impactPaths": [
+        "tool/design/check_loading_composition.test.mjs",
+        "lib/**",
+        "packages/catch_ui/lib/src/patterns/catch_skeleton.dart"
+      ],
+      "checks": [
+        "node --check tool/design/check_loading_composition.mjs",
+        "node --test tool/design/check_loading_composition.test.mjs",
+        "node tool/design/check_loading_composition.mjs"
+      ],
+      "role": "gate",
+      "rules": [
+        "UI-LINT-001",
+        "ASYNC-LOADING-PRESENTATION-001"
+      ],
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/design/check_loading_composition.test.mjs",
+        "contains": [
+          "rejects hand-built loading rows on protected Host and Consumer screens",
+          "rejects root typography overrides while ignoring comments and strings"
+        ]
       }
     }
   ]

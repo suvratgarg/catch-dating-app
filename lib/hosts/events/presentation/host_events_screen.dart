@@ -13,7 +13,6 @@ import 'package:catch_dating_app/hosts/events/presentation/host_events_state.dar
 import 'package:catch_dating_app/hosts/events/presentation/host_events_view_model.dart';
 import 'package:catch_dating_app/hosts/events/presentation/widgets/host_events_list.dart';
 import 'package:catch_dating_app/hosts/presentation/host_organizer_selection_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeletons.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_tokens/catch_tokens.dart';
@@ -62,11 +61,7 @@ class HostEventsScreen extends ConsumerWidget {
         title: CatchScreenHeader.block(
           title: context.l10n.hostsHostEventsListTextEvents,
         ),
-        children: const [
-          CatchStateViewport.sliver(
-            child: HostRouteLoadingBody(padding: EdgeInsets.zero),
-          ),
-        ],
+        children: const [CatchStateViewport.sliverLoading()],
       ),
       HostEventsRouteStatus.error => CatchRootScreenScaffold.standard(
         title: CatchScreenHeader.block(

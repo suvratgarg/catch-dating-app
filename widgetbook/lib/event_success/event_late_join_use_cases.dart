@@ -73,7 +73,7 @@ class _PreviewState extends State<_Preview> {
       if (snapshot.hasError) {
         return Text('Preview unavailable: ${snapshot.error}');
       }
-      if (!snapshot.hasData) return const CatchSkeleton.rows();
+      if (!snapshot.hasData) return const CatchLoadingIndicator();
       final repository = LateJoinPreviewRepository(snapshot.requireData);
       final view = repository.view;
       final setup = view.setup!;

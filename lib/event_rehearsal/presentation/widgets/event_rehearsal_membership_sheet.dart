@@ -67,7 +67,7 @@ class EventRehearsalMembershipSheet extends ConsumerWidget {
               value: form == null ? page : AsyncData(form.review),
               initialLoadTimeout: null,
               onRetry: () => ref.read(query.notifier).reload(),
-              loadingBuilder: (_) => const CatchSkeleton.rows(),
+              loadingBuilder: (_) => const CatchLoadingIndicator(),
               errorBuilder: (_, error, _, retry) =>
                   CatchLocalizedErrorBanner(error, onRetry: retry),
               builder: (_, review) {

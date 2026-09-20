@@ -25,6 +25,25 @@ final class CatchRecordLayout extends CatchFieldLayout {
     this.description,
   });
 
+  /// Representative content for a loading Field with the same record slots.
+  factory CatchRecordLayout.placeholder({
+    required IconData icon,
+    bool hasMetadata = false,
+    int factCount = 0,
+    bool hasDescription = false,
+    Color? color,
+  }) {
+    assert(factCount >= 0);
+    return CatchRecordLayout(
+      title: CatchSkeleton.sampleRecordTitle,
+      icon: icon,
+      color: color,
+      metadata: hasMetadata ? CatchSkeleton.sampleMetadataText : null,
+      facts: List.filled(factCount, CatchSkeleton.sampleFactText),
+      description: hasDescription ? CatchSkeleton.sampleDescriptionText : null,
+    );
+  }
+
   final String title;
   final IconData icon;
   final Color? color;
@@ -93,6 +112,32 @@ final class CatchPersonLayout extends CatchFieldLayout {
     this.facts = const [],
     this.badges = const [],
   });
+
+  /// Representative data for the same identity layout while a row is loading.
+  ///
+  /// Slot choices describe the eventual row anatomy; Section and Field still
+  /// own every inset, divider, and interaction shape.
+  const CatchPersonLayout.placeholder({
+    bool hasSupportingText = false,
+    bool hasContext = false,
+    bool hasBadge = false,
+    this.avatarShape = CatchAvatarVariant.circle,
+  }) : name = CatchSkeleton.samplePersonName,
+       imageUrl = null,
+       avatarColors = null,
+       supportingText = hasSupportingText
+           ? CatchSkeleton.sampleSupportingText
+           : null,
+       context = hasContext ? CatchSkeleton.sampleContextText : null,
+       facts = const [],
+       badges = hasBadge
+           ? const [
+               CatchRowBadge(
+                 label: CatchSkeleton.sampleBadgeText,
+                 tone: CatchBadgeTone.neutral,
+               ),
+             ]
+           : const [];
 
   final String name;
   final String? imageUrl;
@@ -191,6 +236,22 @@ final class CatchConversationLayout extends CatchFieldLayout {
     this.activityLabel,
     this.activitySemantics,
   }) : assert(activityLabel == null || activitySemantics != null);
+
+  /// Representative content for a loading Field with conversation anatomy.
+  const CatchConversationLayout.placeholder({
+    bool hasTimestamp = false,
+    bool hasContext = false,
+    bool hasActivity = false,
+    this.avatarShape = CatchAvatarVariant.circle,
+  }) : name = CatchSkeleton.sampleConversationName,
+       preview = CatchSkeleton.sampleMessagePreview,
+       imageUrl = null,
+       timestamp = hasTimestamp ? CatchSkeleton.sampleTimestampText : null,
+       context = hasContext ? CatchSkeleton.sampleContextText : null,
+       activityLabel = hasActivity ? CatchSkeleton.sampleActivityText : null,
+       activitySemantics = hasActivity
+           ? CatchSkeleton.sampleActivityText
+           : null;
 
   final String name;
   final String preview;

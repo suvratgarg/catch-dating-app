@@ -68,6 +68,19 @@ class _HostFormAutomationsScreenState
                   .firstOrNull
                   ?.title ??
               context.l10n.hostAudienceThisForm;
+    final scopeHeader = Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(scopeTitle, style: CatchTextStyles.headline(context)),
+        gapH8,
+        Text(
+          formId == null
+              ? context.l10n.hostAudienceAutomationScopeAll
+              : context.l10n.hostAudienceAutomationScopeForm,
+          style: CatchTextStyles.supporting(context),
+        ),
+      ],
+    );
     return CatchRouteScaffold(
       topBarBuilder: (context, scrolledUnder) => CatchTopBar(
         title: context.l10n.hostFormAutomationsTitle,
@@ -94,24 +107,40 @@ class _HostFormAutomationsScreenState
           value: automations,
           onRetry: () => ref.invalidate(provider),
           initialLoadTimeout: null,
-          loadingBuilder: (_) => const CatchSkeleton.rows(count: 7),
-          errorBuilder: (_, error, _, onBoundaryRetry) =>
+          loadingBuilder: (_) => Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              scopeHeader,
+              gapH24,
+              CatchSection.containedLoadingRows(
+                title: context.l10n.hostFormAutomationsRules,
+                layouts: List.generate(
+                  7,
+                  (_) => CatchRecordLayout.placeholder(
+                    icon: CatchIcons.autoAwesomeOutlined,
+                    hasMetadata: true,
+                    hasDescription: true,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          errorBuilder: (_, error, _, onBoundaryRetry) => Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              scopeHeader,
+              gapH24,
               CatchLocalizedErrorState(
                 error,
                 context: AppErrorContext.forms,
                 onRetry: onBoundaryRetry,
               ),
+            ],
+          ),
           builder: (context, state) => Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(scopeTitle, style: CatchTextStyles.headline(context)),
-              gapH8,
-              Text(
-                formId == null
-                    ? context.l10n.hostAudienceAutomationScopeAll
-                    : context.l10n.hostAudienceAutomationScopeForm,
-                style: CatchTextStyles.supporting(context),
-              ),
+              scopeHeader,
               if (state.error case final error?) ...[
                 gapH12,
                 CatchLocalizedErrorState(

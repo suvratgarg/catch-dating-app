@@ -192,7 +192,7 @@ class _EventAssistanceDepartureSectionState
             ),
             if (_recordRoster) ...[
               if (widget.rosterLoading)
-                const CatchSkeleton.rows(count: 2)
+                const CatchLoadingIndicator()
               else if (widget.rosterError != null)
                 CatchLocalizedErrorBanner(widget.rosterError!)
               else

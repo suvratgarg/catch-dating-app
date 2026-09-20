@@ -18,37 +18,32 @@ class HostCustomerDirectoryControls extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Wrap(
-      alignment: WrapAlignment.spaceBetween,
-      crossAxisAlignment: WrapCrossAlignment.center,
-      spacing: CatchSpacing.s4,
-      children: [
-        CatchSelectionMenu<HostCustomerSort>.adaptive(
-          title: context.l10n.hostCustomersSort,
-          subtitle: context.l10n.hostCustomersSortSheetSubtitle,
-          value: sort,
-          items: [
-            for (final option in HostCustomerSort.values)
-              CatchSelectionMenuItem(
-                value: option,
-                label: _customerSortLabel(context, option),
-              ),
-          ],
-          onSelected: onSortChanged,
-          builder: (context, selected, open, toggle) => CatchButton.command(
-            key: const ValueKey('host-customers-sort'),
-            label: context.l10n.hostCustomersSortControl(label: selected.label),
-            trailing: Icon(CatchIcons.expandMoreRounded),
-            onPressed: toggle,
-          ),
+    return CatchSection.controls(
+      leading: CatchSelectionMenu<HostCustomerSort>.adaptive(
+        title: context.l10n.hostCustomersSort,
+        subtitle: context.l10n.hostCustomersSortSheetSubtitle,
+        value: sort,
+        items: [
+          for (final option in HostCustomerSort.values)
+            CatchSelectionMenuItem(
+              value: option,
+              label: _customerSortLabel(context, option),
+            ),
+        ],
+        onSelected: onSortChanged,
+        builder: (context, selected, open, toggle) => CatchButton.command(
+          key: const ValueKey('host-customers-sort'),
+          label: context.l10n.hostCustomersSortControl(label: selected.label),
+          trailing: Icon(CatchIcons.expandMoreRounded),
+          onPressed: toggle,
         ),
-        CatchButton.command(
-          key: const ValueKey('host-customers-filters'),
-          label: context.l10n.hostCustomersFilters,
-          leading: Icon(CatchIcons.tuneRounded),
-          onPressed: onOpenFilters,
-        ),
-      ],
+      ),
+      trailing: CatchButton.command(
+        key: const ValueKey('host-customers-filters'),
+        label: context.l10n.hostCustomersFilters,
+        leading: Icon(CatchIcons.tuneRounded),
+        onPressed: onOpenFilters,
+      ),
     );
   }
 }
@@ -392,15 +387,12 @@ class HostCustomersDirectory extends StatelessWidget {
             ),
           ),
         if (contacts.isEmpty)
-          SliverToBoxAdapter(
-            child: CatchEmptyState(
-              icon: CatchIcons.peopleOutlineRounded,
-              title: hasActiveQuery
-                  ? context.l10n.hostCustomersNoResults
-                  : context.l10n.hostCustomersEmpty,
-              message: hasActiveQuery ? null : context.l10n.hostCustomersIntro,
-              variant: CatchEmptyStateVariant.inline,
-            ),
+          CatchSliverEmptyState(
+            icon: CatchIcons.peopleOutlineRounded,
+            title: hasActiveQuery
+                ? context.l10n.hostCustomersNoResults
+                : context.l10n.hostCustomersEmpty,
+            message: hasActiveQuery ? null : context.l10n.hostCustomersIntro,
           )
         else
           CatchSection.sliverRows(
@@ -475,56 +467,61 @@ class HostCustomersSummary extends StatelessWidget {
   final HostCustomerSegmentCount? newCustomerCount;
 
   @override
-  Widget build(BuildContext context) => CatchAsyncBoundary<HostCrmSummary>(
-    value: summary,
-    onRetry: onRetry,
-    initialLoadTimeout: null,
-    loadingBuilder: (_) => const CatchSkeleton.rows(count: 1),
-    errorBuilder: (_, error, _, onBoundaryRetry) => CatchLocalizedErrorState(
-      error,
-      context: AppErrorContext.customers,
-      mode: CatchErrorStateMode.compact,
-      onRetry: onBoundaryRetry,
-    ),
-    builder: (context, value) {
-      String countLabel(int count) => value.truncated ? '$count+' : '$count';
-      final newCount = newCustomerCount;
-      final stats = <({HostCustomerFilter filter, String label, String? value})>[
-        (
-          filter: HostCustomerFilter.all,
-          value: countLabel(value.contactCount),
-          label: context.l10n.hostsHostAudienceAll,
-        ),
-        (
-          filter: HostCustomerFilter.repeat,
-          value: countLabel(value.repeatAttendeeCount),
-          label: context.l10n.hostsOperationalRosterInsightReturning,
-        ),
-        (
-          filter: HostCustomerFilter.newToOrganizer,
-          value: newCount == null
-              ? null
-              : '${newCount.count}${newCount.coverage == HostCustomerMatchCountCoverage.atLeast ? '+' : ''}',
-          label: context.l10n.hostsHostEventManageScreenStateLabelNew,
-        ),
-      ];
-      return CatchChoiceInput<HostCustomerFilter>.segmented(
-        selected: selectedFilter,
-        variant: CatchChoiceInputVariant.summary,
-        contractExemption: 'Organizer directory lenses are local view state.',
-        onChanged: onFilterSelected,
-        options: [
-          for (final stat in stats)
-            CatchOption(
-              value: stat.filter,
-              label: stat.value == null
-                  ? stat.label
-                  : '${stat.label}  ${stat.value}',
-            ),
-        ],
-      );
-    },
-  );
+  Widget build(BuildContext context) {
+    final value = catchAsyncStateFromAsyncValue(summary).value;
+    String countLabel(int count) =>
+        value?.truncated == true ? '$count+' : '$count';
+    final newCount = newCustomerCount;
+    final stats = <({HostCustomerFilter filter, String label, String? value})>[
+      (
+        filter: HostCustomerFilter.all,
+        value: value == null ? '00' : countLabel(value.contactCount),
+        label: context.l10n.hostsHostAudienceAll,
+      ),
+      (
+        filter: HostCustomerFilter.repeat,
+        value: value == null ? '00' : countLabel(value.repeatAttendeeCount),
+        label: context.l10n.hostsOperationalRosterInsightReturning,
+      ),
+      (
+        filter: HostCustomerFilter.newToOrganizer,
+        value: newCount == null
+            ? value == null
+                  ? '00'
+                  : null
+            : '${newCount.count}${newCount.coverage == HostCustomerMatchCountCoverage.atLeast ? '+' : ''}',
+        label: context.l10n.hostsHostEventManageScreenStateLabelNew,
+      ),
+    ];
+    final control = CatchChoiceInput<HostCustomerFilter>.segmented(
+      selected: selectedFilter,
+      variant: CatchChoiceInputVariant.summary,
+      contractExemption: 'Organizer directory lenses are local view state.',
+      onChanged: onFilterSelected,
+      options: [
+        for (final stat in stats)
+          CatchOption(
+            value: stat.filter,
+            label: stat.value == null
+                ? stat.label
+                : '${stat.label}  ${stat.value}',
+          ),
+      ],
+    );
+    return CatchAsyncBoundary<HostCrmSummary>(
+      value: summary,
+      onRetry: onRetry,
+      initialLoadTimeout: null,
+      loadingBuilder: (_) => CatchSkeleton.content(child: control),
+      errorBuilder: (_, error, _, onBoundaryRetry) => CatchLocalizedErrorState(
+        error,
+        context: AppErrorContext.customers,
+        mode: CatchErrorStateMode.compact,
+        onRetry: onBoundaryRetry,
+      ),
+      builder: (context, _) => control,
+    );
+  }
 }
 
 String _customerFilterLabel(

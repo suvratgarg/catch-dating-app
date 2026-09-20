@@ -5753,30 +5753,6 @@ abstract class AppLocalizations {
   /// **'Photos'**
   String get userProfileProfileTabSkeletonTitlePhotos;
 
-  /// Product copy used by lib/clubs/presentation/detail/widgets/club_detail_skeleton.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'About'**
-  String get clubsClubDetailSkeletonTitleAbout;
-
-  /// Product copy used by lib/clubs/presentation/detail/widgets/club_detail_skeleton.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'What we do'**
-  String get clubsClubDetailSkeletonTitleWhatWeDo;
-
-  /// Product copy used by lib/clubs/presentation/detail/widgets/club_detail_skeleton.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'Your hosts'**
-  String get clubsClubDetailSkeletonTitleYourHosts;
-
-  /// Product copy used by lib/clubs/presentation/detail/widgets/club_detail_skeleton.dart (title).
-  ///
-  /// In en, this message translates to:
-  /// **'Schedule'**
-  String get clubsClubDetailSkeletonTitleSchedule;
-
   /// Product copy used by lib/clubs/presentation/detail/widgets/club_hero_app_bar.dart (title).
   ///
   /// In en, this message translates to:
@@ -28019,6 +27995,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Create event'**
   String get hostsCreateEventCreateAction;
+
+  /// Person-field mapping in the Host form builder.
+  ///
+  /// In en, this message translates to:
+  /// **'Use this answer as'**
+  String get hostFormPersonField;
+
+  /// Person-field mapping in the Host form builder.
+  ///
+  /// In en, this message translates to:
+  /// **'Identify contact and profile answers for review. Other answers stay with this response.'**
+  String get hostFormPersonFieldHelp;
+
+  /// Person-field mapping in the Host form builder.
+  ///
+  /// In en, this message translates to:
+  /// **'{field, select, givenName{First name} familyName{Last name} displayName{Full name} dateOfBirth{Date of birth} age{Age} gender{Gender} phoneNumber{Phone number} email{Email} instagramHandle{Instagram} linkedinUrl{LinkedIn} profilePhoto{Profile photo} city{City} heightCm{Height in centimetres} occupation{Occupation} company{Company} education{Education} languages{Languages} relationshipGoal{Relationship goal} interestedInGenders{Gender preference} drinking{Drinking} smoking{Smoking} religion{Religion} workout{Exercise} diet{Diet} children{Children} other{Response only}}'**
+  String hostFormPersonFieldName({required String field});
 
   /// Practice staff configuration copy.
   ///

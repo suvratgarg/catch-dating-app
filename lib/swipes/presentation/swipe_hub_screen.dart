@@ -34,16 +34,9 @@ class SwipeHubScreen extends ConsumerWidget {
       now: referenceNow,
     );
 
-    final showHubChrome = state is CatchesHubEmpty || state is CatchesHubReady;
     final t = CatchTokens.of(context);
 
     final slivers = <Widget>[CatchesHubStateView(state: state)];
-    if (!showHubChrome) {
-      return CatchRootScreenScaffold.fullBleed(
-        title: const SizedBox.shrink(),
-        children: slivers,
-      );
-    }
     return CatchRootScreenScaffold.standard(
       title: CatchScreenHeader.block(
         kicker: context.l10n.swipesSwipeHubScreenTitleCatches,
@@ -73,9 +66,7 @@ class CatchesHubStateView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return switch (state) {
-      CatchesHubAccessLoading() => const SliverToBoxAdapter(
-        child: CatchSkeleton.cards(),
-      ),
+      CatchesHubAccessLoading() => const CatchStateViewport.sliverLoading(),
       CatchesHubAccessError(:final error) => CatchLocalizedSliverErrorState(
         error,
         context: AppErrorContext.auth,
@@ -84,9 +75,7 @@ class CatchesHubStateView extends ConsumerWidget {
       CatchesHubSignedOut() => const SliverToBoxAdapter(
         child: SizedBox.shrink(),
       ),
-      CatchesHubEventsLoading() => const SliverToBoxAdapter(
-        child: CatchSkeleton.cards(),
-      ),
+      CatchesHubEventsLoading() => const CatchStateViewport.sliverLoading(),
       CatchesHubEventsError(:final uid, :final error) =>
         CatchLocalizedSliverErrorState(
           error,

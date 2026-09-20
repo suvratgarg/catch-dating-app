@@ -8,10 +8,33 @@ function assert(condition, message) {
   if (!condition) throw new Error(message);
 }
 
+// Every non-secret param declared in Functions source must appear here:
+// firebase-tools ignores `default:` values in non-interactive mode, so an
+// unmaterialized param fails the whole Delivery lane. The colocated coverage
+// scanner fails closed when source declarations drift from this list.
+export const materializedNonSecretParams = [
+  "ALGOLIA_APPLICATION_ID",
+  "RAZORPAY_PUBLIC_KEY_ID",
+  "META_WHATSAPP_APP_ID",
+  "META_WHATSAPP_EMBEDDED_SIGNUP_CONFIG_ID",
+  "META_WHATSAPP_GRAPH_VERSION",
+  "META_WHATSAPP_ENABLED",
+  "EVENT_ASSISTANCE_RCS_ENABLED",
+  "EVENT_ASSISTANCE_RCS_WEBHOOK_ENABLED",
+  "EVENT_ASSISTANCE_SMS_REPORTS_ENABLED",
+];
+
 function option(name) {
   const offset = process.argv.indexOf(name);
   assert(offset >= 0 && process.argv[offset + 1], `${name} is required`);
   return process.argv[offset + 1];
+}
+
+function normalizedBooleanParam(environment, name) {
+  const value = environment[name]?.trim().toLowerCase() || "false";
+  assert(value === "true" || value === "false",
+    `${name} must be true or false`);
+  return value;
 }
 
 function normalizedProviderParams(environment = process.env) {
@@ -21,10 +44,7 @@ function normalizedProviderParams(environment = process.env) {
     "ALGOLIA_APPLICATION_ID must be a 10-character application identifier");
   assert(/^rzp_(test|live)_[A-Za-z0-9]+$/.test(razorpayPublicKeyId),
     "RAZORPAY_PUBLIC_KEY_ID must be a Razorpay test or live public key id");
-  const enabled = environment.META_WHATSAPP_ENABLED?.trim().toLowerCase() ||
-    "false";
-  assert(enabled === "true" || enabled === "false",
-    "META_WHATSAPP_ENABLED must be true or false");
+  const enabled = normalizedBooleanParam(environment, "META_WHATSAPP_ENABLED");
 
   const appId = environment.META_WHATSAPP_APP_ID?.trim() ?? "";
   const configId = environment.META_WHATSAPP_EMBEDDED_SIGNUP_CONFIG_ID
@@ -42,7 +62,16 @@ function normalizedProviderParams(environment = process.env) {
       "real Meta app and embedded-signup config ids are required when enabled");
   }
 
-  return {
+  const eventAssistance = {
+    EVENT_ASSISTANCE_RCS_ENABLED: normalizedBooleanParam(
+      environment, "EVENT_ASSISTANCE_RCS_ENABLED"),
+    EVENT_ASSISTANCE_RCS_WEBHOOK_ENABLED: normalizedBooleanParam(
+      environment, "EVENT_ASSISTANCE_RCS_WEBHOOK_ENABLED"),
+    EVENT_ASSISTANCE_SMS_REPORTS_ENABLED: normalizedBooleanParam(
+      environment, "EVENT_ASSISTANCE_SMS_REPORTS_ENABLED"),
+  };
+
+  const params = {
     // Distinct names coexist with the SecretParams in immutable older packages.
     ALGOLIA_APPLICATION_ID: algoliaApplicationId,
     RAZORPAY_PUBLIC_KEY_ID: razorpayPublicKeyId,
@@ -52,7 +81,12 @@ function normalizedProviderParams(environment = process.env) {
     META_WHATSAPP_EMBEDDED_SIGNUP_CONFIG_ID: configId || " ",
     META_WHATSAPP_GRAPH_VERSION: graphVersion,
     META_WHATSAPP_ENABLED: enabled,
+    ...eventAssistance,
   };
+  assert(
+    Object.keys(params).join(",") === materializedNonSecretParams.join(","),
+    "materialized params drifted from materializedNonSecretParams");
+  return params;
 }
 
 export function prepareFunctionsParamsForDeploy({

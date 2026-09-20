@@ -51,7 +51,7 @@ class _EventAssistanceDepartureHistorySheetState
         value: ref.watch(query),
         initialLoadTimeout: null,
         onRetry: () => ref.read(query.notifier).reload(),
-        loadingBuilder: (_) => const CatchSkeleton.rows(),
+        loadingBuilder: (_) => const CatchLoadingIndicator(),
         errorBuilder: (_, error, _, retry) =>
             CatchLocalizedErrorBanner(error, onRetry: retry),
         builder: (_, review) {

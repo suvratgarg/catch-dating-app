@@ -112,7 +112,12 @@ class _HostNewMessageScreenState extends ConsumerState<HostNewMessageScreen> {
                 ),
               ),
               if (directory.isLoading && !directory.hasData)
-                const SliverToBoxAdapter(child: CatchSkeleton.rows()),
+                CatchSection.sliverLoadingRows(
+                  layoutBuilder: (_, _) => const CatchPersonLayout.placeholder(
+                    hasSupportingText: true,
+                    hasBadge: true,
+                  ),
+                ),
               if (directory.hasError)
                 SliverToBoxAdapter(
                   child: CatchLocalizedErrorState(
@@ -300,8 +305,18 @@ class HostNewMessageRouteSection extends ConsumerWidget {
             ),
           ],
         ),
-        if (result.isLoading)
-          CatchSection.content(child: const CatchSkeleton.rows(count: 2)),
+        if (result.isLoading && !valid)
+          CatchSection.loadingRows(
+            title: context.l10n.hostInboxAvailableRoutes,
+            layouts: [
+              CatchRecordLayout.placeholder(
+                icon: CatchIcons.chatBubbleOutlineRounded,
+              ),
+              CatchRecordLayout.placeholder(
+                icon: CatchIcons.personOutlineRounded,
+              ),
+            ],
+          ),
         if (result.hasError)
           CatchSection.content(
             child: CatchLocalizedErrorState(

@@ -1433,13 +1433,39 @@ Use `CatchAsyncBoundary` for simple body screens with one async value.
 
 Use `CatchAsyncBoundary.sliver` for simple sliver surfaces.
 
-When the loaded detail or form composition is known, render that same
-composition with representative branch data inside `CatchSkeleton.content`.
-Do not maintain a second tree of placeholder rows for a detail or form screen:
-section order, field geometry, typography changes, and responsive reflow must
-come from the production body. `CatchSkeleton.rows` and `CatchSkeleton.cards`
-remain appropriate for genuinely repeated collections whose item count and
-row data do not exist yet; they are not substitutes for a known screen body.
+When the loaded detail, form, card, or collection composition is known, render
+that same composition with representative branch data inside
+`CatchSkeleton.content`. `CatchSkeleton.content` suppresses pointer input and
+placeholder semantics while the real layout supplies shape and reflow.
+Ordinary row collections use `CatchSection.loadingRows`,
+`CatchSection.sliverLoadingRows`, or `CatchSection.containedLoadingRows` to
+match the loaded Section perimeter with the eventual `CatchFieldLayout` anatomy;
+the Section and Field still own gutters, dividers, interaction shape, and
+disclosure slots. A loading branch may estimate count, but it must not invent a
+second row tree or enclosing card. Leaf `CatchSkeleton.box/text/circle` shapes
+remain appropriate only where no actual child layout exists yet, such as an
+unknown remote image or chart.
+
+When the fetched data determines whether the screen has a conversation, form,
+roster, card, or empty state, there is no honest layout to skeletonize yet.
+Keep the known header and controls mounted and use
+`CatchStateViewport.sliverLoading` below them, or
+`CatchStateViewport.loading` in a bounded, non-scrolling route body. These
+variants center progress in the remaining visible area and account for a
+floating bottom navigation bar. `CatchAsyncBoundary.sliver` uses the sliver
+variant by default when `fillRemaining` is true. Do not fabricate a likely
+card or row collection while the route structure is unresolved.
+
+The route scaffold and its body geometry belong outside async state switches.
+For example, Today selects `CatchRootScreenScaffold.sections` once, then
+switches only the sliver content. A state change cannot substitute a standard
+inset body for the loaded full-width section body. The
+`design:loading-composition` rejects removed generic row and collection
+recipes on Host and Consumer presentation surfaces, as well as root-title
+style overrides. Its per-file allowance is now zero everywhere. Catch UI no
+longer exposes repeated cards, rows, boxes, chips, or fake screen/sliver
+adapters; callers must choose the real composition or the centered state
+viewport.
 
 Both primitives apply `InitialLoadPolicy.standard` (12 seconds) to the first
 user-visible resolution and to blocking retries that have no credible data.
@@ -2385,11 +2411,11 @@ or implementation technique cannot justify a second shared implementation.
   Banner owns persistent inline feedback, with error/retry as named recipes.
   Notice owns transient notification delivery with dismissal/open behavior;
   sharing an icon and message does not make those delivery contracts identical.
-  Skeleton owns content-shaped loading. Explicit shapes, derived content,
-  card lists, row recipes, equal boxes and wrapping chips use named constructors
-  on `CatchSkeleton`; recipe configuration remains private and const-capable.
-  `CatchScreenSkeleton` and `CatchSliverSkeleton` retain their page-body and
-  render-sliver placement protocols. They do not select asynchronous state.
+  Skeleton owns content-shaped loading. Derived content uses the real widget
+  composition; leaf shapes are for media and values with no renderable layout.
+  Generic card lists, row recipes, equal boxes, and wrapping chips have been
+  removed. Known content loads through its actual Section, Field, and child
+  layout; unknown page structure uses the state viewport's centered progress.
   Scaffold owns the page surface, platform safe area, keyboard resize and
   preferred-size forwarding through `CatchScaffold`. `CatchRouteScaffold`
   adds fixed route chrome and scroll-under state; `CatchRootScreenScaffold`

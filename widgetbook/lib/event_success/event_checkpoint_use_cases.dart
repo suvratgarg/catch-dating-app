@@ -152,7 +152,7 @@ class _CheckpointPreviewState extends State<_CheckpointPreview> {
     future: _fixtures,
     builder: (context, value) {
       if (value.hasError) return Text('Preview unavailable: ${value.error}');
-      if (!value.hasData) return const CatchSkeleton.rows();
+      if (!value.hasData) return const CatchLoadingIndicator();
       final fixtures = value.requireData;
       final repository =
           (widget.surface == _Surface.practiceRequest ||

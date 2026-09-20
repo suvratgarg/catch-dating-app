@@ -3,7 +3,7 @@ import 'package:catch_dating_app/design_fixtures/event_success_companion_fixture
 import 'package:catch_dating_app/event_success/domain/event_success_coach.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_host_screen_state.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_host_workspace_page_body.dart';
-import 'package:catch_dating_app/event_success/presentation/host_components/event_success_host_section_skeleton.dart';
+import 'package:catch_dating_app/event_success/presentation/host_components/event_success_host_section_loading_page_body.dart';
 import 'package:catch_dating_app/event_success/presentation/host_report/event_success_funnel_section.dart';
 import 'package:catch_dating_app/event_success/presentation/host_report/event_success_host_report_page_body.dart';
 import 'package:catch_dating_app/event_success/presentation/host_report/event_success_report_empty_state.dart';
@@ -194,76 +194,13 @@ Widget eventSuccessStrictHostFunnelSummary(BuildContext context) =>
     );
 
 @widgetbook.UseCase(
-  name: 'Ready',
-  type: EventSuccessHostSectionSkeleton,
+  name: 'Loading',
+  type: EventSuccessHostSectionLoadingPageBody,
   path: '[P1 product surfaces]/Event Success/Host workspace components',
 )
-Widget eventSuccessStrictEventSuccessHostSectionSkeleton(
-  BuildContext context,
-) => WidgetbookCatalogFrame(
-  title: 'EventSuccessHostSectionSkeleton',
-  catalogId: 'Event Success Host workspace',
-  children: [const EventSuccessHostSectionSkeleton()],
-);
-
-@widgetbook.UseCase(
-  name: 'Ready',
-  type: EventSuccessSetupTabSkeleton,
-  path: '[P1 product surfaces]/Event Success/Host workspace components',
-)
-Widget eventSuccessStrictEventSuccessSetupTabSkeleton(BuildContext context) =>
+Widget eventSuccessStrictEventSuccessHostSectionLoadingPageBody(BuildContext context) =>
     WidgetbookCatalogFrame(
-      title: 'EventSuccessSetupTabSkeleton',
+      title: 'EventSuccessHostSectionLoadingPageBody',
       catalogId: 'Event Success Host workspace',
-      children: [const EventSuccessSetupTabSkeleton()],
+      children: [const EventSuccessHostSectionLoadingPageBody()],
     );
-
-@widgetbook.UseCase(
-  name: 'Ready',
-  type: EventSuccessLiveTabSkeleton,
-  path: '[P1 product surfaces]/Event Success/Host workspace components',
-)
-Widget eventSuccessStrictEventSuccessLiveTabSkeleton(BuildContext context) =>
-    WidgetbookCatalogFrame(
-      title: 'EventSuccessLiveTabSkeleton',
-      catalogId: 'Event Success Host workspace',
-      children: [const EventSuccessLiveTabSkeleton()],
-    );
-
-@widgetbook.UseCase(
-  name: 'Ready',
-  type: EventSuccessReportTabSkeleton,
-  path: '[P1 product surfaces]/Event Success/Host workspace components',
-)
-Widget eventSuccessStrictEventSuccessReportTabSkeleton(BuildContext context) =>
-    WidgetbookCatalogFrame(
-      title: 'EventSuccessReportTabSkeleton',
-      catalogId: 'Event Success Host workspace',
-      children: [const EventSuccessReportTabSkeleton()],
-    );
-
-@widgetbook.UseCase(
-  name: 'Ready',
-  type: EventSuccessSetupControlsSkeleton,
-  path: '[P1 product surfaces]/Event Success/Host workspace components',
-)
-Widget eventSuccessStrictEventSuccessSetupControlsSkeleton(
-  BuildContext context,
-) => WidgetbookCatalogFrame(
-  title: 'EventSuccessSetupControlsSkeleton',
-  catalogId: 'Event Success Host workspace',
-  children: [const EventSuccessSetupControlsSkeleton()],
-);
-
-@widgetbook.UseCase(
-  name: 'Ready',
-  type: EventSuccessReportMetricsSkeleton,
-  path: '[P1 product surfaces]/Event Success/Host workspace components',
-)
-Widget eventSuccessStrictEventSuccessReportMetricsSkeleton(
-  BuildContext context,
-) => WidgetbookCatalogFrame(
-  title: 'EventSuccessReportMetricsSkeleton',
-  catalogId: 'Event Success Host workspace',
-  children: [const EventSuccessReportMetricsSkeleton()],
-);
