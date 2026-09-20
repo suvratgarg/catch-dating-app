@@ -537,6 +537,14 @@ export interface EventPolicyDemandPricingRuleDocument {
   demandStep: number;
 }
 
+/**
+ * Durable organizer rehearsal completion, stamped only by a successful completion transaction; not deleted with expiring sessions.
+ */
+export interface EventRehearsalMilestoneDocument {
+  organizerId: string;
+  completedAt: FirebaseFirestore.Timestamp;
+}
+
 export interface EventRcsCallbackReceiptDocument {
   schemaVersion: 1;
   callbackId: string;

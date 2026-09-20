@@ -58,6 +58,15 @@ should be repairable from edge/source documents.
 | HTTP Function | External web/client POST endpoint. | CORS, validation, rate limiting, server writes. |
 | Server/Admin Only | No client write surface. | Firestore rules deny client writes. |
 
+## Rehearsal completion summary
+
+`getEventRehearsalSummary` is an App-Check-protected, rate-limited, organizer-manager
+read of a completion boolean. The completion transaction alone stamps
+`eventRehearsalMilestones/{organizerId}` alongside the completed session and action
+receipt. Reset, fork, expiry, client preferences and navigation cannot erase or
+create this milestone. Clients cannot directly read or write the collection.
+Legacy completed sessions provide a bounded read-only fallback while retained.
+
 ## Durable Operations Platform
 
 Long-running, resumable admin workflows use the canonical contracts under

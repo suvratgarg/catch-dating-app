@@ -339,14 +339,14 @@ export async function updateEventRehearsalSetupHandler(
 
 /** Applies lifecycle, playbook-step, and virtual-clock actions atomically. */
 export async function controlEventRehearsalHandler(
-  request: CallableRequest<unknown>
+  request: CallableRequest<unknown>,
+  db: Firestore = admin.firestore()
 ): Promise<EventRehearsalBootstrapCallableResponse> {
   const uid = requireAuth(request);
   const data = validateCallableWithAjv<ControlEventRehearsalCallablePayload>(
     request,
     validateControlEventRehearsalCallablePayload
   );
-  const db = admin.firestore();
   await checkRateLimit(db, uid, "controlEventRehearsal");
   const authorized = await requireHostSession(db, data.sessionId, uid);
   const sessionRef = db.collection(sessions).doc(data.sessionId);
@@ -691,6 +691,12 @@ export async function controlEventRehearsalHandler(
       applyRehearsalCues(actorDocuments.map((actor) =>
         actorAtMoment(actor.value, momentForStep(activeStepIndex), now)
       ), cues, now, session.virtualStartedAt.toMillis()));
+    if (resolved.status === "complete") {
+      tx.set(db.collection("eventRehearsalMilestones")
+        .doc(session.organizerId), {
+        organizerId: session.organizerId, completedAt: now,
+      });
+    }
     tx.update(sessionRef, {
       status: resolved.status,
       activeStepIndex,
@@ -2240,7 +2246,7 @@ export const updateEventRehearsalSetup = onCall(
 );
 export const controlEventRehearsal = onCall(
   appCheckCallableOptions,
-  controlEventRehearsalHandler
+  (request) => controlEventRehearsalHandler(request)
 );
 export const injectEventRehearsalBehavior = onCall(
   appCheckCallableOptions,

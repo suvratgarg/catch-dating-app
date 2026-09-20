@@ -15,6 +15,21 @@ const contractRoot = path.join(repoRoot, "contracts");
 const checkOnly = process.argv.includes("--check");
 
 const schemaSpecs = [
+  {
+    "name": "EventRehearsalMilestoneDocument",
+    "source": "firestore/event_rehearsal_milestones.schema.json",
+    "typeOutput": "functions/src/shared/generated/eventRehearsalMilestoneDocument.ts"
+  },
+  {
+    "name": "GetEventRehearsalSummaryCallablePayload",
+    "source": "callables/get_event_rehearsal_summary_payload.schema.json",
+    "typeOutput": "functions/src/shared/generated/getEventRehearsalSummaryCallablePayload.ts"
+  },
+  {
+    "name": "EventRehearsalSummaryCallableResponse",
+    "source": "callable_responses/event_rehearsal_summary_response.schema.json",
+    "typeOutput": "functions/src/shared/generated/eventRehearsalSummaryCallableResponse.ts"
+  },
 {
   "name": "GetEventAssistanceParticipantContextCallablePayload",
   "source": "callables/get_event_assistance_participant_context_payload.schema.json",

@@ -45572,6 +45572,28 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const eventRehearsalMilestoneDocumentCompletedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventRehearsalMilestoneDocument.completedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventRehearsalMilestoneDocumentCompletedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventRehearsalMilestoneDocument.completedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventRehearsalMilestoneDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'eventRehearsalMilestoneDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const eventRehearsalMovementCallableResponseActorUid = CatchContractFieldConstraints(
     path: 'eventRehearsalMovementCallableResponse.actorUid',
     maxLength: 180,
@@ -49724,6 +49746,12 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventRehearsalSummaryCallableResponseHasCompletedRehearsal = CatchContractFieldConstraints(
+    path: 'eventRehearsalSummaryCallableResponse.hasCompletedRehearsal',
+    required: true,
+    valueTypes: <String>['boolean'],
   );
 
   static const eventRosterHandoffDocumentClubId = CatchContractFieldConstraints(
@@ -58497,6 +58525,14 @@ abstract final class CatchContractConstraints {
 
   static const getEventRehearsalMovementCallablePayloadSessionId = CatchContractFieldConstraints(
     path: 'getEventRehearsalMovementCallablePayload.sessionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventRehearsalSummaryCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'getEventRehearsalSummaryCallablePayload.organizerId',
     maxLength: 180,
     minLength: 1,
     required: true,
@@ -107055,6 +107091,9 @@ abstract final class CatchContractConstraints {
     'eventRehearsalMessageDocument.record.schemaVersion': eventRehearsalMessageDocumentRecordSchemaVersion,
     'eventRehearsalMessageDocument.record.updatedAt': eventRehearsalMessageDocumentRecordUpdatedAt,
     'eventRehearsalMessageDocument.sessionId': eventRehearsalMessageDocumentSessionId,
+    'eventRehearsalMilestoneDocument.completedAt._nanoseconds': eventRehearsalMilestoneDocumentCompletedAtNanoseconds,
+    'eventRehearsalMilestoneDocument.completedAt._seconds': eventRehearsalMilestoneDocumentCompletedAtSeconds,
+    'eventRehearsalMilestoneDocument.organizerId': eventRehearsalMilestoneDocumentOrganizerId,
     'eventRehearsalMovementCallableResponse.actorUid': eventRehearsalMovementCallableResponseActorUid,
     'eventRehearsalMovementCallableResponse.checkpoint.accountabilityReviews': eventRehearsalMovementCallableResponseCheckpointAccountabilityReviews,
     'eventRehearsalMovementCallableResponse.checkpoint.accountabilityReviews.items.attendeeId': eventRehearsalMovementCallableResponseCheckpointAccountabilityReviewsItemsAttendeeId,
@@ -107600,6 +107639,7 @@ abstract final class CatchContractConstraints {
     'eventRehearsalRouteDecisionDocument.progressRevision': eventRehearsalRouteDecisionDocumentProgressRevision,
     'eventRehearsalRouteDecisionDocument.sessionId': eventRehearsalRouteDecisionDocumentSessionId,
     'eventRehearsalRouteDecisionDocument.sourceHash': eventRehearsalRouteDecisionDocumentSourceHash,
+    'eventRehearsalSummaryCallableResponse.hasCompletedRehearsal': eventRehearsalSummaryCallableResponseHasCompletedRehearsal,
     'eventRosterHandoffDocument.clubId': eventRosterHandoffDocumentClubId,
     'eventRosterHandoffDocument.createdAt._nanoseconds': eventRosterHandoffDocumentCreatedAtNanoseconds,
     'eventRosterHandoffDocument.createdAt._seconds': eventRosterHandoffDocumentCreatedAtSeconds,
@@ -108784,6 +108824,7 @@ abstract final class CatchContractConstraints {
     'getEventRehearsalMovementCallablePayload.scope.groupId': getEventRehearsalMovementCallablePayloadScopeGroupId,
     'getEventRehearsalMovementCallablePayload.scope.progressRevision': getEventRehearsalMovementCallablePayloadScopeProgressRevision,
     'getEventRehearsalMovementCallablePayload.sessionId': getEventRehearsalMovementCallablePayloadSessionId,
+    'getEventRehearsalSummaryCallablePayload.organizerId': getEventRehearsalSummaryCallablePayloadOrganizerId,
     'getEventRosterInsightsCallablePayload.eventId': getEventRosterInsightsCallablePayloadEventId,
     'getEventRosterInsightsCallableResponse.computedAtMillis': getEventRosterInsightsCallableResponseComputedAtMillis,
     'getEventRosterInsightsCallableResponse.cutoffAtMillis': getEventRosterInsightsCallableResponseCutoffAtMillis,

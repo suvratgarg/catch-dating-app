@@ -11,6 +11,7 @@ import {
   EventRehearsalActorDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {
+  controlEventRehearsalHandler,
   createEventRehearsalHandler,
   resetEventRehearsalHandler,
   updateEventRehearsalSetupHandler,
@@ -21,6 +22,8 @@ import {buildConfiguredRehearsalActors, freezeRehearsalSetup,
   rehearsalUnitCount} from "./configuration";
 import {validPracticeVisit} from "./visitState";
 import {validPracticeParticipation} from "./participation";
+
+import {getEventRehearsalSummaryHandler} from "./summary";
 
 type Data = Record<string, unknown>;
 function updateData(current: Data, patch: Data): Data {
@@ -78,6 +81,9 @@ class Snap {
   }
   data() {
     return this.ref.store.docs[this.ref.path];
+  }
+  get(field: string) {
+    return this.data()?.[field];
   }
 }
 class Query {
@@ -423,4 +429,65 @@ test("legacy requests still create a draft with simulated guests", async () => {
   assert.equal(session.actorCount, 12);
   assert.equal(session.guestSource, "simulated");
   assert.equal(session.rosterSnapshot, undefined);
+});
+
+test("completion survives reset, fork and session deletion", async () => {
+  const db = storeWithRoster();
+  const summary = () => getEventRehearsalSummaryHandler(
+    request({organizerId: "org-1"}), db.asFirestore());
+  assert.deepEqual(await summary(), {hasCompletedRehearsal: false});
+  const created = await createEventRehearsalHandler(request(payload),
+    db.asFirestore());
+  assert.deepEqual(await summary(), {hasCompletedRehearsal: false});
+  const complete = request({sessionId: created.sessionId, action: "complete",
+    expectedRevision: 0, clientActionId: "complete-once"});
+  await controlEventRehearsalHandler(complete, db.asFirestore());
+  const milestone = db.docs["eventRehearsalMilestones/org-1"];
+  assert.ok(milestone.completedAt instanceof admin.firestore.Timestamp);
+  assert.deepEqual(await summary(), {hasCompletedRehearsal: true});
+  const writesBeforeReplay = db.writes.filter((path) =>
+    path.startsWith("eventRehearsalMilestones/")).length;
+  await controlEventRehearsalHandler(complete, db.asFirestore());
+  assert.equal(db.writes.filter((path) =>
+    path.startsWith("eventRehearsalMilestones/")).length, writesBeforeReplay);
+  for (const fork of [true, false]) {
+    await resetEventRehearsalHandler(request({sessionId: created.sessionId,
+      fork, seed: null}), db.asFirestore());
+    assert.deepEqual(await summary(), {hasCompletedRehearsal: true});
+  }
+  for (const path of Object.keys(db.docs)) {
+    if (path.startsWith("eventRehearsals/")) delete db.docs[path];
+  }
+  assert.deepEqual(await summary(), {hasCompletedRehearsal: true});
+  assert.equal(db.docs["eventRehearsalMilestones/org-1"], milestone);
+});
+
+test("summary authorizes each read and keeps errors distinct from false",
+  async () => {
+    const db = storeWithRoster();
+    const summary = () => getEventRehearsalSummaryHandler(
+      request({organizerId: "org-1"}), db.asFirestore());
+    db.docs["eventRehearsals/legacy-complete"] = {
+      organizerId: "other-org", status: "complete",
+    };
+    assert.deepEqual(await summary(), {hasCompletedRehearsal: false});
+    db.docs["eventRehearsals/legacy-complete"].organizerId = "org-1";
+    assert.deepEqual(await summary(), {hasCompletedRehearsal: true});
+    assert.equal(db.docs["eventRehearsalMilestones/org-1"], undefined);
+    db.docs["eventRehearsalMilestones/org-1"] = {organizerId: "org-1"};
+    await assert.rejects(summary(), /evidence needs review/);
+    db.docs["organizers/org-1"].ownerUserId = "another-owner";
+    db.docs["organizers/org-1"].hostUserId = "another-owner";
+    await assert.rejects(summary(), /owners and managers/);
+  });
+
+test("failed completion never stamps a milestone", async () => {
+  const db = storeWithRoster();
+  const created = await createEventRehearsalHandler(
+    request({...payload, startImmediately: false}), db.asFirestore());
+  await assert.rejects(controlEventRehearsalHandler(
+    request({sessionId: created.sessionId, action: "complete",
+      expectedRevision: 0, clientActionId: "invalid-completion"}),
+    db.asFirestore()));
+  assert.equal(db.docs["eventRehearsalMilestones/org-1"], undefined);
 });

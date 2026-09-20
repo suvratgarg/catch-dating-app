@@ -1,6 +1,14 @@
 {
   "indexes": [
     {
+      "collectionGroup": "eventRehearsals",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "organizerId", "mode": "ASCENDING"},
+        {"fieldPath": "status", "mode": "ASCENDING"}
+      ]
+    },
+    {
       "collectionGroup": "eventAttendees",
       "queryScope": "COLLECTION",
       "fields": [
