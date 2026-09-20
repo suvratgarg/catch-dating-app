@@ -1,7 +1,7 @@
 ---
 doc_id: design_language
-version: 1.27.0
-updated: 2026-09-16
+version: 1.28.0
+updated: 2026-09-21
 owner: ui_elevation_initiative
 status: active # identity locked; Phase 0–1 complete (bundled optical-sized fonts, B&W tokens, ActivityPalette routing, matte grade, anti-drift gates); Phase 2 flagship Profile built
 ---
@@ -341,9 +341,10 @@ filled surface in product UI must pass at least one of:
   controls. Elevation resets the rules; content inside starts flat again.
 - **R4 · Status tone** — the fill/border carries semantic state
   (warning/error/success notices, primarySoft signal cards).
-- **R5 · List frame** — ONE hairline container around a stack of
-  divider-separated rows (the ReviewRow/ContactRow/HostRow pattern).
-  Never card-per-row.
+- **R5 · Field or list frame** — ONE hairline container around related rows
+  or a controlling setting and its dependent configuration. Peer rows may
+  have separators; dependents attach through a subtle tint inside the same
+  perimeter. Never card-per-row or a box around children of an uncontained control.
 
 Everything else is an **attribute of the page's subject** and renders flat:
 kicker + typography + hairlines + spacing carry hierarchy.
@@ -351,7 +352,8 @@ kicker + typography + hairlines + spacing carry hierarchy.
 Additional rules:
 
 - **Depth ≤ 1.** A bordered surface never contains another bordered
-  surface; only a plane change (R3) resets the count.
+  surface; only a plane change (R3) resets the count. An attached dependent
+  tint has no perimeter of its own and does not restart the depth count.
 - **Exempt material classes:** chips/pills/badges (data-chip anatomy
   includes its border), skeletons (mimics follow whatever their subject
   does), and the immersive stage/paper/celebration grammars (their own
@@ -665,6 +667,45 @@ that detaches the explanation from the options it describes.
   unless a new named motion primitive is being introduced.
 
 ---
+
+### 7.4 Conditional hierarchy
+
+Logical dependency and visible nesting are separate. A field has one visual
+parent, and may have additional prerequisites elsewhere in the form. Those
+prerequisites affect whether it applies; they do not each earn a nested box.
+For example, Demand pricing belongs to Admission format, while Catch handling
+the booking is a separate prerequisite.
+
+Use these rules for a conditional configuration branch:
+
+1. Keep the controlling choice and applicable dependents in one visual group.
+   Use `CatchSection.dependentFieldRows` for a control with an attached,
+   subtly filled configuration area. Its rows stay flat inside one perimeter.
+   Equal dividers separate peers; they do not establish subordination.
+2. Give the control a short, prominent decision label. Explain its effect in
+   supporting text, and name child inputs by what the person is changing.
+   Units, limits, and a concrete consequence belong beside the relevant input.
+   A term such as “Step” is insufficient when its meaning is not evident.
+3. Allow at most two dependent ownership levels below a region's root.
+   This is Catch's initial presentation policy, not a limit on logical depth.
+   Use emphasis, shared space, and attachment; do not accumulate indentation,
+   vertical guide lines, nested outlines, or a new shade for every level.
+4. Before a third level, choose a coherent continuation or separate task step.
+   Keep earlier decisions available as editable summaries, identify the
+   current task, and preserve the path back. A continuation is an explicit
+   composition decision; reaching a depth never automatically opens a modal.
+5. Distinguish “collapsed” from “does not apply.” Collapsing an editor retains
+   applicability. Disabling an ancestor deactivates its dependent branch;
+   retained draft values must not silently affect the submitted configuration.
+   Validation must reveal the active path to an error, including a collapsed
+   region or another step.
+
+`CatchFormDependencies` checks declared ownership, prerequisites, cycles, and
+inline depth. It does not inspect the rendered widget tree or implement
+continuation navigation. Each adopter must test its actual visibility,
+validation, serialization, and error recovery. Visual review must cover both
+themes, text scale 2.0, and long labels. A valid declaration alone does not
+prove that the screen communicates the hierarchy.
 
 ## Cross-stack component lexicon
 

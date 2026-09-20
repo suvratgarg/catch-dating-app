@@ -367,6 +367,8 @@ import 'package:widgetbook_workspace/primitives/catalog/sections.dart'
     as _widgetbook_workspace_primitives_catalog_sections;
 import 'package:widgetbook_workspace/primitives/catalog/typography.dart'
     as _widgetbook_workspace_primitives_catalog_typography;
+import 'package:widgetbook_workspace/primitives/conditional_form_use_cases.dart'
+    as _widgetbook_workspace_primitives_conditional_form_use_cases;
 import 'package:widgetbook_workspace/primitives/contracts/activity_media.dart'
     as _widgetbook_workspace_primitives_contracts_activity_media;
 import 'package:widgetbook_workspace/primitives/contracts/analytics.dart'
@@ -1422,6 +1424,22 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Validated arrival interaction',
                 builder: _widgetbook_workspace_primitives_catalog_feedback
                     .foregroundNotificationListenerPreview,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
+        name: 'Grouping',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchSection',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Dependent configuration',
+                builder:
+                    _widgetbook_workspace_primitives_conditional_form_use_cases
+                        .catchDependentConfigurationUseCase,
               ),
             ],
           ),

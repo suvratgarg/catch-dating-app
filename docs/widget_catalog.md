@@ -1,7 +1,7 @@
 ---
 doc_id: widget_catalog
-version: 4.5.2
-updated: 2026-09-15
+version: 4.6.0
+updated: 2026-09-21
 owner: recursive_audit_loop
 status: active
 ---
@@ -61,6 +61,7 @@ persistent context stack.
 | `CatchSection.controls` | Use for sort/filter controls above a collection. The Section owns the readable gutter and both full content-width rules; callers supply only controls. | Do not draw a screen-local divider above or below the controls. |
 | `CatchSection.loadingRows` / `.sliverLoadingRows` | Supply representative `CatchFieldLayout` values for the eventual row anatomy. Field and Section retain the loaded row's width, text lane, sibling rules, disclosure slot, and disabled loading semantics. | Do not substitute `CatchSkeleton.rows`, `.mediaRows`, or `.iconRows` for a known collection layout or add a loading-only outer card. |
 | `CatchSection.containedFieldRows` | Use for one outlined group of sibling fields. A supplied title, count, or trailing action forms an outside kicker row by default; use `CatchSectionHeaderPlacement.inside` when that header belongs to the bounded group itself. Inside headers own the same inset end-to-end section rule as divided field sections. | Do not hand-roll a parallel kicker-plus-card shell, place an inside header without its section-owned rule, or round active child rows. |
+| `CatchSection.dependentFieldRows` | A controlling Field and its applicable typed dependents share one rounded perimeter. The child area attaches through tint, without additional outlines or peer dividers. The section owns exact hit bounds; the form owns applicability and serialization. | Do not wrap only the children, accumulate indentation, or hide applicable fields when the control editor collapses. |
 | `CatchSection.containedFieldGroups` | Use when one outlined collection contains one or more labelled groups of related field choices. Supply semantic `CatchSectionFieldGroup` descriptors; the section owns every internal kicker, boundary, sibling rule, clip, and active band. | Do not assemble subsection kickers and field dividers in feature code or use separate outlined sections for groups that form one choice set. |
 | `CatchFieldLanes` | Use `.divided` for headerless sibling fields, `.single` for one ungrouped field, and `.custom` for a non-field body. Divided lanes inherit the responsive interaction policy and own canonical gutter and separators. | Do not override gutters or make a field paint its sibling divider. |
 | `CatchSection.contained` | Use for one bounded operational/action module that qualifies under the surface doctrine. Peer modules with the same role use the same variant, including their loading, empty, error, and populated states. | Do not alternate filled and outlined siblings for equivalent report modules, and do not nest another bordered surface. |

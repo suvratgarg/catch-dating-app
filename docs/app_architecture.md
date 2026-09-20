@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.65.9
-updated: 2026-09-16
+version: 1.66.0
+updated: 2026-09-21
 owner: app_architecture
 status: active
 ---
@@ -4403,6 +4403,32 @@ prototype. Host Club Identity and Contact are the first promoted descriptor
 adopter: both sections use typed `UpdateClubPatch` descriptors and one save
 delegate. Running/Lifestyle retain their existing self-profile descriptors, and
 onboarding retains its step-specific composition.
+
+Conditional forms use `CatchFormDependencies<K>` with stable typed IDs.
+Each node declares one presentation `parent`, optional additional
+`prerequisites`, and a local `when` evaluated from feature state. Applicability
+is the conjunction of that local condition and all prerequisite applicability.
+The immutable snapshot rejects duplicate IDs, missing references, and cycles
+even in inactive branches. Its iterative evaluation imposes no small
+logical-depth limit.
+
+Each presentation region allows two ownership edges below its root. A deeper
+branch must declare a `continuation` or `step` boundary. The declaration
+preserves the full ownership path for ancestor summaries and error recovery;
+it does not render those summaries, navigate, or open a modal. The feature
+must implement and test its chosen boundary. Additional prerequisites never
+add visual depth. Event Policy is the initial applicability and attached-group adopter. The
+shared model lives in `packages/catch_ui/lib/src/patterns/catch_form_dependencies.dart`;
+Section consumes typed Fields rather than arbitrary nested widget shells.
+
+This model is complementary to flat typed row descriptors, not a universal
+form renderer. Values, validation policy, draft retention, and serialization
+remain feature-owned. An inactive field must not validate as an active input
+or affect submitted behavior merely because its draft value was retained.
+Collapsing an active editor does not deactivate it. The section primitive owns
+group geometry; the feature owns decision meaning and state. See
+[`design_language.md` §7.4](design_language.md#74-conditional-hierarchy) for
+the presentation rule and required visual review.
 
 Schema-derived configuration is broader than descriptor adoption. Every
 editable canonical control and descriptor instance in both installable apps
