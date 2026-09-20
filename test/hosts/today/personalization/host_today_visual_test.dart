@@ -66,19 +66,21 @@ void main() {
         );
         addTearDown(router.dispose);
         await tester.pumpWidget(
-          RepaintBoundary(
-            key: _captureKey,
-            child: ProviderScope(
-              overrides: [
-                hostTodayFeedControllerProvider.overrideWith2((_) => _QuietFeed()),
-                uidProvider.overrideWithValue(const AsyncData('owner')),
-                hostOperableClubsProvider('owner').overrideWithValue(
-                  AsyncData([buildClub(id: 'org', ownerUserId: 'owner')]),
-                ),
-                hostTodayPreferenceRepositoryProvider.overrideWithValue(
-                  preferences,
-                ),
-              ],
+          ProviderScope(
+            overrides: [
+              hostTodayFeedControllerProvider.overrideWith2(
+                (_) => _QuietFeed(),
+              ),
+              uidProvider.overrideWithValue(const AsyncData('owner')),
+              hostOperableClubsProvider('owner').overrideWithValue(
+                AsyncData([buildClub(id: 'org', ownerUserId: 'owner')]),
+              ),
+              hostTodayPreferenceRepositoryProvider.overrideWithValue(
+                preferences,
+              ),
+            ],
+            child: RepaintBoundary(
+              key: _captureKey,
               child: MaterialApp.router(
                 debugShowCheckedModeBanner: false,
                 theme: dark ? AppTheme.dark : AppTheme.light,
@@ -216,7 +218,6 @@ HostTodayPersonalizationState _quietState() =>
       evidence: const HostTodayRoadmapEvidence(
         audience: HostTodayMilestoneProgress.incomplete,
         rehearsal: HostTodayMilestoneProgress.complete,
-        organizerPage: HostTodayMilestoneProgress.unknown,
         payouts: HostTodayMilestoneProgress.incomplete,
         canManagePayouts: true,
       ),

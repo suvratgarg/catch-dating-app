@@ -1,10 +1,10 @@
-import 'package:catch_dating_app/hosts/domain/crm/host_crm_summary.dart';
 import 'dart:async';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/hosts/data/crm/host_contacts_repository.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_crm_summary.dart';
 import 'package:catch_dating_app/hosts/today/personalization/domain/host_today_preference.dart';
 import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_personalization_state.dart';
 import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_roadmap_provider.dart';
@@ -46,10 +46,31 @@ void main() {
       expect(evidence.canManagePayouts, isFalse);
     });
 
+    test('cached identity while loading or failed cannot authorize reads', () {
+      for (final identity in _cachedUnavailable<String?>('owner')) {
+        var organizerReads = 0;
+        final container = ProviderContainer(
+          overrides: [
+            uidProvider.overrideWithValue(identity),
+            hostOperableClubsProvider('owner').overrideWith((ref) {
+              organizerReads++;
+              return AsyncData([club]);
+            }),
+          ],
+        );
+        final evidence = container.read(hostTodayRoadmapProvider(scope));
+        expect(organizerReads, 0);
+        expect(evidence.organizerPage, HostTodayMilestoneProgress.unknown);
+        expect(evidence.canManagePayouts, isFalse);
+        container.dispose();
+      }
+    });
+
     test('missing or unavailable membership does not read CRM or payouts', () {
       for (final membership in <AsyncValue<List<Club>>>[
         const AsyncLoading(),
         AsyncError(StateError('Membership unavailable'), StackTrace.empty),
+        ..._cachedUnavailable<List<Club>>([club]),
         const AsyncData([]),
         AsyncData([club.copyWith(id: 'different-organizer')]),
       ]) {
@@ -364,3 +385,18 @@ HostPaymentAccount _account(String userId, {required bool ready}) =>
           ? HostPaymentOnboardingStatus.complete
           : HostPaymentOnboardingStatus.pending,
     );
+
+// Like core async-state tests, construct Riverpod's cached transition snapshots
+// directly so authorization is checked during refresh, reload and stale error.
+List<AsyncValue<T>> _cachedUnavailable<T>(T value) {
+  final previous = AsyncData(value);
+  return [
+    // ignore: invalid_use_of_internal_member
+    AsyncLoading<T>().copyWithPrevious(previous),
+    // ignore: invalid_use_of_internal_member
+    AsyncLoading<T>().copyWithPrevious(previous, isRefresh: false),
+    AsyncError<T>(StateError('Refresh failed'), StackTrace.empty)
+    // ignore: invalid_use_of_internal_member
+    .copyWithPrevious(previous),
+  ];
+}

@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
-import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
@@ -40,20 +39,23 @@ class _HostTodayFocusScreenState extends ConsumerState<HostTodayFocusScreen> {
   @override
   Widget build(BuildContext context) {
     final uid = catchAsyncStateFromAsyncValue(ref.watch(uidProvider));
-    final accountId = uid.value;
-    final organizers = accountId == null
+    final accountId = uid.isSettledData ? uid.value : null;
+    final organizersAsync = accountId == null
         ? null
-        : catchAsyncStateFromAsyncValue(
-            ref.watch(hostOperableClubsProvider(accountId)),
-          );
-    final organizer = organizers?.value
-        ?.where((club) => club.id == widget.organizerId)
-        .firstOrNull;
+        : ref.watch(hostOperableClubsProvider(accountId));
+    final organizers = organizersAsync == null
+        ? null
+        : catchAsyncStateFromAsyncValue(organizersAsync);
+    final organizer = organizers?.isSettledData == true
+        ? organizers?.value
+              ?.where((club) => club.id == widget.organizerId)
+              .firstOrNull
+        : null;
     final scope =
         uid.isLoading ||
-            uid.hasError ||
+            uid.error != null ||
             organizers?.isLoading == true ||
-            organizers?.hasError == true ||
+            organizers?.error != null ||
             organizer == null ||
             accountId == null
         ? null
@@ -83,27 +85,36 @@ class _HostTodayFocusScreenState extends ConsumerState<HostTodayFocusScreen> {
     if (today != null && today.status != HostTodayStatus.loading && !quiet) {
       _returnToTodayForOperationalWork(request!);
     }
-    final preference = scope == null || !quiet
+    final preferenceAsync = scope == null || !quiet
         ? null
         : ref.watch(hostTodayPreferenceProvider(scope));
+    final preference = preferenceAsync == null
+        ? null
+        : catchAsyncStateFromAsyncValue(preferenceAsync);
+    if (scope != null) {
+      listenToCatchMutationErrors(
+        context,
+        ref,
+        mutations: [HostTodayPreferenceController.saveMutation(scope)],
+      );
+    }
     final pending =
         scope != null &&
         ref.watch(HostTodayPreferenceController.saveMutation(scope)).isPending;
-    final saved = preference?.asData?.value;
+    final saved = preference?.error == null ? preference?.value : null;
     final selected = _selectionScope == scope ? _selected : saved?.focus;
 
     Widget content;
     var loading = false;
-    if (uid.hasError ||
-        organizers?.hasError == true ||
-        preference?.hasError == true) {
+    if (uid.error != null ||
+        organizers?.error != null ||
+        preference?.error != null) {
       content = CatchLocalizedErrorState(
         uid.error ?? organizers?.error ?? preference!.error!,
-        context: AppErrorContext.generic,
         onRetry: () {
-          if (uid.hasError) {
+          if (uid.error != null) {
             ref.invalidate(uidProvider);
-          } else if (organizers?.hasError == true) {
+          } else if (organizers?.error != null) {
             ref.invalidate(hostOperableClubsProvider(accountId!));
           } else if (scope != null) {
             ref.invalidate(hostTodayPreferenceProvider(scope));
@@ -111,7 +122,9 @@ class _HostTodayFocusScreenState extends ConsumerState<HostTodayFocusScreen> {
         },
       );
     } else if (uid.isLoading ||
+        uid.isRefreshing ||
         organizers?.isLoading == true ||
+        organizers?.isRefreshing == true ||
         preference?.isLoading == true ||
         (scope != null && !quiet)) {
       loading = true;
@@ -212,11 +225,12 @@ class _HostTodayFocusScreenState extends ConsumerState<HostTodayFocusScreen> {
         );
         return focus == null ? controller.skip() : controller.select(focus);
       });
-      if (!mounted || ref.read(uidProvider).asData?.value != scope.accountId)
+      if (!mounted || ref.read(uidProvider).asData?.value != scope.accountId) {
         return;
+      }
       _exit();
-    } on Object catch (error) {
-      if (mounted) showCatchErrorSnackBar(context, error);
+    } on Object {
+      // The scoped mutation listener owns user-facing save errors.
     }
   }
 

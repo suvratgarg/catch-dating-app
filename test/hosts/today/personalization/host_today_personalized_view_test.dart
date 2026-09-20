@@ -97,8 +97,8 @@ void main() {
             AsyncData([buildClub(id: 'org', ownerUserId: 'owner')]),
           ),
           hostTodayPreferenceRepositoryProvider.overrideWithValue(preferences),
-          hostTodayFeedControllerProvider.overrideWith(
-            () => _TestTodayFeed(statuses),
+          hostTodayFeedControllerProvider.overrideWith2(
+            (_) => _TestTodayFeed(statuses),
           ),
           hostTodayRoadmapProvider(
             scope,
@@ -162,6 +162,37 @@ void main() {
     expect(find.text('Not yet verified'), findsWidgets);
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets(
+    'failed focus save shows one error and leaves the choice retryable',
+    (tester) async {
+      preferences.failWrite = true;
+      final router = await mount(tester);
+      final choice = find.byKey(const ValueKey('host-today-focus-audience'));
+      final continueButton = find.byKey(
+        const ValueKey('host-today-focus-continue'),
+      );
+      await tester.tap(choice);
+      await pumpFeatureUi(tester);
+      await tester.ensureVisible(continueButton);
+      await tester.tap(continueButton);
+      await pumpFeatureUi(tester);
+      expect(find.byType(SnackBar), findsOneWidget);
+      expect(router.state.uri.path, '/host/today/focus');
+      expect(preferences.values, isEmpty);
+      expect(tester.widget<CatchChoiceTile>(choice).selected, isTrue);
+      expect(tester.widget<CatchButton>(continueButton).onPressed, isNotNull);
+      preferences.failWrite = false;
+      await tester.tap(continueButton);
+      await pumpFeatureUi(tester);
+      expect(
+        preferences.values[scope],
+        const HostTodayPreference.selected(HostTodayFocus.audience),
+      );
+      expect(router.state.uri.path, '/host/today');
+      expect(tester.takeException(), isNull);
+    },
+  );
 
   testWidgets('organizer presence action retains the selected organizer', (
     tester,
@@ -274,6 +305,7 @@ void main() {
 class _MemoryPreferences implements HostTodayPreferenceRepository {
   final values = <HostTodayPreferenceScope, HostTodayPreference>{};
   int loads = 0;
+  bool failWrite = false;
   @override
   Future<HostTodayPreference> load(HostTodayPreferenceScope scope) async {
     loads++;
@@ -285,6 +317,7 @@ class _MemoryPreferences implements HostTodayPreferenceRepository {
     HostTodayPreferenceScope scope,
     HostTodayPreference preference,
   ) async {
+    if (failWrite) throw StateError('Storage unavailable');
     values[scope] = preference;
   }
 }

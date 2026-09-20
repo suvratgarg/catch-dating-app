@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/hosts/data/crm/host_contacts_repository.dart';
@@ -86,16 +87,19 @@ class _HostTodayPersonalizedLayoutState
 
   @override
   Widget build(BuildContext context) {
-    final accountId = ref.watch(uidProvider).asData?.value;
+    final identity = catchAsyncStateFromAsyncValue(ref.watch(uidProvider));
+    final accountId = identity.isSettledData ? identity.value : null;
     if (accountId != widget.scope.accountId ||
         !isHostTodayQuiet(widget.today)) {
       _returnToOperationalWork();
       return widget.operationalSurface;
     }
 
-    final preference = ref.watch(hostTodayPreferenceProvider(widget.scope));
+    final preference = catchAsyncStateFromAsyncValue(
+      ref.watch(hostTodayPreferenceProvider(widget.scope)),
+    );
     final evidence = ref.watch(hostTodayRoadmapProvider(widget.scope));
-    final saved = preference.asData?.value;
+    final saved = preference.error == null ? preference.value : null;
     final state = saved == null
         ? null
         : buildHostTodayPersonalizationState(
@@ -105,7 +109,7 @@ class _HostTodayPersonalizedLayoutState
           );
     if (state?.showOrientation == true) _scheduleOrientation();
 
-    if (preference.hasError) {
+    if (preference.error != null) {
       return SliverToBoxAdapter(
         child: CatchSection.content(
           child: CatchLocalizedErrorState(
@@ -158,8 +162,9 @@ class _HostTodayPersonalizedLayoutState
     if (_operationalReturnScheduled ||
         _router?.state.name != Routes.hostTodayFocusScreen.name ||
         _router?.state.uri.queryParameters['organizerId'] !=
-            widget.scope.organizerId)
+            widget.scope.organizerId) {
       return;
+    }
     _operationalReturnScheduled = true;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _operationalReturnScheduled = false;
@@ -168,8 +173,9 @@ class _HostTodayPersonalizedLayoutState
           isHostTodayQuiet(widget.today) ||
           _router?.state.name != Routes.hostTodayFocusScreen.name ||
           _router?.state.uri.queryParameters['organizerId'] !=
-              widget.scope.organizerId)
+              widget.scope.organizerId) {
         return;
+      }
       // Operational work appeared while the optional choice was open. Leave
       // the preference unanswered; interruption is not the user's skip choice.
       _offeredScopes.remove(widget.scope);

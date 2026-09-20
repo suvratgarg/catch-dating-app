@@ -1,9 +1,10 @@
-import 'package:catch_dating_app/hosts/domain/crm/host_crm_summary.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
-import 'package:catch_dating_app/hosts/data/crm/host_contacts_repository.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/event_rehearsal/data/event_rehearsal_repository.dart';
+import 'package:catch_dating_app/hosts/data/crm/host_contacts_repository.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_crm_summary.dart';
 import 'package:catch_dating_app/hosts/today/personalization/domain/host_today_preference.dart';
 import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_personalization_state.dart';
 import 'package:catch_dating_app/payments/data/host_payment_account_repository.dart';
@@ -17,26 +18,35 @@ HostTodayRoadmapEvidence hostTodayRoadmap(
   Ref ref,
   HostTodayPreferenceScope scope,
 ) {
-  final uid = ref.watch(uidProvider).asData?.value;
+  final identity = catchAsyncStateFromAsyncValue(ref.watch(uidProvider));
+  final uid = identity.isSettledData ? identity.value : null;
   if (uid != scope.accountId) return const HostTodayRoadmapEvidence();
-  final organizer = ref
-      .watch(hostOperableClubsProvider(scope.accountId))
-      .asData
-      ?.value
-      .where((club) => club.id == scope.organizerId)
-      .firstOrNull;
+  final membership = catchAsyncStateFromAsyncValue(
+    ref.watch(hostOperableClubsProvider(scope.accountId)),
+  );
+  final organizer = membership.isSettledData
+      ? membership.value
+            ?.where((club) => club.id == scope.organizerId)
+            .firstOrNull
+      : null;
   if (organizer == null) return const HostTodayRoadmapEvidence();
-  final audience = ref.watch(hostCrmSummaryProvider(scope.organizerId));
-  final rehearsal = ref.watch(hostTodayRehearsalCompletionProvider(scope));
-  final accounts = organizer.isOwnedBy(scope.accountId)
-      ? ref.watch(watchHostPaymentAccountsProvider(scope.accountId))
-      : const AsyncValue<List<HostPaymentAccount>>.data([]);
+  final audience = catchAsyncStateFromAsyncValue(
+    ref.watch(hostCrmSummaryProvider(scope.organizerId)),
+  );
+  final rehearsal = catchAsyncStateFromAsyncValue(
+    ref.watch(hostTodayRehearsalCompletionProvider(scope)),
+  );
+  final accounts = catchAsyncStateFromAsyncValue(
+    organizer.isOwnedBy(scope.accountId)
+        ? ref.watch(watchHostPaymentAccountsProvider(scope.accountId))
+        : const AsyncValue<List<HostPaymentAccount>>.data([]),
+  );
   return buildHostTodayRoadmapEvidence(
     organizer: organizer,
     accountId: scope.accountId,
-    audience: audience.asData?.value,
-    paymentAccounts: accounts.asData?.value,
-    hasCompletedRehearsal: rehearsal.asData?.value,
+    audience: audience.isSettledData ? audience.value : null,
+    paymentAccounts: accounts.isSettledData ? accounts.value : null,
+    hasCompletedRehearsal: rehearsal.isSettledData ? rehearsal.value : null,
   );
 }
 
@@ -47,10 +57,15 @@ Future<bool> hostTodayRehearsalCompletion(
   Ref ref,
   HostTodayPreferenceScope scope,
 ) {
-  final uid = ref.watch(uidProvider).asData?.value;
-  final organizers = uid == scope.accountId
-      ? ref.watch(hostOperableClubsProvider(scope.accountId)).asData?.value
-      : null;
+  final identity = catchAsyncStateFromAsyncValue(ref.watch(uidProvider));
+  final uid = identity.isSettledData ? identity.value : null;
+  if (uid != scope.accountId) {
+    throw StateError('Organizer access is unavailable.');
+  }
+  final membership = catchAsyncStateFromAsyncValue(
+    ref.watch(hostOperableClubsProvider(scope.accountId)),
+  );
+  final organizers = membership.isSettledData ? membership.value : null;
   if (organizers == null ||
       !organizers.any((organizer) => organizer.id == scope.organizerId)) {
     throw StateError('Organizer access is unavailable.');

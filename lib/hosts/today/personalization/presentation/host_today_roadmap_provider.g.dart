@@ -72,7 +72,7 @@ final class HostTodayRoadmapProvider
   }
 }
 
-String _$hostTodayRoadmapHash() => r'f500b8a14e6f8146cad3a59a640abf2b815648da';
+String _$hostTodayRoadmapHash() => r'7ea1c3c20e3caf5abdc746d7cfa0051840881fdc';
 
 final class HostTodayRoadmapFamily extends $Family
     with
@@ -156,7 +156,7 @@ final class HostTodayRehearsalCompletionProvider
 }
 
 String _$hostTodayRehearsalCompletionHash() =>
-    r'a98ef2e12388025693aab6e9e13144b377917ae8';
+    r'2cddb78e2e5a9bbd53d80e4b23a424b5641c4144';
 
 /// A failed or unavailable summary stays unknown in the roadmap. Completion is
 /// read from rehearsal's durable milestone, never inferred from opening a route.
