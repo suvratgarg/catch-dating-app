@@ -6541,34 +6541,6 @@
     "x-owner": "product",
     "x-surface": "user_profile.presentation.widgets.profile_tab_skeleton"
   },
-  "clubsClubDetailSkeletonTitleAbout": "About",
-  "@clubsClubDetailSkeletonTitleAbout": {
-    "description": "Product copy used by lib/clubs/presentation/detail/widgets/club_detail_skeleton.dart (title).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "clubs.presentation.detail.widgets.club_detail_skeleton"
-  },
-  "clubsClubDetailSkeletonTitleWhatWeDo": "What we do",
-  "@clubsClubDetailSkeletonTitleWhatWeDo": {
-    "description": "Product copy used by lib/clubs/presentation/detail/widgets/club_detail_skeleton.dart (title).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "clubs.presentation.detail.widgets.club_detail_skeleton"
-  },
-  "clubsClubDetailSkeletonTitleYourHosts": "Your hosts",
-  "@clubsClubDetailSkeletonTitleYourHosts": {
-    "description": "Product copy used by lib/clubs/presentation/detail/widgets/club_detail_skeleton.dart (title).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "clubs.presentation.detail.widgets.club_detail_skeleton"
-  },
-  "clubsClubDetailSkeletonTitleSchedule": "Schedule",
-  "@clubsClubDetailSkeletonTitleSchedule": {
-    "description": "Product copy used by lib/clubs/presentation/detail/widgets/club_detail_skeleton.dart (title).",
-    "x-audience": "consumer",
-    "x-owner": "product",
-    "x-surface": "clubs.presentation.detail.widgets.club_detail_skeleton"
-  },
   "clubsClubHeroAppBarTitleClubDetailCollapsedTitle": "club-detail-collapsed-title",
   "@clubsClubHeroAppBarTitleClubDetailCollapsedTitle": {
     "description": "Product copy used by lib/clubs/presentation/detail/widgets/club_hero_app_bar.dart (title).",
