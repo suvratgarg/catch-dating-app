@@ -1,4 +1,4 @@
-import 'package:catch_ui/src/patterns/catch_form_dependency_boundary.dart';
+import 'package:catch_ui/src/patterns/catch_form_dependency_mode.dart';
 
 /// One field or meaningful group in a form's dependency model.
 ///

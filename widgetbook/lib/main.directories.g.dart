@@ -1433,7 +1433,7 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Grouping',
         children: [
           _widgetbook.WidgetbookComponent(
-            name: 'CatchSection',
+            name: 'CatchDependentRowSection',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Dependent configuration',

@@ -1,7 +1,7 @@
 import 'dart:collection';
 
 import 'package:catch_ui/src/patterns/catch_form_dependency.dart';
-import 'package:catch_ui/src/patterns/catch_form_dependency_boundary.dart';
+import 'package:catch_ui/src/patterns/catch_form_dependency_mode.dart';
 
 /// Validated, immutable applicability snapshot for one form state.
 ///
