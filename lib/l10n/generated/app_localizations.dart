@@ -31410,6 +31410,252 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'WhatsApp'**
   String get hostInboxWhatsappReplyChannel;
+
+  /// Host Today focus and roadmap copy: Add Customer Action.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a contact'**
+  String get hostTodayAddCustomerAction;
+
+  /// Host Today focus and roadmap copy: Add Customer Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Start with someone you know'**
+  String get hostTodayAddCustomerTitle;
+
+  /// Host Today focus and roadmap copy: Audience Action.
+  ///
+  /// In en, this message translates to:
+  /// **'Open People'**
+  String get hostTodayAudienceAction;
+
+  /// Host Today focus and roadmap copy: Audience Body.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep your community in one place. Add contacts, review their history, and build an audience for your next event.'**
+  String get hostTodayAudienceBody;
+
+  /// Host Today focus and roadmap copy: Audience Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Get to know your audience'**
+  String get hostTodayAudienceTitle;
+
+  /// Host Today focus and roadmap copy: Change Focus.
+  ///
+  /// In en, this message translates to:
+  /// **'Change'**
+  String get hostTodayChangeFocus;
+
+  /// Host Today focus and roadmap copy: Explore Focus.
+  ///
+  /// In en, this message translates to:
+  /// **'Explore at your own pace'**
+  String get hostTodayExploreFocus;
+
+  /// Host Today focus and roadmap copy: Focus Audience Body.
+  ///
+  /// In en, this message translates to:
+  /// **'Organize contacts and learn who comes back.'**
+  String get hostTodayFocusAudienceBody;
+
+  /// Host Today focus and roadmap copy: Focus Audience Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Grow and understand my audience'**
+  String get hostTodayFocusAudienceTitle;
+
+  /// Host Today focus and roadmap copy: Focus Back To Today.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to Today'**
+  String get hostTodayFocusBackToToday;
+
+  /// Host Today focus and roadmap copy: Focus Continue.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get hostTodayFocusContinue;
+
+  /// Host Today focus and roadmap copy: Focus Heading.
+  ///
+  /// In en, this message translates to:
+  /// **'What would you like to work on?'**
+  String get hostTodayFocusHeading;
+
+  /// Host Today focus and roadmap copy: Focus Introduction.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a focus for Today. You can change it whenever you like.'**
+  String get hostTodayFocusIntroduction;
+
+  /// Host Today focus and roadmap copy: Focus Presence Body.
+  ///
+  /// In en, this message translates to:
+  /// **'Shape your public page and prepare to welcome guests.'**
+  String get hostTodayFocusPresenceBody;
+
+  /// Host Today focus and roadmap copy: Focus Presence Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Build my organizer presence'**
+  String get hostTodayFocusPresenceTitle;
+
+  /// Host Today focus and roadmap copy: Focus Rehearsal Body.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice with a rehearsal before your next live event.'**
+  String get hostTodayFocusRehearsalBody;
+
+  /// Host Today focus and roadmap copy: Focus Rehearsal Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Get confident running events'**
+  String get hostTodayFocusRehearsalTitle;
+
+  /// Host Today focus and roadmap copy: Focus Safety.
+  ///
+  /// In en, this message translates to:
+  /// **'Live events and anything needing attention always come first.'**
+  String get hostTodayFocusSafety;
+
+  /// Host Today focus and roadmap copy: Focus Screen Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Your focus'**
+  String get hostTodayFocusScreenTitle;
+
+  /// Host Today focus and roadmap copy: Focus Skip.
+  ///
+  /// In en, this message translates to:
+  /// **'Explore for now'**
+  String get hostTodayFocusSkip;
+
+  /// Host Today focus and roadmap copy: Focus Unavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Organizer unavailable'**
+  String get hostTodayFocusUnavailable;
+
+  /// Host Today focus and roadmap copy: Focus Unavailable Body.
+  ///
+  /// In en, this message translates to:
+  /// **'Return to Today and choose an organizer you can manage.'**
+  String get hostTodayFocusUnavailableBody;
+
+  /// Host Today focus and roadmap copy: Milestone Audience.
+  ///
+  /// In en, this message translates to:
+  /// **'Audience established'**
+  String get hostTodayMilestoneAudience;
+
+  /// Host Today focus and roadmap copy: Milestone Available.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready to explore'**
+  String get hostTodayMilestoneAvailable;
+
+  /// Host Today focus and roadmap copy: Milestone Complete.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get hostTodayMilestoneComplete;
+
+  /// Host Today focus and roadmap copy: Milestone Owner Only.
+  ///
+  /// In en, this message translates to:
+  /// **'Organizer owner only'**
+  String get hostTodayMilestoneOwnerOnly;
+
+  /// Host Today focus and roadmap copy: Milestone Page.
+  ///
+  /// In en, this message translates to:
+  /// **'Public organizer page'**
+  String get hostTodayMilestonePage;
+
+  /// Host Today focus and roadmap copy: Milestone Payouts.
+  ///
+  /// In en, this message translates to:
+  /// **'Payouts ready'**
+  String get hostTodayMilestonePayouts;
+
+  /// Host Today focus and roadmap copy: Milestone Rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Rehearsal completed'**
+  String get hostTodayMilestoneRehearsal;
+
+  /// Host Today focus and roadmap copy: Milestone Unknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Not yet verified'**
+  String get hostTodayMilestoneUnknown;
+
+  /// Host Today focus and roadmap copy: Payouts Action.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage payouts'**
+  String get hostTodayPayoutsAction;
+
+  /// Host Today focus and roadmap copy: Payouts Body.
+  ///
+  /// In en, this message translates to:
+  /// **'Set up payouts when you are ready to take payments. This is optional for organizers running free events.'**
+  String get hostTodayPayoutsBody;
+
+  /// Host Today focus and roadmap copy: Practice Action.
+  ///
+  /// In en, this message translates to:
+  /// **'Run a dress rehearsal'**
+  String get hostTodayPracticeAction;
+
+  /// Host Today focus and roadmap copy: Practice Body.
+  ///
+  /// In en, this message translates to:
+  /// **'Try the event controls with practice guests. Build confidence without changing a live event.'**
+  String get hostTodayPracticeBody;
+
+  /// Host Today focus and roadmap copy: Practice Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice before event day'**
+  String get hostTodayPracticeTitle;
+
+  /// Host Today focus and roadmap copy: Presence Action.
+  ///
+  /// In en, this message translates to:
+  /// **'Open organizer page'**
+  String get hostTodayPresenceAction;
+
+  /// Host Today focus and roadmap copy: Presence Body.
+  ///
+  /// In en, this message translates to:
+  /// **'Help guests understand your community and find your events. Review your public page and choose when to publish it.'**
+  String get hostTodayPresenceBody;
+
+  /// Host Today focus and roadmap copy: Presence Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Make your organizer page yours'**
+  String get hostTodayPresenceTitle;
+
+  /// Host Today focus and roadmap copy: Roadmap Introduction.
+  ///
+  /// In en, this message translates to:
+  /// **'Explore what is useful for your community. Progress reflects verified activity; every feature is optional.'**
+  String get hostTodayRoadmapIntroduction;
+
+  /// Host Today focus and roadmap copy: Roadmap Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Your roadmap'**
+  String get hostTodayRoadmapTitle;
+
+  /// Host Today focus and roadmap copy: Your Focus.
+  ///
+  /// In en, this message translates to:
+  /// **'Your focus'**
+  String get hostTodayYourFocus;
 }
 
 class _AppLocalizationsDelegate

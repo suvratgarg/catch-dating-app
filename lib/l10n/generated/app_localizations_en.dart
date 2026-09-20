@@ -19787,4 +19787,138 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostInboxWhatsappReplyChannel => 'WhatsApp';
+
+  @override
+  String get hostTodayAddCustomerAction => 'Add a contact';
+
+  @override
+  String get hostTodayAddCustomerTitle => 'Start with someone you know';
+
+  @override
+  String get hostTodayAudienceAction => 'Open People';
+
+  @override
+  String get hostTodayAudienceBody =>
+      'Keep your community in one place. Add contacts, review their history, and build an audience for your next event.';
+
+  @override
+  String get hostTodayAudienceTitle => 'Get to know your audience';
+
+  @override
+  String get hostTodayChangeFocus => 'Change';
+
+  @override
+  String get hostTodayExploreFocus => 'Explore at your own pace';
+
+  @override
+  String get hostTodayFocusAudienceBody =>
+      'Organize contacts and learn who comes back.';
+
+  @override
+  String get hostTodayFocusAudienceTitle => 'Grow and understand my audience';
+
+  @override
+  String get hostTodayFocusBackToToday => 'Back to Today';
+
+  @override
+  String get hostTodayFocusContinue => 'Continue';
+
+  @override
+  String get hostTodayFocusHeading => 'What would you like to work on?';
+
+  @override
+  String get hostTodayFocusIntroduction =>
+      'Choose a focus for Today. You can change it whenever you like.';
+
+  @override
+  String get hostTodayFocusPresenceBody =>
+      'Shape your public page and prepare to welcome guests.';
+
+  @override
+  String get hostTodayFocusPresenceTitle => 'Build my organizer presence';
+
+  @override
+  String get hostTodayFocusRehearsalBody =>
+      'Practice with a rehearsal before your next live event.';
+
+  @override
+  String get hostTodayFocusRehearsalTitle => 'Get confident running events';
+
+  @override
+  String get hostTodayFocusSafety =>
+      'Live events and anything needing attention always come first.';
+
+  @override
+  String get hostTodayFocusScreenTitle => 'Your focus';
+
+  @override
+  String get hostTodayFocusSkip => 'Explore for now';
+
+  @override
+  String get hostTodayFocusUnavailable => 'Organizer unavailable';
+
+  @override
+  String get hostTodayFocusUnavailableBody =>
+      'Return to Today and choose an organizer you can manage.';
+
+  @override
+  String get hostTodayMilestoneAudience => 'Audience established';
+
+  @override
+  String get hostTodayMilestoneAvailable => 'Ready to explore';
+
+  @override
+  String get hostTodayMilestoneComplete => 'Completed';
+
+  @override
+  String get hostTodayMilestoneOwnerOnly => 'Organizer owner only';
+
+  @override
+  String get hostTodayMilestonePage => 'Public organizer page';
+
+  @override
+  String get hostTodayMilestonePayouts => 'Payouts ready';
+
+  @override
+  String get hostTodayMilestoneRehearsal => 'Rehearsal completed';
+
+  @override
+  String get hostTodayMilestoneUnknown => 'Not yet verified';
+
+  @override
+  String get hostTodayPayoutsAction => 'Manage payouts';
+
+  @override
+  String get hostTodayPayoutsBody =>
+      'Set up payouts when you are ready to take payments. This is optional for organizers running free events.';
+
+  @override
+  String get hostTodayPracticeAction => 'Run a dress rehearsal';
+
+  @override
+  String get hostTodayPracticeBody =>
+      'Try the event controls with practice guests. Build confidence without changing a live event.';
+
+  @override
+  String get hostTodayPracticeTitle => 'Practice before event day';
+
+  @override
+  String get hostTodayPresenceAction => 'Open organizer page';
+
+  @override
+  String get hostTodayPresenceBody =>
+      'Help guests understand your community and find your events. Review your public page and choose when to publish it.';
+
+  @override
+  String get hostTodayPresenceTitle => 'Make your organizer page yours';
+
+  @override
+  String get hostTodayRoadmapIntroduction =>
+      'Explore what is useful for your community. Progress reflects verified activity; every feature is optional.';
+
+  @override
+  String get hostTodayRoadmapTitle => 'Your roadmap';
+
+  @override
+  String get hostTodayYourFocus => 'Your focus';
 }
