@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/hosts/today/personalization/domain/host_today_preference.dart';
-import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_personalized_view.dart';
+import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_personalized_layout.dart';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
@@ -323,13 +323,16 @@ class HostTodayLoadedRoute extends ConsumerWidget {
       l10n: context.l10n,
     );
 
-    return HostTodayPersonalizedView(
+    return HostTodayPersonalizedLayout(
       scope: HostTodayPreferenceScope(
         accountId: uid,
         organizerId: organizer.id,
       ),
       today: todayState,
       now: clockNow,
+      onCreateEvent: () => _showEventEntry(
+        context: context, ref: ref, organizer: organizer,
+        state: entryState, request: request),
       operationalSurface: HostTodayBody(
         organizer: organizer,
         state: todayState,

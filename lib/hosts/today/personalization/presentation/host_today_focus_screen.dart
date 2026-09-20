@@ -7,7 +7,7 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/hosts/today/personalization/domain/host_today_preference.dart';
-import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_focus_body.dart';
+import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_focus_page_body.dart';
 import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_preference_controller.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/route_contract.dart';
@@ -92,7 +92,7 @@ class _HostTodayFocusScreenState extends ConsumerState<HostTodayFocusScreen> {
         onRetry: _exit,
       );
     } else {
-      content = HostTodayFocusBody(
+      content = HostTodayFocusPageBody(
         selected: selected,
         pending: pending,
         onSelect: (focus) => setState(() {
@@ -118,7 +118,7 @@ class _HostTodayFocusScreenState extends ConsumerState<HostTodayFocusScreen> {
           navigation: CatchTopBarNavigation(
             mode: pending
                 ? CatchTopBarNavigationMode.none
-                : CatchTopBarNavigationMode.close,
+                : CatchTopBarNavigationMode.back,
             onPressed: () {
               if (scope != null && saved?.answered == false) {
                 unawaited(_save(scope, null));

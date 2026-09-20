@@ -6,7 +6,7 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.da
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/hosts/data/crm/host_contacts_repository.dart';
 import 'package:catch_dating_app/hosts/today/personalization/domain/host_today_preference.dart';
-import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_personalization_panel.dart';
+import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_personalization_section.dart';
 import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_personalization_state.dart';
 import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_preference_controller.dart';
 import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_roadmap_provider.dart';
@@ -20,27 +20,29 @@ import 'package:go_router/go_router.dart';
 
 /// Owns quiet-day personalization only. The existing Today projection retains
 /// its complete loading, error, event and attention presentation unchanged.
-class HostTodayPersonalizedView extends ConsumerStatefulWidget {
-  const HostTodayPersonalizedView({
+class HostTodayPersonalizedLayout extends ConsumerStatefulWidget {
+  const HostTodayPersonalizedLayout({
     super.key,
     required this.scope,
     required this.today,
     required this.now,
     required this.operationalSurface,
+    this.onCreateEvent,
   });
 
   final HostTodayPreferenceScope scope;
   final HostTodayState today;
   final DateTime now;
   final Widget operationalSurface;
+  final VoidCallback? onCreateEvent;
 
   @override
-  ConsumerState<HostTodayPersonalizedView> createState() =>
-      _HostTodayPersonalizedViewState();
+  ConsumerState<HostTodayPersonalizedLayout> createState() =>
+      _HostTodayPersonalizedLayoutState();
 }
 
-class _HostTodayPersonalizedViewState
-    extends ConsumerState<HostTodayPersonalizedView> {
+class _HostTodayPersonalizedLayoutState
+    extends ConsumerState<HostTodayPersonalizedLayout> {
   final _offeredScopes = <HostTodayPreferenceScope>{};
   GoRouter? _router;
   bool _wasTodayRoute = false;
@@ -119,7 +121,7 @@ class _HostTodayPersonalizedViewState
     return SliverMainAxisGroup(
       slivers: [
         SliverToBoxAdapter(
-          child: HostTodayPersonalizationPanel(
+          child: HostTodayPersonalizationSection(
             state: state,
             onChangeFocus: () => unawaited(_openFocus()),
             onAction: (action) => unawaited(_openAction(action)),
@@ -127,11 +129,23 @@ class _HostTodayPersonalizedViewState
         ),
         SliverToBoxAdapter(
           child: CatchSection.content(
-            child: CatchButton(
+            child: Wrap(
+              spacing: CatchSpacing.s2,
+              runSpacing: CatchSpacing.s2,
+              children: [
+              if (widget.onCreateEvent != null) CatchButton(
+                key: const ValueKey('host-today-create-event'),
+                label: context.l10n.hostsHostEventsListLabelNewEvent,
+                variant: CatchButtonVariant.secondary,
+                onPressed: widget.onCreateEvent,
+              ),
+              CatchButton(
               key: const ValueKey('host-today-view-events'),
               label: context.l10n.hostTodayViewAllEvents,
               variant: CatchButtonVariant.secondary,
               onPressed: () => context.goNamed(Routes.hostEventsScreen.name),
+            ),
+            ],
             ),
           ),
         ),

@@ -5,7 +5,7 @@ import 'package:catch_dating_app/hosts/today/personalization/data/host_today_pre
 import 'package:catch_dating_app/hosts/today/personalization/domain/host_today_preference.dart';
 import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_focus_screen.dart';
 import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_personalization_state.dart';
-import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_personalized_view.dart';
+import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_personalized_layout.dart';
 import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_roadmap_provider.dart';
 import 'package:catch_dating_app/hosts/today/presentation/host_today_state.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -40,7 +40,7 @@ void main() {
           builder: (_, _) => CatchRootScreenScaffold.sections(
             title: const Text('Today'),
             children: [
-              HostTodayPersonalizedView(
+              HostTodayPersonalizedLayout(
                 scope: scope,
                 today: HostTodayState(status: status),
                 now: DateTime(2026, 9, 21),

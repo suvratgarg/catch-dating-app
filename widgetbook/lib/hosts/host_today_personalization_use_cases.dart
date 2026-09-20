@@ -1,8 +1,8 @@
 import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_focus_screen.dart';
-import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_personalized_view.dart';
+import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_personalized_layout.dart';
 import 'package:catch_dating_app/hosts/today/personalization/domain/host_today_preference.dart';
-import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_focus_body.dart';
-import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_personalization_panel.dart';
+import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_focus_page_body.dart';
+import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_personalization_section.dart';
 import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_personalization_state.dart';
 import 'package:catch_dating_app/hosts/today/presentation/host_today_state.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -16,13 +16,13 @@ import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 )
 @widgetbook.UseCase(
   name: 'Choose a focus',
-  type: HostTodayFocusBody,
+  type: HostTodayFocusPageBody,
   path: '[P1 product surfaces]/Host Today',
 )
 Widget hostTodayFocusChoices(BuildContext context) => CatchRouteScaffold(
   topBarBuilder: (_, _) => const CatchTopBar(title: 'Your focus'),
   body: CatchRouteBody.standardConstrained(
-    child: HostTodayFocusBody(
+    child: HostTodayFocusPageBody(
       selected: HostTodayFocus.audience,
       pending: false,
       onSelect: (_) {},
@@ -34,12 +34,12 @@ Widget hostTodayFocusChoices(BuildContext context) => CatchRouteScaffold(
 
 @widgetbook.UseCase(
   name: 'Covered by quiet roadmap',
-  type: HostTodayPersonalizedView,
+  type: HostTodayPersonalizedLayout,
   path: '[P1 product surfaces]/Host Today',
 )
 @widgetbook.UseCase(
   name: 'Quiet day roadmap',
-  type: HostTodayPersonalizationPanel,
+  type: HostTodayPersonalizationSection,
   path: '[P1 product surfaces]/Host Today',
 )
 Widget hostTodayQuietRoadmap(BuildContext context) =>
@@ -47,7 +47,7 @@ Widget hostTodayQuietRoadmap(BuildContext context) =>
       title: const Text('Today'),
       children: [
         SliverToBoxAdapter(
-          child: HostTodayPersonalizationPanel(
+          child: HostTodayPersonalizationSection(
             state: buildHostTodayPersonalizationState(
               today: const HostTodayState(status: HostTodayStatus.empty),
               preference: const HostTodayPreference.selected(

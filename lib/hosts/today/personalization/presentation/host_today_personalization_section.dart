@@ -1,11 +1,11 @@
-import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_focus_body.dart';
+import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_focus_page_body.dart';
 import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_personalization_state.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
-class HostTodayPersonalizationPanel extends StatelessWidget {
-  const HostTodayPersonalizationPanel({
+class HostTodayPersonalizationSection extends StatelessWidget {
+  const HostTodayPersonalizationSection({
     super.key,
     required this.state,
     required this.onChangeFocus,
