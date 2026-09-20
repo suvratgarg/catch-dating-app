@@ -36,33 +36,11 @@ EventDetailAttribution? _eventDetailAttribution(GoRouterState state) {
   };
 }
 
-EventDetailScreen _eventDetailScreen(GoRouterState state) {
-  return EventDetailScreen(
-    clubId: state.pathParameters['clubId']!,
-    eventId: state.pathParameters['eventId']!,
-    inviteCode: state.uri.queryParameters['invite'],
-    inviteLinkId:
-        state.uri.queryParameters['il'] ??
-        state.uri.queryParameters['inviteLinkId'],
-    initialEvent: _eventDetailInitialEvent(state),
-    presentationMode: _eventDetailPresentationMode(state),
-    heroTag: _eventDetailHeroTag(state),
-    attribution: _eventDetailAttribution(state),
-  );
-}
-
 Club? _clubDetailInitialClub(GoRouterState state) {
   return switch (state.extra) {
     final Club club => club,
     _ => null,
   };
-}
-
-ClubDetailScreen _clubDetailScreen(GoRouterState state) {
-  return ClubDetailScreen(
-    clubId: state.pathParameters['clubId']!,
-    initialClub: _clubDetailInitialClub(state),
-  );
 }
 
 Page<void> _clubDetailPage(BuildContext _, GoRouterState state) {

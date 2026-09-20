@@ -1282,6 +1282,28 @@ bool _isHostRoute(String? path) =>
     path == Routes.hostHomeScreen.path ||
     (path?.startsWith('${Routes.hostHomeScreen.path}/') ?? false);
 
+EventDetailScreen _eventDetailScreen(GoRouterState state) {
+  return EventDetailScreen(
+    clubId: state.pathParameters['clubId']!,
+    eventId: state.pathParameters['eventId']!,
+    inviteCode: state.uri.queryParameters['invite'],
+    inviteLinkId:
+        state.uri.queryParameters['il'] ??
+        state.uri.queryParameters['inviteLinkId'],
+    initialEvent: _eventDetailInitialEvent(state),
+    presentationMode: _eventDetailPresentationMode(state),
+    heroTag: _eventDetailHeroTag(state),
+    attribution: _eventDetailAttribution(state),
+  );
+}
+
+ClubDetailScreen _clubDetailScreen(GoRouterState state) {
+  return ClubDetailScreen(
+    clubId: state.pathParameters['clubId']!,
+    initialClub: _clubDetailInitialClub(state),
+  );
+}
+
 // Minimal ChangeNotifier used as GoRouter's refreshListenable.
 class _RouterRefreshNotifier extends ChangeNotifier {
   void notify() => notifyListeners();
