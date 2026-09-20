@@ -128,12 +128,16 @@ class _HostFormResponsesPanelState
               children: [
                 ?formControl,
                 statusControl,
-                for (final filter in filterOptions.take(5))
+                for (final filter in filterOptions)
                   CatchButton.command(
                     label:
                         '${filter.label}: ${filter.options[_answerFilters[filter.questionId]] ?? context.l10n.hostFormsFilterAll}',
                     leading: Icon(CatchIcons.tune),
-                    onPressed: () => _selectAnswer(filter),
+                    onPressed:
+                        _answerFilters.containsKey(filter.questionId) ||
+                            _answerFilters.length < 5
+                        ? () => _selectAnswer(filter)
+                        : null,
                   ),
               ],
             ),
@@ -296,6 +300,11 @@ class _HostFormResponsesPanelState
       ],
     );
     if (selected == null || !mounted) return;
+    if (selected.isNotEmpty &&
+        !_answerFilters.containsKey(filter.questionId) &&
+        _answerFilters.length >= 5) {
+      return;
+    }
     setState(() {
       if (selected.isEmpty) {
         _answerFilters.remove(filter.questionId);
