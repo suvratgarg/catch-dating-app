@@ -48,6 +48,7 @@ import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_screen.dart
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_messaging_setup_screen.dart';
 import 'package:catch_dating_app/hosts/today/presentation/host_today_screen.dart';
+import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_focus_screen.dart';
 import 'package:catch_dating_app/launch_access/presentation/launch_access_application_screen.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_screen.dart';
 import 'package:catch_dating_app/onboarding/presentation/start_welcome_route_screen.dart';
@@ -1029,6 +1030,16 @@ StatefulShellRoute _hostShellRoute(
                   state.uri.queryParameters['organizerId'] ??
                   state.uri.queryParameters['clubId'],
             ),
+            routes: [
+              GoRoute(
+                path: 'focus',
+                name: Routes.hostTodayFocusScreen.name,
+                parentNavigatorKey: keys.root,
+                builder: (context, state) => HostTodayFocusScreen(
+                  organizerId: state.uri.queryParameters['organizerId'] ?? '',
+                ),
+              ),
+            ],
           ),
         ],
       ),

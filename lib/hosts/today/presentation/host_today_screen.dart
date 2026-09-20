@@ -1,5 +1,8 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/hosts/today/personalization/domain/host_today_preference.dart';
+import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_personalized_view.dart';
+
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
@@ -111,7 +114,8 @@ class _HostTodayScreenState extends ConsumerState<HostTodayScreen> {
                 context.l10n.hostsHostAuthRequiredScreenVisiblecopySignIn,
             onRetry: () => context.go(Routes.authScreen.path),
           ),
-          HostTodayRouteStatus.loading => const CatchStateViewport.sliverLoading(),
+          HostTodayRouteStatus.loading =>
+            const CatchStateViewport.sliverLoading(),
           HostTodayRouteStatus.error => CatchLocalizedSliverErrorState(
             routeState.error!,
             context: routeState.errorContext,
@@ -297,23 +301,31 @@ class HostTodayLoadedRoute extends ConsumerWidget {
       l10n: context.l10n,
     );
 
-    return HostTodayBody(
-      organizer: organizer,
-      state: todayState,
-      now: clockNow,
-      onRetry: () =>
-          ref.read(hostTodayFeedControllerProvider(request).notifier).retry(),
-      onOpenEvent: (event) => onOpenEvent(organizer, event),
-      onOpenAttention: (item) => onOpenAttention(organizer, item),
-      onCreateEvent: () => _showEventEntry(
-        context: context,
-        ref: ref,
-        organizer: organizer,
-        state: entryState,
-        request: request,
+    return HostTodayPersonalizedView(
+      scope: HostTodayPreferenceScope(
+        accountId: uid,
+        organizerId: organizer.id,
       ),
-      onViewEvents: onViewEvents,
-      onStartRehearsal: () => onStartRehearsal(organizer),
+      today: todayState,
+      now: clockNow,
+      operationalSurface: HostTodayBody(
+        organizer: organizer,
+        state: todayState,
+        now: clockNow,
+        onRetry: () =>
+            ref.read(hostTodayFeedControllerProvider(request).notifier).retry(),
+        onOpenEvent: (event) => onOpenEvent(organizer, event),
+        onOpenAttention: (item) => onOpenAttention(organizer, item),
+        onCreateEvent: () => _showEventEntry(
+          context: context,
+          ref: ref,
+          organizer: organizer,
+          state: entryState,
+          request: request,
+        ),
+        onViewEvents: onViewEvents,
+        onStartRehearsal: () => onStartRehearsal(organizer),
+      ),
     );
   }
 
