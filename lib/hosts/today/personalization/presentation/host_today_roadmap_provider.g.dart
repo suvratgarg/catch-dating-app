@@ -72,7 +72,7 @@ final class HostTodayRoadmapProvider
   }
 }
 
-String _$hostTodayRoadmapHash() => r'6cfce3d0932965afd31577f239d48a5e03208016';
+String _$hostTodayRoadmapHash() => r'f500b8a14e6f8146cad3a59a640abf2b815648da';
 
 final class HostTodayRoadmapFamily extends $Family
     with
@@ -94,4 +94,90 @@ final class HostTodayRoadmapFamily extends $Family
 
   @override
   String toString() => r'hostTodayRoadmapProvider';
+}
+
+/// A failed or unavailable summary stays unknown in the roadmap. Completion is
+/// read from rehearsal's durable milestone, never inferred from opening a route.
+
+@ProviderFor(hostTodayRehearsalCompletion)
+final hostTodayRehearsalCompletionProvider =
+    HostTodayRehearsalCompletionFamily._();
+
+/// A failed or unavailable summary stays unknown in the roadmap. Completion is
+/// read from rehearsal's durable milestone, never inferred from opening a route.
+
+final class HostTodayRehearsalCompletionProvider
+    extends $FunctionalProvider<AsyncValue<bool>, bool, FutureOr<bool>>
+    with $FutureModifier<bool>, $FutureProvider<bool> {
+  /// A failed or unavailable summary stays unknown in the roadmap. Completion is
+  /// read from rehearsal's durable milestone, never inferred from opening a route.
+  HostTodayRehearsalCompletionProvider._({
+    required HostTodayRehearsalCompletionFamily super.from,
+    required HostTodayPreferenceScope super.argument,
+  }) : super(
+         retry: null,
+         name: r'hostTodayRehearsalCompletionProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$hostTodayRehearsalCompletionHash();
+
+  @override
+  String toString() {
+    return r'hostTodayRehearsalCompletionProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<bool> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<bool> create(Ref ref) {
+    final argument = this.argument as HostTodayPreferenceScope;
+    return hostTodayRehearsalCompletion(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is HostTodayRehearsalCompletionProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$hostTodayRehearsalCompletionHash() =>
+    r'a98ef2e12388025693aab6e9e13144b377917ae8';
+
+/// A failed or unavailable summary stays unknown in the roadmap. Completion is
+/// read from rehearsal's durable milestone, never inferred from opening a route.
+
+final class HostTodayRehearsalCompletionFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<bool>, HostTodayPreferenceScope> {
+  HostTodayRehearsalCompletionFamily._()
+    : super(
+        retry: null,
+        name: r'hostTodayRehearsalCompletionProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// A failed or unavailable summary stays unknown in the roadmap. Completion is
+  /// read from rehearsal's durable milestone, never inferred from opening a route.
+
+  HostTodayRehearsalCompletionProvider call(HostTodayPreferenceScope scope) =>
+      HostTodayRehearsalCompletionProvider._(argument: scope, from: this);
+
+  @override
+  String toString() => r'hostTodayRehearsalCompletionProvider';
 }
