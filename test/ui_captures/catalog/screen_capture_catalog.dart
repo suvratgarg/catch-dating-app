@@ -206,6 +206,9 @@ import 'package:catch_dating_app/hosts/presentation/payments/host_payment_accoun
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_controller_card.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_team_management_section.dart';
 import 'package:catch_dating_app/hosts/today/domain/host_attention_item.dart';
+import 'package:catch_dating_app/hosts/today/personalization/domain/host_today_preference.dart';
+import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_focus_screen.dart';
+import 'package:catch_dating_app/hosts/today/personalization/presentation/host_today_preference_controller.dart';
 import 'package:catch_dating_app/hosts/today/presentation/host_today_feed_controller.dart';
 import 'package:catch_dating_app/hosts/today/presentation/host_today_screen.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
@@ -10173,6 +10176,36 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
         now: _hostEventsReferenceNow,
       ),
     ),
+  ),
+  ScreenCaptureEntry(
+    id: 'host_today_focus',
+    routeIds: const <String>['hostTodayFocusScreen'],
+    device: CaptureDevice.claudePhone390,
+    providerOverrides: [
+      uidProvider.overrideWithValue(
+        const AsyncData<String?>(HostOperationsFixtures.hostUid),
+      ),
+      hostOperableClubsProvider(
+        HostOperationsFixtures.hostUid,
+      ).overrideWithValue(AsyncData([_hostEventsReferenceClub])),
+      hostTodayFeedControllerProvider.overrideWith2(
+        (_) => _CaptureHostTodayFeedController(const {}),
+      ),
+      hostTodayPreferenceProvider.overrideWith(
+        (ref, scope) async => const HostTodayPreference.unanswered(),
+      ),
+    ],
+    builder: (context) =>
+        HostTodayFocusScreen(organizerId: _hostEventsReferenceClub.id),
+    drive: (tester) async {
+      expect(find.byType(HostTodayFocusScreen), findsOneWidget);
+      for (final focus in HostTodayFocus.values) {
+        expect(
+          find.byKey(ValueKey('host-today-focus-${focus.name}')),
+          findsOneWidget,
+        );
+      }
+    },
   ),
   ScreenCaptureEntry(
     id: 'host_home_events_list',

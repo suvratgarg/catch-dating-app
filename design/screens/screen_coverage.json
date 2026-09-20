@@ -1,7 +1,7 @@
 {
   "$schema": "./screen_coverage.schema.json",
   "version": 1,
-  "updated": "2026-09-02",
+  "updated": "2026-09-21",
   "generatedAgainst": "tool/ui_capture/route_inventory.json",
   "description": "Design screen coverage policy. Every route from the generated route inventory must be contracted, aliased to a canonical design surface, planned for future design-parity work, or explicitly excluded from baseline design parity. The schema admits planned as a lifecycle value, but the zero-debt UI composition gate accepts no planned route: rendered routes must be contracted or excluded with typed owners, and redirect-only routes must be aliases.",
   "routes": [
@@ -232,6 +232,13 @@
       "status": "contracted",
       "priority": "P1",
       "reason": "Covered by screen.host.home as the cross-event operational Today workspace.",
+      "screenId": "screen.host.home"
+    },
+    {
+      "routeId": "hostTodayFocusScreen",
+      "status": "contracted",
+      "priority": "P1",
+      "reason": "Covered by screen.host.home as the account-and-organizer-scoped quiet-day focus route.",
       "screenId": "screen.host.home"
     },
     {
