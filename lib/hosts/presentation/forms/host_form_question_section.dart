@@ -65,6 +65,44 @@ class HostFormQuestionSection extends StatelessWidget {
               notifier.updateQuestion(sectionIndex, questionIndex, kind: value),
         ),
       ),
+      if (question.availablePersonFieldIds.isNotEmpty)
+        CatchFieldLanes.single(
+          child: CatchField<String>.select(
+            copy: catchFieldCopy(context.l10n),
+            key: ValueKey('question-person-field-${question.questionId}'),
+            title: context.l10n.hostFormPersonField,
+            helperText: context.l10n.hostFormPersonFieldHelp,
+            contractExemption:
+                'The empty choice serializes to null; other IDs come from the '
+                'generated person-field catalog and are server validated.',
+            values: [
+              '',
+              ...question.availablePersonFieldIds.where(
+                (id) =>
+                    id == question.canonicalFieldId ||
+                    !sections.any(
+                      (section) => section.questions.any(
+                        (other) =>
+                            other.questionId != question.questionId &&
+                            other.canonicalFieldId == id,
+                      ),
+                    ),
+              ),
+            ],
+            value: question.canonicalFieldId ?? '',
+            itemLabelBuilder: (id) =>
+                context.l10n.hostFormPersonFieldName(field: id),
+            onChanged: (id) {
+              if (id == null) return;
+              notifier.updateQuestion(
+                sectionIndex,
+                questionIndex,
+                canonicalFieldId: id.isEmpty ? null : id,
+                clearCanonicalField: id.isEmpty,
+              );
+            },
+          ),
+        ),
       if (sections.length > 1)
         CatchFieldLanes.single(
           child: CatchField<int>.select(

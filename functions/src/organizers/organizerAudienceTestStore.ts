@@ -22,6 +22,9 @@ class Ref {
   async get() {
     return this.store.snapshot(this);
   }
+  async set(data: Data, options?: {merge?: boolean}) {
+    this.store.write(this, data, options?.merge);
+  }
   async update(data: Data) {
     this.store.write(this, data, true);
   }
@@ -44,6 +47,12 @@ class Query {
   limit(cap: number) {
     return new Query(this.store, this.path, this.filters, cap);
   }
+  count() {
+    return {get: async () => {
+      const count = (await this.get()).size;
+      return {data: () => ({count})};
+    }};
+  }
   async get() {
     const docs = Object.entries(this.store.docs)
       .filter(([path, data]) => path.startsWith(this.path + "/") &&
@@ -52,10 +61,11 @@ class Query {
           const actual = field.split(".").reduce<unknown>((v, key) =>
             (v as Data)?.[key], data);
           if (op === "in") return (value as unknown[]).includes(actual);
-          if (op === "<=") {
+          if (op === "<=" || op === ">=") {
             if (actual == null) return false;
-            return (actual as {toMillis: () => number}).toMillis() <=
-              (value as {toMillis: () => number}).toMillis();
+            const left = (actual as {toMillis: () => number}).toMillis();
+            const right = (value as {toMillis: () => number}).toMillis();
+            return op === "<=" ? left <= right : left >= right;
           }
           assert.equal(op, "==", "Unsupported test-store query operator");
           return actual === value;
@@ -89,6 +99,21 @@ export class AudienceTestStore {
           (value as {operand: number}).operand : value;
     }
     this.docs[ref.path] = next;
+  }
+  batch() {
+    const writes: Array<() => void> = [];
+    return {
+      set: (ref: Ref, data: Data, options?: {merge?: boolean}) =>
+        writes.push(() => this.write(ref, data, options?.merge)),
+      create: (ref: Ref, data: Data) => writes.push(() => {
+        assert.equal(this.docs[ref.path], undefined, "Duplicate create");
+        this.write(ref, data);
+      }),
+      delete: (ref: Ref) => writes.push(() => {
+        delete this.docs[ref.path];
+      }),
+      commit: async () => writes.forEach((write) => write()),
+    };
   }
   async runTransaction<T>(body: (tx: Transaction) => Promise<T>): Promise<T> {
     const writes: Array<() => void> = [];
