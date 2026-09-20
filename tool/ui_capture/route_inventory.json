@@ -4,13 +4,13 @@
   "source": {
     "path": "lib/routing/route_contract.dart",
     "runtimePath": "lib/routing/go_router.dart",
-    "normalizedFileSha256": "ef21c8efca9bd232c91ccec3d293307fb1cb03ff9c60e2ff7d78d45110faeab3",
-    "routeContractSha256": "201100c69a1d9af09e2701ec817a5abe998e8d9171d1634df6cbf75922c6c234",
-    "goRouteCount": 86,
+    "normalizedFileSha256": "655c856bd09264d262a40599c0c0f324a0c2c222af688394727e672fc38ac777",
+    "routeContractSha256": "aeea086ad5bd5896aea6e1fd33b49e170d6dd9f9ad1b84f5043cb954f1e389a0",
+    "goRouteCount": 87,
     "shellBranchCount": 9,
-    "enumRouteCount": 71,
-    "referencedRouteCount": 71,
-    "runtimeRouteCount": 71,
+    "enumRouteCount": 72,
+    "referencedRouteCount": 72,
+    "runtimeRouteCount": 72,
     "routeHelperCount": 5,
     "routeHelpers": [
       "_hostUtilityRoutes",
@@ -548,6 +548,21 @@
       "referencedByGoRouter": true
     },
     {
+      "id": "hostTodayFocusScreen",
+      "path": "/host/today/focus",
+      "pathParameters": [],
+      "requiresFixture": false,
+      "gated": false,
+      "runtimePath": "/host/today/focus",
+      "runtimeParentId": "hostTodayScreen",
+      "runtimePathExpression": "'focus'",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>HostTodayFocusScreen(organizerId:state.uri.queryParameters['organizerId']??'')",
+      "presentationTarget": "HostTodayFocusScreen",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
+    },
+    {
       "id": "hostEventsScreen",
       "path": "/host/events",
       "pathParameters": [],
@@ -1020,7 +1035,7 @@
       "runtimeParentId": "hostClubDetailScreen",
       "runtimePathExpression": "'rehearsals/new'",
       "renderKind": "builder",
-      "presentationExpression": "(context,state)=>HostEventRehearsalStartScreen(clubId:state.pathParameters['clubId']!,sourceEventId:state.uri.queryParameters['eventId'])",
+      "presentationExpression": "(context,state)=>HostEventRehearsalStartScreen(clubId:state.pathParameters['clubId']!,sourceEventId:state.uri.queryParameters['eventId'],startFromOrganizerDefaults:state.uri.queryParameters['source']=='custom')",
       "presentationTarget": "HostEventRehearsalStartScreen",
       "runtimePathMatchesEnum": true,
       "referencedByGoRouter": true
@@ -1331,6 +1346,7 @@
     "hostOrganizerMessagingScreen",
     "hostOrganizerScreen",
     "hostSavedAudienceDetailScreen",
+    "hostTodayFocusScreen",
     "hostTodayScreen",
     "launchAccessScreen",
     "loadingScreen",

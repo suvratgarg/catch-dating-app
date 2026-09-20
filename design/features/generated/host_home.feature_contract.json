@@ -1894,7 +1894,7 @@
             {
               "id": "hostTodayFocusScreen",
               "path": "/host/today/focus",
-              "role": "secondary"
+              "role": "host"
             }
           ]
         },
