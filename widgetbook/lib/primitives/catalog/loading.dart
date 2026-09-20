@@ -125,9 +125,11 @@ Widget catchAsyncValueSliverCatalogStates(BuildContext context) {
     catalogId: 'catch.async_value',
     children: [
       WidgetbookCatalogStateCard(
-        label: 'sliver data / loading / error',
+        label: 'inline states',
         child: SizedBox(
-          height: WidgetbookPreviewLayout.startupViewportHeight,
+          height: MediaQuery.textScalerOf(
+            context,
+          ).scale(WidgetbookPreviewLayout.startupViewportHeight),
           child: CustomScrollView(
             slivers: [
               CatchAsyncBoundary<String>.sliver(
@@ -141,6 +143,7 @@ Widget catchAsyncValueSliverCatalogStates(BuildContext context) {
               ),
               CatchAsyncBoundary<String>.sliver(
                 value: AsyncValue.loading(),
+                fillRemaining: false,
                 builder: (context, value) =>
                     widgetbookCatalogSliverTextData(value),
               ),
@@ -153,6 +156,21 @@ Widget catchAsyncValueSliverCatalogStates(BuildContext context) {
                     widgetbookCatalogSliverTextData(value),
                 onRetry: widgetbookNoop,
                 fillRemaining: false,
+              ),
+            ],
+          ),
+        ),
+      ),
+      WidgetbookCatalogStateCard(
+        label: 'viewport loading',
+        child: SizedBox(
+          height: WidgetbookPreviewLayout.startupViewportHeight,
+          child: CustomScrollView(
+            slivers: [
+              CatchAsyncBoundary<String>.sliver(
+                value: const AsyncValue.loading(),
+                builder: (context, value) =>
+                    widgetbookCatalogSliverTextData(value),
               ),
             ],
           ),
