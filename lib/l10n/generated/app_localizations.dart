@@ -25356,7 +25356,7 @@ abstract class AppLocalizations {
   /// Rehearsal data identity shown beside the mode badge.
   ///
   /// In en, this message translates to:
-  /// **'Synthetic guests'**
+  /// **'Practice guests'**
   String get hostEventRehearsalSyntheticGuests;
 
   /// Synthetic guest subtitle in the canonical Host runtime.
@@ -25575,13 +25575,13 @@ abstract class AppLocalizations {
   /// Happy-path rehearsal scenario title.
   ///
   /// In en, this message translates to:
-  /// **'Smooth run'**
+  /// **'Normal flow'**
   String get hostEventRehearsalScenarioSmoothRun;
 
   /// Happy-path rehearsal scenario summary.
   ///
   /// In en, this message translates to:
-  /// **'A cooperative room for learning the normal Host and guest flow.'**
+  /// **'No added disruptions.'**
   String get hostEventRehearsalScenarioSmoothRunBody;
 
   /// Late arrival scenario title.
@@ -25599,7 +25599,7 @@ abstract class AppLocalizations {
   /// Early exit scenario title.
   ///
   /// In en, this message translates to:
-  /// **'Early exit and return'**
+  /// **'Someone leaves and returns'**
   String get hostEventRehearsalScenarioEarlyExitAndReturn;
 
   /// Early exit scenario summary.
@@ -25611,7 +25611,7 @@ abstract class AppLocalizations {
   /// Roster capacity scenario title.
   ///
   /// In en, this message translates to:
-  /// **'Odd roster and capacity'**
+  /// **'An uneven room'**
   String get hostEventRehearsalScenarioRosterAndCapacity;
 
   /// Roster capacity scenario summary.
@@ -25623,7 +25623,7 @@ abstract class AppLocalizations {
   /// Walk-in scenario title.
   ///
   /// In en, this message translates to:
-  /// **'Walk-in and ambiguous claim'**
+  /// **'Walk-ins and identity checks'**
   String get hostEventRehearsalScenarioWalkInAndAmbiguousClaim;
 
   /// Walk-in scenario summary.
@@ -25635,7 +25635,7 @@ abstract class AppLocalizations {
   /// Privacy scenario title.
   ///
   /// In en, this message translates to:
-  /// **'Privacy and keep-apart'**
+  /// **'Privacy and seating boundaries'**
   String get hostEventRehearsalScenarioPrivacyAndKeepApart;
 
   /// Privacy scenario summary.
@@ -25647,7 +25647,7 @@ abstract class AppLocalizations {
   /// Connectivity scenario title.
   ///
   /// In en, this message translates to:
-  /// **'Low connectivity'**
+  /// **'A guest loses connection'**
   String get hostEventRehearsalScenarioLowConnectivity;
 
   /// Connectivity scenario summary.
@@ -25659,7 +25659,7 @@ abstract class AppLocalizations {
   /// Concurrent Host scenario title.
   ///
   /// In en, this message translates to:
-  /// **'Two hosts, one revision'**
+  /// **'Two hosts working together'**
   String get hostEventRehearsalScenarioConcurrentHosts;
 
   /// Concurrent Host scenario summary.
@@ -25671,7 +25671,7 @@ abstract class AppLocalizations {
   /// Reveal interruption scenario title.
   ///
   /// In en, this message translates to:
-  /// **'Reveal interrupted'**
+  /// **'A reveal is interrupted'**
   String get hostEventRehearsalScenarioRevealInterrupted;
 
   /// Reveal interruption scenario summary.
@@ -25683,7 +25683,7 @@ abstract class AppLocalizations {
   /// External profile scenario title.
   ///
   /// In en, this message translates to:
-  /// **'External and incomplete profiles'**
+  /// **'An incomplete guest profile'**
   String get hostEventRehearsalScenarioExternalProfiles;
 
   /// External profile scenario summary.
@@ -25695,7 +25695,7 @@ abstract class AppLocalizations {
   /// Accountability scenario title.
   ///
   /// In en, this message translates to:
-  /// **'Accountability sweep'**
+  /// **'Account for everyone'**
   String get hostEventRehearsalScenarioAccountabilitySweep;
 
   /// Accountability scenario summary.
@@ -31656,6 +31656,363 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Your focus'**
   String get hostTodayYourFocus;
+
+  /// Contextual action on the featured Today event card.
+  ///
+  /// In en, this message translates to:
+  /// **'Rehearse this event'**
+  String get hostTodayRehearseThisEvent;
+
+  /// Dress rehearsal entry and optional configuration: EntryUpcoming.
+  ///
+  /// In en, this message translates to:
+  /// **'Rehearse your next event'**
+  String get hostRehearsalEntryUpcoming;
+
+  /// Title for the rehearsal starting-point sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Start dress rehearsal'**
+  String get hostRehearsalStartTitle;
+
+  /// Supporting copy for the rehearsal starting-point sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a starting point'**
+  String get hostRehearsalStartSubtitle;
+
+  /// Choice that starts from an upcoming event.
+  ///
+  /// In en, this message translates to:
+  /// **'Rehearse {title}'**
+  String hostRehearsalStartUpcoming({required String title});
+
+  /// Explains what is copied from the selected upcoming event.
+  ///
+  /// In en, this message translates to:
+  /// **'Uses its format and {count}-person guest list. You can adjust the rehearsal copy.'**
+  String hostRehearsalStartUpcomingDescription({required int count});
+
+  /// Choice that starts from organizer defaults.
+  ///
+  /// In en, this message translates to:
+  /// **'Create a custom rehearsal'**
+  String get hostRehearsalStartCustom;
+
+  /// Explains the editable custom rehearsal path.
+  ///
+  /// In en, this message translates to:
+  /// **'Start with organiser defaults, then choose the format, guests and scenario.'**
+  String get hostRehearsalStartCustomDescription;
+
+  /// Dress rehearsal entry and optional configuration: EntrySample.
+  ///
+  /// In en, this message translates to:
+  /// **'Practise hosting'**
+  String get hostRehearsalEntrySample;
+
+  /// Dress rehearsal entry and optional configuration: EntryExplanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Practise with a coach in the event screen.'**
+  String get hostRehearsalEntryExplanation;
+
+  /// Dress rehearsal entry and optional configuration: UpcomingLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Your next event'**
+  String get hostRehearsalUpcomingLabel;
+
+  /// Dress rehearsal entry and optional configuration: SampleLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Organiser default'**
+  String get hostRehearsalSampleLabel;
+
+  /// Dress rehearsal entry and optional configuration: SampleTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sample {activity}'**
+  String hostRehearsalSampleTitle({required String activity});
+
+  /// Dress rehearsal entry and optional configuration: SampleDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Your usual setup, with simulated guests.'**
+  String get hostRehearsalSampleDescription;
+
+  /// Dress rehearsal entry and optional configuration: CopiedDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Same setup and attendee list, copied for practice.'**
+  String get hostRehearsalCopiedDescription;
+
+  /// Dress rehearsal entry and optional configuration: CustomDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice copy with custom settings.'**
+  String get hostRehearsalCustomDescription;
+
+  /// Dress rehearsal entry and optional configuration: ScenarioLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Scenario'**
+  String get hostRehearsalScenarioLabel;
+
+  /// Dress rehearsal entry and optional configuration: Customise.
+  ///
+  /// In en, this message translates to:
+  /// **'Customise rehearsal'**
+  String get hostRehearsalCustomise;
+
+  /// Dress rehearsal entry and optional configuration: CustomiseSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Guests, event details and playbook'**
+  String get hostRehearsalCustomiseSummary;
+
+  /// Dress rehearsal entry and optional configuration: CustomisedSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom settings · Edit or reset'**
+  String get hostRehearsalCustomisedSummary;
+
+  /// Dress rehearsal entry and optional configuration: Safety.
+  ///
+  /// In en, this message translates to:
+  /// **'Your real event and attendees stay unchanged.'**
+  String get hostRehearsalSafety;
+
+  /// Dress rehearsal entry and optional configuration: Start.
+  ///
+  /// In en, this message translates to:
+  /// **'Start rehearsal'**
+  String get hostRehearsalStart;
+
+  /// Dress rehearsal entry and optional configuration: ChangesLocal.
+  ///
+  /// In en, this message translates to:
+  /// **'Changes apply only to this rehearsal.'**
+  String get hostRehearsalChangesLocal;
+
+  /// Dress rehearsal entry and optional configuration: EventType.
+  ///
+  /// In en, this message translates to:
+  /// **'Event type'**
+  String get hostRehearsalEventType;
+
+  /// Dress rehearsal entry and optional configuration: EventTypeDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Format for this practice copy'**
+  String get hostRehearsalEventTypeDescription;
+
+  /// Dress rehearsal entry and optional configuration: Guests.
+  ///
+  /// In en, this message translates to:
+  /// **'Guests'**
+  String get hostRehearsalGuests;
+
+  /// Dress rehearsal entry and optional configuration: CopiedGuests.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} attendees from this event'**
+  String hostRehearsalCopiedGuests({required int count});
+
+  /// Dress rehearsal entry and optional configuration: SimulatedGuests.
+  ///
+  /// In en, this message translates to:
+  /// **'Use simulated guests'**
+  String get hostRehearsalSimulatedGuests;
+
+  /// Dress rehearsal entry and optional configuration: GuestCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Number of simulated guests'**
+  String get hostRehearsalGuestCount;
+
+  /// Dress rehearsal entry and optional configuration: GuestCountRange.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose between 2 and 50 guests.'**
+  String get hostRehearsalGuestCountRange;
+
+  /// Explains the rehearsal duration bound without silently changing the source event
+  ///
+  /// In en, this message translates to:
+  /// **'Rehearsals run for 30 minutes to 6 hours. Open Customise rehearsal to adjust the duration of this practice copy.'**
+  String get hostRehearsalDurationLimit;
+
+  /// Dress rehearsal entry and optional configuration: RosterLimit.
+  ///
+  /// In en, this message translates to:
+  /// **'This event has {count} attendees. Rehearsals support 2–50 guests. Choose simulated guests to practise this event.'**
+  String hostRehearsalRosterLimit({required int count});
+
+  /// Dress rehearsal entry and optional configuration: EventDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Event details'**
+  String get hostRehearsalEventDetails;
+
+  /// Dress rehearsal entry and optional configuration: EventDetailsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Title, venue, duration and host notes'**
+  String get hostRehearsalEventDetailsDescription;
+
+  /// Dress rehearsal entry and optional configuration: EventTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Event title'**
+  String get hostRehearsalEventTitle;
+
+  /// Dress rehearsal entry and optional configuration: Venue.
+  ///
+  /// In en, this message translates to:
+  /// **'Venue'**
+  String get hostRehearsalVenue;
+
+  /// Dress rehearsal entry and optional configuration: Duration.
+  ///
+  /// In en, this message translates to:
+  /// **'Event length (minutes)'**
+  String get hostRehearsalDuration;
+
+  /// Dress rehearsal entry and optional configuration: DurationRange.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose between 30 and 360 minutes.'**
+  String get hostRehearsalDurationRange;
+
+  /// Dress rehearsal entry and optional configuration: HostGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'Host goal'**
+  String get hostRehearsalHostGoal;
+
+  /// Dress rehearsal entry and optional configuration: GuestPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest prompt'**
+  String get hostRehearsalGuestPrompt;
+
+  /// Dress rehearsal entry and optional configuration: Playbook.
+  ///
+  /// In en, this message translates to:
+  /// **'Playbook'**
+  String get hostRehearsalPlaybook;
+
+  /// Dress rehearsal entry and optional configuration: PlaybookDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose which parts of the event to include'**
+  String get hostRehearsalPlaybookDescription;
+
+  /// Dress rehearsal entry and optional configuration: Reset.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset to default settings'**
+  String get hostRehearsalReset;
+
+  /// Dress rehearsal entry and optional configuration: ChooseSource.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose what to rehearse'**
+  String get hostRehearsalChooseSource;
+
+  /// Dress rehearsal entry and optional configuration: SampleVenue.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice venue'**
+  String get hostRehearsalSampleVenue;
+
+  /// Dress rehearsal entry and optional configuration: SamplePrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Say hello and share something you enjoy doing.'**
+  String get hostRehearsalSamplePrompt;
+
+  /// Dress rehearsal entry and optional configuration: SourceDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'{date} · {time}\n{venue} · {count} attendees'**
+  String hostRehearsalSourceDetails({
+    required String date,
+    required String time,
+    required String venue,
+    required int count,
+  });
+
+  /// Dress rehearsal entry and optional configuration: SelectModule.
+  ///
+  /// In en, this message translates to:
+  /// **'Include at least one part of the event.'**
+  String get hostRehearsalSelectModule;
+
+  /// Dress rehearsal entry and optional configuration: ModuleArrival.
+  ///
+  /// In en, this message translates to:
+  /// **'Arrivals'**
+  String get hostRehearsalModuleArrival;
+
+  /// Dress rehearsal entry and optional configuration: ModuleFirstHello.
+  ///
+  /// In en, this message translates to:
+  /// **'First introductions'**
+  String get hostRehearsalModuleFirstHello;
+
+  /// Dress rehearsal entry and optional configuration: ModulePods.
+  ///
+  /// In en, this message translates to:
+  /// **'Small groups'**
+  String get hostRehearsalModulePods;
+
+  /// Dress rehearsal entry and optional configuration: ModuleRotations.
+  ///
+  /// In en, this message translates to:
+  /// **'Rotations'**
+  String get hostRehearsalModuleRotations;
+
+  /// Dress rehearsal entry and optional configuration: ModuleCues.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation prompts'**
+  String get hostRehearsalModuleCues;
+
+  /// Dress rehearsal entry and optional configuration: ModuleReveal.
+  ///
+  /// In en, this message translates to:
+  /// **'Reveal'**
+  String get hostRehearsalModuleReveal;
+
+  /// Dress rehearsal entry and optional configuration: ModuleAfterglow.
+  ///
+  /// In en, this message translates to:
+  /// **'After-event follow-up'**
+  String get hostRehearsalModuleAfterglow;
+
+  /// Dress rehearsal entry and optional configuration: ModuleAccountability.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest accountability'**
+  String get hostRehearsalModuleAccountability;
+
+  /// Dress rehearsal source and configuration supporting copy.
+  ///
+  /// In en, this message translates to:
+  /// **'{date} · {time}\n{venue}'**
+  String hostRehearsalSourceWhenWhere({
+    required String date,
+    required String time,
+    required String venue,
+  });
+
+  /// Dress rehearsal source and configuration supporting copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Included in this event type'**
+  String get hostRehearsalRequiredModule;
 }
 
 class _AppLocalizationsDelegate

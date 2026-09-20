@@ -16127,7 +16127,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostEventRehearsalBadge => 'Rehearsal';
 
   @override
-  String get hostEventRehearsalSyntheticGuests => 'Synthetic guests';
+  String get hostEventRehearsalSyntheticGuests => 'Practice guests';
 
   @override
   String get hostEventRehearsalPracticeGuest => 'Practice guest';
@@ -16269,11 +16269,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'This rehearsal and its guest link expire after 24 hours.';
 
   @override
-  String get hostEventRehearsalScenarioSmoothRun => 'Smooth run';
+  String get hostEventRehearsalScenarioSmoothRun => 'Normal flow';
 
   @override
-  String get hostEventRehearsalScenarioSmoothRunBody =>
-      'A cooperative room for learning the normal Host and guest flow.';
+  String get hostEventRehearsalScenarioSmoothRunBody => 'No added disruptions.';
 
   @override
   String get hostEventRehearsalScenarioLateAndNoShow =>
@@ -16285,15 +16284,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostEventRehearsalScenarioEarlyExitAndReturn =>
-      'Early exit and return';
+      'Someone leaves and returns';
 
   @override
   String get hostEventRehearsalScenarioEarlyExitAndReturnBody =>
       'Rebalance when a guest leaves early and another returns later.';
 
   @override
-  String get hostEventRehearsalScenarioRosterAndCapacity =>
-      'Odd roster and capacity';
+  String get hostEventRehearsalScenarioRosterAndCapacity => 'An uneven room';
 
   @override
   String get hostEventRehearsalScenarioRosterAndCapacityBody =>
@@ -16301,7 +16299,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostEventRehearsalScenarioWalkInAndAmbiguousClaim =>
-      'Walk-in and ambiguous claim';
+      'Walk-ins and identity checks';
 
   @override
   String get hostEventRehearsalScenarioWalkInAndAmbiguousClaimBody =>
@@ -16309,14 +16307,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostEventRehearsalScenarioPrivacyAndKeepApart =>
-      'Privacy and keep-apart';
+      'Privacy and seating boundaries';
 
   @override
   String get hostEventRehearsalScenarioPrivacyAndKeepApartBody =>
       'Respect an opt-out and a safety keep-apart constraint while preserving flow.';
 
   @override
-  String get hostEventRehearsalScenarioLowConnectivity => 'Low connectivity';
+  String get hostEventRehearsalScenarioLowConnectivity =>
+      'A guest loses connection';
 
   @override
   String get hostEventRehearsalScenarioLowConnectivityBody =>
@@ -16324,7 +16323,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostEventRehearsalScenarioConcurrentHosts =>
-      'Two hosts, one revision';
+      'Two hosts working together';
 
   @override
   String get hostEventRehearsalScenarioConcurrentHostsBody =>
@@ -16332,7 +16331,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostEventRehearsalScenarioRevealInterrupted =>
-      'Reveal interrupted';
+      'A reveal is interrupted';
 
   @override
   String get hostEventRehearsalScenarioRevealInterruptedBody =>
@@ -16340,7 +16339,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostEventRehearsalScenarioExternalProfiles =>
-      'External and incomplete profiles';
+      'An incomplete guest profile';
 
   @override
   String get hostEventRehearsalScenarioExternalProfilesBody =>
@@ -16348,7 +16347,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostEventRehearsalScenarioAccountabilitySweep =>
-      'Accountability sweep';
+      'Account for everyone';
 
   @override
   String get hostEventRehearsalScenarioAccountabilitySweepBody =>
@@ -19921,4 +19920,216 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostTodayYourFocus => 'Your focus';
+
+  @override
+  String get hostTodayRehearseThisEvent => 'Rehearse this event';
+
+  @override
+  String get hostRehearsalEntryUpcoming => 'Rehearse your next event';
+
+  @override
+  String get hostRehearsalStartTitle => 'Start dress rehearsal';
+
+  @override
+  String get hostRehearsalStartSubtitle => 'Choose a starting point';
+
+  @override
+  String hostRehearsalStartUpcoming({required String title}) {
+    return 'Rehearse $title';
+  }
+
+  @override
+  String hostRehearsalStartUpcomingDescription({required int count}) {
+    return 'Uses its format and $count-person guest list. You can adjust the rehearsal copy.';
+  }
+
+  @override
+  String get hostRehearsalStartCustom => 'Create a custom rehearsal';
+
+  @override
+  String get hostRehearsalStartCustomDescription =>
+      'Start with organiser defaults, then choose the format, guests and scenario.';
+
+  @override
+  String get hostRehearsalEntrySample => 'Practise hosting';
+
+  @override
+  String get hostRehearsalEntryExplanation =>
+      'Practise with a coach in the event screen.';
+
+  @override
+  String get hostRehearsalUpcomingLabel => 'Your next event';
+
+  @override
+  String get hostRehearsalSampleLabel => 'Organiser default';
+
+  @override
+  String hostRehearsalSampleTitle({required String activity}) {
+    return 'Sample $activity';
+  }
+
+  @override
+  String get hostRehearsalSampleDescription =>
+      'Your usual setup, with simulated guests.';
+
+  @override
+  String get hostRehearsalCopiedDescription =>
+      'Same setup and attendee list, copied for practice.';
+
+  @override
+  String get hostRehearsalCustomDescription =>
+      'Practice copy with custom settings.';
+
+  @override
+  String get hostRehearsalScenarioLabel => 'Scenario';
+
+  @override
+  String get hostRehearsalCustomise => 'Customise rehearsal';
+
+  @override
+  String get hostRehearsalCustomiseSummary =>
+      'Guests, event details and playbook';
+
+  @override
+  String get hostRehearsalCustomisedSummary =>
+      'Custom settings · Edit or reset';
+
+  @override
+  String get hostRehearsalSafety =>
+      'Your real event and attendees stay unchanged.';
+
+  @override
+  String get hostRehearsalStart => 'Start rehearsal';
+
+  @override
+  String get hostRehearsalChangesLocal =>
+      'Changes apply only to this rehearsal.';
+
+  @override
+  String get hostRehearsalEventType => 'Event type';
+
+  @override
+  String get hostRehearsalEventTypeDescription =>
+      'Format for this practice copy';
+
+  @override
+  String get hostRehearsalGuests => 'Guests';
+
+  @override
+  String hostRehearsalCopiedGuests({required int count}) {
+    return '$count attendees from this event';
+  }
+
+  @override
+  String get hostRehearsalSimulatedGuests => 'Use simulated guests';
+
+  @override
+  String get hostRehearsalGuestCount => 'Number of simulated guests';
+
+  @override
+  String get hostRehearsalGuestCountRange => 'Choose between 2 and 50 guests.';
+
+  @override
+  String get hostRehearsalDurationLimit =>
+      'Rehearsals run for 30 minutes to 6 hours. Open Customise rehearsal to adjust the duration of this practice copy.';
+
+  @override
+  String hostRehearsalRosterLimit({required int count}) {
+    return 'This event has $count attendees. Rehearsals support 2–50 guests. Choose simulated guests to practise this event.';
+  }
+
+  @override
+  String get hostRehearsalEventDetails => 'Event details';
+
+  @override
+  String get hostRehearsalEventDetailsDescription =>
+      'Title, venue, duration and host notes';
+
+  @override
+  String get hostRehearsalEventTitle => 'Event title';
+
+  @override
+  String get hostRehearsalVenue => 'Venue';
+
+  @override
+  String get hostRehearsalDuration => 'Event length (minutes)';
+
+  @override
+  String get hostRehearsalDurationRange => 'Choose between 30 and 360 minutes.';
+
+  @override
+  String get hostRehearsalHostGoal => 'Host goal';
+
+  @override
+  String get hostRehearsalGuestPrompt => 'Guest prompt';
+
+  @override
+  String get hostRehearsalPlaybook => 'Playbook';
+
+  @override
+  String get hostRehearsalPlaybookDescription =>
+      'Choose which parts of the event to include';
+
+  @override
+  String get hostRehearsalReset => 'Reset to default settings';
+
+  @override
+  String get hostRehearsalChooseSource => 'Choose what to rehearse';
+
+  @override
+  String get hostRehearsalSampleVenue => 'Practice venue';
+
+  @override
+  String get hostRehearsalSamplePrompt =>
+      'Say hello and share something you enjoy doing.';
+
+  @override
+  String hostRehearsalSourceDetails({
+    required String date,
+    required String time,
+    required String venue,
+    required int count,
+  }) {
+    return '$date · $time\n$venue · $count attendees';
+  }
+
+  @override
+  String get hostRehearsalSelectModule =>
+      'Include at least one part of the event.';
+
+  @override
+  String get hostRehearsalModuleArrival => 'Arrivals';
+
+  @override
+  String get hostRehearsalModuleFirstHello => 'First introductions';
+
+  @override
+  String get hostRehearsalModulePods => 'Small groups';
+
+  @override
+  String get hostRehearsalModuleRotations => 'Rotations';
+
+  @override
+  String get hostRehearsalModuleCues => 'Conversation prompts';
+
+  @override
+  String get hostRehearsalModuleReveal => 'Reveal';
+
+  @override
+  String get hostRehearsalModuleAfterglow => 'After-event follow-up';
+
+  @override
+  String get hostRehearsalModuleAccountability => 'Guest accountability';
+
+  @override
+  String hostRehearsalSourceWhenWhere({
+    required String date,
+    required String time,
+    required String venue,
+  }) {
+    return '$date · $time\n$venue';
+  }
+
+  @override
+  String get hostRehearsalRequiredModule => 'Included in this event type';
 }
