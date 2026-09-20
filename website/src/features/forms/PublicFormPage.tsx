@@ -20,6 +20,7 @@ import {
   PublicFormReviewAnswer,
   PublicFormSection,
   PublicFormSignatureInput,
+  SelectField,
   TextAreaField,
   TextField,
 } from "../../shared/ui/primitives";
@@ -360,6 +361,25 @@ function QuestionField({
           value={typeof answer === "string" || typeof answer === "number" ?
             answer : ""}
         />
+      </PublicFormQuestion>
+    );
+  }
+  if (question.kind === "singleChoice" && question.options.length > 4) {
+    return (
+      <PublicFormQuestion {...common}>
+        <SelectField
+          id={`form-question-${question.questionId}`}
+          invalid={Boolean(error)}
+          label={question.label}
+          onChange={(event) => onChange(event.target.value || null)}
+          required={question.required}
+          value={typeof answer === "string" ? answer : ""}
+        >
+          <option value="">{publicFormsCopy.chooseOne}</option>
+          {question.options.map((option) => (
+            <option key={option.optionId} value={option.value}>{option.label}</option>
+          ))}
+        </SelectField>
       </PublicFormQuestion>
     );
   }

@@ -253,6 +253,14 @@ class HostFormsRepository {
       formId: request.formId,
       versionId: request.versionId,
       statuses: request.statuses.map((value) => value.name).toList(),
+      sortDirection: request.oldestFirst ? 'asc' : 'desc',
+      answerFilters: [
+        for (final entry in request.answerFilters.entries)
+          {
+            'questionId': entry.key,
+            'values': [entry.value],
+          },
+      ],
       identityKinds: request.identityKinds.map((value) => value.name).toList(),
       sourceLinkId: request.sourceLinkId,
       query: request.query?.trim().isEmpty ?? true

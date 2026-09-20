@@ -16,12 +16,14 @@ class HostFormResponsesState {
   const HostFormResponsesState({
     required this.responses,
     required this.nextCursor,
+    this.answerFilterOptions = const [],
     this.loadingMore = false,
     this.loadMoreError,
   });
 
   final List<HostFormResponseSummary> responses;
   final String? nextCursor;
+  final List<HostFormResponseFilterOption> answerFilterOptions;
   final bool loadingMore;
   final Object? loadMoreError;
 
@@ -36,6 +38,7 @@ class HostFormResponsesState {
     bool clearLoadMoreError = false,
   }) => HostFormResponsesState(
     responses: responses ?? this.responses,
+    answerFilterOptions: answerFilterOptions,
     nextCursor: clearNextCursor ? null : nextCursor ?? this.nextCursor,
     loadingMore: loadingMore ?? this.loadingMore,
     loadMoreError: clearLoadMoreError
@@ -56,6 +59,7 @@ class HostFormResponsesController extends _$HostFormResponsesController {
         .listResponses(request);
     return HostFormResponsesState(
       responses: page.items,
+      answerFilterOptions: page.answerFilterOptions,
       nextCursor: page.nextCursor,
     );
   }
@@ -77,6 +81,7 @@ class HostFormResponsesController extends _$HostFormResponsesController {
       state = AsyncData(
         HostFormResponsesState(
           responses: List.unmodifiable(byId.values),
+          answerFilterOptions: page.answerFilterOptions,
           nextCursor: page.nextCursor,
         ),
       );

@@ -122,6 +122,43 @@ const schemaListOrganizerFormResponsesCallablePayloadSchema = <String, Object?>{
       ],
       'maxLength': 1000,
     },
+    'sortDirection': <String, Object?>{
+      'type': 'string',
+      'enum': <Object?>[
+        'asc',
+        'desc',
+      ],
+    },
+    'answerFilters': <String, Object?>{
+      'type': 'array',
+      'maxItems': 5,
+      'items': <String, Object?>{
+        'type': 'object',
+        'additionalProperties': false,
+        'required': <Object?>[
+          'questionId',
+          'values',
+        ],
+        'properties': <String, Object?>{
+          'questionId': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 180,
+          },
+          'values': <String, Object?>{
+            'type': 'array',
+            'minItems': 1,
+            'maxItems': 20,
+            'uniqueItems': true,
+            'items': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 200,
+            },
+          },
+        },
+      },
+    },
     'limit': <String, Object?>{
       'type': 'integer',
       'minimum': 1,

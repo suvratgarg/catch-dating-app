@@ -64669,6 +64669,39 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['pending', 'running', 'succeeded', 'partiallyFailed', 'failed', 'skipped'],
   );
 
+  static const listOrganizerFormResponsesCallablePayloadAnswerFilters = CatchContractFieldConstraints(
+    path: 'listOrganizerFormResponsesCallablePayload.answerFilters',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 5,
+  );
+
+  static const listOrganizerFormResponsesCallablePayloadAnswerFiltersItemsQuestionId = CatchContractFieldConstraints(
+    path: 'listOrganizerFormResponsesCallablePayload.answerFilters.items.questionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerFormResponsesCallablePayloadAnswerFiltersItemsValues = CatchContractFieldConstraints(
+    path: 'listOrganizerFormResponsesCallablePayload.answerFilters.items.values',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    minItems: 1,
+    maxItems: 20,
+    uniqueItems: true,
+  );
+
+  static const listOrganizerFormResponsesCallablePayloadAnswerFiltersItemsValuesItems = CatchContractFieldConstraints(
+    path: 'listOrganizerFormResponsesCallablePayload.answerFilters.items.values.items',
+    maxLength: 200,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const listOrganizerFormResponsesCallablePayloadCursor = CatchContractFieldConstraints(
     path: 'listOrganizerFormResponsesCallablePayload.cursor',
     maxLength: 1000,
@@ -64728,6 +64761,12 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const listOrganizerFormResponsesCallablePayloadSortDirection = CatchContractFieldConstraints(
+    path: 'listOrganizerFormResponsesCallablePayload.sortDirection',
+    valueTypes: <String>['string'],
+    enumValues: <String>['asc', 'desc'],
+  );
+
   static const listOrganizerFormResponsesCallablePayloadSourceLinkId = CatchContractFieldConstraints(
     path: 'listOrganizerFormResponsesCallablePayload.sourceLinkId',
     maxLength: 180,
@@ -64763,6 +64802,44 @@ abstract final class CatchContractConstraints {
     path: 'listOrganizerFormResponsesCallablePayload.versionId',
     maxLength: 180,
     minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerFormResponsesCallableResponseAnswerFilterOptions = CatchContractFieldConstraints(
+    path: 'listOrganizerFormResponsesCallableResponse.answerFilterOptions',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 100,
+  );
+
+  static const listOrganizerFormResponsesCallableResponseAnswerFilterOptionsItemsLabel = CatchContractFieldConstraints(
+    path: 'listOrganizerFormResponsesCallableResponse.answerFilterOptions.items.label',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerFormResponsesCallableResponseAnswerFilterOptionsItemsOptions = CatchContractFieldConstraints(
+    path: 'listOrganizerFormResponsesCallableResponse.answerFilterOptions.items.options',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+  );
+
+  static const listOrganizerFormResponsesCallableResponseAnswerFilterOptionsItemsOptionsItemsLabel = CatchContractFieldConstraints(
+    path: 'listOrganizerFormResponsesCallableResponse.answerFilterOptions.items.options.items.label',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerFormResponsesCallableResponseAnswerFilterOptionsItemsOptionsItemsValue = CatchContractFieldConstraints(
+    path: 'listOrganizerFormResponsesCallableResponse.answerFilterOptions.items.options.items.value',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerFormResponsesCallableResponseAnswerFilterOptionsItemsQuestionId = CatchContractFieldConstraints(
+    path: 'listOrganizerFormResponsesCallableResponse.answerFilterOptions.items.questionId',
+    required: true,
     valueTypes: <String>['string'],
   );
 
@@ -106750,6 +106827,10 @@ abstract final class CatchContractConstraints {
     'listOrganizerFormAutomationRunsCallableResponse.runs.items.runId': listOrganizerFormAutomationRunsCallableResponseRunsItemsRunId,
     'listOrganizerFormAutomationRunsCallableResponse.runs.items.sourceId': listOrganizerFormAutomationRunsCallableResponseRunsItemsSourceId,
     'listOrganizerFormAutomationRunsCallableResponse.runs.items.status': listOrganizerFormAutomationRunsCallableResponseRunsItemsStatus,
+    'listOrganizerFormResponsesCallablePayload.answerFilters': listOrganizerFormResponsesCallablePayloadAnswerFilters,
+    'listOrganizerFormResponsesCallablePayload.answerFilters.items.questionId': listOrganizerFormResponsesCallablePayloadAnswerFiltersItemsQuestionId,
+    'listOrganizerFormResponsesCallablePayload.answerFilters.items.values': listOrganizerFormResponsesCallablePayloadAnswerFiltersItemsValues,
+    'listOrganizerFormResponsesCallablePayload.answerFilters.items.values.items': listOrganizerFormResponsesCallablePayloadAnswerFiltersItemsValuesItems,
     'listOrganizerFormResponsesCallablePayload.cursor': listOrganizerFormResponsesCallablePayloadCursor,
     'listOrganizerFormResponsesCallablePayload.formId': listOrganizerFormResponsesCallablePayloadFormId,
     'listOrganizerFormResponsesCallablePayload.fromMillis': listOrganizerFormResponsesCallablePayloadFromMillis,
@@ -106758,11 +106839,18 @@ abstract final class CatchContractConstraints {
     'listOrganizerFormResponsesCallablePayload.limit': listOrganizerFormResponsesCallablePayloadLimit,
     'listOrganizerFormResponsesCallablePayload.organizerId': listOrganizerFormResponsesCallablePayloadOrganizerId,
     'listOrganizerFormResponsesCallablePayload.query': listOrganizerFormResponsesCallablePayloadQuery,
+    'listOrganizerFormResponsesCallablePayload.sortDirection': listOrganizerFormResponsesCallablePayloadSortDirection,
     'listOrganizerFormResponsesCallablePayload.sourceLinkId': listOrganizerFormResponsesCallablePayloadSourceLinkId,
     'listOrganizerFormResponsesCallablePayload.statuses': listOrganizerFormResponsesCallablePayloadStatuses,
     'listOrganizerFormResponsesCallablePayload.statuses.items': listOrganizerFormResponsesCallablePayloadStatusesItems,
     'listOrganizerFormResponsesCallablePayload.toMillis': listOrganizerFormResponsesCallablePayloadToMillis,
     'listOrganizerFormResponsesCallablePayload.versionId': listOrganizerFormResponsesCallablePayloadVersionId,
+    'listOrganizerFormResponsesCallableResponse.answerFilterOptions': listOrganizerFormResponsesCallableResponseAnswerFilterOptions,
+    'listOrganizerFormResponsesCallableResponse.answerFilterOptions.items.label': listOrganizerFormResponsesCallableResponseAnswerFilterOptionsItemsLabel,
+    'listOrganizerFormResponsesCallableResponse.answerFilterOptions.items.options': listOrganizerFormResponsesCallableResponseAnswerFilterOptionsItemsOptions,
+    'listOrganizerFormResponsesCallableResponse.answerFilterOptions.items.options.items.label': listOrganizerFormResponsesCallableResponseAnswerFilterOptionsItemsOptionsItemsLabel,
+    'listOrganizerFormResponsesCallableResponse.answerFilterOptions.items.options.items.value': listOrganizerFormResponsesCallableResponseAnswerFilterOptionsItemsOptionsItemsValue,
+    'listOrganizerFormResponsesCallableResponse.answerFilterOptions.items.questionId': listOrganizerFormResponsesCallableResponseAnswerFilterOptionsItemsQuestionId,
     'listOrganizerFormResponsesCallableResponse.items': listOrganizerFormResponsesCallableResponseItems,
     'listOrganizerFormResponsesCallableResponse.items.items.conversionKinds': listOrganizerFormResponsesCallableResponseItemsItemsConversionKinds,
     'listOrganizerFormResponsesCallableResponse.items.items.conversionKinds.items': listOrganizerFormResponsesCallableResponseItemsItemsConversionKindsItems,

@@ -522,6 +522,15 @@
       "queryScope": "COLLECTION",
       "fields": [
         {"fieldPath": "organizerId", "mode": "ASCENDING"},
+        {"fieldPath": "submittedAt", "mode": "ASCENDING"},
+        {"fieldPath": "__name__", "mode": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "organizerFormResponses",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "organizerId", "mode": "ASCENDING"},
         {"fieldPath": "formId", "mode": "ASCENDING"},
         {"fieldPath": "submittedAt", "mode": "ASCENDING"},
         {"fieldPath": "__name__", "mode": "ASCENDING"}

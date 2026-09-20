@@ -49,6 +49,8 @@ import {
 
 import {genericFormApplicationId} from "./organizerApplicationAccess";
 import {organizerContactOriginId} from "../shared/organizerContactOrigins";
+import {matchesAnswerFilters, responseFilterOptions, validateResponseFilters}
+  from "./organizerFormResponseFilters";
 
 type ResponseRow = ListOrganizerFormResponsesCallableResponse["items"][number];
 
@@ -95,6 +97,25 @@ export async function listOrganizerFormResponsesHandler(
   const db = deps.firestore();
   await deps.checkRateLimit(db, actorUid, "listOrganizerFormResponses");
   await requireOrganizerManager({db, organizerId: data.organizerId, actorUid});
+  const answerFilters = data.answerFilters ?? [];
+  const sortDirection = data.sortDirection ?? "desc";
+  const versions = new Map<string, OrganizerFormVersionDocument>();
+  let answerFilterOptions: ReturnType<typeof responseFilterOptions> = [];
+  if (data.formId) {
+    const form = requireOwnedForm(await db.collection("organizerForms")
+      .doc(data.formId).get(), data.organizerId);
+    const versionId = data.versionId ?? form.activeVersionId;
+    if (versionId) {
+      const version = requireOwnedVersion(await db
+        .collection("organizerFormVersions").doc(versionId).get(),
+      data.organizerId, data.formId);
+      versions.set(versionId, version);
+      answerFilterOptions = responseFilterOptions(version.definition);
+    }
+  } else if (answerFilters.length > 0) {
+    throw new HttpsError("invalid-argument", "Select a form to filter answers.");
+  }
+  validateResponseFilters(answerFilters, answerFilterOptions);
   const filterHash = hashJson({
     formId: data.formId,
     versionId: data.versionId,
@@ -104,6 +125,11 @@ export async function listOrganizerFormResponsesHandler(
     query: data.query?.trim().toLowerCase() ?? null,
     fromMillis: data.fromMillis,
     toMillis: data.toMillis,
+    sortDirection,
+    answerFilters: [...answerFilters].sort((a, b) =>
+      a.questionId.localeCompare(b.questionId)).map((filter) => ({
+      questionId: filter.questionId, values: [...filter.values].sort(),
+    })),
   });
   const cursor = decodeResponseCursor(data.cursor, {
     organizerId: data.organizerId,
@@ -117,8 +143,8 @@ export async function listOrganizerFormResponsesHandler(
     let query: FirebaseFirestore.Query = db
       .collection("organizerFormResponses")
       .where("organizerId", "==", data.organizerId)
-      .orderBy("submittedAt", "desc")
-      .orderBy(admin.firestore.FieldPath.documentId(), "desc")
+      .orderBy("submittedAt", sortDirection)
+      .orderBy(admin.firestore.FieldPath.documentId(), sortDirection)
       .limit(responseScanPageSize);
     if (lastScanned) {
       query = query.startAfter(lastScanned);
@@ -137,7 +163,21 @@ export async function listOrganizerFormResponsesHandler(
         doc,
         "OrganizerFormResponseDocument"
       );
-      if (matchesResponse(response, data)) matched.push(doc);
+      if (matchesResponse(response, data)) {
+        let matches = true;
+        if (answerFilters.length > 0) {
+          let version = versions.get(response.versionId);
+          if (!version) {
+            version = requireOwnedVersion(await db
+              .collection("organizerFormVersions").doc(response.versionId)
+              .get(), data.organizerId, response.formId);
+            versions.set(response.versionId, version);
+          }
+          matches = matchesAnswerFilters(response, version.definition,
+            answerFilters);
+        }
+        if (matches) matched.push(doc);
+      }
       if (matched.length === data.limit || scanned === maxResponseScan) break;
     }
     if (matched.length === data.limit || scanned === maxResponseScan) {
@@ -150,6 +190,7 @@ export async function listOrganizerFormResponsesHandler(
   return {
     organizerId: data.organizerId,
     items,
+    answerFilterOptions,
     nextCursor: hasMore && lastScanned ? encodeResponseCursor({
       version: 1,
       organizerId: data.organizerId,
