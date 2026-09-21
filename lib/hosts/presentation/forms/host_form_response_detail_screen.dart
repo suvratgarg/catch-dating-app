@@ -289,6 +289,8 @@ class _HostFormResponseDetailScreenState
                     CatchField.read(
                       copy: catchFieldCopy(context.l10n),
                       title: field.label,
+                      titleMaxLines: 2,
+                      valueMaxLines: 4,
                       valueText:
                           field.destinationField == 'eventId' &&
                               event != null &&
@@ -297,6 +299,7 @@ class _HostFormResponseDetailScreenState
                           : field.value?.toString() ??
                                 context.l10n.hostFormResponseNotProvided,
                       body: field.conflict,
+                      bodyMaxLines: 4,
                     ),
                 ],
               ),
