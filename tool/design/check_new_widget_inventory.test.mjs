@@ -43,6 +43,38 @@ test("owned renderers require exact source, library, owner, method and return ty
   assert.equal(isOwnedCompositionRenderer({...factory, returnType: "Widget"}), false);
 });
 
+
+test("Section, Banner and TopBar renderer recognition stays bound to real owner methods", () => {
+  const ui = "packages/catch_ui/lib/src/components/";
+  const entries = [
+    {file: `${ui}catch_action_module.dart`, library: `${ui}catch_section.dart`,
+      owner: null, name: "_buildActionModule", returnType: "Widget"},
+    {file: `${ui}catch_banner.dart`, library: `${ui}catch_banner.dart`,
+      owner: "CatchBanner", name: "_buildBodyFeedback", returnType: "Widget"},
+    ...["_buildBar", "_searchField", "_selectorControls"].map((name) => ({
+      file: `${ui}catch_top_bar.dart`, library: `${ui}catch_top_bar.dart`,
+      owner: "_CatchTopBarState", name, returnType: "Widget",
+    })),
+  ];
+  for (const entry of entries) {
+    const source = fs.readFileSync(path.join(repoRoot, entry.file), "utf8");
+    const starts = buildLineStarts(source);
+    const helpers = collectWidgetHelpers(source, starts,
+      collectClassRanges(source, starts),
+      resolveWidgetTypeNames(collectClassDeclarations(source, starts)));
+    assert.equal(helpers.filter(({owner, name, returnType}) =>
+      owner === entry.owner && name === entry.name && returnType === entry.returnType).length,
+    1, `${entry.file}:${entry.owner ?? "library"}.${entry.name} must still exist`);
+    assert.equal(isOwnedCompositionRenderer(entry), true, entry.name);
+    for (const key of Object.keys(entry)) {
+      assert.equal(isOwnedCompositionRenderer({...entry, [key]: "unowned"}),
+        false, `${entry.name}: ${key} cannot inherit recognition`);
+    }
+    assert.equal(isOwnedCompositionRenderer({...entry, name: `${entry.name}Sibling`}), false);
+    assert.equal(isOwnedCompositionRenderer({...entry, returnType: "Widget?"}), false);
+  }
+});
+
 test("new-widget gate uses exact registry and Widgetbook identities without reading markdown", (t) => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-new-widget-policy-"));
   t.after(() => fs.rmSync(root, {recursive: true, force: true}));

@@ -107,7 +107,7 @@ class HostCustomerDetailBody extends StatelessWidget {
                     ? onReviewDuplicates
                     : null,
               ),
-              _HostCustomerSubmissionsPanel(
+              HostCustomerSubmissionsSection(
                 customer: customer,
                 onOpen: onOpenFormResponse,
               ),

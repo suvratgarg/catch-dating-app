@@ -4784,7 +4784,15 @@
       "checks": [
         "dart run tool/marketing/frame_device_capture_test.dart"
       ],
-      "role": "gate"
+      "role": "gate",
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/marketing/frame_device_capture_test.dart",
+        "contains": [
+          "Native source pixels were resampled.",
+          "Undersampled inputs must fail before writing output."
+        ]
+      }
     },
     {
       "id": "marketing:app-screenshot-export",

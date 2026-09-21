@@ -111,3 +111,11 @@ class _ToolbarSelectorPreview extends StatelessWidget
     ),
   );
 }
+
+@widgetbook.UseCase(
+  name: 'Control inheritance',
+  type: CatchToolbarScope,
+  path: '[Core primitives]/Navigation',
+)
+Widget catchToolbarScopeContractStates(BuildContext context) =>
+    catchToolbarButtonContractStates(context);

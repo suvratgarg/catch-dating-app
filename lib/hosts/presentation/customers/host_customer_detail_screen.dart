@@ -36,6 +36,7 @@ import 'package:go_router/go_router.dart';
 
 part 'host_customer_detail_body.dart';
 part 'host_customer_history_panel.dart';
+part 'host_customer_submissions_section.dart';
 
 enum _HostCustomerRecordAction { message, remove }
 

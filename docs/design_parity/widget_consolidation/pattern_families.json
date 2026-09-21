@@ -1221,9 +1221,9 @@
       "status": "approved",
       "targetContract": "catch.section + catch.sheet + catch.top_bar + catch.step_header",
       "qualityReference": "CatchSectionHeader",
-      "decisionSource": "owner-delegated:2026-09-08 source and rendered review",
+      "decisionSource": "owner-directed:2026-09-21 app-bar consolidation and rendered review",
       "acceptedVisualDelta": [
-        "None. Preserve title/counter/action geometry, typography, heading semantics, large-text reflow and collapse opacity."
+        "Screen app bars use CatchTopBar semantic recipes with platform typography, consistent title/subtitle order and shared control geometry. IBM Plex eyebrow labels and independent screen-header assemblies are removed. Section, sheet, chronological and progress header responsibilities remain distinct."
       ],
       "members": [
         {
@@ -1239,10 +1239,10 @@
           "rationale": "One sheet-heading renderer preserves plain and branded glyph recipes."
         },
         {
-          "symbol": "CatchScreenHeader",
+          "symbol": "CatchTopBar",
           "disposition": "canonical",
           "preview": "required",
-          "rationale": "Responsive screen title/kicker/subtitle/leading/action assembly is a Header responsibility."
+          "rationale": "Semantic app-bar recipes own responsive screen identity, titles, subtitles, navigation and action geometry."
         },
         {
           "symbol": "CatchCollapsedHeaderTitle",
@@ -1286,7 +1286,7 @@
         {
           "symbol": "CatchScreenHeaderTitle",
           "disposition": "unify",
-          "target": "CatchScreenHeader",
+          "target": "CatchTopBar",
           "preview": "not-applicable",
           "rationale": "Use the canonical header role or a named presentation recipe, retaining the original rendering contract."
         },
@@ -1296,6 +1296,13 @@
           "target": "CatchCollapsedHeaderTitle",
           "preview": "not-applicable",
           "rationale": "Use the canonical header role or a named presentation recipe, retaining the original rendering contract."
+        },
+        {
+          "symbol": "CatchScreenHeader",
+          "disposition": "unify",
+          "target": "CatchTopBar",
+          "preview": "not-applicable",
+          "rationale": "Retired screen-heading assembly is represented by the canonical app-bar recipes."
         }
       ]
     },

@@ -297,3 +297,29 @@ Widget hostCustomerHistoryPanelStates(BuildContext context) =>
         onUndoMerge: (_) {},
       ),
     );
+
+@widgetbook.UseCase(
+  name: 'Loaded submissions',
+  type: HostCustomerSubmissionsSection,
+  path: '[P1 product surfaces]/Host operations/Customers',
+)
+Widget hostCustomerSubmissionsSectionStates(BuildContext context) =>
+    hostCustomersStates(
+      context,
+      detailBuilder: (customer) =>
+          HostCustomerSubmissionsSection(customer: customer, onOpen: (_) {}),
+    );
+
+@widgetbook.UseCase(
+  name: 'Provenance states',
+  type: HostCustomerSourcesSection,
+  path: '[P1 product surfaces]/Host operations/Customers',
+)
+Widget hostCustomerSourcesSectionStates(BuildContext context) =>
+    hostCustomersStates(
+      context,
+      detailBuilder: (customer) => HostCustomerSourcesSection(
+        customer: customer,
+        onReviewDuplicates: () {},
+      ),
+    );

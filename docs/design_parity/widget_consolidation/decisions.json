@@ -6786,7 +6786,7 @@
         {
           "name": "CatchScreenHeaderTitle",
           "action": "absorb",
-          "target": "CatchScreenHeader"
+          "target": "CatchTopBar"
         },
         {
           "name": "CatchCollapsedSliverTitle",

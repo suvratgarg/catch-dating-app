@@ -1352,10 +1352,15 @@ artwork is outside this UI-boundary diagnostic.
 Closed Field layouts and secondary actions render only inside their owning
 Field library. The inventory's exact source/library/owner/method/return-type
 declarations in `tool/design/lib/owned_composition_renderers.mjs` recognize
-those renderer fragments and the two typed domain/route factories. They do
-not exempt sibling helpers, moved implementations, or generic Widget-returning
-factories. Mutation tests cover each identity dimension; resolved Catch UI
-lints separately enforce the primitive's construction and interaction boundary.
+those renderer fragments, the Section action recipe, Banner body feedback,
+and TopBar's measured frame, search field and selector-row renderers. These
+private fragments implement an existing cataloged owner's closed recipe or
+state lifecycle; they are not independently reusable components. The same
+inventory recognizes two typed domain/route factories. It does not exempt
+sibling helpers, moved implementations, or arbitrary Widget-returning
+factories. Tests verify the named renderer methods still exist and mutation
+tests cover each identity dimension; resolved Catch UI lints separately
+enforce the primitive's construction and interaction boundary.
 
 Widget identity is checked globally rather than one folder at a time. The
 source-derived classification and new-widget gates scan `lib/**`,

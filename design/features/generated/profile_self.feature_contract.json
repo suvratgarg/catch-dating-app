@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/profile_self.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:f34f97e784f0e6c20d8367e020a2878d1b3bf618e21d1bbb7911c9c00613561e",
-  "resolvedDigest": "sha256:81ac210197c68c025898d85400510712e96539486827285902ac2b92138eef1a",
+  "resolvedDigest": "sha256:9fac5ba534ac9e0148df1f0cda7012b4818bb07f3dcfb9e623dfa543f0e4150c",
   "feature": {
     "id": "feature.profile_self",
     "name": "Self Profile",
@@ -1248,7 +1248,8 @@
                 "CatchSection.sliverLoadingRows",
                 "CatchSection.content",
                 "CatchSection.formRows",
-                "CatchSection.dependentFieldRows"
+                "CatchSection.dependentFieldRows",
+                "CatchSection.action"
               ]
             }
           },
@@ -1272,7 +1273,7 @@
               "symbol": "CatchTopBar",
               "file": "packages/catch_ui/lib/src/components/catch_top_bar.dart",
               "constructors": [
-                "CatchTopBar",
+                "CatchTopBar.route",
                 "CatchTopBar.identity",
                 "CatchTopBar.screen",
                 "CatchTopBar.primaryRail"

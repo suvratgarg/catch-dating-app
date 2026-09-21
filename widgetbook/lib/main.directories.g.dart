@@ -3613,6 +3613,16 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'CatchToolbarScope',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Control inheritance',
+                builder: _widgetbook_workspace_primitives_contracts_toolbar
+                    .catchToolbarScopeContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'CatchTopBar',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -10230,6 +10240,28 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_operations_customer_components
                             .hostCustomerRevenueStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostCustomerSourcesSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Provenance states',
+                    builder:
+                        _widgetbook_workspace_hosts_operations_customer_components
+                            .hostCustomerSourcesSectionStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostCustomerSubmissionsSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Loaded submissions',
+                    builder:
+                        _widgetbook_workspace_hosts_operations_customer_components
+                            .hostCustomerSubmissionsSectionStates,
                   ),
                 ],
               ),

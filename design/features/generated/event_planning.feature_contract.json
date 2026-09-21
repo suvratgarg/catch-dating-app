@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/event_planning.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:3500f5027c56ca2f4dc93aeefcb16dc6f000b6f145b614f1bd5503b4a4956c61",
-  "resolvedDigest": "sha256:dee28ff60f3e7548f9361743cf313509b37c69c0e2e03544f2e4024cefc4b547",
+  "resolvedDigest": "sha256:c1fdc21c022941bf368b245b33a6bd81ac727b1cc236d49321f8f62a2d6ef692",
   "feature": {
     "id": "feature.event_planning",
     "name": "Event Planning",
@@ -937,7 +937,7 @@
               "symbol": "CatchTopBar",
               "file": "packages/catch_ui/lib/src/components/catch_top_bar.dart",
               "constructors": [
-                "CatchTopBar",
+                "CatchTopBar.route",
                 "CatchTopBar.identity",
                 "CatchTopBar.screen",
                 "CatchTopBar.primaryRail"
@@ -1698,7 +1698,7 @@
               "symbol": "CatchTopBar",
               "file": "packages/catch_ui/lib/src/components/catch_top_bar.dart",
               "constructors": [
-                "CatchTopBar",
+                "CatchTopBar.route",
                 "CatchTopBar.identity",
                 "CatchTopBar.screen",
                 "CatchTopBar.primaryRail"

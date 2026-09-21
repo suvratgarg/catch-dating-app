@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_organizers.feature.json",
   "generatedFor": "2026-09-14",
   "sourceDigest": "sha256:6c41a73eac567f3d8d4bce13909d58c1fb028049c7c73ee0f1c393a13aa8ea5e",
-  "resolvedDigest": "sha256:3a6b11f33bd97937e6fe6d49652b258d5e85d883a858de2c9a95421c47fafdd3",
+  "resolvedDigest": "sha256:16bc8632906d5b182c1ffac6da5425aa4d48aadca3374859aae1fd2d16de44f4",
   "feature": {
     "id": "feature.host_organizers",
     "name": "Host Organizers",
@@ -5301,7 +5301,8 @@
                 "CatchSection.sliverLoadingRows",
                 "CatchSection.content",
                 "CatchSection.formRows",
-                "CatchSection.dependentFieldRows"
+                "CatchSection.dependentFieldRows",
+                "CatchSection.action"
               ]
             }
           },
@@ -5380,7 +5381,7 @@
               "symbol": "CatchTopBar",
               "file": "packages/catch_ui/lib/src/components/catch_top_bar.dart",
               "constructors": [
-                "CatchTopBar",
+                "CatchTopBar.route",
                 "CatchTopBar.identity",
                 "CatchTopBar.screen",
                 "CatchTopBar.primaryRail"

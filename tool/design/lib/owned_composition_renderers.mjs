@@ -27,6 +27,16 @@ declare(`${ui}components/catch_field_render.dart`, field, null, ["_renderField"]
 declare(`${ui}components/catch_section_render.dart`, section, null, ["_renderSection"], ["Widget"]);
 declare(`${ui}components/catch_row_section.dart`, `${ui}components/catch_row_section.dart`,
   "_CatchRowSectionState", ["_header", "_row"], ["Widget", "Widget?"]);
+// These fragments are private to an existing cataloged owner. The Section
+// factory fixes the action recipe; Banner fixes body feedback; TopBar state
+// owns its measured frame, search lifecycle and selector reflow. They expose
+// no independently callable component or feature-level rendering API.
+declare(`${ui}components/catch_action_module.dart`, section, null,
+  ["_buildActionModule"], ["Widget"]);
+declare(`${ui}components/catch_banner.dart`, `${ui}components/catch_banner.dart`,
+  "CatchBanner", ["_buildBodyFeedback"], ["Widget"]);
+declare(`${ui}components/catch_top_bar.dart`, `${ui}components/catch_top_bar.dart`,
+  "_CatchTopBarState", ["_buildBar", "_searchField", "_selectorControls"], ["Widget"]);
 // Typed factories return the canonical component itself, preventing an outer
 // GestureDetector, inset, or alternate interaction shell around their result.
 declare("lib/hosts/presentation/customers/host_customer_timeline.dart",
