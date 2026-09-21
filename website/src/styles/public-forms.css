@@ -196,7 +196,7 @@
   width: 1px;
 }
 
-.public-form input,
+.public-form input:not([type="checkbox"]),
 .public-form textarea {
   background: #f7f3ed;
   border: 1px solid var(--form-border);
@@ -212,6 +212,23 @@
   border-color: var(--form-accent);
   box-shadow: 0 0 0 3px rgba(244, 95, 58, 0.13);
   outline: none;
+}
+
+.public-form label:has(> input[type="checkbox"]) {
+  align-items: flex-start;
+  cursor: pointer;
+  display: flex;
+  gap: 10px;
+  line-height: 1.5;
+  min-height: 44px;
+}
+
+.public-form input[type="checkbox"] {
+  accent-color: var(--form-accent);
+  flex: 0 0 20px;
+  height: 20px;
+  margin: 2px 0 0;
+  width: 20px;
 }
 
 .public-form__choices {
