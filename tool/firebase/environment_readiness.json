@@ -450,7 +450,31 @@
       "sourcePaths": [
         "functions/src/organizers/organizerFormResponses.ts",
         "tool/firebase/form_upload_identity.mjs"
-      ]
+      ],
+      "purpose": "upload"
+    },
+    {
+      "id": "functions.identity.form-review",
+      "kind": "form-upload-identity",
+      "environments": [
+        "dev",
+        "staging",
+        "prod"
+      ],
+      "requiredWhen": {
+        "anyDeployTarget": [
+          "functions:getOrganizerFormResponseDetail"
+        ]
+      },
+      "acceptedStates": [
+        "READY"
+      ],
+      "owner": "host-forms",
+      "sourcePaths": [
+        "functions/src/organizers/organizerFormOperations.ts",
+        "tool/firebase/form_upload_identity.mjs"
+      ],
+      "purpose": "review"
     }
   ]
 }

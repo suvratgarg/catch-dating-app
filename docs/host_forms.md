@@ -561,7 +561,8 @@ conversion behavior. No delivery status may weaken those requirements.
 ## Upload runtime identity
 
 The public upload-intent callable runs under the dedicated `catch-form-upload`
-service account. Its IAM setup and deploy-time readiness check are owned by
+service account. Host response detail uses the separate `catch-form-review`
+identity for private photo links, with read-only Storage permissions. Their IAM setup and deploy-time readiness check are owned by
 `docs/release_operations.md#dedicated-form-upload-identity`. Signed uploads remain
 bound to the validated draft, form question, fixed object path, file type, size,
 and expiry; finalization still verifies uploaded metadata before attachment.

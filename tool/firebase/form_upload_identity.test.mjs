@@ -71,7 +71,7 @@ test("deployment prerequisite rejects missing signing and passes configured iden
   const commands = identityReadCommands(target);
   const state = readyState();
   const manifest = {environments: ["dev"], requirements: [{
-    id: "upload", kind: "form-upload-identity", environments: ["dev"],
+    id: "upload", kind: "form-upload-identity", purpose: "upload", environments: ["dev"],
     requiredWhen: {anyDeployTarget: ["functions:createOrganizerFormAssetIntent"]},
   }]};
   const runCommand = ({args}) => {
@@ -97,4 +97,13 @@ test("browser POST CORS is limited to Catch origins and preserves other rules", 
   assert.deepEqual(merged[1].origin, target.origins);
   assert.equal(merged[1].origin.includes("*"), false);
   assert.equal(mergeUploadCors(target, merged), merged);
+});
+
+test("private review identity can only read objects and never creates uploads", () => {
+  const review = uploadIdentityTarget("dev", "catchdates-dev", "review");
+  const commands = provisioningCommands(review, evaluateUploadIdentity(review, {}));
+  assert.ok(commands.some((c) => c.includes("--role=roles/storage.objectViewer")));
+  assert.equal(commands.some((c) => c.includes("--role=roles/storage.objectCreator")), false);
+  assert.equal(commands.some((c) => c.includes("--cors-file=<generated-on-apply>")), false);
+  assert.notEqual(review.email, target.email);
 });

@@ -16,7 +16,9 @@ export const inspectorPermissions = [
 ];
 export const signingPermission = "iam.serviceAccounts.signBlob";
 
-export function uploadIdentityTarget(environment, projectId) {
+export function uploadIdentityTarget(environment, projectId, purpose = "upload") {
+  if (!["upload", "review"].includes(purpose)) throw new Error("Invalid asset purpose.");
+  const account = purpose === "upload" ? accountId : "catch-form-review";
   if (!["dev", "staging", "prod"].includes(environment) ||
       !/^[a-z][a-z0-9-]{4,28}[a-z0-9]$/u.test(projectId ?? "")) {
     throw new Error("An explicit Catch environment and project are required.");
@@ -26,11 +28,12 @@ export function uploadIdentityTarget(environment, projectId) {
   ), "utf8"));
   if (config.projectId !== projectId) throw new Error("Firebase project mismatch.");
   return {
-    environment, projectId, bucket: config.storageBucket,
+    environment, projectId, purpose, accountId: account, bucket: config.storageBucket,
+    storageRole: purpose === "upload" ? "roles/storage.objectCreator" : "roles/storage.objectViewer",
     origins: environment === "prod"
       ? ["https://catchdates.com", "https://www.catchdates.com"]
       : [`https://${projectId}.web.app`, `https://${projectId}.firebaseapp.com`],
-    email: `${accountId}@${projectId}.iam.gserviceaccount.com`,
+    email: `${account}@${projectId}.iam.gserviceaccount.com`,
     deployer: `github-actions-deploy@${projectId}.iam.gserviceaccount.com`,
     role: `projects/${projectId}/roles/${signerRoleId}`,
     inspectorRole: `projects/${projectId}/roles/${inspectorRoleId}`,
@@ -75,7 +78,7 @@ export function evaluateUploadIdentity(target, state) {
   const unsafe = [];
   const currentCors = state.bucket?.cors ?? [];
   const cors = mergeUploadCors(target, currentCors);
-  if (cors !== currentCors) missing.push("browser-upload-cors");
+  if (target.purpose === "upload" && cors !== currentCors) missing.push("browser-upload-cors");
   if (!state.signingApi?.some((s) =>
     s.config?.name === "iamcredentials.googleapis.com")) missing.push("signing-api");
   if (!state.account) missing.push("account");
@@ -98,11 +101,11 @@ export function evaluateUploadIdentity(target, state) {
   }
   if (bindingsFor(state.projectPolicy, member).some((b) =>
     b.role !== "roles/datastore.user" || b.condition)) unsafe.push("extra-project-access");
-  if (!hasBinding(state.bucketPolicy, member, "roles/storage.objectCreator")) {
+  if (!hasBinding(state.bucketPolicy, member, target.storageRole)) {
     missing.push("upload-access");
   }
   if (bindingsFor(state.bucketPolicy, member).some((b) =>
-    b.role !== "roles/storage.objectCreator" || b.condition)) unsafe.push("extra-bucket-access");
+    b.role !== target.storageRole || b.condition)) unsafe.push("extra-bucket-access");
   if (!hasBinding(state.accountPolicy, member, target.role)) missing.push("self-signing");
   if (!hasBinding(state.accountPolicy, deployer, "roles/iam.serviceAccountUser")) {
     missing.push("deployer-act-as");
@@ -129,8 +132,8 @@ export function provisioningCommands(target, assessment) {
     "services", "enable", "iamcredentials.googleapis.com", project,
   ]);
   if (missing.has("account")) commands.push([
-    "iam", "service-accounts", "create", accountId, project,
-    "--display-name=Catch form upload runtime",
+    "iam", "service-accounts", "create", target.accountId, project,
+    `--display-name=Catch form ${target.purpose} runtime`,
   ]);
   if (missing.has("role")) commands.push([
     "iam", "roles", "create", signerRoleId, project,
@@ -152,7 +155,7 @@ export function provisioningCommands(target, assessment) {
   ]);
   if (missing.has("upload-access")) commands.push([
     "storage", "buckets", "add-iam-policy-binding", `gs://${target.bucket}`,
-    member, "--role=roles/storage.objectCreator", "--condition=None",
+    member, `--role=${target.storageRole}`, "--condition=None",
   ]);
   if (missing.has("self-signing")) commands.push([
     "iam", "service-accounts", "add-iam-policy-binding", target.email, project,
@@ -199,9 +202,10 @@ export function inspectUploadIdentity(target, run = runGcloud) {
 }
 
 export function parseArgs(argv) {
-  const args = {environment: null, apply: false, allowProd: false};
+  const args = {environment: null, purpose: "upload", apply: false, allowProd: false};
   for (let i = 0; i < argv.length; i++) {
     if (argv[i] === "--env") args.environment = argv[++i];
+    else if (argv[i] === "--purpose") args.purpose = argv[++i];
     else if (argv[i] === "--apply") args.apply = true;
     else if (argv[i] === "--allow-prod") args.allowProd = true;
     else throw new Error(`Unknown argument: ${argv[i]}`);
@@ -218,7 +222,7 @@ export function parseArgs(argv) {
 function main() {
   const args = parseArgs(process.argv.slice(2));
   const target = uploadIdentityTarget(args.environment,
-    readFirebaseProjectAliases()[args.environment]);
+    readFirebaseProjectAliases()[args.environment], args.purpose);
   const before = inspectUploadIdentity(target);
   const commands = provisioningCommands(target, before);
   console.log(JSON.stringify({target, ...before, commands}, null, 2));

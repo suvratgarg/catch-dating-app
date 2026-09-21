@@ -11,3 +11,13 @@ export function appCheckCallableOptionsForFormUpload(
     serviceAccount: "catch-form-upload@",
   };
 }
+
+/** Private response photos use a separate read-only Storage identity. */
+export function appCheckCallableOptionsForFormReview(
+  limits: Parameters<typeof appCheckCallableOptionsWithLimits>[0]
+): CallableOptions {
+  return {
+    ...appCheckCallableOptionsWithLimits(limits),
+    serviceAccount: "catch-form-review@",
+  };
+}

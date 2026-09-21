@@ -301,6 +301,9 @@ export function validateEnvironmentReadinessManifest(
         }
       }
     } else if (requirement.kind === "form-upload-identity") {
+      if (!["upload", "review"].includes(requirement.purpose)) {
+        errors.push(`${label}: form asset purpose must be upload or review.`);
+      }
       if (acceptedStates.length !== 1 || acceptedStates[0] !== "READY") {
         errors.push(`${label}: upload identity must accept only READY.`);
       }
@@ -773,7 +776,7 @@ export function runEnvironmentReadiness({
     for (const requirement of requirements) {
       if (requirement.kind === "form-upload-identity") {
         try {
-          const target = uploadIdentityTarget(environment, projectId);
+          const target = uploadIdentityTarget(environment, projectId, requirement.purpose);
           const assessed = inspectUploadIdentity(target, (args) =>
             runCommand({command: "gcloud", args: [...args, "--format=json", "--quiet"]}));
           results.push(readinessResult({
