@@ -19,7 +19,9 @@ Future<void> loadCatchTestFonts({String? nativeIosFontPath}) async {
       ..addFont(_bytes('assets/fonts/IBMPlexMono-SemiBold.ttf'))
       ..addFont(_bytes('assets/fonts/IBMPlexMono-Bold.ttf')),
     for (final family in _platformFunctionFamilies)
-      if (nativeIosFontPath != null && family.startsWith('CupertinoSystem'))
+      if (nativeIosFontPath != null &&
+          (family.startsWith('CupertinoSystem') ||
+              family == '.AppleSystemUIFont'))
         FontLoader(family)..addFont(_fileBytes(File(nativeIosFontPath)))
       else
         FontLoader(family)

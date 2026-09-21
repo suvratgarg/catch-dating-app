@@ -164,6 +164,15 @@ function updateExports() {
     return;
   }
 
+  // Device framing must not disguise Android typography as an iPhone render.
+  const sfFont = valueAfter("--sf-font") ??
+    (process.platform === "darwin" ? "/System/Library/Fonts/SFNS.ttf" : null);
+  if (!sfFont || !fs.existsSync(sfFont)) {
+    fail("Native iPhone product captures require a local system font.", [
+      "Run on macOS or pass --sf-font with an available native iOS font file.",
+    ]);
+  }
+
   const selected = selectedCaptures.map((capture) => ({
     capture,
     entry: findCatalogEntry(catalog, capture.fixtureKey),
@@ -189,6 +198,12 @@ function updateExports() {
         rawOutputDir,
         "--device",
         device,
+        "--pixel-ratio",
+        String(deviceFrameSpec(device).outputScale),
+        "--platform",
+        "ios",
+        "--sf-font",
+        sfFont,
       ],
       {cwd: repoRoot, stdio: "inherit"}
     );
@@ -557,6 +572,7 @@ Commands:
 
 Options:
   --ids <ids>        Comma-separated marketing capture ids for --update.
+  --sf-font <path>   Native iOS font; defaults to the local macOS SFNS.ttf.
 
 Raw captures are written under ${rawOutputDir}/ and framed source PNGs are
 written to each active manifest sourcePath.
