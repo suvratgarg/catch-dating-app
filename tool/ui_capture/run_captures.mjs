@@ -22,6 +22,16 @@ const outputDir = valueAfter("--output-dir") ?? profileConfig.outputDir ?? "arti
 const deviceId = valueAfter("--device");
 const textScale = valueAfter("--text-scale");
 const pixelRatio = valueAfter("--pixel-ratio") ?? profileConfig.pixelRatio;
+const platform = valueAfter("--platform");
+const sfFont = valueAfter("--sf-font");
+if (platform && !["ios", "android"].includes(platform)) {
+  console.error("--platform must be ios or android.");
+  process.exit(64);
+}
+if (sfFont && (platform !== "ios" || !fs.existsSync(sfFont))) {
+  console.error("--sf-font requires --platform ios and an existing local font file.");
+  process.exit(64);
+}
 const outputLayout = valueAfter("--output-layout") ?? profileConfig.outputLayout;
 const testPath = "test/ui_captures/capture_runner_test.dart";
 
@@ -31,6 +41,8 @@ const flutterArgs = [
   `--dart-define=CAPTURE_IDS=${ids}`,
   `--dart-define=CAPTURE_OUTPUT_DIR=${outputDir}`,
 ];
+if (platform) flutterArgs.push(`--dart-define=CAPTURE_PLATFORM=${platform}`);
+if (sfFont) flutterArgs.push(`--dart-define=CAPTURE_SF_FONT=${sfFont}`);
 if (deviceId) flutterArgs.push(`--dart-define=CAPTURE_DEVICE_ID=${deviceId}`);
 if (textScale) flutterArgs.push(`--dart-define=CAPTURE_TEXT_SCALE=${textScale}`);
 if (pixelRatio) flutterArgs.push(`--dart-define=CAPTURE_DPR=${pixelRatio}`);
@@ -96,6 +108,8 @@ Options:
   --all                    Render every capture id declared in the catalog.
   --output-dir <path>      Artifact output directory. Default: artifacts/ui-captures/review.
   --device <id>            Override catalog devices, e.g. design-phone or iphone-17-pro.
+  --platform <name>        Explicit ios or android widget behavior; otherwise test default.
+  --sf-font <path>         Local native iOS font for ios captures (never bundled or copied).
   --text-scale <scale>     MediaQuery text scale, e.g. 1.5 or 2.0.
   --pixel-ratio <scale>    PNG raster scale passed to RenderRepaintBoundary.toImage.
   --output-layout <layout> capture-first (id/theme.png) or theme-first (theme/id.png).

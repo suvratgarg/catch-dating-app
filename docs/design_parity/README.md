@@ -1,7 +1,7 @@
 ---
 doc_id: design_parity_tracker
-version: 0.1.48
-updated: 2026-09-02
+version: 0.1.49
+updated: 2026-09-21
 owner: product_design_parity
 status: active
 ---
@@ -134,7 +134,18 @@ truth.
 
 ## Visual Comparison Policy
 
-Pixel comparison should be introduced as an advisory gate first. Store exported
+Design rules and valid component configurations govern intentional corrections.
+Review fresh renders against those rules before updating affected regression
+baselines. A golden mismatch reports a change; it does not establish that the
+old layout was correct. Never preserve an invalid configuration merely to pass
+pixel comparison, or update images mechanically to hide a regression.
+
+Synthetic product screenshots use the separate export-only UI capture harness
+and [marketing media pipeline](../marketing_app_media_pipeline.md). Capture
+export does not compare goldens, update baselines, or publish the website.
+
+
+External design-reference comparison starts as an advisory gate. Store exported
 design references under `design/reference_screens/` and compare them against
 `tool/ui_capture/run_captures.mjs` output. Mask dynamic regions such as status
 bars, maps, timestamps, remote photos, and generated counters before enforcing a
@@ -155,8 +166,9 @@ node tool/design/check_reference_screens.mjs --compare --capture-dir /tmp/catch-
 
 Host references must use a repo-pinned `design/source_packs/` source with a
 hash-complete, locally closed dependency manifest and must compare the real
-application navigation chrome. App Build Matrix regenerates the four primary
-full-shell Host captures and runs a focused `--strict` comparison. Strict mode
+application navigation chrome. App Build Matrix validates reference metadata
+with `--check --summary`; it does not regenerate or compare those captures.
+Explicit local `--compare --strict` runs require fresh matching captures. Strict mode
 fails unknown or missing captures, dimension drift, and threshold regressions.
 A real but unfinished feature may declare a stable `parityDebtId` plus a looser
 `regressionThresholds` ceiling; that ceiling prevents further drift and does
