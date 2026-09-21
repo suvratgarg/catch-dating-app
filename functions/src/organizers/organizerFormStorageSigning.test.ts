@@ -6,8 +6,31 @@ import test from "node:test";
 import {promisify} from "node:util";
 import {appCheckCallableOptionsForFormUpload} from
   "../shared/organizerFormUploadIdentity";
+import {matchesAuthorizedFormAssetMetadata} from
+  "./organizerFormResponses";
 
 const run = promisify(execFile);
+
+test("finalizer reads the signed POST asset-id metadata key", () => {
+  const asset = {declaredSizeBytes: 42, contentType: "image/png" as const,
+    declaredSha256: "a".repeat(64)};
+  const metadata = {size: "42", contentType: "image/png", metadata: {
+    "asset-id": "formasset_demo", "sha256": asset.declaredSha256,
+  }} as import("@google-cloud/storage").FileMetadata;
+  assert.equal(matchesAuthorizedFormAssetMetadata(
+    metadata, asset, "formasset_demo"), true);
+  assert.equal(matchesAuthorizedFormAssetMetadata(
+    {...metadata, metadata: {assetId: "formasset_demo",
+      sha256: asset.declaredSha256}}, asset, "formasset_demo"), false);
+  assert.equal(matchesAuthorizedFormAssetMetadata(
+    metadata, asset, "formasset_other"), false);
+  assert.equal(matchesAuthorizedFormAssetMetadata(
+    {...metadata, size: "43"}, asset, "formasset_demo"), false);
+  assert.equal(matchesAuthorizedFormAssetMetadata(
+    {...metadata, metadata: {"asset-id": "formasset_demo",
+      "sha256": "b".repeat(64)}},
+    asset, "formasset_demo"), false);
+});
 
 test("form upload signer accepts metadata response headers", async () => {
   const signer = "demo-signer@example.iam.gserviceaccount.com";
