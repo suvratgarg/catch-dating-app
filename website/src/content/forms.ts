@@ -48,6 +48,7 @@ export const publicFormsCopy = {
   requiredSuffix: "required",
   chooseOne: "Choose one",
   chooseAny: "Choose all that apply",
+  confirmAcknowledgement: "I confirm",
   yes: "Yes",
   no: "No",
   completionKicker: "Response received",

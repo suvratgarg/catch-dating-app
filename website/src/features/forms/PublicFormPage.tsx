@@ -424,7 +424,7 @@ function QuestionField({
           checked={answer === true}
           onChange={(event) => onChange(event.target.checked)}
         >
-          {question.label}
+          {publicFormsCopy.confirmAcknowledgement}
         </CheckboxField>
       </PublicFormQuestion>
     );
