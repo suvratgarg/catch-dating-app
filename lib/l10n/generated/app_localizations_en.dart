@@ -14526,10 +14526,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get hostCustomersSortSheetSubtitle =>
-      'Choose how customers are ordered.';
-
-  @override
   String get hostCustomersSortLastSeen => 'Last seen';
 
   @override
@@ -14539,7 +14535,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostCustomersSortName => 'Name';
 
   @override
-  String get hostCustomersMoreActions => 'More customer actions';
+  String get hostCustomersMoreActions => 'More audience actions';
 
   @override
   String get eventSuccessAccountabilityTitle => 'Return sweep';
@@ -17504,10 +17500,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostAudienceAutomaticGroup => 'Automatic membership';
 
   @override
-  String get hostAudienceGroupMembershipHelp =>
-      'Membership is checked when you refresh a group. Sending eligibility is checked in Inbox.';
-
-  @override
   String hostAudienceGroupChecked({required String date}) {
     return 'Checked $date';
   }
@@ -20119,4 +20111,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostCustomersAccountNotVerified => 'No verified account linked';
+
+  @override
+  String get hostAudienceRecentlyUpdated => 'Recently updated';
+
+  @override
+  String get hostAudienceResponseStatus => 'Submission status';
 }

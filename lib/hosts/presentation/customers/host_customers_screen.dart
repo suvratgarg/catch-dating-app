@@ -61,8 +61,6 @@ part 'host_saved_audience_source_rules.dart';
 part 'host_saved_audience_overview.dart';
 part 'host_saved_audiences_workspace.dart';
 
-enum _HostCustomersHeaderAction { reviewDuplicates, export }
-
 class HostCustomersScreen extends ConsumerStatefulWidget {
   const HostCustomersScreen({
     super.key,
@@ -275,6 +273,18 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
         final activeQuery = peopleView ? _search : _audienceSearch;
         final directoryControls = HostCustomerDirectoryControls(
           sort: _sort,
+          activeFilters:
+              _manualTag?.label ??
+              (effectiveFilter == HostCustomerFilter.all
+                  ? null
+                  : _customerFilterLabel(context, effectiveFilter)),
+          onClear:
+              _manualTag == null && effectiveFilter == HostCustomerFilter.all
+              ? null
+              : () => setState(() {
+                  _filter = HostCustomerFilter.all;
+                  _manualTag = null;
+                }),
           shrinkWrap: true,
           condensed: screenSize.isCompact || screenSize.isExpanded,
           onSortChanged: (sort) => setState(() => _sort = sort),
@@ -287,147 +297,144 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
                   summaryState.value?.smsReadiness,
                 ),
         );
-        return CatchRootScreenScaffold.withPrimaryRail(
-          header: CatchRootScreenHeader.title(
-            title: context.l10n.hostNavigationAudience,
-            actions: peopleView
-                ? [
-                    CatchTopBarPrimaryButton(
-                      key: const ValueKey<String>(
-                        'host-customers-add-customer',
-                      ),
-                      label: context.l10n.hostCustomersAdd,
-                      icon: CatchIcons.personAddAlt1Rounded,
-                      onPressed: () => _addCustomer(selectedClub, request),
-                    ),
-                    CatchActionMenu<_HostCustomersHeaderAction>(
-                      tooltip: context.l10n.hostCustomersMoreActions,
-                      items: _hostCustomersHeaderActions(
-                        context,
-                        includeExport: !_exporting,
-                        exportEnabled: _manualTag == null,
-                        exportSublabel: _manualTag == null
-                            ? null
-                            : context
-                                  .l10n
-                                  .hostCustomersManualTagExportUnavailable,
-                      ),
-                      onSelected: (action) {
-                        if (action ==
-                            _HostCustomersHeaderAction.reviewDuplicates) {
-                          unawaited(_reviewDuplicates(selectedClub.id));
-                        }
-                        if (action == _HostCustomersHeaderAction.export) {
-                          unawaited(
-                            _exportCustomers(selectedClub, effectiveFilter),
-                          );
-                        }
-                      },
-                    ),
-                  ]
-                : const [],
-            search: CatchTopBarSearch(
-              copy: catchSearchFieldCopy(context.l10n),
-              fieldKey: ValueKey(
-                peopleView ? 'host-customers-search' : 'host-audiences-search',
-              ),
-              value: activeQuery ?? '',
-              contract: peopleView
-                  ? CatchContractConstraints
-                        .listOrganizerContactsCallablePayloadQuery
-                  : CatchContractConstraints
-                        .upsertOrganizerSavedAudienceCallablePayloadName,
-              placeholder: peopleView
-                  ? context.l10n.hostsHostAudienceSearch
-                  : context.l10n.hostSavedAudiencesSearch,
-              tooltip: peopleView
-                  ? context.l10n.hostsHostAudienceSearch
-                  : context.l10n.hostSavedAudiencesSearch,
-              semanticLabel: peopleView
-                  ? context.l10n.hostsHostAudienceSearch
-                  : context.l10n.hostSavedAudiencesSearch,
-              expanded: _searchExpanded || activeQuery != null,
-              onExpandedChanged: (expanded) {
-                if (_searchExpanded == expanded) return;
-                setState(() => _searchExpanded = expanded);
-              },
-              onChanged: (value) => _scheduleSearch(_view, value),
-              onSubmitted: (value) => _applySearch(_view, value),
-              onFocusChanged: (focused) {
-                if (!focused && activeQuery == null && _searchExpanded) {
-                  setState(() => _searchExpanded = false);
-                }
-              },
-              textInputAction: TextInputAction.search,
+        return HostAudienceScaffold(
+          organizerId: selectedClub.id,
+          selected: _view,
+          selectionAnimation: _tabController.animation!,
+          onChanged: (view) => _selectAudienceView(view, selectedClub.id),
+          primaryAction: peopleView
+              ? CatchTopBarPrimaryButton(
+                  key: const ValueKey<String>('host-customers-add-customer'),
+                  label: context.l10n.hostCustomersAdd,
+                  icon: CatchIcons.personAddAlt1Rounded,
+                  onPressed: () => _addCustomer(selectedClub, request),
+                )
+              : CatchTopBarPrimaryButton(
+                  key: const ValueKey('host-saved-audience-create'),
+                  label: context.l10n.hostSavedAudienceNew,
+                  icon: CatchIcons.add,
+                  onPressed: () => _openAudienceEditor(selectedClub),
+                ),
+          menuItems: peopleView
+              ? _hostCustomersHeaderActions(
+                  context,
+                  includeExport: !_exporting,
+                  exportEnabled: _manualTag == null,
+                  exportSublabel: _manualTag == null
+                      ? null
+                      : context.l10n.hostCustomersManualTagExportUnavailable,
+                )
+              : const [],
+          onMenuAction: (action) {
+            if (action == HostAudienceMenuAction.reviewDuplicates) {
+              unawaited(_reviewDuplicates(selectedClub.id));
+            }
+            if (action == HostAudienceMenuAction.export) {
+              unawaited(_exportCustomers(selectedClub, effectiveFilter));
+            }
+          },
+          search: CatchTopBarSearch(
+            copy: catchSearchFieldCopy(context.l10n),
+            fieldKey: ValueKey(
+              peopleView ? 'host-customers-search' : 'host-audiences-search',
             ),
-          ),
-          actions: HostAudienceTabRail(
-            selected: _view,
-            selectionAnimation: _tabController.animation!,
-            onChanged: (view) => _selectAudienceView(view, selectedClub.id),
+            value: activeQuery ?? '',
+            contract: peopleView
+                ? CatchContractConstraints
+                      .listOrganizerContactsCallablePayloadQuery
+                : CatchContractConstraints
+                      .upsertOrganizerSavedAudienceCallablePayloadName,
+            placeholder: peopleView
+                ? context.l10n.hostsHostAudienceSearch
+                : context.l10n.hostSavedAudiencesSearch,
+            tooltip: peopleView
+                ? context.l10n.hostsHostAudienceSearch
+                : context.l10n.hostSavedAudiencesSearch,
+            semanticLabel: peopleView
+                ? context.l10n.hostsHostAudienceSearch
+                : context.l10n.hostSavedAudiencesSearch,
+            expanded: _searchExpanded || activeQuery != null,
+            onExpandedChanged: (expanded) {
+              if (_searchExpanded == expanded) return;
+              setState(() => _searchExpanded = expanded);
+            },
+            onChanged: (value) => _scheduleSearch(_view, value),
+            onSubmitted: (value) => _applySearch(_view, value),
+            onFocusChanged: (focused) {
+              if (!focused && activeQuery == null && _searchExpanded) {
+                setState(() => _searchExpanded = false);
+              }
+            },
+            textInputAction: TextInputAction.search,
           ),
           body: CatchRootScreenBody.paged(
             controller: _tabController,
             pages: [
               CatchRootScreenPageSpec.masterDetail(
                 expanded: screenSize.isExpanded,
-                master: CatchRootScreenPageScrollView.fullBleed(
+                master: CatchRootScreenPageScrollView.sections(
                   scrollKey: const PageStorageKey<String>(
                     'host-customers-people',
                   ),
                   children: [
-                    CatchPageBody.sliver(
-                      child: SliverList.list(
-                        children: [
-                          HostCustomersSummary(
-                            summary: summary,
-                            newCustomerCount: ref
-                                .watch(
-                                  hostCustomerSegmentCountProvider(
-                                    HostCustomerSegmentCountRequest(
-                                      organizerId: selectedClub.id,
-                                      filter: HostCustomerFilter.newToOrganizer,
+                    SliverToBoxAdapter(
+                      child: CatchSection.content(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            HostCustomersSummary(
+                              summary: summary,
+                              newCustomerCount: ref
+                                  .watch(
+                                    hostCustomerSegmentCountProvider(
+                                      HostCustomerSegmentCountRequest(
+                                        organizerId: selectedClub.id,
+                                        filter:
+                                            HostCustomerFilter.newToOrganizer,
+                                      ),
                                     ),
+                                  )
+                                  .when(
+                                    data: (value) => value,
+                                    loading: () => null,
+                                    error: (_, _) => null,
                                   ),
-                                )
-                                .when(
-                                  data: (value) => value,
-                                  loading: () => null,
-                                  error: (_, _) => null,
-                                ),
-                            onRetry: () => ref.invalidate(
-                              hostCrmSummaryProvider(selectedClub.id),
+                              onRetry: () => ref.invalidate(
+                                hostCrmSummaryProvider(selectedClub.id),
+                              ),
+                              selectedFilter:
+                                  _manualTag == null &&
+                                      const {
+                                        HostCustomerFilter.all,
+                                        HostCustomerFilter.repeat,
+                                        HostCustomerFilter.newToOrganizer,
+                                      }.contains(effectiveFilter)
+                                  ? effectiveFilter
+                                  : null,
+                              onFilterSelected: (selectedFilter) =>
+                                  setState(() {
+                                    _filter =
+                                        selectedFilter == effectiveFilter &&
+                                            selectedFilter !=
+                                                HostCustomerFilter.all
+                                        ? HostCustomerFilter.all
+                                        : selectedFilter;
+                                    _manualTag = null;
+                                  }),
                             ),
-                            selectedFilter:
-                                _manualTag == null &&
-                                    const {
-                                      HostCustomerFilter.all,
-                                      HostCustomerFilter.repeat,
-                                      HostCustomerFilter.newToOrganizer,
-                                    }.contains(effectiveFilter)
-                                ? effectiveFilter
-                                : null,
-                            onFilterSelected: (selectedFilter) => setState(() {
-                              _filter =
-                                  selectedFilter == effectiveFilter &&
-                                      selectedFilter != HostCustomerFilter.all
-                                  ? HostCustomerFilter.all
-                                  : selectedFilter;
-                              _manualTag = null;
-                            }),
-                          ),
-                          gapH8,
-                        ],
+                            gapH16,
+                          ],
+                        ),
                       ),
                     ),
                     SliverToBoxAdapter(child: directoryControls),
-                    CatchPageBody.sliver(
-                      child: SliverList.list(
-                        children: [
-                          if (directoryState != null &&
-                              (effectiveFilter != HostCustomerFilter.all ||
-                                  _manualTag != null ||
-                                  _search != null))
+                    if (directoryState != null &&
+                        (effectiveFilter != HostCustomerFilter.all ||
+                            _manualTag != null ||
+                            _search != null))
+                      CatchPageBody.sliver(
+                        child: SliverList.list(
+                          children: [
                             HostCustomerFilterSummary(
                               filter: effectiveFilter,
                               manualTag: _manualTag,
@@ -453,18 +460,10 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
                                   ? () =>
                                         _reviewWhatsappSenderSetup(selectedClub)
                                   : null,
-                              onClear:
-                                  effectiveFilter == HostCustomerFilter.all &&
-                                      _manualTag == null
-                                  ? null
-                                  : () => setState(() {
-                                      _filter = HostCustomerFilter.all;
-                                      _manualTag = null;
-                                    }),
                             ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
                     CatchAsyncBoundary<HostCustomersDirectoryState>.sliver(
                       value: directory,
                       onRetry: () => ref.invalidate(
@@ -534,7 +533,7 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
                 page: HostSavedAudiencesWorkspace(
                   organizerId: selectedClub.id,
                   query: _audienceSearch,
-                  onCreate: () => _openAudienceEditor(selectedClub),
+
                   onOpen: (audience) =>
                       _openAudienceEditor(selectedClub, audience: audience),
                 ),
@@ -546,21 +545,20 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
     );
   }
 
-  List<CatchActionMenuItem<_HostCustomersHeaderAction>>
-  _hostCustomersHeaderActions(
+  List<CatchActionMenuItem<HostAudienceMenuAction>> _hostCustomersHeaderActions(
     BuildContext context, {
     required bool includeExport,
     required bool exportEnabled,
     String? exportSublabel,
   }) => [
     CatchActionMenuItem(
-      value: _HostCustomersHeaderAction.reviewDuplicates,
+      value: HostAudienceMenuAction.reviewDuplicates,
       label: context.l10n.hostCustomersReviewDuplicates,
       icon: CatchIcons.peopleOutlineRounded,
     ),
     if (includeExport)
       CatchActionMenuItem(
-        value: _HostCustomersHeaderAction.export,
+        value: HostAudienceMenuAction.export,
         label: context.l10n.hostsHostAudienceExport,
         sublabel: exportSublabel,
         icon: CatchIcons.downloadRounded,

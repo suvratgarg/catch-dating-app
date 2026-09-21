@@ -19,6 +19,7 @@ import 'package:catch_ui/src/components/catch_section_header_placement.dart';
 import 'package:catch_ui/src/components/catch_section_row_list.dart';
 import 'package:catch_ui/src/components/catch_section_row_list_mode.dart';
 import 'package:catch_ui/src/components/catch_section_surface.dart';
+import 'package:catch_ui/src/foundations/catch_icons.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:catch_ui/src/primitives/catch_divider.dart';
 import 'package:catch_ui/src/primitives/catch_kicker_text.dart';
@@ -340,34 +341,94 @@ class CatchSection extends StatelessWidget {
     ),
   );
 
-  /// Collection sort/filter controls with both section-owned boundary rules.
+  /// A collection toolbar: ordering first, filters last, with owned boundaries.
+  /// No widget slots: callers cannot reverse the roles or insert unrelated actions.
   factory CatchSection.controls({
     Key? key,
-    required Widget leading,
-    Widget? trailing,
-  }) => CatchSection._rows(
-    key: key,
-    rowSection: CatchContentSection(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          const CatchDivider.section(),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: CatchSpacing.s3),
-            child: Wrap(
-              alignment: WrapAlignment.spaceBetween,
-              crossAxisAlignment: WrapCrossAlignment.center,
-              spacing: CatchSpacing.s4,
-              runSpacing: CatchSpacing.s2,
-              children: [leading, ?trailing],
-            ),
+    required String sortLabel,
+    VoidCallback? onSort,
+    required String filtersLabel,
+    required VoidCallback? onFilters,
+    Key? sortKey,
+    Key? filtersKey,
+    String? activeFilters,
+    String? clearLabel,
+    VoidCallback? onClear,
+  }) {
+    assert((activeFilters == null) == (clearLabel == null));
+    assert((activeFilters == null) == (onClear == null));
+    return CatchSection._rows(
+      key: key,
+      rowSection: CatchContentSection(
+        child: Builder(
+          builder: (context) => Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const CatchDivider.section(),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: CatchSpacing.s3),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Wrap(
+                      alignment: WrapAlignment.spaceBetween,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      spacing: CatchSpacing.s4,
+                      runSpacing: CatchSpacing.s2,
+                      children: [
+                        if (onSort == null)
+                          Text(
+                            sortLabel,
+                            key: sortKey,
+                            style: CatchTextStyles.supporting(context),
+                          )
+                        else
+                          CatchButton.command(
+                            key: sortKey,
+                            label: sortLabel,
+                            trailing: Icon(CatchIcons.expandMoreRounded),
+                            onPressed: onSort,
+                          ),
+                        CatchButton.command(
+                          key: filtersKey,
+                          label: filtersLabel,
+                          leading: Icon(CatchIcons.tuneRounded),
+                          onPressed: onFilters,
+                        ),
+                      ],
+                    ),
+                    if (activeFilters case final summary?)
+                      Padding(
+                        padding: const EdgeInsets.only(top: CatchSpacing.s2),
+                        child: Wrap(
+                          alignment: WrapAlignment.spaceBetween,
+                          crossAxisAlignment: WrapCrossAlignment.center,
+                          spacing: CatchSpacing.s4,
+                          runSpacing: CatchSpacing.s2,
+                          children: [
+                            Text(
+                              summary,
+                              style: CatchTextStyles.supporting(context),
+                            ),
+                            CatchButton.command(
+                              label: clearLabel!,
+                              onPressed: onClear,
+                            ),
+                          ],
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+              const CatchDivider.section(),
+            ],
           ),
-          const CatchDivider.section(),
-        ],
+        ),
       ),
-    ),
-  );
+    );
+  }
 
   /// One rounded exterior containing full-width internal row bands.
   factory CatchSection.containedRows({

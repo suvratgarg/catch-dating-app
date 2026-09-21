@@ -6,6 +6,7 @@ import 'package:catch_dating_app/hosts/domain/crm/host_messaging_setup.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_saved_audience.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_saved_audience_definition.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/host_audience_view.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_campaign_composer.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -58,21 +59,19 @@ Widget hostSavedAudiencesStates(BuildContext context) {
           overrides: [
             hostAllSavedAudiencesProvider(organizerId).overrideWithValue(value),
           ],
-          child: CatchRootScreenScaffold.withPrimaryRail(
-            header: const CatchRootScreenHeader.title(title: 'Customers'),
-            actions: const CatchPageTabBar<String>(
-              selected: 'audiences',
-              options: [
-                CatchOption(value: 'people', label: 'People'),
-                CatchOption(value: 'audiences', label: 'Audiences'),
-              ],
+          child: HostAudienceScaffold(
+            selected: HostAudienceView.audiences,
+            onChanged: (_) {},
+            primaryAction: CatchTopBarPrimaryButton(
+              label: 'New group',
+              icon: CatchIcons.add,
+              onPressed: () {},
             ),
             body: CatchRootScreenBody.single(
               page: CatchRootScreenPageSpec.scroll(
                 page: HostSavedAudiencesWorkspace(
                   organizerId: organizerId,
                   query: null,
-                  onCreate: () {},
                   onOpen: (_) {},
                 ),
               ),
@@ -112,6 +111,14 @@ Widget hostSavedAudiencesStates(BuildContext context) {
     ],
   );
 }
+
+@widgetbook.UseCase(
+  name: 'Shared Audience header with group states',
+  type: HostAudienceScaffold,
+  path: '[P1 product surfaces]/Host operations/Composed sections',
+)
+Widget hostAudienceScaffoldStates(BuildContext context) =>
+    hostSavedAudiencesStates(context);
 
 @widgetbook.UseCase(
   name: 'Campaign and sender states',

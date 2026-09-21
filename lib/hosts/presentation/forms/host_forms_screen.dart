@@ -26,6 +26,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+part 'host_forms_filter_sheet.dart';
+
 enum _HostFormRowAction {
   analytics,
   automations,
@@ -191,40 +193,34 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
         ? context.l10n.hostFormsSearch
         : context.l10n.hostFormResponsesSearch;
 
-    return CatchRootScreenScaffold.withPrimaryRail(
-      header: CatchRootScreenHeader.title(
-        title: context.l10n.hostNavigationAudience,
-        actions: activeSearchIsForms
-            ? [
-                CatchTopBarPrimaryButton(
-                  key: const ValueKey('host-forms-create'),
-                  label: context.l10n.hostFormsCreate,
-                  icon: CatchIcons.add,
-                  onPressed: () => _openTemplates(selectedClub.id),
-                ),
-              ]
-            : const [],
-        search: CatchTopBarSearch(
-          copy: catchSearchFieldCopy(context.l10n),
-          value: activeSearchIsForms ? _query ?? '' : _responseQuery ?? '',
-          contract: activeSearchIsForms
-              ? CatchContractConstraints.listOrganizerFormsCallablePayloadQuery
-              : CatchContractConstraints
-                    .listOrganizerFormResponsesCallablePayloadQuery,
-          placeholder: searchPlaceholder,
-          tooltip: searchPlaceholder,
-          semanticLabel: searchPlaceholder,
-          autofocus: true,
-          textInputAction: TextInputAction.search,
-          onChanged: (value) => _scheduleSearch(_view, value),
-          onSubmitted: (value) => _applySearch(_view, value),
-        ),
-      ),
-      actions: HostAudienceTabRail(
-        selected: _view,
-        selectionAnimation: _tabController.animation!,
-        animationOffset: 2,
-        onChanged: (view) => _selectAudienceView(view, selectedClub.id),
+    return HostAudienceScaffold(
+      organizerId: selectedClub.id,
+      selected: _view,
+      selectionAnimation: _tabController.animation!,
+      animationOffset: 2,
+      onChanged: (view) => _selectAudienceView(view, selectedClub.id),
+      primaryAction: activeSearchIsForms
+          ? CatchTopBarPrimaryButton(
+              key: const ValueKey('host-forms-create'),
+              label: context.l10n.hostFormsCreate,
+              icon: CatchIcons.add,
+              onPressed: () => _openTemplates(selectedClub.id),
+            )
+          : null,
+      search: CatchTopBarSearch(
+        copy: catchSearchFieldCopy(context.l10n),
+        value: activeSearchIsForms ? _query ?? '' : _responseQuery ?? '',
+        contract: activeSearchIsForms
+            ? CatchContractConstraints.listOrganizerFormsCallablePayloadQuery
+            : CatchContractConstraints
+                  .listOrganizerFormResponsesCallablePayloadQuery,
+        placeholder: searchPlaceholder,
+        tooltip: searchPlaceholder,
+        semanticLabel: searchPlaceholder,
+        autofocus: true,
+        textInputAction: TextInputAction.search,
+        onChanged: (value) => _scheduleSearch(_view, value),
+        onSubmitted: (value) => _applySearch(_view, value),
       ),
       body: CatchRootScreenBody.paged(
         controller: _tabController,
@@ -245,7 +241,7 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
             ),
           ),
           CatchRootScreenPageSpec.scroll(
-            page: CatchRootScreenPageScrollView.fullBleed(
+            page: CatchRootScreenPageScrollView.sections(
               scrollKey: const PageStorageKey<String>('host-forms-responses'),
               children: [
                 HostFormResponsesPanel(
@@ -458,60 +454,73 @@ class _HostFormsLibraryPage extends ConsumerWidget
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return CatchRootScreenPageScrollView.fullBleed(
+    return CatchRootScreenPageScrollView.sections(
       scrollKey: const PageStorageKey<String>('host-forms-library'),
       children: [
-        CatchPageBody.sliver(
-          child: SliverList.list(
-            children: [
-              CatchChoiceInput<HostFormLifecycleStatus?>.segmented(
-                options: [
-                  CatchOption(
-                    value: null,
-                    label: context.l10n.hostFormsFilterAll,
-                  ),
-                  for (final candidate in [
-                    HostFormLifecycleStatus.published,
-                    HostFormLifecycleStatus.draft,
-                    if (status == HostFormLifecycleStatus.paused ||
-                        status == HostFormLifecycleStatus.archived)
-                      status!,
-                  ])
+        SliverToBoxAdapter(
+          child: CatchSection.content(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                CatchChoiceInput<HostFormLifecycleStatus?>.segmented(
+                  options: [
                     CatchOption(
-                      value: candidate,
-                      label: hostFormStatusLabel(context, candidate),
+                      value: null,
+                      label: context.l10n.hostFormsFilterAll,
                     ),
-                ],
-                selected: status,
-                variant: CatchChoiceInputVariant.summary,
-                contractExemption:
-                    'The lifecycle rail maps All to no status and every other '
-                    'option to one item in the statuses array contract.',
-                onChanged: onStatusChanged,
-                scrollable: true,
-                showDivider: false,
-              ),
-              gapH16,
-              Wrap(
-                alignment: WrapAlignment.spaceBetween,
-                spacing: CatchSpacing.s4,
-                children: [
-                  CatchButton.command(
-                    label: purpose == null
-                        ? context.l10n.hostAudienceAllPurposes
-                        : hostFormPurposeLabel(context, purpose!),
-                    leading: Icon(CatchIcons.descriptionOutlined),
-                    onPressed: () => _selectPurpose(context),
-                  ),
-                  CatchButton.command(
-                    label: context.l10n.hostCustomersFilters,
-                    leading: Icon(CatchIcons.tune),
-                    onPressed: () => _selectStatus(context),
-                  ),
-                ],
-              ),
-              gapH8,
-            ],
+                    for (final candidate in [
+                      HostFormLifecycleStatus.published,
+                      HostFormLifecycleStatus.draft,
+                      if (status == HostFormLifecycleStatus.paused ||
+                          status == HostFormLifecycleStatus.archived)
+                        status!,
+                    ])
+                      CatchOption(
+                        value: candidate,
+                        label: hostFormStatusLabel(context, candidate),
+                      ),
+                  ],
+                  selected: status,
+                  variant: CatchChoiceInputVariant.summary,
+                  contractExemption:
+                      'The lifecycle rail maps All to no status and every other '
+                      'option to one item in the statuses array contract.',
+                  onChanged: onStatusChanged,
+                  scrollable: true,
+                  showDivider: false,
+                ),
+                gapH16,
+              ],
+            ),
+          ),
+        ),
+        SliverToBoxAdapter(
+          child: CatchSection.controls(
+            sortLabel: context.l10n.hostAudienceRecentlyUpdated,
+            filtersLabel: context.l10n.hostCustomersFilters,
+            onFilters: () => _showHostFormsFilters(
+              context,
+              purpose: purpose,
+              status: status,
+              onPurposeChanged: onPurposeChanged,
+              onStatusChanged: onStatusChanged,
+            ),
+            activeFilters: status == null && purpose == null
+                ? null
+                : [
+                    if (status != null) hostFormStatusLabel(context, status!),
+                    if (purpose != null)
+                      hostFormPurposeLabel(context, purpose!),
+                  ].join(' · '),
+            clearLabel: status == null && purpose == null
+                ? null
+                : context.l10n.hostCustomersClearFilter,
+            onClear: status == null && purpose == null
+                ? null
+                : () {
+                    onStatusChanged(null);
+                    onPurposeChanged(null);
+                  },
           ),
         ),
         CatchAsyncBoundary<HostFormsDirectoryState>.sliver(
@@ -636,56 +645,6 @@ class _HostFormsLibraryPage extends ConsumerWidget
         ),
       ],
     );
-  }
-
-  Future<void> _selectPurpose(BuildContext context) async {
-    final selected = await showCatchSelectionSheet<String>(
-      context: context,
-      title: context.l10n.hostAudienceFormPurposeFilter,
-      value: purpose?.name ?? 'all',
-      items: [
-        CatchSelectionMenuItem(
-          value: 'all',
-          label: context.l10n.hostAudienceAllPurposes,
-        ),
-        for (final candidate in HostFormPurpose.values)
-          CatchSelectionMenuItem(
-            value: candidate.name,
-            label: hostFormPurposeLabel(context, candidate),
-          ),
-      ],
-    );
-    if (selected != null && context.mounted) {
-      onPurposeChanged(
-        selected == 'all' ? null : HostFormPurpose.values.byName(selected),
-      );
-    }
-  }
-
-  Future<void> _selectStatus(BuildContext context) async {
-    final selected = await showCatchSelectionSheet<String>(
-      context: context,
-      title: context.l10n.hostAudienceFormStatusFilter,
-      value: status?.name ?? 'all',
-      items: [
-        CatchSelectionMenuItem(
-          value: 'all',
-          label: context.l10n.hostAudienceAllStatuses,
-        ),
-        for (final candidate in HostFormLifecycleStatus.values)
-          CatchSelectionMenuItem(
-            value: candidate.name,
-            label: hostFormStatusLabel(context, candidate),
-          ),
-      ],
-    );
-    if (selected != null && context.mounted) {
-      onStatusChanged(
-        selected == 'all'
-            ? null
-            : HostFormLifecycleStatus.values.byName(selected),
-      );
-    }
   }
 }
 

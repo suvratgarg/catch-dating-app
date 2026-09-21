@@ -22600,12 +22600,6 @@ abstract class AppLocalizations {
   /// **'Sort: {label}'**
   String hostCustomersSortControl({required String label});
 
-  /// Explains the Customers directory sort sheet.
-  ///
-  /// In en, this message translates to:
-  /// **'Choose how customers are ordered.'**
-  String get hostCustomersSortSheetSubtitle;
-
   /// Customers directory last-seen ordering.
   ///
   /// In en, this message translates to:
@@ -22627,7 +22621,7 @@ abstract class AppLocalizations {
   /// Accessible label for the Customers header overflow commands.
   ///
   /// In en, this message translates to:
-  /// **'More customer actions'**
+  /// **'More audience actions'**
   String get hostCustomersMoreActions;
 
   /// Host accountability sweep heading.
@@ -27659,12 +27653,6 @@ abstract class AppLocalizations {
   /// **'Automatic membership'**
   String get hostAudienceAutomaticGroup;
 
-  /// Membership is checked when you refresh a group. Sending eligibility is checked in Inbox.
-  ///
-  /// In en, this message translates to:
-  /// **'Membership is checked when you refresh a group. Sending eligibility is checked in Inbox.'**
-  String get hostAudienceGroupMembershipHelp;
-
   /// Checked {date}
   ///
   /// In en, this message translates to:
@@ -31995,6 +31983,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No verified account linked'**
   String get hostCustomersAccountNotVerified;
+
+  /// Fixed server ordering of the Forms directory.
+  ///
+  /// In en, this message translates to:
+  /// **'Recently updated'**
+  String get hostAudienceRecentlyUpdated;
+
+  /// Submitted or withdrawn form response filter, distinct from application review status.
+  ///
+  /// In en, this message translates to:
+  /// **'Submission status'**
+  String get hostAudienceResponseStatus;
 }
 
 class _AppLocalizationsDelegate

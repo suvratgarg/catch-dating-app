@@ -197,7 +197,7 @@ void _registerHostOperationsCustomersTests() {
             page: HostSavedAudiencesWorkspace(
               organizerId: organizerId,
               query: null,
-              onCreate: () {},
+
               onOpen: (_) {},
             ),
           ),
@@ -213,7 +213,7 @@ void _registerHostOperationsCustomersTests() {
     );
     expect(find.text('Repeat runners'), findsOneWidget);
     expect(find.textContaining('24 people · Checked'), findsOneWidget);
-    expect(find.text('New group'), findsOneWidget);
+    expect(find.text('New group'), findsNothing);
     expect(find.text('Archive'), findsNothing);
 
     await _pumpHostScreen(
@@ -226,7 +226,7 @@ void _registerHostOperationsCustomersTests() {
             page: HostSavedAudiencesWorkspace(
               organizerId: organizerId,
               query: null,
-              onCreate: () {},
+
               onOpen: (_) {},
             ),
           ),
@@ -252,7 +252,7 @@ void _registerHostOperationsCustomersTests() {
             page: HostSavedAudiencesWorkspace(
               organizerId: organizerId,
               query: null,
-              onCreate: () {},
+
               onOpen: (_) {},
             ),
           ),
@@ -450,62 +450,6 @@ void _registerHostOperationsCustomersTests() {
     await pumpFeatureUiFor(tester, const Duration(milliseconds: 1));
     await pumpFeatureUi(tester);
     expect(requests.last.search, 'ananya');
-  });
-
-  testWidgets('Audiences has one local create action and skips People loads', (
-    tester,
-  ) async {
-    final club = buildClub(id: 'customers-club', ownerUserId: _hostUid);
-    final requests = <HostCustomersDirectoryRequest>[];
-    final audience = HostSavedAudience(
-      organizerId: club.id,
-      audienceId: 'audience-1',
-      name: 'Repeat runners',
-      status: 'active',
-      definition: const HostSavedAudienceDefinition(
-        join: HostSavedAudienceJoin.all,
-        predicates: [
-          HostSavedAudienceComputedSegment(HostAudienceSegment.repeatAttendee),
-        ],
-      ),
-      definitionHash:
-          'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
-      definitionVersion: 1,
-      revision: 1,
-      lastPreviewMatchCount: 9,
-      lastPreviewAt: DateTime(2026, 8, 30),
-      createdAt: DateTime(2026, 8, 29),
-      updatedAt: DateTime(2026, 8, 30),
-    );
-
-    await _pumpHostScreen(
-      tester,
-      const HostCustomersScreen(initialView: HostAudienceView.audiences),
-      overrides: [
-        ..._hostClubOverrides(owned: [club]),
-        hostCustomersDirectoryControllerProvider.overrideWith2(
-          (_) => _FixedHostCustomersDirectoryController(
-            requests,
-            _customerDirectoryState(),
-          ),
-        ),
-        hostAllSavedAudiencesProvider(club.id).overrideWithValue(
-          AsyncData(
-            HostSavedAudiencePage(audiences: [audience], nextCursor: null),
-          ),
-        ),
-      ],
-    );
-
-    expect(find.text('People'), findsOneWidget);
-    expect(find.text('Groups'), findsOneWidget);
-    expect(find.text('New group'), findsOneWidget);
-    expect(find.text('Repeat runners'), findsOneWidget);
-    expect(
-      find.byKey(const ValueKey('host-customers-add-customer')),
-      findsNothing,
-    );
-    expect(requests, isEmpty);
   });
 
   testWidgets(
@@ -746,7 +690,7 @@ void _registerHostOperationsCustomersTests() {
     );
   }
 
-  testWidgets('saved audience directory exposes one create action', (
+  testWidgets('saved audience directory leaves creation to the app bar', (
     tester,
   ) async {
     const organizerId = 'organizer-1';
@@ -781,7 +725,7 @@ void _registerHostOperationsCustomersTests() {
             page: HostSavedAudiencesWorkspace(
               organizerId: organizerId,
               query: null,
-              onCreate: () {},
+
               onOpen: (_) {},
             ),
           ),
@@ -796,18 +740,18 @@ void _registerHostOperationsCustomersTests() {
       ],
     );
 
-    expect(find.text('New group'), findsOneWidget);
+    expect(find.text('New group'), findsNothing);
     expect(find.text('Regular customers'), findsOneWidget);
     expect(find.textContaining('9 people'), findsOneWidget);
     expect(find.text('Archive'), findsNothing);
     expect(find.text('Refresh'), findsNothing);
-    await tester.tap(find.text('All groups'));
+    await tester.tap(find.text('Filters'));
     await pumpFeatureUi(tester);
     await tester.tap(find.text('Selected people').last);
     await pumpFeatureUi(tester);
     expect(find.text('Regular customers'), findsNothing);
     expect(find.text('No groups yet'), findsNothing);
-    await tester.tap(find.text('Selected people').first);
+    await tester.tap(find.text('Filters'));
     await pumpFeatureUi(tester);
     await tester.tap(find.text('All groups').last);
     await pumpFeatureUi(tester);

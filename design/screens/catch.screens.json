@@ -499,36 +499,12 @@
     "screen.host.customers": {
       "owners": [
         {
-          "routes": [
-            "hostAudienceScreen"
-          ],
-          "file": "lib/hosts/presentation/host_audience_view.dart",
-          "symbol": "HostAudienceStateScaffold",
+          "routes": ["hostAudienceScreen"],
+          "file": "lib/hosts/presentation/host_audience_scaffold.dart",
+          "symbol": "HostAudienceScaffold",
           "family": "root",
           "expression": "CatchRootScreenScaffold.withPrimaryRail",
-          "bodyGeometry": "standard",
-          "topEdge": "safe-area"
-        },
-        {
-          "routes": [
-            "hostAudienceScreen"
-          ],
-          "file": "lib/hosts/presentation/customers/host_customers_screen.dart",
-          "symbol": "_HostCustomersScreenState",
-          "family": "root",
-          "expression": "CatchRootScreenScaffold.withPrimaryRail",
-          "bodyGeometry": "full-bleed",
-          "topEdge": "safe-area"
-        },
-        {
-          "routes": [
-            "hostAudienceScreen"
-          ],
-          "file": "lib/hosts/presentation/forms/host_forms_screen.dart",
-          "symbol": "_HostFormsScreenState",
-          "family": "root",
-          "expression": "CatchRootScreenScaffold.withPrimaryRail",
-          "bodyGeometry": "full-bleed",
+          "bodyGeometry": "mixed",
           "topEdge": "safe-area"
         },
         {

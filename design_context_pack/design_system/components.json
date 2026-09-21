@@ -4407,8 +4407,13 @@
             "navigable"
           ],
           "CatchSection.controls": [
-            "leading",
-            "trailing"
+            "sortLabel",
+            "onSort",
+            "filtersLabel",
+            "onFilters",
+            "activeFilters",
+            "clearLabel",
+            "onClear"
           ],
           "CatchSection.containedRows": [
             "title",

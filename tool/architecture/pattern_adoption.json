@@ -342,16 +342,6 @@
           "status": "aligned"
         },
         {
-          "path": "lib/hosts/presentation/customers/host_customers_screen.dart",
-          "role": "Host Customers root screen uses CatchRootScreenScaffold.withPrimaryRail for People and Audiences, with the adaptive add-customer and overflow actions restricted to People",
-          "status": "aligned"
-        },
-        {
-          "path": "lib/hosts/presentation/forms/host_forms_screen.dart",
-          "role": "Host Forms root screen uses CatchRootScreenScaffold.withPrimaryRail with the adaptive primary create action on the Forms view",
-          "status": "aligned"
-        },
-        {
           "path": "widgetbook/lib/dashboard/catalog/header.dart",
           "role": "Dashboard header review state now mounts CatchTopBar instead of a one-off DashboardHeaderContent wrapper",
           "status": "aligned"
@@ -359,6 +349,11 @@
         {
           "path": "widgetbook/lib/profiles/catalog/header.dart",
           "role": "Profile header review states now mount CatchTopBar instead of a one-off ProfileTitle wrapper",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/hosts/presentation/host_audience_scaffold.dart",
+          "role": "HostAudienceScaffold owns the shared header, tab rail, creation actions, search and organizer-wide overflow for all four Audience tabs and route states",
           "status": "aligned"
         }
       ],

@@ -84,18 +84,8 @@
       "routeName": "Routes.hostAudienceScreen.name",
       "surfaces": [
         {
-          "path": "lib/hosts/presentation/host_audience_view.dart",
-          "symbol": "HostAudienceStateScaffold",
-          "owner": "CatchRootScreenHeader.title"
-        },
-        {
-          "path": "lib/hosts/presentation/customers/host_customers_screen.dart",
-          "symbol": "_HostCustomersScreenState",
-          "owner": "CatchRootScreenHeader.title"
-        },
-        {
-          "path": "lib/hosts/presentation/forms/host_forms_screen.dart",
-          "symbol": "_HostFormsScreenState",
+          "path": "lib/hosts/presentation/host_audience_scaffold.dart",
+          "symbol": "HostAudienceScaffold",
           "owner": "CatchRootScreenHeader.title"
         }
       ]

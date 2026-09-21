@@ -105,7 +105,9 @@ void main() {
         .getRect(
           find
               .ancestor(
-                of: find.text('All statuses'),
+                of: find.byKey(
+                  const ValueKey('host-form-responses-review-applications'),
+                ),
                 matching: find.byType(CatchSection),
               )
               .first,
@@ -305,6 +307,8 @@ void main() {
         await pumpFeatureUi(tester);
         expect(formRequests.last.query, 'waiver');
         expect(responseRequests, isEmpty);
+        await tester.tap(find.text('Filters'));
+        await pumpFeatureUi(tester);
         await tester.tap(find.text('All purposes'));
         await pumpFeatureUi(tester);
         await tester.tap(find.text('Waiver'));
@@ -317,6 +321,8 @@ void main() {
         await tester.tap(find.text('All purposes'));
         await pumpFeatureUi(tester);
         expect(formRequests.last.purposes, isEmpty);
+        await tester.tap(find.text('Done'));
+        await pumpFeatureUi(tester);
 
         await tester.tap(find.text('Responses'));
         await pumpFeatureUiFor(tester, CatchMotion.base);
@@ -329,6 +335,8 @@ void main() {
               .placeholder,
           'Search responses',
         );
+        await tester.tap(find.text('Filters'));
+        await pumpFeatureUi(tester);
         await tester.tap(find.text('All statuses'));
         await pumpFeatureUi(tester);
         await tester.tap(find.text('Submitted'));
@@ -336,6 +344,8 @@ void main() {
         expect(responseRequests.last.statuses, {
           HostFormResponseStatus.submitted,
         });
+        await tester.tap(find.text('Done'));
+        await pumpFeatureUi(tester);
 
         await tester.enterText(
           find.descendant(

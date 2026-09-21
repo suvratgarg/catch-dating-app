@@ -126,7 +126,7 @@ void _registerHostOperationsCustomerDetailTests() {
       find.descendant(of: controls, matching: find.text('Sort: Last seen')),
       findsOneWidget,
     );
-    expect(find.byTooltip('More customer actions'), findsOneWidget);
+    expect(find.byTooltip('More audience actions'), findsOneWidget);
     expect(find.byTooltip('Export this audience'), findsNothing);
 
     await tester.tap(_customerSummaryChoice(HostCustomerFilter.repeat));
@@ -157,19 +157,13 @@ void _registerHostOperationsCustomerDetailTests() {
 
     await tester.tap(find.text('Sort: Last seen'));
     await pumpFeatureUi(tester);
-    final sortMenu = find.byWidgetPredicate(
-      (widget) =>
-          widget is CatchMenu<HostCustomerSort> && widget.builder == null,
-    );
-    expect(sortMenu, findsOneWidget);
-    await tester.tap(
-      find.descendant(of: sortMenu, matching: find.text('Name')),
-    );
+    expect(find.byType(CatchSelectionSheet<HostCustomerSort>), findsOneWidget);
+    await tester.tap(find.text('Name'));
     await pumpFeatureUi(tester);
     expect(find.text('Sort: Name'), findsOneWidget);
     expect(requests.last.sort, HostCustomerSort.name);
 
-    await tester.tap(find.byTooltip('More customer actions'));
+    await tester.tap(find.byTooltip('More audience actions'));
     await pumpFeatureUi(tester);
     expect(find.text('Export this audience'), findsOneWidget);
     expect(find.text('Review applications'), findsNothing);
