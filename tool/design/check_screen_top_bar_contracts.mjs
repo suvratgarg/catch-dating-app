@@ -10,7 +10,7 @@ const architectureAdoptionPath =
 const screenChromeArchitectureId = "ARCH-SCREEN-CHROME-001";
 const appBarPattern = /\bappBar\s*:\s*([A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)?)/gu;
 const routeTopBarBuilderPattern =
-  /\btopBarBuilder\s*:\s*\([^)]*\)\s*=>\s*(CatchTopBar\.screen|CatchTopBar(?:\.identity)?)/gu;
+  /\btopBarBuilder\s*:\s*\([^)]*\)\s*=>\s*(CatchTopBar\.(?:screen|primaryRail)|CatchTopBar(?:\.(?:route|identity))?)/gu;
 const canonicalRouteScaffoldPath =
   "packages/catch_ui/lib/src/patterns/catch_route_scaffold.dart";
 const canonicalScreenScaffoldPath =
@@ -23,15 +23,14 @@ const manualHeaderClassPattern =
 const screenChromeClassPattern =
   /\bclass\s+([_$A-Za-z][\w$]*(?:Screen|Scaffold|Header|TopBar|HeaderContent))\b/gu;
 const manualHeaderOwnerPattern =
-  /\b(CatchScreenHeader(?:\.block)?|CatchTopBar\.screen|CatchRootScreenHeader\.title|CatchTopBar(?:\.identity)?|CatchStepHeader|CatchTextStyles\.(?:headline[A-Za-z]*|titleL))\s*\(/gu;
+  /\b(CatchTopBar\.(?:screen|primaryRail)|CatchRootScreenHeader\.title|CatchTopBar(?:\.(?:route|identity))?|CatchStepHeader|CatchTextStyles\.(?:headline[A-Za-z]*|titleL))\s*\(/gu;
 const canonicalRootOwners = new Set([
-  "CatchScreenHeader",
-  "CatchScreenHeader.block",
+  "CatchTopBar.primaryRail",
   "CatchTopBar.screen",
   "CatchRootScreenHeader.title",
 ]);
 const topBarActionOwnerPattern =
-  /\b(CatchScreenHeader(?:\.block)?|CatchTopBar\.screen|CatchRootScreenHeader\.title|CatchTopBar(?:\.identity)?)\s*\(/gu;
+  /\b(CatchTopBar\.(?:screen|primaryRail)|CatchRootScreenHeader\.title|CatchTopBar(?:\.(?:route|identity))?)\s*\(/gu;
 const directPillActionPattern = /\bCatchButton(?:\.(?!text\b)[A-Za-z_$][\w$]*)?\s*\(/u;
 const rootTitleStylePattern = /\bCatchTextStyles\.headline[A-Za-z]*\s*\(/gu;
 const rootTextScaleOverridePattern =
@@ -41,7 +40,7 @@ const rolePolicies = new Map([
     "screen",
     {expression: "CatchTopBar.screen", owner: "CatchTopBar.screen"},
   ],
-  ["compact", {expression: "CatchTopBar", owner: "CatchTopBar"}],
+  ["compact", {expression: "CatchTopBar.route", owner: "CatchTopBar"}],
   [
     "identity",
     {expression: "CatchTopBar.identity", owner: "CatchTopBar"},
@@ -55,10 +54,11 @@ const validLeadingPolicies = new Set([
   "none",
 ]);
 const validSurfacePolicies = new Set(["CatchRouteScaffold"]);
-const validTitlePolicies = new Set(["sharedRoute", "routeOrIdentity"]);
+const validTitlePolicies = new Set(["sharedRoute"]);
 const canonicalWorkspaceOwners = new Set([
   "CatchTopBar",
   "CatchTopBar.screen",
+  "CatchTopBar.primaryRail",
 ]);
 const rawHeroExpressions = new Set([
   "SliverAppBar",
@@ -75,14 +75,13 @@ const manualHeaderRoleOwners = new Map([
   [
     "screen",
     new Set([
-      "CatchScreenHeader",
-      "CatchScreenHeader.block",
+            "CatchTopBar.primaryRail",
       "CatchTopBar.screen",
       "CatchRootScreenHeader.title",
     ]),
   ],
   ["step-flow", new Set(["CatchStepHeader"])],
-  ["workspace", new Set(["CatchTopBar"])],
+  ["workspace", new Set(["CatchTopBar.route"]) ],
   ["content", new Set(["CatchTextStyles.titleL"])],
   [
     "legacy",
@@ -716,75 +715,25 @@ function checkContract({root, contract, appBars, findings}) {
         code: "route-title-widget-bypass",
         path: contract.path,
         message:
-          "Compact and workspace route bars must pass semantic title, eyebrow, kicker, " +
-          "subtitle, and titleMaxLines inputs to CatchTopBar. A local title " +
+          "Compact and workspace route bars must pass a title and optional " +
+          "contextual subtitle to CatchTopBar.route. A local title " +
           "widget or style bypasses the shared route-title typography contract.",
       });
     }
 
-    const routeTitleModeBypasses = appBars.filter((appBar) => {
-      const pinsCompactMode = topBarArgument(appBar.value, 'size') === 'CatchTopBarSize.compact';
-      const declaresLargeMode = topBarArgument(appBar.value, 'size') != null;
-      const kickerInfersLargeMode = topBarArgument(appBar.value, 'kicker') != null;
-      return (
-        (declaresLargeMode && !pinsCompactMode) ||
-        (kickerInfersLargeMode && !pinsCompactMode) ||
-        (contract.role === "workspace" && !pinsCompactMode)
-      );
-    });
-    if (routeTitleModeBypasses.length > 0) {
+    const legacyOverrides = appBars.filter((appBar) =>
+      ['size', 'variant', 'mode', 'eyebrow', 'kicker', 'titleMaxLines',
+       'largeHeight', 'contentCrossAxisAlignment', 'rowCrossAxisAlignment',
+       'height', 'contentPadding', 'applySafeArea', 'gutter', 'trailing']
+        .some((name) => topBarArgument(appBar.value, name) != null),
+    );
+    if (legacyOverrides.length > 0) {
       findings.push({
-        code: "route-title-large-mode-bypass",
+        code: "route-title-role-override",
         path: contract.path,
-        message:
-          "Compact route typography cannot enter CatchTopBar large mode. " +
-          "Workspace bars, and compact bars with a kicker, must select size: CatchTopBarSize.compact.",
+        message: "App-bar recipes own typography, hierarchy, wrapping and geometry. " +
+          "Translate legacy configurations into title/context and named recipes.",
       });
-    }
-
-    const titlePolicy = contract.titlePolicy ?? "sharedRoute";
-    if (titlePolicy === "sharedRoute") {
-      const identityOverrides = appBars.filter((appBar) =>
-        topBarArgument(appBar.value, 'variant') != null,
-      );
-      if (identityOverrides.length > 0) {
-        findings.push({
-          code: "route-title-role-override",
-          path: contract.path,
-          message:
-            "This route is registered for shared route-title typography. " +
-            "Any explicit typography variant requires a routeOrIdentity policy.",
-        });
-      }
-    }
-
-    if (titlePolicy === "routeOrIdentity") {
-      const missingIdentityRole = appBars.filter(
-        (appBar) =>
-          !/\bCatchTopBarVariant\.identity\b/u.test(topBarArgument(appBar.value, 'variant') ?? ''),
-      );
-      const missingRouteFallback = appBars.filter(
-        (appBar) =>
-          !/\bCatchTopBarVariant\.route\b/u.test(topBarArgument(appBar.value, 'variant') ?? ''),
-      );
-      if (missingIdentityRole.length > 0) {
-        findings.push({
-          code: "missing-identity-title-role",
-          path: contract.path,
-          message:
-            "A routeOrIdentity title policy must explicitly select " +
-            "CatchTopBarVariant.identity when user-authored identity content is present.",
-        });
-      }
-      if (missingRouteFallback.length > 0) {
-        findings.push({
-          code: "missing-route-title-fallback",
-          path: contract.path,
-          message:
-            "A routeOrIdentity title policy must explicitly select " +
-            "CatchTopBarVariant.route while identity content is unavailable.",
-        });
-      }
     }
   }
 
@@ -1544,9 +1493,7 @@ function checkRootHeaderSurface({root, rootHeader, surface, findings}) {
   }
   rootTextScaleOverridePattern.lastIndex = 0;
 
-  const geometryPattern = surface.owner.startsWith("CatchScreenHeader")
-    ? /\bpadding\s*:/u
-    : /\b(?:contentPadding|height)\s*:/u;
+  const geometryPattern = /\b(?:padding|contentPadding|height|titleMaxLines|titleStyle|rowCrossAxisAlignment|eyebrow|kicker)\s*:/u;
   if (ownerCalls.some((call) => geometryPattern.test(call))) {
     findings.push({
       code: "root-header-geometry-override",

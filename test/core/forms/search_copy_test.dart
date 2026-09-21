@@ -96,7 +96,7 @@ void main() {
   ) async {
     await tester.pumpWidget(
       _app(
-        const CatchTopBar(
+        const CatchTopBar.route(
           title: 'People',
           navigation: CatchTopBarNavigation(
             mode: CatchTopBarNavigationMode.none,

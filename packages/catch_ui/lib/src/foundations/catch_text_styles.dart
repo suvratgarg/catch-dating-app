@@ -113,19 +113,6 @@ abstract final class CatchTextStyles {
     color: color,
   );
 
-  /// Compact pushed-route title.
-  ///
-  /// This keeps compact route chrome distinct from the functional root headline
-  /// while giving every route the same Archivo voice. User-authored names remain
-  /// in the platform function family through [titleL].
-  static TextStyle routeTitle(BuildContext context, {Color? color}) => _voice(
-    context,
-    size: 20,
-    weight: FontWeight.w700,
-    height: 1.16,
-    color: color,
-  );
-
   /// Welcome reel and fixed Catch word — the single approved negative-tracking
   /// display exception from `splash_welcome_spec.md`.
   static TextStyle welcomeReelHeadline(BuildContext context, {Color? color}) =>

@@ -53,7 +53,7 @@ class HostSavedAudienceOverview extends ConsumerWidget {
         const HostSavedAudienceFilterOptions.empty();
     final current = catchAsyncStateFromAsyncValue(members).value;
     return CatchRouteScaffold(
-      topBarBuilder: (context, scrolledUnder) => CatchTopBar(
+      topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
         title: context.l10n.hostAudienceGroupTitle,
         navigation: const CatchTopBarNavigation(
           mode: CatchTopBarNavigationMode.back,

@@ -213,14 +213,13 @@ void main() {
 
       expect(find.text('Forms'), findsOneWidget);
       final titleBar = tester.widget<CatchTopBar>(find.byType(CatchTopBar));
-      final expectedContentHeight =
-          CatchIconAction.targetExtentFor(CatchIconAction.navSize) +
-          CatchInsets.primaryRailTitleBlock.vertical;
-      expect(titleBar.contentPadding, CatchInsets.primaryRailTitleBlock);
-      expect(titleBar.applySafeArea, isFalse);
+      final measured = tester.getSize(find.byType(CatchTopBar)).height;
       expect(titleBar.navigation.mode, CatchTopBarNavigationMode.none);
-      expect(titleBar.height, expectedContentHeight);
-      expect(titleBar.height, lessThanOrEqualTo(CatchLayout.topBarHeight));
+      expect(
+        titleBar.contentHeightFor(tester.element(find.byType(CatchTopBar))),
+        measured,
+      );
+      expect(measured, lessThanOrEqualTo(CatchLayout.topBarHeight));
 
       await tester.tap(find.byIcon(CatchIcons.search));
       await tester.pump(CatchMotion.base);

@@ -32,8 +32,7 @@ class HostSavedAudienceEditorScreen extends ConsumerWidget {
       loadingBuilder: (_) =>
           HostLoadingScreen(title: context.l10n.hostSavedAudiencesManage),
       errorBuilder: (_, error, _, onBoundaryRetry) => CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar.screen(
-          context: context,
+        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
           title: context.l10n.hostSavedAudiencesManage,
           navigation: const CatchTopBarNavigation(
             mode: CatchTopBarNavigationMode.back,
@@ -56,8 +55,7 @@ class HostSavedAudienceEditorScreen extends ConsumerWidget {
             .firstOrNull;
         if (audience == null) {
           return CatchRouteScaffold(
-            topBarBuilder: (context, scrolledUnder) => CatchTopBar.screen(
-              context: context,
+            topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
               title: context.l10n.hostSavedAudiencesManage,
               navigation: const CatchTopBarNavigation(
                 mode: CatchTopBarNavigationMode.back,
@@ -142,8 +140,7 @@ class _HostSavedAudienceEditorFormState
       canPop: !_busy,
       child: CatchRouteScaffold(
         resizeToAvoidBottomInset: true,
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar.screen(
-          context: context,
+        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
           title: editing
               ? context.l10n.hostAudienceEditGroup
               : context.l10n.hostSavedAudienceNew,

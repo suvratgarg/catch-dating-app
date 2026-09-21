@@ -21,7 +21,7 @@ class HostEventOperatorScreen extends ConsumerWidget {
       value: accessAsync,
       onRetry: () => ref.invalidate(hostEventOperatorAccessProvider(eventId)),
       loadingBuilder: (_) => CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar(
+        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
           title: context.l10n.hostsEventOperatorTitle,
           emphasis: scrolledUnder
               ? CatchTopBarEmphasis.divided
@@ -35,7 +35,7 @@ class HostEventOperatorScreen extends ConsumerWidget {
         ),
       ),
       errorBuilder: (_, error, _, onBoundaryRetry) => CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar(
+        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
           title: context.l10n.hostsEventOperatorTitle,
           emphasis: scrolledUnder
               ? CatchTopBarEmphasis.divided
@@ -55,9 +55,9 @@ class HostEventOperatorScreen extends ConsumerWidget {
       builder: (context, access) {
         if (access.eventStatus == 'cancelled') {
           return CatchRouteScaffold(
-            topBarBuilder: (context, scrolledUnder) => CatchTopBar(
-              title: access.title,
-              subtitle: context.l10n.hostsEventOperatorTitle,
+            topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+              title: context.l10n.hostsEventOperatorTitle,
+              subtitle: access.title,
               emphasis: scrolledUnder
                   ? CatchTopBarEmphasis.divided
                   : CatchTopBarEmphasis.plain,
@@ -76,9 +76,9 @@ class HostEventOperatorScreen extends ConsumerWidget {
           );
         }
         return CatchRouteScaffold(
-          topBarBuilder: (context, scrolledUnder) => CatchTopBar(
-            title: access.title,
-            subtitle: context.l10n.hostsEventOperatorTitle,
+          topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+            title: context.l10n.hostsEventOperatorTitle,
+            subtitle: access.title,
             emphasis: scrolledUnder
                 ? CatchTopBarEmphasis.divided
                 : CatchTopBarEmphasis.plain,

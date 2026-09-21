@@ -42,7 +42,7 @@ class _HostClubTeamScreenState extends ConsumerState<HostClubTeamScreen>
     final uidState = catchAsyncStateFromAsyncValue(uidAsync);
     if (uidState.hasError) {
       return CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar(
+        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
           title: routeTitle,
           navigation: const CatchTopBarNavigation(
             mode: CatchTopBarNavigationMode.back,
@@ -67,7 +67,7 @@ class _HostClubTeamScreenState extends ConsumerState<HostClubTeamScreen>
     final uid = uidState.value;
     if (uid == null) {
       return CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar(
+        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
           title: routeTitle,
           navigation: const CatchTopBarNavigation(
             mode: CatchTopBarNavigationMode.back,
@@ -95,7 +95,7 @@ class _HostClubTeamScreenState extends ConsumerState<HostClubTeamScreen>
     final clubsState = catchAsyncStateFromAsyncValue(clubsAsync);
     if (clubsState.hasError) {
       return CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar(
+        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
           title: routeTitle,
           navigation: const CatchTopBarNavigation(
             mode: CatchTopBarNavigationMode.back,
@@ -120,7 +120,7 @@ class _HostClubTeamScreenState extends ConsumerState<HostClubTeamScreen>
     final club = clubs.where((item) => item.id == widget.clubId).firstOrNull;
     if (club == null) {
       return CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar(
+        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
           title: routeTitle,
           navigation: const CatchTopBarNavigation(
             mode: CatchTopBarNavigationMode.back,
@@ -162,7 +162,7 @@ class _HostClubTeamScreenState extends ConsumerState<HostClubTeamScreen>
       errorContext: AppErrorContext.profile,
     );
     return CatchRouteScaffold(
-      topBarBuilder: (context, scrolledUnder) => CatchTopBar(
+      topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
         title: routeTitle,
         subtitle: club.name,
         leading: CatchIconAction.toolbar(

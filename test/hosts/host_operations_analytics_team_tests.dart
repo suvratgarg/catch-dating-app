@@ -89,13 +89,11 @@ void _registerHostOperationsAnalyticsTeamTests() {
       ),
       EdgeInsets.zero,
     );
-    final loadedHeader = tester.widget<CatchScreenHeader>(
+    final loadedHeader = tester.widget<CatchTopBar>(
       find.byWidgetPredicate(
-        (widget) =>
-            widget is CatchScreenHeader && widget.title == 'Saket Run Club',
+        (widget) => widget is CatchTopBar && widget.title == 'Saket Run Club',
       ),
     );
-    expect(loadedHeader.kicker, isNull);
     expect(loadedHeader.subtitle, isNull);
     expect(loadedHeader.leading, isNull);
     final publicationSection = find.byWidgetPredicate(

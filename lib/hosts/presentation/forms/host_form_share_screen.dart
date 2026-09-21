@@ -45,7 +45,7 @@ class _HostFormShareScreenState extends ConsumerState<HostFormShareScreen> {
       widget.formId,
     );
     return CatchRouteScaffold(
-      topBarBuilder: (context, scrolledUnder) => CatchTopBar(
+      topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
         title: context.l10n.hostFormShare,
         navigation: const CatchTopBarNavigation(
           mode: CatchTopBarNavigationMode.back,
@@ -77,9 +77,7 @@ class _HostFormShareScreenState extends ConsumerState<HostFormShareScreen> {
                             style: CatchTextStyles.headline(context),
                           ),
                           gapH8,
-                          CatchBadge.status(
-                            label: context.l10n.hostFormShare,
-                          ),
+                          CatchBadge.status(label: context.l10n.hostFormShare),
                         ],
                       ),
                     ),

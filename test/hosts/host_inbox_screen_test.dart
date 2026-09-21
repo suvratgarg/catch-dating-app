@@ -155,7 +155,7 @@ void main() {
 
       expect(find.byType(NestedScrollView), findsOneWidget);
       final topBar = tester.widget<CatchTopBar>(find.byType(CatchTopBar));
-      expect(topBar.contentPadding, CatchInsets.primaryRailTitleBlock);
+      expect(topBar.navigation.mode, CatchTopBarNavigationMode.none);
       final rail = find.byType(HostMessagingWorkspaceTabBar);
       final railBefore = tester.getRect(rail);
 

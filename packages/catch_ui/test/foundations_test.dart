@@ -25,7 +25,7 @@ void main() {
               return Scaffold(
                 body: Column(
                   children: [
-                    Text('Catch', style: CatchTextStyles.routeTitle(context)),
+                    Text('Catch', style: CatchTextStyles.titleL(context)),
                     Text('12:30', style: CatchTextStyles.mono(context)),
                     Icon(CatchIcons.running),
                   ],
@@ -37,7 +37,7 @@ void main() {
       );
       expect(
         tester.widget<Text>(find.text('Catch')).style!.fontFamily,
-        'packages/catch_ui/Archivo',
+        CatchFonts.functionFamily,
       );
       expect(
         tester.widget<Text>(find.text('12:30')).style!.fontFamily,

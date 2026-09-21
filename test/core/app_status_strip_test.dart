@@ -24,14 +24,14 @@ void main() {
           GoRoute(
             path: '/',
             builder: (context, state) => CatchRootScreenScaffold.standard(
-              title: const CatchScreenHeader.block(title: 'Today'),
+              title: const CatchTopBar.primaryRail(title: 'Today'),
               children: const [SliverToBoxAdapter(child: Text('Root content'))],
             ),
           ),
           GoRoute(
             path: '/detail',
             builder: (context, state) => CatchRouteScaffold(
-              topBarBuilder: (context, scrolled) => CatchTopBar(
+              topBarBuilder: (context, scrolled) => CatchTopBar.route(
                 title: 'Detail',
                 emphasis: (scrolled)
                     ? CatchTopBarEmphasis.divided
