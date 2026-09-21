@@ -6,6 +6,88 @@ import 'package:flutter_test/flutter_test.dart';
 import '../test_pump_helpers.dart';
 
 void main() {
+  testWidgets('constrained route reserves height from its actual title lane', (
+    tester,
+  ) async {
+    const bodyKey = ValueKey('narrow-route-body');
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: const MediaQuery(
+          data: MediaQueryData(
+            size: Size(800, 600),
+            textScaler: TextScaler.linear(2),
+          ),
+          child: Center(
+            child: SizedBox(
+              width: 360,
+              height: 600,
+              child: CatchScaffold.workspace(
+                title: CatchTopBar.route(
+                  title: 'Edge-owned route',
+                  navigation: CatchTopBarNavigation(
+                    mode: CatchTopBarNavigationMode.none,
+                  ),
+                ),
+                body: SizedBox.expand(key: bodyKey),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    expect(tester.takeException(), isNull);
+    final bar = tester.getRect(find.byType(CatchTopBar));
+    expect(bar.width, 360);
+    expect(tester.getRect(find.byKey(bodyKey)).top, bar.bottom);
+  });
+
+  for (final scale in [1.0, 2.0]) {
+    testWidgets('step overview shares canonical alignment at scale $scale', (
+      tester,
+    ) async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+      final semantics = tester.ensureSemantics();
+      var opened = false;
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: MediaQuery(
+            data: MediaQueryData(textScaler: TextScaler.linear(scale)),
+            child: Scaffold(
+              body: Align(
+                alignment: Alignment.topLeft,
+                child: SizedBox(
+                  width: 360,
+                  child: CatchStepHeader(
+                    title: 'Create event',
+                    step: 2,
+                    total: 4,
+                    stepLabelBuilder: (step, total) => 'Step $step of $total',
+                    compactStepLabelBuilder: (step, total) => '$step / $total',
+                    stepOverviewSemanticsLabel: 'Review event steps',
+                    onStepOverview: () => opened = true,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      expect(tester.takeException(), isNull);
+      final overview = find.bySemanticsLabel('Review event steps');
+      expect(overview, findsOneWidget);
+      await tester.tap(overview);
+      expect(opened, isTrue);
+      expect(
+        tester.getRect(find.byType(CatchStepHeader)).bottom,
+        greaterThan(tester.getRect(find.byType(CatchTopBar)).bottom),
+      );
+      semantics.dispose();
+      debugDefaultTargetPlatformOverride = null;
+    });
+  }
+
   for (final platform in [TargetPlatform.iOS, TargetPlatform.android]) {
     for (final scale in [1.0, 2.0]) {
       testWidgets(

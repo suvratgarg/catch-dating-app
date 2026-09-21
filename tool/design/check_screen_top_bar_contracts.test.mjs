@@ -999,6 +999,41 @@ for (const [label, height, child, fallback, valid] of [
   });
 }
 
+for (const [label, width, child, valid] of [
+  ["actual bounded width", "constraints.hasBoundedWidth ? constraints.maxWidth : null", "scaled", true],
+  ["global window width", "MediaQuery.sizeOf(context).width", "scaled", false],
+  ["fixed width", "360", "scaled", false],
+  ["substituted child", "constraints.hasBoundedWidth ? constraints.maxWidth : null", "rogueBar", false],
+]) {
+  test(`constrained scaffold header measurement: ${label}`, () => {
+    const root = fixtureRoot({
+      source: "Scaffold(appBar: CatchTopBar.route(title: 'Details'));",
+      contract: compactContract(),
+      includeRootContracts: false,
+      canonicalScaffoldSource: `
+        class CatchScaffold extends StatelessWidget {
+          final PreferredSizeWidget? title;
+          Widget build(BuildContext context) {
+            return LayoutBuilder(
+              builder: (context, constraints) => Scaffold(
+                appBar: switch (title) {
+                  final CatchScaledPreferredSize scaled => PreferredSize(
+                    preferredSize: scaled.preferredSizeFor(context, width: ${width},),
+                    child: ${child},
+                  ),
+                  final bar => bar,
+                },
+              ),
+            );
+          }
+        }
+      `,
+    });
+    const result = checkScreenTopBarContracts({root});
+    assert.equal(hasFinding(result, "canonical-screen-scaffold-app-bar-drift"), !valid);
+  });
+}
+
 test("navigation policy reads the top bar's direct configuration", () => {
   const root = fixtureRoot({
     source: `Scaffold(appBar: CatchTopBar.route(

@@ -4145,6 +4145,9 @@ The former `CatchScreenHeader` renderer is retired.
 Preferred size and paint use the same scaled line budgets. At text scale 1.5
 or greater titles and subtitles may use two lines and actions reflow underneath.
 Feature screens must not compensate with their own line counts or heights.
+The scaffold passes its actual constrained width to `preferredSizeFor`; a wider
+window MediaQuery must not make a narrow route reserve fewer title lines.
+Action measurement includes accessible wrappers and native text-button targets.
 
 Top-bar action slots accept only the top-bar action family. Use
 `CatchTopBarPrimaryButton` for a primary root-screen action: it renders the

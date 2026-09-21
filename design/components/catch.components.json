@@ -1,7 +1,7 @@
 {
   "$schema": "./catch.components.schema.json",
   "version": 4,
-  "updated": "2026-09-16",
+  "updated": "2026-09-21",
   "sourceOfTruth": {
     "behavior": "Flutter implementations in packages/catch_ui/lib/src and the remaining app-coupled lib/core/widgets own runtime behavior, accessibility, layout, and state.",
     "tokens": "design/tokens/catch.tokens.json owns primitive token values; generated Dart/CSS and Figma variables mirror it.",
@@ -77,7 +77,8 @@
         "dependentFieldRows",
         "content",
         "sliverRows",
-        "sliverLoadingRows"
+        "sliverLoadingRows",
+        "action"
       ],
       "slots": [
         "title",
@@ -88,7 +89,16 @@
         "groups",
         "children",
         "child",
-        "leading"
+        "leading",
+        "message",
+        "details",
+        "action-label",
+        "on-action",
+        "action-key",
+        "icon",
+        "action-emphasis",
+        "action-status",
+        "feedback"
       ],
       "rules": [
         "The section owns grouping, dividers, contained chrome, header composition, and field-row focus or error treatment.",
@@ -1356,7 +1366,7 @@
       "name": "CatchEmptyState",
       "status": "active",
       "kind": "composite",
-      "summary": "Canonical successful-empty content with typed stacked/inline variants, responsive containment and caller-owned actions.",
+      "summary": "Successful empty content uses stacked page or inline section anatomy. Inline title icons occupy the heading only; message-only states omit the decorative icon and paragraphs keep the full width.",
       "dart": {
         "symbol": "CatchEmptyState",
         "file": "packages/catch_ui/lib/src/components/catch_empty_state.dart",
@@ -1993,7 +2003,7 @@
       "name": "CatchBanner",
       "status": "active",
       "kind": "composite",
-      "summary": "Persistent inline messages, errors and screen-owned status bands share one icon, copy and action renderer.",
+      "summary": "Body feedback tones share fixed padding, heading icon, full-width copy and actions below. Screen-owned durable status bands retain their separate full-width geometry.",
       "dart": {
         "symbol": "CatchBanner",
         "file": "packages/catch_ui/lib/src/components/catch_banner.dart",
@@ -4301,7 +4311,7 @@
       "name": "CatchSection",
       "status": "active",
       "kind": "composite",
-      "summary": "Owns section headers, readable gutters, row grouping, sibling dividers and the perimeter. Ordinary rows fill the local viewport; deliberately inset groups have one rounded exterior. Content sections hold media, metrics or explanatory content.",
+      "summary": "Owns flat information sections, related row collections and bounded action modules. Action modules share a fixed quiet fill, typography, padding and full-width semantic action; contained collections use one semantic border without elevation.",
       "design": {
         "figma": {
           "status": "unmapped",
@@ -4366,14 +4376,6 @@
             "subtitle",
             "trailing",
             "count",
-            "titleColor",
-            "bodyGap",
-            "padding",
-            "backgroundColor",
-            "borderColor",
-            "tone",
-            "emphasis",
-            "boxShadow",
             "showInternalDividers",
             "states",
             "children",
@@ -4454,6 +4456,18 @@
             "children",
             "footer",
             "states"
+          ],
+          "CatchSection.action": [
+            "title",
+            "message",
+            "actionLabel",
+            "onAction",
+            "actionKey",
+            "details",
+            "icon",
+            "actionEmphasis",
+            "actionStatus",
+            "feedback"
           ]
         },
         "props": [
@@ -4567,51 +4581,6 @@
             "type": "object",
             "required": false,
             "dartType": "EdgeInsetsGeometry?"
-          },
-          {
-            "name": "backgroundColor",
-            "type": "color",
-            "required": false,
-            "dartType": "Color?"
-          },
-          {
-            "name": "borderColor",
-            "type": "color",
-            "required": false,
-            "dartType": "Color?"
-          },
-          {
-            "name": "tone",
-            "type": "enum",
-            "required": false,
-            "default": "surface",
-            "dartType": "CatchSurfaceTone",
-            "values": [
-              "surface",
-              "raised",
-              "primarySoft",
-              "transparent"
-            ]
-          },
-          {
-            "name": "emphasis",
-            "type": "enum",
-            "required": false,
-            "default": "subtle",
-            "dartType": "CatchSurfaceEmphasis",
-            "values": [
-              "flat",
-              "subtle",
-              "raised",
-              "floating"
-            ],
-            "notes": "Selects the shared shadow prominence preset. Named surface recipes supply their own defaults; callers do not provide a separate role marker."
-          },
-          {
-            "name": "boxShadow",
-            "type": "list",
-            "required": false,
-            "dartType": "List<BoxShadow>?"
           },
           {
             "name": "showInternalDividers",
@@ -4754,6 +4723,71 @@
             "required": false,
             "dartType": "int? Function(Key)",
             "notes": "Stable identity lookup when a lazy collection changes order."
+          },
+          {
+            "name": "message",
+            "type": "string",
+            "required": false,
+            "dartType": "String"
+          },
+          {
+            "name": "actionLabel",
+            "type": "string",
+            "required": false,
+            "dartType": "String"
+          },
+          {
+            "name": "onAction",
+            "type": "callback",
+            "required": false,
+            "dartType": "VoidCallback?"
+          },
+          {
+            "name": "actionKey",
+            "type": "object",
+            "required": false,
+            "dartType": "Key?"
+          },
+          {
+            "name": "details",
+            "type": "widget",
+            "required": false,
+            "dartType": "Widget?"
+          },
+          {
+            "name": "icon",
+            "type": "object",
+            "required": false,
+            "dartType": "IconData?"
+          },
+          {
+            "name": "feedback",
+            "type": "widget",
+            "required": false,
+            "dartType": "Widget?"
+          },
+          {
+            "name": "actionEmphasis",
+            "type": "enum",
+            "required": false,
+            "dartType": "CatchSectionActionEmphasis",
+            "default": "primary",
+            "values": [
+              "primary",
+              "secondary",
+              "destructive"
+            ]
+          },
+          {
+            "name": "actionStatus",
+            "type": "enum",
+            "required": false,
+            "dartType": "CatchButtonStatus",
+            "default": "idle",
+            "values": [
+              "idle",
+              "loading"
+            ]
           }
         ],
         "states": [
@@ -4785,7 +4819,13 @@
           "horizontal-full-bleed",
           "horizontal-intrinsic",
           "horizontal-fractional",
-          "horizontal-footer"
+          "horizontal-footer",
+          "action-primary",
+          "action-secondary",
+          "action-destructive",
+          "action-loading",
+          "action-disabled",
+          "action-details"
         ],
         "slots": [
           {
@@ -4838,7 +4878,6 @@
           "theme.light.color.ink2"
         ],
         "dartRoles": [
-          "CatchSurface.card",
           "CatchField",
           "CatchFieldTokens",
           "CatchSectionFieldGroup",
@@ -4852,7 +4891,10 @@
           "CatchTextStyles.sectionTitle",
           "CatchElevation.focusRing",
           "CatchStroke.hairline",
-          "CatchHorizontalScrollView"
+          "CatchHorizontalScrollView",
+          "CatchSectionActionEmphasis",
+          "CatchButton",
+          "CatchSurface"
         ],
         "goldens": [],
         "members": [
@@ -5232,7 +5274,8 @@
           "CatchSection.sliverLoadingRows",
           "CatchSection.content",
           "CatchSection.formRows",
-          "CatchSection.dependentFieldRows"
+          "CatchSection.dependentFieldRows",
+          "CatchSection.action"
         ]
       },
       "surfaces": {

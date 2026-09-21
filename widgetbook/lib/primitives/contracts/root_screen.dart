@@ -92,7 +92,6 @@ class _RootScreenPrimaryRailContractDemoState
   Widget build(BuildContext context) {
     return CatchRootScreenScaffold.withPrimaryRail(
       header: const CatchRootScreenHeader.title(
-        eyebrow: 'YOUR SPACE',
         title: 'Root workspace',
         subtitle: 'Independent page scroll state',
       ),
