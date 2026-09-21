@@ -47,3 +47,27 @@ test("form upload signer accepts metadata response headers", async () => {
     await new Promise<void>((resolve) => server.close(() => resolve()));
   }
 });
+
+test("upload intent uses its dedicated project identity", async () => {
+  for (const project of ["catchdates-dev", "catch-dating-app-64e51"]) {
+    const {stdout} = await run(process.execPath, ["-e", `
+      const forms = require("./lib/organizers/organizerFormResponses");
+      const upload = forms.createOrganizerFormAssetIntent;
+      const trigger = upload.__trigger;
+      process.stdout.write(JSON.stringify({
+        account: trigger.serviceAccountEmail,
+        timeout: upload.__endpoint.timeoutSeconds,
+        other: forms.finalizeOrganizerFormAsset.__endpoint.serviceAccountEmail,
+      }));
+    `], {
+      cwd: path.resolve(__dirname, "../.."),
+      env: {...process.env, GCLOUD_PROJECT: project},
+      timeout: 10000,
+    });
+    const result = JSON.parse(stdout);
+    assert.equal(result.account,
+      `catch-form-upload@${project}.iam.gserviceaccount.com`);
+    assert.equal(result.timeout, 60);
+    assert.ok(result.other == null);
+  }
+});

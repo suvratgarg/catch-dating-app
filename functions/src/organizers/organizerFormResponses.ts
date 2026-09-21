@@ -1559,7 +1559,11 @@ export const saveOrganizerFormResponseDraft = onCall(
 );
 
 export const createOrganizerFormAssetIntent = onCall(
-  appCheckCallableOptionsWithLimits(publicCallableLimits),
+  {
+    ...appCheckCallableOptionsWithLimits(publicCallableLimits),
+    // Firebase resolves the shorthand against the selected deploy project.
+    serviceAccount: "catch-form-upload@",
+  },
   (request) => createOrganizerFormAssetIntentHandler(request)
 );
 

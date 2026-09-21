@@ -429,6 +429,28 @@
         "contracts/firestore/organizer_post_delivery_recipients.schema.json",
         "functions/src/organizers/organizerPostDelivery.ts"
       ]
+    },
+    {
+      "id": "functions.identity.form-upload",
+      "kind": "form-upload-identity",
+      "environments": [
+        "dev",
+        "staging",
+        "prod"
+      ],
+      "requiredWhen": {
+        "anyDeployTarget": [
+          "functions:createOrganizerFormAssetIntent"
+        ]
+      },
+      "acceptedStates": [
+        "READY"
+      ],
+      "owner": "host-forms",
+      "sourcePaths": [
+        "functions/src/organizers/organizerFormResponses.ts",
+        "tool/firebase/form_upload_identity.mjs"
+      ]
     }
   ]
 }

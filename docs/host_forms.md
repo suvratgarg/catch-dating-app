@@ -1,6 +1,6 @@
 ---
 doc_id: host_forms_product_spec
-version: 1.0.2
+version: 1.0.3
 updated: 2026-09-21
 owner: host_tooling
 status: active
@@ -557,3 +557,12 @@ conversion behavior. No delivery status may weaken those requirements.
   Measure time to publish, share-to-start, completion, failed-question rate,
   review turnaround, downstream conversion, and repeat use. Feature count is not
   distribution evidence.
+
+## Upload runtime identity
+
+The public upload-intent callable runs under the dedicated `catch-form-upload`
+service account. Its IAM setup and deploy-time readiness check are owned by
+`docs/release_operations.md#dedicated-form-upload-identity`. Signed uploads remain
+bound to the validated draft, form question, fixed object path, file type, size,
+and expiry; finalization still verifies uploaded metadata before attachment.
+The shared runtime account does not receive a new signing permission.

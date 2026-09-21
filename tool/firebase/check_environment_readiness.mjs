@@ -4,11 +4,14 @@ import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath, pathToFileURL} from "node:url";
 
+import {inspectUploadIdentity, uploadIdentityTarget} from "./form_upload_identity.mjs";
+
 const toolDir = path.dirname(fileURLToPath(import.meta.url));
 const defaultRepoRoot = path.resolve(toolDir, "../..");
 const supportedRequirementKinds = new Set([
   "secret-version",
   "firestore-ttl",
+  "form-upload-identity",
 ]);
 const deployTargetPattern = /^[A-Za-z0-9_.-]+(?::[A-Za-z0-9_.-]+)*$/u;
 const capabilityPattern = /^[a-z][a-z0-9-]*$/u;
@@ -296,6 +299,10 @@ export function validateEnvironmentReadinessManifest(
         )) {
           errors.push(`${label}: runtimeRoles must include secretAccessor.`);
         }
+      }
+    } else if (requirement.kind === "form-upload-identity") {
+      if (acceptedStates.length !== 1 || acceptedStates[0] !== "READY") {
+        errors.push(`${label}: upload identity must accept only READY.`);
       }
     } else if (requirement.kind === "firestore-ttl") {
       if (!resourceNamePattern.test(requirement.collectionGroup ?? "")) {
@@ -764,6 +771,25 @@ export function runEnvironmentReadiness({
     });
     const results = [identityResult];
     for (const requirement of requirements) {
+      if (requirement.kind === "form-upload-identity") {
+        try {
+          const target = uploadIdentityTarget(environment, projectId);
+          const assessed = inspectUploadIdentity(target, (args) =>
+            runCommand({command: "gcloud", args: [...args, "--format=json", "--quiet"]}));
+          results.push(readinessResult({
+            id: requirement.id, kind: requirement.kind, resource: target.email,
+            status: assessed.ready ? "ready" : "not-ready",
+            reason: assessed.ready ? "upload-identity-ready" : "upload-identity-missing-or-unsafe",
+            metadata: assessed,
+          }));
+        } catch {
+          results.push(readinessResult({
+            id: requirement.id, kind: requirement.kind, resource: projectId,
+            status: "unknown", reason: "upload-identity-metadata-unavailable",
+          }));
+        }
+        continue;
+      }
       const command = buildRequirementCommand({projectId, requirement});
       results.push(classifyRequirementResult({
         requirement,
