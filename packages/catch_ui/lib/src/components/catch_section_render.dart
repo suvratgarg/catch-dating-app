@@ -295,18 +295,11 @@ extension _CatchSectionRendering on CatchSection {
           child: fieldRows
               ? CatchSectionSurface.fieldRows(
                   padding: padding ?? const EdgeInsets.all(CatchSpacing.s4),
-                  backgroundColor: backgroundColor,
-                  borderColor: borderColor,
                   states: states,
                   child: content,
                 )
               : CatchSectionSurface(
                   padding: padding ?? const EdgeInsets.all(CatchSpacing.s4),
-                  backgroundColor: backgroundColor,
-                  borderColor: borderColor,
-                  tone: tone,
-                  emphasis: emphasis,
-                  boxShadow: boxShadow,
                   states: states,
                   child: content,
                 ),

@@ -13,7 +13,8 @@ enum CatchBannerVariant { message, error, status, statuses }
 
 /// Persistent feedback with one icon, copy and action renderer.
 ///
-/// Message/error recipes remain inline. [CatchBanner.statuses] renders durable
+/// Body feedback shares spacing, typography and action placement across tones.
+/// [CatchBanner.statuses] renders durable
 /// header context supplied through CatchBannerStatusScope; canonical screen
 /// owners alone place it and consume its publication once.
 class CatchBanner extends StatelessWidget {
@@ -24,10 +25,6 @@ class CatchBanner extends StatelessWidget {
     IconData? icon,
     CatchBannerTone tone = CatchBannerTone.primary,
     List<Widget> actions = const [],
-    EdgeInsetsGeometry? padding = CatchInsets.tileContentCompact,
-    EdgeInsetsGeometry? margin,
-    double? width,
-    double? height,
     Duration duration = CatchMotion.fast,
   }) : this._(
          key: key,
@@ -36,10 +33,6 @@ class CatchBanner extends StatelessWidget {
          icon: icon,
          tone: tone,
          actions: actions,
-         padding: padding,
-         margin: margin,
-         width: width,
-         height: height,
          duration: duration,
        );
 
@@ -50,8 +43,6 @@ class CatchBanner extends StatelessWidget {
         variant: CatchBannerVariant.error,
         tone: CatchBannerTone.danger,
         icon: CatchIcons.errorOutlineRounded,
-        padding: _errorPadding,
-        margin: _errorMargin,
       );
 
   /// The caller-owned retry label stays required while its callback is absent.
@@ -68,8 +59,6 @@ class CatchBanner extends StatelessWidget {
          variant: CatchBannerVariant.error,
          tone: CatchBannerTone.danger,
          icon: CatchIcons.errorOutlineRounded,
-         padding: _errorPadding,
-         margin: _errorMargin,
        );
 
   /// Full-width, intrinsically measured bands placed by screen layouts.
@@ -90,10 +79,6 @@ class CatchBanner extends StatelessWidget {
     this.tone = CatchBannerTone.primary,
     this.variant = CatchBannerVariant.message,
     this.actions = const [],
-    this.padding = CatchInsets.tileContentCompact,
-    this.margin,
-    this.width,
-    this.height,
     this.duration = CatchMotion.fast,
     this.onRetry,
     this.retryLabel,
@@ -101,27 +86,12 @@ class CatchBanner extends StatelessWidget {
     this._status,
   });
 
-  static const _errorPadding = EdgeInsets.symmetric(
-    horizontal: CatchSpacing.s3,
-    vertical: CatchSpacing.micro10,
-  );
-  static const _errorMargin = EdgeInsets.fromLTRB(
-    CatchSpacing.s4,
-    CatchSpacing.s2,
-    CatchSpacing.s4,
-    CatchSpacing.s0,
-  );
-
   final String message;
   final String? title;
   final IconData? icon;
   final CatchBannerTone tone;
   final CatchBannerVariant variant;
   final List<Widget> actions;
-  final EdgeInsetsGeometry? padding;
-  final EdgeInsetsGeometry? margin;
-  final double? width;
-  final double? height;
   final Duration duration;
   final VoidCallback? onRetry;
   final String? retryLabel;
@@ -140,202 +110,186 @@ class CatchBanner extends StatelessWidget {
         ],
       );
     }
-    final tokens = CatchTokens.of(context);
-    final colorScheme = Theme.of(context).colorScheme;
     final status = _status;
-    final isStatus = status != null;
-    final isError = variant == CatchBannerVariant.error;
-    final isNeutral = tone == CatchBannerTone.neutral;
-    final toneColor = switch (tone) {
+    if (status == null) return _buildBodyFeedback(context);
+    final tokens = CatchTokens.of(context);
+    final foreground = _readableAccent(tokens, status.color);
+    final rowChildren = <Widget>[
+      Icon(status.icon, size: CatchIcon.md, color: status.color),
+      const SizedBox(width: CatchSpacing.micro10),
+      Expanded(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              status.label.toUpperCase(),
+              style: CatchTextStyles.kicker(context, color: foreground),
+            ),
+            const SizedBox(height: CatchSpacing.s1),
+            Text(
+              status.message,
+              style: CatchTextStyles.supporting(context, color: foreground),
+            ),
+          ],
+        ),
+      ),
+    ];
+    final actionWidgets = <Widget>[
+      for (final action in status.actions)
+        if (action.icon != null)
+          CatchIconAction.icon(
+            icon: action.icon!,
+            tooltip: action.label,
+            onPressed: action.onPressed,
+            accent: status.color,
+            variant: CatchIconActionVariant.plain,
+          )
+        else
+          CatchButton.text(
+            label: action.label,
+            onPressed: action.onPressed,
+            foregroundColor: foreground,
+            minimumSize: const Size.square(CatchLayout.iconButtonSize),
+          ),
+    ];
+    return Semantics(
+      key: ValueKey('status_strip.${status.id}'),
+      container: true,
+      liveRegion: true,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: _background(tokens.bg, status.color),
+          border: Border(
+            bottom: BorderSide(
+              color: status.color.withValues(
+                alpha: CatchOpacity.lightOverlayBorder,
+              ),
+            ),
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: CatchSpacing.screenPx,
+            vertical: CatchSpacing.s2,
+          ),
+          // Status bands measure their own width. Inline recipes below
+          // keep intrinsic sizing without a LayoutBuilder.
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final stacked =
+                  MediaQuery.textScalerOf(context).scale(1) >= 1.4 ||
+                  constraints.maxWidth < CatchLayout.statusStripInlineMinWidth;
+              final statusActions = Wrap(
+                alignment: WrapAlignment.end,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                spacing: CatchSpacing.s1,
+                children: actionWidgets,
+              );
+              final row = Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  ...rowChildren,
+                  if (!stacked && actionWidgets.isNotEmpty) ...[
+                    const SizedBox(width: CatchSpacing.s2),
+                    statusActions,
+                  ],
+                ],
+              );
+              return ConstrainedBox(
+                constraints: const BoxConstraints(minHeight: CatchSpacing.s12),
+                child: stacked
+                    ? Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          row,
+                          if (actionWidgets.isNotEmpty) ...[
+                            const SizedBox(height: CatchSpacing.s2),
+                            statusActions,
+                          ],
+                        ],
+                      )
+                    : row,
+              );
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBodyFeedback(BuildContext context) {
+    final tokens = CatchTokens.of(context);
+    final accent = switch (tone) {
       CatchBannerTone.primary => tokens.primary,
       CatchBannerTone.success => tokens.success,
       CatchBannerTone.warning => tokens.warning,
       CatchBannerTone.danger => tokens.danger,
       CatchBannerTone.neutral => tokens.ink2,
     };
-    final foreground = isStatus
-        ? _readableAccent(tokens, status.color)
-        : isError
-        ? colorScheme.error
-        : null;
-    final heading = status?.label.toUpperCase() ?? title;
-    final glyph = Icon(
-      status?.icon ?? icon ?? CatchIcons.sparkle,
-      size: isError ? CatchIcon.xs : CatchIcon.md,
-      color: status?.color ?? (isError ? colorScheme.error : toneColor),
-    );
-    final copy = Column(
-      mainAxisSize: isStatus ? MainAxisSize.min : MainAxisSize.max,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (isStatus || (heading != null && heading.isNotEmpty)) ...[
-          Text(
-            heading!,
-            style: isStatus
-                ? CatchTextStyles.kicker(context, color: foreground)
-                : CatchTextStyles.labelL(context),
-          ),
-          const SizedBox(height: CatchSpacing.s1),
-        ],
-        Text(
-          status?.message ?? message,
-          style: CatchTextStyles.supporting(context, color: foreground),
-        ),
-      ],
-    );
-    final actionWidgets = <Widget>[
-      if (isStatus)
-        for (final action in status.actions)
-          if (action.icon != null)
-            CatchIconAction.icon(
-              icon: action.icon!,
-              tooltip: action.label,
-              onPressed: action.onPressed,
-              accent: status.color,
-              variant: CatchIconActionVariant.plain,
-            )
-          else
-            CatchButton.text(
-              label: action.label,
-              onPressed: action.onPressed,
-              foregroundColor: foreground,
-              minimumSize: const Size.square(CatchLayout.iconButtonSize),
-            )
-      else ...[
-        ...actions,
-        if (onRetry != null)
-          CatchButton.text(
-            label: retryLabel!,
-            onPressed: onRetry,
-            foregroundColor: colorScheme.error,
-            minimumSize: const Size(CatchSpacing.s0, CatchSpacing.s8),
-            padding: EdgeInsets.zero,
-          ),
-      ],
+    final hasTitle = title != null && title!.trim().isNotEmpty;
+    final glyph =
+        icon ??
+        switch (tone) {
+          CatchBannerTone.danger => CatchIcons.errorOutlineRounded,
+          CatchBannerTone.warning => CatchIcons.warningAmberRounded,
+          CatchBannerTone.success => CatchIcons.checkCircle,
+          _ => CatchIcons.infoOutlineRounded,
+        };
+    final feedbackActions = <Widget>[
+      ...actions,
+      if (onRetry != null)
+        CatchButton.text(label: retryLabel!, onPressed: onRetry),
     ];
-    final rowChildren = <Widget>[
-      if (isStatus)
-        glyph
-      else
-        Padding(
-          padding: EdgeInsets.only(
-            top: isError ? CatchSpacing.s0 : CatchStroke.hairline,
-          ),
-          child: glyph,
-        ),
-      SizedBox(width: isStatus ? CatchSpacing.micro10 : CatchSpacing.s3),
-      Expanded(child: copy),
-      if (!isStatus)
-        for (final action in actionWidgets) ...[
-          const SizedBox(width: CatchSpacing.s2),
-          action,
-        ],
-    ];
-    if (isStatus) {
-      return Semantics(
-        key: ValueKey('status_strip.${status.id}'),
-        container: true,
-        liveRegion: true,
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            color: _background(tokens.bg, status.color),
-            border: Border(
-              bottom: BorderSide(
-                color: status.color.withValues(
-                  alpha: CatchOpacity.lightOverlayBorder,
-                ),
+    final bodyStyle = CatchTextStyles.supporting(context, color: tokens.ink2);
+    return Semantics(
+      container: true,
+      liveRegion: variant == CatchBannerVariant.error,
+      child: CatchSurface(
+        radius: CatchRadius.md,
+        padding: const EdgeInsets.all(CatchSpacing.s4),
+        duration: duration,
+        backgroundColor: tone == CatchBannerTone.neutral
+            ? tokens.primarySoft
+            : Color.alphaBlend(
+                accent.withValues(alpha: CatchOpacity.calloutFill),
+                tokens.surface,
               ),
-            ),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: CatchSpacing.screenPx,
-              vertical: CatchSpacing.s2,
-            ),
-            // Status bands measure their own width. Inline recipes below
-            // keep intrinsic sizing without a LayoutBuilder.
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                final stacked =
-                    MediaQuery.textScalerOf(context).scale(1) >= 1.4 ||
-                    constraints.maxWidth <
-                        CatchLayout.statusStripInlineMinWidth;
-                final statusActions = Wrap(
-                  alignment: WrapAlignment.end,
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  spacing: CatchSpacing.s1,
-                  children: actionWidgets,
-                );
-                final row = Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    ...rowChildren,
-                    if (!stacked && actionWidgets.isNotEmpty) ...[
-                      const SizedBox(width: CatchSpacing.s2),
-                      statusActions,
-                    ],
-                  ],
-                );
-                return ConstrainedBox(
-                  constraints: const BoxConstraints(
-                    minHeight: CatchSpacing.s12,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (hasTitle) ...[
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(glyph, color: accent, size: CatchIcon.md),
+                  const SizedBox(width: CatchSpacing.s2),
+                  Expanded(
+                    child: Text(
+                      title!,
+                      style: CatchTextStyles.sectionTitle(context),
+                    ),
                   ),
-                  child: stacked
-                      ? Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            row,
-                            if (actionWidgets.isNotEmpty) ...[
-                              const SizedBox(height: CatchSpacing.s2),
-                              statusActions,
-                            ],
-                          ],
-                        )
-                      : row,
-                );
-              },
-            ),
-          ),
-        ),
-      );
-    }
-    final surface = CatchSurface(
-      width: width,
-      height: height,
-      margin: margin,
-      padding: padding,
-      duration: duration,
-      radius: CatchRadius.md,
-      tone: isNeutral ? CatchSurfaceTone.transparent : CatchSurfaceTone.surface,
-      backgroundColor: isError
-          ? colorScheme.errorContainer.withValues(
-              alpha: CatchOpacity.errorContainerFill,
-            )
-          : isNeutral
-          ? null
-          : Color.alphaBlend(
-              toneColor.withValues(alpha: CatchOpacity.calloutFill),
-              tokens.surface,
-            ),
-      borderSpec: isError
-          ? CatchBorder.resolve(
-              tokens,
-              CatchBorderRole.boundary,
-              color: colorScheme.error.withValues(
-                alpha: CatchOpacity.errorContainerBorder,
+                ],
               ),
-            )
-          : null,
-      borderRole: isNeutral ? CatchBorderRole.boundary : null,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: rowChildren,
+              const SizedBox(height: CatchSpacing.s2),
+              Text(message, style: bodyStyle),
+            ] else
+              Text(message, style: bodyStyle),
+            if (feedbackActions.isNotEmpty) ...[
+              const SizedBox(height: CatchSpacing.s4),
+              Wrap(
+                spacing: CatchSpacing.s2,
+                runSpacing: CatchSpacing.s2,
+                children: feedbackActions,
+              ),
+            ],
+          ],
+        ),
       ),
     );
-    return isError
-        ? ColoredBox(color: colorScheme.surface, child: surface)
-        : surface;
   }
 
   static Color _background(Color background, Color accent) => Color.alphaBlend(
