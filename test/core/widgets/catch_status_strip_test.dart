@@ -373,7 +373,7 @@ Widget _app({
               child: pushed
                   ? CatchRouteScaffold(
                       statuses: local,
-                      topBarBuilder: (context, scrolled) => CatchTopBar(
+                      topBarBuilder: (context, scrolled) => CatchTopBar.route(
                         title: 'Dress rehearsal',
                         emphasis: (scrolled)
                             ? CatchTopBarEmphasis.divided
@@ -421,7 +421,7 @@ Widget _app({
                       ),
                     )
                   : CatchRootScreenScaffold.standard(
-                      title: const CatchScreenHeader.block(title: 'Today'),
+                      title: const CatchTopBar.primaryRail(title: 'Today'),
                       controller: controller,
                       topEdge: headerOwned
                           ? CatchRootScreenScrollViewPlacement.headerOwned

@@ -233,7 +233,7 @@ class HostMessagingWorkspaceTabBar extends StatelessWidget
   @override
   Size get preferredSize => Size.fromHeight(CatchPageTabBar.minimumHeight);
   @override
-  Size preferredSizeFor(BuildContext context) =>
+  Size preferredSizeFor(BuildContext context, {double? width}) =>
       Size.fromHeight(CatchPageTabBar.heightFor(context));
   @override
   Widget build(BuildContext context) => CatchPageTabBar<HostMessagingWorkspace>(

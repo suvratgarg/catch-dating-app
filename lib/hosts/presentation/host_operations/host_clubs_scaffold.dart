@@ -40,8 +40,6 @@ class HostOrganizerStateScaffold extends StatelessWidget {
     return CatchRootScreenScaffold.withPrimaryRail(
       header: CatchRootScreenHeader.title(
         title: context.l10n.hostNavigationOrganizer,
-        titleMaxLines: 2,
-        rowCrossAxisAlignment: CrossAxisAlignment.start,
         actions: actions,
       ),
       actions: CatchPageTabBar<HostClubTab>(
@@ -193,8 +191,6 @@ class _HostClubsScaffoldState extends ConsumerState<HostClubsScaffold>
     return CatchRootScreenScaffold.withPrimaryRail(
       header: CatchRootScreenHeader.title(
         title: selectedClub.name,
-        titleMaxLines: 2,
-        rowCrossAxisAlignment: CrossAxisAlignment.start,
         actions: [signOutAction],
       ),
       actions: CatchPageTabBar<HostClubTab>.controlled(

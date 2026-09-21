@@ -1,5 +1,5 @@
 import 'package:catch_tokens/catch_tokens.dart';
-import 'package:catch_ui/src/components/catch_button.dart';
+import 'package:catch_ui/src/components/catch_toolbar_control.dart';
 import 'package:catch_ui/src/components/catch_icon_action.dart';
 import 'package:flutter/material.dart';
 
@@ -31,14 +31,14 @@ class CatchTopBarPrimaryButton extends StatelessWidget {
         icon: icon,
         tooltip: label,
         onPressed: onPressed,
-        variant: CatchIconActionVariant.plain,
       );
     }
 
-    return CatchButton(
+    return CatchToolbarControl.action(
       label: label,
-      leading: Icon(icon, size: CatchIcon.sm),
-      size: CatchButtonSize.sm,
+      semanticLabel: label,
+      tooltip: label,
+      icon: icon,
       onPressed: onPressed,
     );
   }

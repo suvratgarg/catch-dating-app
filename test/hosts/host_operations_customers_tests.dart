@@ -911,7 +911,7 @@ class _CustomersTestPrimaryRail extends StatelessWidget
   Size get preferredSize => Size.fromHeight(CatchPageTabBar.minimumHeight);
 
   @override
-  Size preferredSizeFor(BuildContext context) =>
+  Size preferredSizeFor(BuildContext context, {double? width}) =>
       Size.fromHeight(CatchPageTabBar.heightFor(context));
 
   @override

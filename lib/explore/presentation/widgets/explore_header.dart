@@ -53,15 +53,13 @@ class ExploreBrowseHeaderContent extends StatelessWidget {
     );
 
     if (!chrome.showSearchAction) {
-      return CatchScreenHeader.block(leading: cityPicker, title: chrome.title);
+      return CatchTopBar.primaryRail(leading: cityPicker, title: chrome.title);
     }
 
-    return CatchTopBar.screen(
-      context: context,
+    return CatchTopBar.primaryRail(
       leading: cityPicker,
       title: chrome.title,
       backgroundColor: backgroundColor ?? t.bg,
-      applySafeArea: false,
       search: CatchTopBarSearch(
         copy: catchSearchFieldCopy(context.l10n),
         contract: CatchContractConstraints.exploreSearchCallablePayloadQuery,
@@ -156,7 +154,6 @@ class _ExploreDiscoveryCoverHeaderState
         onQueryChanged: widget.onQueryChanged,
         onSearchExpandedChanged: _setSearchRequested,
         actions: widget.heroActions ?? widget.actions,
-        backgroundColor: Colors.transparent,
         onDarkBackdrop: true,
       ),
     );
@@ -178,7 +175,6 @@ class _ExploreDiscoveryTopBar extends StatelessWidget {
     required this.onQueryChanged,
     required this.onSearchExpandedChanged,
     required this.actions,
-    this.backgroundColor,
     this.onDarkBackdrop = false,
   });
 
@@ -188,28 +184,17 @@ class _ExploreDiscoveryTopBar extends StatelessWidget {
   final ValueChanged<String>? onQueryChanged;
   final ValueChanged<bool> onSearchExpandedChanged;
   final List<Widget> actions;
-  final Color? backgroundColor;
   final bool onDarkBackdrop;
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final darkTokens = CatchTokens.dark;
-    final foreground = onDarkBackdrop ? darkTokens.ink : null;
-    final mutedForeground = onDarkBackdrop ? darkTokens.darkMutedInk : null;
-    final transparentControlFill = onDarkBackdrop ? Colors.transparent : null;
-    final transparentControlRule = onDarkBackdrop ? Colors.transparent : null;
     final topBar = CatchTopBar.screen(
-      context: context,
       leading: ExploreCityPicker(
         state: cityPickerState,
         onSelected: onCitySelected,
-        foregroundColor: foreground,
-        backgroundColor: transparentControlFill,
-        borderColor: transparentControlRule,
       ),
       title: chrome.title,
-      backgroundColor: backgroundColor ?? t.bg,
+      tone: onDarkBackdrop ? CatchTopBarTone.overlay : CatchTopBarTone.page,
       search: CatchTopBarSearch(
         copy: catchSearchFieldCopy(context.l10n),
         contract: CatchContractConstraints.exploreSearchCallablePayloadQuery,
@@ -221,19 +206,9 @@ class _ExploreDiscoveryTopBar extends StatelessWidget {
         placeholder: chrome.searchPlaceholder,
         tooltip: chrome.searchTooltip,
         semanticLabel: chrome.searchSemanticLabel,
-        backgroundColor: transparentControlFill,
-        borderColor: transparentControlRule,
-        foregroundColor: foreground,
-        mutedForegroundColor: mutedForeground,
       ),
       actions: actions,
     );
-    if (!onDarkBackdrop) return topBar;
-    return Theme(
-      data: Theme.of(
-        context,
-      ).copyWith(extensions: const <ThemeExtension<dynamic>>[CatchTokens.dark]),
-      child: topBar,
-    );
+    return topBar;
   }
 }

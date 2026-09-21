@@ -77,10 +77,6 @@ void _registerHostOperationsCustomerDetailTests() {
       tester.widget<CatchTopBar>(find.byType(CatchTopBar)).title,
       'Ananya Rao',
     );
-    expect(
-      tester.widget<CatchTopBar>(find.byType(CatchTopBar)).variant,
-      CatchTopBarVariant.identity,
-    );
   });
 
   testWidgets('customer overview groups status and directory controls', (
@@ -419,7 +415,7 @@ void _registerHostOperationsCustomerDetailTests() {
       ],
     );
 
-    final header = find.byType(CatchScreenHeader);
+    final header = find.byType(CatchTopBar);
     final titleFinder = find.descendant(
       of: header,
       matching: find.text('Audience'),

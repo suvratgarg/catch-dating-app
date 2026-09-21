@@ -30,7 +30,7 @@ class SavedEventsScreen extends ConsumerWidget {
 
     return CatchRouteScaffold(
       backgroundColor: t.bg,
-      topBarBuilder: (context, scrolledUnder) => CatchTopBar(
+      topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
         title: context.l10n.eventsSavedEventsScreenTitleSavedEvents,
         navigation: const CatchTopBarNavigation(
           mode: CatchTopBarNavigationMode.back,

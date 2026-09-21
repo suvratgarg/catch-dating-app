@@ -21,6 +21,12 @@ Widget catchSectionContractStates(BuildContext context) {
     states: const [
       'divided-section',
       'contained-section',
+      'action-primary',
+      'action-secondary',
+      'action-destructive',
+      'action-loading',
+      'action-disabled',
+      'action-details',
       'plain-section',
       'divided-field-rows',
       'divided-field-rows-full-bleed',
@@ -45,6 +51,46 @@ Widget catchSectionContractStates(BuildContext context) {
       'horizontal-footer',
     ],
     children: [
+      for (final emphasis in CatchSectionActionEmphasis.values)
+        WidgetbookContractStateCard(
+          label: 'action-${emphasis.name}',
+          child: CatchSection.action(
+            title: 'Practice before event day',
+            message:
+                'Try the event controls with practice guests before your live event.',
+            actionLabel: emphasis == CatchSectionActionEmphasis.destructive
+                ? 'Reset practice'
+                : 'Run a dress rehearsal',
+            actionEmphasis: emphasis,
+            onAction: () {},
+          ),
+        ),
+      for (final loading in [true, false])
+        WidgetbookContractStateCard(
+          label: loading ? 'action-loading' : 'action-disabled',
+          child: CatchSection.action(
+            title: 'Public visibility',
+            message: 'Only your Host team can access this organizer.',
+            actionLabel: 'Make organizer public',
+            actionStatus: loading
+                ? CatchButtonStatus.loading
+                : CatchButtonStatus.idle,
+            onAction: null,
+          ),
+        ),
+      WidgetbookContractStateCard(
+        label: 'action-details',
+        child: CatchSection.action(
+          title: 'Public visibility',
+          message: 'Only your Host team can access this organizer.',
+          icon: CatchIcons.groups3Outlined,
+          details: const Text(
+            'Catch app: hidden · Public website: not enabled',
+          ),
+          actionLabel: 'Make organizer public',
+          onAction: () {},
+        ),
+      ),
       WidgetbookContractStateCard(
         label: 'contained-section',
         child: WidgetbookContractFieldWidth(

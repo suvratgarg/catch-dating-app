@@ -79,20 +79,25 @@ class CatchScaffold extends StatelessWidget {
       CatchScaffoldPlacement.top => SafeArea(bottom: false, child: content),
       CatchScaffoldPlacement.none => content,
     };
-    return Scaffold(
-      key: scaffoldKey,
-      backgroundColor: backgroundColor ?? CatchTokens.of(context).bg,
-      resizeToAvoidBottomInset: resizeToAvoidBottomInset,
-      extendBody: extendBody,
-      appBar: switch (title) {
-        final CatchScaledPreferredSize scaled => PreferredSize(
-          preferredSize: scaled.preferredSizeFor(context),
-          child: scaled,
-        ),
-        final bar => bar,
-      },
-      bottomNavigationBar: footer,
-      body: child,
+    return LayoutBuilder(
+      builder: (context, constraints) => Scaffold(
+        key: scaffoldKey,
+        backgroundColor: backgroundColor ?? CatchTokens.of(context).bg,
+        resizeToAvoidBottomInset: resizeToAvoidBottomInset,
+        extendBody: extendBody,
+        appBar: switch (title) {
+          final CatchScaledPreferredSize scaled => PreferredSize(
+            preferredSize: scaled.preferredSizeFor(
+              context,
+              width: constraints.hasBoundedWidth ? constraints.maxWidth : null,
+            ),
+            child: scaled,
+          ),
+          final bar => bar,
+        },
+        bottomNavigationBar: footer,
+        body: child,
+      ),
     );
   }
 }

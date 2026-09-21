@@ -1,6 +1,6 @@
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/components/catch_button.dart';
-import 'package:catch_ui/src/primitives/catch_gap.dart';
+import 'package:catch_ui/src/components/catch_toolbar_metrics.dart';
 import 'package:flutter/material.dart';
 
 /// Canonical trailing-action layout for Catch top bars and screen headers.
@@ -15,7 +15,7 @@ class CatchTopBarActionRow extends StatelessWidget {
   double get minimumWidth => actions.isEmpty
       ? 0
       : CatchPlatformTokens.minimumInteractiveExtent * actions.length +
-            CatchSpacing.s2 * (actions.length - 1);
+            CatchToolbarMetrics.gap * (actions.length - 1);
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +40,8 @@ class CatchTopBarActionRow extends StatelessWidget {
       children: [
         for (var index = 0; index < actions.length; index++) ...[
           Flexible(child: actions[index]),
-          if (index != actions.length - 1) gapW8,
+          if (index != actions.length - 1)
+            const SizedBox(width: CatchToolbarMetrics.gap),
         ],
       ],
     );

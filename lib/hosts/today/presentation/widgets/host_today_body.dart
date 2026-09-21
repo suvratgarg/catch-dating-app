@@ -87,10 +87,10 @@ class HostTodayHeader extends StatelessWidget {
     return CatchViewport.atWidth(
       breakpoint: CatchLayout.hostTodayTwoPaneBreakpoint,
       compactBuilder: (_) =>
-          CatchScreenHeader.block(title: context.l10n.hostNavigationToday),
-      expandedBuilder: (_) => CatchScreenHeader.block(
+          CatchTopBar.primaryRail(title: context.l10n.hostNavigationToday),
+      expandedBuilder: (_) => CatchTopBar.primaryRail(
         title: context.l10n.hostNavigationToday,
-        kicker: date,
+        subtitle: date,
       ),
     );
   }

@@ -56,7 +56,6 @@ Widget catchTopBarScreenCatalogStates(BuildContext context) {
       WidgetbookCatalogStateCard(
         label: 'root title / subtitle / action',
         child: CatchTopBar.screen(
-          context: context,
           title: 'Chats',
           subtitle: 'Messages from your matches',
           actions: [
@@ -71,7 +70,6 @@ Widget catchTopBarScreenCatalogStates(BuildContext context) {
       WidgetbookCatalogStateCard(
         label: 'root search chrome',
         child: CatchTopBar.screen(
-          context: context,
           leading: CatchIconAction.toolbar(
             icon: CatchIcons.locationOnOutlined,
             tooltip: 'Change city',
@@ -106,7 +104,7 @@ Widget catchPageTabBarAppBarStates(BuildContext context) {
         child: DefaultTabController(
           length: 3,
           child: Builder(
-            builder: (context) => CatchTopBar(
+            builder: (context) => CatchTopBar.route(
               title: 'Explore',
               navigation: const CatchTopBarNavigation(
                 mode: CatchTopBarNavigationMode.none,
@@ -140,7 +138,7 @@ Widget catchTopBarActionsCatalogStates(BuildContext context) {
     children: [
       WidgetbookCatalogStateCard(
         label: 'icon / text / menu',
-        child: CatchTopBar(
+        child: CatchTopBar.route(
           title: 'Event details',
           navigation: const CatchTopBarNavigation(
             mode: CatchTopBarNavigationMode.back,
@@ -284,11 +282,11 @@ Widget catchIconActionCatalogStates(BuildContext context) {
               tooltip: 'Save',
               onPressed: widgetbookNoop,
             ),
-            CatchIconAction.toolbar(
-              icon: CatchIcons.share,
+            CatchIconAction(
               tooltip: 'Share',
               variant: CatchIconActionVariant.plain,
               onPressed: widgetbookNoop,
+              child: Icon(CatchIcons.share, size: CatchIcon.md),
             ),
             CatchIconAction.toolbar(
               icon: CatchIcons.moreHorizRounded,

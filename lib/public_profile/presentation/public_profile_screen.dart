@@ -119,14 +119,11 @@ class PublicProfileScreen extends ConsumerWidget {
       ],
     );
     return CatchRouteScaffold(
-      topBarBuilder: (context, scrolledUnder) => CatchTopBar(
+      topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
         title: screenState.title(context.l10n),
         navigation: const CatchTopBarNavigation(
           mode: CatchTopBarNavigationMode.back,
         ),
-        variant: profile == null
-            ? CatchTopBarVariant.route
-            : CatchTopBarVariant.identity,
         emphasis: scrolledUnder
             ? CatchTopBarEmphasis.divided
             : CatchTopBarEmphasis.plain,

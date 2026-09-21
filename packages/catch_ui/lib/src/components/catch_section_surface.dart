@@ -14,13 +14,10 @@ class CatchSectionSurface extends StatefulWidget {
     super.key,
     required this.child,
     required this.padding,
-    this.backgroundColor,
-    this.borderColor,
-    this.tone = CatchSurfaceTone.surface,
-    this.emphasis = CatchSurfaceEmphasis.subtle,
-    this.boxShadow,
     this.states = const {},
-  }) : _fieldRows = false;
+  }) : _fieldRows = false,
+       backgroundColor = null,
+       borderColor = null;
 
   const CatchSectionSurface.fieldRows({
     super.key,
@@ -29,10 +26,7 @@ class CatchSectionSurface extends StatefulWidget {
     this.backgroundColor,
     this.borderColor,
     this.states = const {},
-  }) : _fieldRows = true,
-       tone = CatchSurfaceTone.surface,
-       emphasis = CatchSurfaceEmphasis.flat,
-       boxShadow = null;
+  }) : _fieldRows = true;
 
   /// The single rounded clip that owns every contained row's external corners.
   ///
@@ -47,9 +41,6 @@ class CatchSectionSurface extends StatefulWidget {
   final EdgeInsetsGeometry padding;
   final Color? backgroundColor;
   final Color? borderColor;
-  final CatchSurfaceTone tone;
-  final CatchSurfaceEmphasis emphasis;
-  final List<BoxShadow>? boxShadow;
 
   /// Explicit section focus and error. Error takes precedence when both apply.
   final Set<WidgetState> states;
@@ -131,8 +122,6 @@ class _CatchSectionSurfaceState extends State<CatchSectionSurface> {
         ? CatchBorder.resolve(t, CatchBorderRole.danger)
         : effectiveFocused
         ? CatchBorder.resolve(t, CatchBorderRole.focus)
-        : widget.borderColor == null
-        ? null
         : CatchBorder.resolve(
             t,
             CatchBorderRole.boundary,
@@ -145,13 +134,10 @@ class _CatchSectionSurfaceState extends State<CatchSectionSurface> {
       child: CatchSurface(
         padding: widget.padding,
         radius: CatchRadius.md,
-        tone: widget.tone,
-        emphasis: widget.emphasis,
-        backgroundColor: widget.backgroundColor,
         borderSpec: border,
         boxShadow: effectiveFocused && !hasError
             ? CatchElevation.focusRing(t)
-            : widget.boxShadow,
+            : null,
         child: widget.child,
       ),
     );

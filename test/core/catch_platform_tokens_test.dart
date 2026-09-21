@@ -66,9 +66,8 @@ void main() {
               child: child!,
             ),
             home: const Scaffold(
-              appBar: CatchTopBar(
+              appBar: CatchTopBar.route(
                 title: 'Ananya Rao',
-                variant: CatchTopBarVariant.identity,
                 emphasis: CatchTopBarEmphasis.divided,
                 navigation: CatchTopBarNavigation(
                   mode: CatchTopBarNavigationMode.none,
@@ -102,7 +101,7 @@ void main() {
             child: child!,
           ),
           home: const CatchScaffold.workspace(
-            title: CatchTopBar(
+            title: CatchTopBar.route(
               title: 'Customers',
               footer: CatchPageTabBar<int>(
                 selected: 0,

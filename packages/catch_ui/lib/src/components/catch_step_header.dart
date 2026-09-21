@@ -2,9 +2,7 @@ import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/components/catch_button.dart';
 import 'package:catch_ui/src/components/catch_icon_action.dart';
 import 'package:catch_ui/src/components/catch_top_bar.dart';
-import 'package:catch_ui/src/components/catch_top_bar_mode.dart';
 import 'package:catch_ui/src/components/catch_top_bar_navigation.dart';
-import 'package:catch_ui/src/components/catch_top_bar_size.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:flutter/material.dart';
 
@@ -62,50 +60,41 @@ class CatchStepHeader extends StatelessWidget {
     final topRight =
         trailing ??
         (hasProgress
-            ? Padding(
-                padding: EdgeInsets.only(
-                  top: kicker == null
-                      ? CatchLayout.stepHeaderCounterTopPadding
-                      : CatchSpacing.s0,
-                ),
-                child: onStepOverview == null
-                    ? Text(
-                        visibleStepLabel!,
-                        style: CatchTextStyles.monoLabel(
+            ? (onStepOverview == null
+                  ? Text(
+                      visibleStepLabel!,
+                      style: CatchTextStyles.appBarSubtitle(
+                        context,
+                        color: t.ink3,
+                      ),
+                    )
+                  : Semantics(
+                      button: true,
+                      label: stepOverviewSemanticsLabel ?? stepLabel,
+                      excludeSemantics: true,
+                      child: CatchButton.text(
+                        label: visibleStepLabel!,
+                        onPressed: onStepOverview,
+                        tone: CatchButtonTone.neutral,
+                        minimumSize: const Size(
+                          CatchSpacing.s0,
+                          CatchIconAction.navSize,
+                        ),
+                        padding: EdgeInsets.zero,
+                        textStyle: CatchTextStyles.appBarSubtitle(
                           context,
                           color: t.ink3,
                         ),
-                      )
-                    : Semantics(
-                        button: true,
-                        label: stepOverviewSemanticsLabel ?? stepLabel,
-                        excludeSemantics: true,
-                        child: CatchButton.text(
-                          label: visibleStepLabel!,
-                          onPressed: onStepOverview,
-                          tone: CatchButtonTone.neutral,
-                          minimumSize: const Size(
-                            CatchSpacing.s0,
-                            CatchIconAction.navSize,
-                          ),
-                          padding: EdgeInsets.zero,
-                          textStyle: CatchTextStyles.monoLabel(
-                            context,
-                            color: t.ink3,
-                          ),
-                        ),
                       ),
-              )
+                    ))
             : null);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        CatchTopBar(
+        CatchTopBar.route(
           title: title,
-          subtitle: subtitle,
-          kicker: kicker,
-          size: CatchTopBarSize.large,
+          subtitle: [?kicker, ?subtitle].join(' · '),
           navigation: CatchTopBarNavigation(
             mode:
                 leadingType ??
@@ -115,10 +104,7 @@ class CatchStepHeader extends StatelessWidget {
             onPressed: onBack,
           ),
 
-          trailing: topRight,
-          gutter: gutter,
-          largeHeight: CatchLayout.stepHeaderTopBarHeight,
-          mode: CatchTopBarMode.content,
+          actions: [?topRight],
         ),
         if (hasProgress)
           Padding(

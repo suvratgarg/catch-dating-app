@@ -48,7 +48,7 @@ class _HostFormResponseDetailScreenState
     final detailState = catchAsyncStateFromAsyncValue(detail);
     final loadedDetail = detailState.value;
     return CatchRouteScaffold(
-      topBarBuilder: (context, scrolledUnder) => CatchTopBar(
+      topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
         title: context.l10n.hostAudienceResponseTitle,
         navigation: const CatchTopBarNavigation(
           mode: CatchTopBarNavigationMode.back,

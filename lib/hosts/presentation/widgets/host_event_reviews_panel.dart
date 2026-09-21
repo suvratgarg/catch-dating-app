@@ -22,7 +22,7 @@ class HostEventReviewsPanel extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final reviewsAsync = ref.watch(watchReviewsForEventProvider(eventId));
-    return CatchSection.contained(
+    return CatchSection.plain(
       title: context.l10n.hostsHostEventReviewsTitlePublicReviews,
       subtitle: context.l10n.hostsHostEventReviewsSubtitlePublicResponse,
       child: CatchAsyncBoundary<List<Review>>(

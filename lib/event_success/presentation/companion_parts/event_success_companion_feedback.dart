@@ -221,18 +221,21 @@ class RatingRow extends StatelessWidget {
           child: Text(label, style: CatchTextStyles.sectionTitle(context)),
         ),
         for (var i = 1; i <= 5; i++)
-          CatchIconAction.toolbar(
+          CatchIconAction(
             size: CatchIconAction.defaultSize,
             tooltip: context.l10n
                 .eventSuccessEventSuccessCompanionFeedbackTooltipLabelI(
                   label: label,
                   i: i,
                 ),
-            icon: i <= value
-                ? CatchIcons.starRounded
-                : CatchIcons.starBorderRounded,
-            foregroundColor: i <= value ? t.gold : t.ink3,
             onPressed: () => onChanged(i),
+            child: Icon(
+              i <= value
+                  ? CatchIcons.starRounded
+                  : CatchIcons.starBorderRounded,
+              color: i <= value ? t.gold : t.ink3,
+              size: CatchIcon.md,
+            ),
           ),
       ],
     );
@@ -258,14 +261,17 @@ class CounterRow extends StatelessWidget {
             style: CatchTextStyles.sectionTitle(context),
           ),
         ),
-        CatchIconAction.toolbar(
+        CatchIconAction(
           size: CatchIconAction.defaultSize,
           tooltip: context
               .l10n
               .eventSuccessEventSuccessCompanionFeedbackTooltipDecreasePeopleMet,
-          icon: CatchIcons.removeCircleOutlineRounded,
-          foregroundColor: value <= 0 ? t.ink3 : t.ink2,
           onPressed: value <= 0 ? null : () => onChanged(value - 1),
+          child: Icon(
+            CatchIcons.removeCircleOutlineRounded,
+            color: value <= 0 ? t.ink3 : t.ink2,
+            size: CatchIcon.md,
+          ),
         ),
         Text(
           context.l10n.eventSuccessEventSuccessCompanionFeedbackTextValue(
@@ -273,14 +279,17 @@ class CounterRow extends StatelessWidget {
           ),
           style: CatchTextStyles.sectionTitle(context),
         ),
-        CatchIconAction.toolbar(
+        CatchIconAction(
           size: CatchIconAction.defaultSize,
           tooltip: context
               .l10n
               .eventSuccessEventSuccessCompanionFeedbackTooltipIncreasePeopleMet,
-          icon: CatchIcons.addCircleOutlineRounded,
-          foregroundColor: t.ink2,
           onPressed: () => onChanged(value + 1),
+          child: Icon(
+            CatchIcons.addCircleOutlineRounded,
+            color: t.ink2,
+            size: CatchIcon.md,
+          ),
         ),
       ],
     );

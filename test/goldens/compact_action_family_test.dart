@@ -96,11 +96,11 @@ void main() {
                     icon: Icons.close,
                     tooltip: 'Close unavailable',
                   ),
-                  CatchIconAction.toolbar(
-                    icon: Icons.close,
+                  CatchIconAction(
                     tooltip: 'Close overlay',
                     variant: CatchIconActionVariant.float,
                     onPressed: _noop,
+                    child: Icon(Icons.close, size: CatchIcon.md),
                   ),
                 ],
               ),

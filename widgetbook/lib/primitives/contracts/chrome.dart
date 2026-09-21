@@ -19,7 +19,7 @@ Widget catchTopBarContractStates(BuildContext context) {
     contractId: 'catch.top_bar',
     states: const [
       'compact',
-      'large',
+      'context',
       'with-leading',
       'with-action-icon',
       'with-action-text',
@@ -27,7 +27,7 @@ Widget catchTopBarContractStates(BuildContext context) {
       'conversation-title',
       'surface',
       'divider',
-      'plain-actions',
+      'outlined-actions',
       'root-title',
       'root-subtitle-actions',
       'primary-rail',
@@ -36,30 +36,23 @@ Widget catchTopBarContractStates(BuildContext context) {
       WidgetbookContractStateCard(
         label: 'compact',
         child: const WidgetbookContractTopBarFrame(
-          child: CatchTopBar(
-            title: 'Events',
-            subtitle: 'Tonight nearby',
-            mode: CatchTopBarMode.content,
-          ),
+          child: CatchTopBar.route(title: 'Events', subtitle: 'Tonight nearby'),
         ),
       ),
       WidgetbookContractStateCard(
-        label: 'large',
+        label: 'context',
         child: const WidgetbookContractTopBarFrame(
-          child: CatchTopBar(
-            kicker: 'HOST MODE',
+          child: CatchTopBar.route(
             title: 'Upcoming events',
             subtitle: 'Review requests and keep the room balanced.',
-            mode: CatchTopBarMode.content,
           ),
         ),
       ),
       WidgetbookContractStateCard(
         label: 'with-leading',
         child: WidgetbookContractTopBarFrame(
-          child: CatchTopBar(
+          child: CatchTopBar.route(
             title: 'Event details',
-            mode: CatchTopBarMode.content,
             navigation: const CatchTopBarNavigation(
               mode: CatchTopBarNavigationMode.back,
               onPressed: widgetbookNoop,
@@ -68,14 +61,12 @@ Widget catchTopBarContractStates(BuildContext context) {
         ),
       ),
       WidgetbookContractStateCard(
-        label: 'plain-actions',
+        label: 'outlined-actions',
         child: WidgetbookContractTopBarFrame(
-          child: CatchTopBar(
+          child: CatchTopBar.route(
             title: 'Form builder',
-            mode: CatchTopBarMode.content,
             navigation: const CatchTopBarNavigation(
               mode: CatchTopBarNavigationMode.back,
-              variant: CatchIconActionVariant.plain,
               onPressed: widgetbookNoop,
             ),
 
@@ -83,7 +74,6 @@ Widget catchTopBarContractStates(BuildContext context) {
               CatchButton.text(label: 'Preview', onPressed: widgetbookNoop),
               CatchActionMenu<String>(
                 tooltip: 'Form actions',
-                variant: CatchIconActionVariant.plain,
                 items: const [
                   CatchActionMenuItem(value: 'share', label: 'Share form'),
                 ],
@@ -95,9 +85,8 @@ Widget catchTopBarContractStates(BuildContext context) {
       WidgetbookContractStateCard(
         label: 'with-action-icon',
         child: WidgetbookContractTopBarFrame(
-          child: CatchTopBar(
+          child: CatchTopBar.route(
             title: 'Chats',
-            mode: CatchTopBarMode.content,
             actions: [
               CatchIconAction.toolbar(
                 icon: CatchIcons.moreHorizRounded,
@@ -111,9 +100,8 @@ Widget catchTopBarContractStates(BuildContext context) {
       WidgetbookContractStateCard(
         label: 'with-action-text',
         child: WidgetbookContractTopBarFrame(
-          child: CatchTopBar(
+          child: CatchTopBar.route(
             title: 'Preview',
-            mode: CatchTopBarMode.content,
             actions: [
               CatchButton.text(label: 'Done', onPressed: widgetbookNoop),
             ],
@@ -124,9 +112,8 @@ Widget catchTopBarContractStates(BuildContext context) {
         label: 'with-search',
         description: 'Use the search icon to review the expanded search state.',
         child: WidgetbookContractTopBarFrame(
-          child: CatchTopBar(
+          child: CatchTopBar.route(
             title: 'Clubs',
-            mode: CatchTopBarMode.content,
             search: CatchTopBarSearch(
               copy: catchSearchFieldCopy(context.l10n),
               value: 'run',
@@ -146,7 +133,6 @@ Widget catchTopBarContractStates(BuildContext context) {
                   name: 'Taylor from Sunday Social',
                 ),
             identityName: 'Taylor from Sunday Social',
-            mode: CatchTopBarMode.content,
             identityPhotoUrl: null,
             onIdentityTap: widgetbookNoop,
             tone: CatchTopBarTone.surface,
@@ -183,20 +169,18 @@ Widget catchTopBarContractStates(BuildContext context) {
       WidgetbookContractStateCard(
         label: 'surface',
         child: const WidgetbookContractTopBarFrame(
-          child: CatchTopBar(
+          child: CatchTopBar.route(
             title: 'Surface',
             tone: CatchTopBarTone.surface,
-            mode: CatchTopBarMode.content,
           ),
         ),
       ),
       WidgetbookContractStateCard(
         label: 'divider',
         child: const WidgetbookContractTopBarFrame(
-          child: CatchTopBar(
+          child: CatchTopBar.route(
             title: 'Divider',
             emphasis: CatchTopBarEmphasis.divided,
-            mode: CatchTopBarMode.content,
           ),
         ),
       ),
@@ -205,8 +189,7 @@ Widget catchTopBarContractStates(BuildContext context) {
         label: 'root-title',
         child: WidgetbookContractTopBarFrame(
           child: Builder(
-            builder: (context) =>
-                CatchTopBar.screen(context: context, title: 'Your people'),
+            builder: (context) => CatchTopBar.screen(title: 'Your people'),
           ),
         ),
       ),
@@ -215,9 +198,7 @@ Widget catchTopBarContractStates(BuildContext context) {
         child: WidgetbookContractTopBarFrame(
           child: Builder(
             builder: (context) => CatchTopBar.screen(
-              context: context,
               title: 'Your people',
-              eyebrow: 'COMMUNITY',
               subtitle: 'Keep your shared plans in view.',
               actions: [
                 CatchIconAction.toolbar(
@@ -234,8 +215,7 @@ Widget catchTopBarContractStates(BuildContext context) {
         label: 'primary-rail',
         child: WidgetbookContractTopBarFrame(
           child: Builder(
-            builder: (context) =>
-                CatchTopBar.primaryRail(context: context, title: 'People'),
+            builder: (context) => CatchTopBar.primaryRail(title: 'People'),
           ),
         ),
       ),

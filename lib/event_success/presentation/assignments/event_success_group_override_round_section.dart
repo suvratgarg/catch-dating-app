@@ -138,14 +138,17 @@ class EventSuccessGroupOverrideFieldLanes extends StatelessWidget {
                 ),
               ),
               gapW8,
-              CatchIconAction.toolbar(
+              CatchIconAction(
                 size: CatchIconAction.defaultSize,
                 tooltip: context
                     .l10n
                     .eventSuccessEventSuccessHostOverridesTooltipRemoveGroup,
-                icon: CatchIcons.deleteOutlineRounded,
-                foregroundColor: t.danger,
                 onPressed: onRemoveGroup,
+                child: Icon(
+                  CatchIcons.deleteOutlineRounded,
+                  color: t.danger,
+                  size: CatchIcon.md,
+                ),
               ),
             ],
           ),
@@ -224,13 +227,13 @@ class EventSuccessGroupMemberField extends StatelessWidget {
           ),
         ),
         gapW8,
-        CatchIconAction.toolbar(
+        CatchIconAction(
           size: CatchIconAction.defaultSize,
           tooltip: context
               .l10n
               .eventSuccessEventSuccessHostOverridesTooltipRemoveAttendee,
-          icon: CatchIcons.closeRounded,
           onPressed: onRemove,
+          child: Icon(CatchIcons.closeRounded, size: CatchIcon.md),
         ),
       ],
     );

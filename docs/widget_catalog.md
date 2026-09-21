@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 4.6.0
+version: 4.7.1
 updated: 2026-09-21
 owner: recursive_audit_loop
 status: active
@@ -54,7 +54,7 @@ persistent context stack.
 | Family | Use | Do not use |
 |---|---|---|
 | Screen composition | Every full-screen composition terminates in `CatchScaffold.standalone`, `.stepFlow`, or `.workspace`; only that primitive constructs Material `Scaffold`. Root title destinations use `.standard`, `.fullBleed`, or `.sections` on `CatchRootScreenScaffold` / `CatchRootScreenScrollView`; `.sections` keeps full-width rows and the 16 pt title-to-body rhythm. Roots with pinned peer navigation use `.withPrimaryRail` plus `CatchRootScreenPageScrollView`; pushed routes use `CatchRouteScaffold`. Select one root owner outside async state branches so loading, error, empty, and loaded content share its geometry. The composition gate verifies constructor role and branch-universal ownership. | Do not compose a feature-local `Scaffold` + `SafeArea` + `CustomScrollView` + title padding + terminal spacer, override a root title style, or choose a different root recipe for loading and loaded states. |
-| Root and route headers | Root-tab titles use `CatchScreenHeader` in scroll content. Pushed utility, list, and detail routes use `CatchRouteScaffold` with the default compact `CatchTopBar`; callers provide semantic title, title-case eyebrow (`eyebrow`) or uppercase kicker, subtitle, line count, and navigation only. Workspace bars explicitly remain compact. The primitive maps route labels to Archivo `routeTitle` and registered user-authored names to the platform identity role, with a route fallback before identity data arrives. Preserve a known subject name through route arguments while detail data loads. | Do not supply a feature-local `body`, raw title style, `CatchTopBar.heightFor`, custom padding, safe-area, gutter, alignment, or large-mode escape to a compact route bar. Do not let an async detail failure replace the subject with the plural parent destination. |
+| Root and route headers | `CatchTopBar.route`, `.identity`, `.screen` and `.primaryRail` share one renderer and the platform function family. Task title precedes optional entity context; root titles use the headline scale. Search is a typed capability. The primitive owns wrapping, scaled heights and alignment. | No eyebrow, kicker, custom title widget/style, typography variant, size, mode, height, padding, gutter or alignment inputs. Translate invalid configurations and review fresh renders before updating goldens. |
 | Browse search | A permanently expanded browse input renders no empty trailing control and shows its clear control only while the query is non-empty. `onCloseSearch` belongs only to morphing `expanding` chrome where an empty expanded search can collapse. | Do not pass `onCloseSearch` to a fixed Customers-style expanded search merely to occupy the trailing slot. |
 | `CatchSection.divided` | Default for flat page-subject content and ordered detail groups. Typography, spacing, and hairlines carry hierarchy. Callers may supply a theme-resolved `titleColor`, including activity accents; omission uses the neutral section title. | Do not add a surrounding card or a surfaced empty state inside it. |
 | `CatchSection.fieldRows` | Use for a titled divided group of sibling fields. The section owns its leading/header rule, text-lane sibling rules, and one interaction policy: responsive compact pages default to full bleed, while a section may explicitly request `roundedTile`. | Do not configure divider color/inset/role, give individual fields different interaction geometry, or use it as a headerless lane. |
@@ -64,8 +64,9 @@ persistent context stack.
 | `CatchSection.dependentFieldRows` | A controlling Field and its applicable typed dependents share one rounded perimeter. The child area attaches through tint, without additional outlines or peer dividers. The section owns exact hit bounds; the form owns applicability and serialization. | Do not wrap only the children, accumulate indentation, or hide applicable fields when the control editor collapses. |
 | `CatchSection.containedFieldGroups` | Use when one outlined collection contains one or more labelled groups of related field choices. Supply semantic `CatchSectionFieldGroup` descriptors; the section owns every internal kicker, boundary, sibling rule, clip, and active band. | Do not assemble subsection kickers and field dividers in feature code or use separate outlined sections for groups that form one choice set. |
 | `CatchFieldLanes` | Use `.divided` for headerless sibling fields, `.single` for one ungrouped field, and `.custom` for a non-field body. Divided lanes inherit the responsive interaction policy and own canonical gutter and separators. | Do not override gutters or make a field paint its sibling divider. |
-| `CatchSection.contained` | Use for one bounded operational/action module that qualifies under the surface doctrine. Peer modules with the same role use the same variant, including their loading, empty, error, and populated states. | Do not alternate filled and outlined siblings for equivalent report modules, and do not nest another bordered surface. |
-| `CatchSection.plain` | Use when an enclosing component already owns the plane and section chrome. | Do not use it to evade a required peer-module boundary. |
+| `CatchSection.contained` | Fixed, shadowless frame around a related collection; semantic boundary, focus and error treatment belong to the section. | No paint or spacing overrides; ordinary information stays flat. |
+| `CatchSection.action` | One bounded task: title, optional facts, explanation and a full-width primary, secondary or destructive CTA. | No arbitrary surface knobs, field lists in details, or card merely for an empty state. |
+| `CatchSection.plain` | Flat information in an existing content lane, including Public reviews; enclosing composition owns section spacing. | Do not add a frame merely because information is empty or explanatory. |
 | `CatchSliverEmptyState` | `packages/catch_ui/lib/src/patterns/catch_sliver_empty_state.dart:8` | Sliver placement of the canonical empty-state content and shared bottom-overlay accounting. |
 | `CatchEmptyState` | It is content, not a section decision. Inside a section, leave `surface: false` and let the enclosing section own padding and chrome. A standalone route/pane may opt into `surface: true` only when that bounded region itself is the approved surface. | Do not change containment because data is absent; empty state must inherit the same owner as loaded content. |
 | Semantic borders | Choose `CatchBorderRole.separator`, `boundary`, `control`, `selected`, `focus`, `danger`, or `warning`; higher-level primitives own interaction mapping. Focus is 2 px, selected/status is 1.5 px, and resting lines are 1 px with theme-aware contrast. | Do not pair raw border colors and widths in product UI, change outline geometry for hover/press, or make an error/loading branch invent containment. |
@@ -87,7 +88,7 @@ and candidate discussions; this document has no parallel status ledger.
 <!-- Generated by tool/design/generate_widget_catalog.mjs. Do not edit this region. -->
 ## Production Widget Inventory
 
-1112 public production Widgets. Source discovery determines membership; the component registry supplies reviewed identity and ladder metadata.
+1111 public production Widgets. Source discovery determines membership; the component registry supplies reviewed identity and ladder metadata.
 
 Purpose comes from the first class documentation paragraph, then the registry summary. 799 declarations have neither and remain visible as undocumented. Unreviewed feature Widgets use the existing screen-name boundary for L5/L6; that source classification is not a semantic conformance verdict.
 
@@ -120,7 +121,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>CatchSurface</code> | <code>packages/catch_ui/lib/src/primitives/catch_surface.dart:10</code> | <code>Surface</code> | <code>catch.surface</code> | Canonical Catch surface primitive for cards, panels, and tappable tiles. |
 | <code>CatchTextInput</code> | <code>packages/catch_ui/lib/src/primitives/catch_text_input.dart:42</code> | <code>Input</code> | <code>catch.field</code> | Canonical low-level text-entry primitive. |
 
-### L3 (95)
+### L3 (94)
 
 | Widget | Source | Role | Canonical concept | Purpose |
 |---|---|---|---|---|
@@ -192,7 +193,6 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>CatchPrivacyBadge</code> | <code>packages/catch_ui/lib/src/components/catch_privacy_badge.dart:21</code> | <code>Badge</code> | <code>catch.badge</code> | Privacy/visibility adapter with caller-resolved labels and fixed mode-to-icon pairing in CatchBadge.privacy. |
 | <code>CatchRangeInput</code> | <code>packages/catch_ui/lib/src/components/catch_range_input.dart:12</code> | <code>Input</code> | <code>catch.range_slider</code> | Edits an ordered numeric interval through two independently movable ends. |
 | <code>CatchRowSection</code> | <code>packages/catch_ui/lib/src/components/catch_row_section.dart:24</code> | <code>Section</code> | <code>catch.section</code> | Internal renderer for the typed Field collection recipes on CatchSection. |
-| <code>CatchScreenHeader</code> | <code>packages/catch_ui/lib/src/components/catch_screen_header.dart:8</code> | <code>Header</code> | <code>catch.top_bar</code> | Root-screen title stack shared by the main tabs and root-like app bars. |
 | <code>CatchSearchField</code> | <code>packages/catch_ui/lib/src/components/catch_search_field.dart:17</code> | <code>Field</code> | <code>catch.search_field</code> | Handoff `SearchField`: raised pill input with search glyph and quiet clear target. |
 | <code>CatchSection</code> | <code>packages/catch_ui/lib/src/components/catch_section.dart:38</code> | <code>Section</code> | <code>catch.section</code> | Design-system `Section`: the canonical primitive for grouping information. |
 | <code>CatchSectionHeader</code> | <code>packages/catch_ui/lib/src/components/catch_section_header.dart:9</code> | <code>Header</code> | <code>catch.section</code> | Section heading, count and trailing-action layouts, selected by recipe. |
@@ -205,7 +205,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>CatchSheet</code> | <code>packages/catch_ui/lib/src/components/catch_sheet.dart:49</code> | <code>Sheet</code> | <code>catch.sheet</code> | Canonical sheet surface, header and terminal safe region. |
 | <code>CatchSheetHeader</code> | <code>packages/catch_ui/lib/src/components/catch_sheet_header.dart:8</code> | <code>Header</code> | <code>catch.sheet</code> | Sheet heading with plain or branded glyph presentation and a trailing slot. |
 | <code>CatchStatusRow</code> | <code>packages/catch_ui/lib/src/components/catch_status_row.dart:10</code> | <code>Row</code> | <code>catch.badge</code> | Quiet, unboxed status made from a semantic dot and supporting copy. |
-| <code>CatchStepHeader</code> | <code>packages/catch_ui/lib/src/components/catch_step_header.dart:13</code> | <code>Header</code> | <code>catch.step_header</code> | Handoff `StepHeader`: wizard header built from the shared large AppBar plus a 2px progress hairline. |
+| <code>CatchStepHeader</code> | <code>packages/catch_ui/lib/src/components/catch_step_header.dart:11</code> | <code>Header</code> | <code>catch.step_header</code> | Handoff `StepHeader`: wizard header built from the shared large AppBar plus a 2px progress hairline. |
 | <code>CatchStepRowList</code> | <code>packages/catch_ui/lib/src/components/catch_step_row_list.dart:13</code> | <code>RowList</code> | <code>catch.journey_steps</code> | Ordered instructional rows with automatic numbering and a connecting trace. |
 | <code>CatchStepper</code> | <code>packages/catch_ui/lib/src/components/catch_stepper.dart:11</code> | <code>Stepper</code> | <code>catch.number_stepper</code> | Bounded numeric adjustment with accelerated hold-to-repeat controls. |
 | <code>CatchStepperRepeatButton</code> | <code>packages/catch_ui/lib/src/components/catch_stepper_repeat_button.dart:12</code> | <code>Button</code> | <code>catch.number_stepper</code> | Hold-to-repeat platform-sized target used by `CatchStepper`. |
@@ -215,7 +215,8 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>CatchTicketDivider</code> | <code>packages/catch_ui/lib/src/components/catch_ticket_divider.dart:8</code> | <code>Divider</code> | <code>catch.ticket</code> | Ticket perforation aligned to the notch geometry of its containing ticket. |
 | <code>CatchTimestampedMessageText</code> | <code>packages/catch_ui/lib/src/components/catch_timestamped_message_text.dart:8</code> | <code>Text</code> | <code>catch.timestamped_message</code> | Lays out a chat timestamp on the final message line when it fits, otherwise directly below it. |
 | <code>CatchToggleInput</code> | <code>packages/catch_ui/lib/src/components/catch_toggle_input.dart:12</code> | <code>Input</code> | <code>catch.toggle</code> | Catch settings toggle. |
-| <code>CatchTopBar</code> | <code>packages/catch_ui/lib/src/components/catch_top_bar.dart:27</code> | <code>TopBar</code> | <code>catch.top_bar</code> | Canonical Catch top-bar component. |
+| <code>CatchTopBar</code> | <code>packages/catch_ui/lib/src/components/catch_top_bar.dart:22</code> | <code>TopBar</code> | <code>catch.top_bar</code> | Canonical app chrome. Recipes own typography, hierarchy and geometry. |
+| <code>CatchToolbarControl</code> | <code>packages/catch_ui/lib/src/components/catch_toolbar_control.dart</code> | <code>ToolbarControl</code> | <code>catch.top_bar</code> | Closed selector and labelled action; shared outline, measured platform typography and accessible height. |
 | <code>CatchTopBarActionRow</code> | <code>packages/catch_ui/lib/src/components/catch_top_bar_action_row.dart:10</code> | <code>Row</code> | <code>catch.top_bar</code> | Canonical trailing-action layout for Catch top bars and screen headers. |
 | <code>CatchTopBarPrimaryButton</code> | <code>packages/catch_ui/lib/src/components/catch_top_bar_primary_button.dart:12</code> | <code>Button</code> | <code>catch.top_bar</code> | Primary root-screen action that preserves canonical top-bar geometry. |
 | <code>CatchWheelPickerSheet</code> | <code>packages/catch_ui/lib/src/components/catch_wheel_picker_sheet.dart:10</code> | <code>Sheet</code> | <code>catch.sheet</code> | Shared wheel-picker sheet with caller-resolved copy and actions. |
@@ -236,7 +237,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>CatchPageBody</code> | <code>packages/catch_ui/lib/src/patterns/catch_page_body.dart:14</code> | <code>PageBody</code> | <code>catch.screen_body</code> | Page insets and field paint geometry, with form, screen and sliver recipes. |
 | <code>CatchRootScreenPageScrollView</code> | <code>packages/catch_ui/lib/src/patterns/catch_root_screen_page_scroll_view.dart:15</code> | <code>ScrollView</code> | <code>catch.screen_body</code> | Inner scroll owner for one page of `CatchRootScreenScaffold`. |
 | <code>CatchRootScreenScaffold</code> | <code>packages/catch_ui/lib/src/patterns/catch_root_screen_scaffold.dart:18</code> | <code>Scaffold</code> | <code>catch.screen_body</code> | Full-screen owner for a root destination with scroll-content title chrome. |
-| <code>CatchRootScreenScrollView</code> | <code>packages/catch_ui/lib/src/patterns/catch_root_screen_scroll_view.dart:26</code> | <code>ScrollView</code> | <code>catch.screen_body</code> | Root-screen scroll composition for a pane whose parent already owns the [Scaffold], such as an adaptive master-detail workspace. |
+| <code>CatchRootScreenScrollView</code> | <code>packages/catch_ui/lib/src/patterns/catch_root_screen_scroll_view.dart:25</code> | <code>ScrollView</code> | <code>catch.screen_body</code> | Root-screen scroll composition for a pane whose parent already owns the [Scaffold], such as an adaptive master-detail workspace. |
 | <code>CatchRouteScaffold</code> | <code>packages/catch_ui/lib/src/patterns/catch_route_scaffold.dart:359</code> | <code>Scaffold</code> | <code>catch.screen_body</code> | Canonical shell for pushed utility, list, and identity routes. |
 | <code>CatchRowViewport</code> | <code>packages/catch_ui/lib/src/patterns/catch_row_viewport.dart:5</code> | <code>Viewport</code> | <code>catch.screen_body</code> | Internal boundary published only by page and pane owners. A section may inset its content, but cannot quietly shrink the row interaction perimeter. |
 | <code>CatchRowViewportScope</code> | <code>packages/catch_ui/lib/src/patterns/catch_row_viewport.dart:23</code> | <code>Scope</code> | <code>catch.screen_body</code> | Internal inherited width value owned by CatchRowViewport; consumers cannot publish a fabricated row perimeter. |
@@ -740,7 +741,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>ExploreFilterRail</code> | <code>lib/explore/presentation/widgets/explore_filter_rail.dart:16</code> | — | — | Explore's pinned primary time-scope rail. |
 | <code>ExploreFilterSheet</code> | <code>lib/explore/presentation/widgets/explore_filter_rail.dart:207</code> | — | — | No class documentation or registry summary. |
 | <code>ExploreBrowseHeaderContent</code> | <code>lib/explore/presentation/widgets/explore_header.dart:18</code> | — | — | Non-sliver browse header embeddable in [CatchSliverHeader.bottom] or a regular column. Uses [CatchTopBar] with built-in search support instead of a custom animated search morph. |
-| <code>ExploreDiscoveryCoverHeader</code> | <code>lib/explore/presentation/widgets/explore_header.dart:79</code> | — | — | No class documentation or registry summary. |
+| <code>ExploreDiscoveryCoverHeader</code> | <code>lib/explore/presentation/widgets/explore_header.dart:77</code> | — | — | No class documentation or registry summary. |
 | <code>ClubDirectorySkeletonCard</code> | <code>lib/explore/presentation/widgets/explore_list.dart:205</code> | — | — | No class documentation or registry summary. |
 | <code>ClubDirectorySkeletonList</code> | <code>lib/explore/presentation/widgets/explore_list.dart:188</code> | — | — | No class documentation or registry summary. |
 | <code>ExploreList</code> | <code>lib/explore/presentation/widgets/explore_list.dart:13</code> | — | — | No class documentation or registry summary. |
@@ -775,9 +776,9 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>HostCustomerRecentEvents</code> | <code>lib/hosts/presentation/customers/host_customer_detail_cards.dart:570</code> | — | — | No class documentation or registry summary. |
 | <code>HostCustomerRevenueBreakdown</code> | <code>lib/hosts/presentation/customers/host_customer_detail_cards.dart:703</code> | — | — | No class documentation or registry summary. |
 | <code>HostCustomerRevenueCard</code> | <code>lib/hosts/presentation/customers/host_customer_detail_cards.dart:615</code> | — | — | No class documentation or registry summary. |
-| <code>HostCustomerActiveMergesSection</code> | <code>lib/hosts/presentation/customers/host_customer_detail_screen.dart:722</code> | — | — | No class documentation or registry summary. |
+| <code>HostCustomerActiveMergesSection</code> | <code>lib/hosts/presentation/customers/host_customer_detail_screen.dart:717</code> | — | — | No class documentation or registry summary. |
 | <code>HostCustomerDetailTabs</code> | <code>lib/hosts/presentation/customers/host_customer_detail_tabs.dart:7</code> | — | — | No class documentation or registry summary. |
-| <code>HostCustomerIdentityInputSection</code> | <code>lib/hosts/presentation/customers/host_customer_editor.dart:188</code> | — | — | No class documentation or registry summary. |
+| <code>HostCustomerIdentityInputSection</code> | <code>lib/hosts/presentation/customers/host_customer_editor.dart:187</code> | — | — | No class documentation or registry summary. |
 | <code>HostSaveAudienceSheet</code> | <code>lib/hosts/presentation/customers/host_customer_editor_sheets.dart:3</code> | — | — | No class documentation or registry summary. |
 | <code>HostCustomerHistoryPanel</code> | <code>lib/hosts/presentation/customers/host_customer_history_panel.dart:4</code> | — | — | Mounted only by the History tab, so operational joins cannot block Overview. |
 | <code>HostCustomerMemoryPreview</code> | <code>lib/hosts/presentation/customers/host_customer_memory.dart:18</code> | — | — | No class documentation or registry summary. |
@@ -871,7 +872,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>HostTeamProfessionalProfilePreview</code> | <code>lib/hosts/presentation/host_operations/host_club_team_screen.dart:338</code> | — | — | Read-only projection of the professional identity edited in Host team. This intentionally consumes [HostTeamProfileState] rather than the dating profile collection: a host can have a valid organizer identity without a discoverable consumer profile. |
 | <code>HostTeamProfileRows</code> | <code>lib/hosts/presentation/host_operations/host_club_team_screen.dart:528</code> | — | — | No class documentation or registry summary. |
 | <code>HostTeamProfileSection</code> | <code>lib/hosts/presentation/host_operations/host_club_team_screen.dart:455</code> | — | — | No class documentation or registry summary. |
-| <code>HostClubsScaffold</code> | <code>lib/hosts/presentation/host_operations/host_clubs_scaffold.dart:66</code> | — | — | No class documentation or registry summary. |
+| <code>HostClubsScaffold</code> | <code>lib/hosts/presentation/host_operations/host_clubs_scaffold.dart:64</code> | — | — | No class documentation or registry summary. |
 | <code>HostOrganizerStateScaffold</code> | <code>lib/hosts/presentation/host_operations/host_clubs_scaffold.dart:24</code> | — | — | Organizer route-state adapter that preserves the loaded workspace chrome. |
 | <code>HostClubOrganizerOverview</code> | <code>lib/hosts/presentation/host_operations/host_organizer.dart:165</code> | — | — | No class documentation or registry summary. |
 | <code>HostClubOrganizerOverviewController</code> | <code>lib/hosts/presentation/host_operations/host_organizer.dart:3</code> | — | — | No class documentation or registry summary. |
@@ -1018,10 +1019,10 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>PaymentHistoryTile</code> | <code>lib/payments/presentation/payment_history_screen.dart:214</code> | — | — | No class documentation or registry summary. |
 | <code>PaymentHistoryTileSkeleton</code> | <code>lib/payments/presentation/payment_history_screen.dart:168</code> | — | — | No class documentation or registry summary. |
 | <code>PaymentReceiptSheet</code> | <code>lib/payments/presentation/payment_history_screen.dart:325</code> | — | — | No class documentation or registry summary. |
-| <code>PublicProfileBody</code> | <code>lib/public_profile/presentation/public_profile_screen.dart:229</code> | — | — | No class documentation or registry summary. |
-| <code>PublicProfileReportReasonTile</code> | <code>lib/public_profile/presentation/public_profile_screen.dart:333</code> | — | — | No class documentation or registry summary. |
-| <code>PublicProfileReportSheet</code> | <code>lib/public_profile/presentation/public_profile_screen.dart:271</code> | — | — | No class documentation or registry summary. |
-| <code>PublicProfileScreenBody</code> | <code>lib/public_profile/presentation/public_profile_screen.dart:189</code> | — | — | No class documentation or registry summary. |
+| <code>PublicProfileBody</code> | <code>lib/public_profile/presentation/public_profile_screen.dart:226</code> | — | — | No class documentation or registry summary. |
+| <code>PublicProfileReportReasonTile</code> | <code>lib/public_profile/presentation/public_profile_screen.dart:330</code> | — | — | No class documentation or registry summary. |
+| <code>PublicProfileReportSheet</code> | <code>lib/public_profile/presentation/public_profile_screen.dart:268</code> | — | — | No class documentation or registry summary. |
+| <code>PublicProfileScreenBody</code> | <code>lib/public_profile/presentation/public_profile_screen.dart:186</code> | — | — | No class documentation or registry summary. |
 | <code>ReviewHistoryItem</code> | <code>lib/reviews/presentation/reviews_history_screen.dart:158</code> | — | — | No class documentation or registry summary. |
 | <code>ReviewHistoryItemSkeleton</code> | <code>lib/reviews/presentation/reviews_history_screen.dart:209</code> | — | — | No class documentation or registry summary. |
 | <code>ReviewsHistoryBody</code> | <code>lib/reviews/presentation/reviews_history_screen.dart:91</code> | — | — | No class documentation or registry summary. |

@@ -1591,7 +1591,7 @@ class _FiltersContentCapture extends StatelessWidget {
     final t = CatchTokens.of(context);
     return Scaffold(
       backgroundColor: t.bg,
-      appBar: CatchTopBar(
+      appBar: CatchTopBar.route(
         title: 'Filters',
         leading: CatchIconAction.toolbar(
           icon: CatchIcons.closeRounded,

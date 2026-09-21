@@ -6145,7 +6145,7 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Dashboard home',
         children: [
           _widgetbook.WidgetbookComponent(
-            name: 'CatchScreenHeader',
+            name: 'CatchTopBar',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Header content',
@@ -11976,22 +11976,22 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'Sections',
             children: [
               _widgetbook.WidgetbookComponent(
-                name: 'CatchScreenHeader',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Profile title',
-                    builder: _widgetbook_workspace_profiles_catalog_header
-                        .profileTitleStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
                 name: 'CatchSection',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Field row section states',
                     builder: _widgetbook_workspace_profiles_catalog_fields
                         .profileFieldRowSectionStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'CatchTopBar',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Profile title',
+                    builder: _widgetbook_workspace_profiles_catalog_header
+                        .profileTitleStates,
                   ),
                 ],
               ),

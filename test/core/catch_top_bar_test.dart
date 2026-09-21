@@ -3,6 +3,7 @@ import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -16,14 +17,16 @@ void main() {
       MaterialApp(
         theme: AppTheme.light,
         home: const MediaQuery(
-          data: MediaQueryData(textScaler: TextScaler.linear(2)),
+          data: MediaQueryData(
+            size: Size(800, 600),
+            textScaler: TextScaler.linear(2),
+          ),
           child: Scaffold(
             body: Column(
               children: [
                 CatchTopBar.identity(
                   identityName: 'Riya Mehta',
                   identitySemanticLabel: 'Riya Mehta',
-                  applySafeArea: false,
                 ),
               ],
             ),
@@ -51,7 +54,7 @@ void main() {
   ) async {
     await tester.pumpWidget(
       _wrap(
-        const CatchTopBar(
+        const CatchTopBar.route(
           title: 'Settings',
           navigation: CatchTopBarNavigation(
             mode: CatchTopBarNavigationMode.none,
@@ -65,7 +68,7 @@ void main() {
     expect(tester.getSize(find.byType(CatchTopBar)).height, 56);
     expect(
       tester.widget<Text>(find.text('Settings')).style,
-      CatchTextStyles.routeTitle(
+      CatchTextStyles.titleL(
         tester.element(find.text('Settings')),
         color: CatchTokens.of(tester.element(find.text('Settings'))).ink,
       ),
@@ -73,11 +76,14 @@ void main() {
     final titleStyle = tester.widget<Text>(find.text('Settings')).style!;
     expect(
       titleStyle.fontFamily,
-      'packages/catch_ui/${CatchFonts.voiceFamily}',
+      CatchFonts.functionFamilyForPlatform(defaultTargetPlatform, fontSize: 20),
     );
     expect(titleStyle.fontSize, 20);
-    expect(titleStyle.fontWeight, FontWeight.w700);
-    expect(titleStyle.height, 1.16);
+    expect(
+      titleStyle.fontWeight,
+      CatchPlatformTokens.typography.title.fontWeight,
+    );
+    expect(titleStyle.height, CatchPlatformTokens.typography.title.height);
     expect(find.byType(CatchIconAction), findsNothing);
     expect(
       _topBarMaterial(tester).color,
@@ -91,7 +97,7 @@ void main() {
   ) async {
     await tester.pumpWidget(
       _wrap(
-        const CatchTopBar(
+        const CatchTopBar.route(
           title: 'Settings',
           navigation: CatchTopBarNavigation(
             mode: CatchTopBarNavigationMode.none,
@@ -110,9 +116,8 @@ void main() {
   ) async {
     await tester.pumpWidget(
       _wrap(
-        const CatchTopBar(
+        const CatchTopBar.route(
           title: 'Aarav Shah',
-          variant: CatchTopBarVariant.identity,
           navigation: CatchTopBarNavigation(
             mode: CatchTopBarNavigationMode.none,
           ),
@@ -130,46 +135,47 @@ void main() {
     );
   });
 
-  testWidgets('CatchTopBar preserves title-case workspace eyebrows', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      _wrap(
-        const CatchTopBar(
-          title: 'Sunday Evening Run',
-          eyebrow: 'Event preparation',
-          navigation: CatchTopBarNavigation(
-            mode: CatchTopBarNavigationMode.none,
+  testWidgets(
+    'CatchTopBar places context below the task title in the function family',
+    (tester) async {
+      await tester.pumpWidget(
+        _wrap(
+          const CatchTopBar.route(
+            title: 'Event preparation',
+            subtitle: 'Sunday Evening Run',
+            navigation: CatchTopBarNavigation(
+              mode: CatchTopBarNavigationMode.none,
+            ),
           ),
         ),
-      ),
-    );
+      );
 
-    expect(find.text('Event preparation'), findsOneWidget);
-    expect(find.text('EVENT PREPARATION'), findsNothing);
-    expect(
-      tester.widget<CatchTopBar>(find.byType(CatchTopBar)).isLarge,
-      isFalse,
-    );
-    final eyebrowContext = tester.element(find.text('Event preparation'));
-    expect(
-      tester.widget<Text>(find.text('Event preparation')).style,
-      CatchTextStyles.monoLabel(
-        eyebrowContext,
-        color: CatchTokens.of(eyebrowContext).ink3,
-      ),
-    );
-    final titleContext = tester.element(find.text('Sunday Evening Run'));
-    expect(
-      tester.widget<Text>(find.text('Sunday Evening Run')).style,
-      CatchTextStyles.routeTitle(
-        titleContext,
-        color: CatchTokens.of(titleContext).ink,
-      ),
-    );
-  });
+      expect(find.text('Event preparation'), findsOneWidget);
+      expect(find.text('EVENT PREPARATION'), findsNothing);
+      final eyebrowContext = tester.element(find.text('Event preparation'));
+      expect(
+        tester.widget<Text>(find.text('Event preparation')).style,
+        CatchTextStyles.titleL(
+          eyebrowContext,
+          color: CatchTokens.of(eyebrowContext).ink,
+        ),
+      );
+      final titleContext = tester.element(find.text('Sunday Evening Run'));
+      expect(
+        tester.widget<Text>(find.text('Sunday Evening Run')).style,
+        CatchTextStyles.appBarSubtitle(
+          titleContext,
+          color: CatchTokens.of(titleContext).ink2,
+        ),
+      );
+      expect(
+        tester.getTopLeft(find.text('Event preparation')).dy,
+        lessThan(tester.getTopLeft(find.text('Sunday Evening Run')).dy),
+      );
+    },
+  );
 
-  testWidgets('CatchTopBar uses the root screen headline voice', (
+  testWidgets('CatchTopBar root uses the platform headline scale', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -178,7 +184,7 @@ void main() {
 
     final titleContext = tester.element(find.text('Activity'));
     expect(find.byType(CatchTopBar), findsOneWidget);
-    expect(tester.getSize(find.byType(CatchTopBar)).height, 88);
+    expect(tester.getSize(find.byType(CatchTopBar)).height, 56);
     expect(
       tester.widget<Text>(find.text('Activity')).style,
       CatchTextStyles.headline(
@@ -196,7 +202,7 @@ void main() {
       MaterialApp(
         theme: AppTheme.light,
         home: CatchRouteScaffold(
-          topBarBuilder: (context, scrolledUnder) => CatchTopBar(
+          topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
             title: 'Payment history',
             navigation: const CatchTopBarNavigation(
               mode: CatchTopBarNavigationMode.back,
@@ -306,22 +312,14 @@ void main() {
     },
   );
 
-  testWidgets('CatchScreenHeader supports reviewed two-line titles', (
+  testWidgets('Root app bars wrap long titles at accessible text sizes', (
     tester,
   ) async {
     await tester.pumpWidget(
-      MaterialApp(
-        theme: AppTheme.light,
-        home: const Scaffold(
-          body: CatchScreenHeader.block(
-            title: 'Good evening, Mira',
-            titleMaxLines: 2,
-          ),
-        ),
-      ),
+      _wrapScreenTopBar(title: 'Good evening, Mira', textScale: 2),
     );
-
     expect(tester.widget<Text>(find.text('Good evening, Mira')).maxLines, 2);
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('CatchTopBar wires leading and action controls', (tester) async {
@@ -330,7 +328,7 @@ void main() {
 
     await tester.pumpWidget(
       _wrap(
-        CatchTopBar(
+        CatchTopBar.route(
           title: 'Profile',
           navigation: CatchTopBarNavigation(
             mode: CatchTopBarNavigationMode.back,
@@ -369,7 +367,7 @@ void main() {
 
     await tester.pumpWidget(
       _wrap(
-        CatchTopBar(
+        CatchTopBar.route(
           title: 'Home',
           navigation: const CatchTopBarNavigation(
             mode: CatchTopBarNavigationMode.none,
@@ -403,14 +401,14 @@ void main() {
     expect(find.byType(CatchTopBarActionRow), findsOneWidget);
   });
 
-  testWidgets('CatchScreenHeader uses the same action group', (tester) async {
+  testWidgets('Root app bars use the same action group', (tester) async {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.light,
         home: const Scaffold(
           body: SizedBox(
             width: 390,
-            child: CatchScreenHeader(
+            child: CatchTopBar.primaryRail(
               title: 'Your profile',
               actions: [
                 SizedBox.square(
@@ -525,7 +523,10 @@ void main() {
       ),
     );
 
-    expect(find.widgetWithText(CatchButton, 'Create event'), findsOneWidget);
+    expect(
+      find.widgetWithText(CatchToolbarControl, 'Create event'),
+      findsOneWidget,
+    );
     expect(find.byType(CatchIconAction), findsNothing);
   });
 
@@ -548,46 +549,41 @@ void main() {
     expect(exception.toString(), contains('direct top-bar action'));
   });
 
-  testWidgets('CatchTopBar supports custom title widgets and text actions', (
-    tester,
-  ) async {
-    var saved = false;
+  testWidgets(
+    'CatchTopBar identity supports profile navigation and text actions',
+    (tester) async {
+      var saved = false;
 
-    await tester.pumpWidget(
-      _wrap(
-        CatchTopBar(
-          body: const Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              CircleAvatar(radius: 12, child: Text('A')),
-              SizedBox(width: 8),
-              Text('Aarav'),
+      await tester.pumpWidget(
+        _wrap(
+          CatchTopBar.identity(
+            identityName: 'Aarav',
+            identitySemanticLabel: 'View Aarav profile',
+            navigation: const CatchTopBarNavigation(
+              mode: CatchTopBarNavigationMode.none,
+            ),
+            actions: [
+              CatchButton.text(label: 'Save', onPressed: () => saved = true),
             ],
           ),
-          navigation: const CatchTopBarNavigation(
-            mode: CatchTopBarNavigationMode.none,
-          ),
-          actions: [
-            CatchButton.text(label: 'Save', onPressed: () => saved = true),
-          ],
         ),
-      ),
-    );
+      );
 
-    expect(find.byType(CircleAvatar), findsOneWidget);
-    expect(find.text('Aarav'), findsOneWidget);
+      expect(find.byType(CatchAvatar), findsOneWidget);
+      expect(find.text('Aarav'), findsOneWidget);
 
-    await tester.tap(find.text('Save'));
-    await tester.pump();
-    expect(saved, isTrue);
-  });
+      await tester.tap(find.text('Save'));
+      await tester.pump();
+      expect(saved, isTrue);
+    },
+  );
 
   testWidgets('CatchTopBar constrains text actions at large text scale', (
     tester,
   ) async {
     await tester.pumpWidget(
       _wrapWithTextScale(
-        CatchTopBar(
+        CatchTopBar.route(
           title: 'Activity',
           navigation: const CatchTopBarNavigation(
             mode: CatchTopBarNavigationMode.none,
@@ -608,7 +604,7 @@ void main() {
   ) async {
     await tester.pumpWidget(
       _wrapWithTextScale(
-        const CatchTopBar(
+        const CatchTopBar.route(
           title: 'Professional profile',
           subtitle: 'Active professional profile',
           navigation: CatchTopBarNavigation(
@@ -621,7 +617,7 @@ void main() {
 
     expect(tester.takeException(), isNull);
     expect(find.text('Professional profile'), findsOneWidget);
-    expect(find.text('Active professional profile'), findsNothing);
+    expect(find.text('Active professional profile'), findsOneWidget);
   });
 
   testWidgets('CatchTopBar constrains large subtitle at large text scale', (
@@ -629,10 +625,9 @@ void main() {
   ) async {
     await tester.pumpWidget(
       _wrapWithTextScale(
-        const CatchTopBar(
+        const CatchTopBar.route(
           title: 'Create event',
           subtitle: 'Add the details guests need before they book',
-          kicker: 'Host event',
           navigation: CatchTopBarNavigation(
             mode: CatchTopBarNavigationMode.none,
           ),
@@ -646,11 +641,11 @@ void main() {
     expect(find.text('Create event'), findsOneWidget);
     expect(
       find.text('Add the details guests need before they book'),
-      findsNothing,
+      findsOneWidget,
     );
   });
 
-  testWidgets('CatchTopBar renders the large handoff AppBar header', (
+  testWidgets('CatchTopBar context uses the shared route geometry', (
     tester,
   ) async {
     var closed = false;
@@ -658,10 +653,9 @@ void main() {
 
     await tester.pumpWidget(
       _wrap(
-        CatchTopBar(
+        CatchTopBar.route(
           title: 'Discover',
           subtitle: 'Tonight near you',
-          kicker: 'Explore',
           navigation: CatchTopBarNavigation(
             mode: CatchTopBarNavigationMode.close,
             onPressed: () => closed = true,
@@ -675,8 +669,11 @@ void main() {
       ),
     );
 
-    expect(tester.getSize(find.byType(CatchTopBar)).height, 104);
-    expect(find.text('EXPLORE'), findsOneWidget);
+    expect(
+      tester.getSize(find.byType(CatchTopBar)).height,
+      greaterThanOrEqualTo(56),
+    );
+    expect(find.text('EXPLORE'), findsNothing);
     expect(find.text('Discover'), findsOneWidget);
     expect(find.text('Tonight near you'), findsOneWidget);
     expect(_topBarMaterial(tester).color, CatchTokens.editorialLight.surface);
@@ -709,7 +706,7 @@ void main() {
         theme: AppTheme.light,
         home: StatefulBuilder(
           builder: (context, setState) => Scaffold(
-            appBar: CatchTopBar(
+            appBar: CatchTopBar.route(
               title: 'Clubs',
               search: CatchTopBarSearch(
                 copy: catchSearchFieldCopy(AppLocalizationsEn()),
@@ -753,15 +750,15 @@ void main() {
     expect(find.text('Clubs'), findsOneWidget);
   });
 
-  testWidgets('CatchTopBar can render an icon-only onboarding bar', (
+  testWidgets('CatchTopBar route owns the outlined navigation treatment', (
     tester,
   ) async {
     await tester.pumpWidget(
       _wrap(
-        const CatchTopBar(
+        const CatchTopBar.route(
+          title: 'Welcome',
           navigation: CatchTopBarNavigation(
             mode: CatchTopBarNavigationMode.back,
-            variant: CatchIconActionVariant.plain,
           ),
         ),
       ),
@@ -771,7 +768,7 @@ void main() {
     expect(find.byType(CatchIconAction), findsOneWidget);
     expect(
       tester.widget<CatchIconAction>(find.byType(CatchIconAction)).variant,
-      CatchIconActionVariant.plain,
+      CatchIconActionVariant.bordered,
     );
   });
 
@@ -786,7 +783,7 @@ void main() {
         home: DefaultTabController(
           length: 2,
           child: Scaffold(
-            appBar: CatchTopBar(
+            appBar: CatchTopBar.route(
               title: 'Profile',
               navigation: const CatchTopBarNavigation(
                 mode: CatchTopBarNavigationMode.none,
@@ -819,7 +816,10 @@ void main() {
       ),
     );
 
-    expect(tester.getSize(find.byType(CatchTopBar)).height, 104);
+    expect(
+      tester.getSize(find.byType(CatchTopBar)).height,
+      greaterThanOrEqualTo(56),
+    );
     expect(find.text('Profile'), findsNWidgets(2));
     expect(find.text('Preview'), findsOneWidget);
 
@@ -910,7 +910,7 @@ void main() {
 Widget _wrap(PreferredSizeWidget appBar) {
   return MaterialApp(
     theme: AppTheme.light,
-    home: Scaffold(appBar: appBar, body: const SizedBox.shrink()),
+    home: CatchScaffold.workspace(title: appBar, body: const SizedBox.shrink()),
   );
 }
 
@@ -922,9 +922,8 @@ Widget _wrapScreenTopBar({
   CatchTopBarSearch? search,
 }) {
   Widget home = Builder(
-    builder: (context) => Scaffold(
-      appBar: CatchTopBar.screen(
-        context: context,
+    builder: (context) => CatchScaffold.workspace(
+      title: CatchTopBar.screen(
         title: title,
         subtitle: subtitle,
         actions: actions,
@@ -954,7 +953,10 @@ Widget _wrapWithTextScale(
         child: SizedBox(
           width: 390,
           height: 812,
-          child: Scaffold(appBar: appBar, body: const SizedBox.shrink()),
+          child: CatchScaffold.workspace(
+            title: appBar,
+            body: const SizedBox.shrink(),
+          ),
         ),
       ),
     ),
