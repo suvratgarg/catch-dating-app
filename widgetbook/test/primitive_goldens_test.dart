@@ -101,10 +101,9 @@ void main() {
     expect(registered, greaterThan(0));
     expect(renderer.visited.length, registered);
     expect(renderer.visited.toSet().length, registered);
-    // The seven retired recipe previews were the club tag, screen/sliver/list,
-    // and rows/boxes/chips skeletons. Derived-content and leaf cases remain;
-    // the shared conditional-configuration preview adds one designation.
-    expect(coreGoldenIds, hasLength(302));
+    // Pin the reviewed designation inventory, including toolbar inheritance.
+    // Exact visitation below also rejects missing or duplicate registrations.
+    expect(coreGoldenIds, hasLength(303));
     expect(renderer.selected, unorderedEquals(coreGoldenIds));
     expect(
       coreGoldenIds.map(_corpusStem).toSet(),
