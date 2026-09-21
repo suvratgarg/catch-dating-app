@@ -75,10 +75,10 @@
         "containedRows",
         "containedLoadingRows",
         "dependentFieldRows",
+        "action",
         "content",
         "sliverRows",
-        "sliverLoadingRows",
-        "action"
+        "sliverLoadingRows"
       ],
       "slots": [
         "title",
