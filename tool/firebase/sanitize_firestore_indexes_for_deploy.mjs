@@ -47,6 +47,8 @@ export function sanitizeFirestoreIndexesForDeploy({packaged, current}) {
     "current Firestore index configuration must contain indexes");
   const currentSignatures = new Set(current.indexes.map(indexSignature));
   const removed = [];
+  const duplicates = [];
+  const seenDefinitions = new Set();
   const indexes = [];
   for (const index of packaged.indexes) {
     const signature = indexSignature(index);
@@ -57,11 +59,20 @@ export function sanitizeFirestoreIndexesForDeploy({packaged, current}) {
       removed.push(signature);
       continue;
     }
+    // Preserve every property and field order: the narrower signature above
+    // cannot prove that two complete deployable definitions are identical.
+    const definition = JSON.stringify(index);
+    if (seenDefinitions.has(definition)) {
+      duplicates.push(definition);
+      continue;
+    }
+    seenDefinitions.add(definition);
     indexes.push(index);
   }
   return {
     document: {...packaged, indexes},
     removed,
+    duplicates,
   };
 }
 
@@ -87,6 +98,8 @@ function runCli() {
     ok: true,
     removedCount: result.removed.length,
     removed: result.removed,
+    duplicateCount: result.duplicates.length,
+    duplicates: result.duplicates,
   }));
 }
 

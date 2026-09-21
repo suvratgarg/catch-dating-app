@@ -65,3 +65,46 @@ test("field overrides fail closed instead of assuming a built-in index", () => {
   assert.deepEqual(result.document.indexes, [redundant]);
   assert.deepEqual(result.removed, []);
 });
+
+test("identical historical composite duplicates are removed only from the deploy copy", () => {
+  const fieldOverrides = [{collectionGroup: "events", fieldPath: "note", indexes: []}];
+  const packaged = {
+    indexes: [composite, structuredClone(composite), structuredClone(composite)],
+    fieldOverrides,
+  };
+  const original = structuredClone(packaged);
+  const result = sanitizeFirestoreIndexesForDeploy({packaged, current: packaged});
+  assert.deepEqual(result.document.indexes, [composite]);
+  assert.equal(result.document.indexes[0], packaged.indexes[0]);
+  assert.deepEqual(result.document.fieldOverrides, fieldOverrides);
+  assert.deepEqual(packaged, original);
+  assert.equal(result.duplicates.length, 2);
+  assert.deepEqual(result.removed, []);
+  const repeated = sanitizeFirestoreIndexesForDeploy({
+    packaged: result.document, current: packaged,
+  });
+  assert.deepEqual(repeated.document, result.document);
+  assert.deepEqual(repeated.duplicates, []);
+});
+
+test("deduplication retains definitions that differ in any property or field order", () => {
+  const indexes = [
+    composite,
+    {...composite, queryScope: "COLLECTION_GROUP"},
+    {...composite, apiScope: "DATASTORE_MODE_API"},
+    {...composite, density: "DENSE"},
+    {...composite, multikey: true},
+    {...composite, fields: [...composite.fields].reverse()},
+    {...composite, futureOption: true},
+    ...[128, 256].map((dimension) => ({
+      ...composite,
+      fields: [{fieldPath: "embedding", vectorConfig: {dimension}}],
+    })),
+  ];
+  const result = sanitizeFirestoreIndexesForDeploy({
+    packaged: {indexes}, current: {indexes},
+  });
+  assert.deepEqual(result.document.indexes, indexes);
+  assert.deepEqual(result.duplicates, []);
+  assert.deepEqual(result.removed, []);
+});
