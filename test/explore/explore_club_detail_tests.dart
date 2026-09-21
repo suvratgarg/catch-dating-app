@@ -783,7 +783,15 @@ void _registerExploreClubDetailTests() {
           )
           .first,
     );
-    expect(scrollBackground.color, CatchTokens.editorialLight.surface);
+    expect(scrollBackground.color, CatchTokens.editorialLight.bg);
+    final metrics = tester.widget<CatchMetricSection>(
+      find.byType(CatchMetricSection),
+    );
+    expect(metrics.variant, CatchMetricSectionVariant.grid);
+    expect(
+      metrics.items.map((item) => item.label),
+      ['Followers', 'Rating', 'Reviews', 'Established'],
+    );
     expect(find.byIcon(CatchIcons.platformShare()), findsOneWidget);
     expect(find.text('Share'), findsNothing);
     expect(find.text('Asha Host'), findsOneWidget);
