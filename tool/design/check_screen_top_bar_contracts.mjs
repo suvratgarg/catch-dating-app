@@ -302,7 +302,7 @@ function checkCanonicalScreenScaffoldAppBar({root, findings}) {
       path: canonicalScreenScaffoldPath,
       message:
         `${canonicalScreenScaffoldSymbol}.build must contain exactly one ` +
-        "returned Scaffold whose top-level appBar argument forwards the " +
+        "direct or constraint-measured Scaffold whose top-level appBar argument forwards the " +
         "class title field directly or through its canonical scaled-size adapter. " +
         "Only that exact infrastructure " +
         "declaration is exempt from per-screen chrome registration.",
@@ -338,7 +338,11 @@ function findCanonicalScreenScaffoldAppBarIndex(source) {
   const buildOpenBrace =
     classOpenBrace + (buildMatch.index ?? 0) + buildMatch[0].lastIndexOf("{");
   const buildBody = readBalanced(source, buildOpenBrace, "{", "}");
-  const scaffoldMatches = [...buildBody.matchAll(/\breturn\s+Scaffold\s*\(/gu)];
+  const directScaffolds = [...buildBody.matchAll(/\breturn\s+Scaffold\s*\(/gu)];
+  const constrainedScaffolds = [...buildBody.matchAll(
+    /\breturn\s+LayoutBuilder\s*\(\s*builder\s*:\s*\(\s*context\s*,\s*constraints\s*\)\s*=>\s*Scaffold\s*\(/gu,
+  )];
+  const scaffoldMatches = [...directScaffolds, ...constrainedScaffolds];
   if (scaffoldMatches.length !== 1) return null;
 
   const scaffoldMatch = scaffoldMatches[0];
@@ -353,7 +357,16 @@ function findCanonicalScreenScaffoldAppBarIndex(source) {
     "switch(title){finalCatchScaledPreferredSizescaled=>PreferredSize(" +
     "preferredSize:scaled.preferredSizeFor(context),child:scaled,)," +
     "finalbar=>bar,}";
-  if (argument !== "title" && compactArgument !== scaledForwarder) return null;
+  const constrainedForwarder =
+    "switch(title){finalCatchScaledPreferredSizescaled=>PreferredSize(" +
+    "preferredSize:scaled.preferredSizeFor(context," +
+    "width:constraints.hasBoundedWidth?constraints.maxWidth:null,),child:scaled,)," +
+    "finalbar=>bar,}";
+  if (constrainedScaffolds.length === 1) {
+    if (compactArgument !== constrainedForwarder) return null;
+  } else if (argument !== "title" && compactArgument !== scaledForwarder) {
+    return null;
+  }
 
   const appBarMatches = [...scaffoldCall.matchAll(appBarPattern)];
   if (appBarMatches.length !== 1) return null;

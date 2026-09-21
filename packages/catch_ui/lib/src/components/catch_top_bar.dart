@@ -137,14 +137,17 @@ class CatchTopBar extends StatefulWidget implements CatchScaledPreferredSize {
   );
 
   @override
-  Size preferredSizeFor(BuildContext context) {
+  Size preferredSizeFor(BuildContext context, {double? width}) {
     final bottom = switch (footer) {
       final CatchScaledPreferredSize scaled =>
-        scaled.preferredSizeFor(context).height,
+        scaled.preferredSizeFor(context, width: width).height,
       final bar? => bar.preferredSize.height,
       null => 0.0,
     };
-    return Size.fromHeight(contentHeightFor(context) + bottom);
+    return Size.fromHeight(
+      _contentHeightFor(context, width ?? MediaQuery.sizeOf(context).width) +
+          bottom,
+    );
   }
 
   double contentHeightFor(BuildContext context) =>
@@ -173,8 +176,9 @@ class CatchTopBar extends StatefulWidget implements CatchScaledPreferredSize {
         CatchTopBarActionRow(actions: actions).minimumWidth,
       );
     }
-    if (identityName != null)
+    if (identityName != null) {
       laneWidth -= 36 + CatchSpacing.s2 + CatchSpacing.micro2;
+    }
     laneWidth = math.max(1, laneWidth);
     final titleHeight = _textHeight(
       context,
@@ -197,8 +201,9 @@ class CatchTopBar extends StatefulWidget implements CatchScaledPreferredSize {
             maxLines: _lines(context),
           );
     }
-    if (identityName != null)
+    if (identityName != null) {
       textHeight += CatchInsets.controlVerticalTight.vertical;
+    }
     var rowHeight = math.max(target, textHeight);
     if (search?.enabled ?? false) {
       rowHeight = math.max(
@@ -231,7 +236,24 @@ class CatchTopBar extends StatefulWidget implements CatchScaledPreferredSize {
       1.0,
       (width - CatchSpacing.s2 * (actions.length - 1)) / actions.length,
     );
-    for (final action in actions) {
+    for (final item in actions) {
+      Widget? action = item;
+      // Accessibility wrappers do not change a control's painted size.
+      while (action is Semantics) {
+        action = action.child;
+      }
+      if (action is Text) {
+        height = math.max(
+          height,
+          _textHeight(
+            context,
+            action.data ?? action.textSpan?.toPlainText() ?? '',
+            action.style ?? DefaultTextStyle.of(context).style,
+            lane,
+            maxLines: action.maxLines,
+          ),
+        );
+      }
       if (action is CatchTopBarPrimaryButton &&
           !CatchWindowSize.fromWidth(
             MediaQuery.sizeOf(context).width,
@@ -254,6 +276,14 @@ class CatchTopBar extends StatefulWidget implements CatchScaledPreferredSize {
         );
       }
       if (action is CatchButton && action.isTextAction) {
+        final tapTargetSize =
+            action.tapTargetSize ??
+            TextButtonTheme.of(context).style?.tapTargetSize ??
+            Theme.of(context).materialTapTargetSize;
+        height = math.max(height, action.minimumSize.height);
+        if (tapTargetSize == MaterialTapTargetSize.padded) {
+          height = math.max(height, kMinInteractiveDimension);
+        }
         final padding = action.padding.resolve(Directionality.of(context));
         final labelWidth =
             lane -

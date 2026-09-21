@@ -20,6 +20,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../clubs/clubs_test_helpers.dart' show buildClub;
 import '../events/events_test_helpers.dart' show buildEvent;
+import '../test_pump_helpers.dart';
 
 void main() {
   Future<void> mount(WidgetTester tester, Widget child) async {
@@ -42,7 +43,7 @@ void main() {
         ),
       ),
     );
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
   }
 
   testWidgets(

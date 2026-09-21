@@ -1,6 +1,6 @@
 ---
 doc_id: design_language
-version: 1.29.0
+version: 1.29.1
 updated: 2026-09-21
 owner: ui_elevation_initiative
 status: active # identity locked; Phase 0–1 complete (bundled optical-sized fonts, B&W tokens, ActivityPalette routing, matte grade, anti-drift gates); Phase 2 flagship Profile built
@@ -373,6 +373,33 @@ Additional rules:
 
 The audited application of this doctrine lives in
 `docs/design_parity/containment_audit.md`.
+
+Body compositions selecta semantic recipe before paint. Ordinary informational
+sections and successful-empty content stay flat; emptiness alone never earns a
+surface. `CatchSection.action` owns a single task: title, optional structured
+facts, explanation, then a full-width action. It uses 16 pt padding, 12 pt content
+gaps, a 16 pt action gap, radius.md and primarySoft fill without a shadow or
+outline. Primary, secondary and destructive action roles change the button;
+a destructive action does not recolor its whole module. Callers supply content,
+callbacks and busy state, never padding, shadows or arbitrary button variants.
+`CatchSection.contained` is the fixed, shadowless framed collection recipe. It
+owns semantic boundary/focus/error treatment; use the field/row recipes when
+those controls own the collection geometry. Module borders are not decoration.
+`CatchBanner` body feedback uses the same padding, heading/body rhythm and
+below-copy action placement for neutral, primary, success, warning and danger.
+Tone changes pigment and glyph, not layout. Durable screen status bands retain
+their dedicated geometry. Elevation is reserved for actual plane changes.
+For inline empty content or body feedback, an icon accompanies the heading and
+never reserves a column beside the whole paragraph. Message-only empty and feedback states omit decorative icons.
+The parent section list owns inter-module spacing through CatchGaps.section;
+modules own internal spacing. Do not combine a zero-gap list with adjoining
+self-contained modules without an explicit parent-owned section boundary.
+
+Goldens record a reviewed result, not design authority. Approve fresh renders
+against these rules before updating baselines. Regression tests verify full-width
+copy, matching geometry across semantic tones, action state and report spacing
+in packages/catch_ui/test/surface_composition_test.dart and
+test/design_system/surface_composition_test.dart.
 
 ### 7.1.1 Semantic line system — how an earned line looks
 

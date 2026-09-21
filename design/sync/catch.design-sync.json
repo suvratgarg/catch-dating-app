@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "9340cdebbb82ed63784c1ec7338381085d9539f09479aa089524a95c48196130",
+  "sourceDigest": "ae4044f020989a49e539abda0b25202f8d1304a689e3a8a50c12f52398049c8f",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "9340cdebbb82ed63784c1ec7338381085d9539f09479aa089524a95c48196130",
-    "contractDigest": "9340cdebbb82ed63784c1ec7338381085d9539f09479aa089524a95c48196130"
+    "digest": "ae4044f020989a49e539abda0b25202f8d1304a689e3a8a50c12f52398049c8f",
+    "contractDigest": "ae4044f020989a49e539abda0b25202f8d1304a689e3a8a50c12f52398049c8f"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "ae978761558b56efaa77575445022d6c41d90644a96b75be654ae9f845c6f174",
+    "handoffRequestDigest": "7e340b04973ea7aaf439921c9ddb9ac9e9c3a69859c7a73163947680f2fb7e85",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -843,8 +843,8 @@
       "figmaVariableBindingCount": 0,
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
-      "figmaExpectedPropertyCount": 19,
-      "figmaExpectedPropertyDigest": "2bbffbce5dcdc64d101d8d953190556a1cfc4cbcca2d8cb0ad853131141065f1",
+      "figmaExpectedPropertyCount": 21,
+      "figmaExpectedPropertyDigest": "818dc183bf8e242df3316acd2017c49641c671b5e109e292cf566eaef8e20e03",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
@@ -852,7 +852,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Section",
       "claudeAllowed": true,
-      "contractDigest": "158d52e95037bdd57f76a2882e12b33dd2f6c2534e3a02f9202d81593a195cce"
+      "contractDigest": "a528de732fa03944983a171ead64807274f8e6a96c9300788d1c95bf14270904"
     },
     {
       "contractId": "catch.skeleton",
