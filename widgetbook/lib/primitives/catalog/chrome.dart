@@ -282,11 +282,11 @@ Widget catchIconActionCatalogStates(BuildContext context) {
               tooltip: 'Save',
               onPressed: widgetbookNoop,
             ),
-            CatchIconAction.toolbar(
-              icon: CatchIcons.share,
+            CatchIconAction(
               tooltip: 'Share',
               variant: CatchIconActionVariant.plain,
               onPressed: widgetbookNoop,
+              child: Icon(CatchIcons.share),
             ),
             CatchIconAction.toolbar(
               icon: CatchIcons.moreHorizRounded,

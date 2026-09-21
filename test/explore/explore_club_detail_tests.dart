@@ -33,7 +33,7 @@ void _registerExploreClubDetailTests() {
     expect(find.text('HYD'), findsNothing);
     expect(find.text('Hyderabad'), findsOneWidget);
     final triggerSize = tester.getSize(find.byType(ExploreCityPicker));
-    expect(triggerSize.height, CatchSpacing.s12);
+    expect(triggerSize.height, CatchToolbarMetrics.targetExtent);
     expect(triggerSize.width, greaterThan(triggerSize.height));
     expect(triggerSize.width, lessThanOrEqualTo(132));
   });

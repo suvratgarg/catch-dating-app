@@ -12,6 +12,8 @@ import 'package:catch_ui/src/components/catch_top_bar_navigation.dart';
 import 'package:catch_ui/src/components/catch_top_bar_primary_button.dart';
 import 'package:catch_ui/src/components/catch_top_bar_search.dart';
 import 'package:catch_ui/src/components/catch_top_bar_tone.dart';
+import 'package:catch_ui/src/components/catch_toolbar_metrics.dart';
+import 'package:catch_ui/src/components/catch_toolbar_control.dart';
 import 'package:catch_ui/src/foundations/catch_icons.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:catch_ui/src/primitives/catch_gap.dart';
@@ -156,6 +158,7 @@ class CatchTopBar extends StatefulWidget implements CatchScaledPreferredSize {
   double _contentHeightFor(BuildContext context, double width) {
     final target = CatchIconAction.targetExtentFor(CatchIconAction.navSize);
     final largeText = _lines(context) > 1;
+    final selectorReflow = largeText && _root && leading is CatchToolbarLeading;
     final hasLeading =
         leading != null ||
         switch (navigation.mode) {
@@ -165,10 +168,19 @@ class CatchTopBar extends StatefulWidget implements CatchScaledPreferredSize {
           CatchTopBarNavigationMode.back ||
           CatchTopBarNavigationMode.close => true,
         };
+    final leadingSize = leading is CatchToolbarLeading
+        ? (leading! as CatchToolbarLeading).toolbarSizeFor(context)
+        : Size.square(target);
     final contentWidth = math.max(1.0, width - _padding.horizontal);
-    var laneWidth = contentWidth - (hasLeading ? target + CatchSpacing.s3 : 0);
-    if (search?.enabled ?? false) {
-      laneWidth -= CatchIconAction.targetExtentFor(search!.collapsedExtent);
+    var laneWidth =
+        contentWidth -
+        (hasLeading && !selectorReflow
+            ? leadingSize.width + CatchSpacing.s3
+            : 0);
+    if (!selectorReflow && (search?.enabled ?? false)) {
+      laneWidth -= CatchToolbarMetrics.targetExtent;
+      if (!largeText && actions.isNotEmpty)
+        laneWidth -= CatchToolbarMetrics.gap;
     }
     if (!largeText && actions.isNotEmpty) {
       laneWidth -= math.max(
@@ -204,13 +216,36 @@ class CatchTopBar extends StatefulWidget implements CatchScaledPreferredSize {
     if (identityName != null) {
       textHeight += CatchInsets.controlVerticalTight.vertical;
     }
-    var rowHeight = math.max(target, textHeight);
+    if (selectorReflow) {
+      final searchHeight = (search?.enabled ?? false)
+          ? CatchSearchField.heightFor(
+              context,
+              visualExtent: CatchToolbarMetrics.visualExtent,
+            )
+          : target;
+      final controlsHeight = math.max(
+        leadingSize.height,
+        math.max(searchHeight, _actionsHeight(context, contentWidth)),
+      );
+      return math.max(
+        CatchLayout.topBarHeight,
+        (textHeight +
+                CatchToolbarMetrics.gap +
+                controlsHeight +
+                _padding.vertical)
+            .ceilToDouble(),
+      );
+    }
+    var rowHeight = math.max(
+      hasLeading ? leadingSize.height : target,
+      textHeight,
+    );
     if (search?.enabled ?? false) {
       rowHeight = math.max(
         rowHeight,
         CatchSearchField.heightFor(
           context,
-          visualExtent: search!.collapsedExtent,
+          visualExtent: CatchToolbarMetrics.visualExtent,
         ),
       );
     }
@@ -260,19 +295,7 @@ class CatchTopBar extends StatefulWidget implements CatchScaledPreferredSize {
           ).isCompact) {
         height = math.max(
           height,
-          _textHeight(
-                context,
-                action.label,
-                CatchTextStyles.buttonSm(context),
-                math.max(
-                  1,
-                  lane -
-                      CatchSpacing.micro14 * 2 -
-                      CatchIcon.sm -
-                      CatchSpacing.micro6,
-                ),
-              ) +
-              CatchSpacing.s2 * 2,
+          CatchToolbarControl.sizeFor(context, label: action.label).height,
         );
       }
       if (action is CatchButton && action.isTextAction) {
@@ -350,16 +373,35 @@ class _CatchTopBarState extends State<CatchTopBar> {
   }
 
   @override
-  Widget build(BuildContext context) => LayoutBuilder(
-    builder: (context, constraints) => _buildBar(context, constraints.maxWidth),
-  );
+  Widget build(BuildContext context) {
+    final bar = LayoutBuilder(
+      builder: (context, constraints) =>
+          _buildBar(context, constraints.maxWidth),
+    );
+    if (widget.tone != CatchTopBarTone.overlay) return bar;
+    return Theme(
+      data: Theme.of(context).copyWith(
+        extensions: [
+          ...Theme.of(
+            context,
+          ).extensions.values.where((extension) => extension is! CatchTokens),
+          CatchTokens.dark,
+        ],
+      ),
+      child: bar,
+    );
+  }
 
   Widget _buildBar(BuildContext context, double width) {
     final t = CatchTokens.of(context);
     final showDivider = widget.emphasis == CatchTopBarEmphasis.divided;
     final background =
         widget.backgroundColor ??
-        (widget.tone == CatchTopBarTone.surface ? t.surface : t.bg);
+        switch (widget.tone) {
+          CatchTopBarTone.surface => t.surface,
+          CatchTopBarTone.overlay => Colors.transparent,
+          CatchTopBarTone.page => t.bg,
+        };
     const crossAxisAlignment = CrossAxisAlignment.center;
     Widget? leading = widget.leading;
     if (leading == null) {
@@ -379,7 +421,6 @@ class _CatchTopBarState extends State<CatchTopBar> {
               ? localizations.closeButtonTooltip
               : localizations.backButtonTooltip,
           icon: isClose ? CatchIcons.close : CatchIcons.arrowBackIosNewRounded,
-          variant: widget.navigation.variant,
           onPressed:
               widget.navigation.onPressed ??
               () => Navigator.of(context).maybePop(),
@@ -387,6 +428,8 @@ class _CatchTopBarState extends State<CatchTopBar> {
       }
     }
     final largeText = CatchTopBar._lines(context) > 1;
+    final selectorReflow =
+        largeText && widget._root && widget.leading is CatchToolbarLeading;
     final effectiveActions = largeText ? const <Widget>[] : widget.actions;
     final identityName = widget.identityName;
     final body = (identityName != null && identityName.isNotEmpty
@@ -473,130 +516,134 @@ class _CatchTopBarState extends State<CatchTopBar> {
                 : const Border(),
           ),
           child: LayoutBuilder(
-            builder: (context, frameConstraints) => Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Row(
-                  crossAxisAlignment: crossAxisAlignment,
-                  children: [
-                    if (leading != null) ...[leading, gapW12],
-                    Expanded(
-                      child: LayoutBuilder(
-                        builder: (context, laneConstraints) {
-                          final search = _searchEnabled ? widget.search : null;
-                          final searchWidget = search == null
-                              ? null
-                              : CatchSearchField.expanding(
-                                  copy: search.copy,
-                                  key: search.fieldKey,
-                                  status: _searchOpenEffective
-                                      ? CatchSearchFieldStatus.expanded
-                                      : CatchSearchFieldStatus.collapsed,
-                                  maxWidth: laneConstraints.maxWidth,
-                                  value: search.value,
-                                  contract: search.contract,
-                                  contractExemption: search.contractExemption,
-                                  onChanged: search.onChanged,
-                                  placeholder: search.placeholder,
-                                  autofocus: search.autofocus,
-                                  textInputAction: search.textInputAction,
-                                  onSubmitted: search.onSubmitted,
-                                  onFocusChanged: search.onFocusChanged,
-                                  semanticLabel: search.semanticLabel,
-                                  onOpenSearch: () => _setSearchOpen(true),
-                                  onCloseSearch: () => _setSearchOpen(false),
-                                  tooltip: search.tooltip,
-                                  collapsedExtent: search.collapsedExtent,
-                                  backgroundColor: search.backgroundColor,
-                                  borderColor: search.borderColor,
-                                  foregroundColor: search.foregroundColor,
-                                  mutedForegroundColor:
-                                      search.mutedForegroundColor,
-                                );
-                          final maxTrailingWidth =
-                              frameConstraints.maxWidth *
-                              CatchLayout.topBarTrailingMaxRatio;
-                          final minimumTrailingWidth =
-                              trailing is CatchTopBarActionRow
-                              ? trailing.minimumWidth
-                              : CatchPlatformTokens.minimumInteractiveExtent;
-                          final trailingEdge = trailing == null
-                              ? const SizedBox.shrink()
-                              : ConstrainedBox(
-                                  constraints: BoxConstraints(
-                                    maxWidth:
-                                        maxTrailingWidth < minimumTrailingWidth
-                                        ? minimumTrailingWidth
-                                        : maxTrailingWidth,
-                                  ),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [Flexible(child: trailing)],
-                                  ),
-                                );
-                          if (searchWidget == null) {
-                            return Row(
-                              crossAxisAlignment: crossAxisAlignment,
-                              children: [
-                                Expanded(child: title),
-                                trailingEdge,
-                              ],
-                            );
-                          }
-                          return Stack(
-                            alignment: Alignment.centerRight,
-                            children: [
-                              ExcludeSemantics(
-                                excluding: _searchOpenEffective,
-                                child: IgnorePointer(
-                                  ignoring: _searchOpenEffective,
-                                  child: AnimatedOpacity(
-                                    opacity: _searchOpenEffective ? 0 : 1,
-                                    duration: CatchMotion.base,
-                                    curve: CatchMotion.standardCurve,
-                                    child: Row(
-                                      crossAxisAlignment: crossAxisAlignment,
-                                      children: [
-                                        Expanded(child: title),
-                                        trailingEdge,
-                                        if (trailing != null) gapW4,
-                                        SizedBox(
-                                          width:
-                                              CatchIconAction.targetExtentFor(
-                                                widget
-                                                        .search
-                                                        ?.collapsedExtent ??
-                                                    CatchIconAction.navSize,
-                                              ),
+            builder: (context, frameConstraints) => selectorReflow
+                ? Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      title,
+                      const SizedBox(height: CatchToolbarMetrics.gap),
+                      _selectorControls(leading!, frameConstraints.maxWidth),
+                    ],
+                  )
+                : Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Row(
+                        crossAxisAlignment: crossAxisAlignment,
+                        children: [
+                          if (leading != null) ...[
+                            CatchToolbarScope(child: leading),
+                            gapW12,
+                          ],
+                          Expanded(
+                            child: LayoutBuilder(
+                              builder: (context, laneConstraints) {
+                                final search = _searchEnabled
+                                    ? widget.search
+                                    : null;
+                                final searchWidget = search == null
+                                    ? null
+                                    : _searchField(
+                                        search,
+                                        laneConstraints.maxWidth,
+                                      );
+                                final maxTrailingWidth =
+                                    frameConstraints.maxWidth *
+                                    CatchLayout.topBarTrailingMaxRatio;
+                                final minimumTrailingWidth =
+                                    trailing is CatchTopBarActionRow
+                                    ? trailing.minimumWidth
+                                    : CatchPlatformTokens
+                                          .minimumInteractiveExtent;
+                                final trailingEdge = trailing == null
+                                    ? const SizedBox.shrink()
+                                    : ConstrainedBox(
+                                        constraints: BoxConstraints(
+                                          maxWidth:
+                                              maxTrailingWidth <
+                                                  minimumTrailingWidth
+                                              ? minimumTrailingWidth
+                                              : maxTrailingWidth,
                                         ),
-                                      ],
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Flexible(
+                                              child: CatchToolbarScope(
+                                                child: trailing,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                if (searchWidget == null) {
+                                  return Row(
+                                    crossAxisAlignment: crossAxisAlignment,
+                                    children: [
+                                      Expanded(child: title),
+                                      trailingEdge,
+                                    ],
+                                  );
+                                }
+                                return Stack(
+                                  alignment: Alignment.centerRight,
+                                  children: [
+                                    ExcludeSemantics(
+                                      excluding: _searchOpenEffective,
+                                      child: IgnorePointer(
+                                        ignoring: _searchOpenEffective,
+                                        child: AnimatedOpacity(
+                                          opacity: _searchOpenEffective ? 0 : 1,
+                                          duration: CatchMotion.base,
+                                          curve: CatchMotion.standardCurve,
+                                          child: Row(
+                                            crossAxisAlignment:
+                                                crossAxisAlignment,
+                                            children: [
+                                              Expanded(child: title),
+                                              trailingEdge,
+                                              if (trailing != null)
+                                                const SizedBox(
+                                                  width:
+                                                      CatchToolbarMetrics.gap,
+                                                ),
+                                              SizedBox(
+                                                width: CatchToolbarMetrics
+                                                    .targetExtent,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
                                     ),
-                                  ),
-                                ),
-                              ),
-                              searchWidget,
-                            ],
-                          );
-                        },
+                                    searchWidget,
+                                  ],
+                                );
+                              },
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                  ],
-                ),
-                if (largeText && widget.actions.isNotEmpty) ...[
-                  gapH8,
-                  Visibility(
-                    visible: !_searchOpenEffective,
-                    maintainSize: true,
-                    maintainState: true,
-                    maintainAnimation: true,
-                    child: Align(
-                      alignment: AlignmentDirectional.centerEnd,
-                      child: CatchTopBarActionRow(actions: widget.actions),
-                    ),
+                      if (largeText && widget.actions.isNotEmpty) ...[
+                        gapH8,
+                        Visibility(
+                          visible: !_searchOpenEffective,
+                          maintainSize: true,
+                          maintainState: true,
+                          maintainAnimation: true,
+                          child: Align(
+                            alignment: AlignmentDirectional.centerEnd,
+                            child: CatchToolbarScope(
+                              child: CatchTopBarActionRow(
+                                actions: widget.actions,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
                   ),
-                ],
-              ],
-            ),
           ),
         ),
         if (widget.footer != null)
@@ -616,6 +663,62 @@ class _CatchTopBarState extends State<CatchTopBar> {
       child: widget._safeArea
           ? SafeArea(bottom: false, child: content)
           : content,
+    );
+  }
+
+  Widget _searchField(CatchTopBarSearch search, double maxWidth) =>
+      CatchSearchField.expanding(
+        copy: search.copy,
+        key: search.fieldKey,
+        status: _searchOpenEffective
+            ? CatchSearchFieldStatus.expanded
+            : CatchSearchFieldStatus.collapsed,
+        maxWidth: maxWidth,
+        value: search.value,
+        contract: search.contract,
+        contractExemption: search.contractExemption,
+        onChanged: search.onChanged,
+        placeholder: search.placeholder,
+        autofocus: search.autofocus,
+        textInputAction: search.textInputAction,
+        onSubmitted: search.onSubmitted,
+        onFocusChanged: search.onFocusChanged,
+        semanticLabel: search.semanticLabel,
+        onOpenSearch: () => _setSearchOpen(true),
+        onCloseSearch: () => _setSearchOpen(false),
+        tooltip: search.tooltip,
+      );
+
+  Widget _selectorControls(Widget leading, double width) {
+    final search = _searchEnabled ? widget.search : null;
+    return Stack(
+      alignment: Alignment.centerRight,
+      children: [
+        Visibility(
+          visible: !_searchOpenEffective,
+          maintainSize: true,
+          maintainState: true,
+          maintainAnimation: true,
+          child: Padding(
+            padding: EdgeInsets.only(
+              right: search == null
+                  ? 0
+                  : CatchToolbarMetrics.targetExtent + CatchToolbarMetrics.gap,
+            ),
+            child: Row(
+              children: [
+                CatchToolbarScope(child: leading),
+                const Spacer(),
+                if (widget.actions.isNotEmpty)
+                  CatchToolbarScope(
+                    child: CatchTopBarActionRow(actions: widget.actions),
+                  ),
+              ],
+            ),
+          ),
+        ),
+        if (search != null) _searchField(search, width),
+      ],
     );
   }
 

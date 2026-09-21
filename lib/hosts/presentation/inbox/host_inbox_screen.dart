@@ -193,10 +193,10 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
             compactForPrimaryRail: true,
             actions: [
               if (isInbox && selectedClub != null)
-                CatchIconAction(
+                CatchIconAction.toolbar(
                   tooltip: context.l10n.hostInboxNewMessage,
                   onPressed: () => _newMessage(selectedClub.id),
-                  child: Icon(CatchIcons.editOutlined),
+                  icon: CatchIcons.editOutlined,
                 ),
             ],
           ),

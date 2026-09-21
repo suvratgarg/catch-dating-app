@@ -7102,11 +7102,7 @@
           "CatchIconAction.toolbar": [
             "icon",
             "tooltip",
-            "onPressed",
-            "backgroundColor",
-            "foregroundColor",
-            "variant",
-            "size"
+            "onPressed"
           ]
         }
       },
@@ -7116,7 +7112,7 @@
           "Design handoff must include tooltip/action label when used as an accessible command.",
           "Use CatchIconAction.counted for integer overlays; zero hides and values above 99 clamp through CatchCountBadge.",
           "defaultSize and navSize both select the current 44-point visual diameter. One outer gesture/focus owner supplies the larger platform target; hover/press tint is painted inside the opaque visual rather than hidden behind it.",
-          "One IconAction owns raw-child, themed-glyph, counted and required-tooltip toolbar recipes. Toolbar preserves the navigation glyph size and explicit foreground, including on floating backgrounds. Status and glyph emphasis replace disabled/fill booleans; active and liveRegion remain independent booleans."
+          "One IconAction owns raw-child, themed-glyph, counted and closed toolbar recipes. Toolbar owns the 44-point outlined visual and 24-point glyph. CatchTopBar rejects per-control styling even through generic or menu wrappers; bar-level overlay tone owns contrast. Flexible body/media recipes remain valid outside canonical app bars."
         ]
       },
       "governance": {
@@ -8829,7 +8825,8 @@
             "dartType": "CatchTopBarTone",
             "values": [
               "page",
-              "surface"
+              "surface",
+              "overlay"
             ]
           },
           {
@@ -8866,7 +8863,7 @@
           "conversation-title",
           "surface",
           "divider",
-          "plain-actions",
+          "outlined-actions",
           "root-title",
           "root-subtitle-actions",
           "primary-rail"
@@ -9031,6 +9028,25 @@
               "qualifier": "recipe",
               "decisionRef": "pattern-family:top-bar-recipes"
             }
+          },
+          {
+            "id": "catch.top_bar.labelled_control",
+            "symbol": "CatchToolbarControl",
+            "file": "packages/catch_ui/lib/src/components/catch_toolbar_control.dart",
+            "summary": "Closed selector and labelled action recipes; shared toolbar outline, platform text measurement and accessible height.",
+            "states": [
+              "selector",
+              "action",
+              "disabled",
+              "large-text"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.top_bar",
+              "parentConceptId": "catch.top_bar",
+              "qualifier": "control",
+              "decisionRef": "contract-family:catch.top_bar"
+            }
           }
         ],
         "accessibility": {
@@ -9059,7 +9075,8 @@
           "The component owns text scaling, wrapping, safe-area placement and control alignment. Search remains a typed capability, and all recipes preserve full text in accessibility semantics.",
           "Use CatchTopBarPrimaryButton, CatchIconAction, CatchButton.text or CatchActionMenu for actions. Body-style pill buttons are invalid app-bar actions.",
           "At enlarged text sizes, titles and context may wrap and actions reflow underneath. Search hides covered title/action semantics while expanded.",
-          "Golden images record reviewed output. Correct semantic and geometry rules take precedence over preserving flawed baselines; approve fresh renders before replacing affected images."
+          "Golden images record reviewed output. Correct semantic and geometry rules take precedence over preserving flawed baselines; approve fresh renders before replacing affected images.",
+          "Controls share 44-point visuals, platform hit allocation, centered alignment and 8-point gaps including collapsed search. Labelled selectors and actions may grow for accessible text. Overlay contrast belongs to the bar; icon and menu overrides are rejected inside it."
         ]
       },
       "governance": {

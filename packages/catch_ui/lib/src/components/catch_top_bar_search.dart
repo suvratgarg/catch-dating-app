@@ -1,5 +1,4 @@
 import 'package:catch_ui/src/components/catch_contract_field_constraints.dart';
-import 'package:catch_ui/src/components/catch_icon_action.dart';
 import 'package:catch_ui/src/components/catch_search_field_copy.dart';
 import 'package:flutter/material.dart';
 
@@ -26,11 +25,6 @@ class CatchTopBarSearch {
     this.semanticLabel,
     this.autofocus = false,
     this.textInputAction = TextInputAction.done,
-    this.collapsedExtent = CatchIconAction.navSize,
-    this.backgroundColor,
-    this.borderColor,
-    this.foregroundColor,
-    this.mutedForegroundColor,
   });
 
   final CatchSearchFieldCopy copy;
@@ -51,9 +45,4 @@ class CatchTopBarSearch {
   final String? semanticLabel;
   final bool autofocus;
   final TextInputAction textInputAction;
-  final double collapsedExtent;
-  final Color? backgroundColor;
-  final Color? borderColor;
-  final Color? foregroundColor;
-  final Color? mutedForegroundColor;
 }

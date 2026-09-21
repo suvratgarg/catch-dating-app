@@ -768,7 +768,7 @@ void _registerExploreClubCardsTests() {
     final initialCityTriggerSize = tester.getSize(
       find.byType(ExploreCityPicker),
     );
-    expect(initialCityTriggerSize.height, CatchSpacing.s12);
+    expect(initialCityTriggerSize.height, CatchToolbarMetrics.targetExtent);
     expect(
       initialCityTriggerSize.width,
       greaterThan(initialCityTriggerSize.height),

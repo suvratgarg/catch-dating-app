@@ -523,7 +523,10 @@ void main() {
       ),
     );
 
-    expect(find.widgetWithText(CatchButton, 'Create event'), findsOneWidget);
+    expect(
+      find.widgetWithText(CatchToolbarControl, 'Create event'),
+      findsOneWidget,
+    );
     expect(find.byType(CatchIconAction), findsNothing);
   });
 
@@ -747,7 +750,7 @@ void main() {
     expect(find.text('Clubs'), findsOneWidget);
   });
 
-  testWidgets('CatchTopBar route retains a plain navigation treatment', (
+  testWidgets('CatchTopBar route owns the outlined navigation treatment', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -756,7 +759,6 @@ void main() {
           title: 'Welcome',
           navigation: CatchTopBarNavigation(
             mode: CatchTopBarNavigationMode.back,
-            variant: CatchIconActionVariant.plain,
           ),
         ),
       ),
@@ -766,7 +768,7 @@ void main() {
     expect(find.byType(CatchIconAction), findsOneWidget);
     expect(
       tester.widget<CatchIconAction>(find.byType(CatchIconAction)).variant,
-      CatchIconActionVariant.plain,
+      CatchIconActionVariant.bordered,
     );
   });
 

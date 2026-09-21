@@ -27,7 +27,7 @@ Widget catchTopBarContractStates(BuildContext context) {
       'conversation-title',
       'surface',
       'divider',
-      'plain-actions',
+      'outlined-actions',
       'root-title',
       'root-subtitle-actions',
       'primary-rail',
@@ -61,13 +61,12 @@ Widget catchTopBarContractStates(BuildContext context) {
         ),
       ),
       WidgetbookContractStateCard(
-        label: 'plain-actions',
+        label: 'outlined-actions',
         child: WidgetbookContractTopBarFrame(
           child: CatchTopBar.route(
             title: 'Form builder',
             navigation: const CatchTopBarNavigation(
               mode: CatchTopBarNavigationMode.back,
-              variant: CatchIconActionVariant.plain,
               onPressed: widgetbookNoop,
             ),
 
@@ -75,7 +74,6 @@ Widget catchTopBarContractStates(BuildContext context) {
               CatchButton.text(label: 'Preview', onPressed: widgetbookNoop),
               CatchActionMenu<String>(
                 tooltip: 'Form actions',
-                variant: CatchIconActionVariant.plain,
                 items: const [
                   CatchActionMenuItem(value: 'share', label: 'Share form'),
                 ],

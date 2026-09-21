@@ -414,16 +414,11 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
       );
     }
 
-    Widget savedEventsAction({bool onDarkBackdrop = false}) {
+    Widget savedEventsAction() {
       return CatchIconAction.toolbar(
         icon: CatchIcons.bookmarkBorderRounded,
         tooltip: context.l10n.exploreExploreScreenTooltipSavedEvents,
         onPressed: () => context.push(Routes.savedEventsScreen.path),
-        variant: onDarkBackdrop
-            ? CatchIconActionVariant.plain
-            : CatchIconActionVariant.bordered,
-        backgroundColor: onDarkBackdrop ? Colors.transparent : null,
-        foregroundColor: onDarkBackdrop ? CatchTokens.dark.ink : null,
       );
     }
 
@@ -561,7 +556,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                   ref.read(exploreSearchQueryProvider.notifier).setQuery(value),
               actions: showAccountControls ? [savedEventsAction()] : const [],
               heroActions: showAccountControls
-                  ? [savedEventsAction(onDarkBackdrop: true)]
+                  ? [savedEventsAction()]
                   : const [],
               searchRequested: _searchRequested,
               onSearchRequestedChanged: (expanded) {

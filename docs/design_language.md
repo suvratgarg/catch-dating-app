@@ -180,6 +180,22 @@ secondary context. Person-identity destinations may use the person's name as
 the primary title. No app-bar eyebrow, kicker, IBM Plex, Archivo, raw title
 widget or feature-owned typography/geometry is valid.
 
+Toolbar navigation, icon actions, menu triggers and collapsed search share a
+44-point visual extent, a platform-sized hit target, centered alignment and
+an 8-point peer gap. Their resting border is `CatchBorder.interactive`; a root
+primary action does not drop its outline. `CatchToolbarControl.selector` owns
+city/current-value controls, and `.action` owns labelled wide-screen commands.
+They use the same outline and 44-point minimum height; accessible text may grow
+the labelled control vertically. Its measured platform text determines both
+painted size and the app bar's reserved leading width. At large text sizes,
+root selectors join actions and search in a separate control row beneath the
+full-width title; opening search replaces those control-row peers. `CatchTopBarTone.overlay`
+sets contrast once for the entire bar. Per-icon colors, size, radius and plain
+variants are invalid inside app bars, including generic and overflow wrappers.
+The shared bar asserts these constraints. Semantic text commands and step
+counters retain their existing text recipe; photo/map controls outside the
+canonical bar retain their separately registered media treatment.
+
 IBM Plex is reserved for numerals and explicitly uppercase labels. Sentence
 case and user-authored text use the platform function family; do not uppercase
 user data to make it fit a font role. Legacy mono roles outside app bars require

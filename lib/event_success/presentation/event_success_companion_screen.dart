@@ -96,7 +96,6 @@ class CompanionScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
     final canPop = _companionCanPop(context);
     return CatchScaffold.workspace(
       backgroundColor: CatchTokens.of(context).bg,
@@ -107,9 +106,8 @@ class CompanionScaffold extends StatelessWidget {
         emphasis: CatchTopBarEmphasis.divided,
         leading: CatchIconAction.toolbar(
           tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-          icon: CatchIcons.arrowBackIosNewRounded,
-          foregroundColor: canPop ? t.ink : t.ink3,
           onPressed: canPop ? () => _popCompanion(context) : null,
+          icon: CatchIcons.arrowBackIosNewRounded,
         ),
       ),
       body: body,

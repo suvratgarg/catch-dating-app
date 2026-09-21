@@ -302,7 +302,6 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
                       onPressed: () => _addCustomer(selectedClub, request),
                     ),
                     CatchActionMenu<_HostCustomersHeaderAction>(
-                      variant: CatchIconActionVariant.plain,
                       tooltip: context.l10n.hostCustomersMoreActions,
                       items: _hostCustomersHeaderActions(
                         context,
@@ -330,8 +329,6 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
                 : const [],
             search: CatchTopBarSearch(
               copy: catchSearchFieldCopy(context.l10n),
-              backgroundColor: Colors.transparent,
-              borderColor: Colors.transparent,
               fieldKey: ValueKey(
                 peopleView ? 'host-customers-search' : 'host-audiences-search',
               ),
