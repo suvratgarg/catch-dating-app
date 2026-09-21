@@ -1665,7 +1665,10 @@ export const validateOrganizerFormDraft = onCall(
 );
 
 export const publishOrganizerForm = onCall(
-  appCheckCallableOptionsWithLimits(organizerFormCallableLimits),
+  appCheckCallableOptionsWithLimits({
+    ...organizerFormCallableLimits,
+    memory: "512MiB",
+  }),
   (request) => publishOrganizerFormHandler(request)
 );
 
