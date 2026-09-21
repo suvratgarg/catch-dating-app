@@ -9,6 +9,7 @@ import 'package:catch_ui/src/components/catch_search_field_status.dart';
 import 'package:catch_ui/src/components/catch_top_bar_action_row.dart';
 import 'package:catch_ui/src/components/catch_top_bar_emphasis.dart';
 import 'package:catch_ui/src/components/catch_top_bar_navigation.dart';
+import 'package:catch_ui/src/components/catch_top_bar_primary_button.dart';
 import 'package:catch_ui/src/components/catch_top_bar_search.dart';
 import 'package:catch_ui/src/components/catch_top_bar_tone.dart';
 import 'package:catch_ui/src/foundations/catch_icons.dart';
@@ -231,6 +232,27 @@ class CatchTopBar extends StatefulWidget implements CatchScaledPreferredSize {
       (width - CatchSpacing.s2 * (actions.length - 1)) / actions.length,
     );
     for (final action in actions) {
+      if (action is CatchTopBarPrimaryButton &&
+          !CatchWindowSize.fromWidth(
+            MediaQuery.sizeOf(context).width,
+          ).isCompact) {
+        height = math.max(
+          height,
+          _textHeight(
+                context,
+                action.label,
+                CatchTextStyles.buttonSm(context),
+                math.max(
+                  1,
+                  lane -
+                      CatchSpacing.micro14 * 2 -
+                      CatchIcon.sm -
+                      CatchSpacing.micro6,
+                ),
+              ) +
+              CatchSpacing.s2 * 2,
+        );
+      }
       if (action is CatchButton && action.isTextAction) {
         final padding = action.padding.resolve(Directionality.of(context));
         final labelWidth =
