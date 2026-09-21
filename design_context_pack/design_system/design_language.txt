@@ -1,6 +1,6 @@
 ---
 doc_id: design_language
-version: 1.29.1
+version: 1.30.0
 updated: 2026-09-21
 owner: ui_elevation_initiative
 status: active # identity locked; Phase 0–1 complete (bundled optical-sized fonts, B&W tokens, ActivityPalette routing, matte grade, anti-drift gates); Phase 2 flagship Profile built
@@ -355,8 +355,8 @@ tiers within one list.
 
 ### 7.1 Containment doctrine — when a surface earns a border
 
-Containers mark **objects and actions, never information**. A bordered or
-filled surface in product UI must pass at least one of:
+Containers mark **objects, actions, semantic states, or independent measurements**.
+A bordered or filled surface in product UI must pass at least one of:
 
 - **R1 · Collection object** — a peer in a set you browse or choose among
   (feed tickets, organizer posters, person polaroids, photo slots). The
@@ -373,6 +373,28 @@ filled surface in product UI must pass at least one of:
   or a controlling setting and its dependent configuration. Peer rows may
   have separators; dependents attach through a subtle tint inside the same
   perimeter. Never card-per-row or a box around children of an uncontained control.
+
+- **R6 · Independent metric collection** — one scalar/date and its label per
+  tile in `CatchMetricSection.grid` or `.dataQuality`. This supports comparison
+  and scanning; it does not authorize cards around arbitrary prose or sections.
+  Tiles have a shared boundary outline, no shadow, 16 pt padding and equal
+  12 pt horizontal/vertical gaps. Paired tiles share height and width. Labels,
+  values and captions wrap naturally. Below 320 pt available width or at text
+  scale 1.4 and above, the collection becomes one column. An odd final tile
+  fills the lane. Use native metric and supporting typography; missing data
+  displays a dash, while a measured zero stays zero.
+
+Independent organizer metrics (Performance, Reviews, All time, Audience and
+public Preview) use R6, never a shared strip with vertical dividers. The compact
+metric rail remains for short, related context about one subject, such as event
+capacity. Section headings remain outside metric surfaces. Audience channel
+explanations are full-width, stacked text rows under their own section heading;
+counts do not imply that a messaging channel is enabled.
+
+`packages/catch_ui/test/metric_section_test.dart` checks equal gutters, paired
+geometry, semantic boundaries, readable large text and missing-data behavior.
+Intentional layout corrections update reviewed captures; historical goldens do
+not override these rules.
 
 Everything else is an **attribute of the page's subject** and renders flat:
 kicker + typography + hairlines + spacing carry hierarchy.

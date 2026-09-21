@@ -1,6 +1,61 @@
 part of 'host_operations_screen_test.dart';
 
 void _registerHostOperationsAnalyticsTeamTests() {
+  testWidgets(
+    'Organizer audience retry preserves unknown versus measured zero',
+    (tester) async {
+      final club = buildClub(id: 'audience-layout', ownerUserId: _hostUid);
+      var attempts = 0;
+      await _pumpHostScreen(
+        tester,
+        Scaffold(
+          body: SingleChildScrollView(
+            child: HostClubOrganizerOverviewController(club: club),
+          ),
+        ),
+        overrides: [
+          watchEventsForClubProvider(
+            club.id,
+          ).overrideWithValue(const AsyncData<List<Event>>([])),
+          hostCrmSummaryProvider(club.id).overrideWith((ref) async {
+            attempts++;
+            if (attempts == 1) throw StateError('Temporarily unavailable');
+            return _emptyCrmSummary(club.id);
+          }),
+        ],
+      );
+      expect(
+        find.text('Audience counts are temporarily unavailable.'),
+        findsOneWidget,
+      );
+      expect(find.text('Total contacts'), findsNothing);
+      expect(find.text('MESSAGING CHANNELS'), findsNothing);
+      final retry = find.text('Try again');
+      await tester.ensureVisible(retry);
+      await tester.tap(retry);
+      await pumpFeatureUi(tester);
+      expect(attempts, 2);
+      expect(find.text('Total contacts'), findsOneWidget);
+      expect(find.text('Imported contacts'), findsOneWidget);
+      expect(find.text('MESSAGING CHANNELS'), findsOneWidget);
+      final audience = find.byWidgetPredicate(
+        (widget) => widget is CatchSection && widget.title == 'Audience',
+      );
+      expect(
+        find.ancestor(of: audience, matching: find.byType(CatchSurface)),
+        findsNothing,
+      );
+      final metrics = tester.widget<CatchMetricSection>(
+        find.descendant(
+          of: audience,
+          matching: find.byType(CatchMetricSection),
+        ),
+      );
+      expect(metrics.items.map((item) => item.value), everyElement('0'));
+      expect(tester.takeException(), isNull);
+    },
+  );
+
   testWidgets('Host club workspace keeps shared chrome across every tab', (
     tester,
   ) async {

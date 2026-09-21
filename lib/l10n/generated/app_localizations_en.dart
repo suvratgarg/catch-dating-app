@@ -6424,7 +6424,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsHostOrganizerLabelUpcoming => 'Upcoming';
 
   @override
-  String get hostsHostOrganizerCrmTitle => 'Past attendee CRM';
+  String get hostsHostOrganizerCrmTitle => 'Audience';
+
+  @override
+  String get hostsHostOrganizerCrmContacts => 'Total contacts';
+
+  @override
+  String get hostsHostOrganizerCrmPastAttendees => 'Past attendees';
+
+  @override
+  String get hostsHostOrganizerCrmRepeatAttendees => 'Repeat attendees';
+
+  @override
+  String get hostsHostOrganizerCrmImportedContacts => 'Imported contacts';
+
+  @override
+  String get hostsHostOrganizerCrmChannels => 'Messaging channels';
 
   @override
   String get hostsHostOrganizerCrmLoading =>
@@ -6433,15 +6448,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hostsHostOrganizerCrmUnavailable =>
       'Audience counts are temporarily unavailable.';
-
-  @override
-  String hostsHostOrganizerCrmSummary({
-    required Object pastCount,
-    required Object repeatCount,
-    required Object contactCount,
-  }) {
-    return '$pastCount past attendees · $repeatCount repeat attendees · $contactCount total contacts';
-  }
 
   @override
   String get hostsHostOrganizerCrmCatchApp => 'Catch app';
@@ -8039,16 +8045,16 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get clubsClubDetailBodyLabelMembers => 'followers';
+  String get clubsClubDetailBodyLabelMembers => 'Followers';
 
   @override
-  String get clubsClubDetailBodyLabelRating => 'rating';
+  String get clubsClubDetailBodyLabelRating => 'Rating';
 
   @override
-  String get clubsClubDetailBodyLabelReviews => 'reviews';
+  String get clubsClubDetailBodyLabelReviews => 'Reviews';
 
   @override
-  String get clubsClubDetailBodyLabelEst => 'est.';
+  String get clubsClubDetailBodyLabelEst => 'Established';
 
   @override
   String eventsEventDetailOverviewSectionVisiblecopyADistancekmTolowercaseAt({

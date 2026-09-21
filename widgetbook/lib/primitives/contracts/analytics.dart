@@ -118,6 +118,8 @@ Widget catchMetricStripContractStates(BuildContext context) {
       'two-column',
       'limited-items',
       'large-text-grid',
+      'independent-grid',
+      'independent-large-text',
     ],
     children: [
       WidgetbookContractStateCard(
@@ -198,6 +200,23 @@ Widget catchMetricStripContractStates(BuildContext context) {
           ),
         ),
       ),
+      for (final scale in [1.0, 2.0])
+        WidgetbookContractStateCard(
+          label: scale == 1 ? 'independent-grid' : 'independent-large-text',
+          child: MediaQuery(
+            data: MediaQuery.of(
+              context,
+            ).copyWith(textScaler: TextScaler.linear(scale)),
+            child: const CatchMetricSection.grid(
+              items: [
+                CatchMetricValue(value: '126', label: 'Followers'),
+                CatchMetricValue(value: '4.8', label: 'Average rating'),
+                CatchMetricValue(value: '12', label: 'Published reviews'),
+                CatchMetricValue(value: 'May 2026', label: 'Established'),
+              ],
+            ),
+          ),
+        ),
       const WidgetbookContractStateCard(
         label: 'empty-grid',
         child: CatchMetricSection.dataQuality(metrics: []),

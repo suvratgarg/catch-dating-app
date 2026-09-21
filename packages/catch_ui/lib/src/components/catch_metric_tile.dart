@@ -13,7 +13,7 @@ enum CatchMetricTileMode { plain, surface }
 ///
 /// The compact recipe retains the metric rail's centered value/unit baseline
 /// and bounded label behavior. Display values keep natural-height text. Data
-/// completeness, status badges and explanatory captions have their own typed
+/// completeness, status labels and explanatory captions have their own typed
 /// contract in CatchDataQualityMetricTile.
 class CatchMetricTile extends StatelessWidget {
   const CatchMetricTile({
@@ -151,7 +151,8 @@ class CatchMetricTile extends StatelessWidget {
     final tile = mode == CatchMetricTileMode.surface
         ? CatchSurface(
             padding: padding ?? CatchInsets.contentDense,
-            borderColor: borderColor ?? t.line,
+            borderRole: borderColor == null ? CatchBorderRole.boundary : null,
+            borderColor: borderColor,
             child: content,
           )
         : content;

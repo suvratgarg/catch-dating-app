@@ -10230,8 +10230,38 @@ abstract class AppLocalizations {
   /// Title for the privacy-bounded organizer audience summary.
   ///
   /// In en, this message translates to:
-  /// **'Past attendee CRM'**
+  /// **'Audience'**
   String get hostsHostOrganizerCrmTitle;
+
+  /// Organizer audience summary label.
+  ///
+  /// In en, this message translates to:
+  /// **'Total contacts'**
+  String get hostsHostOrganizerCrmContacts;
+
+  /// Organizer audience summary label.
+  ///
+  /// In en, this message translates to:
+  /// **'Past attendees'**
+  String get hostsHostOrganizerCrmPastAttendees;
+
+  /// Organizer audience summary label.
+  ///
+  /// In en, this message translates to:
+  /// **'Repeat attendees'**
+  String get hostsHostOrganizerCrmRepeatAttendees;
+
+  /// Organizer audience summary label.
+  ///
+  /// In en, this message translates to:
+  /// **'Imported contacts'**
+  String get hostsHostOrganizerCrmImportedContacts;
+
+  /// Organizer audience summary label.
+  ///
+  /// In en, this message translates to:
+  /// **'Messaging channels'**
+  String get hostsHostOrganizerCrmChannels;
 
   /// Loading message for the organizer audience summary.
   ///
@@ -10244,16 +10274,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Audience counts are temporarily unavailable.'**
   String get hostsHostOrganizerCrmUnavailable;
-
-  /// Deduplicated organizer attendee and contact counts.
-  ///
-  /// In en, this message translates to:
-  /// **'{pastCount} past attendees · {repeatCount} repeat attendees · {contactCount} total contacts'**
-  String hostsHostOrganizerCrmSummary({
-    required Object pastCount,
-    required Object repeatCount,
-    required Object contactCount,
-  });
 
   /// Label for the Catch in-app audience channel.
   ///
@@ -12717,25 +12737,25 @@ abstract class AppLocalizations {
   /// Product copy used by lib/clubs/presentation/detail/widgets/club_detail_body.dart (label).
   ///
   /// In en, this message translates to:
-  /// **'followers'**
+  /// **'Followers'**
   String get clubsClubDetailBodyLabelMembers;
 
   /// Product copy used by lib/clubs/presentation/detail/widgets/club_detail_body.dart (label).
   ///
   /// In en, this message translates to:
-  /// **'rating'**
+  /// **'Rating'**
   String get clubsClubDetailBodyLabelRating;
 
   /// Product copy used by lib/clubs/presentation/detail/widgets/club_detail_body.dart (label).
   ///
   /// In en, this message translates to:
-  /// **'reviews'**
+  /// **'Reviews'**
   String get clubsClubDetailBodyLabelReviews;
 
   /// Product copy used by lib/clubs/presentation/detail/widgets/club_detail_body.dart (label).
   ///
   /// In en, this message translates to:
-  /// **'est.'**
+  /// **'Established'**
   String get clubsClubDetailBodyLabelEst;
 
   /// Product copy used by lib/events/presentation/widgets/event_detail_overview_section.dart (visibleCopy).

@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 4.7.1
+version: 4.8.0
 updated: 2026-09-21
 owner: recursive_audit_loop
 status: active
@@ -9,6 +9,12 @@ status: active
 # Widget Catalog
 
 ## Canonical Usage Decisions
+
+Independent measurements use `CatchMetricSection.grid`; source-completeness
+states use `.dataQuality` with the same adaptive tile geometry. Do not recreate
+organizer summary strips or wrap the tile grid in a second surface. Large text
+uses one column and natural-height labels. See the containment doctrine in
+`docs/design_language.md` for the metric-only exception.
 
 `CatchFieldStatus` is the single save-state input for all field recipes. Saving
 locks disclosure controls and commit actions and supplies progress and
@@ -149,7 +155,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>CatchContentSectionHeader</code> | <code>packages/catch_ui/lib/src/components/catch_content_section.dart:14</code> | <code>Header</code> | <code>catch.section</code> | Internal header boundary shared by row and non-row section recipes. |
 | <code>CatchCountBadge</code> | <code>packages/catch_ui/lib/src/components/catch_count_badge.dart:13</code> | <code>Badge</code> | <code>catch.badge</code> | Canonical integer count marker. |
 | <code>CatchCountText</code> | <code>packages/catch_ui/lib/src/components/catch_count_text.dart:6</code> | <code>Text</code> | <code>catch.section</code> | Animated, uncapped numeric text for count-bearing headers. |
-| <code>CatchDataQualityMetricTile</code> | <code>packages/catch_ui/lib/src/components/catch_data_quality_metric_tile.dart:11</code> | <code>Tile</code> | <code>catch.analytics_metric</code> | Summary surface for a caller-formatted metric and its data-quality status. |
+| <code>CatchDataQualityMetricTile</code> | <code>packages/catch_ui/lib/src/components/catch_data_quality_metric_tile.dart:10</code> | <code>Tile</code> | <code>catch.analytics_metric</code> | Summary surface for a caller-formatted metric and its data-quality status. |
 | <code>CatchDaySectionHeader</code> | <code>packages/catch_ui/lib/src/components/catch_day_section_header.dart:12</code> | <code>Header</code> | <code>catch.section</code> | Sticky day-section header for chronologically grouped feeds. |
 | <code>CatchDependentRowSection</code> | <code>packages/catch_ui/lib/src/components/catch_dependent_row_section.dart:13</code> | <code>Section</code> | <code>catch.section</code> | Internal renderer for Section's conditional configuration recipe. The leading and descendants share geometry; tint signals attachment without adding another perimeter or claiming that a dependency is an equal peer. |
 | <code>CatchDialog</code> | <code>packages/catch_ui/lib/src/components/catch_dialog.dart:81</code> | <code>Dialog</code> | <code>catch.confirm_dialog</code> | Shared modal frame for slotted content and typed confirmation choices. |
@@ -184,7 +190,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>CatchMenu</code> | <code>packages/catch_ui/lib/src/components/catch_menu.dart:19</code> | <code>Menu</code> | <code>catch.menu</code> | Canonical menu panel, optionally anchored to a caller-owned trigger. |
 | <code>CatchMenuRow</code> | <code>packages/catch_ui/lib/src/components/catch_menu_row.dart:7</code> | <code>Row</code> | <code>catch.menu</code> | Direct menu-row renderer with explicit action or mutually-exclusive choice semantics. |
 | <code>CatchMetaRow</code> | <code>packages/catch_ui/lib/src/components/catch_meta_row.dart:15</code> | <code>Row</code> | <code>catch.meta_row</code> | Compact factual metadata, from a single icon/label to a separated group. |
-| <code>CatchMetricSection</code> | <code>packages/catch_ui/lib/src/components/catch_metric_section.dart:18</code> | <code>Section</code> | <code>catch.metric_strip</code> | Local arrangement of metric values or data-quality-aware metric tiles. |
+| <code>CatchMetricSection</code> | <code>packages/catch_ui/lib/src/components/catch_metric_section.dart:19</code> | <code>Section</code> | <code>catch.metric_strip</code> | Local arrangement of metric values or data-quality-aware metric tiles. |
 | <code>CatchMetricTile</code> | <code>packages/catch_ui/lib/src/components/catch_metric_tile.dart:18</code> | <code>Tile</code> | <code>catch.metric_strip</code> | One caller-formatted value and its label, with an optional icon or unit. |
 | <code>CatchNavigationButton</code> | <code>packages/catch_ui/lib/src/components/catch_navigation_button.dart:13</code> | <code>Button</code> | <code>catch.tab_bar</code> | A navigation destination with bottom-bar and side-rail layout recipes. |
 | <code>CatchNotice</code> | <code>packages/catch_ui/lib/src/components/catch_notice.dart:12</code> | <code>Notice</code> | <code>catch.notice</code> | Configurable ambient notice family with one app-level safe-area overlay. Arrival notices open from the whole card and support swipe dismissal; ordinary notifications use explicit action and dismiss controls. Features own copy, identity, tone and routing; the shared renderer owns readable geometry and interaction. |
@@ -295,10 +301,10 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>SuvbotResetActionRow</code> | <code>lib/chats/presentation/widgets/suvbot_action_bar.dart:333</code> | — | — | No class documentation or registry summary. |
 | <code>ClubDetailReadOnlyPreviewSliver</code> | <code>lib/clubs/presentation/detail/club_detail_read_only_preview.dart:15</code> | — | — | Live, consumer-facing Club Detail composition for an owner-facing read-only preview. The selected [initialClub] renders immediately while live detail data hydrates, matching the consumer route's initial-club fallback policy. |
 | <code>ClubContactSection</code> | <code>lib/clubs/presentation/detail/widgets/club_contact_section.dart:13</code> | — | — | No class documentation or registry summary. |
-| <code>ClubActivitySection</code> | <code>lib/clubs/presentation/detail/widgets/club_detail_body.dart:320</code> | — | — | No class documentation or registry summary. |
+| <code>ClubActivitySection</code> | <code>lib/clubs/presentation/detail/widgets/club_detail_body.dart:322</code> | — | — | No class documentation or registry summary. |
 | <code>ClubDetailBody</code> | <code>lib/clubs/presentation/detail/widgets/club_detail_body.dart:31</code> | — | — | No class documentation or registry summary. |
 | <code>ClubDetailSliverBody</code> | <code>lib/clubs/presentation/detail/widgets/club_detail_body.dart:78</code> | — | — | Sliver-native form of the canonical Club Detail composition. |
-| <code>ClubNextRunBanner</code> | <code>lib/clubs/presentation/detail/widgets/club_detail_body.dart:267</code> | — | — | No class documentation or registry summary. |
+| <code>ClubNextRunBanner</code> | <code>lib/clubs/presentation/detail/widgets/club_detail_body.dart:269</code> | — | — | No class documentation or registry summary. |
 | <code>ClubDetailDock</code> | <code>lib/clubs/presentation/detail/widgets/club_detail_dock.dart:27</code> | — | — | Design-system `ClubDock` (`components/clubs/ClubDock`): the persistent bottom bar of a club detail screen, stateful over membership role — BookingDock's club sibling. `visitor` shows the member count + an **activity-pigmented** Join CTA (the one sanctioned use of the club pigment on an action); `member` shows the count + a notifications bell + a quiet "Joined" control; `owner` shows Manage + a New-event pair; `guest` shows an ink "Sign in to join". The mono [footnote] carries the state's quiet facts. |
 | <code>ClubMembershipDock</code> | <code>lib/clubs/presentation/detail/widgets/club_detail_dock.dart:305</code> | — | — | Provider-backed [ClubDetailDock] for the consumer club-detail screen. Computes the membership state and wires Join / Leave / notification mutations and the guest sign-in route. (Owner state is host-app territory and not rendered here.) |
 | <code>DockBell</code> | <code>lib/clubs/presentation/detail/widgets/club_detail_dock.dart:253</code> | — | — | Member notifications bell — the active state fills with the club's activity accent (not the raw Material color scheme). |
@@ -858,11 +864,11 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>HostFormsNoOrganizer</code> | <code>lib/hosts/presentation/forms/host_forms_screen.dart:740</code> | — | — | No class documentation or registry summary. |
 | <code>HostAudienceStateScaffold</code> | <code>lib/hosts/presentation/host_audience_view.dart:21</code> | — | — | Canonical Audience destination owner for route-level loading, auth, error, and no-organizer states. |
 | <code>HostAudienceTabRail</code> | <code>lib/hosts/presentation/host_audience_view.dart:65</code> | — | — | No class documentation or registry summary. |
-| <code>HostAnalyticsDualBar</code> | <code>lib/hosts/presentation/host_operations/host_analytics.dart:589</code> | — | — | No class documentation or registry summary. |
-| <code>HostAnalyticsEventList</code> | <code>lib/hosts/presentation/host_operations/host_analytics.dart:694</code> | — | — | No class documentation or registry summary. |
-| <code>HostAnalyticsReportView</code> | <code>lib/hosts/presentation/host_operations/host_analytics.dart:269</code> | — | — | No class documentation or registry summary. |
-| <code>HostAnalyticsReviewsPanel</code> | <code>lib/hosts/presentation/host_operations/host_analytics.dart:764</code> | — | — | No class documentation or registry summary. |
-| <code>HostAnalyticsTrendPanel</code> | <code>lib/hosts/presentation/host_operations/host_analytics.dart:466</code> | — | — | No class documentation or registry summary. |
+| <code>HostAnalyticsDualBar</code> | <code>lib/hosts/presentation/host_operations/host_analytics.dart:587</code> | — | — | No class documentation or registry summary. |
+| <code>HostAnalyticsEventList</code> | <code>lib/hosts/presentation/host_operations/host_analytics.dart:692</code> | — | — | No class documentation or registry summary. |
+| <code>HostAnalyticsReportView</code> | <code>lib/hosts/presentation/host_operations/host_analytics.dart:267</code> | — | — | No class documentation or registry summary. |
+| <code>HostAnalyticsReviewsPanel</code> | <code>lib/hosts/presentation/host_operations/host_analytics.dart:762</code> | — | — | No class documentation or registry summary. |
+| <code>HostAnalyticsTrendPanel</code> | <code>lib/hosts/presentation/host_operations/host_analytics.dart:464</code> | — | — | No class documentation or registry summary. |
 | <code>HostClubInsightsPane</code> | <code>lib/hosts/presentation/host_operations/host_analytics.dart:17</code> | — | — | No class documentation or registry summary. |
 | <code>HostAnalyticsPeriodInput</code> | <code>lib/hosts/presentation/host_operations/host_analytics_period_input.dart:3</code> | — | — | No class documentation or registry summary. |
 | <code>HostWhatsappSetupPane</code> | <code>lib/hosts/presentation/host_operations/host_audience.dart:3</code> | — | — | No class documentation or registry summary. |
@@ -877,10 +883,10 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>HostTeamProfileSection</code> | <code>lib/hosts/presentation/host_operations/host_club_team_screen.dart:455</code> | — | — | No class documentation or registry summary. |
 | <code>HostClubsScaffold</code> | <code>lib/hosts/presentation/host_operations/host_clubs_scaffold.dart:64</code> | — | — | No class documentation or registry summary. |
 | <code>HostOrganizerStateScaffold</code> | <code>lib/hosts/presentation/host_operations/host_clubs_scaffold.dart:24</code> | — | — | Organizer route-state adapter that preserves the loaded workspace chrome. |
-| <code>HostClubOrganizerOverview</code> | <code>lib/hosts/presentation/host_operations/host_organizer.dart:165</code> | — | — | No class documentation or registry summary. |
+| <code>HostClubOrganizerOverview</code> | <code>lib/hosts/presentation/host_operations/host_organizer.dart:182</code> | — | — | No class documentation or registry summary. |
 | <code>HostClubOrganizerOverviewController</code> | <code>lib/hosts/presentation/host_operations/host_organizer.dart:3</code> | — | — | No class documentation or registry summary. |
-| <code>HostOrganizerMetricGrid</code> | <code>lib/hosts/presentation/host_operations/host_organizer.dart:191</code> | — | — | No class documentation or registry summary. |
-| <code>HostOrganizerMetricRow</code> | <code>lib/hosts/presentation/host_operations/host_organizer.dart:247</code> | — | — | No class documentation or registry summary. |
+| <code>HostOrganizerMetricGrid</code> | <code>lib/hosts/presentation/host_operations/host_organizer.dart:208</code> | — | — | No class documentation or registry summary. |
+| <code>HostOrganizerMetricRow</code> | <code>lib/hosts/presentation/host_operations/host_organizer.dart:258</code> | — | — | No class documentation or registry summary. |
 | <code>HostTeamHostedClubsSection</code> | <code>lib/hosts/presentation/host_operations/host_team_hosted_clubs_section.dart:3</code> | — | — | No class documentation or registry summary. |
 | <code>HostedEventPolicySection</code> | <code>lib/hosts/presentation/hosted_event_policy_section.dart:22</code> | — | — | No class documentation or registry summary. |
 | <code>HostedEventScheduleSection</code> | <code>lib/hosts/presentation/hosted_event_schedule_section.dart:14</code> | — | — | No class documentation or registry summary. |

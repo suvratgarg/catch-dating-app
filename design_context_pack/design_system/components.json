@@ -6203,12 +6203,13 @@
       "name": "CatchMetricSection",
       "status": "active",
       "kind": "composite",
-      "summary": "Caller-formatted metric groups with a compact rail and a data-quality tile-grid recipe.",
+      "summary": "Caller-formatted metrics with a compact context rail and adaptive independent-measurement grids.",
       "dart": {
         "symbol": "CatchMetricSection",
         "file": "packages/catch_ui/lib/src/components/catch_metric_section.dart",
         "constructors": [
           "CatchMetricSection",
+          "CatchMetricSection.grid",
           "CatchMetricSection.dataQuality"
         ]
       },
@@ -6235,7 +6236,7 @@
             "type": "list",
             "required": false,
             "dartType": "List<CatchMetricValue>",
-            "notes": "Required by the default rail constructor."
+            "notes": "Required by the default rail and grid constructors."
           },
           {
             "name": "padding",
@@ -6305,7 +6306,9 @@
           "empty-grid",
           "two-column",
           "limited-items",
-          "large-text-grid"
+          "large-text-grid",
+          "independent-grid",
+          "independent-large-text"
         ],
         "slots": [],
         "tokens": [
@@ -6361,7 +6364,7 @@
               "comparedWith": [
                 "catch.analytics_metric"
               ],
-              "reason": "Displays one scalar value and its label, with an optional icon, unit, emphasis or surface. DataQualityMetricTile adds an explicit completeness status, status badge, warning chrome and explanatory caption; simple values do not claim that data-quality contract."
+              "reason": "Displays one scalar value and its label, with an optional icon, unit, emphasis or surface. DataQualityMetricTile adds an explicit completeness status, status label, warning chrome and explanatory caption; simple values do not claim that data-quality contract."
             }
           }
         ],
@@ -6392,6 +6395,9 @@
           "CatchMetricSection.dataQuality": [
             "metrics",
             "maxItems"
+          ],
+          "CatchMetricSection.grid": [
+            "items"
           ]
         }
       },
@@ -6399,8 +6405,8 @@
         "allowedChildren": [],
         "notes": [
           "Use the default rail for compact quantitative or short factual data pairs. Keep labels concise and supply a separate unit through CatchMetricValue.unit.",
-          "Use dataQuality for a two-column arrangement of status-aware CatchMetricData records. maxItems preserves the input order while limiting the visible prefix.",
-          "CatchMetricTile owns standalone value/label rendering, with a compact recipe for rail cells. Data-quality warnings, status badges and captions remain CatchDataQualityMetricTile."
+          "Use grid for independent measurements and dataQuality for source-completeness-aware measurements. Both use 12 pt gutters, equal paired tiles and single-column reflow at large text or narrow widths; never wrap either in another surface.",
+          "CatchMetricTile owns standalone value/label rendering, with a compact recipe for rail cells. Data-quality warnings, status labels and captions remain CatchDataQualityMetricTile."
         ]
       },
       "governance": {
@@ -6426,7 +6432,7 @@
         "comparedWith": [
           "catch.section"
         ],
-        "reason": "Arranges typed metric values in a shared rail that reflows at large text, or independently surfaced data-quality tiles in two columns. Generic Section owns titled content and field-group structure; it does not interpret metric payloads or choose metric layout."
+        "reason": "Arranges typed metric values in a compact context rail or adaptive independent-measurement tiles. Generic Section owns headings and page gutters; MetricSection owns only the local metric collection."
       }
     },
     {
@@ -16946,16 +16952,14 @@
           "CatchMetricDataStatus",
           "CatchMetricSection.dataQuality",
           "CatchSurface",
-          "CatchBadge",
-          "CatchTextStyles.numericLarge",
-          "CatchTextStyles.labelM",
-          "CatchTextStyles.supporting"
+          "CatchTextStyles.supporting",
+          "CatchTextStyles.metric"
         ],
         "goldens": [],
         "accessibility": {
           "largeText": {
             "minimumScale": 2,
-            "policy": "Preserve the existing natural-height layout at text scale 2.0; callers supply concise metric values and labels and full explanatory row text."
+            "policy": "Natural-height labels, values, statuses and captions remain readable at 2x text. Metric collections reflow to one column."
           },
           "reducedMotion": {
             "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
@@ -16970,7 +16974,7 @@
         "allowedChildren": [],
         "notes": [
           "Callers own metric identity, formatted values and all visible copy, including partial and missing status labels.",
-          "Use CatchMetricSection.dataQuality to arrange the same metric payloads in two columns; maxItems limits the visible prefix without changing order.",
+          "Use CatchMetricSection.dataQuality for adaptive tiles with matching gutters and paired heights. Missing values display a dash; ready or partial zero values stay zero. Labels and captions wrap without truncation.",
           "Data fetching, source readiness and range selection belong to feature adapters."
         ]
       },
@@ -16997,7 +17001,7 @@
         "comparedWith": [
           "catch.metric_strip.stat_column"
         ],
-        "reason": "Owns an explicit data-completeness contract: ready, partial and missing states, badge copy, warning border/fill and an optional explanation. MetricTile displays a scalar and label without asserting source completeness. The qualifier names that responsibility rather than the feature that consumes it."
+        "reason": "Owns an explicit data-completeness contract: ready, partial and missing states, status copy, warning fill and an optional explanation. MetricTile displays a scalar and label without asserting source completeness. The qualifier names that responsibility rather than the feature that consumes it."
       }
     },
     {
