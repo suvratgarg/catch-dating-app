@@ -34,11 +34,12 @@ void main(List<String> args) {
     exitCode = 65;
     return;
   }
-  if (screenshot.width != spec.logicalWidth ||
-      screenshot.height != spec.logicalHeight) {
+  if (screenshot.width != spec.logicalWidth * spec.outputScale ||
+      screenshot.height != spec.logicalHeight * spec.outputScale) {
     stderr.writeln(
       'Expected ${spec.id} screenshot to be '
-      '${spec.logicalWidth}x${spec.logicalHeight}, got '
+      '${spec.logicalWidth * spec.outputScale}x'
+      '${spec.logicalHeight * spec.outputScale} (native ${spec.outputScale}x), got '
       '${screenshot.width}x${screenshot.height}.',
     );
     exitCode = 65;
@@ -111,15 +112,9 @@ img.Image _renderDeviceFrame(img.Image screenshot, _DeviceFrameSpec spec) {
     color: _rgba(4, 4, 5),
   );
 
-  final scaledScreenshot = img.copyResize(
-    screenshot,
-    width: screenW,
-    height: screenH,
-    interpolation: img.Interpolation.linear,
-  );
   _copyRounded(
     canvas,
-    scaledScreenshot,
+    screenshot,
     dstX: screenX,
     dstY: screenY,
     radius: spec.screenRadius * scale,
@@ -236,7 +231,7 @@ void _printHelp() {
   stdout.writeln('''
 Usage: dart run tool/marketing/frame_device_capture.dart --input <png> --output <png> [--device iphone-17-pro]
 
-Wraps a raw Flutter app capture in a marketing device frame.
+Wraps a native 2x Flutter app capture (804x1748 for iPhone 17 Pro) without resizing.
 ''');
 }
 

@@ -745,7 +745,9 @@ void _registerExploreClubCardsTests() {
                 slivers: [
                   ...CatchSliverHeader(
                     title: const SizedBox.shrink(),
-                    bottomHeight: CatchTopBar.heightFor(context: context),
+                    bottomHeight: const CatchTopBar.primaryRail(
+                      title: 'Explore',
+                    ).contentHeightFor(context),
                     bottom: ExploreBrowseHeaderContent(
                       query: container.read(exploreSearchQueryProvider),
                       onQueryChanged: (value) => container
@@ -766,7 +768,7 @@ void _registerExploreClubCardsTests() {
     final initialCityTriggerSize = tester.getSize(
       find.byType(ExploreCityPicker),
     );
-    expect(initialCityTriggerSize.height, CatchSpacing.s12);
+    expect(initialCityTriggerSize.height, CatchToolbarMetrics.targetExtent);
     expect(
       initialCityTriggerSize.width,
       greaterThan(initialCityTriggerSize.height),

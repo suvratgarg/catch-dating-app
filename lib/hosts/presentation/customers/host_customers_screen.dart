@@ -24,7 +24,6 @@ import 'package:catch_dating_app/hosts/domain/crm/host_audience_query.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_campaign_policy.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_crm_summary.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_customer_revenue.dart';
-import 'package:catch_dating_app/hosts/domain/crm/host_customer_timeline.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_messaging_setup.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_saved_audience.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_saved_audience_definition.dart';
@@ -302,7 +301,6 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
                       onPressed: () => _addCustomer(selectedClub, request),
                     ),
                     CatchActionMenu<_HostCustomersHeaderAction>(
-                      variant: CatchIconActionVariant.plain,
                       tooltip: context.l10n.hostCustomersMoreActions,
                       items: _hostCustomersHeaderActions(
                         context,
@@ -330,8 +328,6 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
                 : const [],
             search: CatchTopBarSearch(
               copy: catchSearchFieldCopy(context.l10n),
-              backgroundColor: Colors.transparent,
-              borderColor: Colors.transparent,
               fieldKey: ValueKey(
                 peopleView ? 'host-customers-search' : 'host-audiences-search',
               ),

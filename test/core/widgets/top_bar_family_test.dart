@@ -29,11 +29,14 @@ void main() {
               appBar: root
                   ? CatchTopBar.screen(
                       key: key,
-                      context: context,
                       title: 'People',
                       search: search,
                     )
-                  : CatchTopBar(key: key, title: 'People', search: search),
+                  : CatchTopBar.route(
+                      key: key,
+                      title: 'People',
+                      search: search,
+                    ),
             );
           },
         ),

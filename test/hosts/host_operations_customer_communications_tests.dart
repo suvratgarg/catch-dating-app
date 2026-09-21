@@ -56,16 +56,13 @@ void _registerHostOperationsCustomerCommunicationsTests() {
         ],
       );
 
-      final identityY = tester
-          .getTopLeft(find.byType(HostCustomerIdentityCard))
-          .dy;
+      expect(find.byType(HostCustomerIdentityCard), findsNothing);
       final memoryY = tester
           .getTopLeft(find.byType(HostCustomerMemoryPreview))
           .dy;
       final activityY = tester
           .getTopLeft(find.byType(HostCustomerDetailOverview))
           .dy;
-      expect(identityY, lessThan(memoryY));
       expect(activityY, lessThan(memoryY));
       expect(find.byType(HostCustomerDetailOverview), findsOneWidget);
       expect(
@@ -142,6 +139,9 @@ void _registerHostOperationsCustomerCommunicationsTests() {
 
     expect(find.text('Message'), findsOneWidget);
     expect(find.text('Message Ananya Rao'), findsNothing);
+    expect(find.byType(HostCustomerReachSection), findsNothing);
+    await tester.tap(find.text('Details'));
+    await pumpFeatureUi(tester);
     expect(find.text('Opens the Catch conversation.'), findsOneWidget);
     expect(find.byKey(const ValueKey('host-customer-message')), findsOneWidget);
     expect(
@@ -154,54 +154,55 @@ void _registerHostOperationsCustomerCommunicationsTests() {
     expect(find.text('You press send'), findsNothing);
   });
 
-  testWidgets('wide customer detail aligns attendance with recorded spend', (
-    tester,
-  ) async {
-    tester.view.physicalSize = const Size(1000, 1200);
-    tester.view.devicePixelRatio = 1;
-    addTearDown(tester.view.resetPhysicalSize);
-    addTearDown(tester.view.resetDevicePixelRatio);
+  testWidgets(
+    'wide customer detail gives attendance and spend separate sections',
+    (tester) async {
+      tester.view.physicalSize = const Size(1000, 1200);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
 
-    await _pumpHostScreen(
-      tester,
-      const HostCustomerDetailScreen(
-        organizerId: 'organizer-1',
-        contactId: 'contact-1',
-      ),
-      overrides: [
-        uidProvider.overrideWith((ref) => Stream.value(_hostUid)),
-        hostAudienceContactDetailProvider(
-          'organizer-1',
-          'contact-1',
-        ).overrideWithValue(AsyncData(_customerDetail())),
-        hostCommunicationPlanProvider(
-          'organizer-1',
-          'contact-1',
-        ).overrideWithValue(AsyncData(_individualCommunicationPlan())),
-      ],
-    );
+      await _pumpHostScreen(
+        tester,
+        const HostCustomerDetailScreen(
+          organizerId: 'organizer-1',
+          contactId: 'contact-1',
+        ),
+        overrides: [
+          uidProvider.overrideWith((ref) => Stream.value(_hostUid)),
+          hostAudienceContactDetailProvider(
+            'organizer-1',
+            'contact-1',
+          ).overrideWithValue(AsyncData(_customerDetail())),
+          hostCommunicationPlanProvider(
+            'organizer-1',
+            'contact-1',
+          ).overrideWithValue(AsyncData(_individualCommunicationPlan())),
+        ],
+      );
 
-    final overview = find.byType(HostCustomerDetailOverview);
-    final attendance = find.descendant(
-      of: overview,
-      matching: find.text('Attended'),
-    );
-    final spend = find.descendant(
-      of: overview,
-      matching: find.textContaining('Recorded spend'),
-    );
-    expect(attendance, findsOneWidget);
-    expect(spend, findsOneWidget);
-    expect(
-      tester.getTopLeft(attendance).dy,
-      closeTo(tester.getTopLeft(spend).dy, 0.5),
-    );
-    expect(
-      tester.getRect(attendance).right,
-      lessThan(tester.getRect(spend).left),
-    );
-    expect(tester.takeException(), isNull);
-  });
+      final overview = find.byType(HostCustomerDetailOverview);
+      final attendance = find.descendant(
+        of: overview,
+        matching: find.text('Attended'),
+      );
+      final spend = find.descendant(
+        of: overview,
+        matching: find.text('RECORDED SPEND'),
+      );
+      expect(attendance, findsOneWidget);
+      expect(spend, findsOneWidget);
+      expect(
+        tester.getTopLeft(attendance).dy,
+        lessThan(tester.getTopLeft(spend).dy),
+      );
+      expect(
+        tester.getRect(attendance).left,
+        closeTo(tester.getRect(spend).left, 0.5),
+      );
+      expect(tester.takeException(), isNull);
+    },
+  );
 
   testWidgets('customer WhatsApp handoff pre-fills copy and opens the app', (
     tester,

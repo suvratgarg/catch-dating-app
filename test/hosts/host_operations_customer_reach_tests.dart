@@ -203,7 +203,7 @@ void _registerHostOperationsCustomerReachTests() {
       ),
     );
 
-    expect(find.text('Pause personal WhatsApp handoffs'), findsOneWidget);
+    expect(find.text('Pause personal WhatsApp'), findsOneWidget);
     await tester.tap(
       find.byKey(const ValueKey('host-customer-organizer-messages')),
     );

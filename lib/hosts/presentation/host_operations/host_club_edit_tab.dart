@@ -495,11 +495,10 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
         ],
         if (widget.isOwner)
           CatchSection.content(
-            child: CatchSection.contained(
+            child: CatchSection.action(
               title: context.l10n.hostsHostClubPublicationTitle,
-              tone: CatchSurfaceTone.primarySoft,
-              emphasis: CatchSurfaceEmphasis.flat,
-              child: Column(
+              message: publicationBody,
+              meta: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   _HostClubPublicationChannelRow(
@@ -519,47 +518,33 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
                         : context.l10n.hostsHostClubPublicationStatusNotEnabled,
                     visible: publicationState.websiteEnabled,
                   ),
-                  gapH16,
-                  Text(
-                    publicationBody,
-                    style: CatchTextStyles.supporting(
-                      context,
-                      color: CatchTokens.of(context).ink2,
+                ],
+              ),
+              actionLabel: publicationAction,
+              onAction: publicationMutation.isPending
+                  ? null
+                  : () => unawaited(
+                      _setPublicListingEnabled(
+                        publicationState.targetPublicListingEnabled,
+                      ),
                     ),
-                  ),
-                  gapH12,
-                  CatchButton(
-                    label: publicationAction,
-                    onPressed: publicationMutation.isPending
-                        ? null
-                        : () => unawaited(
-                            _setPublicListingEnabled(
-                              publicationState.targetPublicListingEnabled,
-                            ),
-                          ),
-                    status: (publicationMutation.isPending)
-                        ? CatchButtonStatus.loading
-                        : CatchButtonStatus.idle,
-                    variant:
-                        publicationState.kind ==
-                            HostClubPublicationKind.everywhere
-                        ? CatchButtonVariant.secondary
-                        : CatchButtonVariant.primary,
-                    fullWidth: true,
-                  ),
-                  if (publicationMutation.hasError) ...[
-                    gapH8,
-                    CatchFieldSupportRow(
+              actionStatus: publicationMutation.isPending
+                  ? CatchButtonStatus.loading
+                  : CatchButtonStatus.idle,
+              actionEmphasis:
+                  publicationState.kind == HostClubPublicationKind.everywhere
+                  ? CatchSectionEmphasis.secondary
+                  : CatchSectionEmphasis.primary,
+              footer: publicationMutation.hasError
+                  ? CatchFieldSupportRow(
                       text: mutationErrorMessage(
                         publicationMutation,
                         l10n: context.l10n,
                       ),
                       color: CatchTokens.of(context).danger,
                       showErrorIcon: true,
-                    ),
-                  ],
-                ],
-              ),
+                    )
+                  : null,
             ),
           ),
         CatchSection.content(

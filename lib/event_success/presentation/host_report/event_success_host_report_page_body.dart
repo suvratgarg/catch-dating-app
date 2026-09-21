@@ -56,6 +56,8 @@ class EventSuccessHostReportPageBody extends StatelessWidget {
         children: [
           ?helpSection,
           ?deliverySection,
+          if (helpSection != null || deliverySection != null)
+            const SizedBox(height: CatchGaps.section),
           EventSuccessReportEmptyState(
             icon: CatchIcons.insightsOutlined,
             title: context
@@ -80,6 +82,8 @@ class EventSuccessHostReportPageBody extends StatelessWidget {
         children: [
           ?helpSection,
           ?deliverySection,
+          if (helpSection != null || deliverySection != null)
+            const SizedBox(height: CatchGaps.section),
           EventSuccessReportEmptyState(
             icon: CatchIcons.insightsOutlined,
             title: context
@@ -121,6 +125,8 @@ class EventSuccessHostReportPageBody extends StatelessWidget {
         children: [
           ?helpSection,
           ?deliverySection,
+          if (helpSection != null || deliverySection != null)
+            const SizedBox(height: CatchGaps.section),
           ...errorStates.expand((error) => [error, gapH16]),
           if (!reportFailures.any(
             (failure) =>
@@ -154,6 +160,8 @@ class EventSuccessHostReportPageBody extends StatelessWidget {
       children: [
         ?helpSection,
         ?deliverySection,
+        if (helpSection != null || deliverySection != null)
+          const SizedBox(height: CatchGaps.section),
         ...errorStates.expand((error) => [error, gapH16]),
         CatchBanner(
           icon: CatchIcons.assignmentTurnedInOutlined,

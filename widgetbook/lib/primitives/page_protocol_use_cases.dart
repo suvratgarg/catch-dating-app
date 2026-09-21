@@ -18,7 +18,7 @@ Widget routeBodyRoleStates(BuildContext context) => WidgetbookCatalogFrame(
         size: const Size(360, 300),
         child: Builder(
           builder: (context) => CatchRouteScaffold(
-            topBarBuilder: (context, scrolledUnder) => CatchTopBar(
+            topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
               title: fullBleed ? 'Edge-owned route' : 'Standard route',
               navigation: const CatchTopBarNavigation(
                 mode: CatchTopBarNavigationMode.none,
@@ -66,10 +66,8 @@ Widget rootScrollOwnerStates(BuildContext context) => WidgetbookCatalogFrame(
         child: CatchScaffold.workspace(
           body: fullBleed
               ? CatchRootScreenScrollView.fullBleed(
-                  title: const CatchScreenHeader.block(
+                  title: const CatchTopBar.primaryRail(
                     title: 'Full-bleed pane',
-                    titleMaxLines: 2,
-                    padding: CatchInsets.screenTitleBlock,
                   ),
                   children: [
                     SliverToBoxAdapter(
@@ -84,10 +82,7 @@ Widget rootScrollOwnerStates(BuildContext context) => WidgetbookCatalogFrame(
                   ],
                 )
               : CatchRootScreenScrollView.standard(
-                  title: const CatchScreenHeader.block(
-                    title: 'Standard pane',
-                    padding: CatchInsets.screenTitleBlock,
-                  ),
+                  title: const CatchTopBar.primaryRail(title: 'Standard pane'),
                   children: [
                     SliverToBoxAdapter(
                       child: Text(

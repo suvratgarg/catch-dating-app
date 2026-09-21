@@ -15,7 +15,7 @@
         {
           "path": "lib/dashboard/presentation/dashboard_home_screen.dart",
           "symbol": "DashboardHomeScreen",
-          "owner": "CatchScreenHeader.block"
+          "owner": "CatchTopBar.primaryRail"
         }
       ]
     },
@@ -37,7 +37,7 @@
         {
           "path": "lib/chats/presentation/inbox/widgets/chats_sliver_header.dart",
           "symbol": "ChatsBrowseHeader",
-          "owner": "CatchTopBar.screen"
+          "owner": "CatchTopBar.primaryRail"
         }
       ]
     },
@@ -59,7 +59,7 @@
         {
           "path": "lib/hosts/today/presentation/widgets/host_today_body.dart",
           "symbol": "HostTodayHeader",
-          "owner": "CatchScreenHeader.block"
+          "owner": "CatchTopBar.primaryRail"
         }
       ]
     },
@@ -70,7 +70,7 @@
         {
           "path": "lib/hosts/events/presentation/host_events_screen.dart",
           "symbol": "HostEventsRouteScaffold",
-          "owner": "CatchScreenHeader.block"
+          "owner": "CatchTopBar.primaryRail"
         },
         {
           "path": "lib/hosts/events/presentation/widgets/host_events_list.dart",
@@ -107,7 +107,7 @@
         {
           "path": "lib/chats/presentation/inbox/widgets/chats_sliver_header.dart",
           "symbol": "ChatsBrowseHeader",
-          "owner": "CatchTopBar.screen"
+          "owner": "CatchTopBar.primaryRail"
         }
       ]
     },
@@ -132,7 +132,7 @@
     {
       "path": "lib/core/widgets/ordered_photo_picker.dart",
       "role": "compact",
-      "expression": "CatchTopBar",
+      "expression": "CatchTopBar.route",
       "owner": "CatchTopBar"
     },
     {
@@ -146,14 +146,14 @@
     {
       "path": "lib/cross_paths/presentation/cross_paths_invitation_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar",
+      "expression": "CatchTopBar.route",
       "owner": "CatchTopBar",
       "leading": "back"
     },
     {
       "path": "lib/dashboard/presentation/activity_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar",
+      "expression": "CatchTopBar.route",
       "owner": "CatchTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back"
@@ -161,13 +161,13 @@
     {
       "path": "lib/event_success/presentation/event_success_companion_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar",
+      "expression": "CatchTopBar.route",
       "owner": "CatchTopBar"
     },
     {
       "path": "lib/event_rehearsal/presentation/host_event_rehearsal_screen.dart",
       "role": "workspace",
-      "expression": "CatchTopBar",
+      "expression": "CatchTopBar.route",
       "owner": "CatchTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back",
@@ -176,7 +176,7 @@
     {
       "path": "lib/event_rehearsal/presentation/widgets/event_rehearsal_entry_scaffold.dart",
       "role": "compact",
-      "expression": "CatchTopBar",
+      "expression": "CatchTopBar.route",
       "owner": "CatchTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back"
@@ -184,7 +184,7 @@
     {
       "path": "lib/event_rehearsal/presentation/host_event_rehearsal_start_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar",
+      "expression": "CatchTopBar.route",
       "owner": "CatchTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back"
@@ -192,7 +192,7 @@
     {
       "path": "lib/events/presentation/calendar/calendar_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar",
+      "expression": "CatchTopBar.route",
       "owner": "CatchTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back"
@@ -200,7 +200,7 @@
     {
       "path": "lib/events/presentation/saved_events_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar",
+      "expression": "CatchTopBar.route",
       "owner": "CatchTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back"
@@ -208,7 +208,7 @@
     {
       "path": "lib/hosts/today/personalization/presentation/host_today_focus_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar",
+      "expression": "CatchTopBar.route",
       "owner": "CatchTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back"
@@ -216,7 +216,7 @@
     {
       "path": "lib/hosts/presentation/edit_hosted_event_route_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar",
+      "expression": "CatchTopBar.route",
       "owner": "CatchTopBar",
       "surface": "CatchRouteScaffold",
       "occurrences": 4
@@ -224,14 +224,14 @@
     {
       "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar",
+      "expression": "CatchTopBar.route",
       "owner": "CatchTopBar",
       "surface": "CatchRouteScaffold"
     },
     {
       "path": "lib/hosts/presentation/host_event_manage_route_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar",
+      "expression": "CatchTopBar.route",
       "owner": "CatchTopBar",
       "surface": "CatchRouteScaffold",
       "occurrences": 4
@@ -239,7 +239,7 @@
     {
       "path": "lib/hosts/presentation/host_event_manage_screen.dart",
       "role": "workspace",
-      "expression": "CatchTopBar",
+      "expression": "CatchTopBar.route",
       "owner": "CatchTopBar",
       "surface": "CatchRouteScaffold",
       "reason": "Host Event Manage spans responsive setup, live, and recap workspaces."
@@ -247,7 +247,7 @@
     {
       "path": "lib/hosts/presentation/host_event_operator_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar",
+      "expression": "CatchTopBar.route",
       "owner": "CatchTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back",
@@ -256,13 +256,13 @@
     {
       "path": "lib/hosts/presentation/event_management/widgets/route_path_builder_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar",
+      "expression": "CatchTopBar.route",
       "owner": "CatchTopBar"
     },
     {
       "path": "lib/hosts/presentation/forms/host_form_analytics_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar",
+      "expression": "CatchTopBar.route",
       "owner": "CatchTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back"
@@ -270,7 +270,7 @@
     {
       "path": "lib/hosts/presentation/forms/host_automation_rule_editor.dart",
       "role": "compact",
-      "expression": "CatchTopBar",
+      "expression": "CatchTopBar.route",
       "owner": "CatchTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back"
@@ -278,7 +278,7 @@
     {
       "path": "lib/hosts/presentation/forms/host_form_automations_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar",
+      "expression": "CatchTopBar.route",
       "owner": "CatchTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back"
@@ -286,7 +286,7 @@
     {
       "path": "lib/hosts/presentation/forms/host_form_builder_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar",
+      "expression": "CatchTopBar.route",
       "owner": "CatchTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back"
@@ -294,7 +294,7 @@
     {
       "path": "lib/hosts/presentation/forms/host_form_preview_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar",
+      "expression": "CatchTopBar.route",
       "owner": "CatchTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back"
@@ -302,7 +302,7 @@
     {
       "path": "lib/hosts/presentation/forms/host_form_response_detail_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar",
+      "expression": "CatchTopBar.route",
       "owner": "CatchTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back"
@@ -310,7 +310,7 @@
     {
       "path": "lib/hosts/presentation/forms/host_form_share_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar",
+      "expression": "CatchTopBar.route",
       "owner": "CatchTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back"
@@ -318,7 +318,7 @@
     {
       "path": "lib/hosts/presentation/forms/host_form_templates_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar",
+      "expression": "CatchTopBar.route",
       "owner": "CatchTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back"
@@ -326,7 +326,7 @@
     {
       "path": "lib/hosts/presentation/applications/host_application_detail_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar",
+      "expression": "CatchTopBar.route",
       "owner": "CatchTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back"
@@ -334,7 +334,7 @@
     {
       "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar",
+      "expression": "CatchTopBar.route",
       "owner": "CatchTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back",
@@ -343,7 +343,7 @@
     {
       "path": "lib/hosts/presentation/customers/host_saved_audience_overview.dart",
       "role": "compact",
-      "expression": "CatchTopBar",
+      "expression": "CatchTopBar.route",
       "owner": "CatchTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back",
@@ -351,34 +351,33 @@
     },
     {
       "path": "lib/hosts/presentation/customers/host_saved_audience_editor.dart",
-      "role": "screen",
-      "expression": "CatchTopBar.screen",
-      "owner": "CatchTopBar.screen",
+      "role": "compact",
+      "expression": "CatchTopBar.route",
+      "owner": "CatchTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back",
       "occurrences": 3
     },
     {
       "path": "lib/hosts/presentation/customers/host_customer_editor.dart",
-      "role": "screen",
-      "expression": "CatchTopBar.screen",
-      "owner": "CatchTopBar.screen",
+      "role": "compact",
+      "expression": "CatchTopBar.route",
+      "owner": "CatchTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back"
     },
     {
       "path": "lib/hosts/presentation/customers/host_customer_detail_screen.dart",
-      "role": "compact",
-      "expression": "CatchTopBar",
+      "role": "identity",
+      "expression": "CatchTopBar.identity",
       "owner": "CatchTopBar",
       "surface": "CatchRouteScaffold",
-      "leading": "backUnlessEmbedded",
-      "titlePolicy": "routeOrIdentity"
+      "leading": "backUnlessEmbedded"
     },
     {
       "path": "lib/hosts/presentation/applications/host_applications_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar",
+      "expression": "CatchTopBar.route",
       "owner": "CatchTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back"
@@ -386,7 +385,7 @@
     {
       "path": "lib/hosts/presentation/inbox/host_messaging_setup_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar",
+      "expression": "CatchTopBar.route",
       "owner": "CatchTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back"
@@ -394,7 +393,7 @@
     {
       "path": "lib/hosts/presentation/host_operations/host_club_spoke_screens.dart",
       "role": "compact",
-      "expression": "CatchTopBar",
+      "expression": "CatchTopBar.route",
       "owner": "CatchTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back",
@@ -403,26 +402,26 @@
     {
       "path": "lib/hosts/presentation/host_operations/host_loading_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar",
+      "expression": "CatchTopBar.route",
       "owner": "CatchTopBar",
       "surface": "CatchRouteScaffold"
     },
     {
       "path": "lib/image_uploads/shared/profile_photo_editor_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar",
+      "expression": "CatchTopBar.route",
       "owner": "CatchTopBar"
     },
     {
       "path": "lib/launch_access/presentation/launch_access_application_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar",
+      "expression": "CatchTopBar.route",
       "owner": "CatchTopBar"
     },
     {
       "path": "lib/payments/presentation/payment_history_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar",
+      "expression": "CatchTopBar.route",
       "owner": "CatchTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back"
@@ -430,14 +429,14 @@
     {
       "path": "lib/public_profile/presentation/public_profile_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar",
+      "expression": "CatchTopBar.route",
       "owner": "CatchTopBar",
-      "titlePolicy": "routeOrIdentity"
+      "titlePolicy": "sharedRoute"
     },
     {
       "path": "lib/reviews/presentation/reviews_history_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar",
+      "expression": "CatchTopBar.route",
       "owner": "CatchTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back"
@@ -445,7 +444,7 @@
     {
       "path": "lib/safety/presentation/settings_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar",
+      "expression": "CatchTopBar.route",
       "owner": "CatchTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back"
@@ -453,19 +452,19 @@
     {
       "path": "lib/swipes/presentation/event_recap_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar",
+      "expression": "CatchTopBar.route",
       "owner": "CatchTopBar"
     },
     {
       "path": "lib/swipes/presentation/filters_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar",
+      "expression": "CatchTopBar.route",
       "owner": "CatchTopBar"
     },
     {
       "path": "lib/hosts/presentation/inbox/host_new_message_screen.dart",
       "role": "compact",
-      "expression": "CatchTopBar",
+      "expression": "CatchTopBar.route",
       "owner": "CatchTopBar",
       "surface": "CatchRouteScaffold",
       "leading": "back"

@@ -354,7 +354,7 @@ class _ProfileHeaderHarnessState extends State<_ProfileHeaderHarness>
         child: CustomScrollView(
           slivers: [
             ...CatchSliverHeader(
-              title: const CatchScreenHeader.block(
+              title: const CatchTopBar.primaryRail(
                 title: 'Your profile',
                 actions: [ProfileSettingsButton()],
               ),

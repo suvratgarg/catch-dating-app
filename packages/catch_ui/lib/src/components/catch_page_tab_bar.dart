@@ -97,7 +97,7 @@ class CatchPageTabBar<T> extends StatelessWidget
   Size get preferredSize => Size.fromHeight(minimumHeightFor(variant));
 
   @override
-  Size preferredSizeFor(BuildContext context) =>
+  Size preferredSizeFor(BuildContext context, {double? width}) =>
       Size.fromHeight(CatchPageTabBar.heightFor(context, variant: variant));
 
   @override

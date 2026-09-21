@@ -65,38 +65,48 @@ void main() {
     expect(repository.addedReview?.comment, 'Friendly crew.');
   });
 
-  testWidgets('empty event reviews use an inline actionable state', (
-    tester,
-  ) async {
-    final repository = _FakeReviewsRepository();
-    final user = buildUser(name: 'Asha');
-    final container = _reviewsContainer(repository);
-    addTearDown(container.dispose);
+  testWidgets(
+    'empty event reviews keep copy full-width without an icon gutter',
+    (tester) async {
+      final repository = _FakeReviewsRepository();
+      final user = buildUser(name: 'Asha');
+      final container = _reviewsContainer(repository);
+      addTearDown(container.dispose);
 
-    await _pumpReviewsSection(
-      tester,
-      container: container,
-      user: user,
-      reviews: const [],
-    );
+      await _pumpReviewsSection(
+        tester,
+        container: container,
+        user: user,
+        reviews: const [],
+      );
 
-    final iconRight = tester
-        .getTopRight(find.byIcon(CatchIcons.rateReviewOutlined))
-        .dx;
-    final messageLeft = tester
-        .getTopLeft(find.text('Be the first to review this event.'))
-        .dx;
-    final emptyState = tester.widget<CatchEmptyState>(
-      find.byType(CatchEmptyState),
-    );
+      final emptyFinder = find.byType(CatchEmptyState);
+      final emptyState = tester.widget<CatchEmptyState>(emptyFinder);
+      final bounds = tester.getRect(emptyFinder);
+      final message = tester.getRect(
+        find.text('Be the first to review this event.'),
+      );
 
-    expect(messageLeft, greaterThan(iconRight));
-    expect(emptyState.surface, false);
-    expect(emptyState.variant, CatchEmptyStateVariant.inline);
-    expect(emptyState.padding, EdgeInsets.zero);
-    expect(find.text('No reviews yet'), findsNothing);
-    expect(find.byKey(ReviewKeys.writeReviewButton), findsOneWidget);
-  });
+      expect(
+        find.descendant(
+          of: emptyFinder,
+          matching: find.byIcon(CatchIcons.rateReviewOutlined),
+        ),
+        findsNothing,
+      );
+      expect(message.left, bounds.left);
+      expect(message.width, bounds.width);
+      expect(
+        tester.getRect(find.byKey(ReviewKeys.writeReviewButton)).top,
+        greaterThan(message.bottom),
+      );
+      expect(emptyState.surface, false);
+      expect(emptyState.variant, CatchEmptyStateVariant.inline);
+      expect(emptyState.padding, EdgeInsets.zero);
+      expect(find.text('No reviews yet'), findsNothing);
+      expect(find.byKey(ReviewKeys.writeReviewButton), findsOneWidget);
+    },
+  );
 
   testWidgets('empty event reviews stay hidden without write access', (
     tester,

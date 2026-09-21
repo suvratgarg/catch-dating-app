@@ -27,9 +27,8 @@ Widget topBarGeometryMatrix(BuildContext context) {
       _topBarSpecimen(
         context,
         label: 'Compact route',
-        child: CatchTopBar(
+        child: CatchTopBar.route(
           title: 'Event details',
-          mode: CatchTopBarMode.content,
           navigation: const CatchTopBarNavigation(
             mode: CatchTopBarNavigationMode.back,
             onPressed: widgetbookNoop,
@@ -39,11 +38,9 @@ Widget topBarGeometryMatrix(BuildContext context) {
       _topBarSpecimen(
         context,
         label: 'Large editorial',
-        child: const CatchTopBar(
-          kicker: 'HOST MODE',
+        child: const CatchTopBar.route(
           title: 'Upcoming events',
           subtitle: 'Review requests and keep the room balanced.',
-          mode: CatchTopBarMode.content,
         ),
       ),
       _topBarSpecimen(
@@ -55,7 +52,6 @@ Widget topBarGeometryMatrix(BuildContext context) {
                 name: 'Taylor from Sunday Social',
               ),
           identityName: 'Taylor from Sunday Social',
-          mode: CatchTopBarMode.content,
           identityPhotoUrl: null,
           onIdentityTap: widgetbookNoop,
           tone: CatchTopBarTone.surface,
@@ -81,9 +77,8 @@ Widget topBarGeometryMatrix(BuildContext context) {
         label: 'Expanding search',
         description:
             'Use the search action to inspect the in-place width morph and title fade.',
-        child: CatchTopBar(
+        child: CatchTopBar.route(
           title: 'Explore',
-          mode: CatchTopBarMode.content,
           search: CatchTopBarSearch(
             copy: catchSearchFieldCopy(context.l10n),
             value: '',

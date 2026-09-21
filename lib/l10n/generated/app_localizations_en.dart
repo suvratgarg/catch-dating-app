@@ -13676,7 +13676,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostCustomersVerifiedDetailsManagedByCatch =>
-      'Linked Catch profiles stay private. Phone and email can’t be edited here.';
+      'Phone and email come from the source record and can’t be edited here.';
 
   @override
   String get hostCustomersUnverifiedContactDetails =>
@@ -14121,8 +14121,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostCustomersDetailRevenue => 'Recorded spend';
 
   @override
-  String get hostCustomersDetailNoRevenue =>
-      'No revenue has been recorded for this customer.';
+  String get hostCustomersDetailNoRevenue => 'No spend recorded.';
 
   @override
   String get hostCustomersDetailRevenueUnavailable =>
@@ -14130,7 +14129,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostCustomersDetailRevenuePartial =>
-      'This total includes the available event and payment facts, but some bounded history may be missing.';
+      'Some event and payment history may be missing.';
 
   @override
   String hostCustomersDetailRevenueFacts({required int count}) {
@@ -14157,7 +14156,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostCustomersMessageOptionsLoading =>
-      'Checking what is available now…';
+      'Checking messaging options…';
 
   @override
   String get hostCustomersMessageOptionsUnavailable =>
@@ -14175,7 +14174,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Sending setup is not available for this route yet.';
 
   @override
-  String get hostCustomersWhatsappAppChannel => 'WhatsApp app · You';
+  String get hostCustomersWhatsappAppChannel => 'Personal WhatsApp';
 
   @override
   String get hostCustomersWhatsappHandoffDisclosure =>
@@ -14241,7 +14240,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostCustomersMessagePersonHandoff =>
-      'Prepares a durable handoff. You review it and press Send in WhatsApp.';
+      'Review your message, then send it in WhatsApp.';
 
   @override
   String get hostCustomersWhatsappPermission => 'WhatsApp permission';
@@ -14289,7 +14288,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostCustomersCustomerProvenanceUnavailable =>
-      'No source receipt is available for this legacy customer.';
+      'Source information is unavailable.';
 
   @override
   String hostCustomersCustomerProvenanceItem({
@@ -14320,30 +14319,25 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get hostCustomersPauseWhatsappHandoffs =>
-      'Pause personal WhatsApp handoffs';
+  String get hostCustomersPauseWhatsappHandoffs => 'Pause personal WhatsApp';
 
   @override
   String get hostCustomersPauseWhatsappHandoffsBody =>
-      'Stops your team from starting personal WhatsApp messages to this customer. Their permission stays unchanged.';
+      'Stops your team’s personal WhatsApp handoffs. This does not change the person’s permission.';
 
   @override
   String get hostCustomersTimeline => 'History';
 
   @override
-  String get hostCustomersTimelineEmpty =>
-      'No form, event, send, or reply history is available yet.';
-
-  @override
-  String get hostCustomersTimelinePartialTitle => 'Some history may be missing';
+  String get hostCustomersTimelineEmpty => 'No activity recorded in this view.';
 
   @override
   String get hostCustomersTimelinePartialBody =>
-      'The available entries are shown newest first. Legacy or temporarily unavailable sources are not represented as complete.';
+      'Some history may be missing. Available activity is shown newest first.';
 
   @override
   String get hostCustomersTimelineReplyBoundary =>
-      'Catch and managed WhatsApp messages can appear here. Replies in personal WhatsApp remain outside Catch and cannot be observed.';
+      'Personal WhatsApp conversations stay in WhatsApp. Only Catch and managed WhatsApp messages appear here.';
 
   @override
   String get hostCustomersTimelineFormFallback => 'Form response';
@@ -14439,11 +14433,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostCustomersOverview => 'Overview';
 
   @override
-  String get hostCustomersRecentEvents => 'Recent events attended';
+  String get hostCustomersRecentEvents => 'Event activity';
 
   @override
   String get hostCustomersMemoryHelp =>
-      'Notes and your tags are private to this organizer’s management team.';
+      'Notes and tags are private to your host team.';
 
   @override
   String get hostCustomersManualTags => 'Your tags';
@@ -14514,11 +14508,8 @@ class AppLocalizationsEn extends AppLocalizations {
       'Only the 100 newest notes are shown.';
 
   @override
-  String get hostCustomersNotesUnavailableTitle => 'Notes could not be loaded';
-
-  @override
   String get hostCustomersNotesUnavailableBody =>
-      'The customer details are available. Try reloading to restore note history.';
+      'Notes are temporarily unavailable. Other customer details are still available.';
 
   @override
   String get hostCustomersSort => 'Sort customers';
@@ -16992,7 +16983,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostCustomersNoSubmittedInformation =>
-      'No form responses appear in the loaded history.';
+      'No form responses recorded.';
 
   @override
   String hostCustomersViewAnswers({required int count}) {
@@ -17048,9 +17039,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostCustomersCheckMessaging => 'Check again';
-
-  @override
-  String get hostCustomersSourceUnavailable => 'Source not recorded';
 
   @override
   String get hostCustomersSourcesTruncated =>
@@ -17609,9 +17597,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }) {
     return '$trigger, then $actions';
   }
-
-  @override
-  String get hostAudienceAtAGlance => 'At a glance';
 
   @override
   String get hostAudienceContactRequirement =>
@@ -20092,4 +20077,40 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostRehearsalRequiredModule => 'Included in this event type';
+
+  @override
+  String get hostCustomersTimelineUnavailable =>
+      'No activity is available in this view. History may be incomplete.';
+
+  @override
+  String get hostCustomersNoContactMethods => 'No phone number or email saved.';
+
+  @override
+  String get hostCustomersSubmissionsUnavailable =>
+      'Form responses are unavailable or incomplete.';
+
+  @override
+  String get hostCustomersAttendancePartial =>
+      'Attendance covers the records available to your team. Some activity may be missing.';
+
+  @override
+  String hostCustomersAttendanceSummary({
+    required int cancelled,
+    required int noShows,
+    required int imported,
+  }) {
+    return '$cancelled cancelled · $noShows no-shows · $imported imported';
+  }
+
+  @override
+  String get hostCustomersAccountLink => 'Catch account';
+
+  @override
+  String get hostCustomersAccountNeedsReview => 'Possible matches need review';
+
+  @override
+  String get hostCustomersAccountVerified => 'Verified account linked';
+
+  @override
+  String get hostCustomersAccountNotVerified => 'No verified account linked';
 }

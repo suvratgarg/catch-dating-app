@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/dashboard_home.feature.json",
   "generatedFor": "2026-08-18",
   "sourceDigest": "sha256:d53a70ef5535bb95521a8031cda5c0eb7f84385b04314d9ebaf4c0a58372f134",
-  "resolvedDigest": "sha256:0437bc6658ba69e5e75501db1b11e20d18c20daf9abd00e5242c3c63ab834510",
+  "resolvedDigest": "sha256:62eebd9d18b2dd4b5101c2ef9603a9459b1d641458e1562465f893dbb7f8a008",
   "feature": {
     "id": "feature.dashboard_home",
     "name": "Dashboard Home",
@@ -1666,7 +1666,7 @@
               "symbol": "CatchTopBar",
               "file": "packages/catch_ui/lib/src/components/catch_top_bar.dart",
               "constructors": [
-                "CatchTopBar",
+                "CatchTopBar.route",
                 "CatchTopBar.identity",
                 "CatchTopBar.screen",
                 "CatchTopBar.primaryRail"

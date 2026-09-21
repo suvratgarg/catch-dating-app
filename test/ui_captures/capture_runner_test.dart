@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'catalog/screen_capture_catalog.dart';
@@ -15,6 +16,7 @@ const _outputDirArg = String.fromEnvironment(
   'CAPTURE_OUTPUT_DIR',
   defaultValue: 'artifacts/ui-captures/review',
 );
+const _platformArg = String.fromEnvironment('CAPTURE_PLATFORM');
 const _deviceIdArg = String.fromEnvironment('CAPTURE_DEVICE_ID');
 const _textScaleArg = String.fromEnvironment('CAPTURE_TEXT_SCALE');
 const _pixelRatioArg = String.fromEnvironment(
@@ -36,6 +38,13 @@ void main() {
   final textScaleOverride = double.tryParse(_textScaleArg);
   final pixelRatio = double.tryParse(_pixelRatioArg) ?? 1.0;
   final outputLayout = CaptureOutputLayout.fromName(_outputLayoutArg);
+
+  final TestVariant<Object?> platformVariant = switch (_platformArg) {
+    '' => const DefaultTestVariant(),
+    'ios' => TargetPlatformVariant.only(TargetPlatform.iOS),
+    'android' => TargetPlatformVariant.only(TargetPlatform.android),
+    _ => throw ArgumentError.value(_platformArg, 'CAPTURE_PLATFORM'),
+  };
 
   for (final captureId in captureIds) {
     testWidgets('captures $captureId', (tester) async {
@@ -64,6 +73,6 @@ void main() {
         expect(artifact.file.existsSync(), isTrue);
         expect(artifact.file.lengthSync(), greaterThan(0));
       }
-    });
+    }, variant: platformVariant);
   }
 }

@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/organizer_detail.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:6f68464b6ad22655b5ff4bc62ef5eae2affe4a911818092f61f7a853bbdbe92a",
-  "resolvedDigest": "sha256:2caed83fba0ec517cd9d86c9ae5c5b91af1aadacc91f3530e7cfeb6769f57b5f",
+  "resolvedDigest": "sha256:e159ed9528cce053b933ca671c977baa8f0195696cf9821d5a81aaf40fa568aa",
   "feature": {
     "id": "feature.organizer_detail",
     "name": "Organizer Detail",
@@ -1211,7 +1211,7 @@
               "symbol": "CatchTopBar",
               "file": "packages/catch_ui/lib/src/components/catch_top_bar.dart",
               "constructors": [
-                "CatchTopBar",
+                "CatchTopBar.route",
                 "CatchTopBar.identity",
                 "CatchTopBar.screen",
                 "CatchTopBar.primaryRail"
@@ -2488,7 +2488,7 @@
               "symbol": "CatchTopBar",
               "file": "packages/catch_ui/lib/src/components/catch_top_bar.dart",
               "constructors": [
-                "CatchTopBar",
+                "CatchTopBar.route",
                 "CatchTopBar.identity",
                 "CatchTopBar.screen",
                 "CatchTopBar.primaryRail"

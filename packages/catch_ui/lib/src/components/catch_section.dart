@@ -2,6 +2,7 @@
 // ignore_for_file: prefer_initializing_formals
 
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/src/components/catch_button.dart';
 import 'package:catch_ui/src/components/catch_content_section.dart';
 import 'package:catch_ui/src/components/catch_dependent_row_section.dart';
 import 'package:catch_ui/src/components/catch_divided_field_interaction_scope.dart';
@@ -27,8 +28,12 @@ import 'package:flutter/material.dart';
 
 part 'catch_section_render.dart';
 part 'catch_section_configs.dart';
+part 'catch_action_module.dart';
 
 enum _CatchSectionVariant { divided, contained, plain }
+
+/// The supported action hierarchies inside a contained task.
+enum CatchSectionEmphasis { primary, secondary, destructive }
 
 /// Design-system `Section`: the canonical primitive for grouping information.
 ///
@@ -182,20 +187,14 @@ class CatchSection extends StatelessWidget {
        _plainConfig = null,
        _horizontalConfig = null;
 
+  /// One quiet frame around a related interactive collection.
+  /// Typography, padding, boundary and elevation are owned here.
   const CatchSection.contained({
     super.key,
     String? title,
     String? subtitle,
     this.trailing,
     Object? count,
-    Color? titleColor,
-    double bodyGap = CatchSpacing.s3,
-    EdgeInsetsGeometry? padding,
-    Color? backgroundColor,
-    Color? borderColor,
-    CatchSurfaceTone tone = CatchSurfaceTone.surface,
-    CatchSurfaceEmphasis emphasis = CatchSurfaceEmphasis.subtle,
-    List<BoxShadow>? boxShadow,
     bool showInternalDividers = true,
     Set<WidgetState> states = const {},
     this.children,
@@ -212,15 +211,9 @@ class CatchSection extends StatelessWidget {
            title: title,
            subtitle: subtitle,
            count: count,
-           titleColor: titleColor,
-           bodyGap: bodyGap,
+           titleColor: null,
+           bodyGap: CatchSpacing.s3,
          ),
-         padding: padding,
-         backgroundColor: backgroundColor,
-         borderColor: borderColor,
-         tone: tone,
-         emphasis: emphasis,
-         boxShadow: boxShadow,
          showInternalDividers: showInternalDividers,
          states: states,
        ),
@@ -461,6 +454,43 @@ class CatchSection extends StatelessWidget {
     ),
   );
 
+  /// One self-contained task: heading, optional facts, explanation, action.
+  /// [meta] supplies facts above the explanation; [footer] supplies support
+  /// below the action. The recipe owns their spacing and containment.
+  /// A destructive action does not tint the whole module. Feedback belongs in
+  /// `CatchBanner`, and ordinary information belongs in [CatchSection.content].
+  factory CatchSection.action({
+    Key? key,
+    required String title,
+    required String message,
+    required String actionLabel,
+    required VoidCallback? onAction,
+    Key? actionKey,
+    Widget? meta,
+    IconData? icon,
+    CatchSectionEmphasis actionEmphasis = CatchSectionEmphasis.primary,
+    CatchButtonStatus actionStatus = CatchButtonStatus.idle,
+    Widget? footer,
+  }) => CatchSection._rows(
+    key: key,
+    title: title,
+    rowSection: Builder(
+      builder: (context) => _buildActionModule(
+        context,
+        title: title,
+        message: message,
+        actionLabel: actionLabel,
+        onAction: onAction,
+        actionKey: actionKey,
+        details: meta,
+        icon: icon,
+        actionEmphasis: actionEmphasis,
+        actionStatus: actionStatus,
+        feedback: footer,
+      ),
+    ),
+  );
+
   /// Media, metrics or explanatory content with a canonical header boundary.
   /// Ordinary Fields belong in [CatchSection.rows] instead.
   factory CatchSection.content({
@@ -602,15 +632,7 @@ class CatchSection extends StatelessWidget {
           : CatchDividerVariant.fieldRow);
   EdgeInsetsGeometry? get padding => _containedFieldRowsConfig != null
       ? EdgeInsets.zero
-      : _containedConfig?.padding ?? _plainConfig?.padding;
-  Color? get backgroundColor => _containedConfig?.backgroundColor;
-  Color? get borderColor => _containedConfig?.borderColor;
-  CatchSurfaceTone get tone =>
-      _containedConfig?.tone ?? CatchSurfaceTone.surface;
-  CatchSurfaceEmphasis get emphasis => _containedFieldRowsConfig != null
-      ? CatchSurfaceEmphasis.flat
-      : _containedConfig?.emphasis ?? CatchSurfaceEmphasis.subtle;
-  List<BoxShadow>? get boxShadow => _containedConfig?.boxShadow;
+      : _plainConfig?.padding;
   bool get showInternalDividers =>
       _dividedConfig?.showInternalDividers ??
       _containedConfig?.showInternalDividers ??

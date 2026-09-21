@@ -1,7 +1,7 @@
 {
   "$schema": "./catch.components.schema.json",
   "version": 4,
-  "updated": "2026-09-16",
+  "updated": "2026-09-21",
   "sourceOfTruth": {
     "behavior": "Flutter implementations in packages/catch_ui/lib/src and the remaining app-coupled lib/core/widgets own runtime behavior, accessibility, layout, and state.",
     "tokens": "design/tokens/catch.tokens.json owns primitive token values; generated Dart/CSS and Figma variables mirror it.",
@@ -75,6 +75,7 @@
         "containedRows",
         "containedLoadingRows",
         "dependentFieldRows",
+        "action",
         "content",
         "sliverRows",
         "sliverLoadingRows"
@@ -88,7 +89,16 @@
         "groups",
         "children",
         "child",
-        "leading"
+        "leading",
+        "message",
+        "details",
+        "action-label",
+        "on-action",
+        "action-key",
+        "icon",
+        "action-emphasis",
+        "action-status",
+        "feedback"
       ],
       "rules": [
         "The section owns grouping, dividers, contained chrome, header composition, and field-row focus or error treatment.",
@@ -1356,7 +1366,7 @@
       "name": "CatchEmptyState",
       "status": "active",
       "kind": "composite",
-      "summary": "Canonical successful-empty content with typed stacked/inline variants, responsive containment and caller-owned actions.",
+      "summary": "Successful empty content uses stacked page or inline section anatomy. Inline title icons occupy the heading only; message-only states omit the decorative icon and paragraphs keep the full width.",
       "dart": {
         "symbol": "CatchEmptyState",
         "file": "packages/catch_ui/lib/src/components/catch_empty_state.dart",
@@ -1993,7 +2003,7 @@
       "name": "CatchBanner",
       "status": "active",
       "kind": "composite",
-      "summary": "Persistent inline messages, errors and screen-owned status bands share one icon, copy and action renderer.",
+      "summary": "Body feedback tones share fixed padding, heading icon, full-width copy and actions below. Screen-owned durable status bands retain their separate full-width geometry.",
       "dart": {
         "symbol": "CatchBanner",
         "file": "packages/catch_ui/lib/src/components/catch_banner.dart",
@@ -4301,7 +4311,7 @@
       "name": "CatchSection",
       "status": "active",
       "kind": "composite",
-      "summary": "Owns section headers, readable gutters, row grouping, sibling dividers and the perimeter. Ordinary rows fill the local viewport; deliberately inset groups have one rounded exterior. Content sections hold media, metrics or explanatory content.",
+      "summary": "Owns flat information sections, related row collections and bounded action modules. Action modules share a fixed quiet fill, typography, padding and full-width semantic action; contained collections use one semantic border without elevation.",
       "design": {
         "figma": {
           "status": "unmapped",
@@ -4366,14 +4376,6 @@
             "subtitle",
             "trailing",
             "count",
-            "titleColor",
-            "bodyGap",
-            "padding",
-            "backgroundColor",
-            "borderColor",
-            "tone",
-            "emphasis",
-            "boxShadow",
             "showInternalDividers",
             "states",
             "children",
@@ -4454,6 +4456,18 @@
             "children",
             "footer",
             "states"
+          ],
+          "CatchSection.action": [
+            "title",
+            "message",
+            "actionLabel",
+            "onAction",
+            "actionKey",
+            "meta",
+            "icon",
+            "actionEmphasis",
+            "actionStatus",
+            "footer"
           ]
         },
         "props": [
@@ -4569,51 +4583,6 @@
             "dartType": "EdgeInsetsGeometry?"
           },
           {
-            "name": "backgroundColor",
-            "type": "color",
-            "required": false,
-            "dartType": "Color?"
-          },
-          {
-            "name": "borderColor",
-            "type": "color",
-            "required": false,
-            "dartType": "Color?"
-          },
-          {
-            "name": "tone",
-            "type": "enum",
-            "required": false,
-            "default": "surface",
-            "dartType": "CatchSurfaceTone",
-            "values": [
-              "surface",
-              "raised",
-              "primarySoft",
-              "transparent"
-            ]
-          },
-          {
-            "name": "emphasis",
-            "type": "enum",
-            "required": false,
-            "default": "subtle",
-            "dartType": "CatchSurfaceEmphasis",
-            "values": [
-              "flat",
-              "subtle",
-              "raised",
-              "floating"
-            ],
-            "notes": "Selects the shared shadow prominence preset. Named surface recipes supply their own defaults; callers do not provide a separate role marker."
-          },
-          {
-            "name": "boxShadow",
-            "type": "list",
-            "required": false,
-            "dartType": "List<BoxShadow>?"
-          },
-          {
             "name": "showInternalDividers",
             "type": "bool",
             "required": false,
@@ -4625,7 +4594,7 @@
             "type": "widget",
             "required": false,
             "dartType": "Widget?",
-            "notes": "Below-section support for field recipes; the final scrollable item for horizontal collections."
+            "notes": "Below-section support for field recipes; feedback below an action module; the final scrollable item for horizontal collections."
           },
           {
             "name": "children",
@@ -4754,6 +4723,65 @@
             "required": false,
             "dartType": "int? Function(Key)",
             "notes": "Stable identity lookup when a lazy collection changes order."
+          },
+          {
+            "name": "message",
+            "type": "string",
+            "required": false,
+            "dartType": "String"
+          },
+          {
+            "name": "actionLabel",
+            "type": "string",
+            "required": false,
+            "dartType": "String"
+          },
+          {
+            "name": "onAction",
+            "type": "callback",
+            "required": false,
+            "dartType": "VoidCallback?"
+          },
+          {
+            "name": "actionKey",
+            "type": "object",
+            "required": false,
+            "dartType": "Key?"
+          },
+          {
+            "name": "meta",
+            "type": "widget",
+            "required": false,
+            "dartType": "Widget?"
+          },
+          {
+            "name": "icon",
+            "type": "object",
+            "required": false,
+            "dartType": "IconData?"
+          },
+          {
+            "name": "actionEmphasis",
+            "type": "enum",
+            "required": false,
+            "dartType": "CatchSectionEmphasis",
+            "default": "primary",
+            "values": [
+              "primary",
+              "secondary",
+              "destructive"
+            ]
+          },
+          {
+            "name": "actionStatus",
+            "type": "enum",
+            "required": false,
+            "dartType": "CatchButtonStatus",
+            "default": "idle",
+            "values": [
+              "idle",
+              "loading"
+            ]
           }
         ],
         "states": [
@@ -4764,6 +4792,12 @@
           "titled",
           "divided-section",
           "contained-section",
+          "action-primary",
+          "action-secondary",
+          "action-destructive",
+          "action-loading",
+          "action-disabled",
+          "action-details",
           "plain-section",
           "divided-field-rows",
           "divided-field-rows-full-bleed",
@@ -4838,7 +4872,6 @@
           "theme.light.color.ink2"
         ],
         "dartRoles": [
-          "CatchSurface.card",
           "CatchField",
           "CatchFieldTokens",
           "CatchSectionFieldGroup",
@@ -4852,7 +4885,10 @@
           "CatchTextStyles.sectionTitle",
           "CatchElevation.focusRing",
           "CatchStroke.hairline",
-          "CatchHorizontalScrollView"
+          "CatchHorizontalScrollView",
+          "CatchSectionEmphasis",
+          "CatchButton",
+          "CatchSurface"
         ],
         "goldens": [],
         "members": [
@@ -5232,7 +5268,8 @@
           "CatchSection.sliverLoadingRows",
           "CatchSection.content",
           "CatchSection.formRows",
-          "CatchSection.dependentFieldRows"
+          "CatchSection.dependentFieldRows",
+          "CatchSection.action"
         ]
       },
       "surfaces": {
@@ -7059,11 +7096,7 @@
           "CatchIconAction.toolbar": [
             "icon",
             "tooltip",
-            "onPressed",
-            "backgroundColor",
-            "foregroundColor",
-            "variant",
-            "size"
+            "onPressed"
           ]
         }
       },
@@ -7073,7 +7106,7 @@
           "Design handoff must include tooltip/action label when used as an accessible command.",
           "Use CatchIconAction.counted for integer overlays; zero hides and values above 99 clamp through CatchCountBadge.",
           "defaultSize and navSize both select the current 44-point visual diameter. One outer gesture/focus owner supplies the larger platform target; hover/press tint is painted inside the opaque visual rather than hidden behind it.",
-          "One IconAction owns raw-child, themed-glyph, counted and required-tooltip toolbar recipes. Toolbar preserves the navigation glyph size and explicit foreground, including on floating backgrounds. Status and glyph emphasis replace disabled/fill booleans; active and liveRegion remain independent booleans."
+          "One IconAction owns raw-child, themed-glyph, counted and closed toolbar recipes. Toolbar owns the 44-point outlined visual and 24-point glyph. CatchTopBar rejects per-control styling even through generic or menu wrappers; bar-level overlay tone owns contrast. Flexible body/media recipes remain valid outside canonical app bars."
         ]
       },
       "governance": {
@@ -8701,8 +8734,8 @@
           "SliverAppBar"
         ],
         "replacementMap": {
-          "AppBar": "CatchTopBar or CatchTopBar.screen",
-          "CupertinoNavigationBar": "CatchTopBar or CatchTopBar.screen",
+          "AppBar": "CatchTopBar.route or CatchTopBar.screen",
+          "CupertinoNavigationBar": "CatchTopBar.route or CatchTopBar.screen",
           "SliverAppBar": "a registered media-hero sliver or CatchTopBar"
         },
         "steeringGroup": "control",
@@ -8719,12 +8752,12 @@
       "name": "CatchTopBar",
       "status": "active",
       "kind": "composite",
-      "summary": "One top-bar owner for compact route, identity, root-title and primary-rail chrome, with explicit navigation, size, background, boundary and height policies.",
+      "summary": "One canonical app bar with closed route, identity, root and embedded-root recipes; platform typography, title-then-context hierarchy and scaled geometry.",
       "dart": {
         "symbol": "CatchTopBar",
         "file": "packages/catch_ui/lib/src/components/catch_top_bar.dart",
         "constructors": [
-          "CatchTopBar",
+          "CatchTopBar.route",
           "CatchTopBar.identity",
           "CatchTopBar.screen",
           "CatchTopBar.primaryRail"
@@ -8761,24 +8794,6 @@
             "dartType": "String?"
           },
           {
-            "name": "eyebrow",
-            "type": "string",
-            "required": false,
-            "dartType": "String?"
-          },
-          {
-            "name": "kicker",
-            "type": "string",
-            "required": false,
-            "dartType": "String?"
-          },
-          {
-            "name": "titleMaxLines",
-            "type": "number",
-            "required": false,
-            "dartType": "int?"
-          },
-          {
             "name": "identityName",
             "type": "string",
             "required": false,
@@ -8797,29 +8812,6 @@
             "dartType": "VoidCallback?"
           },
           {
-            "name": "size",
-            "type": "enum",
-            "required": false,
-            "default": "automatic",
-            "dartType": "CatchTopBarSize",
-            "values": [
-              "automatic",
-              "compact",
-              "large"
-            ]
-          },
-          {
-            "name": "variant",
-            "type": "enum",
-            "required": false,
-            "default": "route",
-            "dartType": "CatchTopBarVariant",
-            "values": [
-              "route",
-              "identity"
-            ]
-          },
-          {
             "name": "tone",
             "type": "enum",
             "required": false,
@@ -8827,7 +8819,8 @@
             "dartType": "CatchTopBarTone",
             "values": [
               "page",
-              "surface"
+              "surface",
+              "overlay"
             ]
           },
           {
@@ -8842,17 +8835,6 @@
             ]
           },
           {
-            "name": "mode",
-            "type": "enum",
-            "required": false,
-            "default": "fixed",
-            "dartType": "CatchTopBarMode",
-            "values": [
-              "fixed",
-              "content"
-            ]
-          },
-          {
             "name": "navigation",
             "type": "object",
             "required": false,
@@ -8863,25 +8845,11 @@
             "type": "object",
             "required": false,
             "dartType": "CatchTopBarSearch?"
-          },
-          {
-            "name": "gutter",
-            "type": "bool",
-            "required": false,
-            "default": true,
-            "dartType": "bool"
-          },
-          {
-            "name": "applySafeArea",
-            "type": "bool",
-            "required": false,
-            "default": true,
-            "dartType": "bool"
           }
         ],
         "states": [
           "compact",
-          "large",
+          "context",
           "with-leading",
           "with-action-icon",
           "with-action-text",
@@ -8889,16 +8857,12 @@
           "conversation-title",
           "surface",
           "divider",
-          "plain-actions",
+          "outlined-actions",
           "root-title",
           "root-subtitle-actions",
           "primary-rail"
         ],
         "slots": [
-          {
-            "name": "body",
-            "kind": "optional-title-widget"
-          },
           {
             "name": "leading",
             "kind": "optional-leading-widget"
@@ -8908,16 +8872,12 @@
             "kind": "optional-action-list"
           },
           {
-            "name": "trailing",
-            "kind": "optional-trailing-widget"
-          },
-          {
             "name": "footer",
             "kind": "optional-preferred-size-widget"
           }
         ],
         "tokens": [
-          "font.family.voice",
+          "font.family.function",
           "space.s0",
           "space.micro3",
           "space.micro6",
@@ -8928,17 +8888,12 @@
           "theme.light.color.line"
         ],
         "dartRoles": [
-          "CatchScreenHeader",
           "CatchTopBar.screen",
           "CatchLayout.topBarHeight",
-          "CatchLayout.topBarLargeHeight",
           "CatchIconAction.navSize",
           "CatchSearchField",
-          "CatchKickerText",
           "CatchAvatar",
           "CatchTextStyles.headline",
-          "CatchTextStyles.monoLabel",
-          "CatchTextStyles.routeTitle",
           "CatchTextStyles.titleL",
           "CatchTextStyles.appBarSubtitle",
           "CatchCollapsedHeaderTitle",
@@ -8950,35 +8905,6 @@
         ],
         "goldens": [],
         "members": [
-          {
-            "id": "catch.top_bar.screen_header_title",
-            "symbol": "CatchScreenHeader",
-            "file": "packages/catch_ui/lib/src/components/catch_screen_header.dart",
-            "summary": "Root-screen title stack for Home, Explore, Chats, Profile, Activity, and Settings using Archivo headline typography with optional eyebrow, subtitle, leading, action, material, and padding slots.",
-            "states": [
-              "title",
-              "eyebrow",
-              "subtitle",
-              "leading",
-              "actions"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.top_bar",
-              "parentConceptId": "catch.top_bar",
-              "qualifier": "adapter",
-              "decisionRef": "contract-family:catch.top_bar"
-            },
-            "level": "L3",
-            "roleNoun": "Header",
-            "naming": {
-              "useCase": "Screen",
-              "comparedWith": [
-                "catch.top_bar"
-              ],
-              "reason": "Composes a screen title, kicker, subtitle, leading and action lanes that reflow at large text; a HeaderTitle only draws the title."
-            }
-          },
           {
             "id": "catch.top_bar.collapsed_sliver_title",
             "symbol": "CatchCollapsedHeaderTitle",
@@ -9011,7 +8937,7 @@
             "id": "catch.top_bar.primary_action",
             "symbol": "CatchTopBarPrimaryButton",
             "file": "packages/catch_ui/lib/src/components/catch_top_bar_primary_button.dart",
-            "summary": "Adaptive primary top-bar action that renders a quiet plain icon target on compact phones and a labelled small button on wider viewports.",
+            "summary": "Adaptive primary top-bar action: an outlined icon on compact phones and an outlined labelled toolbar control on wider viewports.",
             "states": [
               "compact",
               "medium",
@@ -9033,7 +8959,7 @@
                 "catch.top_bar",
                 "catch.button"
               ],
-              "reason": "The shared Button renders one chosen control recipe. This top-bar member switches between a quiet icon target on compact windows and a labelled small button on wider windows, owning the breakpoint and toolbar allocation while preserving one callback and accessible label. That responsive chrome contract is distinct from choosing another Button style."
+              "reason": "This top-bar member owns the responsive icon or labelled action recipe, shared control border, breakpoint, target allocation, callback and accessible label."
             }
           },
           {
@@ -9084,7 +9010,7 @@
             "id": "catch.top_bar.navigation",
             "symbol": "CatchTopBarNavigation",
             "file": "packages/catch_ui/lib/src/components/catch_top_bar_navigation.dart",
-            "summary": "Typed leading navigation mode, icon treatment and caller-owned destination callback.",
+            "summary": "Typed leading navigation mode and caller-owned destination callback; appearance belongs to the shared app-bar control.",
             "states": [
               "default",
               "configured"
@@ -9095,6 +9021,86 @@
               "parentConceptId": "catch.top_bar",
               "qualifier": "recipe",
               "decisionRef": "pattern-family:top-bar-recipes"
+            }
+          },
+          {
+            "id": "catch.top_bar.labelled_control",
+            "symbol": "CatchToolbarButton",
+            "level": "L3",
+            "roleNoun": "Button",
+            "file": "packages/catch_ui/lib/src/components/catch_toolbar_button.dart",
+            "summary": "Closed selector and labelled action recipes; shared toolbar outline, platform text measurement and accessible height.",
+            "states": [
+              "selector",
+              "action",
+              "disabled",
+              "large-text"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.top_bar",
+              "parentConceptId": "catch.top_bar",
+              "qualifier": "recipe",
+              "decisionRef": "contract-family:catch.top_bar"
+            },
+            "naming": {
+              "useCase": "Toolbar",
+              "comparedWith": [
+                "catch.top_bar",
+                "catch.button"
+              ],
+              "reason": "The parent TopBar owns header composition. This button owns its closed labelled-action and current-value-selector recipes, measured platform typography, toolbar outline and accessible target; the general Button permits body-action variants that are not valid in this slot."
+            }
+          },
+          {
+            "id": "catch.top_bar.control_metrics",
+            "symbol": "CatchToolbarMetrics",
+            "file": "packages/catch_ui/lib/src/components/catch_toolbar_metrics.dart",
+            "summary": "Shared 44-point visual, platform target and 8-point spacing metrics used by canonical app-bar controls.",
+            "states": [],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.top_bar",
+              "parentConceptId": "catch.top_bar",
+              "qualifier": "recipe",
+              "decisionRef": "contract-family:catch.top_bar"
+            }
+          },
+          {
+            "id": "catch.top_bar.leading_measurement",
+            "symbol": "CatchToolbarLeading",
+            "file": "packages/catch_ui/lib/src/components/catch_toolbar_metrics.dart",
+            "summary": "Measured-leading interface so root selectors reserve their actual text-dependent dimensions.",
+            "states": [],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.top_bar",
+              "parentConceptId": "catch.top_bar",
+              "qualifier": "adapter",
+              "decisionRef": "contract-family:catch.top_bar"
+            }
+          },
+          {
+            "id": "catch.top_bar.control_scope",
+            "symbol": "CatchToolbarScope",
+            "file": "packages/catch_ui/lib/src/components/catch_toolbar_scope.dart",
+            "summary": "Canonical control boundary and closed root-selector reflow scope; communicates the available-lane policy to descendants.",
+            "states": [],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.top_bar",
+              "parentConceptId": "catch.top_bar",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.top_bar"
+            },
+            "level": "L3",
+            "roleNoun": "Scope",
+            "naming": {
+              "useCase": "Toolbar",
+              "comparedWith": [
+                "catch.top_bar"
+              ],
+              "reason": "Publishes the parent TopBar control boundary and selector-row reflow policy to descendants. It carries inherited layout context; it does not render a control or choose navigation."
             }
           }
         ],
@@ -9118,18 +9124,14 @@
           "catch.icon_button"
         ],
         "notes": [
-          "Use this primitive for route chrome before creating local AppBar variants.",
-          "Use CatchScreenHeader or CatchTopBar.screen for root screen headers that need the main tab Archivo title voice.",
-          "Generic compact and workspace route labels use CatchTextStyles.routeTitle; pass title, eyebrow or kicker, subtitle, and titleMaxLines instead of a local titleWidget or style.",
-          "Title-case eyebrow copy uses the untracked CatchTextStyles.monoLabel role; uppercase kicker copy uses CatchKickerText. Workspace bars pin large: false so the route-title family cannot drift.",
-          "Use CatchTopBarVariant.identity only for a registered user-authored name; controls and identity names remain in the platform function family.",
-          "Use CatchTopBarPrimaryButton when a root-screen primary action must compact from a labelled button to the canonical icon target; use CatchButton.text for native text actions, and never pass a pill-style CatchButton directly to an actions slot.",
-          "Large mode is implied by a non-empty kicker unless explicitly overridden.",
-          "Use CatchTopBar.identity for conversation or profile-backed app bars; missing identity taps are runtime availability, not a separate design variant.",
-          "Top-bar root header helpers, action wrappers, and collapsed sliver titles are typed members of catch.top_bar; use them inside route chrome rather than creating local app-bar helper widgets.",
-          "The native text-action recipe is CatchButton.text. The action row permits that explicit recipe and rejects other CatchButton recipes, while the source scanner probes both ordinary and named pill constructors.",
-          "Toolbar overflow uses CatchActionMenu directly. Its former toolbar wrapper added no behavior, defaults or styling; command limits, disabled reasons, anchoring and callback dispatch have one implementation.",
-          "CatchTopBarActionRow is the action-layout member: it owns target allocation and gaps without handling the actions themselves. The Row role names its actual responsibility."
+          "CatchTopBar is the only app-bar renderer. Use route for pushed tasks, identity for avatar-backed conversation identity, screen for a standalone root app bar, and primaryRail for embedded scroll-away root titles. Root recipes default to no navigation.",
+          "The primary line identifies the current screen or task. Optional secondary context follows underneath in the same platform function family. Event recap precedes the event name; event defaults precedes the organizer name. Identity names remain the main title when the destination itself is a person.",
+          "IBM Plex and Archivo are never app-bar typography. Eyebrow, kicker, arbitrary heading widgets, title styles, line counts, height, size, mode, padding, gutter and alignment are not caller inputs.",
+          "The component owns text scaling, wrapping, safe-area placement and control alignment. Search remains a typed capability, and all recipes preserve full text in accessibility semantics.",
+          "Use CatchTopBarPrimaryButton, CatchIconAction, CatchButton.text or CatchActionMenu for actions. Body-style pill buttons are invalid app-bar actions.",
+          "At enlarged text sizes, titles and context may wrap and actions reflow underneath. Search hides covered title/action semantics while expanded.",
+          "Golden images record reviewed output. Correct semantic and geometry rules take precedence over preserving flawed baselines; approve fresh renders before replacing affected images.",
+          "Controls share 44-point visuals, platform hit allocation, centered alignment and 8-point gaps including collapsed search. Labelled selectors and actions may grow for accessible text. Overlay contrast belongs to the bar; icon and menu overrides are rejected inside it."
         ]
       },
       "governance": {

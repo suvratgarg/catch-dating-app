@@ -151,14 +151,16 @@ class EventSuccessRotationPairFieldLanes extends StatelessWidget {
           ),
         ),
         gapW8,
-        CatchIconAction.toolbar(
-          size: CatchIconAction.defaultSize,
+        CatchIconAction(
           tooltip: context
               .l10n
               .eventSuccessEventSuccessHostOverridesTooltipRemovePair,
-          icon: CatchIcons.deleteOutlineRounded,
-          foregroundColor: CatchTokens.of(context).danger,
           onPressed: onRemove,
+          child: Icon(
+            CatchIcons.deleteOutlineRounded,
+            color: CatchTokens.of(context).danger,
+            size: CatchIcon.md,
+          ),
         ),
       ],
     );

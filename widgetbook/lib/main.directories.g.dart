@@ -427,6 +427,8 @@ import 'package:widgetbook_workspace/primitives/contracts/surfaces.dart'
     as _widgetbook_workspace_primitives_contracts_surfaces;
 import 'package:widgetbook_workspace/primitives/contracts/tabs.dart'
     as _widgetbook_workspace_primitives_contracts_tabs;
+import 'package:widgetbook_workspace/primitives/contracts/toolbar.dart'
+    as _widgetbook_workspace_primitives_contracts_toolbar;
 import 'package:widgetbook_workspace/primitives/contracts/typography.dart'
     as _widgetbook_workspace_primitives_contracts_typography;
 import 'package:widgetbook_workspace/primitives/distance_ring_use_cases.dart'
@@ -3601,6 +3603,26 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'CatchToolbarButton',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder: _widgetbook_workspace_primitives_contracts_toolbar
+                    .catchToolbarButtonContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchToolbarScope',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Control inheritance',
+                builder: _widgetbook_workspace_primitives_contracts_toolbar
+                    .catchToolbarScopeContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'CatchTopBar',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -6145,7 +6167,7 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Dashboard home',
         children: [
           _widgetbook.WidgetbookComponent(
-            name: 'CatchScreenHeader',
+            name: 'CatchTopBar',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Header content',
@@ -10222,6 +10244,28 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'HostCustomerSourcesSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Provenance states',
+                    builder:
+                        _widgetbook_workspace_hosts_operations_customer_components
+                            .hostCustomerSourcesSectionStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostCustomerSubmissionsSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Loaded submissions',
+                    builder:
+                        _widgetbook_workspace_hosts_operations_customer_components
+                            .hostCustomerSubmissionsSectionStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostCustomerTimelineSection',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -11976,22 +12020,22 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'Sections',
             children: [
               _widgetbook.WidgetbookComponent(
-                name: 'CatchScreenHeader',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Profile title',
-                    builder: _widgetbook_workspace_profiles_catalog_header
-                        .profileTitleStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
                 name: 'CatchSection',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Field row section states',
                     builder: _widgetbook_workspace_profiles_catalog_fields
                         .profileFieldRowSectionStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'CatchTopBar',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Profile title',
+                    builder: _widgetbook_workspace_profiles_catalog_header
+                        .profileTitleStates,
                   ),
                 ],
               ),

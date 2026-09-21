@@ -35,7 +35,6 @@ class _CatchActionMenuState<T> extends State<CatchActionMenu<T>> {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
     assert(
       widget.items.length <= CatchLayout.actionMenuMaxItems,
       'CatchActionMenu is for at most five commands. Use a dedicated '
@@ -79,13 +78,15 @@ class _CatchActionMenuState<T> extends State<CatchActionMenu<T>> {
         return CatchIconAction(
           tooltip: widget.tooltip,
           variant: widget.variant,
+          status: widget.enabled
+              ? CatchIconActionStatus.enabled
+              : CatchIconActionStatus.disabled,
           onPressed: _canOpen
               ? () => controller.isOpen ? controller.close() : controller.open()
               : null,
           child: Icon(
             widget.icon ?? CatchIcons.moreHorizRounded,
             size: CatchIcon.md,
-            color: widget.enabled ? t.ink : t.ink3,
           ),
         );
       },

@@ -250,7 +250,7 @@ class _ProfileHeaderPreviewState extends State<_ProfileHeaderPreview>
     return CustomScrollView(
       slivers: [
         ...CatchSliverHeader(
-          title: const CatchScreenHeader.block(
+          title: const CatchTopBar.primaryRail(
             title: 'Your profile',
             actions: [ProfileSettingsButton()],
           ),

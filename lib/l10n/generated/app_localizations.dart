@@ -21335,7 +21335,7 @@ abstract class AppLocalizations {
   /// Boundary between organizer-owned contact details and a linked Catch profile.
   ///
   /// In en, this message translates to:
-  /// **'Linked Catch profiles stay private. Phone and email can’t be edited here.'**
+  /// **'Phone and email come from the source record and can’t be edited here.'**
   String get hostCustomersVerifiedDetailsManagedByCatch;
 
   /// Labels manually entered customer endpoints as unverified.
@@ -22022,7 +22022,7 @@ abstract class AppLocalizations {
   /// Zero unified customer revenue state.
   ///
   /// In en, this message translates to:
-  /// **'No revenue has been recorded for this customer.'**
+  /// **'No spend recorded.'**
   String get hostCustomersDetailNoRevenue;
 
   /// Revenue data availability boundary.
@@ -22034,7 +22034,7 @@ abstract class AppLocalizations {
   /// Partial revenue coverage warning.
   ///
   /// In en, this message translates to:
-  /// **'This total includes the available event and payment facts, but some bounded history may be missing.'**
+  /// **'Some event and payment history may be missing.'**
   String get hostCustomersDetailRevenuePartial;
 
   /// Number of payment, imported, provider, or estimated facts for one currency.
@@ -22070,7 +22070,7 @@ abstract class AppLocalizations {
   /// Loading state for the server-derived customer communication plan.
   ///
   /// In en, this message translates to:
-  /// **'Checking what is available now…'**
+  /// **'Checking messaging options…'**
   String get hostCustomersMessageOptionsLoading;
 
   /// Failure or unsupported state for the server-derived customer communication plan.
@@ -22100,7 +22100,7 @@ abstract class AppLocalizations {
   /// Explicit channel and sender label for a personal-device WhatsApp handoff.
   ///
   /// In en, this message translates to:
-  /// **'WhatsApp app · You'**
+  /// **'Personal WhatsApp'**
   String get hostCustomersWhatsappAppChannel;
 
   /// Disclosure for the untracked personal WhatsApp handoff.
@@ -22199,7 +22199,7 @@ abstract class AppLocalizations {
   /// Consequence of the derived personal WhatsApp handoff route.
   ///
   /// In en, this message translates to:
-  /// **'Prepares a durable handoff. You review it and press Send in WhatsApp.'**
+  /// **'Review your message, then send it in WhatsApp.'**
   String get hostCustomersMessagePersonHandoff;
 
   /// Participant-controlled WhatsApp permission row.
@@ -22268,7 +22268,7 @@ abstract class AppLocalizations {
   /// Missing legacy customer-source receipt boundary.
   ///
   /// In en, this message translates to:
-  /// **'No source receipt is available for this legacy customer.'**
+  /// **'Source information is unavailable.'**
   String get hostCustomersCustomerProvenanceUnavailable;
 
   /// One immutable customer source and observation date.
@@ -22319,13 +22319,13 @@ abstract class AppLocalizations {
   /// Organizer suppression control distinct from participant permission.
   ///
   /// In en, this message translates to:
-  /// **'Pause personal WhatsApp handoffs'**
+  /// **'Pause personal WhatsApp'**
   String get hostCustomersPauseWhatsappHandoffs;
 
   /// Legal distinction between organizer suppression and participant consent.
   ///
   /// In en, this message translates to:
-  /// **'Stops your team from starting personal WhatsApp messages to this customer. Their permission stays unchanged.'**
+  /// **'Stops your team’s personal WhatsApp handoffs. This does not change the person’s permission.'**
   String get hostCustomersPauseWhatsappHandoffsBody;
 
   /// Newest-first cross-surface customer timeline heading.
@@ -22337,25 +22337,19 @@ abstract class AppLocalizations {
   /// Empty cross-surface customer timeline.
   ///
   /// In en, this message translates to:
-  /// **'No form, event, send, or reply history is available yet.'**
+  /// **'No activity recorded in this view.'**
   String get hostCustomersTimelineEmpty;
-
-  /// Partial or unavailable source coverage warning for the customer timeline.
-  ///
-  /// In en, this message translates to:
-  /// **'Some history may be missing'**
-  String get hostCustomersTimelinePartialTitle;
 
   /// Explains bounded and incomplete timeline coverage.
   ///
   /// In en, this message translates to:
-  /// **'The available entries are shown newest first. Legacy or temporarily unavailable sources are not represented as complete.'**
+  /// **'Some history may be missing. Available activity is shown newest first.'**
   String get hostCustomersTimelinePartialBody;
 
   /// Unobservable personal WhatsApp reply boundary.
   ///
   /// In en, this message translates to:
-  /// **'Catch and managed WhatsApp messages can appear here. Replies in personal WhatsApp remain outside Catch and cannot be observed.'**
+  /// **'Personal WhatsApp conversations stay in WhatsApp. Only Catch and managed WhatsApp messages appear here.'**
   String get hostCustomersTimelineReplyBoundary;
 
   /// Fallback title when the source form no longer has display metadata.
@@ -22436,16 +22430,16 @@ abstract class AppLocalizations {
   /// **'Overview'**
   String get hostCustomersOverview;
 
-  /// Recent attended events on a customer record.
+  /// Recent recorded event participation of any status on a customer record.
   ///
   /// In en, this message translates to:
-  /// **'Recent events attended'**
+  /// **'Event activity'**
   String get hostCustomersRecentEvents;
 
   /// Privacy boundary for organizer-authored contact memory.
   ///
   /// In en, this message translates to:
-  /// **'Notes and your tags are private to this organizer’s management team.'**
+  /// **'Notes and tags are private to your host team.'**
   String get hostCustomersMemoryHelp;
 
   /// Organizer-authored tags on one customer.
@@ -22568,16 +22562,10 @@ abstract class AppLocalizations {
   /// **'Only the 100 newest notes are shown.'**
   String get hostCustomersNotesTruncated;
 
-  /// Localized optional note-history failure title.
-  ///
-  /// In en, this message translates to:
-  /// **'Notes could not be loaded'**
-  String get hostCustomersNotesUnavailableTitle;
-
   /// Localized optional note-history failure guidance.
   ///
   /// In en, this message translates to:
-  /// **'The customer details are available. Try reloading to restore note history.'**
+  /// **'Notes are temporarily unavailable. Other customer details are still available.'**
   String get hostCustomersNotesUnavailableBody;
 
   /// Customers directory sort menu group label.
@@ -26787,7 +26775,7 @@ abstract class AppLocalizations {
   /// Empty customer submitted information state.
   ///
   /// In en, this message translates to:
-  /// **'No form responses appear in the loaded history.'**
+  /// **'No form responses recorded.'**
   String get hostCustomersNoSubmittedInformation;
 
   /// Action summary for opening a linked form response.
@@ -26873,12 +26861,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Check again'**
   String get hostCustomersCheckMessaging;
-
-  /// Title for a customer with no available origin receipts.
-  ///
-  /// In en, this message translates to:
-  /// **'Source not recorded'**
-  String get hostCustomersSourceUnavailable;
 
   /// Explicit boundary when the backend returns a truncated set of customer origin receipts.
   ///
@@ -27827,12 +27809,6 @@ abstract class AppLocalizations {
     required String trigger,
     required String actions,
   });
-
-  /// At a glance
-  ///
-  /// In en, this message translates to:
-  /// **'At a glance'**
-  String get hostAudienceAtAGlance;
 
   /// Add at least one contact method.
   ///
@@ -31941,6 +31917,64 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Included in this event type'**
   String get hostRehearsalRequiredModule;
+
+  /// Customer record presentation and availability copy.
+  ///
+  /// In en, this message translates to:
+  /// **'No activity is available in this view. History may be incomplete.'**
+  String get hostCustomersTimelineUnavailable;
+
+  /// Customer record presentation and availability copy.
+  ///
+  /// In en, this message translates to:
+  /// **'No phone number or email saved.'**
+  String get hostCustomersNoContactMethods;
+
+  /// Customer record presentation and availability copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Form responses are unavailable or incomplete.'**
+  String get hostCustomersSubmissionsUnavailable;
+
+  /// Customer record presentation and availability copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Attendance covers the records available to your team. Some activity may be missing.'**
+  String get hostCustomersAttendancePartial;
+
+  /// Customer record presentation and availability copy.
+  ///
+  /// In en, this message translates to:
+  /// **'{cancelled} cancelled · {noShows} no-shows · {imported} imported'**
+  String hostCustomersAttendanceSummary({
+    required int cancelled,
+    required int noShows,
+    required int imported,
+  });
+
+  /// Customer account link evidence without inferring messaging consent.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch account'**
+  String get hostCustomersAccountLink;
+
+  /// Customer account link evidence without inferring messaging consent.
+  ///
+  /// In en, this message translates to:
+  /// **'Possible matches need review'**
+  String get hostCustomersAccountNeedsReview;
+
+  /// Customer account link evidence without inferring messaging consent.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified account linked'**
+  String get hostCustomersAccountVerified;
+
+  /// Customer account link evidence without inferring messaging consent.
+  ///
+  /// In en, this message translates to:
+  /// **'No verified account linked'**
+  String get hostCustomersAccountNotVerified;
 }
 
 class _AppLocalizationsDelegate

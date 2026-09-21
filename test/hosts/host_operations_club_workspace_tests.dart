@@ -220,51 +220,49 @@ void _registerHostOperationsClubWorkspaceTests() {
     expect(find.text('Section live'), findsOneWidget);
   });
 
-  testWidgets('Host Today loading centers progress below the persistent root title', (
-    tester,
-  ) async {
-    final now = DateTime(2026, 6, 15, 12);
-    final club = buildClub(id: 'today-loading-club', ownerUserId: _hostUid);
-    await _pumpHostScreen(
-      tester,
-      CatchRootScreenScaffold.sections(
-        title: HostTodayHeader(now: now),
-        children: [
-          HostTodayBody(
-            organizer: club,
-            state: const HostTodayState(status: HostTodayStatus.loading),
-            now: now,
-            onRetry: () {},
-            onOpenEvent: (_) {},
-            onOpenAttention: (_) {},
-            onCreateEvent: () {},
-            onViewEvents: () {},
-            onStartRehearsal: () {},
-          ),
-        ],
-      ),
-      settle: false,
-    );
-    expect(
-      tester
-          .widget<CatchRootScreenScaffold>(find.byType(CatchRootScreenScaffold))
-          .bodyLayout,
-      CatchPageBodyMode.fullBleed,
-    );
-    expect(
-      tester
-          .widget<CatchScreenHeader>(find.byType(CatchScreenHeader))
-          .titleStyle,
-      isNull,
-    );
-    expect(find.byType(HostTodayEventSection), findsNothing);
-    expect(find.byType(CatchSkeleton), findsNothing);
-    expect(find.byType(CatchLoadingIndicator), findsOneWidget);
-    final headerBottom = tester.getRect(find.byType(CatchScreenHeader)).bottom;
-    final progress = tester.getRect(find.byType(CircularProgressIndicator));
-    expect(progress.center.dy, greaterThan(headerBottom));
-    expect(tester.takeException(), isNull);
-  });
+  testWidgets(
+    'Host Today loading centers progress below the persistent root title',
+    (tester) async {
+      final now = DateTime(2026, 6, 15, 12);
+      final club = buildClub(id: 'today-loading-club', ownerUserId: _hostUid);
+      await _pumpHostScreen(
+        tester,
+        CatchRootScreenScaffold.sections(
+          title: HostTodayHeader(now: now),
+          children: [
+            HostTodayBody(
+              organizer: club,
+              state: const HostTodayState(status: HostTodayStatus.loading),
+              now: now,
+              onRetry: () {},
+              onOpenEvent: (_) {},
+              onOpenAttention: (_) {},
+              onCreateEvent: () {},
+              onViewEvents: () {},
+              onStartRehearsal: () {},
+            ),
+          ],
+        ),
+        settle: false,
+      );
+      expect(
+        tester
+            .widget<CatchRootScreenScaffold>(
+              find.byType(CatchRootScreenScaffold),
+            )
+            .bodyLayout,
+        CatchPageBodyMode.fullBleed,
+      );
+      expect(find.byType(CatchTopBar), findsOneWidget);
+      expect(find.byType(HostTodayEventSection), findsNothing);
+      expect(find.byType(CatchSkeleton), findsNothing);
+      expect(find.byType(CatchLoadingIndicator), findsOneWidget);
+      final headerBottom = tester.getRect(find.byType(CatchTopBar)).bottom;
+      final progress = tester.getRect(find.byType(CircularProgressIndicator));
+      expect(progress.center.dy, greaterThan(headerBottom));
+      expect(tester.takeException(), isNull);
+    },
+  );
 
   testWidgets(
     'Host Today error stays in the root state viewport without a club subtitle',
@@ -873,7 +871,7 @@ void _registerHostOperationsClubWorkspaceTests() {
     expect(find.text('Groups'), findsOneWidget);
     expect(find.text('Campaigns'), findsNothing);
     expect(
-      tester.widget<CatchScreenHeader>(find.byType(CatchScreenHeader)).kicker,
+      tester.widget<CatchTopBar>(find.byType(CatchTopBar)).subtitle,
       isNull,
     );
     expect(

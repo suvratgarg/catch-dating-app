@@ -688,9 +688,6 @@ void _registerExploreDiscoveryWidgetsTests() {
       return CatchIconAction.toolbar(
         icon: icon,
         tooltip: tooltip,
-        variant: CatchIconActionVariant.plain,
-        backgroundColor: Colors.transparent,
-        foregroundColor: CatchTokens.dark.ink,
         onPressed: _noop,
       );
     }
@@ -780,8 +777,14 @@ void _registerExploreDiscoveryWidgetsTests() {
           )
           .first,
     );
-    expect(searchShell.backgroundColor, Colors.transparent);
-    expect(searchShell.borderSpec?.color, Colors.transparent);
+    expect(searchShell.backgroundColor, CatchTokens.dark.surface);
+    expect(
+      searchShell.borderSpec?.color,
+      CatchBorder.interactive(
+        CatchTokens.dark,
+        CatchInteractiveBorderState.resting,
+      ).color,
+    );
     expect(tester.widget<Icon>(searchIcon).color, CatchTokens.dark.ink);
 
     for (final icon in [
@@ -796,11 +799,12 @@ void _registerExploreDiscoveryWidgetsTests() {
         of: find.byIcon(icon),
         matching: find.byType(CatchIconAction),
       );
-      final buttonBox = tester.widget<DecoratedBox>(
-        find.descendant(of: buttonFinder, matching: find.byType(DecoratedBox)),
+      final buttonSurface = tester.widget<CatchSurface>(
+        find
+            .descendant(of: buttonFinder, matching: find.byType(CatchSurface))
+            .first,
       );
-      final buttonDecoration = buttonBox.decoration as BoxDecoration;
-      expect(buttonDecoration.color, Colors.transparent);
+      expect(buttonSurface.backgroundColor, CatchTokens.dark.surface);
     }
   });
 
@@ -826,11 +830,11 @@ void _registerExploreDiscoveryWidgetsTests() {
     expect(find.text('Mumbai'), findsOneWidget);
     expect(find.text('Find an event worth showing up for.'), findsNothing);
     expect(find.byType(CatchCoverStory), findsNothing);
-    final cityButton = tester.widget<CatchButton>(
+    final cityButton = tester.widget<CatchSurface>(
       find
           .descendant(
             of: find.byType(ExploreCityPicker),
-            matching: find.byType(CatchButton),
+            matching: find.byType(CatchSurface),
           )
           .first,
     );

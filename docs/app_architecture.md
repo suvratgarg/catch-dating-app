@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.66.0
+version: 1.67.0
 updated: 2026-09-21
 owner: app_architecture
 status: active
@@ -1290,7 +1290,7 @@ the Preview slivers.
 
 | Surface | Direction |
 |---|---|
-| Home dashboard | Keep one `CustomScrollView` with `CatchSliverHeader(title: CatchScreenHeader.block(...))`; do not reintroduce Dashboard/Activity tabs without a product decision. |
+| Home dashboard | Keep one `CustomScrollView` with `CatchSliverHeader(title: CatchTopBar.primaryRail(...))`; do not reintroduce Dashboard/Activity tabs without a product decision. |
 | Explore | Keep sliver-native. This remains the strongest mixed event/club discovery pattern. |
 | Chats list | Keep sliver shell; make populated body sliver-native only if list scale or tests demand it. |
 | Event detail | Keep sliver-native because the collapsing hero justifies it. |
@@ -1352,10 +1352,15 @@ artwork is outside this UI-boundary diagnostic.
 Closed Field layouts and secondary actions render only inside their owning
 Field library. The inventory's exact source/library/owner/method/return-type
 declarations in `tool/design/lib/owned_composition_renderers.mjs` recognize
-those renderer fragments and the two typed domain/route factories. They do
-not exempt sibling helpers, moved implementations, or generic Widget-returning
-factories. Mutation tests cover each identity dimension; resolved Catch UI
-lints separately enforce the primitive's construction and interaction boundary.
+those renderer fragments, the Section action recipe, Banner body feedback,
+and TopBar's measured frame, search field and selector-row renderers. These
+private fragments implement an existing cataloged owner's closed recipe or
+state lifecycle; they are not independently reusable components. The same
+inventory recognizes two typed domain/route factories. It does not exempt
+sibling helpers, moved implementations, or arbitrary Widget-returning
+factories. Tests verify the named renderer methods still exist and mutation
+tests cover each identity dimension; resolved Catch UI lints separately
+enforce the primitive's construction and interaction boundary.
 
 Widget identity is checked globally rather than one folder at a time. The
 source-derived classification and new-widget gates scan `lib/**`,
@@ -3194,20 +3199,23 @@ not evidence that a baseline is already empty.
 ### Screen chrome contracts
 
 Every handwritten `Scaffold.appBar` is registered by exact file, role,
-expression, and canonical owner in
-`tool/design/screen_top_bar_contracts.json`. Root and root-like destinations
-use `CatchTopBar.screen`, compact detail/edit/utility routes use `CatchTopBar`,
-and avatar-backed identity routes use `CatchTopBar.identity`. Root
-titles and pinned-rail titles use `.screen` and `.primaryRail`; all recipes
-share one stateful renderer. Navigation owns its mode, icon treatment and
-callback in `CatchTopBarNavigation`. Size, background tone, boundary emphasis,
-height mode and typography variant use closed axes; `body` supplies custom
-heading content and `footer` supplies a preferred-size companion. Generic compact
-route labels resolve through `CatchTextStyles.routeTitle`; a user-authored name
-must opt into `CatchTopBarVariant.identity` under a registered title policy.
-A canonical call elsewhere in
-the file cannot bless helper-owned or raw chrome inside the actual `appBar`
-value.
+expression, and canonical owner in `tool/design/screen_top_bar_contracts.json`.
+`CatchTopBar` is the single renderer: `.route` owns compact pushed task titles,
+`.identity` owns avatar-backed conversation identity, `.screen` owns a standalone
+root app bar, and `.primaryRail` owns embedded root titles whose scroll parent
+supplies safe area. Root recipes default to no navigation. Search is a typed
+capability, not a different typography family. Navigation remains a typed mode,
+icon treatment and callback; actions and preferred-size footers retain their
+functional slots.
+
+All text uses the platform function family. The prominent first line is the
+screen purpose, followed by optional quieter entity context. The shared owner
+selects title/headline scale, subtitle style, wrapping, control alignment,
+spacing and scaled height. Callers cannot choose an eyebrow, kicker, arbitrary
+body/title widget, typography variant, size, height, padding or alignment.
+Invalid combinations must be translated to these recipes, never registered as
+additional legacy variants. Goldens record the approved result; they cannot
+justify a violation of these rules.
 
 Pushed utility/list and identity routes use `CatchRouteScaffold`. It owns the
 page background and derives the top-bar divider from real vertical scroll
@@ -3238,15 +3246,10 @@ toggle scroll, responsive width, or terminal-padding policy with booleans.
 Box, sliver, and section variants all publish the same shell obstruction to
 expanding fields.
 
-The primitive owns the compact title role: `CatchTextStyles.routeTitle` is
-Archivo at 20/700/1.16, while the root `CatchScreenHeader` remains Archivo
-at the larger headline scale. Route and workspace screens pass semantic
-`title`, title-case `eyebrow` (untracked `monoLabel`) or uppercase `kicker`,
-`subtitle`, and `titleMaxLines` inputs; a feature-local `body` or raw
-title style is a contract failure. Workspace bars pin `size: CatchTopBarSize.compact` so this
-path cannot silently resolve back to `titleL`. Identity names remain a
-registered semantic exception in the platform function family, with an
-explicit route-title fallback while identity data is unavailable.
+The primitive owns the compact title role: `CatchTextStyles.titleL` is the
+platform function family for route labels and user-authored names alike. A
+workspace uses `.route` with task title and contextual subtitle. Do not replace
+semantic title inputs with custom widgets or feature-specific height logic.
 
 The adopters are Saved Events, Review History, Payment History, Settings, Chat
 Detail, Host Event Manage, Host Event Edit, Host team, every Host organizer
@@ -3279,13 +3282,13 @@ The same gate consumes `tool/design/root_screen_composition_contracts.json` and
 must report every consumer and Host root-screen branch; a zero-root pass is
 invalid. That manifest classifies shell branches only. Exact title ownership is
 registered against the title primitive (`CatchRootScreenHeader.title`,
-`CatchScreenHeader.block`, or `CatchTopBar.screen`), never against the
+`CatchTopBar.primaryRail`, or `CatchTopBar.screen`), never against the
 layout scaffold that happens to carry it.
 
 Full-screen editors that must cover persistent shell navigation declare their
 launcher in the same contract and push through
 `Navigator.of(context, rootNavigator: true)`. This route ownership is separate
-from title typography: Edit Photo remains correct compact `CatchTopBar`
+from title typography: Edit Photo remains correct compact `CatchTopBar.route`
 navigation while the root presentation prevents the tab bar from leaking over
 its body.
 
@@ -4133,27 +4136,23 @@ Widget build(BuildContext context) {
 Reference files:
 
 - `packages/catch_ui/lib/src/components/catch_top_bar.dart`
-- `packages/catch_ui/lib/src/components/catch_screen_header.dart`
 - `lib/dashboard/presentation/dashboard_home_screen.dart`
 - `lib/chats/presentation/inbox/widgets/chats_sliver_header.dart`
 - `lib/explore/presentation/widgets/explore_header.dart`
 - `lib/user_profile/presentation/profile_screen.dart`
 
-Use this pattern for root tab screens and root-like shell destinations whose
-screen title should read as Catch voice/head typography. The title text routes
-through `CatchScreenHeader`, which uses `CatchTextStyles.headline`
-(Archivo) for the primary title, optional mono kicker and supporting subtitle
-roles, and explicit leading/action slots. Sliver screens pass
-`CatchScreenHeader.block(...)` into `CatchSliverHeader.title`; app-bar
-screens use `CatchTopBar.screen(...)`, a named recipe of the same owner preserving
-search, leading, action, safe-area, and padding configuration.
+Use this pattern for root tab screens and root-like shell destinations.
+Scroll-owned root titles use `CatchTopBar.primaryRail`; standalone root app bars
+use `.screen`. Both use the platform `headline` role, optional contextual
+`appBarSubtitle`, and leading/action/search slots in the canonical renderer.
+The former `CatchScreenHeader` renderer is retired.
 
-The screen recipe's preferred size must reserve the same title, eyebrow,
-subtitle, and action line counts that `CatchScreenHeader` renders. At a
-text scale of 1.5 or greater the supporting subtitle may use two lines, so
-`CatchTopBar.heightFor` must budget two scaled supporting line heights.
-Keep this invariant in the shared primitive and its focused widget test rather
-than compensating with route-owned fixed heights.
+Preferred size and paint use the same scaled line budgets. At text scale 1.5
+or greater titles and subtitles may use two lines and actions reflow underneath.
+Feature screens must not compensate with their own line counts or heights.
+The scaffold passes its actual constrained width to `preferredSizeFor`; a wider
+window MediaQuery must not make a narrow route reserve fewer title lines.
+Action measurement includes accessible wrappers and native text-button targets.
 
 Top-bar action slots accept only the top-bar action family. Use
 `CatchTopBarPrimaryButton` for a primary root-screen action: it renders the
@@ -4166,23 +4165,20 @@ other `CatchButton` recipes are page/body CTA chrome and are rejected by
 `design:screen-top-bar-contracts` gate also rejects direct pills in inline
 action lists and simple local action-list variables.
 
-Do not use bare `CatchTopBar(title: ...)` for these root headers. That compact
-route-title path intentionally remains available for detail, edit, lab, and
-utility screens. It shares the Archivo family but remains a separate compact
-hierarchy from the 32px root headline.
+Use `.route` for compact detail, edit and utility titles. It shares the root
+font family but uses the smaller semantic title scale. A new configuration must
+represent a functional need; cosmetic variants and legacy exceptions are not
+valid reasons to expand the API.
 
 ```dart
-CatchTopBar.screen(
-  context: context,
-  title: title,
-  eyebrow: eyebrow,
-  subtitle: subtitle,
+CatchTopBar.route(
+  title: 'Event recap',
+  subtitle: event.title,
   navigation: CatchTopBarNavigation(
     mode: CatchTopBarNavigationMode.back,
     onPressed: onBack,
   ),
   actions: actions,
-  search: search,
 )
 ```
 

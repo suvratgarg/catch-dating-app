@@ -1591,7 +1591,7 @@ class _FiltersContentCapture extends StatelessWidget {
     final t = CatchTokens.of(context);
     return Scaffold(
       backgroundColor: t.bg,
-      appBar: CatchTopBar(
+      appBar: CatchTopBar.route(
         title: 'Filters',
         leading: CatchIconAction.toolbar(
           icon: CatchIcons.closeRounded,
@@ -16023,7 +16023,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     ),
     providerOverrides: _audienceCapturePersonOverrides(),
     includeOverlays: true,
-    drive: (tester) => _audienceCaptureOpenTab(tester, 'Notes & tags'),
+    drive: (tester) => _audienceCaptureOpenTab(tester, 'Notes'),
   ),
   ScreenCaptureEntry(
     id: 'host_person_history',

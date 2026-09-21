@@ -117,7 +117,7 @@ void _registerCatchPrimitivesControlsTests() {
                 CatchTextStyles.display(context),
                 CatchTextStyles.headline(context),
                 CatchTextStyles.headlineS(context),
-                CatchTextStyles.routeTitle(context),
+                CatchTextStyles.titleL(context),
                 CatchTextStyles.eventTitle(context),
                 CatchTextStyles.consoleTitle(context),
                 CatchTextStyles.hint(context),
@@ -634,7 +634,7 @@ void _registerCatchPrimitivesControlsTests() {
     expect(iconSurface.borderSpec?.role, CatchBorderRole.control);
   });
 
-  testWidgets('CatchStepHeader renders AppBar anatomy and progress hairline', (
+  testWidgets('CatchStepHeader renders canonical title/context and progress', (
     tester,
   ) async {
     var backTaps = 0;
@@ -661,9 +661,10 @@ void _registerCatchPrimitivesControlsTests() {
       ),
     );
 
-    expect(find.text('CREATE EVENT'), findsOneWidget);
+    const contextLabel = 'Create event · South Bombay Runners';
+    expect(find.text('CREATE EVENT'), findsNothing);
     expect(find.text('Basics'), findsOneWidget);
-    expect(find.text('South Bombay Runners'), findsOneWidget);
+    expect(find.text(contextLabel), findsOneWidget);
     expect(find.text('STEP 2 OF 5'), findsOneWidget);
     expect(find.byIcon(CatchIcons.arrowBackIosNewRounded), findsOneWidget);
     expect(
@@ -689,9 +690,15 @@ void _registerCatchPrimitivesControlsTests() {
         matching: find.byType(CatchTopBar),
       ),
     );
-    expect(topBarSize.height, CatchLayout.stepHeaderTopBarHeight);
+    expect(topBarSize.height, greaterThanOrEqualTo(CatchLayout.topBarHeight));
 
-    final subtitleRect = tester.getRect(find.text('South Bombay Runners'));
+    final titleRect = tester.getRect(find.text('Basics'));
+    final subtitleRect = tester.getRect(find.text(contextLabel));
+    expect(subtitleRect.top, greaterThanOrEqualTo(titleRect.bottom));
+    final titleStyle = tester.widget<Text>(find.text('Basics')).style!;
+    final subtitleStyle = tester.widget<Text>(find.text(contextLabel)).style!;
+    expect(subtitleStyle.fontFamily, titleStyle.fontFamily);
+    expect(titleStyle.fontSize, greaterThan(subtitleStyle.fontSize!));
     final progressRect = tester.getRect(
       find.descendant(
         of: find.byType(CatchStepHeader),
@@ -707,9 +714,11 @@ void _registerCatchPrimitivesControlsTests() {
       lessThanOrEqualTo(CatchSpacing.s4),
     );
 
-    final kickerRect = tester.getRect(find.text('CREATE EVENT'));
+    final barRect = tester.getRect(find.byType(CatchTopBar));
     final counterRect = tester.getRect(find.text('STEP 2 OF 5'));
-    expect(counterRect.top - kickerRect.top, closeTo(0, 0.001));
+    expect(counterRect.center.dy, closeTo(barRect.center.dy, 0.001));
+    expect(progressRect.top, closeTo(barRect.bottom, 0.001));
+    expect(tester.takeException(), isNull);
 
     await tester.tap(find.byIcon(CatchIcons.arrowBackIosNewRounded));
     await tester.pump();
@@ -742,41 +751,50 @@ void _registerCatchPrimitivesControlsTests() {
         matching: find.byType(CatchTopBar),
       ),
     );
-    expect(topBarSize.height, CatchLayout.stepHeaderTopBarHeight);
-    expect(
-      counterRect.top - titleRect.top,
-      closeTo(CatchLayout.stepHeaderCounterTopPadding, 0.001),
-    );
-  });
-
-  testWidgets('CatchStepHeader expands for long supplemental copy', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      _wrap(
-        SizedBox(
-          width: 350,
-          child: CatchStepHeader(
-            stepLabelBuilder: stepLabel,
-            compactStepLabelBuilder: compactStepLabel,
-            title: "What's your number?",
-            subtitle: "We'll send you a one-time code to verify.",
-            showBack: false,
-            gutter: false,
-          ),
-        ),
-      ),
-    );
-
-    final topBarSize = tester.getSize(
-      find.descendant(
-        of: find.byType(CatchStepHeader),
-        matching: find.byType(CatchTopBar),
-      ),
-    );
-    expect(topBarSize.height, greaterThan(CatchLayout.stepHeaderTopBarHeight));
+    expect(topBarSize.height, CatchLayout.topBarHeight);
+    expect(counterRect.center.dy, closeTo(titleRect.center.dy, 0.001));
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets(
+    'CatchStepHeader grows its context lane at accessible text scale',
+    (tester) async {
+      const subtitle = "We'll send you a one-time code to verify.";
+      final heights = <double>[];
+      for (final scale in [1.0, 2.0]) {
+        await tester.pumpWidget(
+          _wrap(
+            SizedBox(
+              width: 350,
+              child: CatchStepHeader(
+                stepLabelBuilder: stepLabel,
+                compactStepLabelBuilder: compactStepLabel,
+                title: "What's your number?",
+                subtitle: subtitle,
+                showBack: false,
+                gutter: false,
+              ),
+            ),
+            textScale: scale,
+          ),
+        );
+
+        final barRect = tester.getRect(find.byType(CatchTopBar));
+        final titleRect = tester.getRect(find.text("What's your number?"));
+        final subtitleRect = tester.getRect(find.text(subtitle));
+        heights.add(barRect.height);
+        expect(titleRect.top, greaterThanOrEqualTo(barRect.top));
+        expect(subtitleRect.top, greaterThanOrEqualTo(titleRect.bottom));
+        expect(subtitleRect.bottom, lessThanOrEqualTo(barRect.bottom));
+        expect(
+          tester.widget<Text>(find.text(subtitle)).maxLines,
+          scale == 1 ? 1 : 2,
+        );
+        expect(tester.takeException(), isNull);
+      }
+      expect(heights.last, greaterThan(heights.first));
+    },
+  );
 
   testWidgets('CatchStepHeader exposes its step overview as a 44px action', (
     tester,

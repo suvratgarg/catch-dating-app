@@ -54,7 +54,6 @@ void main() {
     expect(find.byType(CatchTopBar), findsOneWidget);
     final topBar = tester.widget<CatchTopBar>(find.byType(CatchTopBar));
     expect(topBar.title, 'Dress rehearsal');
-    expect(topBar.body, isNull);
     final titleFinder = find.descendant(
       of: find.byType(CatchTopBar),
       matching: find.text('Dress rehearsal'),
@@ -62,12 +61,12 @@ void main() {
     final titleContext = tester.element(titleFinder);
     expect(
       tester.widget<Text>(titleFinder).style,
-      CatchTextStyles.routeTitle(
+      CatchTextStyles.titleL(
         titleContext,
         color: CatchTokens.of(titleContext).ink,
       ),
     );
-    expect(find.byType(CatchScreenHeader), findsNothing);
+    expect(find.byType(CatchTopBar), findsOneWidget);
     expect(
       find.ancestor(
         of: find.byType(CatchPageBody),
@@ -117,16 +116,16 @@ void main() {
     expect(find.text('Courtyard practice'), findsWidgets);
     expect(find.text('REHEARSAL'), findsOneWidget);
     final topBar = tester.widget<CatchTopBar>(find.byType(CatchTopBar));
-    expect(topBar.title, 'Courtyard practice');
-    expect(topBar.body, isNull);
+    expect(topBar.title, 'Host · Manage');
+    expect(topBar.subtitle, 'Courtyard practice');
     final titleFinder = find.descendant(
       of: find.byType(CatchTopBar),
-      matching: find.text('Courtyard practice'),
+      matching: find.text('Host · Manage'),
     );
     final titleContext = tester.element(titleFinder);
     expect(
       tester.widget<Text>(titleFinder).style,
-      CatchTextStyles.routeTitle(
+      CatchTextStyles.titleL(
         titleContext,
         color: CatchTokens.of(titleContext).ink,
       ),

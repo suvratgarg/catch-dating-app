@@ -4,7 +4,9 @@ import 'package:flutter/widgets.dart';
 ///
 /// [preferredSize] remains its unscaled minimum for composition contracts;
 /// the screen owner requests [preferredSizeFor] when reserving its live slot.
+/// [preferredSizeFor] accepts the actual available width for wrapping headers;
+/// width-independent rails may ignore it.
 abstract interface class CatchScaledPreferredSize
     implements PreferredSizeWidget {
-  Size preferredSizeFor(BuildContext context);
+  Size preferredSizeFor(BuildContext context, {double? width});
 }

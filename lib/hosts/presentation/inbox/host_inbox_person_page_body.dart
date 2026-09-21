@@ -84,7 +84,7 @@ class HostInboxPersonPageBody extends ConsumerWidget {
     }
     return Column(
       children: [
-        CatchTopBar(
+        CatchTopBar.route(
           title: context.l10n.hostInboxNewMessage,
           navigation: CatchTopBarNavigation(
             mode: CatchTopBarNavigationMode.back,

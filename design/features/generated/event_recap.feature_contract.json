@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/event_recap.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:e269308b4e0f26106555a2ebcc36b0911dc91a3df3b81cdd968e330e71d2a789",
-  "resolvedDigest": "sha256:fee0a1b5fbcbc1618a970cd064a43a04a8488ab32bc960bc68ba11a0b72b44fb",
+  "resolvedDigest": "sha256:944282a99c9036150468fad104cb3364f0540055a12140f7ac4e8adc5199b475",
   "feature": {
     "id": "feature.event_recap",
     "name": "Event Recap",
@@ -950,7 +950,7 @@
               "symbol": "CatchTopBar",
               "file": "packages/catch_ui/lib/src/components/catch_top_bar.dart",
               "constructors": [
-                "CatchTopBar",
+                "CatchTopBar.route",
                 "CatchTopBar.identity",
                 "CatchTopBar.screen",
                 "CatchTopBar.primaryRail"

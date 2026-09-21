@@ -41,7 +41,7 @@ class HostCustomerApplicationsPanel extends ConsumerWidget {
     return CatchAsyncBoundary<HostApplicationsDirectoryState>(
       value: ref.watch(provider),
       onRetry: () => ref.invalidate(provider),
-      loadingBuilder: (_) => CatchSection.containedLoadingRows(
+      loadingBuilder: (_) => CatchSection.loadingRows(
         title: context.l10n.hostApplicationsTitle,
         layouts: [
           CatchRecordLayout.placeholder(
@@ -57,37 +57,48 @@ class HostCustomerApplicationsPanel extends ConsumerWidget {
       builder: (context, state) => Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          CatchSection.containedRows(
-            key: const ValueKey('host-customer-applications'),
-            title: context.l10n.hostApplicationsTitle,
-            children: [
-              if (state.applications.isEmpty)
-                CatchField.read(
-                  copy: catchFieldCopy(context.l10n),
-                  body: context.l10n.hostCustomersNoApplications,
-                ),
-              for (final application in state.applications)
-                CatchField.navigate(
-                  key: ValueKey(
-                    'host-customer-application-${application.applicationId}',
+          if (state.applications.isEmpty)
+            CatchSection.content(
+              key: const ValueKey('host-customer-applications'),
+              title: context.l10n.hostApplicationsTitle,
+              child: Text(
+                context.l10n.hostCustomersNoApplications,
+                style: CatchTextStyles.supporting(context),
+              ),
+            )
+          else
+            CatchSection.rows(
+              key: const ValueKey('host-customer-applications'),
+              title: context.l10n.hostApplicationsTitle,
+              children: [
+                if (state.applications.isEmpty)
+                  CatchField.read(
+                    copy: catchFieldCopy(context.l10n),
+                    body: context.l10n.hostCustomersNoApplications,
+                    bodyMaxLines: 6,
                   ),
-                  onActivate: () =>
-                      onOpenApplication(application.applicationId),
-                  content: CatchRecordLayout(
-                    title: hostApplicationContextLabel(
-                      context,
-                      formId: application.formId,
-                      targetKind: application.targetKind,
-                      targetId: application.targetId,
-                      sources: sources,
+                for (final application in state.applications)
+                  CatchField.navigate(
+                    key: ValueKey(
+                      'host-customer-application-${application.applicationId}',
                     ),
-                    metadata:
-                        '${hostApplicationStatusLabel(context, application.reviewStatus)} · ${AppTimeFormatters.shortDate(application.submittedAt)}',
-                    icon: CatchIcons.tabForms,
+                    onActivate: () =>
+                        onOpenApplication(application.applicationId),
+                    content: CatchRecordLayout(
+                      title: hostApplicationContextLabel(
+                        context,
+                        formId: application.formId,
+                        targetKind: application.targetKind,
+                        targetId: application.targetId,
+                        sources: sources,
+                      ),
+                      metadata:
+                          '${hostApplicationStatusLabel(context, application.reviewStatus)} · ${AppTimeFormatters.shortDate(application.submittedAt)}',
+                      icon: CatchIcons.tabForms,
+                    ),
                   ),
-                ),
-            ],
-          ),
+              ],
+            ),
           if (state.loadMoreError case final error?)
             CatchLocalizedErrorState(
               error,
@@ -106,20 +117,24 @@ class HostCustomerApplicationsPanel extends ConsumerWidget {
             ),
           if (state.applications.isNotEmpty) ...[
             gapH24,
-            CatchFieldLanes.single(
-              child: CatchField.control(
-                copy: catchFieldCopy(context.l10n),
-                title: context.l10n.hostCustomersLatestSubmittedDetails,
-                contractExemption:
-                    'Read-only disclosure of a grant-filtered application snapshot; no scalar value is persisted.',
-                child: HostCustomerApplicationSnapshot(
-                  organizerId: organizerId,
-                  applicationId: state.applications.first.applicationId,
-                  onOpen: () =>
-                      onOpenApplication(state.applications.first.applicationId),
-                  onOpenContact: onOpenContact,
+            CatchSection.rows(
+              children: [
+                CatchField.control(
+                  copy: catchFieldCopy(context.l10n),
+                  title: context.l10n.hostCustomersLatestSubmittedDetails,
+                  titleMaxLines: 4,
+                  contractExemption:
+                      'Read-only disclosure of a grant-filtered application snapshot; no scalar value is persisted.',
+                  child: HostCustomerApplicationSnapshot(
+                    organizerId: organizerId,
+                    applicationId: state.applications.first.applicationId,
+                    onOpen: () => onOpenApplication(
+                      state.applications.first.applicationId,
+                    ),
+                    onOpenContact: onOpenContact,
+                  ),
                 ),
-              ),
+              ],
             ),
           ],
         ],

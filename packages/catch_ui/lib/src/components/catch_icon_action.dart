@@ -2,6 +2,8 @@ import 'dart:math' as math;
 
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/components/catch_count_badge.dart';
+import 'package:catch_ui/src/components/catch_toolbar_metrics.dart';
+import 'package:catch_ui/src/components/catch_toolbar_scope.dart';
 import 'package:catch_ui/src/primitives/catch_surface.dart';
 import 'package:flutter/material.dart';
 
@@ -150,14 +152,13 @@ class CatchIconAction extends StatefulWidget {
     required IconData icon,
     required String this.tooltip,
     this.onPressed,
-    this.backgroundColor,
-    this.foregroundColor,
-    this.variant = CatchIconActionVariant.bordered,
-    double? size,
   }) : child = null,
        _toolbarIcon = icon,
        _count = null,
-       size = size ?? navSize,
+       size = CatchToolbarMetrics.visualExtent,
+       variant = CatchIconActionVariant.bordered,
+       backgroundColor = null,
+       foregroundColor = null,
        active = false,
        emphasis = CatchIconActionEmphasis.adaptive,
        accent = null,
@@ -216,6 +217,30 @@ class _CatchIconActionState extends State<CatchIconAction> {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
+    final toolbar = CatchToolbarScope.contains(context);
+    assert(() {
+      if (!toolbar) return true;
+      final glyph = widget.child;
+      final invalidGlyph =
+          glyph != null &&
+          (glyph is! Icon ||
+              glyph.color != null ||
+              (glyph.size != null && glyph.size != CatchIcon.md));
+      if (invalidGlyph ||
+          widget.accent != null ||
+          widget.emphasis != CatchIconActionEmphasis.adaptive ||
+          widget.size != CatchToolbarMetrics.visualExtent ||
+          widget.variant != CatchIconActionVariant.bordered ||
+          widget.backgroundColor != null ||
+          widget.borderColor != null ||
+          widget.borderRadius != null ||
+          widget.foregroundColor != null) {
+        throw FlutterError(
+          'App-bar controls own their 44-point outline and paint. Use CatchIconAction.toolbar or a canonical counted action; configure contrast on CatchTopBar.',
+        );
+      }
+      return true;
+    }());
     final onTap = widget.onPressed;
     final variant = widget.variant;
     final active = widget.active;
@@ -264,7 +289,9 @@ class _CatchIconActionState extends State<CatchIconAction> {
           );
     final iconTheme = IconThemeData(
       color: palette.foreground,
-      size: (size * CatchLayout.iconButtonGlyphScale).roundToDouble(),
+      size: toolbar
+          ? CatchIcon.md
+          : (size * CatchLayout.iconButtonGlyphScale).roundToDouble(),
       fill: filled ? 1.0 : null,
     );
 
@@ -295,7 +322,7 @@ class _CatchIconActionState extends State<CatchIconAction> {
                 Icon(
                   widget._toolbarIcon,
                   size: CatchIcon.md,
-                  color: widget.foregroundColor ?? t.ink,
+                  color: widget.foregroundColor ?? (enabled ? t.ink : t.ink3),
                 ),
           ),
         ),

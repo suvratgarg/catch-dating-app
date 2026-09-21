@@ -34,7 +34,7 @@ void main() {
       ),
     );
 
-    final header = tester.getRect(find.byType(CatchScreenHeader));
+    final header = tester.getRect(find.byType(CatchTopBar));
     final progress = tester.getCenter(find.byType(CircularProgressIndicator));
     expect(find.byType(CatchStateViewport), findsOneWidget);
     expect(progress.dy, closeTo((header.bottom + 844) / 2, 36));
@@ -266,7 +266,7 @@ void main() {
     await tester.pump();
 
     expect(find.byType(CatchRootScreenScaffold), findsOneWidget);
-    final headerRect = tester.getRect(find.byType(CatchScreenHeader));
+    final headerRect = tester.getRect(find.byType(CatchTopBar));
     final emptyRect = tester.getRect(find.byType(CatchEmptyState));
     final noteRect = tester.getRect(find.byType(CatchSurface));
     final emptyBodyRect = emptyRect.expandToInclude(noteRect);

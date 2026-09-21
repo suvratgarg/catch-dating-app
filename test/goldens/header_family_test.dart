@@ -52,9 +52,8 @@ void main() {
                 trailing: Icon(Icons.close),
               ),
               const SizedBox(height: 24),
-              const CatchScreenHeader.block(
+              const CatchTopBar.primaryRail(
                 title: 'Your events',
-                kicker: 'This week',
                 subtitle: 'Everything you are planning',
                 leading: Icon(Icons.event),
                 actions: [Text('Create'), Icon(Icons.add)],

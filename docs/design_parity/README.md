@@ -1,7 +1,7 @@
 ---
 doc_id: design_parity_tracker
-version: 0.1.48
-updated: 2026-09-02
+version: 0.2.1
+updated: 2026-09-21
 owner: product_design_parity
 status: active
 ---
@@ -39,7 +39,7 @@ checks in one durable matrix.
 | `tool/design/check_widgetbook_coverage.mjs` | Computes role-derived Widgetbook coverage directly from current Dart, Widgetbook, classification, and decision sources. `--check` is authoritative; `--json` or `--write` is for ephemeral review output, never a tracked report. |
 | `tool/design/check_screen_contract_hygiene.mjs` | Advisory scanner for raw Material controls and hand-rolled visual values in contracted screen implementation files. Masks comments/string literals, ignores `Colors.transparent`, and prints sample line refs so findings are reviewable before promotion to lints. |
 | `tool/design/screen_top_bar_contracts.json` | Exhaustive role classification for every Flutter `Scaffold.appBar`, every consumer/Host root-screen header surface, compact title policy, canonical zero-inset geometry, and reviewed raw media-hero exceptions. New app bars and shell branches are unregistered by default and fail the gate. |
-| `tool/design/check_screen_top_bar_contracts.mjs` | Blocking screen-chrome gate. Rejects unregistered/raw/wrong app-bar owners, incomplete root-screen coverage, compact/workspace title-widget, title-style, or large-mode bypasses, unregistered or incomplete route/identity title policies, root headers that bypass `CatchScreenHeaderTitle`/`CatchScreenTopBar`, local geometry/text-scaling overrides, and a nonzero canonical post-safe-area inset. |
+| `tool/design/check_screen_top_bar_contracts.mjs` | Blocking screen-chrome gate. Rejects unregistered/raw/wrong app-bar owners, incomplete root-screen coverage, compact/workspace custom-title, retired typography/geometry overrides, root headers that bypass `CatchTopBar.screen`/`CatchTopBar.primaryRail`, local geometry/text-scaling overrides, and a nonzero canonical post-safe-area inset. |
 | `tool/design/check_screen_gutters.mjs` | Advisory inventory for `EdgeInsets` constructors across `lib/**/presentation/**/*.dart` and contracted screen implementation files. Classifies likely screen-gutter candidates separately from lower-confidence local spacing so manual UI reviews have broad evidence instead of a narrow lint. |
 | `design/reference_screens/manifest.json` | Exported design-reference PNG manifest used for advisory pixel comparison. |
 | `tool/design/check_reference_screens.mjs` | Validates reference PNG metadata and can compare exported references against UI capture output. |
@@ -134,7 +134,18 @@ truth.
 
 ## Visual Comparison Policy
 
-Pixel comparison should be introduced as an advisory gate first. Store exported
+Design rules and valid component configurations govern intentional corrections.
+Review fresh renders against those rules before updating affected regression
+baselines. A golden mismatch reports a change; it does not establish that the
+old layout was correct. Never preserve an invalid configuration merely to pass
+pixel comparison, or update images mechanically to hide a regression.
+
+Synthetic product screenshots use the separate export-only UI capture harness
+and [marketing media pipeline](../marketing_app_media_pipeline.md). Capture
+export does not compare goldens, update baselines, or publish the website.
+
+
+External design-reference comparison starts as an advisory gate. Store exported
 design references under `design/reference_screens/` and compare them against
 `tool/ui_capture/run_captures.mjs` output. Mask dynamic regions such as status
 bars, maps, timestamps, remote photos, and generated counters before enforcing a
@@ -155,8 +166,9 @@ node tool/design/check_reference_screens.mjs --compare --capture-dir /tmp/catch-
 
 Host references must use a repo-pinned `design/source_packs/` source with a
 hash-complete, locally closed dependency manifest and must compare the real
-application navigation chrome. App Build Matrix regenerates the four primary
-full-shell Host captures and runs a focused `--strict` comparison. Strict mode
+application navigation chrome. App Build Matrix validates reference metadata
+with `--check --summary`; it does not regenerate or compare those captures.
+Explicit local `--compare --strict` runs require fresh matching captures. Strict mode
 fails unknown or missing captures, dimension drift, and threshold regressions.
 A real but unfinished feature may declare a stable `parityDebtId` plus a looser
 `regressionThresholds` ceiling; that ceiling prevents further drift and does

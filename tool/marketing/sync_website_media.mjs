@@ -70,6 +70,22 @@ function checkWebsiteMedia(manifest) {
 
   if (errors.length > 0) fail("Marketing website media check failed.", errors);
 
+  for (const capture of manifest.captures) {
+    if (capture.status !== "active") continue;
+    const target = fromRepo(capture.websitePath);
+    if (!fs.existsSync(target)) {
+      errors.push(`${capture.id}: website image is missing at ${capture.websitePath}.`);
+    } else if (sha256(fromRepo(capture.sourcePath)) !== sha256(target)) {
+      errors.push(`${capture.id}: website image differs from the app capture source.`);
+    }
+  }
+  if (errors.length > 0) {
+    fail("Marketing website images are not in sync.", [
+      ...errors,
+      "Run node tool/marketing/sync_website_media.mjs --update after reviewing the source captures.",
+    ]);
+  }
+
   const expected = stableJson(buildWebsiteManifest(manifest));
   const actual = fs.readFileSync(websiteManifestPath, "utf8");
   if (actual !== expected) {
@@ -155,9 +171,7 @@ function buildWebsiteManifest(manifest) {
     .map((capture) => {
       const isActive = capture.status === "active";
       const sourcePath = isActive ? capture.sourcePath : capture.placeholderPath;
-      const sourceAbs = fromRepo(sourcePath);
       const webPath = toWebPath(isActive ? capture.websitePath : sourcePath);
-      const hash = sha256(sourceAbs);
       return {
         id: capture.id,
         audience: capture.audience,
