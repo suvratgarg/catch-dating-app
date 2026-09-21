@@ -38,27 +38,12 @@ class HostTodayPersonalizationSection extends StatelessWidget {
         ),
         if (state.primaryAction case final action?)
           CatchSection.content(
-            child: CatchSurface.card(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text(
-                    _actionTitle(l10n, action),
-                    style: CatchTextStyles.titleL(context),
-                  ),
-                  gapH12,
-                  Text(
-                    _actionBody(l10n, action),
-                    style: CatchTextStyles.bodyL(context),
-                  ),
-                  gapH16,
-                  CatchButton(
-                    key: const ValueKey('host-today-suggested-action'),
-                    label: _actionLabel(l10n, action),
-                    onPressed: () => onAction(action),
-                  ),
-                ],
-              ),
+            child: CatchSection.action(
+              title: _actionTitle(l10n, action),
+              message: _actionBody(l10n, action),
+              actionKey: const ValueKey('host-today-suggested-action'),
+              actionLabel: _actionLabel(l10n, action),
+              onAction: () => onAction(action),
             ),
           ),
         CatchSection.content(
