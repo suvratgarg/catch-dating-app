@@ -15,18 +15,18 @@
     },
     {
       "path": "design_system/claude_design_handoff_request.json",
-      "sha256": "7bd6af04f78cd6aad00945996773d7c93a8716bfe343caea696efbcd6c7f32c8",
+      "sha256": "4498919595307084f897b684d6ab5df127615a27cea6814c99fc132c8accdb72",
       "bytes": 5472
     },
     {
       "path": "design_system/components.json",
-      "sha256": "890900ab9eac43e50b5cb028f5d1307384be1761199c55f174d7fe87f8edfe3d",
-      "bytes": 608836
+      "sha256": "b1f9ea84218cf0fa79603fe0861f10cefafa5e970613573a58241c755204d206",
+      "bytes": 604968
     },
     {
       "path": "design_system/design_language.txt",
-      "sha256": "33242638bcba284b3477c6daeaa3562be030b2d5cf76e32245056c3ce2002f04",
-      "bytes": 48687
+      "sha256": "795e28a5a591bd34b179487061f073ac2cb205f26481899d995bbc2d554f6ae5",
+      "bytes": 49424
     },
     {
       "path": "design_system/specimens/catch_design_system.html",
@@ -40,8 +40,8 @@
     },
     {
       "path": "design_system/typography.json",
-      "sha256": "5f7f4f7a73a7d993d57ddbb50f61e85c8abdd6aea71a72cf9bf710ecdd83fe8b",
-      "bytes": 31274
+      "sha256": "0235be2498fd6eb5e96b2a4abee1933cf5fcf8e1ad733c14af78dde10a339b94",
+      "bytes": 30786
     },
     {
       "path": "gallery/manifest.json",

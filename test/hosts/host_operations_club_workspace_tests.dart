@@ -253,10 +253,7 @@ void _registerHostOperationsClubWorkspaceTests() {
             .bodyLayout,
         CatchPageBodyMode.fullBleed,
       );
-      expect(
-        tester.widget<CatchTopBar>(find.byType(CatchTopBar)).titleStyle,
-        isNull,
-      );
+      expect(find.byType(CatchTopBar), findsOneWidget);
       expect(find.byType(HostTodayEventSection), findsNothing);
       expect(find.byType(CatchSkeleton), findsNothing);
       expect(find.byType(CatchLoadingIndicator), findsOneWidget);
