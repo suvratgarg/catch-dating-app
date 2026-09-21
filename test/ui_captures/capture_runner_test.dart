@@ -39,7 +39,7 @@ void main() {
   final pixelRatio = double.tryParse(_pixelRatioArg) ?? 1.0;
   final outputLayout = CaptureOutputLayout.fromName(_outputLayoutArg);
 
-  final platformVariant = switch (_platformArg) {
+  final TestVariant<Object?> platformVariant = switch (_platformArg) {
     '' => const DefaultTestVariant(),
     'ios' => TargetPlatformVariant.only(TargetPlatform.iOS),
     'android' => TargetPlatformVariant.only(TargetPlatform.android),
