@@ -1538,7 +1538,10 @@ const publicCallableLimits = {
 };
 
 export const getPublicOrganizerForm = onCall(
-  appCheckCallableOptionsWithLimits(publicCallableLimits),
+  appCheckCallableOptionsWithLimits({
+    ...publicCallableLimits,
+    memory: "512MiB",
+  }),
   (request) => getPublicOrganizerFormHandler(request)
 );
 
