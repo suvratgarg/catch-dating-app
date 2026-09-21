@@ -98,32 +98,28 @@ class CatchEmptyState extends StatelessWidget {
               if (actionWidget != null) ...[gapH16, actionWidget],
             ],
           ),
-          CatchEmptyStateVariant.inline => Row(
+          CatchEmptyStateVariant.inline => Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              if (iconData != null) ...[
-                CatchIconTile.empty(
-                  icon: iconData,
-                  variant: iconVariant,
-                  iconSize: iconSize,
-                  size: iconContainerSize ?? 44,
-                ),
-                gapW12,
-              ],
-              Expanded(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
+              if (_hasText(titleText))
+                Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (_hasText(titleText))
-                      Text(titleText!, style: effectiveTitleStyle),
-                    if (_hasText(messageText)) ...[
-                      if (_hasText(titleText)) gapH4,
-                      Text(messageText!, style: effectiveMessageStyle),
+                    if (iconData != null) ...[
+                      Icon(iconData, size: CatchIcon.md, color: t.ink3),
+                      gapW8,
                     ],
-                    if (actionWidget != null) ...[gapH12, actionWidget],
+                    Expanded(
+                      child: Text(titleText!, style: effectiveTitleStyle),
+                    ),
                   ],
                 ),
-              ),
+              if (_hasText(messageText)) ...[
+                if (_hasText(titleText)) gapH8,
+                Text(messageText!, style: effectiveMessageStyle),
+              ],
+              if (actionWidget != null) ...[gapH16, actionWidget],
             ],
           ),
         };

@@ -39,12 +39,6 @@ typedef _ContainedFieldRowsSectionConfig = ({
 
 typedef _ContainedSectionConfig = ({
   _SectionCommonConfig common,
-  EdgeInsetsGeometry? padding,
-  Color? backgroundColor,
-  Color? borderColor,
-  CatchSurfaceTone tone,
-  CatchSurfaceEmphasis emphasis,
-  List<BoxShadow>? boxShadow,
   bool showInternalDividers,
   Set<WidgetState> states,
 });

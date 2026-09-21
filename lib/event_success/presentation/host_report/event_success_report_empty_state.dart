@@ -14,13 +14,11 @@ class EventSuccessReportEmptyState extends StatelessWidget {
   final String message;
 
   @override
-  Widget build(BuildContext context) => CatchSection.contained(
-    child: CatchEmptyState(
-      icon: icon,
-      title: title,
-      message: message,
-      variant: CatchEmptyStateVariant.inline,
-      padding: EdgeInsets.zero,
-    ),
+  Widget build(BuildContext context) => CatchEmptyState(
+    icon: icon,
+    title: title,
+    message: message,
+    variant: CatchEmptyStateVariant.inline,
+    padding: EdgeInsets.zero,
   );
 }
