@@ -52,9 +52,9 @@ class FoundationTypographyTokens extends StatelessWidget {
                 CatchTextStyles.headlineS(context),
               ),
               _TypeSpec(
-                'routeTitle',
+                'titleL (app bars)',
                 'Dress rehearsal',
-                CatchTextStyles.routeTitle(context),
+                CatchTextStyles.titleL(context),
               ),
               _TypeSpec(
                 'welcomeReelHeadline',

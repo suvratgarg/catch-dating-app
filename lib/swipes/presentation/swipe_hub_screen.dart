@@ -38,9 +38,9 @@ class SwipeHubScreen extends ConsumerWidget {
 
     final slivers = <Widget>[CatchesHubStateView(state: state)];
     return CatchRootScreenScaffold.standard(
-      title: CatchScreenHeader.block(
-        kicker: context.l10n.swipesSwipeHubScreenTitleCatches,
-        title: context.l10n.swipesSwipeHubScreenTextAfterTheEvent,
+      title: CatchTopBar.primaryRail(
+        title: context.l10n.swipesSwipeHubScreenTitleCatches,
+        subtitle: context.l10n.swipesSwipeHubScreenTextAfterTheEvent,
         actions: [
           CatchIconTile(
             icon: CatchIcons.favoriteRounded,

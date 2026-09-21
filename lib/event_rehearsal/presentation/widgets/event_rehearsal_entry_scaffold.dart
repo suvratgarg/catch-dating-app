@@ -29,7 +29,7 @@ class EventRehearsalEntryScaffold extends StatelessWidget {
   Widget build(BuildContext context) => PopScope(
     canPop: !isPending,
     child: CatchRouteScaffold(
-      topBarBuilder: (context, scrolled) => CatchTopBar(
+      topBarBuilder: (context, scrolled) => CatchTopBar.route(
         title: context.l10n.hostEventRehearsalTitle,
         navigation: const CatchTopBarNavigation(
           mode: CatchTopBarNavigationMode.back,

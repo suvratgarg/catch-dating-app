@@ -107,9 +107,6 @@ class _HostEventRehearsalScreenState
         exportMutation.isPending ||
         shareMutation.isPending ||
         runtimeOperation.isSubmitting;
-    final topBarTitleMaxLines = MediaQuery.textScalerOf(context).scale(1) >= 1.4
-        ? 3
-        : 1;
     listenToCatchMutationErrors(
       context,
       ref,
@@ -158,20 +155,11 @@ class _HostEventRehearsalScreenState
             ],
           ),
       ],
-      topBarBuilder: (context, scrolledUnder) => CatchTopBar(
-        size: CatchTopBarSize.compact,
-        height: CatchTopBar.workspaceHeightFor(
-          context: context,
-          hasEyebrow: true,
-          titleMaxLines: topBarTitleMaxLines,
-        ),
-        mode: CatchTopBarMode.content,
-        contentCrossAxisAlignment: CrossAxisAlignment.start,
-        eyebrow: context.l10n.hostEventRehearsalManageSubtitle,
-        title:
+      topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+        title: context.l10n.hostEventRehearsalManageSubtitle,
+        subtitle:
             rehearsalState.value?.session.setup.title ??
             context.l10n.hostEventRehearsalTitle,
-        titleMaxLines: topBarTitleMaxLines,
         navigation: const CatchTopBarNavigation(
           mode: CatchTopBarNavigationMode.back,
         ),

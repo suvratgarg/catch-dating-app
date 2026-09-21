@@ -101,7 +101,7 @@ class _HostAutomationRuleEditorState
       canPop: !_busy,
       child: CatchRouteScaffold(
         resizeToAvoidBottomInset: true,
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar(
+        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
           title: widget.initialRule == null
               ? l.hostAutomationNew
               : l.hostAutomationEdit,

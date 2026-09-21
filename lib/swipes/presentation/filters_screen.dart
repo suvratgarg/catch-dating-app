@@ -118,7 +118,7 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
       canPop: !saving,
       child: CatchRouteScaffold(
         backgroundColor: t.bg,
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar(
+        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
           title: context.l10n.swipesFiltersScreenTitleFilters,
           emphasis: scrolledUnder
               ? CatchTopBarEmphasis.divided

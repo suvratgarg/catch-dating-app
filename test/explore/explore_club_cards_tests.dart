@@ -745,7 +745,9 @@ void _registerExploreClubCardsTests() {
                 slivers: [
                   ...CatchSliverHeader(
                     title: const SizedBox.shrink(),
-                    bottomHeight: CatchTopBar.heightFor(context: context),
+                    bottomHeight: const CatchTopBar.primaryRail(
+                      title: 'Explore',
+                    ).contentHeightFor(context),
                     bottom: ExploreBrowseHeaderContent(
                       query: container.read(exploreSearchQueryProvider),
                       onQueryChanged: (value) => container

@@ -883,7 +883,6 @@ final _styleRegistry = <_StyleEntry>[
   _StyleEntry.single('display', 'voice', CatchTextStyles.display),
   _StyleEntry.single('headline', 'function', CatchTextStyles.headline),
   _StyleEntry.single('headlineS', 'voice', CatchTextStyles.headlineS),
-  _StyleEntry.single('routeTitle', 'voice', CatchTextStyles.routeTitle),
   _StyleEntry.single(
     'welcomeReelHeadline',
     'voice',

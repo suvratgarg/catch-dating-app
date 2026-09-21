@@ -1,6 +1,6 @@
 ---
 doc_id: design_language
-version: 1.28.0
+version: 1.29.0
 updated: 2026-09-21
 owner: ui_elevation_initiative
 status: active # identity locked; Phase 0–1 complete (bundled optical-sized fonts, B&W tokens, ActivityPalette routing, matte grade, anti-drift gates); Phase 2 flagship Profile built
@@ -133,8 +133,8 @@ Three roles, no competition:
 
 | Role | Family | Use |
 |---|---|---|
-| **Voice / display** | **Archivo** (variable grotesque, locked to a single **78% width** — the "78% system") | brand moments, root headlines, compact route titles, event/club display titles, and the welcome reel |
-| **Function / reading** | **Platform system font** (SF on iOS, Roboto on Android) | prose, bios, descriptions, user-authored names, buttons, navigation controls, inputs, and dense UI controls |
+| **Voice / display** | **Archivo** (variable grotesque, locked to a single **78% width** — the "78% system") | brand moments, event/club display titles, and the welcome reel |
+| **Function / reading** | **Platform system font** (SF on iOS, Roboto on Android) | app bars, root titles, prose, bios, descriptions, user-authored names, buttons, navigation controls, inputs, and dense UI controls |
 | **Data** | **IBM Plex Mono** | time, price, counts, OTP digits, kickers, and explicit uppercase labels |
 
 **Why Archivo:** the current direction is typographic, restrained, and non-serif. Archivo
@@ -167,15 +167,27 @@ imported through `package:catch_tokens/catch_tokens.dart`. Shared theme wiring, 
 - Flutter native bundles `Archivo-Roman-VF.ttf`; web surfaces keep the WOFF2 build.
   Both formats are covered by the bundled Archivo OFL license.
 
-These map onto the existing `CatchTextStyles` roles — display/title styles move to
-Archivo, sentence/data roles to untracked IBM Plex Mono, explicit caps roles to tracked
-IBM Plex Mono, and names/controls/prose to the platform system font. App UI calls semantic
+These map onto semantic `CatchTextStyles` roles: brand display styles use
+Archivo, numeric and explicitly uppercase data labels use IBM Plex Mono, and
+app bars, names, sentence-case labels, controls and prose use the platform font. App UI calls semantic
 `CatchTextStyles` roles; `CatchFonts` is an internal theme implementation detail.
 
-Functional root-screen titles use `CatchTextStyles.headline` in the platform system
-family. Compact brand route labels retain `CatchTextStyles.routeTitle` (Archivo,
-20/700/1.16); a user-authored person name uses the semantic identity title role.
-Feature screens do not restate these styles.
+All app-bar text uses the platform function family. `CatchTopBar.route` and
+`.identity` use `CatchTextStyles.titleL`; root `.screen` and `.primaryRail` use
+`CatchTextStyles.headline`. Context always follows the primary title using
+`appBarSubtitle`. A screen's purpose is primary; an event or organizer name is
+secondary context. Person-identity destinations may use the person's name as
+the primary title. No app-bar eyebrow, kicker, IBM Plex, Archivo, raw title
+widget or feature-owned typography/geometry is valid.
+
+IBM Plex is reserved for numerals and explicitly uppercase labels. Sentence
+case and user-authored text use the platform function family; do not uppercase
+user data to make it fit a font role. Legacy mono roles outside app bars require
+separate caller migration and are not approval for new lowercase mono text.
+
+Golden snapshots are regression evidence, not design authority. Establish the
+semantic and geometry rules, translate invalid configurations into valid
+recipes, inspect fresh renders, then deliberately update affected baselines.
 
 ### 5.1 Platform function scale and readable records
 
@@ -505,7 +517,7 @@ not rebuild the family as local `Row`, `Stack`, padding, or divider recipes.
   `.freezed.dart`, and the named localization outputs are excluded as generated
   source; a hand-authored file is not exempt merely because it lives below a
   directory named `generated`.
-- Compact route bars use the default `CatchTopBar` geometry. Feature screens do
+- Compact route bars use `CatchTopBar.route` geometry. Feature screens do
   not override height, safe-area, alignment, gutter, or content padding. A
   detail route whose title is loaded asynchronously carries the known subject
   label through navigation so loading and error states never fall back to a

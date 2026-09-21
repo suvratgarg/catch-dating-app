@@ -234,7 +234,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     return PopScope(
       canPop: !operationPending,
       child: CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar(
+        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
           title: context.l10n.safetySettingsScreenTitleSettings,
           navigation: const CatchTopBarNavigation(
             mode: CatchTopBarNavigationMode.back,

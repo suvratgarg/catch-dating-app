@@ -424,7 +424,7 @@ Widget catchStatusStripScopeCatalogStates(BuildContext context) {
             ),
           ],
           child: CatchRootScreenScaffold.standard(
-            title: const CatchScreenHeader.block(title: 'Today'),
+            title: const CatchTopBar.primaryRail(title: 'Today'),
             children: const [
               SliverToBoxAdapter(child: Text('Content below status')),
             ],

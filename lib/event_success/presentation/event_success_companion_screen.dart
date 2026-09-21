@@ -100,7 +100,7 @@ class CompanionScaffold extends StatelessWidget {
     final canPop = _companionCanPop(context);
     return CatchScaffold.workspace(
       backgroundColor: CatchTokens.of(context).bg,
-      title: CatchTopBar(
+      title: CatchTopBar.route(
         title: context
             .l10n
             .eventSuccessEventSuccessCompanionScreenTitleEventCompanion,

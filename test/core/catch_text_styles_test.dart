@@ -1,34 +1,34 @@
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('routeTitle is the locked compact Archivo title role', (
-    tester,
-  ) async {
+  testWidgets('compact titles use the platform function scale', (tester) async {
     late TextStyle style;
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.light,
         home: Builder(
           builder: (context) {
-            style = CatchTextStyles.routeTitle(context);
+            style = CatchTextStyles.titleL(context);
             return const SizedBox.shrink();
           },
         ),
       ),
     );
 
-    expect(style.fontFamily, 'packages/catch_ui/${CatchFonts.voiceFamily}');
+    expect(
+      style.fontFamily,
+      CatchFonts.functionFamilyForPlatform(defaultTargetPlatform, fontSize: 20),
+    );
     expect(style.fontSize, 20);
-    expect(style.fontWeight, FontWeight.w700);
-    expect(style.height, 1.16);
+    expect(style.fontWeight, CatchPlatformTokens.typography.title.fontWeight);
+    expect(style.height, CatchPlatformTokens.typography.title.height);
     expect(style.letterSpacing, 0);
-    expect(style.fontVariations, const <FontVariation>[
-      FontVariation('wght', 700),
-      FontVariation('wdth', CatchFonts.archivoWidth),
-    ]);
+    expect(style.fontVariations, isNull);
   });
 
   test('icon raster glyph preserves icon-font metadata and art effects', () {
