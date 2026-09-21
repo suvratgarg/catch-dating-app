@@ -77,6 +77,7 @@ void main() {
           ],
           device: CaptureDevice.iphone17Pro,
           includeOverlays:
+              view == 'edit' ||
               view == 'spend' ||
               view == 'record_actions' ||
               view == 'remove_confirmation',
@@ -94,12 +95,7 @@ void main() {
             ),
           ),
           drive: (tester) async {
-            for (final label in [
-              'Overview',
-              'Details',
-              'Notes & tags',
-              'History',
-            ]) {
+            for (final label in ['Overview', 'Details', 'Notes', 'History']) {
               final paragraph = tester.renderObject<RenderParagraph>(
                 find.text(label),
               );
@@ -108,6 +104,10 @@ void main() {
                 isFalse,
                 reason: 'Customer detail tab labels must remain readable',
               );
+            }
+            if (view == 'reach' || view == 'edit') {
+              await tester.tap(find.text('Details'));
+              await pumpFeatureUi(tester);
             }
             if (view == 'reach') {
               await tester.ensureVisible(
@@ -172,9 +172,7 @@ void main() {
               await pumpFeatureUi(tester);
               expect(find.byType(HostCustomerRevenueBreakdown), findsOneWidget);
             } else if (view == 'memory' || view.startsWith('history')) {
-              final tab = find.text(
-                view == 'memory' ? 'Notes & tags' : 'History',
-              );
+              final tab = find.text(view == 'memory' ? 'Notes' : 'History');
               await tester.ensureVisible(tab);
               await tester.tap(tab);
               await pumpFeatureUi(tester);
@@ -239,6 +237,14 @@ void main() {
           },
         );
         expect(artifacts, hasLength(2));
+        if (view == 'edit') {
+          final cancel = find.text('Cancel');
+          await tester.ensureVisible(cancel);
+          await tester.tap(cancel);
+          await pumpFeatureUi(tester);
+          expect(find.byType(HostCustomerIdentityCard), findsNothing);
+          expect(find.byType(HostCustomerDetailsSection), findsOneWidget);
+        }
         expect(tester.takeException(), isNull);
       }
     },

@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/external_links.dart';
@@ -8,6 +7,7 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
+import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/hosts/data/crm/host_communication_repository.dart';
 import 'package:catch_dating_app/hosts/data/crm/host_contacts_repository.dart';
@@ -15,7 +15,7 @@ import 'package:catch_dating_app/hosts/domain/crm/host_audience_contact_detail.d
 import 'package:catch_dating_app/hosts/domain/crm/host_communication_plan.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_contact_merge.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_customer_memory.dart';
-import 'package:catch_dating_app/hosts/domain/crm/host_customer_revenue.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_customer_timeline.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_contact_merge_review.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_applications_panel.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_detail_tabs.dart';
@@ -33,7 +33,6 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 
 part 'host_customer_detail_body.dart';
 part 'host_customer_history_panel.dart';
@@ -87,8 +86,9 @@ class _HostCustomerDetailScreenState
         (initialDisplayName?.isNotEmpty ?? false ? initialDisplayName : null) ??
         context.l10n.hostNavigationCustomers;
     return CatchRouteScaffold(
-      topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
-        title: displayName,
+      topBarBuilder: (context, scrolledUnder) => CatchTopBar.identity(
+        identityName: displayName,
+        identitySemanticLabel: displayName,
         navigation: CatchTopBarNavigation(
           mode: widget.embedded
               ? CatchTopBarNavigationMode.none
@@ -152,105 +152,112 @@ class _HostCustomerDetailScreenState
             ? CatchTopBarEmphasis.divided
             : CatchTopBarEmphasis.plain,
       ),
-      body: CatchRouteBody.standard(
-        child: CatchAsyncBoundary<HostAudienceContactDetail>(
-          value: detail,
-          onRetry: () => ref.invalidate(
-            hostAudienceContactDetailProvider(
-              widget.organizerId,
-              widget.contactId,
-            ),
-          ),
-          initialLoadTimeout: null,
-          loadingBuilder: (_) => CatchSkeleton.content(
-            child: HostCustomerDetailBody(
-              customer: hostCustomerSkeletonDetail(
-                organizerId: widget.organizerId,
-                contactId: widget.contactId,
-                displayName: displayName,
-                manualTagLabel: context.l10n.hostCustomersManualTags,
-                noteBody: context.l10n.hostCustomersMemoryHelp,
-              ),
-              currentUid: currentUid,
-              communicationPlan: null,
-              communicationPlanLoading: true,
-              communicationPlanFailed: false,
-              openingConversation: false,
-              updatingCustomer: false,
-              onSaveDetails: _noopSaveCustomerDetails,
-              onEditTags: _noop,
-              onAddNote: _noop,
-              onEditNote: (_) {},
-              onReviewDuplicates: _noop,
-              onMessage: _noop,
-              onRetryCommunicationPlan: _noop,
-              onMessagingEnabledChanged: (_) {},
-              onOpenFormResponse: (_) {},
-              onCall: null,
-              onEmail: null,
-              onOpenApplication: (_) {},
-              onOpenContact: (_) {},
-              onOpenRevenue: _noop,
-              onOpenEvent: (_) {},
-              onOpenCatchThread: (_) {},
-              onOpenWhatsappThread: (_) {},
-              onUndoMerge: (_) {},
-            ),
-          ),
-          errorBuilder: (_, error, _, onBoundaryRetry) =>
-              CatchLocalizedErrorState(
-                error,
-                context: AppErrorContext.customer,
-                onRetry: onBoundaryRetry,
-              ),
-          builder: (context, customer) => HostCustomerDetailBody(
-            customer: customer,
-            currentUid: currentUid,
-            communicationPlan: communicationPlanState?.value,
-            communicationPlanLoading: communicationPlanState?.isLoading ?? true,
-            communicationPlanFailed: communicationPlanState?.hasError ?? false,
-            messageActionInHeader:
-                communicationPlanState
-                    ?.value
-                    ?.singleRecipient
-                    .recommendedRouteId !=
-                null,
-            openingConversation: _openingConversation,
-            updatingCustomer: _updatingCustomer,
-            onSaveDetails: ({required displayName, phoneE164, email}) =>
-                _saveCustomerDetails(
-                  customer,
-                  displayName: displayName,
-                  phoneE164: phoneE164,
-                  email: email,
+      body: CatchRouteBody.fullBleed(
+        child: CatchSectionList.panes(
+          body: CatchPageBody.screen(
+            gutter: false,
+            child: CatchAsyncBoundary<HostAudienceContactDetail>(
+              value: detail,
+              onRetry: () => ref.invalidate(
+                hostAudienceContactDetailProvider(
+                  widget.organizerId,
+                  widget.contactId,
                 ),
-            onEditTags: () => _editTags(customer),
-            onAddNote: () => _editNote(customer),
-            onEditNote: (note) => _editNote(customer, note: note),
-            onReviewDuplicates: _reviewDuplicates,
-            onMessage: () =>
-                _messageCustomer(customer, communicationPlanState?.value),
-            onRetryCommunicationPlan: _refreshCommunicationPlan,
-            onMessagingEnabledChanged: (enabled) =>
-                _setMessagingEnabled(customer, enabled),
-            onOpenFormResponse: _openFormResponse,
-            onOpenApplication: _openApplication,
-            onOpenContact: _openCustomerContact,
-            onOpenRevenue: () => _openRevenue(customer),
-            onCall: customer.phoneE164 == null
-                ? null
-                : () => _openCustomerContact(
-                    Uri(scheme: 'tel', path: customer.phoneE164),
+              ),
+              initialLoadTimeout: null,
+              loadingBuilder: (_) => CatchSkeleton.content(
+                child: HostCustomerDetailBody(
+                  customer: hostCustomerSkeletonDetail(
+                    organizerId: widget.organizerId,
+                    contactId: widget.contactId,
+                    displayName: displayName,
+                    manualTagLabel: context.l10n.hostCustomersManualTags,
+                    noteBody: context.l10n.hostCustomersMemoryHelp,
                   ),
-            onEmail: customer.email == null
-                ? null
-                : () => _openCustomerContact(
-                    Uri(scheme: 'mailto', path: customer.email),
+                  currentUid: currentUid,
+                  communicationPlan: null,
+                  communicationPlanLoading: true,
+                  communicationPlanFailed: false,
+                  openingConversation: false,
+                  updatingCustomer: false,
+                  onSaveDetails: _noopSaveCustomerDetails,
+                  onEditTags: _noop,
+                  onAddNote: _noop,
+                  onEditNote: (_) {},
+                  onReviewDuplicates: _noop,
+                  onMessage: _noop,
+                  onRetryCommunicationPlan: _noop,
+                  onMessagingEnabledChanged: (_) {},
+                  onOpenFormResponse: (_) {},
+                  onCall: null,
+                  onEmail: null,
+                  onOpenApplication: (_) {},
+                  onOpenContact: (_) {},
+                  onOpenRevenue: _noop,
+                  onOpenEvent: (_) {},
+                  onOpenCatchThread: (_) {},
+                  onOpenWhatsappThread: (_) {},
+                  onUndoMerge: (_) {},
+                ),
+              ),
+              errorBuilder: (_, error, _, onBoundaryRetry) =>
+                  CatchLocalizedErrorState(
+                    error,
+                    context: AppErrorContext.customer,
+                    onRetry: onBoundaryRetry,
                   ),
-            onOpenEvent: _openEvent,
-            onOpenCatchThread: _openCatchThread,
-            onOpenWhatsappThread: _openWhatsappThread,
-            onUndoMerge: _undoMerge,
+              builder: (context, customer) => HostCustomerDetailBody(
+                customer: customer,
+                currentUid: currentUid,
+                communicationPlan: communicationPlanState?.value,
+                communicationPlanLoading:
+                    communicationPlanState?.isLoading ?? true,
+                communicationPlanFailed:
+                    communicationPlanState?.hasError ?? false,
+                messageActionInHeader:
+                    communicationPlanState
+                        ?.value
+                        ?.singleRecipient
+                        .recommendedRouteId !=
+                    null,
+                openingConversation: _openingConversation,
+                updatingCustomer: _updatingCustomer,
+                onSaveDetails: ({required displayName, phoneE164, email}) =>
+                    _saveCustomerDetails(
+                      customer,
+                      displayName: displayName,
+                      phoneE164: phoneE164,
+                      email: email,
+                    ),
+                onEditTags: () => _editTags(customer),
+                onAddNote: () => _editNote(customer),
+                onEditNote: (note) => _editNote(customer, note: note),
+                onReviewDuplicates: _reviewDuplicates,
+                onMessage: () =>
+                    _messageCustomer(customer, communicationPlanState?.value),
+                onRetryCommunicationPlan: _refreshCommunicationPlan,
+                onMessagingEnabledChanged: (enabled) =>
+                    _setMessagingEnabled(customer, enabled),
+                onOpenFormResponse: _openFormResponse,
+                onOpenApplication: _openApplication,
+                onOpenContact: _openCustomerContact,
+                onOpenRevenue: () => _openRevenue(customer),
+                onCall: customer.phoneE164 == null
+                    ? null
+                    : () => _openCustomerContact(
+                        Uri(scheme: 'tel', path: customer.phoneE164),
+                      ),
+                onEmail: customer.email == null
+                    ? null
+                    : () => _openCustomerContact(
+                        Uri(scheme: 'mailto', path: customer.email),
+                      ),
+                onOpenEvent: _openEvent,
+                onOpenCatchThread: _openCatchThread,
+                onOpenWhatsappThread: _openWhatsappThread,
+                onUndoMerge: _undoMerge,
+              ),
+            ),
           ),
         ),
       ),
@@ -724,7 +731,7 @@ class HostCustomerActiveMergesSection extends StatelessWidget {
   final ValueChanged<HostActiveContactMerge> onUndo;
 
   @override
-  Widget build(BuildContext context) => CatchSection.plain(
+  Widget build(BuildContext context) => CatchSection.content(
     key: const ValueKey('host-customer-active-merges'),
     title: context.l10n.hostCustomersMergedHistory,
     child: Column(

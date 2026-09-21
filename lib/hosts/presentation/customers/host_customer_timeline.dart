@@ -23,6 +23,7 @@ class HostCustomerReachSection extends StatelessWidget {
     required this.onRetryCommunicationPlan,
     required this.onMessagingEnabledChanged,
     this.messageActionInHeader = false,
+    this.includeSources = true,
     this.onReviewDuplicates,
   });
 
@@ -35,6 +36,7 @@ class HostCustomerReachSection extends StatelessWidget {
   final VoidCallback onRetryCommunicationPlan;
   final ValueChanged<bool>? onMessagingEnabledChanged;
   final bool messageActionInHeader;
+  final bool includeSources;
   final VoidCallback? onReviewDuplicates;
 
   @override
@@ -47,7 +49,7 @@ class HostCustomerReachSection extends StatelessWidget {
       key: const ValueKey('host-customer-reach-and-provenance'),
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        CatchSection.containedRows(
+        CatchSection.rows(
           title: l10n.hostCustomersMessaging,
           children: [
             if (communicationPlanLoading)
@@ -68,7 +70,7 @@ class HostCustomerReachSection extends StatelessWidget {
                 ),
                 content: CatchRecordLayout(
                   title: l10n.hostCustomersMessageOptionsUnavailable,
-                  description: l10n.hostCustomersMessageOptionsRetry,
+                  metadata: l10n.hostCustomersMessageOptionsRetry,
                   icon: CatchIcons.tabChats,
                   color: t.warning,
                 ),
@@ -87,7 +89,8 @@ class HostCustomerReachSection extends StatelessWidget {
                         loading: messageLoading,
                       ),
                 content: CatchRecordLayout(
-                  title: _recommendedMessageBody(context, recommendedRoute),
+                  title: _recommendedMessageTitle(context, recommendedRoute),
+                  metadata: _recommendedMessageBody(context, recommendedRoute),
                   icon: CatchIcons.tabChats,
                 ),
               ),
@@ -96,7 +99,7 @@ class HostCustomerReachSection extends StatelessWidget {
                 key: const ValueKey('host-customer-message'),
                 content: CatchRecordLayout(
                   title: l10n.hostCustomersMessageOptionsUnavailable,
-                  description: _unavailableMessageBody(context, recipient),
+                  metadata: _unavailableMessageBody(context, recipient),
                   icon: CatchIcons.tabChats,
                 ),
               ),
@@ -104,7 +107,7 @@ class HostCustomerReachSection extends StatelessWidget {
               key: const ValueKey('host-customer-whatsapp-permission'),
               content: CatchRecordLayout(
                 title: l10n.hostCustomersWhatsappPermission,
-                description: _permissionSummary(
+                metadata: _permissionSummary(
                   context,
                   customer.whatsappPermission,
                 ),
@@ -120,11 +123,6 @@ class HostCustomerReachSection extends StatelessWidget {
                 },
               ),
             ),
-          ],
-        ),
-        gapH16,
-        CatchSection.containedFieldRows(
-          children: [
             CatchField.toggle(
               copy: catchFieldCopy(context.l10n),
               key: const ValueKey('host-customer-organizer-messages'),
@@ -132,7 +130,6 @@ class HostCustomerReachSection extends StatelessWidget {
               titleMaxLines: 5,
               contract: CatchContractConstraints
                   .mutateOrganizerContactCallablePayloadWhatsappAdminSuppressed,
-              helperText: l10n.hostCustomersPauseWhatsappHandoffsBody,
               value: customer.whatsappAdminSuppressed,
               onChanged: onMessagingEnabledChanged == null
                   ? null
@@ -140,54 +137,116 @@ class HostCustomerReachSection extends StatelessWidget {
             ),
           ],
         ),
-        gapH24,
-        CatchSection.containedRows(
-          key: const ValueKey('host-customer-provenance'),
-          title: l10n.hostCustomersCustomerProvenance,
-          trailing: onReviewDuplicates == null
-              ? null
-              : CatchButton.text(
-                  key: const ValueKey('host-customer-review-duplicates'),
-                  label: l10n.hostCustomersReviewDuplicates,
-                  onPressed: onReviewDuplicates,
-                ),
-          children: [
-            if (customer.origins.isEmpty)
-              CatchField.read(
-                content: CatchRecordLayout(
-                  title: l10n.hostCustomersSourceUnavailable,
-                  description: l10n.hostCustomersCustomerProvenanceUnavailable,
-                  icon: CatchIcons.accountTreeOutlined,
-                ),
-              )
-            else
-              for (final origin in customer.origins)
-                CatchField.read(
-                  key: ValueKey('host-customer-origin-${origin.originId}'),
-                  content: CatchRecordLayout(
-                    title: _originLabel(context, origin),
-                    metadata: l10n.hostCustomersCustomerProvenanceItem(
-                      source: _originKindLabel(context, origin.sourceKind),
-                      date: AppTimeFormatters.shortDate(origin.observedAt),
-                    ),
-                    icon:
-                        origin.sourceKind ==
-                            HostCustomerOriginSourceKind.hostForm
-                        ? CatchIcons.descriptionOutlined
-                        : CatchIcons.accountTreeOutlined,
-                  ),
-                ),
-          ],
-        ),
-        if (customer.originsTruncated)
-          Text(
-            l10n.hostCustomersSourcesTruncated,
+        gapH8,
+        CatchSection.content(
+          child: Text(
+            l10n.hostCustomersPauseWhatsappHandoffsBody,
             style: CatchTextStyles.recordContext(context),
+          ),
+        ),
+        if (includeSources) ...[
+          gapH24,
+          HostCustomerSourcesSection(
+            customer: customer,
+            onReviewDuplicates: onReviewDuplicates,
+          ),
+        ],
+      ],
+    );
+  }
+}
+
+/// Contact provenance is independent of current communication availability.
+class HostCustomerSourcesSection extends StatelessWidget {
+  const HostCustomerSourcesSection({
+    super.key,
+    required this.customer,
+    this.onReviewDuplicates,
+  });
+
+  final HostAudienceContactDetail customer;
+  final VoidCallback? onReviewDuplicates;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (customer.origins.isEmpty)
+          CatchSection.content(
+            key: const ValueKey('host-customer-provenance'),
+            title: l10n.hostCustomersCustomerProvenance,
+            trailing: onReviewDuplicates == null
+                ? null
+                : CatchButton.text(
+                    key: const ValueKey('host-customer-review-duplicates'),
+                    label: l10n.hostCustomersReviewDuplicates,
+                    onPressed: onReviewDuplicates,
+                  ),
+            child: Text(
+              l10n.hostCustomersCustomerProvenanceUnavailable,
+              style: CatchTextStyles.supporting(context),
+            ),
+          )
+        else
+          CatchSection.rows(
+            key: const ValueKey('host-customer-provenance'),
+            title: l10n.hostCustomersCustomerProvenance,
+            trailing: onReviewDuplicates == null
+                ? null
+                : CatchButton.text(
+                    key: const ValueKey('host-customer-review-duplicates'),
+                    label: l10n.hostCustomersReviewDuplicates,
+                    onPressed: onReviewDuplicates,
+                  ),
+            children: [
+              if (customer.origins.isEmpty)
+                CatchField.read(
+                  copy: catchFieldCopy(l10n),
+                  body: l10n.hostCustomersCustomerProvenanceUnavailable,
+                )
+              else
+                for (final origin in customer.origins)
+                  CatchField.read(
+                    key: ValueKey('host-customer-origin-${origin.originId}'),
+                    content: CatchRecordLayout(
+                      title: _originLabel(context, origin),
+                      metadata: l10n.hostCustomersCustomerProvenanceItem(
+                        source: _originKindLabel(context, origin.sourceKind),
+                        date: AppTimeFormatters.shortDate(origin.observedAt),
+                      ),
+                      icon:
+                          origin.sourceKind ==
+                              HostCustomerOriginSourceKind.hostForm
+                          ? CatchIcons.descriptionOutlined
+                          : CatchIcons.accountTreeOutlined,
+                    ),
+                  ),
+            ],
+          ),
+        if (customer.originsTruncated)
+          CatchSection.content(
+            child: Text(
+              l10n.hostCustomersSourcesTruncated,
+              style: CatchTextStyles.recordContext(context),
+            ),
           ),
       ],
     );
   }
 }
+
+String _recommendedMessageTitle(
+  BuildContext context,
+  HostCommunicationRouteId route,
+) => switch (route) {
+  HostCommunicationRouteId.catchChat =>
+    context.l10n.hostsHostOrganizerCrmCatchApp,
+  HostCommunicationRouteId.personalWhatsappHandoff =>
+    context.l10n.hostCustomersWhatsappAppChannel,
+  _ => context.l10n.hostCustomersMessageOptionsUnavailable,
+};
 
 String _recommendedMessageBody(
   BuildContext context,
@@ -345,33 +404,35 @@ class _HostCustomerHistoryFiltersState
   Widget build(BuildContext context) => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
-      Align(
-        alignment: AlignmentDirectional.centerStart,
-        child: CatchSelectionMenu<HostCustomerHistoryKind>.control(
-          title: context.l10n.hostCustomersTimeline,
-          tooltip: context.l10n.hostCustomersTimeline,
-          buttonKey: const ValueKey('host-customer-history-filter'),
-          value: selected,
-          labelBuilder: (item) => item.label,
-          onSelected: (value) => setState(() => selected = value),
-          items: [
-            CatchSelectionMenuItem(
-              value: HostCustomerHistoryKind.all,
-              label: context.l10n.hostCustomersAllActivity,
-            ),
-            CatchSelectionMenuItem(
-              value: HostCustomerHistoryKind.forms,
-              label: context.l10n.hostFormsViewForms,
-            ),
-            CatchSelectionMenuItem(
-              value: HostCustomerHistoryKind.events,
-              label: context.l10n.hostNavigationEvents,
-            ),
-            CatchSelectionMenuItem(
-              value: HostCustomerHistoryKind.messages,
-              label: context.l10n.hostCustomersMessageHistory,
-            ),
-          ],
+      CatchSection.content(
+        child: Align(
+          alignment: AlignmentDirectional.centerStart,
+          child: CatchSelectionMenu<HostCustomerHistoryKind>.control(
+            title: context.l10n.hostCustomersTimeline,
+            tooltip: context.l10n.hostCustomersTimeline,
+            buttonKey: const ValueKey('host-customer-history-filter'),
+            value: selected,
+            labelBuilder: (item) => item.label,
+            onSelected: (value) => setState(() => selected = value),
+            items: [
+              CatchSelectionMenuItem(
+                value: HostCustomerHistoryKind.all,
+                label: context.l10n.hostCustomersAllActivity,
+              ),
+              CatchSelectionMenuItem(
+                value: HostCustomerHistoryKind.forms,
+                label: context.l10n.hostFormsViewForms,
+              ),
+              CatchSelectionMenuItem(
+                value: HostCustomerHistoryKind.events,
+                label: context.l10n.hostNavigationEvents,
+              ),
+              CatchSelectionMenuItem(
+                value: HostCustomerHistoryKind.messages,
+                label: context.l10n.hostCustomersMessageHistory,
+              ),
+            ],
+          ),
         ),
       ),
       gapH16,
@@ -414,25 +475,39 @@ class HostCustomerTimelineSection extends StatelessWidget {
           },
         )
         .toList(growable: false);
+    final coverage = customer.timelineCoverage;
+    final selectedCoverage = switch (filter) {
+      HostCustomerHistoryKind.all => [
+        coverage.forms,
+        coverage.events,
+        coverage.sends,
+        coverage.replies,
+      ],
+      HostCustomerHistoryKind.forms => [coverage.forms],
+      HostCustomerHistoryKind.events => [coverage.events],
+      HostCustomerHistoryKind.messages => [coverage.sends, coverage.replies],
+    };
     final hasGap =
         customer.timelineTruncated ||
-        customer.timelineCoverage.forms !=
-            HostCustomerTimelineCoverageValue.exact ||
-        customer.timelineCoverage.events !=
-            HostCustomerTimelineCoverageValue.exact ||
-        customer.timelineCoverage.sends !=
-            HostCustomerTimelineCoverageValue.exact ||
-        customer.timelineCoverage.replies ==
-            HostCustomerTimelineCoverageValue.unavailable;
+        selectedCoverage.any(
+          (value) => value != HostCustomerTimelineCoverageValue.exact,
+        );
+    final showMessageBoundary =
+        filter == HostCustomerHistoryKind.all ||
+        filter == HostCustomerHistoryKind.messages;
     return CatchSection.plain(
       key: const ValueKey('host-customer-timeline'),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           if (entries.isEmpty)
-            Text(
-              context.l10n.hostCustomersTimelineEmpty,
-              style: CatchTextStyles.supporting(context),
+            CatchSection.content(
+              child: Text(
+                hasGap
+                    ? context.l10n.hostCustomersTimelineUnavailable
+                    : context.l10n.hostCustomersTimelineEmpty,
+                style: CatchTextStyles.supporting(context),
+              ),
             )
           else
             _HostCustomerTimelineRows(
@@ -442,23 +517,24 @@ class HostCustomerTimelineSection extends StatelessWidget {
               onOpenCatchThread: onOpenCatchThread,
               onOpenWhatsappThread: onOpenWhatsappThread,
             ),
-          if (hasGap) ...[
+          if (hasGap && entries.isNotEmpty) ...[
             gapH12,
-            CatchNotice(
-              dismissLabel: context.l10n.coreCatchNoticeTooltipDismiss,
-              notice: CatchNoticeData(
-                id: 'host.customer.timeline.partial',
-                title: context.l10n.hostCustomersTimelinePartialTitle,
-                message: context.l10n.hostCustomersTimelinePartialBody,
-                tone: CatchNoticeTone.warning,
+            CatchSection.content(
+              child: Text(
+                context.l10n.hostCustomersTimelinePartialBody,
+                style: CatchTextStyles.recordContext(context),
               ),
             ),
           ],
-          gapH12,
-          Text(
-            context.l10n.hostCustomersTimelineReplyBoundary,
-            style: CatchTextStyles.recordContext(context),
-          ),
+          if (showMessageBoundary) ...[
+            gapH12,
+            CatchSection.content(
+              child: Text(
+                context.l10n.hostCustomersTimelineReplyBoundary,
+                style: CatchTextStyles.recordContext(context),
+              ),
+            ),
+          ],
         ],
       ),
     );
@@ -498,7 +574,7 @@ class _HostCustomerTimelineRows extends StatelessWidget {
       children: [
         for (final day in days.entries) ...[
           if (day.key != days.keys.first) gapH24,
-          CatchSection.containedRows(
+          CatchSection.rows(
             title: MaterialLocalizations.of(context).formatFullDate(day.key),
             children: [
               for (final entry in day.value)

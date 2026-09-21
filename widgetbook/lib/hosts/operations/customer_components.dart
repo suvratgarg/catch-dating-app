@@ -54,7 +54,6 @@ Widget hostCustomerDetailsSectionComponentStates(BuildContext context) =>
         customer: customer,
         onCall: () {},
         onEmail: () {},
-        onOpenFormResponse: (_) {},
       ),
     );
 
@@ -165,7 +164,6 @@ Widget hostCustomerDetailTabsComponentStates(
       customer: customer,
       onCall: () {},
       onEmail: () {},
-      onOpenFormResponse: (_) {},
     ),
     memory: HostCustomerMemoryPreview(customer: customer, onOpenMemory: () {}),
     history: HostCustomerTimelineSection(

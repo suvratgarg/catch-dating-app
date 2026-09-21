@@ -74,7 +74,7 @@ void _registerHostOperationsCustomerDetailTests() {
     expect(find.text('Reload customer'), findsOneWidget);
     expect(find.text('Organizer unavailable'), findsNothing);
     expect(
-      tester.widget<CatchTopBar>(find.byType(CatchTopBar)).title,
+      tester.widget<CatchTopBar>(find.byType(CatchTopBar)).identityName,
       'Ananya Rao',
     );
   });
@@ -499,12 +499,13 @@ void _registerHostOperationsCustomerDetailTests() {
       ),
     );
 
-    expect(find.text('NOTES & TAGS'), findsOneWidget);
+    expect(find.text('NOTES'), findsOneWidget);
     expect(find.text('Brings friends'), findsOneWidget);
     final manualTagsField = tester.widget<CatchField>(
       find.byKey(const ValueKey('host-customer-edit-tags')),
     );
-    expect(manualTagsField.title, 'Brings friends');
+    expect(manualTagsField.title, AppLocalizationsEn().hostCustomersEditTags);
+    expect(manualTagsField.body, 'Brings friends');
     expect(manualTagsField.onTap, isNotNull);
     expect(find.text('Introduced three friends.'), findsOneWidget);
     expect(find.textContaining('You ·'), findsOneWidget);
@@ -547,10 +548,10 @@ void _registerHostOperationsCustomerDetailTests() {
       ),
       findsOneWidget,
     );
-    expect(find.byType(HostCustomerIdentityCard), findsOneWidget);
+    expect(find.byType(HostCustomerIdentityCard), findsNothing);
     expect(find.byType(HostCustomerMemoryPreview), findsOneWidget);
     expect(find.byType(HostCustomerDetailOverview), findsOneWidget);
-    expect(find.byType(HostCustomerReachSection), findsOneWidget);
+    expect(find.byType(HostCustomerReachSection), findsNothing);
     expect(find.byType(HostCustomerRecentEvents), findsOneWidget);
     expect(find.byType(HostCustomerTimelineSection), findsNothing);
     expect(find.byKey(const ValueKey('host-customer-controls')), findsNothing);
@@ -582,3 +583,59 @@ void _expectAudienceStateOwner(
     CatchPageBodyMode.standard,
   );
 }
+
+// A real overview intentionally omits operational history; the shared fixture
+// otherwise includes it. Keep missing, unavailable and known-empty distinct.
+HostAudienceContactDetail _customerDetailPresentationFixture({
+  bool historyLoaded = true,
+  List<HostCustomerTimelineEntry>? timeline,
+  HostCustomerTimelineCoverageValue formsCoverage =
+      HostCustomerTimelineCoverageValue.exact,
+  List<HostCustomerNote>? notes,
+  HostCustomerHistoryCoverage notesCoverage = HostCustomerHistoryCoverage.exact,
+}) {
+  final base = _customerDetail();
+  return HostAudienceContactDetail(
+    organizerId: base.organizerId,
+    contactId: base.contactId,
+    displayName: base.displayName,
+    sourceDisplayName: base.sourceDisplayName,
+    displayNameOverride: base.displayNameOverride,
+    phoneE164: '+919876543210',
+    email: 'ananya@example.com',
+    linkedAccount: base.linkedAccount,
+    identityState: base.identityState,
+    identityConfidence: base.identityConfidence,
+    contactDetailsEditable: base.contactDetailsEditable,
+    ambiguousCandidateCount: base.ambiguousCandidateCount,
+    whatsappAdminSuppressed: base.whatsappAdminSuppressed,
+    whatsappPermission: base.whatsappPermission,
+    origins: base.origins,
+    originsTruncated: base.originsTruncated,
+    traits: base.traits,
+    revenue: base.revenue,
+    events: base.events,
+    eventsTruncated: base.eventsTruncated,
+    manualTags: base.manualTags,
+    manualTagVocabulary: base.manualTagVocabulary,
+    notes: notes ?? base.notes,
+    notesCoverage: notesCoverage,
+    historyLoaded: historyLoaded,
+    timeline: timeline ?? base.timeline,
+    timelineTruncated: false,
+    timelineCoverage: HostCustomerTimelineCoverage(
+      forms: formsCoverage,
+      events: base.timelineCoverage.events,
+      sends: base.timelineCoverage.sends,
+      replies: base.timelineCoverage.replies,
+    ),
+    revision: base.revision,
+  );
+}
+
+FirebaseFunctions _customerDetailsFunctions() => _ManualHandoffTestFunctions([])
+  ..responses['listOrganizerApplications'] = {
+    'organizerId': 'organizer-1',
+    'applications': <Object?>[],
+    'nextCursor': null,
+  };

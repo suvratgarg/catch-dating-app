@@ -16023,7 +16023,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     ),
     providerOverrides: _audienceCapturePersonOverrides(),
     includeOverlays: true,
-    drive: (tester) => _audienceCaptureOpenTab(tester, 'Notes & tags'),
+    drive: (tester) => _audienceCaptureOpenTab(tester, 'Notes'),
   ),
   ScreenCaptureEntry(
     id: 'host_person_history',

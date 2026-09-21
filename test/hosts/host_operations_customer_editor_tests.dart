@@ -210,7 +210,7 @@ void _registerHostOperationsCustomerEditorTests() {
     );
     expect(
       find.text(
-        'Linked Catch profiles stay private. Phone and email can’t be edited here.',
+        'Phone and email come from the source record and can’t be edited here.',
       ),
       findsOne,
     );

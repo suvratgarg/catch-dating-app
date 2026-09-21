@@ -1069,6 +1069,36 @@ requirements. Event staff never inherit cross-event CRM. Notes and
 manual tags are source/UI capabilities, not proof of deployment or user
 availability.
 
+### Customer record presentation
+
+Customer Details is an organizer-scoped record, with the person's name in the
+identity app bar and four peer views: Overview, Details, Notes, and History.
+Ordinary information uses full-width row sections with one shared readable
+gutter. Empty, loading and populated sections keep the same geometry; neither
+an empty state nor an individual fact creates a card.
+
+- Overview shows attendance once, including expected, cancelled, no-show and
+  imported counts, followed by currency-separated recorded spend, recent event
+  activity and a private-note preview. The existing attendance rate is attended
+  divided by expected noncancelled participation, including future events; it
+  is not a score of reliability. Missing spend is not zero lifetime spend.
+- Details owns contact methods and editing, channel availability and the
+  organizer's personal-WhatsApp pause, form responses, applications and their
+  dated permitted answers, then record sources. Responses load on entering
+  Details; an unloaded or failed history must never become an empty-submission
+  claim. Contact editability does not establish verified identity.
+- Notes owns organizer tags and author-stamped notes. Unavailable notes are
+  distinct from no notes. Editing these facts cannot alter participant consent.
+- History loads independently and filters dated event, form and recorded
+  messaging activity. A personal WhatsApp launch does not prove a send or reply.
+  Merge history retains its explicit, reversible action.
+
+Messaging stays in the identity bar when a server-returned route is available;
+removal remains in the action menu. Profile attributes outside this DTO remain
+private; submitted application answers are dated snapshots, not inferred
+current customer profile fields. These rules and behavior tests take precedence
+over old golden images; new captures provide visual review evidence.
+
 ### Contact identity and resolution
 
 An organizer contact is organizer-scoped. It represents "the person this

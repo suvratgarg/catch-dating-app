@@ -183,7 +183,7 @@ widget or feature-owned typography/geometry is valid.
 Toolbar navigation, icon actions, menu triggers and collapsed search share a
 44-point visual extent, a platform-sized hit target, centered alignment and
 an 8-point peer gap. Their resting border is `CatchBorder.interactive`; a root
-primary action does not drop its outline. `CatchToolbarControl.selector` owns
+primary action does not drop its outline. `CatchToolbarButton.selector` owns
 city/current-value controls, and `.action` owns labelled wide-screen commands.
 They use the same outline and 44-point minimum height; accessible text may grow
 the labelled control vertically. Its measured platform text determines both

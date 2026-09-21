@@ -663,7 +663,7 @@
           "symbol": "_HostCustomerDetailScreenState",
           "family": "pushed-route",
           "expression": "CatchRouteScaffold",
-          "bodyGeometry": "standard",
+          "bodyGeometry": "full-bleed",
           "topEdge": "route-chrome"
         },
         {

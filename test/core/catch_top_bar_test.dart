@@ -524,7 +524,7 @@ void main() {
     );
 
     expect(
-      find.widgetWithText(CatchToolbarControl, 'Create event'),
+      find.widgetWithText(CatchToolbarButton, 'Create event'),
       findsOneWidget,
     );
     expect(find.byType(CatchIconAction), findsNothing);

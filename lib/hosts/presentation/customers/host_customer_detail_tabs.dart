@@ -45,14 +45,13 @@ class _HostCustomerDetailTabsState extends State<HostCustomerDetailTabs> {
           ),
           CatchOption(
             value: _HostCustomerDetailView.memory,
-            label: context.l10n.hostCustomersMemory,
+            label: context.l10n.hostCustomersNotes,
           ),
           CatchOption(
             value: _HostCustomerDetailView.history,
             label: context.l10n.hostCustomersTimeline,
           ),
         ],
-        contentPadding: EdgeInsets.zero,
       ),
       gapH20,
       switch (selected) {

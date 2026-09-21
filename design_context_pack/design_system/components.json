@@ -9025,8 +9025,10 @@
           },
           {
             "id": "catch.top_bar.labelled_control",
-            "symbol": "CatchToolbarControl",
-            "file": "packages/catch_ui/lib/src/components/catch_toolbar_control.dart",
+            "symbol": "CatchToolbarButton",
+            "level": "L3",
+            "roleNoun": "Button",
+            "file": "packages/catch_ui/lib/src/components/catch_toolbar_button.dart",
             "summary": "Closed selector and labelled action recipes; shared toolbar outline, platform text measurement and accessible height.",
             "states": [
               "selector",
@@ -9040,6 +9042,14 @@
               "parentConceptId": "catch.top_bar",
               "qualifier": "recipe",
               "decisionRef": "contract-family:catch.top_bar"
+            },
+            "naming": {
+              "useCase": "Toolbar",
+              "comparedWith": [
+                "catch.top_bar",
+                "catch.button"
+              ],
+              "reason": "The parent TopBar owns header composition. This button owns its closed labelled-action and current-value-selector recipes, measured platform typography, toolbar outline and accessible target; the general Button permits body-action variants that are not valid in this slot."
             }
           },
           {
@@ -9073,7 +9083,7 @@
           {
             "id": "catch.top_bar.control_scope",
             "symbol": "CatchToolbarScope",
-            "file": "packages/catch_ui/lib/src/components/catch_toolbar_metrics.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_toolbar_scope.dart",
             "summary": "Canonical control boundary and closed root-selector reflow scope; communicates the available-lane policy to descendants.",
             "states": [],
             "governance": {
@@ -9082,6 +9092,15 @@
               "parentConceptId": "catch.top_bar",
               "qualifier": "layout",
               "decisionRef": "contract-family:catch.top_bar"
+            },
+            "level": "L3",
+            "roleNoun": "Scope",
+            "naming": {
+              "useCase": "Toolbar",
+              "comparedWith": [
+                "catch.top_bar"
+              ],
+              "reason": "Publishes the parent TopBar control boundary and selector-row reflow policy to descendants. It carries inherited layout context; it does not render a control or choose navigation."
             }
           }
         ],

@@ -63,13 +63,6 @@ class HostCustomerDetailBody extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        HostCustomerIdentityCard(
-          customer: customer,
-          onSave: onSaveDetails,
-          showName: false,
-          showContacts: false,
-        ),
-        gapH12,
         HostCustomerDetailTabs(
           overviewBuilder: (openMemory) => CatchSectionList(
             emptyStateOmitted: true,
@@ -86,7 +79,19 @@ class HostCustomerDetailBody extends StatelessWidget {
                 customer: customer,
                 onOpenEvent: onOpenEvent,
               ),
+            ],
+          ),
+          details: CatchSectionList(
+            emptyStateOmitted: true,
+            children: [
+              HostCustomerDetailsSection(
+                customer: customer,
+                onCall: onCall,
+                onEmail: onEmail,
+                onEdit: () => _editDetails(context),
+              ),
               HostCustomerReachSection(
+                includeSources: false,
                 customer: customer,
                 communicationPlan: communicationPlan,
                 communicationPlanLoading: communicationPlanLoading,
@@ -102,22 +107,21 @@ class HostCustomerDetailBody extends StatelessWidget {
                     ? onReviewDuplicates
                     : null,
               ),
-            ],
-          ),
-          details: CatchSectionList(
-            emptyStateOmitted: true,
-            children: [
-              HostCustomerDetailsSection(
+              _HostCustomerSubmissionsPanel(
                 customer: customer,
-                onCall: onCall,
-                onEmail: onEmail,
-                onOpenFormResponse: onOpenFormResponse,
+                onOpen: onOpenFormResponse,
               ),
               HostCustomerApplicationsPanel(
                 organizerId: customer.organizerId,
                 contactId: customer.contactId,
                 onOpenApplication: onOpenApplication,
                 onOpenContact: onOpenContact,
+              ),
+              HostCustomerSourcesSection(
+                customer: customer,
+                onReviewDuplicates: customer.ambiguousCandidateCount > 0
+                    ? onReviewDuplicates
+                    : null,
               ),
             ],
           ),
@@ -145,6 +149,28 @@ class HostCustomerDetailBody extends StatelessWidget {
       ],
     );
   }
+
+  Future<void> _editDetails(BuildContext context) => showCatchBottomSheet<void>(
+    context: context,
+    builder: (sheetContext) => CatchSheet(
+      title: context.l10n.hostCustomersEditDetails,
+      mode: CatchSheetMode.scrollable,
+      keyboardSafe: true,
+      child: HostCustomerIdentityCard(
+        customer: customer,
+        initiallyEditing: true,
+        onCancel: () => Navigator.of(sheetContext).pop(),
+        onSave: ({required displayName, phoneE164, email}) async {
+          await onSaveDetails(
+            displayName: displayName,
+            phoneE164: phoneE164,
+            email: email,
+          );
+          if (sheetContext.mounted) Navigator.of(sheetContext).pop();
+        },
+      ),
+    ),
+  );
 }
 
 class HostCustomerDetailOverview extends StatelessWidget {
@@ -158,84 +184,20 @@ class HostCustomerDetailOverview extends StatelessWidget {
   final VoidCallback onOpenRevenue;
 
   @override
-  Widget build(BuildContext context) {
-    final largeText =
-        MediaQuery.textScalerOf(context).scale(1) >=
-        CatchRecordTokens.largeTextBreakpoint;
-    final metrics = <Widget>[
-      CatchMetricTile(
-        value: '${customer.traits.attendedEventCount}',
-        label: context.l10n.hostsHostAudienceAttended,
+  Widget build(BuildContext context) => CatchSectionList(
+    emptyStateOmitted: true,
+    children: [
+      CatchSection.content(
+        title: context.l10n.hostCustomersDetailAttendance,
+        child: HostCustomerAttendanceCard(customer: customer),
       ),
-      if (customer.revenue.amounts.isEmpty ||
-          customer.revenue.coverage == HostCustomerRevenueCoverage.unavailable)
-        CatchMetricTile(
-          value: '—',
-          label: context.l10n.hostCustomersDetailRevenue,
+      CatchSection.content(
+        title: context.l10n.hostCustomersDetailRevenue,
+        child: HostCustomerRevenueCard(
+          revenue: customer.revenue,
+          onOpen: onOpenRevenue,
         ),
-      if (customer.revenue.coverage != HostCustomerRevenueCoverage.unavailable)
-        for (final amount in customer.revenue.amounts)
-          CatchMetricTile(
-            value: NumberFormat.simpleCurrency(
-              name: amount.currency,
-            ).format(amount.amountMinor / 100),
-            label:
-                '${context.l10n.hostCustomersDetailRevenue} · ${amount.currency}',
-          ),
-    ];
-    return CatchSection.divided(
-      first: true,
-      title: context.l10n.hostAudienceAtAGlance,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          if (largeText)
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                for (final entry in metrics.indexed) ...[
-                  if (entry.$1 > 0) gapH16,
-                  entry.$2,
-                ],
-              ],
-            )
-          else
-            Wrap(
-              spacing: CatchSpacing.s8,
-              runSpacing: CatchSpacing.s4,
-              children: metrics,
-            ),
-          if (customer.revenue.coverage ==
-              HostCustomerRevenueCoverage.unavailable) ...[
-            gapH8,
-            Text(
-              context.l10n.hostCustomersDetailRevenueUnavailable,
-              style: CatchTextStyles.supporting(context),
-            ),
-          ],
-          if (customer.revenue.coverage ==
-              HostCustomerRevenueCoverage.partial) ...[
-            gapH8,
-            Text(
-              context.l10n.hostCustomersDetailRevenuePartial,
-              style: CatchTextStyles.recordContext(context),
-            ),
-          ],
-          gapH16,
-          CatchField.control(
-            copy: catchFieldCopy(context.l10n),
-            title: context.l10n.hostCustomersDetailAttendance,
-            contractExemption:
-                'Read-only disclosure of derived attendance metrics; no scalar value is persisted.',
-            child: HostCustomerAttendanceCard(customer: customer),
-          ),
-          CatchButton.command(
-            key: const ValueKey('host-customer-revenue-breakdown'),
-            label: context.l10n.hostCustomersViewBreakdown,
-            onPressed: onOpenRevenue,
-          ),
-        ],
       ),
-    );
-  }
+    ],
+  );
 }

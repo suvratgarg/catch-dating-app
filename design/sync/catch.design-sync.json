@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "ae4044f020989a49e539abda0b25202f8d1304a689e3a8a50c12f52398049c8f",
+  "sourceDigest": "a8b9336a422cb9269573c1178df9d183bba0dc486c189b5bd6a2748eb8b8f187",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "ae4044f020989a49e539abda0b25202f8d1304a689e3a8a50c12f52398049c8f",
-    "contractDigest": "ae4044f020989a49e539abda0b25202f8d1304a689e3a8a50c12f52398049c8f"
+    "digest": "a8b9336a422cb9269573c1178df9d183bba0dc486c189b5bd6a2748eb8b8f187",
+    "contractDigest": "a8b9336a422cb9269573c1178df9d183bba0dc486c189b5bd6a2748eb8b8f187"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "7e340b04973ea7aaf439921c9ddb9ac9e9c3a69859c7a73163947680f2fb7e85",
+    "handoffRequestDigest": "865884c46445519f512c89f373d779df759a585a86ab28dfb171ca5f8e1b9b03",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -83,15 +83,15 @@
   },
   "metrics": {
     "contractCount": 68,
-    "publicClassCount": 226,
+    "publicClassCount": 230,
     "conceptCount": 60,
-    "memberCount": 148,
-    "membersPerConcept": 2.47,
+    "memberCount": 152,
+    "membersPerConcept": 2.53,
     "unclassifiedCount": 0,
     "byConceptRole": {
       "composition": 3,
       "concept": 60,
-      "member": 148,
+      "member": 152,
       "screen": 15
     },
     "collisionCount": 29,
@@ -397,6 +397,10 @@
         "symbols": [
           "CatchCollapsedHeaderTitle",
           "CatchSliverHeader",
+          "CatchToolbarButton",
+          "CatchToolbarLeading",
+          "CatchToolbarMetrics",
+          "CatchToolbarScope",
           "CatchTopBar",
           "CatchTopBarActionRow",
           "CatchTopBarNavigation",
@@ -852,7 +856,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Section",
       "claudeAllowed": true,
-      "contractDigest": "a528de732fa03944983a171ead64807274f8e6a96c9300788d1c95bf14270904"
+      "contractDigest": "bff70b5d44e8846cd50101642278f30fd08d7cea2b358f887a5791387d94de28"
     },
     {
       "contractId": "catch.skeleton",
@@ -1388,7 +1392,7 @@
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
       "figmaExpectedPropertyCount": 7,
-      "figmaExpectedPropertyDigest": "83ae281c4709b85b1f85b82b05a0b13139b2d18f3d95d824178873677423172c",
+      "figmaExpectedPropertyDigest": "e4754fd0ca64da2a8313e049a25c197939f3deb2f78046905df29153820d4a69",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
@@ -1396,7 +1400,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "TopBar",
       "claudeAllowed": true,
-      "contractDigest": "ec140d72b07a612af1c5855a5fb226bbe48fd08cf822ab97d1a543d0b59610bf"
+      "contractDigest": "dec5e7cce0a9fcc5dba8b410c2762cd1d31abcd171ab6e38d421b24b100a9faf"
     },
     {
       "contractId": "catch.privacy_badge",

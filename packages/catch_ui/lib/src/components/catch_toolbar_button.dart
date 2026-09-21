@@ -6,9 +6,9 @@ import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:catch_ui/src/primitives/catch_surface.dart';
 import 'package:flutter/material.dart';
 
-/// Current-value selector in app chrome. Geometry and paint are not caller inputs.
-class CatchToolbarControl extends StatefulWidget {
-  const CatchToolbarControl.action({
+/// Labelled action or current-value selector button in canonical app chrome.
+class CatchToolbarButton extends StatefulWidget {
+  const CatchToolbarButton.action({
     super.key,
     required this.label,
     required this.semanticLabel,
@@ -16,7 +16,7 @@ class CatchToolbarControl extends StatefulWidget {
     required this.icon,
     required this.onPressed,
   }) : expanded = null;
-  const CatchToolbarControl.selector({
+  const CatchToolbarButton.selector({
     super.key,
     required this.label,
     required this.semanticLabel,
@@ -68,10 +68,10 @@ class CatchToolbarControl extends StatefulWidget {
   }
 
   @override
-  State<CatchToolbarControl> createState() => _CatchToolbarControlState();
+  State<CatchToolbarButton> createState() => _CatchToolbarButtonState();
 }
 
-class _CatchToolbarControlState extends State<CatchToolbarControl> {
+class _CatchToolbarButtonState extends State<CatchToolbarButton> {
   bool _focused = false;
   bool _hovered = false;
   bool _pressed = false;
@@ -84,7 +84,7 @@ class _CatchToolbarControlState extends State<CatchToolbarControl> {
       context,
       color: enabled ? t.ink : t.ink3,
     );
-    final lineHeight = CatchToolbarControl._labelSize(
+    final lineHeight = CatchToolbarButton._labelSize(
       context,
       widget.label,
     ).height;

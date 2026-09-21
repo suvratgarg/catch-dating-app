@@ -6,8 +6,9 @@ import 'package:catch_ui/src/components/catch_button.dart';
 import 'package:catch_ui/src/components/catch_icon_action.dart';
 import 'package:catch_ui/src/components/catch_search_field.dart';
 import 'package:catch_ui/src/components/catch_search_field_status.dart';
-import 'package:catch_ui/src/components/catch_toolbar_control.dart';
+import 'package:catch_ui/src/components/catch_toolbar_button.dart';
 import 'package:catch_ui/src/components/catch_toolbar_metrics.dart';
+import 'package:catch_ui/src/components/catch_toolbar_scope.dart';
 import 'package:catch_ui/src/components/catch_top_bar_action_row.dart';
 import 'package:catch_ui/src/components/catch_top_bar_emphasis.dart';
 import 'package:catch_ui/src/components/catch_top_bar_navigation.dart';
@@ -296,7 +297,7 @@ class CatchTopBar extends StatefulWidget implements CatchScaledPreferredSize {
           ).isCompact) {
         height = math.max(
           height,
-          CatchToolbarControl.sizeFor(context, label: action.label).height,
+          CatchToolbarButton.sizeFor(context, label: action.label).height,
         );
       }
       if (action is CatchButton && action.isTextAction) {

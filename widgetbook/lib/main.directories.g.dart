@@ -3603,12 +3603,12 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CatchToolbarControl',
+            name: 'CatchToolbarButton',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
                 builder: _widgetbook_workspace_primitives_contracts_toolbar
-                    .catchToolbarControlContractStates,
+                    .catchToolbarButtonContractStates,
               ),
             ],
           ),

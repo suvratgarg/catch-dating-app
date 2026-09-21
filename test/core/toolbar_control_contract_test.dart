@@ -103,7 +103,7 @@ void main() {
           wrap(
             Align(
               alignment: Alignment.topLeft,
-              child: CatchToolbarControl.selector(
+              child: CatchToolbarButton.selector(
                 label: 'Goa',
                 semanticLabel: 'Choose city Goa',
                 tooltip: 'Choose city',
@@ -114,8 +114,8 @@ void main() {
             scale: scale,
           ),
         );
-        final finder = find.byType(CatchToolbarControl);
-        final size = CatchToolbarControl.sizeFor(
+        final finder = find.byType(CatchToolbarButton);
+        final size = CatchToolbarButton.sizeFor(
           tester.element(finder),
           label: 'Goa',
         );
@@ -233,14 +233,14 @@ void main() {
           for (final enabled in [true, false]) {
             final VoidCallback? activate = enabled ? () => taps++ : null;
             final control = selector
-                ? CatchToolbarControl.selector(
+                ? CatchToolbarButton.selector(
                     label: 'Mumbai',
                     semanticLabel: 'Choose Mumbai',
                     tooltip: 'Choose city',
                     icon: CatchIcons.locationOnOutlined,
                     onPressed: activate,
                   )
-                : CatchToolbarControl.action(
+                : CatchToolbarButton.action(
                     label: 'Create event',
                     semanticLabel: 'Create event',
                     tooltip: 'Create event',
@@ -250,7 +250,7 @@ void main() {
             await tester.pumpWidget(
               wrap(Align(alignment: Alignment.topLeft, child: control)),
             );
-            final node = tester.getSemantics(find.byType(CatchToolbarControl));
+            final node = tester.getSemantics(find.byType(CatchToolbarButton));
             expect(
               node.getSemanticsData().hasAction(SemanticsAction.tap),
               enabled,

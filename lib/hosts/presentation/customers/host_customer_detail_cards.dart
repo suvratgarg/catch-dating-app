@@ -16,6 +16,7 @@ class HostCustomerIdentityCard extends StatefulWidget {
     this.showName = true,
     this.showContacts = true,
     this.primaryAction,
+    this.onCancel,
   });
 
   final HostAudienceContactDetail customer;
@@ -24,6 +25,7 @@ class HostCustomerIdentityCard extends StatefulWidget {
   final bool showName;
   final bool showContacts;
   final Widget? primaryAction;
+  final VoidCallback? onCancel;
 
   @override
   State<HostCustomerIdentityCard> createState() =>
@@ -181,6 +183,10 @@ class _HostCustomerIdentityCardState extends State<HostCustomerIdentityCard> {
 
   void _cancelEditing() {
     if (_saving) return;
+    if (widget.onCancel case final onCancel?) {
+      onCancel();
+      return;
+    }
     _resetDraft();
     setState(() => _editing = false);
   }
@@ -310,11 +316,13 @@ class _HostCustomerIdentitySummary extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        CatchSection.containedRows(
+        CatchSection.rows(
           children: [
             CatchField.read(
               content: CatchPersonLayout(
-                name: displayName,
+                name: showName
+                    ? displayName
+                    : segmentLabel ?? context.l10n.hostCustomersContactDetails,
                 supportingText: context.l10n.hostCustomersCompactEventCount(
                   count: customer.traits.attendedEventCount,
                 ),
@@ -399,47 +407,46 @@ class HostCustomerAttendanceCard extends StatelessWidget {
       ),
       (value: attendanceRate, label: context.l10n.hostCustomersAttendanceRate),
     ];
-    final largeText =
-        MediaQuery.textScalerOf(context).scale(1) >=
-        CatchRecordTokens.largeTextBreakpoint;
-    return CatchSection.plain(
+    final segment = _hostCustomerPrimarySegment(traits.segments);
+    return Column(
       key: const ValueKey('host-customer-activity'),
-      title: context.l10n.hostCustomersDetailAttendance,
-      child: Padding(
-        padding: CatchInsets.contentVerticalCompact,
-        child: largeText
-            ? Column(
-                children: [
-                  for (final (index, item) in metrics.indexed) ...[
-                    if (index > 0) ...[gapH12, const CatchDivider(), gapH12],
-                    CatchMetricTile(
-                      value: item.value,
-                      label: item.label,
-                      center: true,
-                    ),
-                  ],
-                ],
-              )
-            : Row(
-                children: [
-                  for (final (index, item) in metrics.indexed) ...[
-                    if (index > 0)
-                      SizedBox(
-                        width: CatchStroke.hairline,
-                        height: CatchSpacing.s10,
-                        child: ColoredBox(color: CatchTokens.of(context).line),
-                      ),
-                    Expanded(
-                      child: CatchMetricTile(
-                        value: item.value,
-                        label: item.label,
-                        center: true,
-                      ),
-                    ),
-                  ],
-                ],
-              ),
-      ),
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (segment != null) ...[
+          Text(
+            _customerFilterLabel(
+              context,
+              hostCustomerFilterForAudienceSegment(segment),
+            ),
+            style: CatchTextStyles.supporting(context),
+          ),
+          gapH16,
+        ],
+        Wrap(
+          spacing: CatchSpacing.s8,
+          runSpacing: CatchSpacing.s4,
+          children: [
+            for (final item in metrics)
+              CatchMetricTile(value: item.value, label: item.label),
+          ],
+        ),
+        gapH12,
+        Text(
+          context.l10n.hostCustomersAttendanceSummary(
+            cancelled: traits.cancelledEventCount,
+            noShows: traits.noShowCount,
+            imported: traits.importedEventCount,
+          ),
+          style: CatchTextStyles.recordContext(context),
+        ),
+        if (traits.sourceCoverage != HostAudienceSourceCoverage.exact) ...[
+          gapH8,
+          Text(
+            context.l10n.hostCustomersAttendancePartial,
+            style: CatchTextStyles.recordContext(context),
+          ),
+        ],
+      ],
     );
   }
 }
@@ -450,121 +457,72 @@ class HostCustomerDetailsSection extends StatelessWidget {
     required this.customer,
     required this.onCall,
     required this.onEmail,
-    required this.onOpenFormResponse,
+    this.onEdit,
   });
-
   final HostAudienceContactDetail customer;
   final VoidCallback? onCall;
   final VoidCallback? onEmail;
-  final ValueChanged<String> onOpenFormResponse;
+  final VoidCallback? onEdit;
 
   @override
-  Widget build(BuildContext context) {
-    final forms = <String, HostCustomerFormTimelineEntry>{};
-    for (final entry
-        in customer.timeline.whereType<HostCustomerFormTimelineEntry>()) {
-      final prior = forms[entry.responseId];
-      if (prior == null || entry.occurredAt.isAfter(prior.occurredAt)) {
-        forms[entry.responseId] = entry;
-      }
-    }
-    final formRows = forms.values.toList()
-      ..sort((a, b) => b.occurredAt.compareTo(a.occurredAt));
-    final endpointContext = customer.contactDetailsEditable
-        ? context.l10n.hostCustomersUnverifiedContactDetails
-        : context.l10n.hostCustomersVerifiedDetailsManagedByCatch;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        CatchSection.fieldRows(
-          key: const ValueKey('host-customer-contact-methods'),
-          title: context.l10n.hostCustomersContactMethods,
-          footer: Text(
-            endpointContext,
-            style: CatchTextStyles.recordContext(context),
-          ),
-          children: [
-            if (customer.phoneE164 case final phone?)
-              CatchField.action(
-                copy: catchFieldCopy(context.l10n),
-                key: const ValueKey('host-customer-call'),
-                title: context.l10n.hostCustomersPhone,
-                body: phone,
-                icon: CatchIcons.phoneOutlined,
-                onTap: onCall,
+  Widget build(BuildContext context) => CatchSectionList(
+    emptyStateOmitted: true,
+    gap: CatchSpacing.s2,
+    children: [
+      CatchSection.rows(
+        key: const ValueKey('host-customer-contact-methods'),
+        title: context.l10n.hostCustomersContactMethods,
+        trailing: onEdit == null
+            ? null
+            : CatchButton.text(
+                key: const ValueKey('host-customer-edit-details'),
+                label: context.l10n.hostCustomersEditDetails,
+                onPressed: onEdit,
               ),
-            if (customer.email case final email?)
-              CatchField.action(
-                copy: catchFieldCopy(context.l10n),
-                key: const ValueKey('host-customer-email'),
-                title: context.l10n.hostCustomersEmail,
-                body: email,
-                icon: CatchIcons.emailOutlined,
-                onTap: onEmail,
-              ),
-          ],
-        ),
-        gapH24,
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            CatchSection.containedRows(
-              key: const ValueKey('host-customer-submitted-information'),
-              title: context.l10n.hostCustomersSubmittedInformation,
-              children: formRows.isEmpty
-                  ? [
-                      CatchField.read(
-                        copy: catchFieldCopy(context.l10n),
-                        body: context.l10n.hostCustomersNoSubmittedInformation,
-                        icon: CatchIcons.tabForms,
-                      ),
-                    ]
-                  : [
-                      for (final entry in formRows)
-                        CatchField.navigate(
-                          key: ValueKey(
-                            'host-customer-submission-${entry.responseId}',
-                          ),
-                          onActivate: () =>
-                              onOpenFormResponse(entry.responseId),
-                          content: CatchRecordLayout(
-                            title:
-                                entry.formTitle ??
-                                context.l10n.hostCustomersTimelineFormFallback,
-                            metadata:
-                                entry.action ==
-                                    HostCustomerFormTimelineAction.withdrawn
-                                ? context.l10n
-                                      .hostCustomersTimelineFormWithdrawn(
-                                        date: AppTimeFormatters.shortDate(
-                                          entry.occurredAt,
-                                        ),
-                                      )
-                                : [
-                                    context.l10n.hostCustomersViewAnswers(
-                                      count: entry.answeredQuestionCount,
-                                    ),
-                                    AppTimeFormatters.shortDate(
-                                      entry.occurredAt,
-                                    ),
-                                  ].join(' · '),
-                            icon: CatchIcons.tabForms,
-                          ),
-                        ),
-                    ],
+        children: [
+          if (customer.phoneE164 case final phone?)
+            CatchField.action(
+              copy: catchFieldCopy(context.l10n),
+              key: const ValueKey('host-customer-call'),
+              title: context.l10n.hostCustomersPhone,
+              body: phone,
+              icon: CatchIcons.phoneOutlined,
+              onTap: onCall,
             ),
-            if (customer.timelineCoverage.forms !=
-                    HostCustomerTimelineCoverageValue.exact ||
-                customer.timelineTruncated)
-              Text(
-                context.l10n.hostCustomersTimelinePartialBody,
-                style: CatchTextStyles.recordContext(context),
-              ),
-          ],
+          if (customer.email case final email?)
+            CatchField.action(
+              copy: catchFieldCopy(context.l10n),
+              key: const ValueKey('host-customer-email'),
+              title: context.l10n.hostCustomersEmail,
+              body: email,
+              bodyMaxLines: 4,
+              icon: CatchIcons.emailOutlined,
+              onTap: onEmail,
+            ),
+          CatchField.read(
+            copy: catchFieldCopy(context.l10n),
+            title: context.l10n.hostCustomersAccountLink,
+            body: customer.identityState == HostAudienceIdentityState.ambiguous
+                ? context.l10n.hostCustomersAccountNeedsReview
+                : customer.linkedAccount && customer.isIdentityVerified
+                ? context.l10n.hostCustomersAccountVerified
+                : context.l10n.hostCustomersAccountNotVerified,
+            bodyMaxLines: 4,
+          ),
+        ],
+      ),
+      CatchSection.content(
+        child: Text(
+          customer.phoneE164 == null && customer.email == null
+              ? context.l10n.hostCustomersNoContactMethods
+              : customer.contactDetailsEditable
+              ? context.l10n.hostCustomersUnverifiedContactDetails
+              : context.l10n.hostCustomersVerifiedDetailsManagedByCatch,
+          style: CatchTextStyles.recordContext(context),
         ),
-      ],
-    );
-  }
+      ),
+    ],
+  );
 }
 
 class HostCustomerRecentEvents extends StatelessWidget {
@@ -579,17 +537,14 @@ class HostCustomerRecentEvents extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final events =
-        customer.events
-            .where((event) => event.checkedIn || event.status == 'attended')
-            .toList()
-          ..sort(
-            (a, b) => (b.eventStartAt ?? DateTime(0)).compareTo(
-              a.eventStartAt ?? DateTime(0),
-            ),
-          );
+    final events = customer.events.toList()
+      ..sort(
+        (a, b) => (b.eventStartAt ?? DateTime(0)).compareTo(
+          a.eventStartAt ?? DateTime(0),
+        ),
+      );
     if (events.isEmpty) return const SizedBox.shrink();
-    return CatchSection.containedRows(
+    return CatchSection.rows(
       key: const ValueKey('host-customer-recent-events'),
       title: context.l10n.hostCustomersRecentEvents,
       children: [
@@ -602,7 +557,9 @@ class HostCustomerRecentEvents extends StatelessWidget {
               metadata: [
                 if (event.eventStartAt case final date?)
                   AppTimeFormatters.dateTime(date),
-                context.l10n.hostsHostAudienceAttended,
+                context.l10n.hostCustomersTimelineEventStatus(
+                  status: event.checkedIn ? 'checkedIn' : event.status,
+                ),
               ].join(' · '),
               icon: CatchIcons.tabEvents,
             ),
@@ -624,7 +581,6 @@ class HostCustomerRevenueCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => CatchSection.plain(
-    title: context.l10n.hostCustomersDetailRevenue,
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [

@@ -20,7 +20,7 @@ class ExploreCityPicker extends StatefulWidget implements CatchToolbarLeading {
   final ExploreCityPickerPresentation presentation;
 
   @override
-  Size toolbarSizeFor(BuildContext context) => CatchToolbarControl.sizeFor(
+  Size toolbarSizeFor(BuildContext context) => CatchToolbarButton.sizeFor(
     context,
     label: presentation == ExploreCityPickerPresentation.scopeLabel
         ? ExploreCityTriggerState.from(
@@ -114,7 +114,7 @@ class CityTrigger extends StatelessWidget {
             ? double.infinity
             : 132,
       ),
-      child: CatchToolbarControl.selector(
+      child: CatchToolbarButton.selector(
         label: presentation == ExploreCityPickerPresentation.scopeLabel
             ? state.scopeLabel
             : city.label,
