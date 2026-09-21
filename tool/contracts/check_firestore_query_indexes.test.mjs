@@ -102,6 +102,62 @@ test("single-field vector indexes are not classified as built-in indexes", () =>
   assert.deepEqual(errors, []);
 });
 
+test("known-bad duplicate composite index is detected", () => {
+  const duplicate = {
+    collectionGroup: "organizerFormResponses",
+    queryScope: "COLLECTION",
+    fields: [
+      {fieldPath: "organizerId", mode: "ASCENDING"},
+      {fieldPath: "submittedAt", mode: "ASCENDING"},
+      {fieldPath: "__name__", mode: "ASCENDING"},
+    ],
+  };
+  const result = validateContracts({
+    sources: [],
+    indexConfig: {indexes: [duplicate, structuredClone(duplicate)]},
+  });
+  assert.deepEqual(result.errors, [
+    "firestore.indexes.json: duplicate composite index " +
+      "organizerFormResponses at entries 1 and 2; " +
+      "declare each deployable index only once",
+  ]);
+});
+
+test("duplicate detection shares deployment normalization for aliases and implicit name", () => {
+  const original = indexConfig.indexes[0];
+  const equivalent = {
+    ...original,
+    queryScope: "COLLECTION",
+    apiScope: "ANY_API",
+    fields: [
+      ...original.fields.map(({fieldPath, mode}) => ({fieldPath, order: mode})),
+      {fieldPath: "__name__", order: "ASCENDING"},
+    ],
+  };
+  assert.match(
+    validateConfiguredIndexes({indexes: [original, equivalent]}).join("\n"),
+    /duplicate composite index events at entries 1 and 2/u
+  );
+});
+
+test("distinct index scopes, field order, direction and vector dimensions remain valid", () => {
+  const original = indexConfig.indexes[0];
+  const indexes = [
+    original,
+    {...original, queryScope: "COLLECTION_GROUP"},
+    {...original, apiScope: "DATASTORE_MODE_API"},
+    {...original, fields: [...original.fields].reverse()},
+    {...original, fields: [
+      original.fields[0], {fieldPath: "startTime", order: "DESCENDING"},
+    ]},
+    ...[128, 256].map((dimension) => ({
+      collectionGroup: "profiles",
+      fields: [{fieldPath: "embedding", vectorConfig: {dimension}}],
+    })),
+  ];
+  assert.deepEqual(validateConfiguredIndexes({indexes}), []);
+});
+
 test("contract parser preserves ordered and array index modes", () => {
   const source =
     "// firestore-index: events " +

@@ -1018,7 +1018,7 @@
         "tool/contracts/check_firestore_query_indexes.test.mjs",
         "tool/firebase/sanitize_firestore_indexes_for_deploy.test.mjs"
       ],
-      "description": "Removes only obsolete, collection-scoped, non-vector one-field composite declarations from a verified Firebase deploy copy after current source proves the exact declaration was retired and no matching field override exists.",
+      "description": "Normalizes only the verified Firebase deploy copy: removes obsolete collection-scoped non-vector one-field declarations after retirement and field-override checks, and removes repeated identical complete index definitions while preserving their first occurrence.",
       "checks": [
         "node --check tool/firebase/sanitize_firestore_indexes_for_deploy.mjs",
         "node --test tool/firebase/sanitize_firestore_indexes_for_deploy.test.mjs"
@@ -1030,7 +1030,9 @@
         "contains": [
           "an obsolete redundant declaration is removed from only the deploy copy",
           "a declaration still present in current source is never removed",
-          "field overrides fail closed instead of assuming a built-in index"
+          "field overrides fail closed instead of assuming a built-in index",
+          "identical historical composite duplicates are removed only from the deploy copy",
+          "deduplication retains definitions that differ in any property or field order"
         ]
       }
     },
@@ -2467,7 +2469,7 @@
       "command": "node tool/contracts/check_firestore_query_indexes.mjs",
       "safety": "local-readonly",
       "status": "active",
-      "description": "Checks repository-owned composite Firestore query contracts against firestore.indexes.json, rejects uncontracted composite query builders, and blocks non-deployable single-field plus __name__ pseudo-composites.",
+      "description": "Checks repository-owned composite Firestore query contracts against firestore.indexes.json, rejects uncontracted composite query builders, and blocks duplicate composite definitions and non-deployable single-field plus __name__ pseudo-composites.",
       "checks": [
         "node --check tool/contracts/check_firestore_query_indexes.mjs",
         "node --test tool/contracts/check_firestore_query_indexes.test.mjs",
@@ -2483,7 +2485,8 @@
         "contains": [
           "known-bad missing composite index is detected",
           "known-bad uncontracted composite query builder is detected",
-          "known-bad unnecessary single-field composite index is detected"
+          "known-bad unnecessary single-field composite index is detected",
+          "known-bad duplicate composite index is detected"
         ]
       }
     },

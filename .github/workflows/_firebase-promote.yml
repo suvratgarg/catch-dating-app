@@ -420,7 +420,7 @@ jobs:
             --affected-functions true > build/delivery/reverified-plan.json
           cmp build/delivery/execution-plan.json build/delivery/reverified-plan.json
 
-      - name: Remove only obsolete non-deployable indexes from the deploy copy
+      - name: Remove obsolete and identical duplicate indexes from the deploy copy
         run: |
           set -euo pipefail
           indexes=build/delivery/deploy-tree/firestore.indexes.json

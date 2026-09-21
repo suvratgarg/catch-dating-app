@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.134.0
-updated: 2026-09-16
+version: 1.134.1
+updated: 2026-09-21
 owner: recursive_audit_loop
 status: active
 ---
@@ -3036,7 +3036,10 @@ handwritten repository source, rejects composite builders with no contract,
 verifies each declared ordered field list against `firestore.indexes.json`,
 and rejects non-vector one-field composites, with or without an explicit
 `__name__`, that Firestore refuses to deploy because built-in single-field
-indexes already own those query shapes.
+indexes already own those query shapes. Duplicate composite definitions are also
+rejected using the same scope, field-order and implicit `__name__` normalization
+as the deployment readiness check, preventing duplicate creation requests in a
+single deployment.
 The check also runs inside `./tool/check_data_contract.sh` and Tools CI whenever
 repository data code or the index file changes.
 

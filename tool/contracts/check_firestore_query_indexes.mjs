@@ -2,6 +2,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
+import {indexSignature} from "../firebase/wait_firestore_indexes_ready.mjs";
 
 const toolDir = path.dirname(fileURLToPath(import.meta.url));
 const defaultRepoRoot = path.resolve(toolDir, "../..");
@@ -64,7 +65,19 @@ export function configuredIndexes(indexConfig) {
 
 export function validateConfiguredIndexes(indexConfig) {
   const errors = [];
-  for (const index of indexConfig.indexes ?? []) {
+  const seenIndexes = new Map();
+  for (const [position, index] of (indexConfig.indexes ?? []).entries()) {
+    const signature = indexSignature(index, {desired: true});
+    const previous = seenIndexes.get(signature);
+    if (previous != null) {
+      errors.push(
+        "firestore.indexes.json: duplicate composite index " +
+          `${index.collectionGroup} at entries ${previous + 1} and ${position + 1}; ` +
+          "declare each deployable index only once"
+      );
+    } else {
+      seenIndexes.set(signature, position);
+    }
     const fields = index.fields ?? [];
     const userFields = fields.filter(
       (field) => field.fieldPath !== "__name__"

@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 2.7.14
+version: 2.7.15
 updated: 2026-09-21
 owner: recursive_audit_loop
 status: active
@@ -1046,12 +1046,15 @@ package at stage one when the terminal attempt ended before checkpoint
 publication. It cannot rebuild a branch, borrow an unrelated failed run,
 broaden the authorized targets, or substitute newer workspace contents.
 The original package and its pristine extracted tree remain byte-verified and
-immutable. A separate deploy copy may remove only a non-vector one-field
-composite index that Firestore cannot create, and only after the current
-control plane no longer declares that exact index. This deterministic recovery
-normalization changes no query capability because Firestore's built-in
-single-field index already owns the shape; all other packaged bytes and stages
-remain bound to the original CI authority.
+immutable. A separate deploy copy may remove a non-vector one-field composite
+index that Firestore cannot create, and only after the current control plane no
+longer declares that exact index. It may also retain only the first occurrence
+of a repeated complete index definition whose serialized object is identical,
+preserving every property, field order and field override. Narrow field-only
+signatures cannot authorize this removal. These deterministic normalizations
+change no query capability: built-in single-field indexes own the obsolete
+shape, and one retained composite provides the repeated definition. All other
+packaged bytes and stages remain bound to the original CI authority.
 
 Before each stage, artifact promotion refreshes main and verifies both the
 pinned control-plane commit and package source remain ancestors of it. Ordinary
