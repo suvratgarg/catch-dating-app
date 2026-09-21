@@ -8701,8 +8701,8 @@
           "SliverAppBar"
         ],
         "replacementMap": {
-          "AppBar": "CatchTopBar or CatchTopBar.screen",
-          "CupertinoNavigationBar": "CatchTopBar or CatchTopBar.screen",
+          "AppBar": "CatchTopBar.route or CatchTopBar.screen",
+          "CupertinoNavigationBar": "CatchTopBar.route or CatchTopBar.screen",
           "SliverAppBar": "a registered media-hero sliver or CatchTopBar"
         },
         "steeringGroup": "control",
@@ -8719,12 +8719,12 @@
       "name": "CatchTopBar",
       "status": "active",
       "kind": "composite",
-      "summary": "One top-bar owner for compact route, identity, root-title and primary-rail chrome, with explicit navigation, size, background, boundary and height policies.",
+      "summary": "One canonical app bar with closed route, identity, root and embedded-root recipes; platform typography, title-then-context hierarchy and scaled geometry.",
       "dart": {
         "symbol": "CatchTopBar",
         "file": "packages/catch_ui/lib/src/components/catch_top_bar.dart",
         "constructors": [
-          "CatchTopBar",
+          "CatchTopBar.route",
           "CatchTopBar.identity",
           "CatchTopBar.screen",
           "CatchTopBar.primaryRail"
@@ -8761,24 +8761,6 @@
             "dartType": "String?"
           },
           {
-            "name": "eyebrow",
-            "type": "string",
-            "required": false,
-            "dartType": "String?"
-          },
-          {
-            "name": "kicker",
-            "type": "string",
-            "required": false,
-            "dartType": "String?"
-          },
-          {
-            "name": "titleMaxLines",
-            "type": "number",
-            "required": false,
-            "dartType": "int?"
-          },
-          {
             "name": "identityName",
             "type": "string",
             "required": false,
@@ -8795,29 +8777,6 @@
             "type": "callback",
             "required": false,
             "dartType": "VoidCallback?"
-          },
-          {
-            "name": "size",
-            "type": "enum",
-            "required": false,
-            "default": "automatic",
-            "dartType": "CatchTopBarSize",
-            "values": [
-              "automatic",
-              "compact",
-              "large"
-            ]
-          },
-          {
-            "name": "variant",
-            "type": "enum",
-            "required": false,
-            "default": "route",
-            "dartType": "CatchTopBarVariant",
-            "values": [
-              "route",
-              "identity"
-            ]
           },
           {
             "name": "tone",
@@ -8842,17 +8801,6 @@
             ]
           },
           {
-            "name": "mode",
-            "type": "enum",
-            "required": false,
-            "default": "fixed",
-            "dartType": "CatchTopBarMode",
-            "values": [
-              "fixed",
-              "content"
-            ]
-          },
-          {
             "name": "navigation",
             "type": "object",
             "required": false,
@@ -8863,25 +8811,11 @@
             "type": "object",
             "required": false,
             "dartType": "CatchTopBarSearch?"
-          },
-          {
-            "name": "gutter",
-            "type": "bool",
-            "required": false,
-            "default": true,
-            "dartType": "bool"
-          },
-          {
-            "name": "applySafeArea",
-            "type": "bool",
-            "required": false,
-            "default": true,
-            "dartType": "bool"
           }
         ],
         "states": [
           "compact",
-          "large",
+          "context",
           "with-leading",
           "with-action-icon",
           "with-action-text",
@@ -8896,10 +8830,6 @@
         ],
         "slots": [
           {
-            "name": "body",
-            "kind": "optional-title-widget"
-          },
-          {
             "name": "leading",
             "kind": "optional-leading-widget"
           },
@@ -8908,16 +8838,12 @@
             "kind": "optional-action-list"
           },
           {
-            "name": "trailing",
-            "kind": "optional-trailing-widget"
-          },
-          {
             "name": "footer",
             "kind": "optional-preferred-size-widget"
           }
         ],
         "tokens": [
-          "font.family.voice",
+          "font.family.function",
           "space.s0",
           "space.micro3",
           "space.micro6",
@@ -8928,17 +8854,12 @@
           "theme.light.color.line"
         ],
         "dartRoles": [
-          "CatchScreenHeader",
           "CatchTopBar.screen",
           "CatchLayout.topBarHeight",
-          "CatchLayout.topBarLargeHeight",
           "CatchIconAction.navSize",
           "CatchSearchField",
-          "CatchKickerText",
           "CatchAvatar",
           "CatchTextStyles.headline",
-          "CatchTextStyles.monoLabel",
-          "CatchTextStyles.routeTitle",
           "CatchTextStyles.titleL",
           "CatchTextStyles.appBarSubtitle",
           "CatchCollapsedHeaderTitle",
@@ -8950,35 +8871,6 @@
         ],
         "goldens": [],
         "members": [
-          {
-            "id": "catch.top_bar.screen_header_title",
-            "symbol": "CatchScreenHeader",
-            "file": "packages/catch_ui/lib/src/components/catch_screen_header.dart",
-            "summary": "Root-screen title stack for Home, Explore, Chats, Profile, Activity, and Settings using Archivo headline typography with optional eyebrow, subtitle, leading, action, material, and padding slots.",
-            "states": [
-              "title",
-              "eyebrow",
-              "subtitle",
-              "leading",
-              "actions"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.top_bar",
-              "parentConceptId": "catch.top_bar",
-              "qualifier": "adapter",
-              "decisionRef": "contract-family:catch.top_bar"
-            },
-            "level": "L3",
-            "roleNoun": "Header",
-            "naming": {
-              "useCase": "Screen",
-              "comparedWith": [
-                "catch.top_bar"
-              ],
-              "reason": "Composes a screen title, kicker, subtitle, leading and action lanes that reflow at large text; a HeaderTitle only draws the title."
-            }
-          },
           {
             "id": "catch.top_bar.collapsed_sliver_title",
             "symbol": "CatchCollapsedHeaderTitle",
@@ -9118,18 +9010,13 @@
           "catch.icon_button"
         ],
         "notes": [
-          "Use this primitive for route chrome before creating local AppBar variants.",
-          "Use CatchScreenHeader or CatchTopBar.screen for root screen headers that need the main tab Archivo title voice.",
-          "Generic compact and workspace route labels use CatchTextStyles.routeTitle; pass title, eyebrow or kicker, subtitle, and titleMaxLines instead of a local titleWidget or style.",
-          "Title-case eyebrow copy uses the untracked CatchTextStyles.monoLabel role; uppercase kicker copy uses CatchKickerText. Workspace bars pin large: false so the route-title family cannot drift.",
-          "Use CatchTopBarVariant.identity only for a registered user-authored name; controls and identity names remain in the platform function family.",
-          "Use CatchTopBarPrimaryButton when a root-screen primary action must compact from a labelled button to the canonical icon target; use CatchButton.text for native text actions, and never pass a pill-style CatchButton directly to an actions slot.",
-          "Large mode is implied by a non-empty kicker unless explicitly overridden.",
-          "Use CatchTopBar.identity for conversation or profile-backed app bars; missing identity taps are runtime availability, not a separate design variant.",
-          "Top-bar root header helpers, action wrappers, and collapsed sliver titles are typed members of catch.top_bar; use them inside route chrome rather than creating local app-bar helper widgets.",
-          "The native text-action recipe is CatchButton.text. The action row permits that explicit recipe and rejects other CatchButton recipes, while the source scanner probes both ordinary and named pill constructors.",
-          "Toolbar overflow uses CatchActionMenu directly. Its former toolbar wrapper added no behavior, defaults or styling; command limits, disabled reasons, anchoring and callback dispatch have one implementation.",
-          "CatchTopBarActionRow is the action-layout member: it owns target allocation and gaps without handling the actions themselves. The Row role names its actual responsibility."
+          "CatchTopBar is the only app-bar renderer. Use route for pushed tasks, identity for avatar-backed conversation identity, screen for a standalone root app bar, and primaryRail for embedded scroll-away root titles. Root recipes default to no navigation.",
+          "The primary line identifies the current screen or task. Optional secondary context follows underneath in the same platform function family. Event recap precedes the event name; event defaults precedes the organizer name. Identity names remain the main title when the destination itself is a person.",
+          "IBM Plex and Archivo are never app-bar typography. Eyebrow, kicker, arbitrary heading widgets, title styles, line counts, height, size, mode, padding, gutter and alignment are not caller inputs.",
+          "The component owns text scaling, wrapping, safe-area placement and control alignment. Search remains a typed capability, and all recipes preserve full text in accessibility semantics.",
+          "Use CatchTopBarPrimaryButton, CatchIconAction, CatchButton.text or CatchActionMenu for actions. Body-style pill buttons are invalid app-bar actions.",
+          "At enlarged text sizes, titles and context may wrap and actions reflow underneath. Search hides covered title/action semantics while expanded.",
+          "Golden images record reviewed output. Correct semantic and geometry rules take precedence over preserving flawed baselines; approve fresh renders before replacing affected images."
         ]
       },
       "governance": {

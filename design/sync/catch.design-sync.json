@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "updated": "2026-09-20",
+  "updated": "2026-09-21",
   "sourceOfTruth": {
     "behavior": "Flutter sources named by design/components/catch.components.json",
     "componentContracts": "design/components/catch.components.json",
@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "4c4c60ed85d808cbf08aa1e64742d669837a34236eb23a5e33ea250a91f1ad71",
+  "sourceDigest": "9340cdebbb82ed63784c1ec7338381085d9539f09479aa089524a95c48196130",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "4c4c60ed85d808cbf08aa1e64742d669837a34236eb23a5e33ea250a91f1ad71",
-    "contractDigest": "4c4c60ed85d808cbf08aa1e64742d669837a34236eb23a5e33ea250a91f1ad71"
+    "digest": "9340cdebbb82ed63784c1ec7338381085d9539f09479aa089524a95c48196130",
+    "contractDigest": "9340cdebbb82ed63784c1ec7338381085d9539f09479aa089524a95c48196130"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "1abd8b92493839e71c1300419135afb1c4a5ff6bf30cda2dcfbe8215bdab7176",
+    "handoffRequestDigest": "ae978761558b56efaa77575445022d6c41d90644a96b75be654ae9f845c6f174",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -83,15 +83,15 @@
   },
   "metrics": {
     "contractCount": 68,
-    "publicClassCount": 227,
+    "publicClassCount": 226,
     "conceptCount": 60,
-    "memberCount": 149,
-    "membersPerConcept": 2.48,
+    "memberCount": 148,
+    "membersPerConcept": 2.47,
     "unclassifiedCount": 0,
     "byConceptRole": {
       "composition": 3,
       "concept": 60,
-      "member": 149,
+      "member": 148,
       "screen": 15
     },
     "collisionCount": 29,
@@ -396,7 +396,6 @@
         "key": "catch.top_bar",
         "symbols": [
           "CatchCollapsedHeaderTitle",
-          "CatchScreenHeader",
           "CatchSliverHeader",
           "CatchTopBar",
           "CatchTopBarActionRow",
@@ -1388,8 +1387,8 @@
       "figmaVariableBindingCount": 0,
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
-      "figmaExpectedPropertyCount": 15,
-      "figmaExpectedPropertyDigest": "7ee4694059651b3a3ef0192594976c94a2c5c6d22a4745215be8237551170d92",
+      "figmaExpectedPropertyCount": 7,
+      "figmaExpectedPropertyDigest": "83ae281c4709b85b1f85b82b05a0b13139b2d18f3d95d824178873677423172c",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
@@ -1397,7 +1396,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "TopBar",
       "claudeAllowed": true,
-      "contractDigest": "abdf63561d84dcdf8eb9bc0dad4299285778877e78e51d73d5d46ede19022af9"
+      "contractDigest": "ec140d72b07a612af1c5855a5fb226bbe48fd08cf822ab97d1a543d0b59610bf"
     },
     {
       "contractId": "catch.privacy_badge",

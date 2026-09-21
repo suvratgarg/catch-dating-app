@@ -3,6 +3,7 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import '../test_pump_helpers.dart';
 
 void main() {
   for (final platform in [TargetPlatform.iOS, TargetPlatform.android]) {
@@ -106,7 +107,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
       expect(find.bySemanticsLabel('Customer communications'), findsNothing);
       expect(
         find.bySemanticsLabel('Mark every conversation as read'),
