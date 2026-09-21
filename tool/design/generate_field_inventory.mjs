@@ -129,6 +129,13 @@ const sectionSlotByParameter = Object.freeze({
   itemBuilder: "children",
   child: "child",
   leading: "leading",
+  message: "message",
+  actionLabel: "action-label",
+  onAction: "on-action",
+  actionKey: "action-key",
+  icon: "icon",
+  actionEmphasis: "action-emphasis",
+  actionStatus: "action-status",
 });
 
 const sectionSlotOrder = Object.freeze([
@@ -141,7 +148,22 @@ const sectionSlotOrder = Object.freeze([
   "children",
   "child",
   "leading",
+  "message",
+  "details",
+  "action-label",
+  "on-action",
+  "action-key",
+  "icon",
+  "action-emphasis",
+  "action-status",
+  "feedback",
 ]);
+
+function sectionSlotForParameter(variant, name) {
+  if (variant === "action" && name === "meta") return "details";
+  if (variant === "action" && name === "footer") return "feedback";
+  return sectionSlotByParameter[name];
+}
 
 export function extractCatchFieldFacades(source, {useWhen = facadeUseWhen} = {}) {
   const declarations = [
@@ -209,7 +231,7 @@ export function extractCatchSectionContract(source) {
   const observedSlots = new Set(
     declarations.flatMap((declaration) =>
       declaration.parameters
-        .map((parameter) => sectionSlotByParameter[parameter.name])
+        .map((parameter) => sectionSlotForParameter(declaration.name, parameter.name))
         .filter(Boolean),
     ),
   );

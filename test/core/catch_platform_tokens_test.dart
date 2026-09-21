@@ -51,40 +51,68 @@ void main() {
       debugDefaultTargetPlatformOverride = null;
     });
 
-    testWidgets(
-      'identity header preserves its title lane with a divider at 2x $platform',
-      (tester) async {
-        debugDefaultTargetPlatformOverride = platform;
-        addTearDown(() => debugDefaultTargetPlatformOverride = null);
-        await tester.pumpWidget(
-          MaterialApp(
-            theme: AppTheme.light,
-            builder: (context, child) => MediaQuery(
-              data: MediaQuery.of(
-                context,
-              ).copyWith(textScaler: const TextScaler.linear(2)),
-              child: child!,
-            ),
-            home: const Scaffold(
-              appBar: CatchTopBar.route(
-                title: 'Ananya Rao',
-                emphasis: CatchTopBarEmphasis.divided,
-                navigation: CatchTopBarNavigation(
-                  mode: CatchTopBarNavigationMode.none,
+    for (final identity in [false, true]) {
+      testWidgets(
+        '${identity ? 'identity' : 'route'} header reserves its scaled '
+        'title lane with a divider at 2x $platform',
+        (tester) async {
+          debugDefaultTargetPlatformOverride = platform;
+          addTearDown(() => debugDefaultTargetPlatformOverride = null);
+          await tester.pumpWidget(
+            MaterialApp(
+              theme: AppTheme.light,
+              builder: (context, child) => MediaQuery(
+                data: MediaQuery.of(
+                  context,
+                ).copyWith(textScaler: const TextScaler.linear(2)),
+                child: child!,
+              ),
+              home: Align(
+                alignment: Alignment.topLeft,
+                child: SizedBox(
+                  width: 360,
+                  child: CatchScaffold.workspace(
+                    title: identity
+                        ? const CatchTopBar.identity(
+                            identityName: 'Ananya Rao',
+                            identitySemanticLabel: 'Ananya Rao',
+                            emphasis: CatchTopBarEmphasis.divided,
+                            navigation: CatchTopBarNavigation(
+                              mode: CatchTopBarNavigationMode.none,
+                            ),
+                          )
+                        : const CatchTopBar.route(
+                            title: 'Ananya Rao',
+                            emphasis: CatchTopBarEmphasis.divided,
+                            navigation: CatchTopBarNavigation(
+                              mode: CatchTopBarNavigationMode.none,
+                            ),
+                          ),
+                    body: const SizedBox.expand(
+                      key: ValueKey('scaled-header-content'),
+                    ),
+                  ),
                 ),
               ),
-              body: SizedBox.shrink(),
             ),
-          ),
-        );
-        expect(tester.takeException(), isNull);
-        final header = tester.getRect(find.byType(CatchTopBar));
-        final title = tester.getRect(find.text('Ananya Rao'));
-        expect(title.top, greaterThanOrEqualTo(header.top));
-        expect(title.bottom, lessThanOrEqualTo(header.bottom));
-        debugDefaultTargetPlatformOverride = null;
-      },
-    );
+          );
+          expect(tester.takeException(), isNull);
+          final header = tester.getRect(find.byType(CatchTopBar));
+          final title = tester.getRect(find.text('Ananya Rao'));
+          expect(header.width, 360);
+          expect(header.height, greaterThan(CatchLayout.topBarHeight));
+          expect(title.top, greaterThanOrEqualTo(header.top));
+          expect(title.bottom, lessThanOrEqualTo(header.bottom));
+          expect(
+            tester
+                .getRect(find.byKey(const ValueKey('scaled-header-content')))
+                .top,
+            header.bottom,
+          );
+          debugDefaultTargetPlatformOverride = null;
+        },
+      );
+    }
 
     testWidgets('scaled tab rail reserves its actual height on $platform', (
       tester,

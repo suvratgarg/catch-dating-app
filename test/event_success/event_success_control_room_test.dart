@@ -15,42 +15,60 @@ import 'package:flutter_test/flutter_test.dart';
 import '../events/events_test_helpers.dart' show buildEvent;
 
 void main() {
-  testWidgets('report empty state inherits the contained report module', (
-    tester,
-  ) async {
-    final event = buildEvent(id: 'waiting-report');
-    final plan = EventSuccessPlan.defaultForEvent(event, now: event.startTime);
+  testWidgets(
+    'report empty state stays flat with full-width explanatory copy',
+    (tester) async {
+      final event = buildEvent(id: 'waiting-report');
+      final plan = EventSuccessPlan.defaultForEvent(
+        event,
+        now: event.startTime,
+      );
 
-    await tester.pumpWidget(
-      ProviderScope(
-        child: MaterialApp(
-          theme: AppTheme.light,
-          home: Scaffold(
-            body: EventSuccessHostWorkspacePageBody(
-              event: event,
-              plan: plan,
-              planIsPersisted: true,
-              roster: EventParticipationRoster.empty(),
-              initialTab: EventSuccessHostTab.report,
-              showTabs: false,
-              embedded: true,
+      await tester.pumpWidget(
+        ProviderScope(
+          child: MaterialApp(
+            theme: AppTheme.light,
+            home: Scaffold(
+              body: EventSuccessHostWorkspacePageBody(
+                event: event,
+                plan: plan,
+                planIsPersisted: true,
+                roster: EventParticipationRoster.empty(),
+                initialTab: EventSuccessHostTab.report,
+                showTabs: false,
+                embedded: true,
+              ),
             ),
           ),
         ),
-      ),
-    );
+      );
 
-    final waiting = find.text('Waiting for attendee feedback');
-    expect(waiting, findsOneWidget);
-    expect(
-      find.ancestor(of: waiting, matching: find.byType(CatchSectionSurface)),
-      findsOneWidget,
-    );
-    expect(
-      tester.widget<CatchEmptyState>(find.byType(CatchEmptyState)).surface,
-      isFalse,
-    );
-  });
+      final waiting = find.text('Waiting for attendee feedback');
+      expect(waiting, findsOneWidget);
+      final emptyFinder = find.ancestor(
+        of: waiting,
+        matching: find.byType(CatchEmptyState),
+      );
+      final emptyState = tester.widget<CatchEmptyState>(emptyFinder);
+      expect(emptyState.surface, isFalse);
+      expect(emptyState.variant, CatchEmptyStateVariant.inline);
+      expect(
+        find.ancestor(of: waiting, matching: find.byType(CatchSectionSurface)),
+        findsNothing,
+      );
+      expect(
+        find.ancestor(of: waiting, matching: find.byType(CatchSurface)),
+        findsNothing,
+      );
+
+      final bounds = tester.getRect(emptyFinder);
+      final message = tester.getRect(find.text(emptyState.message!));
+      final heading = tester.getRect(waiting);
+      expect(message.left, bounds.left);
+      expect(message.width, bounds.width);
+      expect(message.top, greaterThan(heading.bottom));
+    },
+  );
 
   testWidgets('restart mid-round resumes the correct persisted beat', (
     tester,

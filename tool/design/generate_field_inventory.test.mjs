@@ -100,6 +100,7 @@ test("extracts every current facade and semantic slot", () => {
     "containedRows",
     "containedLoadingRows",
     "dependentFieldRows",
+    "action",
     "content",
     "sliverRows",
     "sliverLoadingRows",
@@ -114,6 +115,15 @@ test("extracts every current facade and semantic slot", () => {
     "children",
     "child",
     "leading",
+    "message",
+    "details",
+    "action-label",
+    "on-action",
+    "action-key",
+    "icon",
+    "action-emphasis",
+    "action-status",
+    "feedback",
   ]);
 });
 
@@ -172,6 +182,17 @@ test("section factories preserve source order and omit package-internal adapters
   `);
   assert.deepEqual(contract.variants, ["content", "sliverRows"]);
   assert.deepEqual(contract.slots, ["children", "child"]);
+});
+
+test("action section meta and footer retain details and feedback semantics", () => {
+  const action = extractCatchSectionContract(`
+    factory CatchSection.action({required String message, Widget? meta, Widget? footer});
+  `);
+  assert.deepEqual(action.slots, ["message", "details", "feedback"]);
+  const ordinary = extractCatchSectionContract(`
+    const CatchSection.rows({Widget? footer});
+  `);
+  assert.deepEqual(ordinary.slots, ["footer"]);
 });
 
 test("canonical slots retain their recipe-specific placement without former aliases", () => {

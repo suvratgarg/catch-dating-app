@@ -116,10 +116,11 @@ void main() {
     expect(find.text('Courtyard practice'), findsWidgets);
     expect(find.text('REHEARSAL'), findsOneWidget);
     final topBar = tester.widget<CatchTopBar>(find.byType(CatchTopBar));
-    expect(topBar.title, 'Courtyard practice');
+    expect(topBar.title, 'Host · Manage');
+    expect(topBar.subtitle, 'Courtyard practice');
     final titleFinder = find.descendant(
       of: find.byType(CatchTopBar),
-      matching: find.text('Courtyard practice'),
+      matching: find.text('Host · Manage'),
     );
     final titleContext = tester.element(titleFinder);
     expect(
