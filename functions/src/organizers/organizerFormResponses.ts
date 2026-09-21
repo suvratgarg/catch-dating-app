@@ -1566,7 +1566,10 @@ export const createOrganizerFormAssetIntent = onCall(
 );
 
 export const finalizeOrganizerFormAsset = onCall(
-  appCheckCallableOptionsWithLimits(publicCallableLimits),
+  appCheckCallableOptionsWithLimits({
+    ...publicCallableLimits,
+    memory: "512MiB",
+  }),
   (request) => finalizeOrganizerFormAssetHandler(request)
 );
 

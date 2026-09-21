@@ -63,6 +63,8 @@ test("upload intent uses its dedicated project identity", async () => {
         reviewAccount: review.__trigger.serviceAccountEmail,
         timeout: upload.__endpoint.timeoutSeconds,
         other: forms.finalizeOrganizerFormAsset.__endpoint.serviceAccountEmail,
+        finalizeMemory: forms.finalizeOrganizerFormAsset
+          .__endpoint.availableMemoryMb,
       }));
     `], {
       cwd: path.resolve(__dirname, "../.."),
@@ -76,6 +78,7 @@ test("upload intent uses its dedicated project identity", async () => {
       `catch-form-review@${project}.iam.gserviceaccount.com`);
     assert.equal(result.timeout, 60);
     assert.ok(result.other == null);
+    assert.equal(result.finalizeMemory, 512);
   }
 });
 
