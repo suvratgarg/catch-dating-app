@@ -174,8 +174,8 @@ Typed handoffs:
 
 | Owner | Source | Responsibility |
 |---|---|---|
-| `HostCustomersScreen` | `lib/hosts/presentation/customers/host_customers_screen.dart` | Feature-contract actions: switch_customers_view, retry_directory, switch_organizer, search_customers, open_customer_filters, filter_customers, sort_customers, message_filtered_customers, review_whatsapp_sender_setup, open_customer, review_duplicate_customers. |
-| `HostSavedAudiencesWorkspace` | `lib/hosts/presentation/customers/host_saved_audiences_workspace.dart` | Feature-contract actions: search_saved_audiences, open_saved_audience_create, open_saved_audience_detail. |
+| `HostCustomersScreen` | `lib/hosts/presentation/customers/host_customers_screen.dart` | Feature-contract actions: switch_customers_view, open_saved_audience_create, retry_directory, switch_organizer, search_customers, open_customer_filters, filter_customers, sort_customers, message_filtered_customers, review_whatsapp_sender_setup, open_customer, review_duplicate_customers. |
+| `HostSavedAudiencesWorkspace` | `lib/hosts/presentation/customers/host_saved_audiences_workspace.dart` | Feature-contract actions: search_saved_audiences, open_saved_audience_detail. |
 | `HostSavedAudienceEditorScreen` | `lib/hosts/presentation/customers/host_saved_audience_editor.dart` | Feature-contract actions: save_saved_audience, archive_saved_audience. |
 | `HostAddCustomerScreen` | `lib/hosts/presentation/customers/host_customer_editor.dart` | Structural owner from feature.host_customers. |
 | `HostCustomersDirectoryController` | `lib/hosts/presentation/customers/host_customers_controller.dart` | Feature-contract actions: load_more. |
