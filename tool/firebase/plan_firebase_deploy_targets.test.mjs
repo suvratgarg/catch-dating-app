@@ -286,6 +286,10 @@ function executorFixture(t) {
     "tool/firebase/list_firebase_function_targets.mjs",
     "tool/firebase/check_deploy_parity.mjs",
     "tool/firebase/check_environment_readiness.mjs",
+    "tool/firebase/form_upload_identity.mjs",
+    "tool/firebase/storage_rules_firestore_iam.mjs",
+    "tool/lib/repo_paths.mjs",
+    "tool/lib/firebase_project.mjs",
   ]) {
     write(relativePath, fs.readFileSync(path.join(repoRoot, relativePath)), 0o755);
   }

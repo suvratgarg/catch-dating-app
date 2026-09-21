@@ -3129,7 +3129,10 @@
           "secret metadata classification never returns payload fields",
           "backend promotion selects targets before credentials and checks readiness before runtime installation"
         ]
-      }
+      },
+      "alsoCheckIds": [
+        "firebase:form-upload-identity"
+      ]
     },
     {
       "id": "firebase:function-targets",
@@ -7175,6 +7178,29 @@
       "checks": [
         "dart format --output=none --set-exit-if-changed tool/demo/rsvp_escape/import_main.dart"
       ]
+    },
+    {
+      "id": "firebase:form-upload-identity",
+      "category": "firebase",
+      "path": "tool/firebase/form_upload_identity.mjs",
+      "command": "node tool/firebase/form_upload_identity.mjs",
+      "safety": "remote-write",
+      "checkSafety": "local-readonly",
+      "status": "active",
+      "description": "Checks or explicitly provisions the dedicated form upload runtime identity; default is read-only and production apply is separately gated.",
+      "checks": [
+        "node --check tool/firebase/form_upload_identity.mjs",
+        "node --test tool/firebase/form_upload_identity.test.mjs"
+      ],
+      "impactPaths": [
+        "tool/firebase/form_upload_identity.test.mjs"
+      ],
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      }
     }
   ]
 }

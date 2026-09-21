@@ -4,6 +4,8 @@ import {CallableRequest, HttpsError, onCall} from
   "firebase-functions/v2/https";
 import {appCheckCallableOptionsWithLimits} from
   "../shared/callableOptions";
+import {appCheckCallableOptionsForFormReview} from
+  "../shared/organizerFormUploadIdentity";
 import {normalizePayloadStrings} from
   "../shared/callablePayloadNormalization";
 import {requireAuth} from "../shared/auth";
@@ -719,7 +721,7 @@ export const listOrganizerFormResponses = onCall(
 );
 
 export const getOrganizerFormResponseDetail = onCall(
-  appCheckCallableOptionsWithLimits(managerCallableLimits),
+  appCheckCallableOptionsForFormReview(managerCallableLimits),
   (request) => getOrganizerFormResponseDetailHandler(request)
 );
 

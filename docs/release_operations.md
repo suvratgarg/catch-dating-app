@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 2.7.15
+version: 2.7.16
 updated: 2026-09-21
 owner: recursive_audit_loop
 status: active
@@ -643,6 +643,70 @@ The corresponding Google Cloud service accounts are:
 
 Do not add `FIREBASE_SERVICE_ACCOUNT_*` JSON secrets unless the OIDC setup is
 intentionally retired.
+
+### Dedicated form upload identity
+
+`createOrganizerFormAssetIntent` runs as `catch-form-upload@` using Firebase's
+project-relative service-account shorthand. Provision this account separately
+in dev, staging, and prod before deploying the function. `getOrganizerFormResponseDetail` runs as the separate `catch-form-review@`
+identity to sign private photo viewing links. Other functions retain their
+existing identities. Never fix form signing by granting the shared Compute
+runtime identity permission to sign as itself.
+
+The dedicated account has `roles/datastore.user` to validate draft/version
+records and transactionally record upload intents/rate limits; Firestore IAM
+cannot scope this to individual collections. Existing callable authorization,
+App Check, draft-token, question-type, size and MIME validation remain enforced.
+Its Storage permission is only `roles/storage.objectCreator` on that environment's
+default bucket: it cannot list, read, delete or overwrite existing objects.
+The separate review identity gets `roles/storage.objectViewer` on that bucket
+and `roles/datastore.user` for response ownership checks and rate-limit writes.
+It can read/list objects but cannot create, overwrite or delete them; private
+links are issued only after organizer-manager and asset ownership validation.
+Each signed POST policy fixes the server-selected `organizerForms/` object key,
+MIME type, size bound, metadata, and 15-minute expiry. The IAM create grant is
+bucket-scoped, not folder-scoped: existing buckets use fine-grained ACLs, so this
+repair does not enable uniform bucket access or change their existing policies.
+
+Custom role `catchFormUploadSigner` contains only `iam.serviceAccounts.signBlob`
+and is bound on each dedicated account only to itself. Signing can also produce tokens
+as that same narrowly privileged account. The existing `github-actions-deploy`
+identity gets `roles/iam.serviceAccountUser` on this account for deployment.
+Custom role `catchFormUploadIamInspector` gives that deploy identity only
+`iam.roles.get` and `iam.serviceAccounts.getIamPolicy` at project scope so the
+readiness gate can verify the IAM setup. It grants metadata reads, not signing,
+IAM mutation, secret access, or application-data access.
+No keys or secrets are created, and no Editor/Owner/Token Creator grant is added.
+
+The same prerequisite checks IAM Credentials API enablement and browser POST
+CORS. Provisioning preserves unrelated CORS rules and adds only POST for
+`https://catchdates.com` and `https://www.catchdates.com` in production, or the
+selected project's `web.app` and `firebaseapp.com` origins in dev/staging.
+No wildcard or localhost origin is added. CORS permits the browser to read the
+upload response; it does not replace the signed policy or make objects public.
+
+```sh
+node tool/firebase/form_upload_identity.mjs --env dev
+node tool/firebase/form_upload_identity.mjs --env dev --apply
+node tool/firebase/form_upload_identity.mjs --env dev --purpose review --apply
+node tool/firebase/form_upload_identity.mjs --env prod
+node tool/firebase/form_upload_identity.mjs --env prod --apply --allow-prod
+node tool/firebase/form_upload_identity.mjs --env prod --purpose review --apply --allow-prod
+```
+
+Default mode reads metadata and prints exact missing grants. Apply mode adds
+only those grants and verifies the result; unexpected extra roles or delegation
+fail closed without removal. Provisioning requires explicit IAM authorization.
+The existing environment-readiness gate checks this identity before deploying
+`createOrganizerFormAssetIntent` and `getOrganizerFormResponseDetail`
+(including full Functions deployments), so a
+missing account, signing grant, bucket access, database access, deployment
+attachment permission, or unreadable policy blocks deployment. Provisioning
+runs under an authorized operator; CI checks metadata and does not change IAM.
+
+Rollback the function through the normal source delivery path before removing
+its dedicated account grants. Removing the self-signing binding disables new
+signed uploads; previously issued upload policies can remain valid until expiry.
 
 ### Read-only Marketing snapshot identity
 

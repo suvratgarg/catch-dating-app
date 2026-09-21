@@ -4,6 +4,8 @@ import {createServer} from "node:http";
 import path from "node:path";
 import test from "node:test";
 import {promisify} from "node:util";
+import {appCheckCallableOptionsForFormUpload} from
+  "../shared/organizerFormUploadIdentity";
 
 const run = promisify(execFile);
 
@@ -46,4 +48,40 @@ test("form upload signer accepts metadata response headers", async () => {
     server.closeAllConnections();
     await new Promise<void>((resolve) => server.close(() => resolve()));
   }
+});
+
+test("upload intent uses its dedicated project identity", async () => {
+  for (const project of ["catchdates-dev", "catch-dating-app-64e51"]) {
+    const {stdout} = await run(process.execPath, ["-e", `
+      const forms = require("./lib/organizers/organizerFormResponses");
+      const review = require("./lib/organizers/organizerFormOperations")
+        .getOrganizerFormResponseDetail;
+      const upload = forms.createOrganizerFormAssetIntent;
+      const trigger = upload.__trigger;
+      process.stdout.write(JSON.stringify({
+        account: trigger.serviceAccountEmail,
+        reviewAccount: review.__trigger.serviceAccountEmail,
+        timeout: upload.__endpoint.timeoutSeconds,
+        other: forms.finalizeOrganizerFormAsset.__endpoint.serviceAccountEmail,
+      }));
+    `], {
+      cwd: path.resolve(__dirname, "../.."),
+      env: {...process.env, GCLOUD_PROJECT: project},
+      timeout: 10000,
+    });
+    const result = JSON.parse(stdout);
+    assert.equal(result.account,
+      `catch-form-upload@${project}.iam.gserviceaccount.com`);
+    assert.equal(result.reviewAccount,
+      `catch-form-review@${project}.iam.gserviceaccount.com`);
+    assert.equal(result.timeout, 60);
+    assert.ok(result.other == null);
+  }
+});
+
+test("upload identity preserves shared App Check and invoker policy", () => {
+  const options = appCheckCallableOptionsForFormUpload({timeoutSeconds: 60});
+  assert.equal(options.enforceAppCheck, true);
+  assert.equal(options.invoker, "public");
+  assert.equal(options.timeoutSeconds, 60);
 });

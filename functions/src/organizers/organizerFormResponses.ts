@@ -84,6 +84,8 @@ import {
   "../shared/generated/validators/withdrawOrganizerFormResponseInput";
 import {appCheckCallableOptionsWithLimits} from
   "../shared/callableOptions";
+import {appCheckCallableOptionsForFormUpload} from
+  "../shared/organizerFormUploadIdentity";
 import {normalizePayloadStrings} from
   "../shared/callablePayloadNormalization";
 import {requireAuth} from "../shared/auth";
@@ -1559,7 +1561,7 @@ export const saveOrganizerFormResponseDraft = onCall(
 );
 
 export const createOrganizerFormAssetIntent = onCall(
-  appCheckCallableOptionsWithLimits(publicCallableLimits),
+  appCheckCallableOptionsForFormUpload(publicCallableLimits),
   (request) => createOrganizerFormAssetIntentHandler(request)
 );
 
