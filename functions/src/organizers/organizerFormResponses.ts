@@ -84,6 +84,8 @@ import {
   "../shared/generated/validators/withdrawOrganizerFormResponseInput";
 import {appCheckCallableOptionsWithLimits} from
   "../shared/callableOptions";
+import {appCheckCallableOptionsForFormUpload} from
+  "../shared/organizerFormUploadIdentity";
 import {normalizePayloadStrings} from
   "../shared/callablePayloadNormalization";
 import {requireAuth} from "../shared/auth";
@@ -1559,11 +1561,7 @@ export const saveOrganizerFormResponseDraft = onCall(
 );
 
 export const createOrganizerFormAssetIntent = onCall(
-  {
-    ...appCheckCallableOptionsWithLimits(publicCallableLimits),
-    // Firebase resolves the shorthand against the selected deploy project.
-    serviceAccount: "catch-form-upload@",
-  },
+  appCheckCallableOptionsForFormUpload(publicCallableLimits),
   (request) => createOrganizerFormAssetIntentHandler(request)
 );
 

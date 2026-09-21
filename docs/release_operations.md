@@ -667,7 +667,18 @@ Custom role `catchFormUploadSigner` contains only `iam.serviceAccounts.signBlob`
 and is bound on the dedicated account to itself. Signing can also produce tokens
 as that same narrowly privileged account. The existing `github-actions-deploy`
 identity gets `roles/iam.serviceAccountUser` on this account for deployment.
+Custom role `catchFormUploadIamInspector` gives that deploy identity only
+`iam.roles.get` and `iam.serviceAccounts.getIamPolicy` at project scope so the
+readiness gate can verify the IAM setup. It grants metadata reads, not signing,
+IAM mutation, secret access, or application-data access.
 No keys or secrets are created, and no Editor/Owner/Token Creator grant is added.
+
+The same prerequisite checks IAM Credentials API enablement and browser POST
+CORS. Provisioning preserves unrelated CORS rules and adds only POST for
+`https://catchdates.com` and `https://www.catchdates.com` in production, or the
+selected project's `web.app` and `firebaseapp.com` origins in dev/staging.
+No wildcard or localhost origin is added. CORS permits the browser to read the
+upload response; it does not replace the signed policy or make objects public.
 
 ```sh
 node tool/firebase/form_upload_identity.mjs --env dev

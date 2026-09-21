@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
 import {spawnSync} from "node:child_process";
 import {pathToFileURL} from "node:url";
 import {fromRepo} from "../lib/repo_paths.mjs";
@@ -8,6 +10,10 @@ import {parseFirebaseWebConfig} from "./storage_rules_firestore_iam.mjs";
 
 export const accountId = "catch-form-upload";
 export const signerRoleId = "catchFormUploadSigner";
+export const inspectorRoleId = "catchFormUploadIamInspector";
+export const inspectorPermissions = [
+  "iam.roles.get", "iam.serviceAccounts.getIamPolicy",
+];
 export const signingPermission = "iam.serviceAccounts.signBlob";
 
 export function uploadIdentityTarget(environment, projectId) {
@@ -21,9 +27,13 @@ export function uploadIdentityTarget(environment, projectId) {
   if (config.projectId !== projectId) throw new Error("Firebase project mismatch.");
   return {
     environment, projectId, bucket: config.storageBucket,
+    origins: environment === "prod"
+      ? ["https://catchdates.com", "https://www.catchdates.com"]
+      : [`https://${projectId}.web.app`, `https://${projectId}.firebaseapp.com`],
     email: `${accountId}@${projectId}.iam.gserviceaccount.com`,
     deployer: `github-actions-deploy@${projectId}.iam.gserviceaccount.com`,
     role: `projects/${projectId}/roles/${signerRoleId}`,
+    inspectorRole: `projects/${projectId}/roles/${inspectorRoleId}`,
   };
 }
 
@@ -34,8 +44,10 @@ export function identityReadCommands(target) {
       "--filter=config.name=iamcredentials.googleapis.com"],
     account: ["iam", "service-accounts", "describe", target.email, project],
     role: ["iam", "roles", "describe", signerRoleId, project],
+    inspectorRole: ["iam", "roles", "describe", inspectorRoleId, project],
     projectPolicy: ["projects", "get-iam-policy", target.projectId],
     accountPolicy: ["iam", "service-accounts", "get-iam-policy", target.email, project],
+    bucket: ["storage", "buckets", "describe", `gs://${target.bucket}`, "--raw"],
     bucketPolicy: ["storage", "buckets", "get-iam-policy", `gs://${target.bucket}`],
   };
 }
@@ -47,11 +59,23 @@ function hasBinding(policy, member, role) {
   return bindingsFor(policy, member).some((b) => b.role === role && !b.condition);
 }
 
+export function mergeUploadCors(target, existing = []) {
+  const missingOrigins = target.origins.filter((origin) => !existing.some((rule) =>
+    rule.origin?.includes(origin) && rule.method?.includes("POST")));
+  return missingOrigins.length === 0 ? existing : [...existing, {
+    origin: missingOrigins, method: ["POST"],
+    responseHeader: ["Content-Type"], maxAgeSeconds: 3600,
+  }];
+}
+
 export function evaluateUploadIdentity(target, state) {
   const member = `serviceAccount:${target.email}`;
   const deployer = `serviceAccount:${target.deployer}`;
   const missing = [];
   const unsafe = [];
+  const currentCors = state.bucket?.cors ?? [];
+  const cors = mergeUploadCors(target, currentCors);
+  if (cors !== currentCors) missing.push("browser-upload-cors");
   if (!state.signingApi?.some((s) =>
     s.config?.name === "iamcredentials.googleapis.com")) missing.push("signing-api");
   if (!state.account) missing.push("account");
@@ -62,6 +86,13 @@ export function evaluateUploadIdentity(target, state) {
   else if (state.role.deleted || state.role.stage !== "GA" ||
       JSON.stringify([...(state.role.includedPermissions ?? [])].sort()) !==
       JSON.stringify([signingPermission])) unsafe.push("signer-role-permissions");
+  if (!state.inspectorRole) missing.push("inspector-role");
+  else if (state.inspectorRole.deleted || state.inspectorRole.stage !== "GA" ||
+      JSON.stringify([...(state.inspectorRole.includedPermissions ?? [])].sort()) !==
+      JSON.stringify(inspectorPermissions)) unsafe.push("inspector-role-permissions");
+  if (!hasBinding(state.projectPolicy, deployer, target.inspectorRole)) {
+    missing.push("deployer-inspection");
+  }
   if (!hasBinding(state.projectPolicy, member, "roles/datastore.user")) {
     missing.push("database-access");
   }
@@ -83,7 +114,7 @@ export function evaluateUploadIdentity(target, state) {
       unsafe.push("unexpected-account-delegation");
     }
   }
-  return {ready: missing.length === 0 && unsafe.length === 0, missing, unsafe};
+  return {ready: missing.length === 0 && unsafe.length === 0, missing, unsafe, cors};
 }
 
 export function provisioningCommands(target, assessment) {
@@ -105,6 +136,16 @@ export function provisioningCommands(target, assessment) {
     "iam", "roles", "create", signerRoleId, project,
     "--title=Catch form upload signer", `--permissions=${signingPermission}`, "--stage=GA",
   ]);
+  if (missing.has("inspector-role")) commands.push([
+    "iam", "roles", "create", inspectorRoleId, project,
+    "--title=Catch form upload IAM inspector",
+    `--permissions=${inspectorPermissions.join(",")}`, "--stage=GA",
+  ]);
+  if (missing.has("deployer-inspection")) commands.push([
+    "projects", "add-iam-policy-binding", target.projectId,
+    `--member=serviceAccount:${target.deployer}`,
+    `--role=${target.inspectorRole}`, "--condition=None",
+  ]);
   if (missing.has("database-access")) commands.push([
     "projects", "add-iam-policy-binding", target.projectId, member,
     "--role=roles/datastore.user", "--condition=None",
@@ -122,6 +163,10 @@ export function provisioningCommands(target, assessment) {
     `--member=serviceAccount:${target.deployer}`,
     "--role=roles/iam.serviceAccountUser", "--condition=None",
   ]);
+  if (missing.has("browser-upload-cors")) commands.push([
+    "storage", "buckets", "update", `gs://${target.bucket}`,
+    "--cors-file=<generated-on-apply>",
+  ]);
   return commands;
 }
 
@@ -136,7 +181,7 @@ export function inspectUploadIdentity(target, run = runGcloud) {
   for (const [key, args] of Object.entries(identityReadCommands(target))) {
     const result = run(args);
     if (result.error || result.status !== 0) {
-      if (["account", "accountPolicy", "role"].includes(key) &&
+      if (["account", "accountPolicy", "role", "inspectorRole"].includes(key) &&
           /NOT_FOUND|not found|does not exist/iu.test(result.stderr ?? "")) {
         state[key] = null;
         continue;
@@ -178,8 +223,22 @@ function main() {
   const commands = provisioningCommands(target, before);
   console.log(JSON.stringify({target, ...before, commands}, null, 2));
   if (!args.apply) { process.exitCode = before.ready ? 0 : 1; return; }
-  for (const command of commands) {
+  for (const planned of commands) {
+    let command = planned;
+    let tempDirectory;
+    if (planned.includes("--cors-file=<generated-on-apply>")) {
+      // Re-read immediately before update and preserve unrelated CORS entries.
+      const current = runGcloud(identityReadCommands(target).bucket);
+      if (current.error || current.status !== 0) throw new Error("Cannot re-read bucket CORS.");
+      const cors = mergeUploadCors(target, JSON.parse(current.stdout).cors ?? []);
+      tempDirectory = fs.mkdtempSync(path.join(os.tmpdir(), "catch-upload-cors-"));
+      const corsFile = path.join(tempDirectory, "cors.json");
+      fs.writeFileSync(corsFile, JSON.stringify(cors));
+      command = planned.map((arg) => arg === "--cors-file=<generated-on-apply>"
+        ? `--cors-file=${corsFile}` : arg);
+    }
     const result = runGcloud(command);
+    if (tempDirectory) fs.rmSync(tempDirectory, {recursive: true});
     if (result.error || result.status !== 0) {
       throw new Error(`Provisioning failed: ${result.error?.message ?? result.stderr}`);
     }

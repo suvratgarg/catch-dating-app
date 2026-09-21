@@ -4,6 +4,8 @@ import {createServer} from "node:http";
 import path from "node:path";
 import test from "node:test";
 import {promisify} from "node:util";
+import {appCheckCallableOptionsForFormUpload} from
+  "../shared/organizerFormUploadIdentity";
 
 const run = promisify(execFile);
 
@@ -70,4 +72,11 @@ test("upload intent uses its dedicated project identity", async () => {
     assert.equal(result.timeout, 60);
     assert.ok(result.other == null);
   }
+});
+
+test("upload identity preserves shared App Check and invoker policy", () => {
+  const options = appCheckCallableOptionsForFormUpload({timeoutSeconds: 60});
+  assert.equal(options.enforceAppCheck, true);
+  assert.equal(options.invoker, "public");
+  assert.equal(options.timeoutSeconds, 60);
 });
