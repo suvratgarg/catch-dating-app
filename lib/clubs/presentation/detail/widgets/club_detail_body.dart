@@ -53,7 +53,7 @@ class ClubDetailBody extends StatelessWidget {
     final t = CatchTokens.of(context);
 
     return ColoredBox(
-      color: t.surface,
+      color: t.bg,
       child: CustomScrollView(
         slivers: [
           ClubDetailSliverBody(
@@ -149,7 +149,9 @@ class ClubDetailSliverBody extends StatelessWidget {
                   ),
                 ),
                 gapH12,
-                CatchMetricSection(items: _clubMetricItems(club, context.l10n)),
+                CatchMetricSection.grid(
+                  items: _clubMetricItems(club, context.l10n),
+                ),
               ],
             ),
             Column(

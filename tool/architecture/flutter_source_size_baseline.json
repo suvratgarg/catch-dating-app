@@ -11,7 +11,7 @@
     },
     {
       "path": "lib/hosts/presentation/host_operations/host_analytics.dart",
-      "maxLines": 1088
+      "maxLines": 1063
     },
     {
       "path": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",

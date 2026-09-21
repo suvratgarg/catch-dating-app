@@ -14,15 +14,18 @@ class HostClubOrganizerOverviewController extends ConsumerWidget {
     final events = eventsState.value ?? const <Event>[];
     final activeEventCount = events.where((event) => !event.isCancelled).length;
 
-    return Column(
+    return CatchSectionList(
+      emptyStateOmitted: true,
       children: [
-        HostClubOrganizerOverview(
-          club: club,
-          eventsLoaded: eventsState.hasData,
-          eventCount: events.length,
-          activeEventCount: activeEventCount,
+        CatchSection.content(
+          title: context.l10n.hostsHostAnalyticsLabelAllTime,
+          child: HostClubOrganizerOverview(
+            club: club,
+            eventsLoaded: eventsState.hasData,
+            eventCount: events.length,
+            activeEventCount: activeEventCount,
+          ),
         ),
-        gapH12,
         _HostCrmAudienceCard(
           summary: crmState.value,
           loading: crmState.isLoading,
@@ -50,78 +53,100 @@ class _HostCrmAudienceCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return CatchSurface(
-      borderColor: t.line,
-      child: Padding(
-        padding: CatchInsets.content,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              context.l10n.hostsHostOrganizerCrmTitle,
-              style: CatchTextStyles.sectionTitle(context, color: t.ink),
-            ),
-            gapH8,
-            if (loading)
-              Text(
-                context.l10n.hostsHostOrganizerCrmLoading,
-                style: CatchTextStyles.supporting(context, color: t.ink2),
-              )
-            else if (hasError || summary == null) ...[
-              Text(
-                context.l10n.hostsHostOrganizerCrmUnavailable,
-                style: CatchTextStyles.supporting(context, color: t.ink2),
-              ),
-              gapH8,
-              CatchButton(
-                label: context.l10n.sharedActionTryAgain,
-                onPressed: onRetry,
-                variant: CatchButtonVariant.secondary,
-              ),
-            ] else ...[
-              Text(
-                context.l10n.hostsHostOrganizerCrmSummary(
-                  pastCount: summary!.pastAttendeeCount,
-                  repeatCount: summary!.repeatAttendeeCount,
-                  contactCount: summary!.contactCount,
-                ),
-                style: CatchTextStyles.supporting(context, color: t.ink2),
-              ),
-              gapH12,
-              _HostCrmChannelRow(
-                label: context.l10n.hostsHostOrganizerCrmCatchApp,
-                value: context.l10n.hostsHostOrganizerCrmLinked(
-                  count: summary!.linkedAccountCount,
-                ),
-                status: context.l10n.hostsHostOrganizerCrmCurrentEventLive,
-              ),
-              gapH8,
-              _HostCrmChannelRow(
-                label: context.l10n.hostsHostOrganizerCrmWhatsapp,
-                value: context.l10n.hostsHostOrganizerCrmOptedIn(
-                  count: summary!.whatsappOptInCount,
-                ),
-                status: context.l10n.hostsHostOrganizerCrmWhatsappSetup,
-              ),
-              gapH8,
-              _HostCrmChannelRow(
-                label: context.l10n.hostsHostOrganizerCrmTextMessage,
-                value: context.l10n.hostsHostOrganizerCrmOptedIn(
-                  count: summary!.smsOptInCount,
-                ),
-                status: context.l10n.hostsHostOrganizerCrmSmsSetup,
-              ),
-              if (summary!.truncated) ...[
-                gapH8,
+    final data = summary;
+    return CatchSectionList(
+      emptyStateOmitted: true,
+      children: [
+        CatchSection.content(
+          title: context.l10n.hostsHostOrganizerCrmTitle,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              if (loading)
                 Text(
-                  context.l10n.hostsHostOrganizerCrmTruncated,
+                  context.l10n.hostsHostOrganizerCrmLoading,
+                  style: CatchTextStyles.supporting(context, color: t.ink2),
+                )
+              else if (hasError || data == null) ...[
+                Text(
+                  context.l10n.hostsHostOrganizerCrmUnavailable,
                   style: CatchTextStyles.supporting(context, color: t.ink2),
                 ),
+                gapH12,
+                CatchButton(
+                  label: context.l10n.sharedActionTryAgain,
+                  onPressed: onRetry,
+                  variant: CatchButtonVariant.secondary,
+                ),
+              ] else ...[
+                CatchMetricSection.grid(
+                  items: [
+                    CatchMetricValue(
+                      value: _compactCount(data.contactCount),
+                      label: context.l10n.hostsHostOrganizerCrmContacts,
+                    ),
+                    CatchMetricValue(
+                      value: _compactCount(data.pastAttendeeCount),
+                      label: context.l10n.hostsHostOrganizerCrmPastAttendees,
+                    ),
+                    CatchMetricValue(
+                      value: _compactCount(data.repeatAttendeeCount),
+                      label: context.l10n.hostsHostOrganizerCrmRepeatAttendees,
+                    ),
+                    CatchMetricValue(
+                      value: _compactCount(data.importedContactCount),
+                      label: context.l10n.hostsHostOrganizerCrmImportedContacts,
+                    ),
+                  ],
+                ),
+                if (data.truncated) ...[
+                  gapH12,
+                  Text(
+                    context.l10n.hostsHostOrganizerCrmTruncated,
+                    style: CatchTextStyles.supporting(context, color: t.ink2),
+                  ),
+                ],
               ],
             ],
-          ],
+          ),
         ),
-      ),
+        if (!loading && !hasError && data != null)
+          CatchSection.content(
+            title: context.l10n.hostsHostOrganizerCrmChannels,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _HostCrmChannelRow(
+                  label: context.l10n.hostsHostOrganizerCrmCatchApp,
+                  value: context.l10n.hostsHostOrganizerCrmLinked(
+                    count: data.linkedAccountCount,
+                  ),
+                  status: context.l10n.hostsHostOrganizerCrmCurrentEventLive,
+                ),
+                gapH16,
+                const CatchDivider.section(),
+                gapH16,
+                _HostCrmChannelRow(
+                  label: context.l10n.hostsHostOrganizerCrmWhatsapp,
+                  value: context.l10n.hostsHostOrganizerCrmOptedIn(
+                    count: data.whatsappOptInCount,
+                  ),
+                  status: context.l10n.hostsHostOrganizerCrmWhatsappSetup,
+                ),
+                gapH16,
+                const CatchDivider.section(),
+                gapH16,
+                _HostCrmChannelRow(
+                  label: context.l10n.hostsHostOrganizerCrmTextMessage,
+                  value: context.l10n.hostsHostOrganizerCrmOptedIn(
+                    count: data.smsOptInCount,
+                  ),
+                  status: context.l10n.hostsHostOrganizerCrmSmsSetup,
+                ),
+              ],
+            ),
+          ),
+      ],
     );
   }
 }
@@ -140,23 +165,15 @@ class _HostCrmChannelRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return Row(
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Expanded(
-          child: Text(
-            '$label · $value',
-            style: CatchTextStyles.labelL(context, color: t.ink),
-          ),
+        Text(
+          '$label · $value',
+          style: CatchTextStyles.labelL(context, color: t.ink),
         ),
-        gapW12,
-        Flexible(
-          child: Text(
-            status,
-            textAlign: TextAlign.end,
-            style: CatchTextStyles.supporting(context, color: t.ink2),
-          ),
-        ),
+        gapH4,
+        Text(status, style: CatchTextStyles.supporting(context, color: t.ink2)),
       ],
     );
   }
@@ -227,13 +244,7 @@ class HostOrganizerMetricGrid extends StatelessWidget {
       ),
     ];
 
-    return Column(
-      children: [
-        HostOrganizerMetricRow(items: [items[0], items[1]]),
-        gapH12,
-        HostOrganizerMetricRow(items: [items[2], items[3]]),
-      ],
-    );
+    return HostOrganizerMetricRow(items: items);
   }
 }
 
@@ -251,7 +262,7 @@ class HostOrganizerMetricRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchMetricSection(
+    return CatchMetricSection.grid(
       items: [
         for (final item in items)
           CatchMetricValue(value: item.value, label: item.label),
@@ -267,7 +278,7 @@ String _compactCount(int count) {
 }
 
 String _ratingValue(Club club) {
-  if (club.reviewCount <= 0 || club.rating <= 0) return 'New';
+  if (club.reviewCount <= 0 || club.rating <= 0) return '—';
   final rounded = club.rating.roundToDouble();
   return club.rating == rounded
       ? rounded.toStringAsFixed(0)

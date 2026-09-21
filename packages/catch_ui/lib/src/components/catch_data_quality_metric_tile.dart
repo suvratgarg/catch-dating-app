@@ -1,5 +1,4 @@
 import 'package:catch_tokens/catch_tokens.dart';
-import 'package:catch_ui/src/components/catch_badge.dart';
 import 'package:catch_ui/src/components/catch_metric_data.dart';
 import 'package:catch_ui/src/components/catch_metric_data_status.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
@@ -19,36 +18,32 @@ class CatchDataQualityMetricTile extends StatelessWidget {
     final muted = data.status == CatchMetricDataStatus.missing;
     return CatchSurface(
       padding: CatchInsets.content,
-      borderColor: muted
-          ? t.warning.withValues(alpha: CatchOpacity.mutedBorderUrgent)
-          : t.line,
+      borderRole: CatchBorderRole.boundary,
       backgroundColor: muted
           ? t.warning.withValues(alpha: CatchOpacity.warningFill)
           : t.surface,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
+          Wrap(
+            spacing: CatchSpacing.s3,
+            runSpacing: CatchSpacing.s2,
+            crossAxisAlignment: WrapCrossAlignment.center,
             children: [
               Icon(data.icon, size: CatchIcon.sm, color: t.ink2),
-              const Spacer(),
               if (data.status != CatchMetricDataStatus.ready)
-                CatchBadge(
-                  label: data.status == CatchMetricDataStatus.partial
+                Text(
+                  data.status == CatchMetricDataStatus.partial
                       ? data.partialBadgeLabel
                       : data.missingBadgeLabel,
-                  tone: data.status == CatchMetricDataStatus.partial
-                      ? CatchBadgeTone.warning
-                      : CatchBadgeTone.neutral,
+                  style: CatchTextStyles.labelM(context, color: t.ink2),
                 ),
             ],
           ),
           gapH12,
           Text(
-            data.value,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: CatchTextStyles.numericLarge(
+            muted ? '—' : data.value,
+            style: CatchTextStyles.metric(
               context,
               color: muted ? t.ink3 : t.ink,
             ),
@@ -56,17 +51,13 @@ class CatchDataQualityMetricTile extends StatelessWidget {
           gapH4,
           Text(
             data.label,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: CatchTextStyles.labelM(context, color: t.ink2),
+            style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
           if (data.caption case final caption?
               when caption.trim().isNotEmpty) ...[
             gapH8,
             Text(
               caption,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
               style: CatchTextStyles.supporting(context, color: t.ink3),
             ),
           ],

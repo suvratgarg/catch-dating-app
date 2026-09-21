@@ -80,8 +80,9 @@ class _HostClubInsightsPaneState extends ConsumerState<HostClubInsightsPane> {
         CatchAsyncBoundary<HostAnalyticsReport>(
           value: analyticsAsync,
           onRetry: () => ref.invalidate(hostAnalyticsProvider(query)),
-          loadingBuilder: (_) =>
-              CatchSection.content(child: const HostAnalyticsReportLoadingIndicator()),
+          loadingBuilder: (_) => CatchSection.content(
+            child: const HostAnalyticsReportLoadingIndicator(),
+          ),
           errorBuilder: (_, error, _, onBoundaryRetry) => CatchSection.content(
             child: CatchLocalizedErrorState(
               error,
@@ -105,10 +106,7 @@ class _HostClubInsightsPaneState extends ConsumerState<HostClubInsightsPane> {
                 ),
           ),
         ),
-        CatchSection.content(
-          title: context.l10n.hostsHostAnalyticsLabelAllTime,
-          child: HostClubOrganizerOverviewController(club: widget.club),
-        ),
+        HostClubOrganizerOverviewController(club: widget.club),
       ],
     );
   }
@@ -770,50 +768,27 @@ class HostAnalyticsReviewsPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     return CatchSection.content(
       title: context.l10n.hostsHostAnalyticsLabelReviews,
-      child: CatchSurface(
-        padding: CatchInsets.content,
-        borderColor: CatchTokens.of(context).line,
-        child: Column(
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: CatchMetricTile(
-                    label: context.l10n.hostsHostAnalyticsLabelNewReviews,
-                    value: _compactCount(report.reviewSummary.newReviews),
-                  ),
-                ),
-                Expanded(
-                  child: CatchMetricTile(
-                    label: context.l10n.hostsHostAnalyticsLabelAverageRating,
-                    value: report.reviewSummary.averageRating <= 0
-                        ? '—'
-                        : report.reviewSummary.averageRating.toStringAsFixed(1),
-                  ),
-                ),
-              ],
-            ),
-            gapH16,
-            Row(
-              children: [
-                Expanded(
-                  child: CatchMetricTile(
-                    label: context.l10n.hostsHostAnalyticsLabelPublishedReviews,
-                    value: _compactCount(report.reviewSummary.publishedReviews),
-                  ),
-                ),
-                Expanded(
-                  child: CatchMetricTile(
-                    label: context.l10n.hostsHostAnalyticsLabelResponses,
-                    value: _compactCount(
-                      report.reviewSummary.ownerResponseCount,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
+      child: CatchMetricSection.grid(
+        items: [
+          CatchMetricValue(
+            label: context.l10n.hostsHostAnalyticsLabelNewReviews,
+            value: _compactCount(report.reviewSummary.newReviews),
+          ),
+          CatchMetricValue(
+            label: context.l10n.hostsHostAnalyticsLabelAverageRating,
+            value: report.reviewSummary.averageRating <= 0
+                ? '—'
+                : report.reviewSummary.averageRating.toStringAsFixed(1),
+          ),
+          CatchMetricValue(
+            label: context.l10n.hostsHostAnalyticsLabelPublishedReviews,
+            value: _compactCount(report.reviewSummary.publishedReviews),
+          ),
+          CatchMetricValue(
+            label: context.l10n.hostsHostAnalyticsLabelResponses,
+            value: _compactCount(report.reviewSummary.ownerResponseCount),
+          ),
+        ],
       ),
     );
   }

@@ -251,7 +251,7 @@ class _HostClubsScaffoldState extends ConsumerState<HostClubsScaffold>
             ),
           ),
           CatchRootScreenPageSpec.surface(
-            backgroundColor: t.surface,
+            backgroundColor: t.bg,
             page: CatchRootScreenPageScrollView.fullBleed(
               scrollStateController:
                   _pageScrollControllers[HostClubTab.preview],
