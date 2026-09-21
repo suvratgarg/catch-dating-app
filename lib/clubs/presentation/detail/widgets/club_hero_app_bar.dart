@@ -131,7 +131,10 @@ class ClubHeroAppBar extends StatelessWidget {
               tooltip: context.l10n.clubsClubHeroAppBarTooltipBack,
               variant: CatchIconActionVariant.float,
               onPressed: () => Navigator.of(context).pop(),
-              child: Icon(CatchIcons.arrowBackIosNewRounded),
+              child: Icon(
+                CatchIcons.arrowBackIosNewRounded,
+                size: CatchIcon.md,
+              ),
             ),
           ),
           actions: [
@@ -157,6 +160,7 @@ class ClubHeroAppBar extends StatelessWidget {
                     CatchIcons.platformShare(
                       platform: Theme.of(context).platform,
                     ),
+                    size: CatchIcon.md,
                   ),
                 ),
               ),

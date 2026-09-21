@@ -286,7 +286,7 @@ Widget catchIconActionCatalogStates(BuildContext context) {
               tooltip: 'Share',
               variant: CatchIconActionVariant.plain,
               onPressed: widgetbookNoop,
-              child: Icon(CatchIcons.share),
+              child: Icon(CatchIcons.share, size: CatchIcon.md),
             ),
             CatchIconAction.toolbar(
               icon: CatchIcons.moreHorizRounded,

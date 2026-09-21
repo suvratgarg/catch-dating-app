@@ -22,13 +22,25 @@ Widget wrap(Widget child, {double scale = 1}) => MaterialApp(
     child: Scaffold(body: SizedBox(width: 390, child: child)),
   ),
 );
+
 class _Selector extends StatelessWidget implements CatchToolbarLeading {
   const _Selector();
   @override
-  Size toolbarSizeFor(BuildContext context) => CatchToolbarControl.sizeFor(context, label: 'Mumbai', maxWidth: 132);
+  Size toolbarSizeFor(BuildContext context) =>
+      CatchToolbarControl.sizeFor(context, label: 'Mumbai', maxWidth: 132);
   @override
-  Widget build(BuildContext context) => ConstrainedBox(constraints: const BoxConstraints(maxWidth:132), child: CatchToolbarControl.selector(label:'Mumbai',semanticLabel:'Choose Mumbai',tooltip:'Choose city',icon:CatchIcons.locationOnOutlined,onPressed:noop));
+  Widget build(BuildContext context) => ConstrainedBox(
+    constraints: const BoxConstraints(maxWidth: 132),
+    child: CatchToolbarControl.selector(
+      label: 'Mumbai',
+      semanticLabel: 'Choose Mumbai',
+      tooltip: 'Choose city',
+      icon: CatchIcons.locationOnOutlined,
+      onPressed: noop,
+    ),
+  );
 }
+
 void main() {
   tearDown(() {
     debugDefaultTargetPlatformOverride = null;
@@ -153,28 +165,57 @@ void main() {
       debugDefaultTargetPlatformOverride = null;
     },
   );
-  testWidgets('large root selectors reflow below the full-width title with their peers', (tester) async {
-    debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
-    await tester.pumpWidget(wrap(CatchTopBar.screen(title:'Explore',leading:const _Selector(),actions:[CatchIconAction.toolbar(icon:CatchIcons.savedOutlined,tooltip:'Saved',onPressed:noop)],search:CatchTopBarSearch(copy:copy,placeholder:'Search',tooltip:'Search')),scale:2));
-    final barFinder=find.byType(CatchTopBar);
-    final title=tester.getRect(find.text('Explore'));
-    final selector=tester.getRect(find.byType(_Selector));
-    final search=tester.getRect(find.byType(CatchSearchField));
-    final action=tester.getRect(find.byType(CatchIconAction));
-    expect(title.width, greaterThan(300));
-    expect(title.bottom, lessThanOrEqualTo(selector.top));
-    expect(selector.center.dy, search.center.dy);
-    expect(action.center.dy, search.center.dy);
-    final context=tester.element(barFinder);
-    expect(tester.widget<CatchTopBar>(barFinder).preferredSizeFor(context,width:390).height,tester.getSize(barFinder).height);
-    expect(tester.takeException(),isNull);
-    await tester.tap(find.byTooltip('Search'));
-    await tester.pumpAndSettle();
-    expect(find.text('Explore'),findsOneWidget);
-    expect(tester.getSize(find.byType(CatchSearchField)).width,350);
-    expect(tester.takeException(),isNull);
-    debugDefaultTargetPlatformOverride = null;
-  });
+  testWidgets(
+    'large root selectors reflow below the full-width title with their peers',
+    (tester) async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+      await tester.pumpWidget(
+        wrap(
+          CatchTopBar.screen(
+            title: 'Explore',
+            leading: const _Selector(),
+            actions: [
+              CatchIconAction.toolbar(
+                icon: CatchIcons.savedOutlined,
+                tooltip: 'Saved',
+                onPressed: noop,
+              ),
+            ],
+            search: CatchTopBarSearch(
+              copy: copy,
+              placeholder: 'Search',
+              tooltip: 'Search',
+            ),
+          ),
+          scale: 2,
+        ),
+      );
+      final barFinder = find.byType(CatchTopBar);
+      final title = tester.getRect(find.text('Explore'));
+      final selector = tester.getRect(find.byType(_Selector));
+      final search = tester.getRect(find.byType(CatchSearchField));
+      final action = tester.getRect(find.byType(CatchIconAction));
+      expect(title.width, greaterThan(300));
+      expect(title.bottom, lessThanOrEqualTo(selector.top));
+      expect(selector.center.dy, search.center.dy);
+      expect(action.center.dy, search.center.dy);
+      final context = tester.element(barFinder);
+      expect(
+        tester
+            .widget<CatchTopBar>(barFinder)
+            .preferredSizeFor(context, width: 390)
+            .height,
+        tester.getSize(barFinder).height,
+      );
+      expect(tester.takeException(), isNull);
+      await tester.tap(find.byTooltip('Search'));
+      await tester.pumpAndSettle();
+      expect(find.text('Explore'), findsOneWidget);
+      expect(tester.getSize(find.byType(CatchSearchField)).width, 350);
+      expect(tester.takeException(), isNull);
+      debugDefaultTargetPlatformOverride = null;
+    },
+  );
   final invalid = <String, Widget>{
     'plain icon': CatchIconAction.icon(
       icon: CatchIcons.add,

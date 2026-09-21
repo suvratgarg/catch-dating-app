@@ -86,7 +86,11 @@ class EventDetailHeroAppBar extends StatelessWidget {
               tooltip: context.l10n.eventsEventDetailHeroAppBarTooltipBack,
               backgroundColor: overlayScrim,
               onPressed: onBack,
-              child: Icon(CatchIcons.backArrow, color: d.ink),
+              child: Icon(
+                CatchIcons.backArrow,
+                color: d.ink,
+                size: CatchIcon.md,
+              ),
             ),
           ),
           actions: [
@@ -107,6 +111,7 @@ class EventDetailHeroAppBar extends StatelessWidget {
                             platform: Theme.of(context).platform,
                           ),
                           color: d.ink,
+                          size: CatchIcon.md,
                         ),
                       ),
                     ),
@@ -118,7 +123,11 @@ class EventDetailHeroAppBar extends StatelessWidget {
                             .eventsEventDetailHeroAppBarTooltipAddToCalendar,
                         backgroundColor: overlayScrim,
                         onPressed: () => onAddToCalendar(buttonContext),
-                        child: Icon(CatchIcons.calendarAdd, color: d.ink),
+                        child: Icon(
+                          CatchIcons.calendarAdd,
+                          color: d.ink,
+                          size: CatchIcon.md,
+                        ),
                       ),
                     ),
                   CatchIconAction(
@@ -134,6 +143,7 @@ class EventDetailHeroAppBar extends StatelessWidget {
                     child: Icon(
                       isSaved ? CatchIcons.saved : CatchIcons.savedOutlined,
                       color: d.ink,
+                      size: CatchIcon.md,
                     ),
                   ),
                 ],

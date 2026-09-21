@@ -30,7 +30,10 @@ class MapOverlayControls extends StatelessWidget {
                     alpha: CatchOpacity.mapOverlayChromeFill,
                   ),
                   onPressed: onBack ?? () => Navigator.of(context).maybePop(),
-                  child: Icon(CatchIcons.arrowBackIosNewRounded),
+                  child: Icon(
+                    CatchIcons.arrowBackIosNewRounded,
+                    size: CatchIcon.md,
+                  ),
                 ),
                 const Spacer(),
                 ?trailing,
