@@ -1,5 +1,4 @@
 import 'package:catch_dating_app/explore/presentation/widgets/explore_city_picker.dart';
-import 'package:catch_tokens/catch_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
@@ -48,7 +47,6 @@ Widget exploreCityPickerStates(BuildContext context) {
   path: '[Explore]/Controls',
 )
 Widget exploreCityTriggerStates(BuildContext context) {
-  final t = CatchTokens.of(context);
   return WidgetbookScrollCatalogFrame(
     title: 'CityTrigger',
     catalogId: 'control.explore.city_trigger',
@@ -81,7 +79,6 @@ Widget exploreCityTriggerStates(BuildContext context) {
             focused: false,
             enabled: false,
             presentation: ExploreCityPickerPresentation.scopeLabel,
-            foregroundColor: t.ink,
           ),
         ),
       ),

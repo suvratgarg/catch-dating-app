@@ -1,12 +1,12 @@
 import 'package:catch_tokens/catch_tokens.dart';
-import 'package:catch_ui/src/components/catch_toolbar_control.dart';
 import 'package:catch_ui/src/components/catch_icon_action.dart';
+import 'package:catch_ui/src/components/catch_toolbar_control.dart';
 import 'package:flutter/material.dart';
 
 /// Primary root-screen action that preserves canonical top-bar geometry.
 ///
-/// Preview: compact layouts use a quiet 44-point icon target.
-/// Medium and expanded layouts retain the labelled small primary button.
+/// Compact layouts use the shared outlined 44-point icon control.
+/// Medium and expanded layouts retain its outlined labelled action.
 /// Callers provide semantics and behavior; this member owns the breakpoint,
 /// action primitive, size, palette, and icon/label composition.
 class CatchTopBarPrimaryButton extends StatelessWidget {

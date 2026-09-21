@@ -427,6 +427,8 @@ import 'package:widgetbook_workspace/primitives/contracts/surfaces.dart'
     as _widgetbook_workspace_primitives_contracts_surfaces;
 import 'package:widgetbook_workspace/primitives/contracts/tabs.dart'
     as _widgetbook_workspace_primitives_contracts_tabs;
+import 'package:widgetbook_workspace/primitives/contracts/toolbar.dart'
+    as _widgetbook_workspace_primitives_contracts_toolbar;
 import 'package:widgetbook_workspace/primitives/contracts/typography.dart'
     as _widgetbook_workspace_primitives_contracts_typography;
 import 'package:widgetbook_workspace/primitives/distance_ring_use_cases.dart'
@@ -3597,6 +3599,16 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Selection and contact indicators',
                 builder: _widgetbook_workspace_primitives_tab_bar_use_cases
                     .tabBarIndicatorStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchToolbarControl',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder: _widgetbook_workspace_primitives_contracts_toolbar
+                    .catchToolbarControlContractStates,
               ),
             ],
           ),

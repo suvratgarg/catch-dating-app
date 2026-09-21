@@ -102,6 +102,7 @@ class _CatchToolbarControlState extends State<CatchToolbarControl> {
       expanded: widget.expanded,
       label: widget.semanticLabel,
       excludeSemantics: true,
+      onTap: enabled ? widget.onPressed : null,
       child: Tooltip(
         message: widget.tooltip,
         excludeFromSemantics: true,

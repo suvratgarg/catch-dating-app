@@ -382,14 +382,14 @@ class CatchesTopOverlay extends StatelessWidget {
             children: [
               CatchIconAction(
                 tooltip: context.l10n.swipesSwipeScreenTooltipBackToCatches,
-                child: Icon(
-                  CatchIcons.arrowBackIosNewRounded,
-                  size: CatchIcon.md,
-                ),
                 onPressed: onBack,
                 size: CatchLayout.floatingControlExtent,
                 backgroundColor: t.surface.withValues(
                   alpha: CatchOpacity.floatingControlFill,
+                ),
+                child: Icon(
+                  CatchIcons.arrowBackIosNewRounded,
+                  size: CatchIcon.md,
                 ),
               ),
               gapW10,
@@ -420,12 +420,12 @@ class CatchesTopOverlay extends StatelessWidget {
               gapW10,
               CatchIconAction(
                 tooltip: context.l10n.swipesSwipeScreenTooltipFilters,
-                child: Icon(CatchIcons.tuneRounded, size: CatchIcon.md),
                 onPressed: onFilters,
                 size: CatchLayout.floatingControlExtent,
                 backgroundColor: t.surface.withValues(
                   alpha: CatchOpacity.floatingControlFill,
                 ),
+                child: Icon(CatchIcons.tuneRounded, size: CatchIcon.md),
               ),
             ],
           ),

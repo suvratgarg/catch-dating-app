@@ -395,13 +395,12 @@ class MapPickerSearchRow extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         CatchIconAction(
-          child: Icon(CatchIcons.arrowBackIosNewRounded, size: CatchIcon.md),
           tooltip: MaterialLocalizations.of(context).backButtonTooltip,
           backgroundColor: t.surface.withValues(
             alpha: CatchOpacity.locationPickerTopChromeFill,
           ),
-          size: CatchControlMetrics.floatingMinHeight,
           onPressed: onBack,
+          child: Icon(CatchIcons.arrowBackIosNewRounded, size: CatchIcon.md),
         ),
         gapW12,
         Expanded(child: searchPanel),

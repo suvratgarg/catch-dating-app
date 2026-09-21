@@ -139,7 +139,6 @@ class EventSuccessGroupOverrideFieldLanes extends StatelessWidget {
               ),
               gapW8,
               CatchIconAction(
-                size: CatchIconAction.defaultSize,
                 tooltip: context
                     .l10n
                     .eventSuccessEventSuccessHostOverridesTooltipRemoveGroup,
@@ -228,7 +227,6 @@ class EventSuccessGroupMemberField extends StatelessWidget {
         ),
         gapW8,
         CatchIconAction(
-          size: CatchIconAction.defaultSize,
           tooltip: context
               .l10n
               .eventSuccessEventSuccessHostOverridesTooltipRemoveAttendee,

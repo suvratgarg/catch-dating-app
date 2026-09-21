@@ -109,7 +109,11 @@ class CityTrigger extends StatelessWidget {
     );
 
     return ConstrainedBox(
-      constraints: const BoxConstraints(maxWidth: 132),
+      constraints: BoxConstraints(
+        maxWidth: CatchToolbarScope.selectorReflowOf(context)
+            ? double.infinity
+            : 132,
+      ),
       child: CatchToolbarControl.selector(
         label: presentation == ExploreCityPickerPresentation.scopeLabel
             ? state.scopeLabel

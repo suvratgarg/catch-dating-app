@@ -152,7 +152,6 @@ class EventSuccessRotationPairFieldLanes extends StatelessWidget {
         ),
         gapW8,
         CatchIconAction(
-          size: CatchIconAction.defaultSize,
           tooltip: context
               .l10n
               .eventSuccessEventSuccessHostOverridesTooltipRemovePair,

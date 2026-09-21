@@ -6,14 +6,14 @@ import 'package:catch_ui/src/components/catch_button.dart';
 import 'package:catch_ui/src/components/catch_icon_action.dart';
 import 'package:catch_ui/src/components/catch_search_field.dart';
 import 'package:catch_ui/src/components/catch_search_field_status.dart';
+import 'package:catch_ui/src/components/catch_toolbar_control.dart';
+import 'package:catch_ui/src/components/catch_toolbar_metrics.dart';
 import 'package:catch_ui/src/components/catch_top_bar_action_row.dart';
 import 'package:catch_ui/src/components/catch_top_bar_emphasis.dart';
 import 'package:catch_ui/src/components/catch_top_bar_navigation.dart';
 import 'package:catch_ui/src/components/catch_top_bar_primary_button.dart';
 import 'package:catch_ui/src/components/catch_top_bar_search.dart';
 import 'package:catch_ui/src/components/catch_top_bar_tone.dart';
-import 'package:catch_ui/src/components/catch_toolbar_metrics.dart';
-import 'package:catch_ui/src/components/catch_toolbar_control.dart';
 import 'package:catch_ui/src/foundations/catch_icons.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:catch_ui/src/primitives/catch_gap.dart';
@@ -179,8 +179,9 @@ class CatchTopBar extends StatefulWidget implements CatchScaledPreferredSize {
             : 0);
     if (!selectorReflow && (search?.enabled ?? false)) {
       laneWidth -= CatchToolbarMetrics.targetExtent;
-      if (!largeText && actions.isNotEmpty)
+      if (!largeText && actions.isNotEmpty) {
         laneWidth -= CatchToolbarMetrics.gap;
+      }
     }
     if (!largeText && actions.isNotEmpty) {
       laneWidth -= math.max(
@@ -707,12 +708,18 @@ class _CatchTopBarState extends State<CatchTopBar> {
             ),
             child: Row(
               children: [
-                CatchToolbarScope(child: leading),
-                const Spacer(),
-                if (widget.actions.isNotEmpty)
+                Expanded(
+                  child: Align(
+                    alignment: AlignmentDirectional.centerStart,
+                    child: CatchToolbarScope.selectorRow(child: leading),
+                  ),
+                ),
+                if (widget.actions.isNotEmpty) ...[
+                  const SizedBox(width: CatchToolbarMetrics.gap),
                   CatchToolbarScope(
                     child: CatchTopBarActionRow(actions: widget.actions),
                   ),
+                ],
               ],
             ),
           ),

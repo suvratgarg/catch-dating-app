@@ -104,7 +104,7 @@ void main() {
     // The seven retired recipe previews were the club tag, screen/sliver/list,
     // and rows/boxes/chips skeletons. Derived-content and leaf cases remain;
     // the shared conditional-configuration preview adds one designation.
-    expect(coreGoldenIds, hasLength(301));
+    expect(coreGoldenIds, hasLength(302));
     expect(renderer.selected, unorderedEquals(coreGoldenIds));
     expect(
       coreGoldenIds.map(_corpusStem).toSet(),

@@ -306,6 +306,9 @@ class _CatchSearchFieldState extends State<CatchSearchField> {
                     : null,
                 enabled: collapsedInteractive ? widget.enabled : null,
                 excludeSemantics: collapsedInteractive,
+                onTap: collapsedInteractive && widget.enabled
+                    ? widget.onOpenSearch
+                    : null,
                 child: InkWell(
                   onTap: collapsedInteractive && widget.enabled
                       ? widget.onOpenSearch

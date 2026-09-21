@@ -1,19 +1,27 @@
+import 'package:catch_dating_app/core/domain/city_data.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_dating_app/explore/presentation/explore_chrome_state.dart';
+import 'package:catch_dating_app/explore/presentation/widgets/explore_city_picker.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import '../test_pump_helpers.dart';
 
 void noop() {}
 String clear(String s) => 'Clear $s';
-final copy = CatchSearchFieldCopy(
+const copy = CatchSearchFieldCopy(
   searchLabel: 'Search',
   clearTooltip: clear,
   closeSearchLabel: 'Close search',
 );
 Widget wrap(Widget child, {double scale = 1}) => MaterialApp(
   theme: AppTheme.light,
+  localizationsDelegates: AppLocalizations.localizationsDelegates,
+  supportedLocales: AppLocalizations.supportedLocales,
   home: MediaQuery(
     data: MediaQueryData(
       size: const Size(390, 800),
@@ -23,23 +31,12 @@ Widget wrap(Widget child, {double scale = 1}) => MaterialApp(
   ),
 );
 
-class _Selector extends StatelessWidget implements CatchToolbarLeading {
-  const _Selector();
-  @override
-  Size toolbarSizeFor(BuildContext context) =>
-      CatchToolbarControl.sizeFor(context, label: 'Mumbai', maxWidth: 132);
-  @override
-  Widget build(BuildContext context) => ConstrainedBox(
-    constraints: const BoxConstraints(maxWidth: 132),
-    child: CatchToolbarControl.selector(
-      label: 'Mumbai',
-      semanticLabel: 'Choose Mumbai',
-      tooltip: 'Choose city',
-      icon: CatchIcons.locationOnOutlined,
-      onPressed: noop,
-    ),
-  );
-}
+const city = CityData(
+  name: 'mumbai',
+  label: 'Mumbai',
+  latitude: 19.07,
+  longitude: 72.87,
+);
 
 void main() {
   tearDown(() {
@@ -61,7 +58,7 @@ void main() {
                   onPressed: noop,
                 ),
               ],
-              search: CatchTopBarSearch(
+              search: const CatchTopBarSearch(
                 copy: copy,
                 placeholder: 'Search messages',
                 tooltip: 'Search messages',
@@ -145,7 +142,7 @@ void main() {
                 onPressed: noop,
               ),
             ],
-            search: CatchTopBarSearch(
+            search: const CatchTopBarSearch(
               copy: copy,
               placeholder: 'Search messages',
               tooltip: 'Search messages',
@@ -156,9 +153,9 @@ void main() {
       );
       await tester.tap(find.byTooltip('Search messages'));
       await tester.pump();
-      await tester.pump(const Duration(milliseconds: 30));
+      await pumpFeatureUiFor(tester, const Duration(milliseconds: 30));
       expect(tester.takeException(), isNull);
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
       await tester.enterText(find.byType(EditableText), 'Riya');
       await tester.pump();
       expect(tester.takeException(), isNull);
@@ -173,7 +170,15 @@ void main() {
         wrap(
           CatchTopBar.screen(
             title: 'Explore',
-            leading: const _Selector(),
+            leading: ExploreCityPicker(
+              state: ExploreCityPickerState.from(
+                selectedCity: city,
+                cities: [city],
+                cityListLoading: false,
+                cityListError: null,
+              ),
+              onSelected: (_) {},
+            ),
             actions: [
               CatchIconAction.toolbar(
                 icon: CatchIcons.savedOutlined,
@@ -181,7 +186,7 @@ void main() {
                 onPressed: noop,
               ),
             ],
-            search: CatchTopBarSearch(
+            search: const CatchTopBarSearch(
               copy: copy,
               placeholder: 'Search',
               tooltip: 'Search',
@@ -192,10 +197,12 @@ void main() {
       );
       final barFinder = find.byType(CatchTopBar);
       final title = tester.getRect(find.text('Explore'));
-      final selector = tester.getRect(find.byType(_Selector));
+      final selector = tester.getRect(find.byType(ExploreCityPicker));
       final search = tester.getRect(find.byType(CatchSearchField));
       final action = tester.getRect(find.byType(CatchIconAction));
       expect(title.width, greaterThan(300));
+      expect(selector.width, greaterThan(132));
+      expect(action.left - selector.right, greaterThanOrEqualTo(8));
       expect(title.bottom, lessThanOrEqualTo(selector.top));
       expect(selector.center.dy, search.center.dy);
       expect(action.center.dy, search.center.dy);
@@ -209,11 +216,116 @@ void main() {
       );
       expect(tester.takeException(), isNull);
       await tester.tap(find.byTooltip('Search'));
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
       expect(find.text('Explore'), findsOneWidget);
       expect(tester.getSize(find.byType(CatchSearchField)).width, 350);
       expect(tester.takeException(), isNull);
       debugDefaultTargetPlatformOverride = null;
+    },
+  );
+  for (final selector in [true, false]) {
+    testWidgets(
+      'labelled toolbar ${selector ? 'selector' : 'action'} supports semantic activation and disables it',
+      (tester) async {
+        final semantics = tester.ensureSemantics();
+        try {
+          var taps = 0;
+          for (final enabled in [true, false]) {
+            final VoidCallback? activate = enabled ? () => taps++ : null;
+            final control = selector
+                ? CatchToolbarControl.selector(
+                    label: 'Mumbai',
+                    semanticLabel: 'Choose Mumbai',
+                    tooltip: 'Choose city',
+                    icon: CatchIcons.locationOnOutlined,
+                    onPressed: activate,
+                  )
+                : CatchToolbarControl.action(
+                    label: 'Create event',
+                    semanticLabel: 'Create event',
+                    tooltip: 'Create event',
+                    icon: CatchIcons.add,
+                    onPressed: activate,
+                  );
+            await tester.pumpWidget(
+              wrap(Align(alignment: Alignment.topLeft, child: control)),
+            );
+            final node = tester.getSemantics(find.byType(CatchToolbarControl));
+            expect(
+              node.getSemanticsData().hasAction(SemanticsAction.tap),
+              enabled,
+            );
+            expect(
+              node.getSemanticsData().label,
+              selector ? 'Choose Mumbai' : 'Create event',
+            );
+            if (enabled) {
+              node.owner!.performAction(node.id, SemanticsAction.tap);
+              await tester.pump();
+            }
+            expect(taps, 1);
+          }
+        } finally {
+          semantics.dispose();
+        }
+      },
+    );
+  }
+  testWidgets(
+    'collapsed search supports semantic activation and disabled search exposes no tap',
+    (tester) async {
+      final semantics = tester.ensureSemantics();
+      try {
+        await tester.pumpWidget(
+          wrap(
+            const CatchTopBar.screen(
+              title: 'Messaging',
+              search: CatchTopBarSearch(
+                copy: copy,
+                placeholder: 'Search messages',
+                tooltip: 'Search messages',
+              ),
+            ),
+          ),
+        );
+        final node = tester.getSemantics(
+          find.bySemanticsLabel('Search messages'),
+        );
+        expect(node.getSemanticsData().hasAction(SemanticsAction.tap), isTrue);
+        node.owner!.performAction(node.id, SemanticsAction.tap);
+        await pumpFeatureUi(tester);
+        expect(
+          tester.widget<CatchSearchField>(find.byType(CatchSearchField)).status,
+          CatchSearchFieldStatus.expanded,
+        );
+        expect(find.byType(EditableText), findsOneWidget);
+
+        await tester.pumpWidget(
+          wrap(
+            const Align(
+              alignment: Alignment.topRight,
+              child: CatchSearchField.expanding(
+                copy: copy,
+                placeholder: 'Search',
+                tooltip: 'Search',
+                enabled: false,
+                status: CatchSearchFieldStatus.collapsed,
+                maxWidth: 350,
+                onOpenSearch: noop,
+              ),
+            ),
+          ),
+        );
+        await pumpFeatureUi(tester);
+        final disabled = tester.getSemantics(find.bySemanticsLabel('Search'));
+        expect(
+          disabled.getSemanticsData().hasAction(SemanticsAction.tap),
+          isFalse,
+        );
+        expect(tester.takeException(), isNull);
+      } finally {
+        semantics.dispose();
+      }
     },
   );
   final invalid = <String, Widget>{
