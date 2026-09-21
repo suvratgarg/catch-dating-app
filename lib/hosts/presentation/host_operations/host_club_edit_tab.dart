@@ -498,7 +498,7 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
             child: CatchSection.action(
               title: context.l10n.hostsHostClubPublicationTitle,
               message: publicationBody,
-              details: Column(
+              meta: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   _HostClubPublicationChannelRow(
@@ -533,9 +533,9 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
                   : CatchButtonStatus.idle,
               actionEmphasis:
                   publicationState.kind == HostClubPublicationKind.everywhere
-                  ? CatchSectionActionEmphasis.secondary
-                  : CatchSectionActionEmphasis.primary,
-              feedback: publicationMutation.hasError
+                  ? CatchSectionEmphasis.secondary
+                  : CatchSectionEmphasis.primary,
+              footer: publicationMutation.hasError
                   ? CatchFieldSupportRow(
                       text: mutationErrorMessage(
                         publicationMutation,

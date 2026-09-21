@@ -51,14 +51,14 @@ Widget catchSectionContractStates(BuildContext context) {
       'horizontal-footer',
     ],
     children: [
-      for (final emphasis in CatchSectionActionEmphasis.values)
+      for (final emphasis in CatchSectionEmphasis.values)
         WidgetbookContractStateCard(
           label: 'action-${emphasis.name}',
           child: CatchSection.action(
             title: 'Practice before event day',
             message:
                 'Try the event controls with practice guests before your live event.',
-            actionLabel: emphasis == CatchSectionActionEmphasis.destructive
+            actionLabel: emphasis == CatchSectionEmphasis.destructive
                 ? 'Reset practice'
                 : 'Run a dress rehearsal',
             actionEmphasis: emphasis,
@@ -84,9 +84,7 @@ Widget catchSectionContractStates(BuildContext context) {
           title: 'Public visibility',
           message: 'Only your Host team can access this organizer.',
           icon: CatchIcons.groups3Outlined,
-          details: const Text(
-            'Catch app: hidden · Public website: not enabled',
-          ),
+          meta: const Text('Catch app: hidden · Public website: not enabled'),
           actionLabel: 'Make organizer public',
           onAction: () {},
         ),

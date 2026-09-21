@@ -125,7 +125,7 @@ void main() {
         'action roles share geometry, facts order and full-width action, dark=$dark scale=$scale',
         (tester) async {
           Size? firstSize;
-          for (final emphasis in CatchSectionActionEmphasis.values) {
+          for (final emphasis in CatchSectionEmphasis.values) {
             var calls = 0;
             await mount(
               tester,
@@ -133,7 +133,7 @@ void main() {
                 title: 'Public visibility',
                 message:
                     'Only your Host team can access this organizer. You can still run events and check people in.',
-                details: const Text('Catch app: hidden'),
+                meta: const Text('Catch app: hidden'),
                 icon: CatchIcons.groups3Outlined,
                 actionLabel: 'Review visibility',
                 actionEmphasis: emphasis,

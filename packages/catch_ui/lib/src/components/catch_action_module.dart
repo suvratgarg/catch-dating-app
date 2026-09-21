@@ -9,7 +9,7 @@ Widget _buildActionModule(
   required Key? actionKey,
   required Widget? details,
   required IconData? icon,
-  required CatchSectionActionEmphasis actionEmphasis,
+  required CatchSectionEmphasis actionEmphasis,
   required CatchButtonStatus actionStatus,
   required Widget? feedback,
 }) {
@@ -49,10 +49,9 @@ Widget _buildActionModule(
           label: actionLabel,
           onPressed: onAction,
           variant: switch (actionEmphasis) {
-            CatchSectionActionEmphasis.primary => CatchButtonVariant.primary,
-            CatchSectionActionEmphasis.secondary =>
-              CatchButtonVariant.secondary,
-            CatchSectionActionEmphasis.destructive => CatchButtonVariant.danger,
+            CatchSectionEmphasis.primary => CatchButtonVariant.primary,
+            CatchSectionEmphasis.secondary => CatchButtonVariant.secondary,
+            CatchSectionEmphasis.destructive => CatchButtonVariant.danger,
           },
           status: actionStatus,
           fullWidth: true,

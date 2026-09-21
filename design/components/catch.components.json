@@ -4463,11 +4463,11 @@
             "actionLabel",
             "onAction",
             "actionKey",
-            "details",
+            "meta",
             "icon",
             "actionEmphasis",
             "actionStatus",
-            "feedback"
+            "footer"
           ]
         },
         "props": [
@@ -4594,7 +4594,7 @@
             "type": "widget",
             "required": false,
             "dartType": "Widget?",
-            "notes": "Below-section support for field recipes; the final scrollable item for horizontal collections."
+            "notes": "Below-section support for field recipes; feedback below an action module; the final scrollable item for horizontal collections."
           },
           {
             "name": "children",
@@ -4749,7 +4749,7 @@
             "dartType": "Key?"
           },
           {
-            "name": "details",
+            "name": "meta",
             "type": "widget",
             "required": false,
             "dartType": "Widget?"
@@ -4761,16 +4761,10 @@
             "dartType": "IconData?"
           },
           {
-            "name": "feedback",
-            "type": "widget",
-            "required": false,
-            "dartType": "Widget?"
-          },
-          {
             "name": "actionEmphasis",
             "type": "enum",
             "required": false,
-            "dartType": "CatchSectionActionEmphasis",
+            "dartType": "CatchSectionEmphasis",
             "default": "primary",
             "values": [
               "primary",
@@ -4892,7 +4886,7 @@
           "CatchElevation.focusRing",
           "CatchStroke.hairline",
           "CatchHorizontalScrollView",
-          "CatchSectionActionEmphasis",
+          "CatchSectionEmphasis",
           "CatchButton",
           "CatchSurface"
         ],

@@ -33,7 +33,7 @@ part 'catch_action_module.dart';
 enum _CatchSectionVariant { divided, contained, plain }
 
 /// The supported action hierarchies inside a contained task.
-enum CatchSectionActionEmphasis { primary, secondary, destructive }
+enum CatchSectionEmphasis { primary, secondary, destructive }
 
 /// Design-system `Section`: the canonical primitive for grouping information.
 ///
@@ -455,6 +455,8 @@ class CatchSection extends StatelessWidget {
   );
 
   /// One self-contained task: heading, optional facts, explanation, action.
+  /// [meta] supplies facts above the explanation; [footer] supplies support
+  /// below the action. The recipe owns their spacing and containment.
   /// A destructive action does not tint the whole module. Feedback belongs in
   /// `CatchBanner`, and ordinary information belongs in [CatchSection.content].
   factory CatchSection.action({
@@ -464,12 +466,11 @@ class CatchSection extends StatelessWidget {
     required String actionLabel,
     required VoidCallback? onAction,
     Key? actionKey,
-    Widget? details,
+    Widget? meta,
     IconData? icon,
-    CatchSectionActionEmphasis actionEmphasis =
-        CatchSectionActionEmphasis.primary,
+    CatchSectionEmphasis actionEmphasis = CatchSectionEmphasis.primary,
     CatchButtonStatus actionStatus = CatchButtonStatus.idle,
-    Widget? feedback,
+    Widget? footer,
   }) => CatchSection._rows(
     key: key,
     title: title,
@@ -481,11 +482,11 @@ class CatchSection extends StatelessWidget {
         actionLabel: actionLabel,
         onAction: onAction,
         actionKey: actionKey,
-        details: details,
+        details: meta,
         icon: icon,
         actionEmphasis: actionEmphasis,
         actionStatus: actionStatus,
-        feedback: feedback,
+        feedback: footer,
       ),
     ),
   );
