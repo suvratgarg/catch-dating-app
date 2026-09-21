@@ -4,7 +4,7 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-part 'host_audience_scaffold.dart';
+part 'host_audience_header.dart';
 
 enum HostAudienceView { people, audiences, forms, responses }
 
@@ -36,9 +36,13 @@ class HostAudienceStateScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return HostAudienceScaffold(
-      selected: selected,
-      onChanged: onChanged ?? (view) => _openView(context, view),
+    return CatchRootScreenScaffold.withPrimaryRail(
+      header: const CatchRootScreenHeader.custom(HostAudienceHeader()),
+      actions: HostAudienceTabRail(
+        selected: selected,
+        selectionPosition: selected.index.toDouble(),
+        onChanged: onChanged ?? (view) => _openView(context, view),
+      ),
       body: CatchRootScreenBody.single(
         page: CatchRootScreenPageSpec.scroll(
           page: CatchRootScreenPageScrollView.standard(

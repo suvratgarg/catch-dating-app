@@ -59,13 +59,20 @@ Widget hostSavedAudiencesStates(BuildContext context) {
           overrides: [
             hostAllSavedAudiencesProvider(organizerId).overrideWithValue(value),
           ],
-          child: HostAudienceScaffold(
-            selected: HostAudienceView.audiences,
-            onChanged: (_) {},
-            primaryAction: CatchTopBarPrimaryButton(
-              label: 'New group',
-              icon: CatchIcons.add,
-              onPressed: () {},
+          child: CatchRootScreenScaffold.withPrimaryRail(
+            header: CatchRootScreenHeader.custom(
+              HostAudienceHeader(
+                primaryAction: CatchTopBarPrimaryButton(
+                  label: 'New group',
+                  icon: CatchIcons.add,
+                  onPressed: () {},
+                ),
+              ),
+            ),
+            actions: HostAudienceTabRail(
+              selected: HostAudienceView.audiences,
+              selectionPosition: 1,
+              onChanged: (_) {},
             ),
             body: CatchRootScreenBody.single(
               page: CatchRootScreenPageSpec.scroll(
@@ -114,10 +121,10 @@ Widget hostSavedAudiencesStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Shared Audience header with group states',
-  type: HostAudienceScaffold,
+  type: HostAudienceHeader,
   path: '[P1 product surfaces]/Host operations/Composed sections',
 )
-Widget hostAudienceScaffoldStates(BuildContext context) =>
+Widget hostAudienceHeaderStates(BuildContext context) =>
     hostSavedAudiencesStates(context);
 
 @widgetbook.UseCase(

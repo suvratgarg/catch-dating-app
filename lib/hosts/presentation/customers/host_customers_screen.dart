@@ -297,75 +297,87 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
                   summaryState.value?.smsReadiness,
                 ),
         );
-        return HostAudienceScaffold(
-          organizerId: selectedClub.id,
-          selected: _view,
-          selectionAnimation: _tabController.animation!,
-          onChanged: (view) => _selectAudienceView(view, selectedClub.id),
-          primaryAction: peopleView
-              ? CatchTopBarPrimaryButton(
-                  key: const ValueKey<String>('host-customers-add-customer'),
-                  label: context.l10n.hostCustomersAdd,
-                  icon: CatchIcons.personAddAlt1Rounded,
-                  onPressed: () => _addCustomer(selectedClub, request),
-                )
-              : CatchTopBarPrimaryButton(
-                  key: const ValueKey('host-saved-audience-create'),
-                  label: context.l10n.hostSavedAudienceNew,
-                  icon: CatchIcons.add,
-                  onPressed: () => _openAudienceEditor(selectedClub),
+        return CatchRootScreenScaffold.withPrimaryRail(
+          header: CatchRootScreenHeader.custom(
+            HostAudienceHeader(
+              organizerId: selectedClub.id,
+              primaryAction: peopleView
+                  ? CatchTopBarPrimaryButton(
+                      key: const ValueKey<String>(
+                        'host-customers-add-customer',
+                      ),
+                      label: context.l10n.hostCustomersAdd,
+                      icon: CatchIcons.personAddAlt1Rounded,
+                      onPressed: () => _addCustomer(selectedClub, request),
+                    )
+                  : CatchTopBarPrimaryButton(
+                      key: const ValueKey('host-saved-audience-create'),
+                      label: context.l10n.hostSavedAudienceNew,
+                      icon: CatchIcons.add,
+                      onPressed: () => _openAudienceEditor(selectedClub),
+                    ),
+              menuItems: peopleView
+                  ? _hostCustomersHeaderActions(
+                      context,
+                      includeExport: !_exporting,
+                      exportEnabled: _manualTag == null,
+                      exportSublabel: _manualTag == null
+                          ? null
+                          : context
+                                .l10n
+                                .hostCustomersManualTagExportUnavailable,
+                    )
+                  : const [],
+              onMenuAction: (action) {
+                if (action == HostAudienceMenuAction.reviewDuplicates) {
+                  unawaited(_reviewDuplicates(selectedClub.id));
+                }
+                if (action == HostAudienceMenuAction.export) {
+                  unawaited(_exportCustomers(selectedClub, effectiveFilter));
+                }
+              },
+              search: CatchTopBarSearch(
+                copy: catchSearchFieldCopy(context.l10n),
+                fieldKey: ValueKey(
+                  peopleView
+                      ? 'host-customers-search'
+                      : 'host-audiences-search',
                 ),
-          menuItems: peopleView
-              ? _hostCustomersHeaderActions(
-                  context,
-                  includeExport: !_exporting,
-                  exportEnabled: _manualTag == null,
-                  exportSublabel: _manualTag == null
-                      ? null
-                      : context.l10n.hostCustomersManualTagExportUnavailable,
-                )
-              : const [],
-          onMenuAction: (action) {
-            if (action == HostAudienceMenuAction.reviewDuplicates) {
-              unawaited(_reviewDuplicates(selectedClub.id));
-            }
-            if (action == HostAudienceMenuAction.export) {
-              unawaited(_exportCustomers(selectedClub, effectiveFilter));
-            }
-          },
-          search: CatchTopBarSearch(
-            copy: catchSearchFieldCopy(context.l10n),
-            fieldKey: ValueKey(
-              peopleView ? 'host-customers-search' : 'host-audiences-search',
+                value: activeQuery ?? '',
+                contract: peopleView
+                    ? CatchContractConstraints
+                          .listOrganizerContactsCallablePayloadQuery
+                    : CatchContractConstraints
+                          .upsertOrganizerSavedAudienceCallablePayloadName,
+                placeholder: peopleView
+                    ? context.l10n.hostsHostAudienceSearch
+                    : context.l10n.hostSavedAudiencesSearch,
+                tooltip: peopleView
+                    ? context.l10n.hostsHostAudienceSearch
+                    : context.l10n.hostSavedAudiencesSearch,
+                semanticLabel: peopleView
+                    ? context.l10n.hostsHostAudienceSearch
+                    : context.l10n.hostSavedAudiencesSearch,
+                expanded: _searchExpanded || activeQuery != null,
+                onExpandedChanged: (expanded) {
+                  if (_searchExpanded == expanded) return;
+                  setState(() => _searchExpanded = expanded);
+                },
+                onChanged: (value) => _scheduleSearch(_view, value),
+                onSubmitted: (value) => _applySearch(_view, value),
+                onFocusChanged: (focused) {
+                  if (!focused && activeQuery == null && _searchExpanded) {
+                    setState(() => _searchExpanded = false);
+                  }
+                },
+                textInputAction: TextInputAction.search,
+              ),
             ),
-            value: activeQuery ?? '',
-            contract: peopleView
-                ? CatchContractConstraints
-                      .listOrganizerContactsCallablePayloadQuery
-                : CatchContractConstraints
-                      .upsertOrganizerSavedAudienceCallablePayloadName,
-            placeholder: peopleView
-                ? context.l10n.hostsHostAudienceSearch
-                : context.l10n.hostSavedAudiencesSearch,
-            tooltip: peopleView
-                ? context.l10n.hostsHostAudienceSearch
-                : context.l10n.hostSavedAudiencesSearch,
-            semanticLabel: peopleView
-                ? context.l10n.hostsHostAudienceSearch
-                : context.l10n.hostSavedAudiencesSearch,
-            expanded: _searchExpanded || activeQuery != null,
-            onExpandedChanged: (expanded) {
-              if (_searchExpanded == expanded) return;
-              setState(() => _searchExpanded = expanded);
-            },
-            onChanged: (value) => _scheduleSearch(_view, value),
-            onSubmitted: (value) => _applySearch(_view, value),
-            onFocusChanged: (focused) {
-              if (!focused && activeQuery == null && _searchExpanded) {
-                setState(() => _searchExpanded = false);
-              }
-            },
-            textInputAction: TextInputAction.search,
+          ),
+          actions: HostAudienceTabRail(
+            selected: _view,
+            selectionAnimation: _tabController.animation!,
+            onChanged: (view) => _selectAudienceView(view, selectedClub.id),
           ),
           body: CatchRootScreenBody.paged(
             controller: _tabController,

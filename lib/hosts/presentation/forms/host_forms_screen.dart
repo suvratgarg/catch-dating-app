@@ -193,34 +193,41 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
         ? context.l10n.hostFormsSearch
         : context.l10n.hostFormResponsesSearch;
 
-    return HostAudienceScaffold(
-      organizerId: selectedClub.id,
-      selected: _view,
-      selectionAnimation: _tabController.animation!,
-      animationOffset: 2,
-      onChanged: (view) => _selectAudienceView(view, selectedClub.id),
-      primaryAction: activeSearchIsForms
-          ? CatchTopBarPrimaryButton(
-              key: const ValueKey('host-forms-create'),
-              label: context.l10n.hostFormsCreate,
-              icon: CatchIcons.add,
-              onPressed: () => _openTemplates(selectedClub.id),
-            )
-          : null,
-      search: CatchTopBarSearch(
-        copy: catchSearchFieldCopy(context.l10n),
-        value: activeSearchIsForms ? _query ?? '' : _responseQuery ?? '',
-        contract: activeSearchIsForms
-            ? CatchContractConstraints.listOrganizerFormsCallablePayloadQuery
-            : CatchContractConstraints
-                  .listOrganizerFormResponsesCallablePayloadQuery,
-        placeholder: searchPlaceholder,
-        tooltip: searchPlaceholder,
-        semanticLabel: searchPlaceholder,
-        autofocus: true,
-        textInputAction: TextInputAction.search,
-        onChanged: (value) => _scheduleSearch(_view, value),
-        onSubmitted: (value) => _applySearch(_view, value),
+    return CatchRootScreenScaffold.withPrimaryRail(
+      header: CatchRootScreenHeader.custom(
+        HostAudienceHeader(
+          organizerId: selectedClub.id,
+          primaryAction: activeSearchIsForms
+              ? CatchTopBarPrimaryButton(
+                  key: const ValueKey('host-forms-create'),
+                  label: context.l10n.hostFormsCreate,
+                  icon: CatchIcons.add,
+                  onPressed: () => _openTemplates(selectedClub.id),
+                )
+              : null,
+          search: CatchTopBarSearch(
+            copy: catchSearchFieldCopy(context.l10n),
+            value: activeSearchIsForms ? _query ?? '' : _responseQuery ?? '',
+            contract: activeSearchIsForms
+                ? CatchContractConstraints
+                      .listOrganizerFormsCallablePayloadQuery
+                : CatchContractConstraints
+                      .listOrganizerFormResponsesCallablePayloadQuery,
+            placeholder: searchPlaceholder,
+            tooltip: searchPlaceholder,
+            semanticLabel: searchPlaceholder,
+            autofocus: true,
+            textInputAction: TextInputAction.search,
+            onChanged: (value) => _scheduleSearch(_view, value),
+            onSubmitted: (value) => _applySearch(_view, value),
+          ),
+        ),
+      ),
+      actions: HostAudienceTabRail(
+        selected: _view,
+        selectionAnimation: _tabController.animation!,
+        animationOffset: 2,
+        onChanged: (view) => _selectAudienceView(view, selectedClub.id),
       ),
       body: CatchRootScreenBody.paged(
         controller: _tabController,

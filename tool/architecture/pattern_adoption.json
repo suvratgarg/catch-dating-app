@@ -352,8 +352,8 @@
           "status": "aligned"
         },
         {
-          "path": "lib/hosts/presentation/host_audience_scaffold.dart",
-          "role": "HostAudienceScaffold owns the shared header, tab rail, creation actions, search and organizer-wide overflow for all four Audience tabs and route states",
+          "path": "lib/hosts/presentation/host_audience_header.dart",
+          "role": "HostAudienceHeader owns canonical primary-rail title, creation actions, search and organizer-wide overflow for all Audience tabs and route states",
           "status": "aligned"
         }
       ],

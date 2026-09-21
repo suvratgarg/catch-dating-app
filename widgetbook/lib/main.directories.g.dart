@@ -9821,12 +9821,12 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'HostAudienceScaffold',
+                name: 'HostAudienceHeader',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Shared Audience header with group states',
                     builder: _widgetbook_workspace_hosts_operations_audiences
-                        .hostAudienceScaffoldStates,
+                        .hostAudienceHeaderStates,
                   ),
                 ],
               ),

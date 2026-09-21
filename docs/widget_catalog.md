@@ -861,10 +861,10 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>HostFormValidationFieldLanes</code> | <code>lib/hosts/presentation/forms/host_form_validation_field_lanes.dart:12</code> | — | — | No class documentation or registry summary. |
 | <code>HostFormValidationTextField</code> | <code>lib/hosts/presentation/forms/host_form_validation_text_field.dart:6</code> | — | — | No class documentation or registry summary. |
 | <code>HostFormWorkspaceHeader</code> | <code>lib/hosts/presentation/forms/host_form_workspace_header.dart:9</code> | — | — | No class documentation or registry summary. |
-| <code>HostFormsNoOrganizer</code> | <code>lib/hosts/presentation/forms/host_forms_screen.dart:699</code> | — | — | No class documentation or registry summary. |
-| <code>HostAudienceScaffold</code> | <code>lib/hosts/presentation/host_audience_scaffold.dart:6</code> | — | — | Shared chrome owner for every Audience tab, including route states. |
+| <code>HostFormsNoOrganizer</code> | <code>lib/hosts/presentation/forms/host_forms_screen.dart:706</code> | — | — | No class documentation or registry summary. |
+| <code>HostAudienceHeader</code> | <code>lib/hosts/presentation/host_audience_header.dart:6</code> | — | — | Shared Audience header; the canonical root scaffold owns each tab's body. |
 | <code>HostAudienceStateScaffold</code> | <code>lib/hosts/presentation/host_audience_view.dart:23</code> | — | — | Canonical Audience destination owner for route-level loading, auth, error, and no-organizer states. |
-| <code>HostAudienceTabRail</code> | <code>lib/hosts/presentation/host_audience_view.dart:61</code> | — | — | No class documentation or registry summary. |
+| <code>HostAudienceTabRail</code> | <code>lib/hosts/presentation/host_audience_view.dart:65</code> | — | — | No class documentation or registry summary. |
 | <code>HostAnalyticsDualBar</code> | <code>lib/hosts/presentation/host_operations/host_analytics.dart:587</code> | — | — | No class documentation or registry summary. |
 | <code>HostAnalyticsEventList</code> | <code>lib/hosts/presentation/host_operations/host_analytics.dart:692</code> | — | — | No class documentation or registry summary. |
 | <code>HostAnalyticsReportView</code> | <code>lib/hosts/presentation/host_operations/host_analytics.dart:267</code> | — | — | No class documentation or registry summary. |

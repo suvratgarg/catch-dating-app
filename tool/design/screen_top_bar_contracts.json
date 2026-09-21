@@ -84,9 +84,9 @@
       "routeName": "Routes.hostAudienceScreen.name",
       "surfaces": [
         {
-          "path": "lib/hosts/presentation/host_audience_scaffold.dart",
-          "symbol": "HostAudienceScaffold",
-          "owner": "CatchRootScreenHeader.title"
+          "path": "lib/hosts/presentation/host_audience_header.dart",
+          "symbol": "HostAudienceHeader",
+          "owner": "CatchTopBar.primaryRail"
         }
       ]
     },
