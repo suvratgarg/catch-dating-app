@@ -2467,7 +2467,7 @@
       "command": "node tool/contracts/check_firestore_query_indexes.mjs",
       "safety": "local-readonly",
       "status": "active",
-      "description": "Checks repository-owned composite Firestore query contracts against firestore.indexes.json, rejects uncontracted composite query builders, and blocks non-deployable single-field plus __name__ pseudo-composites.",
+      "description": "Checks repository-owned composite Firestore query contracts against firestore.indexes.json, rejects uncontracted composite query builders, and blocks duplicate composite definitions and non-deployable single-field plus __name__ pseudo-composites.",
       "checks": [
         "node --check tool/contracts/check_firestore_query_indexes.mjs",
         "node --test tool/contracts/check_firestore_query_indexes.test.mjs",
@@ -2483,7 +2483,8 @@
         "contains": [
           "known-bad missing composite index is detected",
           "known-bad uncontracted composite query builder is detected",
-          "known-bad unnecessary single-field composite index is detected"
+          "known-bad unnecessary single-field composite index is detected",
+          "known-bad duplicate composite index is detected"
         ]
       }
     },
