@@ -36,7 +36,7 @@ class CrossPathsInvitationScreen extends ConsumerWidget {
       watchCrossPathsInvitationProvider(invitationId),
     );
     return CatchRouteScaffold(
-      topBarBuilder: (context, scrolledUnder) => CatchTopBar(
+      topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
         title: context.l10n.crossPathsInvitationScreenTitle,
         navigation: const CatchTopBarNavigation(
           mode: CatchTopBarNavigationMode.back,

@@ -91,7 +91,7 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
     final settings = view == HostFormWorkspaceView.settings;
 
     return CatchRouteScaffold(
-      topBarBuilder: (context, scrolledUnder) => CatchTopBar(
+      topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
         title: settings
             ? context.l10n.hostFormSettings
             : context.l10n.hostAudienceFormWorkspaceTitle,

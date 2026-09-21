@@ -308,17 +308,17 @@
       "adopters": [
         {
           "path": "packages/catch_ui/lib/src/components/catch_top_bar.dart",
-          "role": "reference CatchTopBar.screen implementation composing CatchScreenHeader for root-screen title typography, root app-bar wrapper configuration, search slots, leading slots, and action slots",
+          "role": "reference CatchTopBar.screen implementation composing CatchTopBar for root-screen title typography, root app-bar wrapper configuration, search slots, leading slots, and action slots",
           "status": "aligned"
         },
         {
           "path": "lib/dashboard/presentation/dashboard_home_screen.dart",
-          "role": "Home tab sliver title uses CatchScreenHeader.block with compact root-screen padding and notification action slot",
+          "role": "Home tab sliver title uses CatchTopBar.primaryRail with compact root-screen padding and notification action slot",
           "status": "aligned"
         },
         {
           "path": "lib/explore/presentation/widgets/explore_header.dart",
-          "role": "Explore browse and no-cover discovery headers use CatchScreenHeader/CatchTopBar.screen with city picker leading slot and shared expanding search",
+          "role": "Explore browse and no-cover discovery headers use CatchTopBar/CatchTopBar.screen with city picker leading slot and shared expanding search",
           "status": "aligned"
         },
         {
@@ -333,12 +333,12 @@
         },
         {
           "path": "lib/hosts/today/presentation/widgets/host_today_body.dart",
-          "role": "HostTodayHeader gives every Today branch one scroll-owned CatchScreenHeader.block root header while HostTodayBody retains terminal shell padding",
+          "role": "HostTodayHeader gives every Today branch one scroll-owned CatchTopBar.primaryRail root header while HostTodayBody retains terminal shell padding",
           "status": "aligned"
         },
         {
           "path": "lib/hosts/events/presentation/host_events_screen.dart",
-          "role": "Host Events route delegates title ownership to CatchScreenHeader while its organizer section supplies the adaptive primary create action",
+          "role": "Host Events route delegates title ownership to CatchTopBar while its organizer section supplies the adaptive primary create action",
           "status": "aligned"
         },
         {
@@ -353,12 +353,12 @@
         },
         {
           "path": "widgetbook/lib/dashboard/catalog/header.dart",
-          "role": "Dashboard header review state now mounts CatchScreenHeader instead of a one-off DashboardHeaderContent wrapper",
+          "role": "Dashboard header review state now mounts CatchTopBar instead of a one-off DashboardHeaderContent wrapper",
           "status": "aligned"
         },
         {
           "path": "widgetbook/lib/profiles/catalog/header.dart",
-          "role": "Profile header review states now mount CatchScreenHeader instead of a one-off ProfileTitle wrapper",
+          "role": "Profile header review states now mount CatchTopBar instead of a one-off ProfileTitle wrapper",
           "status": "aligned"
         }
       ],
@@ -366,12 +366,12 @@
         {
           "symbol": "DashboardHeaderContent",
           "path": "lib/dashboard/presentation/widgets/dashboard_sliver_header.dart",
-          "reason": "One-off wrapper duplicated root-screen title typography and action layout now owned by CatchScreenHeader."
+          "reason": "One-off wrapper duplicated root-screen title typography and action layout now owned by CatchTopBar."
         },
         {
           "symbol": "ProfileTitle",
           "path": "lib/user_profile/presentation/widgets/profile_sliver_header.dart",
-          "reason": "One-off wrapper duplicated root-screen title typography and action layout now owned by CatchScreenHeader."
+          "reason": "One-off wrapper duplicated root-screen title typography and action layout now owned by CatchTopBar."
         }
       ],
       "requiredBackPropagation": "When root-screen header typography, padding, action slots, or search composition changes, inspect every adopter above and keep consumer and Host root destinations aligned. Compact/detail CatchTopBar(title: ...) screens remain outside this pattern unless product promotes them to root-like destinations.",
@@ -385,7 +385,7 @@
         "node tool/architecture/check_app_architecture_exhibits.mjs",
         "bash tool/widget_cleanup_scan.sh"
       ],
-      "notes": "This pattern separates the 32px root headline hierarchy from compact route chrome while both use Archivo through distinct semantic roles. CatchScreenHeader owns headline typography for root titles plus optional mono eyebrow, subtitle, leading, action, material, and padding slots. CatchTopBar.screen wraps CatchTopBar when a root-like app bar also needs safe-area, action, or expanding-search behavior. Do not recreate feature-local title widgets for Home, Explore, Chats, Profile, Activity, or Settings; pass feature data and actions into the shared header slots. The screen-top-bar contract gate inventories every compact and identity app bar, exact raw media-hero exception, feature-owned Screen/Scaffold/Header/TopBar/HeaderContent class including delegated State bodies, and shell-covering editor launcher. Every discovered surface in an aligned adopter path must retain a canonical root owner, so one correct header cannot hide a second drifting implementation."
+      "notes": "CatchTopBar is the only app-bar renderer. Closed route, identity, screen and primaryRail recipes share platform function typography, title then optional context, and internally scaled geometry. No eyebrow, kicker, arbitrary title widget/style, size/mode/variant, line-count or geometry overrides. Goldens follow reviewed semantic rules. Exact root, route, identity and media-hero contracts remain enforced."
     },
     {
       "id": "ARCH-ROUTE-CHROME-001",
@@ -425,12 +425,12 @@
         },
         {
           "path": "lib/hosts/presentation/host_event_manage_screen.dart",
-          "role": "Host event workspace using primitive-owned Archivo route-title, multiline, and scroll-under chrome",
+          "role": "Host event workspace using primitive-owned platform title/context hierarchy and scroll-under chrome",
           "status": "aligned"
         },
         {
           "path": "lib/event_rehearsal/presentation/host_event_rehearsal_start_screen.dart",
-          "role": "Host rehearsal launcher using the shared Archivo compact route-title role and scroll-derived divider",
+          "role": "Host rehearsal launcher using the shared platform compact route-title role and scroll-derived divider",
           "status": "aligned"
         },
         {
@@ -476,7 +476,7 @@
         "node tool/run.mjs check design:screen-top-bar-contracts",
         "node tool/architecture/check_app_architecture_exhibits.mjs"
       ],
-      "notes": "Root tab titles remain scroll content under ARCH-SCREEN-CHROME-001. This exhibit owns pushed-route surface, divider, and compact title typography. Root and route titles share Archivo through separate headline and routeTitle roles; identity names remain platform function text. Compact and workspace adopters pass semantic title stack inputs instead of feature-local title widgets."
+      "notes": "Root tab titles remain scroll content under ARCH-SCREEN-CHROME-001. This exhibit owns pushed-route surface, divider, and compact title typography. Root, route and identity titles share platform function typography; root titles use headline scale. Compact and workspace adopters pass semantic title stack inputs instead of feature-local title widgets."
     },
     {
       "id": "ARCH-UI-STATE-001",
@@ -1531,7 +1531,7 @@
         },
         {
           "path": "lib/event_rehearsal/presentation/host_event_rehearsal_start_screen.dart",
-          "role": "pushed-route adopter using shared Archivo compact route-title typography while delegating section rhythm and responsive columns to CatchSectionList.page",
+          "role": "pushed-route adopter using shared platform compact route-title typography while delegating section rhythm and responsive columns to CatchSectionList.page",
           "status": "aligned"
         }
       ],
@@ -1545,7 +1545,7 @@
         "node tool/architecture/check_app_architecture_exhibits.mjs",
         "node tool/architecture/check_adopted_architecture_boundaries.mjs"
       ],
-      "notes": "Features select semantic body roles and provide header/body/state content. The composition owners\u2014not each screen\u2014translate those choices into page padding, one scroll owner, responsive lanes, interaction planes, and shell-aware terminal geometry. Pushed routes remain a separate compact-title hierarchy while sharing the Archivo family through CatchTextStyles.routeTitle."
+      "notes": "Features select semantic body roles and provide header/body/state content. The composition owners\u2014not each screen\u2014translate those choices into page padding, one scroll owner, responsive lanes, interaction planes, and shell-aware terminal geometry. Pushed routes remain a separate compact-title hierarchy while sharing the platform function family through CatchTextStyles.titleL."
     },
     {
       "id": "ARCH-ROOT-PRIMARY-RAIL-001",

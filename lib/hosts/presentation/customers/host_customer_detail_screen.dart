@@ -87,13 +87,8 @@ class _HostCustomerDetailScreenState
         (initialDisplayName?.isNotEmpty ?? false ? initialDisplayName : null) ??
         context.l10n.hostNavigationCustomers;
     return CatchRouteScaffold(
-      topBarBuilder: (context, scrolledUnder) => CatchTopBar(
+      topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
         title: displayName,
-        variant:
-            detailState.value != null ||
-                (initialDisplayName?.isNotEmpty ?? false)
-            ? CatchTopBarVariant.identity
-            : CatchTopBarVariant.route,
         navigation: CatchTopBarNavigation(
           mode: widget.embedded
               ? CatchTopBarNavigationMode.none

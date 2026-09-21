@@ -53,7 +53,6 @@ void main() {
     expect(find.text('Continue to publish'), findsNothing);
     expect(find.text('Form title'), findsNothing);
     final topBar = find.byType(CatchTopBar);
-    expect(tester.widget<CatchTopBar>(topBar).body, isNull);
     final titleFinder = find.descendant(
       of: topBar,
       matching: find.text('Form'),
@@ -61,7 +60,7 @@ void main() {
     final titleContext = tester.element(titleFinder);
     expect(
       tester.widget<Text>(titleFinder).style,
-      CatchTextStyles.routeTitle(
+      CatchTextStyles.titleL(
         titleContext,
         color: CatchTokens.of(titleContext).ink,
       ),

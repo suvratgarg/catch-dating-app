@@ -55,7 +55,7 @@ class _HostNewMessageScreenState extends ConsumerState<HostNewMessageScreen> {
       ref.watch(hostCustomersDirectoryControllerProvider(request)),
     );
     return CatchRouteScaffold(
-      topBarBuilder: (_, scrolledUnder) => CatchTopBar(
+      topBarBuilder: (_, scrolledUnder) => CatchTopBar.route(
         title: context.l10n.hostInboxNewMessage,
         navigation: CatchTopBarNavigation(
           mode: CatchTopBarNavigationMode.back,

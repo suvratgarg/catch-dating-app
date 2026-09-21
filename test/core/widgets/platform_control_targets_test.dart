@@ -476,7 +476,7 @@ void main() {
             home: SizedBox(
               width: 320,
               child: CatchScaffold.workspace(
-                title: CatchTopBar(
+                title: CatchTopBar.route(
                   title: 'Workspace',
                   navigation: const CatchTopBarNavigation(
                     mode: CatchTopBarNavigationMode.none,

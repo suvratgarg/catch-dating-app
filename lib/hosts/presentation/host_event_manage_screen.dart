@@ -422,14 +422,11 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
             padding: CatchInsets.pageBody,
             children: workspaceChildren,
           );
-    final topBarEyebrow = hostEventManageLifecycleLabel(
+    final topBarTitle = hostEventManageLifecycleLabel(
       context.l10n,
       event: event,
       phase: screenState.phase,
     );
-    final topBarTitleMaxLines = MediaQuery.textScalerOf(context).scale(1) >= 1.4
-        ? 3
-        : 1;
     listenToCatchMutationErrors(
       context,
       ref,
@@ -437,18 +434,9 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
       errorContext: AppErrorContext.event,
     );
     return CatchRouteScaffold(
-      topBarBuilder: (context, scrolledUnder) => CatchTopBar(
-        size: CatchTopBarSize.compact,
-        title: screenState.eventTitle,
-        eyebrow: topBarEyebrow,
-        titleMaxLines: topBarTitleMaxLines,
-        height: CatchTopBar.workspaceHeightFor(
-          context: context,
-          hasEyebrow: true,
-          titleMaxLines: topBarTitleMaxLines,
-        ),
-        mode: CatchTopBarMode.content,
-        contentCrossAxisAlignment: CrossAxisAlignment.start,
+      topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+        title: topBarTitle,
+        subtitle: screenState.eventTitle,
         leading: CatchIconAction.toolbar(
           tooltip: MaterialLocalizations.of(context).backButtonTooltip,
           icon: CatchIcons.arrowBackIosNewRounded,

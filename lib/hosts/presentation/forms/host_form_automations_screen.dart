@@ -82,7 +82,7 @@ class _HostFormAutomationsScreenState
       ],
     );
     return CatchRouteScaffold(
-      topBarBuilder: (context, scrolledUnder) => CatchTopBar(
+      topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
         title: context.l10n.hostFormAutomationsTitle,
         navigation: const CatchTopBarNavigation(
           mode: CatchTopBarNavigationMode.back,

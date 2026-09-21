@@ -53,15 +53,13 @@ class ExploreBrowseHeaderContent extends StatelessWidget {
     );
 
     if (!chrome.showSearchAction) {
-      return CatchScreenHeader.block(leading: cityPicker, title: chrome.title);
+      return CatchTopBar.primaryRail(leading: cityPicker, title: chrome.title);
     }
 
-    return CatchTopBar.screen(
-      context: context,
+    return CatchTopBar.primaryRail(
       leading: cityPicker,
       title: chrome.title,
       backgroundColor: backgroundColor ?? t.bg,
-      applySafeArea: false,
       search: CatchTopBarSearch(
         copy: catchSearchFieldCopy(context.l10n),
         contract: CatchContractConstraints.exploreSearchCallablePayloadQuery,
@@ -200,7 +198,6 @@ class _ExploreDiscoveryTopBar extends StatelessWidget {
     final transparentControlFill = onDarkBackdrop ? Colors.transparent : null;
     final transparentControlRule = onDarkBackdrop ? Colors.transparent : null;
     final topBar = CatchTopBar.screen(
-      context: context,
       leading: ExploreCityPicker(
         state: cityPickerState,
         onSelected: onCitySelected,

@@ -68,7 +68,7 @@ class HostClubSpokeResolver extends ConsumerWidget {
     final uidState = catchAsyncStateFromAsyncValue(uidAsync);
     if (uidState.hasError) {
       return CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar(
+        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
           title: title,
           navigation: const CatchTopBarNavigation(
             mode: CatchTopBarNavigationMode.back,
@@ -90,7 +90,7 @@ class HostClubSpokeResolver extends ConsumerWidget {
     final uid = uidState.value;
     if (uid == null) {
       return CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar(
+        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
           title: title,
           navigation: const CatchTopBarNavigation(
             mode: CatchTopBarNavigationMode.back,
@@ -118,7 +118,7 @@ class HostClubSpokeResolver extends ConsumerWidget {
       onRetry: () => ref.invalidate(_hostClubsForUserProvider(uid)),
       loadingBuilder: (_) => HostLoadingScreen(title: title),
       errorBuilder: (_, error, _, onBoundaryRetry) => CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar(
+        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
           title: title,
           navigation: const CatchTopBarNavigation(
             mode: CatchTopBarNavigationMode.back,
@@ -139,7 +139,7 @@ class HostClubSpokeResolver extends ConsumerWidget {
         final club = clubs.where((item) => item.id == clubId).firstOrNull;
         if (club == null) {
           return CatchRouteScaffold(
-            topBarBuilder: (context, scrolledUnder) => CatchTopBar(
+            topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
               title: title,
               navigation: const CatchTopBarNavigation(
                 mode: CatchTopBarNavigationMode.back,
@@ -181,7 +181,7 @@ class HostClubSpokeScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CatchRouteScaffold(
-      topBarBuilder: (context, scrolledUnder) => CatchTopBar(
+      topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
         title: title,
         subtitle: club.name,
         navigation: const CatchTopBarNavigation(

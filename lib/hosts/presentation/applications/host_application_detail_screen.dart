@@ -40,7 +40,7 @@ class _HostApplicationDetailScreenState
     final detailState = catchAsyncStateFromAsyncValue(detail);
     final loaded = detailState.value;
     return CatchRouteScaffold(
-      topBarBuilder: (context, scrolledUnder) => CatchTopBar(
+      topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
         title: context.l10n.hostAudienceApplicationTitle,
         navigation: const CatchTopBarNavigation(
           mode: CatchTopBarNavigationMode.back,
