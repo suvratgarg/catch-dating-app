@@ -33,6 +33,7 @@ class FakeProgramMutator implements ProgramOperationsMutator {
   final List<String> calls = [];
   Object? error;
   bool failOnce = false;
+  DateTime? lastDeparture;
 
   Object? _maybeError() {
     if (failOnce) {
@@ -69,13 +70,15 @@ class FakeProgramMutator implements ProgramOperationsMutator {
     required String vehicleClassId,
     required String plateDisplay,
     required List<String> legIds,
+    required DateTime departedAt,
     required String clientOperationId,
     String? destinationHotelId,
     String? destinationLabel,
     String? vendorId,
-    List<({String legId, int revision})>? expectedLegRevisions,
+    required List<({String legId, int revision})> expectedLegRevisions,
   }) async {
     calls.add('dispatch:$plateDisplay:$clientOperationId');
+    lastDeparture = departedAt;
     if (_maybeError() case final failure?) throw failure;
     return const DispatchResult(
       tripId: 'trip_1',
@@ -149,6 +152,7 @@ void main() {
             vehicleClassId: 'innova',
             plateDisplay: 'DL-1T-4421',
             legIds: const ['leg-1'],
+            expectedLegRevisions: const [(legId: 'leg-1', revision: 2)],
             clientOperationId: 'op_dispatch',
             createdAt: DateTime.now().add(const Duration(seconds: 1)),
           ),
@@ -218,6 +222,58 @@ void main() {
         );
         expect(summary.pendingCount, 2);
         expect(mutator.calls, hasLength(1));
+      },
+    );
+
+    test('legacy dispatch without fences is preserved for review', () async {
+      final raw = ProgramOperationOutboxEntry.dispatch(
+        programId: 'program-1',
+        pickupPointId: 'pickup',
+        vehicleClassId: 'suv',
+        plateDisplay: 'DL1234',
+        legIds: ['leg-1'],
+        expectedLegRevisions: [(legId: 'leg-1', revision: 1)],
+        clientOperationId: 'legacy',
+        createdAt: DateTime.now(),
+      ).toJson();
+      (raw['payload']! as Map<String, Object?>).remove('expectedLegRevisions');
+      await store.save('acct', [ProgramOperationOutboxEntry.fromJson(raw)]);
+      final result = await outbox.flushProgram(
+        accountId: 'acct',
+        programId: 'program-1',
+      );
+      expect(mutator.calls, isEmpty);
+      expect(result.needsReviewCount, 1);
+      expect(result.entries.single.clientOperationId, 'legacy');
+      expect(
+        result.entries.single.lastErrorCode,
+        'dispatch-manifest-needs-review',
+      );
+    });
+
+    test(
+      'offline dispatch keeps its observed departure time on replay',
+      () async {
+        final departedAt = DateTime.now().subtract(const Duration(hours: 2));
+        await outbox.enqueueAndAttempt(
+          accountId: 'acct',
+          offline: true,
+          entry: ProgramOperationOutboxEntry.dispatch(
+            programId: 'program-1',
+            pickupPointId: 'pickup',
+            vehicleClassId: 'suv',
+            plateDisplay: 'DL1234',
+            legIds: ['leg-1'],
+            expectedLegRevisions: [(legId: 'leg-1', revision: 1)],
+            clientOperationId: 'departure',
+            createdAt: departedAt,
+          ),
+        );
+        await outbox.flushProgram(accountId: 'acct', programId: 'program-1');
+        expect(
+          mutator.lastDeparture?.millisecondsSinceEpoch,
+          departedAt.millisecondsSinceEpoch,
+        );
       },
     );
 

@@ -1,3 +1,6 @@
+import {vehicleFits, type VehicleClass} from "./vehicleCapacity";
+export type {VehicleClass} from "./vehicleCapacity";
+
 export interface TransportParty {
   id: string;
   programId: string;
@@ -9,13 +12,6 @@ export interface TransportParty {
   luggageUnits: number;
   requiredCapabilities: readonly string[];
   dedicatedVehicle: boolean;
-}
-
-export interface VehicleClass {
-  id: string;
-  passengerCapacity: number;
-  luggageCapacity: number;
-  capabilities: readonly string[];
 }
 
 export interface TransportGroupSuggestion {
@@ -124,9 +120,8 @@ export function suggestTransportGroups(
 
 function fittingClass(classes: readonly VehicleClass[], passengers: number,
   luggage: number, capabilities: readonly string[]): VehicleClass | undefined {
-  return classes.find((vehicle) => vehicle.passengerCapacity >= passengers &&
-    vehicle.luggageCapacity >= luggage && capabilities.every((capability) =>
-    vehicle.capabilities.includes(capability)));
+  return classes.find((vehicle) =>
+    vehicleFits(vehicle, passengers, luggage, capabilities));
 }
 
 function scope(party: TransportParty): string {

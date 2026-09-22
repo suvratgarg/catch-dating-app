@@ -7,6 +7,7 @@ import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/programs/data/program_operations_outbox.dart';
 import 'package:catch_dating_app/programs/data/program_snapshot_reader.dart';
 import 'package:catch_dating_app/programs/data/program_work_repository.dart';
+import 'package:catch_dating_app/programs/domain/dispatch_manifest.dart';
 import 'package:catch_dating_app/programs/domain/program_models.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -328,25 +329,14 @@ class _ProgramDispatchSheetState extends ConsumerState<ProgramDispatchSheet> {
     super.dispose();
   }
 
-  Future<List<({String legId, int revision})>?> _legRevisionFences() async {
-    try {
-      final roster = await ref.read(
-        programArrivalsRosterProvider(
-          widget.programId,
-          widget.pickupPointId,
-        ).future,
-      );
-      final revisions = {
-        for (final row in roster.rows) row.legId: row.revision,
-      };
-      return [
-        for (final legId in _dispatchLegIds)
-          if (revisions[legId] case final revision?)
-            (legId: legId, revision: revision),
-      ];
-    } on Object {
-      return null;
-    }
+  Future<List<DispatchLegRevision>> _legRevisionFences() async {
+    final view = await ref.read(
+      programArrivalsRosterViewProvider(
+        widget.programId,
+        widget.pickupPointId,
+      ).future,
+    );
+    return captureDispatchLegRevisions(view.value, _dispatchLegIds);
   }
 
   Future<void> _dispatch() async {

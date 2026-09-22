@@ -17,7 +17,7 @@ final class DispatchProgramTripCallableRequest {
     this.vendorId,
     this.kind,
     required this.legIds,
-    this.expectedLegRevisions,
+    required this.expectedLegRevisions,
     this.departedAtMillis,
     this.notes,
     required this.clientOperationId,
@@ -32,7 +32,7 @@ final class DispatchProgramTripCallableRequest {
   final String? vendorId;
   final String? kind;
   final List<String> legIds;
-  final List<Map<String, Object?>>? expectedLegRevisions;
+  final List<Map<String, Object?>> expectedLegRevisions;
   final int? departedAtMillis;
   final String? notes;
   final String clientOperationId;
@@ -47,7 +47,7 @@ final class DispatchProgramTripCallableRequest {
     'vendorId': ?vendorId,
     'kind': ?kind,
     'legIds': legIds,
-    'expectedLegRevisions': ?expectedLegRevisions,
+    'expectedLegRevisions': expectedLegRevisions,
     'departedAtMillis': ?departedAtMillis,
     'notes': ?notes,
     'clientOperationId': clientOperationId,

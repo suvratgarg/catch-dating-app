@@ -11,11 +11,13 @@ import {
   nextRevision,
   requireProgramAccess,
 } from "../shared/programAuthority";
+import {vehicleFits} from "./vehicleCapacity";
 import {hashRequest} from "../shared/programOperationHash";
 import type {
   ProgramHotelDocument,
   ProgramPickupPointDocument,
   ProgramTravelLegDocument,
+  ProgramTravelPartyDocument,
   TransportActiveAssignmentDocument,
   TransportOperationReceiptDocument,
   TransportTripDocument,
@@ -127,6 +129,7 @@ export async function dispatchProgramTripHandler(
       throw new HttpsError("failed-precondition",
         "Pickup point is not active in this program.");
     }
+    let hotelName: string | null = null;
     if (data.destinationHotelId) {
       const hotelSnap = await tx.get(db.collection("programHotels")
         .doc(data.destinationHotelId));
@@ -135,6 +138,7 @@ export async function dispatchProgramTripHandler(
         throw new HttpsError(
           "invalid-argument", "Destination hotel is not in this program.");
       }
+      hotelName = hotel.name;
     }
     const vehicleClass = access.program.transportSettings.vehicleClasses
       .find((entry) => entry.id === data.vehicleClassId);
@@ -156,13 +160,28 @@ export async function dispatchProgramTripHandler(
       }
       vendorName = vendor.name;
     }
+    const plateNormalized = normalizePlate(data.plateDisplay);
+    if (plateNormalized.length < 4 || plateNormalized.length > 16) {
+      throw new HttpsError("invalid-argument",
+        "Enter a vehicle plate with 4 to 16 letters or numbers.");
+    }
+    if (data.kind !== undefined && data.kind !== "guestTransfer") {
+      throw new HttpsError("failed-precondition",
+        "Passenger dispatch cannot record an empty vehicle repositioning.");
+    }
     const legSnaps = await Promise.all(data.legIds.map((legId) =>
       tx.get(db.collection("programTravelLegs").doc(legId))));
     const assignmentSnaps = await Promise.all(data.legIds.map((legId) =>
       tx.get(db.collection("transportActiveAssignments")
         .doc(transportAssignmentId(data.programId, legId)))));
-    const revisionFences = new Map((data.expectedLegRevisions ?? [])
+    const revisionFences = new Map(data.expectedLegRevisions
       .map((fence) => [fence.legId, fence.revision]));
+    if (revisionFences.size !== data.legIds.length ||
+        data.expectedLegRevisions.length !== data.legIds.length ||
+        !data.legIds.every((id) => revisionFences.has(id))) {
+      throw new HttpsError("invalid-argument",
+        "A unique revision fence is required for every manifest leg.");
+    }
     const legs: Array<{id: string; doc: ProgramTravelLegDocument}> = [];
     for (const snap of legSnaps) {
       const leg = snap.data() as ProgramTravelLegDocument | undefined;
@@ -171,16 +190,25 @@ export async function dispatchProgramTripHandler(
           "not-found", `Leg ${snap.id} is not in this program.`);
       }
       const fence = revisionFences.get(snap.id);
-      if (fence !== undefined) assertRevision(leg.revision, fence);
+      assertRevision(leg.revision, fence!);
       if (leg.pickupPointId !== data.pickupPointId) {
         throw new HttpsError(
           "failed-precondition",
           `Leg ${snap.id} is not staged at this pickup point.`);
       }
-      if (!["ready", "expected"].includes(leg.readiness)) {
+      if (leg.readiness !== "ready" || !leg.readyAt) {
         throw new HttpsError(
           "failed-precondition",
           `Leg ${snap.id} is not dispatchable (state ${leg.readiness}).`);
+      }
+      if (leg.kind !== "inbound" ||
+          leg.destinationHotelId !== (data.destinationHotelId ?? null) ||
+          (!leg.destinationHotelId &&
+            (!leg.destinationLabel?.trim() ||
+            leg.destinationLabel.trim().toLowerCase() !==
+              data.destinationLabel?.trim().toLowerCase()))) {
+        throw new HttpsError("failed-precondition",
+          "Every passenger must be inbound to the selected destination.");
       }
       legs.push({id: snap.id, doc: leg});
     }
@@ -193,27 +221,63 @@ export async function dispatchProgramTripHandler(
           `Guest leg ${snap.id.split("__").pop()} is already on a vehicle.`);
       }
     }
+    if (new Set(legs.map((leg) => leg.doc.guestId)).size !== legs.length) {
+      throw new HttpsError("failed-precondition",
+        "A guest cannot occupy multiple manifest rows on the same trip.");
+    }
+    const partyIds = [...new Set(legs.map((leg) => leg.doc.partyId)
+      .filter((id): id is string => id !== null))].sort();
+    const partySnaps = await Promise.all(partyIds.map((id) =>
+      tx.get(db.collection("programTravelParties").doc(id))));
+    for (const snap of partySnaps) {
+      const party = snap.data() as ProgramTravelPartyDocument | undefined;
+      const members = legs.filter((leg) => leg.doc.partyId === snap.id);
+      if (!party || party.programId !== data.programId ||
+          party.memberGuestIds.length !== members.length ||
+          !members.every((leg) =>
+            party.memberGuestIds.includes(leg.doc.guestId))) {
+        throw new HttpsError("failed-precondition",
+          "The complete travel party must be ready on the same manifest.");
+      }
+      if (party.dedicatedVehicle && members.length !== legs.length) {
+        throw new HttpsError("failed-precondition",
+          "A private party cannot share a vehicle with another party.");
+      }
+    }
+    for (const leg of legs.filter((entry) => entry.doc.dedicatedVehicle)) {
+      if (legs.some((other) => other.id !== leg.id &&
+          (!leg.doc.partyId || other.doc.partyId !== leg.doc.partyId))) {
+        throw new HttpsError("failed-precondition",
+          "A private transfer cannot share a vehicle with another party.");
+      }
+    }
     const passengerCount = legs.reduce(
       (sum, leg) => sum + leg.doc.passengers, 0);
     const luggageUnits = legs.reduce(
       (sum, leg) => sum + leg.doc.luggageUnits, 0);
-    if (passengerCount > vehicleClass.passengerCapacity ||
-        luggageUnits > vehicleClass.luggageCapacity) {
+    const capabilities = [...new Set(legs.flatMap((leg) =>
+      leg.doc.requiredCapabilities))];
+    if (!vehicleFits(
+      vehicleClass, passengerCount, luggageUnits, capabilities)) {
       throw new HttpsError(
         "failed-precondition",
-        `Manifest exceeds ${vehicleClass.label} capacity ` +
+        `Manifest exceeds ${vehicleClass.label} capabilities or capacity ` +
         `(${passengerCount}/${vehicleClass.passengerCapacity} seats, ` +
         `${luggageUnits}/${vehicleClass.luggageCapacity} luggage).`);
     }
     const now = deps.now();
+    if (data.departedAtMillis != null &&
+        (data.departedAtMillis > now.toMillis() + 5 * 60 * 1000 ||
+        data.departedAtMillis < now.toMillis() - receiptRetentionMillis)) {
+      throw new HttpsError("failed-precondition",
+        "Departure time needs review before this trip can be recorded.");
+    }
     const departedAt = data.departedAtMillis !== undefined &&
       data.departedAtMillis !== null ?
       admin.firestore.Timestamp.fromMillis(data.departedAtMillis) : now;
-    const destinationLabel = data.destinationLabel ??
+    const destinationLabel = hotelName ?? data.destinationLabel ??
       legs[0].doc.destinationLabel ??
       (data.destinationHotelId ? "Hotel" : "Unassigned");
-    const partyIds = [...new Set(legs.map((leg) => leg.doc.partyId)
-      .filter((id): id is string => id !== null))].sort();
     const trip: TransportTripDocument = {
       programId: data.programId,
       organizerId: access.program.organizerId,
@@ -224,7 +288,7 @@ export async function dispatchProgramTripHandler(
       vehicleClassId: data.vehicleClassId,
       vendorId: data.vendorId ?? null,
       vendorNameSnapshot: vendorName,
-      plateNormalized: normalizePlate(data.plateDisplay),
+      plateNormalized,
       plateDisplay: data.plateDisplay,
       partyIds,
       legIds: [...data.legIds].sort(),

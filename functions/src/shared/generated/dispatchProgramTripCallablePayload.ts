@@ -20,11 +20,12 @@ export interface DispatchProgramTripCallablePayload {
    */
   legIds: string[];
   /**
-   * Optional revision fence per boarded leg; a stale roster aborts the dispatch instead of splitting a party.
+   * Exactly one revision fence for every selected leg; missing, duplicate, extraneous or stale fences abort dispatch.
    *
+   * @minItems 1
    * @maxItems 50
    */
-  expectedLegRevisions?: {
+  expectedLegRevisions: {
     legId: string;
     revision: number;
   }[];

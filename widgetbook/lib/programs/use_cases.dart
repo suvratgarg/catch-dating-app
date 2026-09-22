@@ -243,11 +243,12 @@ class _PreviewMutator implements ProgramOperationsMutator {
     required String vehicleClassId,
     required String plateDisplay,
     required List<String> legIds,
+    required DateTime departedAt,
     required String clientOperationId,
     String? destinationHotelId,
     String? destinationLabel,
     String? vendorId,
-    List<({String legId, int revision})>? expectedLegRevisions,
+    required List<({String legId, int revision})> expectedLegRevisions,
   }) async => const DispatchResult(
     tripId: 'trip_preview',
     revision: 1,

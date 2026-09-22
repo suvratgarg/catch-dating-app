@@ -160,7 +160,7 @@ class ProgramWorkRepository {
     String? destinationHotelId,
     String? destinationLabel,
     String? vendorId,
-    List<({String legId, int revision})>? expectedLegRevisions,
+    required List<({String legId, int revision})> expectedLegRevisions,
     DateTime? departedAt,
     String? notes,
   }) => _call(
@@ -175,7 +175,7 @@ class ProgramWorkRepository {
       vendorId: vendorId,
       legIds: legIds,
       expectedLegRevisions: expectedLegRevisions
-          ?.map((fence) => {'legId': fence.legId, 'revision': fence.revision})
+          .map((fence) => {'legId': fence.legId, 'revision': fence.revision})
           .toList(growable: false),
       departedAtMillis: departedAt?.millisecondsSinceEpoch,
       notes: notes,

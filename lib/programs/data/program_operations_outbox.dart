@@ -5,6 +5,7 @@ import 'package:catch_dating_app/core/persistence/command_journal_storage.dart';
 import 'package:catch_dating_app/core/persistence/local_command_journal.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/programs/data/program_work_repository.dart';
+import 'package:catch_dating_app/programs/domain/dispatch_manifest.dart';
 import 'package:catch_dating_app/programs/domain/program_models.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -40,11 +41,12 @@ abstract interface class ProgramOperationsMutator {
     required String vehicleClassId,
     required String plateDisplay,
     required List<String> legIds,
+    required DateTime departedAt,
     required String clientOperationId,
     String? destinationHotelId,
     String? destinationLabel,
     String? vendorId,
-    List<({String legId, int revision})>? expectedLegRevisions,
+    required List<({String legId, int revision})> expectedLegRevisions,
   });
 }
 
@@ -106,11 +108,12 @@ class RepositoryProgramOperationsMutator implements ProgramOperationsMutator {
     required String vehicleClassId,
     required String plateDisplay,
     required List<String> legIds,
+    required DateTime departedAt,
     required String clientOperationId,
     String? destinationHotelId,
     String? destinationLabel,
     String? vendorId,
-    List<({String legId, int revision})>? expectedLegRevisions,
+    required List<({String legId, int revision})> expectedLegRevisions,
   }) => _repository.dispatchTrip(
     programId: programId,
     pickupPointId: pickupPointId,
@@ -122,6 +125,7 @@ class RepositoryProgramOperationsMutator implements ProgramOperationsMutator {
     destinationLabel: destinationLabel,
     vendorId: vendorId,
     expectedLegRevisions: expectedLegRevisions,
+    departedAt: departedAt,
   );
 }
 
@@ -175,7 +179,7 @@ class ProgramOperationOutboxEntry {
     String? destinationHotelId,
     String? destinationLabel,
     String? vendorId,
-    List<({String legId, int revision})>? expectedLegRevisions,
+    required List<({String legId, int revision})> expectedLegRevisions,
   }) => ProgramOperationOutboxEntry._(
     kind: ProgramOperationKind.dispatch,
     programId: programId,
@@ -191,7 +195,7 @@ class ProgramOperationOutboxEntry {
       'destinationLabel': destinationLabel,
       'vendorId': vendorId,
       'expectedLegRevisions': expectedLegRevisions
-          ?.map(
+          .map(
             (fence) => <String, Object?>{
               'legId': fence.legId,
               'revision': fence.revision,
@@ -432,6 +436,18 @@ class ProgramOperationsOutbox {
           manualCurbNote: entry.payload['manualCurbNote'] as String?,
         );
       case ProgramOperationKind.dispatch:
+        final legs = (entry.payload['legIds']! as List<Object?>).cast<String>();
+        final fences =
+            (entry.payload['expectedLegRevisions'] as List<Object?>? ?? [])
+                .map((fence) {
+                  final map = fence! as Map<Object?, Object?>;
+                  return (
+                    legId: map['legId']! as String,
+                    revision: map['revision']! as int,
+                  );
+                })
+                .toList(growable: false);
+        validateDispatchRevisionFences(legs, fences);
         await _mutator.dispatchTrip(
           programId: entry.programId,
           pickupPointId: entry.payload['pickupPointId']! as String,
@@ -442,16 +458,8 @@ class ProgramOperationsOutbox {
           destinationHotelId: entry.payload['destinationHotelId'] as String?,
           destinationLabel: entry.payload['destinationLabel'] as String?,
           vendorId: entry.payload['vendorId'] as String?,
-          expectedLegRevisions:
-              (entry.payload['expectedLegRevisions'] as List<Object?>?)
-                  ?.map((fence) {
-                    final map = fence! as Map<Object?, Object?>;
-                    return (
-                      legId: map['legId']! as String,
-                      revision: map['revision']! as int,
-                    );
-                  })
-                  .toList(growable: false),
+          expectedLegRevisions: fences,
+          departedAt: entry.createdAt,
         );
     }
   }

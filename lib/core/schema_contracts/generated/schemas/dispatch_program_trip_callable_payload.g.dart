@@ -18,6 +18,7 @@ const schemaDispatchProgramTripCallablePayloadSchema = <String, Object?>{
     'plateDisplay',
     'legIds',
     'clientOperationId',
+    'expectedLegRevisions',
   ],
   'properties': <String, Object?>{
     'programId': <String, Object?>{
@@ -104,7 +105,9 @@ const schemaDispatchProgramTripCallablePayloadSchema = <String, Object?>{
           },
         },
       },
-      'description': 'Optional revision fence per boarded leg; a stale roster aborts the dispatch instead of splitting a party.',
+      'description': 'Exactly one revision fence for every selected leg; missing, duplicate, extraneous or stale fences abort dispatch.',
+      'minItems': 1,
+      'uniqueItems': true,
     },
     'departedAtMillis': <String, Object?>{
       'type': <Object?>[
@@ -112,7 +115,7 @@ const schemaDispatchProgramTripCallablePayloadSchema = <String, Object?>{
         'null',
       ],
       'minimum': 0,
-      'maximum': 9007199254740991,
+      'maximum': 253402300799999,
       'description': 'Explicit departure timestamp for late offline sync; defaults to server now.',
     },
     'notes': <String, Object?>{

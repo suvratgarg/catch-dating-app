@@ -322,3 +322,12 @@ export function deps(firestore: FakeFirestore,
   } as never;
 }
 
+
+/** A physical curb observation, distinct from the default expected roster. */
+export function readySeed(): Record<string, FakeData> {
+  const seed = baseSeed();
+  seed["programTravelLegs/leg-1"] = {
+    ...seed["programTravelLegs/leg-1"], readiness: "ready", readyAt: now,
+  };
+  return seed;
+}

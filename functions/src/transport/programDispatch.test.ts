@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {HttpsError} from "firebase-functions/v2/https";
-import {baseSeed, deps, request} from "../shared/testing/programFixtures";
+import {readySeed, deps, request} from "../shared/testing/programFixtures";
 import {FakeFirestore} from "../shared/testing/programFirestore";
 import {dispatchProgramTripHandler, markProgramTripArrivedHandler,
   voidProgramTripHandler} from "./programDispatch";
@@ -37,17 +37,17 @@ for (const [path, patch, code] of [
   ["organizerPrograms/program-1", {capabilities: []}, "failed-precondition"],
 ] as const) {
   test(`dispatch revalidates ${path} in its transaction`, async () => {
-    const db = new FakeFirestore(baseSeed());
+    const db = new FakeFirestore(readySeed());
     changeBeforeCommit(db, () => db.updateDoc(path, patch));
     await assert.rejects(dispatch(db), isCode(code));
     assert.equal([...db.docs.keys()].some((key) =>
       key.startsWith("transportTrips/")), false);
-    assert.equal(db.getDoc("programTravelLegs/leg-1")?.readiness, "expected");
+    assert.equal(db.getDoc("programTravelLegs/leg-1")?.readiness, "ready");
   });
 }
 
 test("dispatch enforces both resource scopes from the same duty", async () => {
-  const seed = baseSeed();
+  const seed = readySeed();
   seed["programStaffGrants/program-1__dispatcher-1"].duties = [{
     duty: "transportDispatcher", pickupPointIds: ["pp-t3"],
     hotelIds: ["hotel-2"],
@@ -62,7 +62,7 @@ for (const changed of [
   {expectedLegRevisions: [{legId: "leg-1", revision: 2}]},
 ]) {
   test(`receipt binds changed ${Object.keys(changed)[0]}`, async () => {
-    const db = new FakeFirestore(baseSeed());
+    const db = new FakeFirestore(readySeed());
     await dispatch(db);
     await assert.rejects(dispatchProgramTripHandler(request({
       ...dispatchData(), ...changed,
@@ -71,7 +71,7 @@ for (const changed of [
 }
 
 test("valid receipt can replay after its vendor is disabled", async () => {
-  const db = new FakeFirestore(baseSeed());
+  const db = new FakeFirestore(readySeed());
   const created = await dispatch(db);
   db.updateDoc("transportVendors/vendor-1", {active: false});
   const replay = await dispatch(db);
@@ -84,7 +84,7 @@ test("valid receipt can replay after its vendor is disabled", async () => {
 
 for (const action of [markProgramTripArrivedHandler, voidProgramTripHandler]) {
   test(`${action.name} revalidates authority during completion`, async () => {
-    const db = new FakeFirestore(baseSeed());
+    const db = new FakeFirestore(readySeed());
     const created = await dispatch(db);
     changeBeforeCommit(db, () => db.updateDoc(
       "programStaffGrants/program-1__dispatcher-1", {status: "revoked"}));
@@ -97,7 +97,7 @@ for (const action of [markProgramTripArrivedHandler, voidProgramTripHandler]) {
   });
 
   test(`${action.name} cannot release another trip's assignment`, async () => {
-    const db = new FakeFirestore(baseSeed());
+    const db = new FakeFirestore(readySeed());
     const created = await dispatch(db);
     db.updateDoc("transportActiveAssignments/program-1__leg-1", {
       tripId: "another-trip",
@@ -114,7 +114,7 @@ for (const action of [markProgramTripArrivedHandler, voidProgramTripHandler]) {
   });
 
   test(`${action.name} replay rechecks the trip's current scope`, async () => {
-    const db = new FakeFirestore(baseSeed());
+    const db = new FakeFirestore(readySeed());
     const created = await dispatch(db);
     const data = {programId: "program-1", tripId: created.tripId,
       expectedRevision: created.revision, reason: "Incorrect dispatch",
@@ -125,5 +125,100 @@ for (const action of [markProgramTripArrivedHandler, voidProgramTripHandler]) {
     }]});
     await assert.rejects(action(request(data, "dispatcher-1"), deps(db)),
       isCode("permission-denied"));
+  });
+}
+
+for (const [label, legPatch, requestPatch] of [
+  ["expected passenger", {readiness: "expected", readyAt: null}, {}],
+  ["missing curb observation", {readyAt: null}, {}],
+  ["outbound journey", {kind: "outbound"}, {}],
+  ["different hotel", {destinationHotelId: "hotel-2"}, {}],
+  ["unsupported accessibility",
+    {requiredCapabilities: ["wheelchairAccessible"]}, {}],
+  ["excess luggage", {luggageUnits: 9}, {}],
+  ["empty normalized plate", {}, {plateDisplay: "----"}],
+  ["empty repositioning", {}, {kind: "repositioning"}],
+] as const) {
+  test(`dispatch rejects ${label}`, async () => {
+    const db = new FakeFirestore(readySeed());
+    db.updateDoc("programTravelLegs/leg-1", legPatch);
+    await assert.rejects(dispatchProgramTripHandler(request({
+      ...dispatchData(), ...requestPatch,
+    }, "dispatcher-1"), deps(db)), (error: unknown) =>
+      error instanceof HttpsError &&
+      ["failed-precondition", "invalid-argument"].includes(error.code));
+    assert.equal([...db.docs.keys()].some((key) =>
+      key.startsWith("transportTrips/")), false);
+  });
+}
+
+test("dispatch requires the complete ready party",
+  async () => {
+    const db = new FakeFirestore(readySeed());
+    db.updateDoc("programTravelLegs/leg-1", {partyId: "party-1"});
+    db.updateDoc("programTravelLegs/leg-2", {partyId: "party-1",
+      pickupPointId: "pp-t3", readiness: "ready",
+      readyAt: db.getDoc("programTravelLegs/leg-1")!.readyAt});
+    db.setDoc("programTravelParties/party-1", {programId: "program-1",
+      memberGuestIds: ["guest-1", "guest-2"], dedicatedVehicle: true});
+    await assert.rejects(dispatch(db), isCode("failed-precondition"));
+    const complete = await dispatchProgramTripHandler(request({
+      ...dispatchData(), legIds: ["leg-1", "leg-2"],
+      expectedLegRevisions: [{legId: "leg-1", revision: 1},
+        {legId: "leg-2", revision: 1}],
+    }, "dispatcher-1"), deps(db));
+    assert.equal(complete.passengerCount, 3);
+  });
+
+for (const party of [false, true]) {
+  test(`private ${party ? "party" : "leg"} cannot mix unrelated guests`,
+    async () => {
+      const db = new FakeFirestore(readySeed());
+      db.updateDoc("programTravelLegs/leg-1", party ? {partyId: "private"} :
+        {dedicatedVehicle: true});
+      db.setDoc("programTravelParties/private", {programId: "program-1",
+        memberGuestIds: ["guest-1"], dedicatedVehicle: true});
+      db.updateDoc("programTravelLegs/leg-2", {pickupPointId: "pp-t3",
+        readiness: "ready",
+        readyAt: db.getDoc("programTravelLegs/leg-1")!.readyAt});
+      await assert.rejects(dispatchProgramTripHandler(request({
+        ...dispatchData(), legIds: ["leg-1", "leg-2"],
+        expectedLegRevisions: [{legId: "leg-1", revision: 1},
+          {legId: "leg-2", revision: 1}],
+      }, "dispatcher-1"), deps(db)), isCode("failed-precondition"));
+    });
+}
+
+test("two legs cannot count the same guest twice on a manifest", async () => {
+  const db = new FakeFirestore(readySeed());
+  db.setDoc("programTravelLegs/duplicate",
+    db.getDoc("programTravelLegs/leg-1")!);
+  await assert.rejects(dispatchProgramTripHandler(request({
+    ...dispatchData(), legIds: ["leg-1", "duplicate"],
+    expectedLegRevisions: [{legId: "leg-1", revision: 1},
+      {legId: "duplicate", revision: 1}],
+  }, "dispatcher-1"), deps(db)), isCode("failed-precondition"));
+});
+
+for (const fences of [undefined, [],
+  [{legId: "unselected", revision: 1}],
+  [{legId: "leg-1", revision: 1}, {legId: "leg-1", revision: 2}],
+  [{legId: "leg-1", revision: 1}, {legId: "unselected", revision: 1}],
+]) {
+  test(`dispatch requires complete unique fences: ${JSON.stringify(fences)}`,
+    async () => {
+      const db = new FakeFirestore(readySeed());
+      await assert.rejects(dispatchProgramTripHandler(request({
+        ...dispatchData(), expectedLegRevisions: fences,
+      }, "dispatcher-1"), deps(db)), isCode("invalid-argument"));
+    });
+}
+
+for (const offset of [6 * 60_000, -8 * 24 * 60 * 60_000]) {
+  test(`dispatch rejects departure offset ${offset}`, async () => {
+    const db = new FakeFirestore(readySeed());
+    await assert.rejects(dispatchProgramTripHandler(request({
+      ...dispatchData(), departedAtMillis: 1_800_000_000_000 + offset,
+    }, "dispatcher-1"), deps(db)), isCode("failed-precondition"));
   });
 }

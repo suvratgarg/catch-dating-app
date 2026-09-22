@@ -14310,7 +14310,7 @@ abstract final class CatchContractConstraints {
     path: 'dispatchProgramTripCallablePayload.departedAtMillis',
     valueTypes: <String>['integer'],
     minimum: 0,
-    maximum: 9007199254740991,
+    maximum: 253402300799999,
   );
 
   static const dispatchProgramTripCallablePayloadDestinationHotelId = CatchContractFieldConstraints(
@@ -14328,9 +14328,12 @@ abstract final class CatchContractConstraints {
 
   static const dispatchProgramTripCallablePayloadExpectedLegRevisions = CatchContractFieldConstraints(
     path: 'dispatchProgramTripCallablePayload.expectedLegRevisions',
+    required: true,
     valueTypes: <String>['array'],
     itemValueTypes: <String>['object'],
+    minItems: 1,
     maxItems: 50,
+    uniqueItems: true,
   );
 
   static const dispatchProgramTripCallablePayloadExpectedLegRevisionsItemsLegId = CatchContractFieldConstraints(

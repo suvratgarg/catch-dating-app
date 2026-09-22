@@ -25,7 +25,7 @@ import {
 import {FakeFirestore} from
   "../shared/testing/programFirestore";
 
-import {baseSeed, deps, now, request, transportSettings} from
+import {baseSeed, deps, now, readySeed, request, transportSettings} from
   "../shared/testing/programFixtures";
 
 test("createOrganizerProgram requires organizer management", async () => {
@@ -271,7 +271,7 @@ test("claims are exclusive, releasable, and replay-safe", async () => {
 });
 
 test("dispatch writes trip, assignments and receipt atomically", async () => {
-  const firestore = new FakeFirestore(baseSeed());
+  const firestore = new FakeFirestore(readySeed());
   const dispatchDeps = deps(firestore);
   const dispatched = await dispatchProgramTripHandler(request({
     programId: "program-1",
@@ -281,6 +281,7 @@ test("dispatch writes trip, assignments and receipt atomically", async () => {
     plateDisplay: "DL-1T-4471",
     vendorId: "vendor-1",
     legIds: ["leg-1"],
+    expectedLegRevisions: [{legId: "leg-1", revision: 1}],
     clientOperationId: "op-dispatch-1",
   }, "dispatcher-1"), dispatchDeps);
   assert.equal(dispatched.passengerCount, 2);
@@ -303,6 +304,7 @@ test("dispatch writes trip, assignments and receipt atomically", async () => {
     plateDisplay: "DL-1T-4471",
     vendorId: "vendor-1",
     legIds: ["leg-1"],
+    expectedLegRevisions: [{legId: "leg-1", revision: 1}],
     clientOperationId: "op-dispatch-1",
   }, "dispatcher-1"), dispatchDeps);
   assert.equal(replay.alreadyApplied, true);
@@ -316,11 +318,12 @@ test("dispatch writes trip, assignments and receipt atomically", async () => {
       vehicleClassId: "sedan",
       plateDisplay: "DL-9Z-0001",
       legIds: ["leg-1"],
+      expectedLegRevisions: [{legId: "leg-1", revision: 1}],
       clientOperationId: "op-dispatch-2",
     }, "dispatcher-1"), dispatchDeps),
     (error: unknown) =>
       error instanceof HttpsError &&
-      ["already-exists", "failed-precondition"].includes(error.code)
+      ["already-exists", "failed-precondition", "aborted"].includes(error.code)
   );
   // A greeter cannot dispatch.
   await assert.rejects(
@@ -331,6 +334,7 @@ test("dispatch writes trip, assignments and receipt atomically", async () => {
       vehicleClassId: "sedan",
       plateDisplay: "DL-9Z-0002",
       legIds: ["leg-2"],
+      expectedLegRevisions: [{legId: "leg-2", revision: 1}],
       clientOperationId: "op-dispatch-3",
     }, "greeter-1"), dispatchDeps),
     (error: unknown) =>
@@ -360,7 +364,7 @@ test("dispatch writes trip, assignments and receipt atomically", async () => {
 });
 
 test("hotel inbound is hotel-scoped and arrival marks the trip", async () => {
-  const firestore = new FakeFirestore(baseSeed());
+  const firestore = new FakeFirestore(readySeed());
   const dispatchDeps = deps(firestore);
   const dispatched = await dispatchProgramTripHandler(request({
     programId: "program-1",
@@ -370,6 +374,7 @@ test("hotel inbound is hotel-scoped and arrival marks the trip", async () => {
     plateDisplay: "DL-1T-4471",
     vendorId: "vendor-1",
     legIds: ["leg-1"],
+    expectedLegRevisions: [{legId: "leg-1", revision: 1}],
     clientOperationId: "op-dispatch-9",
   }, "dispatcher-1"), dispatchDeps);
   const inbound = await getProgramHotelInboundHandler(request({
@@ -433,7 +438,7 @@ test("transport plan groups by station, destination and readiness",
 
 test("trip ledger is restricted to dispatcher/reconciliation duties",
   async () => {
-    const firestore = new FakeFirestore(baseSeed());
+    const firestore = new FakeFirestore(readySeed());
     await dispatchProgramTripHandler(request({
       programId: "program-1",
       pickupPointId: "pp-t3",
@@ -442,6 +447,7 @@ test("trip ledger is restricted to dispatcher/reconciliation duties",
       plateDisplay: "DL-1T-4471",
       vendorId: "vendor-1",
       legIds: ["leg-1"],
+      expectedLegRevisions: [{legId: "leg-1", revision: 1}],
       clientOperationId: "op-dispatch-ledger",
     }, "dispatcher-1"), deps(firestore));
     const ledger = await listProgramTripsHandler(request({
