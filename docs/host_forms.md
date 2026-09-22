@@ -1,7 +1,7 @@
 ---
 doc_id: host_forms_product_spec
-version: 1.1.0
-updated: 2026-09-22
+version: 1.1.1
+updated: 2026-09-23
 owner: host_tooling
 status: active
 ---
@@ -402,6 +402,30 @@ expiring download. It includes provenance and consent fields, never internal
 grant data or private participant suggestions, and records an auditable export
 receipt. Advertising-platform customer-list formats remain policy-gated and
 separate from ordinary response export.
+
+## Unified response detail
+
+Native submissions and imported applications use one response-detail renderer.
+Legacy application URLs are compatibility entries into that renderer, not a
+second review page. Native application details join the authorized response
+projection so attachments, provenance, submission metadata and reviewed
+conversions remain available with review status, outreach and notes. Imports
+without a native response retain their authorized application answers and review
+controls. Failed linked loads fail closed and expose retry rather than silently
+losing actions; revoked grants never restore data through the other projection.
+
+The app bar identifies the respondent. Form context and status are flat content;
+contact actions have equally sized bounded targets and stack at large text.
+Answers remain directly visible; submission metadata and recorded review dates
+use a disclosure. A common answer provenance appears once, with per-answer
+provenance retained when it differs. Review notes have an explicit save action
+that retains the current review status. Acceptance, People conversion and event
+admission keep their distinct reviewed commands and conflict handling.
+
+The primary action uses the borderless shared page-action recipe. Decline is a
+neutral outlined secondary danger action at rest. The review status badge
+represents the existing decision. Withdrawn or revoked entries expose no review
+or conversion mutations.
 
 ## Automations And Conversion
 

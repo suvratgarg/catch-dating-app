@@ -31947,6 +31947,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Selected person'**
   String get hostAudienceSelectedPerson;
+
+  /// Explicit save for an application review note without changing its status.
+  ///
+  /// In en, this message translates to:
+  /// **'Save review note'**
+  String get hostResponseSaveReviewNote;
+
+  /// Create the review projection for a response on its existing detail page.
+  ///
+  /// In en, this message translates to:
+  /// **'Start application review'**
+  String get hostResponseStartReview;
 }
 
 class _AppLocalizationsDelegate

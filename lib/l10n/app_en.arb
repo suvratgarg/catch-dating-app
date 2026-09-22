@@ -27247,5 +27247,9 @@
   "hostAudienceRecentlyUpdated": "Recently updated",
   "@hostAudienceRecentlyUpdated": {"description": "Fixed server ordering of the Forms directory.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
   "hostAudienceSelectedPerson": "Selected person",
-  "@hostAudienceSelectedPerson": {"description": "Active person filter on the unified responses list.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"}
+  "@hostAudienceSelectedPerson": {"description": "Active person filter on the unified responses list.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostResponseSaveReviewNote": "Save review note",
+  "@hostResponseSaveReviewNote": {"description": "Explicit save for an application review note without changing its status.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
+  "hostResponseStartReview": "Start application review",
+  "@hostResponseStartReview": {"description": "Create the review projection for a response on its existing detail page.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"}
 }

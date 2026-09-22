@@ -13,6 +13,41 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../test_pump_helpers.dart';
 
 void main() {
+  testWidgets('review note saves without changing status', (tester) async {
+    final controller = _ReviewController();
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          hostApplicationsControllerProvider.overrideWithValue(controller),
+          hostApplicationDetailProvider(
+            'org-1',
+            'app-1',
+          ).overrideWith((_) async => _detail(false)),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: const HostApplicationDetailScreen(
+            organizerId: 'org-1',
+            applicationId: 'app-1',
+          ),
+        ),
+      ),
+    );
+    await pumpFeatureUi(tester);
+    final input = find.byType(TextField);
+    await tester.ensureVisible(input);
+    await tester.enterText(input, 'Follow up about the weekend event');
+    await pumpFeatureUi(tester);
+    final save = find.text('Save review note');
+    await tester.ensureVisible(save);
+    await tester.tap(save);
+    await pumpFeatureUi(tester);
+    expect(controller.lastStatus, HostApplicationReviewStatus.submitted);
+    expect(controller.lastNote, 'Follow up about the weekend event');
+    expect(controller.accepted, isFalse);
+    expect(find.text('Open original response'), findsNothing);
+  });
+
   testWidgets('accept refreshes application and opens its linked person', (
     tester,
   ) async {
@@ -105,7 +140,7 @@ void main() {
         expect(find.text(label).hitTestable(), findsOneWidget);
         expect(
           tester.getTopLeft(find.text(label)).dy,
-          lessThan(tester.getTopLeft(find.text('Answers')).dy),
+          lessThan(tester.getTopLeft(find.text('ANSWERS')).dy),
         );
       }
       await tester.tap(find.text('Call'));
@@ -172,7 +207,6 @@ HostApplicationDetail _detail(
   reviewedAt: null,
   revision: accepted ? 2 : 1,
   contactId: accepted ? 'person-1' : null,
-  sourceResponseId: revoked ? null : 'response-1',
   dataAccessState: revoked
       ? 'revokedParticipantGrant'
       : 'submittedFormResponse',
@@ -180,6 +214,8 @@ HostApplicationDetail _detail(
 
 class _ReviewController extends Fake implements HostApplicationsController {
   bool accepted = false;
+  HostApplicationReviewStatus? lastStatus;
+  String? lastNote;
   @override
   Future<HostApplicationReviewResult> reviewApplication({
     required String organizerId,
@@ -189,8 +225,9 @@ class _ReviewController extends Fake implements HostApplicationsController {
     String? reviewNote,
   }) async {
     expect(expectedRevision, 1);
-    expect(reviewStatus, HostApplicationReviewStatus.approved);
-    accepted = true;
+    lastStatus = reviewStatus;
+    lastNote = reviewNote;
+    accepted = reviewStatus == HostApplicationReviewStatus.approved;
     return HostApplicationReviewResult(
       organizerId: organizerId,
       applicationId: applicationId,

@@ -20092,4 +20092,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostAudienceSelectedPerson => 'Selected person';
+
+  @override
+  String get hostResponseSaveReviewNote => 'Save review note';
+
+  @override
+  String get hostResponseStartReview => 'Start application review';
 }

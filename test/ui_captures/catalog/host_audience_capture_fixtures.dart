@@ -168,6 +168,44 @@ final _audienceCaptureApplication = HostApplicationDetail(
   dataAccessState: 'submittedFormResponse',
 );
 
+HostApplicationDetail _responseReviewCaptureApplication({
+  bool imported = false,
+  bool revoked = false,
+}) {
+  final base = _audienceCaptureApplication;
+  return HostApplicationDetail(
+    organizerId: base.organizerId,
+    applicationId: base.applicationId,
+    formId: base.formId,
+    formVersionId: base.formVersionId,
+    targetKind: base.targetKind,
+    targetId: base.targetId,
+    applicantDisplayName: base.applicantDisplayName,
+    reviewStatus: HostApplicationReviewStatus.submitted,
+    answers: revoked ? const [] : base.answers,
+    outreach: revoked
+        ? const HostApplicationOutreach(
+            phoneE164: null,
+            email: null,
+            instagramUrl: null,
+            linkedinUrl: null,
+          )
+        : const HostApplicationOutreach(
+            phoneE164: '+919876543210',
+            email: 'maya@example.com',
+            instagramUrl: 'https://www.instagram.com/maya.example/',
+            linkedinUrl: 'https://www.linkedin.com/in/maya-example/',
+          ),
+    reviewNote: null,
+    assignedReviewerUid: null,
+    submittedAt: base.submittedAt,
+    reviewedAt: null,
+    revision: 1,
+    sourceResponseId: imported ? null : base.sourceResponseId,
+    dataAccessState: revoked ? 'revokedParticipantGrant' : base.dataAccessState,
+  );
+}
+
 class _AudienceCaptureResponses extends HostFormResponsesController {
   @override
   Future<HostFormResponsesState> build(
@@ -466,6 +504,11 @@ List<Object> _audienceCaptureResponseOverrides({
   bool application = true,
   bool withdrawn = false,
 }) => [
+  ..._audienceCaptureSources('org_1'),
+  hostApplicationDetailProvider(
+    'org_1',
+    'design-application-1',
+  ).overrideWithValue(AsyncData(_audienceCaptureApplication)),
   hostFormResponseCanApplyProvider(
     organizerId: 'org_1',
     responseId: 'response_1',
@@ -475,6 +518,9 @@ List<Object> _audienceCaptureResponseOverrides({
     responseId: 'response_1',
   ).overrideWith((_) async {
     final data = _audienceCaptureDetailMap();
+    if (application && !withdrawn) {
+      data['applicationId'] = 'design-application-1';
+    }
     if (withdrawn) {
       (data['response'] as Map<String, Object?>)['status'] = 'withdrawn';
     }
