@@ -143,7 +143,7 @@ class _HostFormResponseDetailScreenState
               onOpenPerson: _openPerson,
               onConvert: _reviewConversion,
             ),
-      body: CatchRouteBody.fullBleed(
+      body: CatchRouteBody.standard(
         child: CatchAsyncBoundary<HostResponseReviewDetail>(
           value: detail,
           onRetry: _reload,
@@ -155,19 +155,17 @@ class _HostFormResponseDetailScreenState
               _noteRevision = application.revision;
               _note.text = application.reviewNote ?? '';
             }
-            return CatchPageBody.screen(
-              child: HostResponseDetailSection(
-                value: value,
-                organizerId: widget.organizerId,
-                note: _note,
-                busy: _busy,
-                saving: _saving,
-                onReview: _review,
-                onOpenPerson: _openPerson,
-                onConvert: _reviewConversion,
-                onOpenAsset: _openAsset,
-                onContact: _openContact,
-              ),
+            return HostResponseDetailSection(
+              value: value,
+              organizerId: widget.organizerId,
+              note: _note,
+              busy: _busy,
+              saving: _saving,
+              onReview: _review,
+              onOpenPerson: _openPerson,
+              onConvert: _reviewConversion,
+              onOpenAsset: _openAsset,
+              onContact: _openContact,
             );
           },
         ),

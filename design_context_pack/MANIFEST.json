@@ -25,8 +25,8 @@
     },
     {
       "path": "design_system/design_language.txt",
-      "sha256": "95d0bbbd18bee701531c0811e69bcfcce2e2c9f3462c0b3afc8563ced5c91901",
-      "bytes": 54838
+      "sha256": "76ba1cb84fe711cdc1f587f8682ff0ab6e447c944fcb5eab04b8d9d69e5b4e08",
+      "bytes": 55425
     },
     {
       "path": "design_system/specimens/catch_design_system.html",
@@ -45,8 +45,8 @@
     },
     {
       "path": "gallery/manifest.json",
-      "sha256": "f6aa946c0fce7aaadd7bf0c6c2453d4c7bb6cf324aa580f26421bfd3568268bd",
-      "bytes": 281575
+      "sha256": "9b58fc259584129c22f02467a9692b5d95acc35927b60cab84ad865000349ed2",
+      "bytes": 282889
     }
   ]
 }
