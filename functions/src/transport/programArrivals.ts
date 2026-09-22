@@ -1,3 +1,5 @@
+import {hashRequest} from "../shared/programOperationHash";
+import {validateTravelPartyMembership} from "./travelPartyPolicy";
 /* firestore-index: programTravelLegs (
   programId:ASCENDING,
   kind:ASCENDING,
@@ -180,7 +182,10 @@ export async function getProgramArrivalsRosterHandler(
         partyId: leg.doc.partyId,
         guestDisplayName: guest?.displayName ?? "Guest",
         partyLabel: party?.label ?? null,
-        partyGuestIds: party?.memberGuestIds ?? [leg.doc.guestId],
+        partyGuestIds: party ? legs.filter((member) =>
+          party.legIds?.includes(member.id))
+          .map((member) => member.doc.guestId) :
+          [leg.doc.guestId],
         passengers: leg.doc.passengers,
         luggageUnits: leg.doc.luggageUnits,
         flightNumber: leg.doc.flightNumber,
@@ -243,8 +248,30 @@ export async function getProgramTransportPlanHandler(
     dedicated: boolean;
   }>();
   const unassigned: ProgramTransportPlanCallableResponse["unassigned"] = [];
+  const visibleLegs = new Map(legs.map((leg) => [leg.id, leg.doc]));
+  const invalidParties = new Set<string>();
   for (const leg of legs) {
-    const key = leg.doc.partyId ?? leg.id;
+    const partyId = leg.doc.partyId;
+    if (!partyId) continue;
+    const party = parties.get(partyId);
+    if (!party || !party.legIds?.includes(leg.id)) {
+      invalidParties.add(partyId);
+      continue;
+    }
+    try {
+      validateTravelPartyMembership(partyId, party, visibleLegs);
+    } catch (error) {
+      if (!(error instanceof HttpsError)) throw error;
+      invalidParties.add(partyId);
+    }
+  }
+  for (const leg of legs) {
+    if (leg.doc.partyId && invalidParties.has(leg.doc.partyId)) {
+      unassigned.push({legId: leg.id, reason: "missingScope"});
+      continue;
+    }
+    const key = leg.doc.partyId ?
+      hashRequest({partyId: leg.doc.partyId}) : hashRequest({legId: leg.id});
     let unit = unitMap.get(key);
     if (!unit) {
       const party = leg.doc.partyId ? parties.get(leg.doc.partyId) : null;

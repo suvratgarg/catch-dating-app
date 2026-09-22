@@ -1,5 +1,5 @@
 import {flightRefreshTier, nextFlightRefreshAt} from "./flightRefreshPolicy";
-import {reconcileTravelLegFlightState} from "./travelLegFlightState";
+import {reconcileTravelLegState} from "./travelLegState";
 import assert from "node:assert/strict";
 import test from "node:test";
 import * as admin from "firebase-admin";
@@ -394,14 +394,14 @@ test("rebooking resets old flight facts while retaining subscription cleanup",
   async () => {
     const old = leg({flightStatus: "landed", actualArrivalAt: ts(NOW - 1000),
       flightAlertSubscriptionId: "old-sub", flightProviderUpdatedAt: ts(NOW)});
-    const next = reconcileTravelLegFlightState(old,
+    const next = reconcileTravelLegState(old,
       {...old, flightNumber: "AI999", updatedAt: ts(NOW)}, new Date(NOW));
     assert.equal(next.actualArrivalAt, null);
     assert.equal(next.flightProviderUpdatedAt, null);
     assert.equal(next.flightStatus, "scheduled");
     assert.equal(next.flightAlertSubscriptionId, "old-sub");
     assert.equal(next.flightNextRefreshAt!.toMillis(), NOW);
-    const unchanged = reconcileTravelLegFlightState(old,
+    const unchanged = reconcileTravelLegState(old,
       {...old, passengers: 3}, new Date(NOW));
     assert.equal(unchanged.actualArrivalAt, old.actualArrivalAt);
     assert.equal(unchanged.flightProviderUpdatedAt,

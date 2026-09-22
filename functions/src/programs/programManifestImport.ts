@@ -185,7 +185,7 @@ export async function importProgramManifestHandler(
       const now = deps.now();
       const writes = buildManifestWrites(data.programId,
         access.program.organizerId, planned, state.households, state.parties,
-        db, now);
+        state.legs, now);
       for (const write of writes) {
         tx.set(db.doc(write.path), write.data as admin.firestore.DocumentData);
       }

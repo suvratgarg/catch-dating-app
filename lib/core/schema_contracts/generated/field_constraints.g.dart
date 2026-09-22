@@ -90632,18 +90632,18 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
-  static const programTravelPartyDocumentMemberGuestIds = CatchContractFieldConstraints(
-    path: 'programTravelPartyDocument.memberGuestIds',
+  static const programTravelPartyDocumentLegIds = CatchContractFieldConstraints(
+    path: 'programTravelPartyDocument.legIds',
     required: true,
     valueTypes: <String>['array'],
     itemValueTypes: <String>['string'],
-    minItems: 1,
+    minItems: 0,
     maxItems: 50,
     uniqueItems: true,
   );
 
-  static const programTravelPartyDocumentMemberGuestIdsItems = CatchContractFieldConstraints(
-    path: 'programTravelPartyDocument.memberGuestIds.items',
+  static const programTravelPartyDocumentLegIdsItems = CatchContractFieldConstraints(
+    path: 'programTravelPartyDocument.legIds.items',
     maxLength: 180,
     minLength: 1,
     required: true,
@@ -103657,13 +103657,6 @@ abstract final class CatchContractConstraints {
     pattern: '^[A-Z]{3}\$',
   );
 
-  static const upsertProgramTravelLegCallablePayloadPartyId = CatchContractFieldConstraints(
-    path: 'upsertProgramTravelLegCallablePayload.partyId',
-    maxLength: 180,
-    minLength: 1,
-    valueTypes: <String>['string'],
-  );
-
   static const upsertProgramTravelLegCallablePayloadPassengers = CatchContractFieldConstraints(
     path: 'upsertProgramTravelLegCallablePayload.passengers',
     required: true,
@@ -103708,7 +103701,7 @@ abstract final class CatchContractConstraints {
     path: 'upsertProgramTravelLegCallablePayload.scheduledArrivalAtMillis',
     valueTypes: <String>['integer'],
     minimum: 0,
-    maximum: 9007199254740991,
+    maximum: 253402300799999,
   );
 
   static const upsertProgramTravelPartyCallablePayloadDedicatedVehicle = CatchContractFieldConstraints(
@@ -103730,18 +103723,18 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
-  static const upsertProgramTravelPartyCallablePayloadMemberGuestIds = CatchContractFieldConstraints(
-    path: 'upsertProgramTravelPartyCallablePayload.memberGuestIds',
+  static const upsertProgramTravelPartyCallablePayloadLegIds = CatchContractFieldConstraints(
+    path: 'upsertProgramTravelPartyCallablePayload.legIds',
     required: true,
     valueTypes: <String>['array'],
     itemValueTypes: <String>['string'],
-    minItems: 1,
+    minItems: 0,
     maxItems: 50,
     uniqueItems: true,
   );
 
-  static const upsertProgramTravelPartyCallablePayloadMemberGuestIdsItems = CatchContractFieldConstraints(
-    path: 'upsertProgramTravelPartyCallablePayload.memberGuestIds.items',
+  static const upsertProgramTravelPartyCallablePayloadLegIdsItems = CatchContractFieldConstraints(
+    path: 'upsertProgramTravelPartyCallablePayload.legIds.items',
     maxLength: 180,
     minLength: 1,
     required: true,
@@ -118970,8 +118963,8 @@ abstract final class CatchContractConstraints {
     'programTravelPartyDocument.createdAt._seconds': programTravelPartyDocumentCreatedAtSeconds,
     'programTravelPartyDocument.dedicatedVehicle': programTravelPartyDocumentDedicatedVehicle,
     'programTravelPartyDocument.label': programTravelPartyDocumentLabel,
-    'programTravelPartyDocument.memberGuestIds': programTravelPartyDocumentMemberGuestIds,
-    'programTravelPartyDocument.memberGuestIds.items': programTravelPartyDocumentMemberGuestIdsItems,
+    'programTravelPartyDocument.legIds': programTravelPartyDocumentLegIds,
+    'programTravelPartyDocument.legIds.items': programTravelPartyDocumentLegIdsItems,
     'programTravelPartyDocument.organizerId': programTravelPartyDocumentOrganizerId,
     'programTravelPartyDocument.programId': programTravelPartyDocumentProgramId,
     'programTravelPartyDocument.revision': programTravelPartyDocumentRevision,
@@ -120740,7 +120733,6 @@ abstract final class CatchContractConstraints {
     'upsertProgramTravelLegCallablePayload.legId': upsertProgramTravelLegCallablePayloadLegId,
     'upsertProgramTravelLegCallablePayload.luggageUnits': upsertProgramTravelLegCallablePayloadLuggageUnits,
     'upsertProgramTravelLegCallablePayload.originIata': upsertProgramTravelLegCallablePayloadOriginIata,
-    'upsertProgramTravelLegCallablePayload.partyId': upsertProgramTravelLegCallablePayloadPartyId,
     'upsertProgramTravelLegCallablePayload.passengers': upsertProgramTravelLegCallablePayloadPassengers,
     'upsertProgramTravelLegCallablePayload.pickupPointId': upsertProgramTravelLegCallablePayloadPickupPointId,
     'upsertProgramTravelLegCallablePayload.programId': upsertProgramTravelLegCallablePayloadProgramId,
@@ -120750,8 +120742,8 @@ abstract final class CatchContractConstraints {
     'upsertProgramTravelPartyCallablePayload.dedicatedVehicle': upsertProgramTravelPartyCallablePayloadDedicatedVehicle,
     'upsertProgramTravelPartyCallablePayload.expectedRevision': upsertProgramTravelPartyCallablePayloadExpectedRevision,
     'upsertProgramTravelPartyCallablePayload.label': upsertProgramTravelPartyCallablePayloadLabel,
-    'upsertProgramTravelPartyCallablePayload.memberGuestIds': upsertProgramTravelPartyCallablePayloadMemberGuestIds,
-    'upsertProgramTravelPartyCallablePayload.memberGuestIds.items': upsertProgramTravelPartyCallablePayloadMemberGuestIdsItems,
+    'upsertProgramTravelPartyCallablePayload.legIds': upsertProgramTravelPartyCallablePayloadLegIds,
+    'upsertProgramTravelPartyCallablePayload.legIds.items': upsertProgramTravelPartyCallablePayloadLegIdsItems,
     'upsertProgramTravelPartyCallablePayload.partyId': upsertProgramTravelPartyCallablePayloadPartyId,
     'upsertProgramTravelPartyCallablePayload.programId': upsertProgramTravelPartyCallablePayloadProgramId,
     'upsertTransportVendorCallablePayload.active': upsertTransportVendorCallablePayloadActive,

@@ -3,14 +3,15 @@
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
 /**
- * Create or update one guest's travel leg. Planner/manager-owned; manual flight entries stay unresolved until the provider slice ships.
+ * Create or update one guest journey. Guest and journey kind are immutable; party membership is owned by upsertProgramTravelParty.
  */
-export interface UpsertProgramTravelLegCallablePayload {
+export type UpsertProgramTravelLegCallablePayload = {
+  [k: string]: unknown;
+} & {
   programId: string;
   legId?: string;
   expectedRevision?: number;
   guestId: string;
-  partyId?: string | null;
   kind: "inbound" | "outbound" | "ground";
   flightNumber?: string | null;
   carrierCode?: string | null;
@@ -35,4 +36,4 @@ export interface UpsertProgramTravelLegCallablePayload {
     | "childSeat"
   )[];
   dedicatedVehicle: boolean;
-}
+};

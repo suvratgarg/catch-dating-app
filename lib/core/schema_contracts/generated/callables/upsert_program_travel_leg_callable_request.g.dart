@@ -5,14 +5,13 @@
 // Typed callable request DTO emitted from callables/upsert_program_travel_leg_payload.schema.json.
 // Re-exported by lib/core/schema_contracts/generated/callable_request_dtos.g.dart.
 
-/// Create or update one guest's travel leg. Planner/manager-owned; manual flight entries stay unresolved until the provider slice ships.
+/// Create or update one guest journey. Guest and journey kind are immutable; party membership is owned by upsertProgramTravelParty.
 final class UpsertProgramTravelLegCallableRequest {
   const UpsertProgramTravelLegCallableRequest({
     required this.programId,
     this.legId,
     this.expectedRevision,
     required this.guestId,
-    this.partyId,
     required this.kind,
     this.flightNumber,
     this.carrierCode,
@@ -33,7 +32,6 @@ final class UpsertProgramTravelLegCallableRequest {
   final String? legId;
   final int? expectedRevision;
   final String guestId;
-  final String? partyId;
   final String kind;
   final String? flightNumber;
   final String? carrierCode;
@@ -54,7 +52,6 @@ final class UpsertProgramTravelLegCallableRequest {
     'legId': ?legId,
     'expectedRevision': ?expectedRevision,
     'guestId': guestId,
-    'partyId': ?partyId,
     'kind': kind,
     'flightNumber': ?flightNumber,
     'carrierCode': ?carrierCode,

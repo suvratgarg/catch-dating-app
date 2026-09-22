@@ -1,3 +1,4 @@
+import {validateTravelPartyMembership} from "./travelPartyPolicy";
 import * as admin from "firebase-admin";
 import {CallableRequest, HttpsError, onCall} from
   "firebase-functions/v2/https";
@@ -250,12 +251,13 @@ export async function dispatchProgramTripHandler(
       const party = snap.data() as ProgramTravelPartyDocument | undefined;
       const members = legs.filter((leg) => leg.doc.partyId === snap.id);
       if (!party || party.programId !== data.programId ||
-          party.memberGuestIds.length !== members.length ||
-          !members.every((leg) =>
-            party.memberGuestIds.includes(leg.doc.guestId))) {
+          party.organizerId !== access.program.organizerId ||
+          party.legIds?.length !== members.length) {
         throw new HttpsError("failed-precondition",
           "The complete travel party must be ready on the same manifest.");
       }
+      validateTravelPartyMembership(snap.id, party,
+        new Map(members.map((leg) => [leg.id, leg.doc])));
       if (party.dedicatedVehicle && members.length !== legs.length) {
         throw new HttpsError("failed-precondition",
           "A private party cannot share a vehicle with another party.");

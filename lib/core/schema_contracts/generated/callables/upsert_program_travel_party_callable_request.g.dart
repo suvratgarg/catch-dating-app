@@ -5,30 +5,30 @@
 // Typed callable request DTO emitted from callables/upsert_program_travel_party_payload.schema.json.
 // Re-exported by lib/core/schema_contracts/generated/callable_request_dtos.g.dart.
 
-/// Create or update a ride-together travel party.
+/// Server-owned ride-together membership for specific travel legs. This is independent of invitation households and does not apply to a guest's other journeys.
 final class UpsertProgramTravelPartyCallableRequest {
   const UpsertProgramTravelPartyCallableRequest({
     required this.programId,
     this.partyId,
     this.expectedRevision,
     this.label,
-    required this.memberGuestIds,
     required this.dedicatedVehicle,
+    required this.legIds,
   });
 
   final String programId;
   final String? partyId;
   final int? expectedRevision;
   final String? label;
-  final List<String> memberGuestIds;
   final bool dedicatedVehicle;
+  final List<String> legIds;
 
   Map<String, Object?> toJson() => {
     'programId': programId,
     'partyId': ?partyId,
     'expectedRevision': ?expectedRevision,
     'label': ?label,
-    'memberGuestIds': memberGuestIds,
     'dedicatedVehicle': dedicatedVehicle,
+    'legIds': legIds,
   };
 }

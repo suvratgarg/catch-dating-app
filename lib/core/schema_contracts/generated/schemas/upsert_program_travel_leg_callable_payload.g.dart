@@ -8,7 +8,7 @@ const schemaUpsertProgramTravelLegCallablePayloadSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
   '\$id': 'https://catch.app/contracts/callables/upsert_program_travel_leg_payload.schema.json',
   'title': 'UpsertProgramTravelLegCallablePayload',
-  'description': 'Create or update one guest\'s travel leg. Planner/manager-owned; manual flight entries stay unresolved until the provider slice ships.',
+  'description': 'Create or update one guest journey. Guest and journey kind are immutable; party membership is owned by upsertProgramTravelParty.',
   'type': 'object',
   'additionalProperties': false,
   'required': <Object?>[
@@ -38,14 +38,6 @@ const schemaUpsertProgramTravelLegCallablePayloadSchema = <String, Object?>{
     },
     'guestId': <String, Object?>{
       'type': 'string',
-      'minLength': 1,
-      'maxLength': 180,
-    },
-    'partyId': <String, Object?>{
-      'type': <Object?>[
-        'string',
-        'null',
-      ],
       'minLength': 1,
       'maxLength': 180,
     },
@@ -103,7 +95,7 @@ const schemaUpsertProgramTravelLegCallablePayloadSchema = <String, Object?>{
         'null',
       ],
       'minimum': 0,
-      'maximum': 9007199254740991,
+      'maximum': 253402300799999,
     },
     'international': <String, Object?>{
       'type': <Object?>[
@@ -162,4 +154,18 @@ const schemaUpsertProgramTravelLegCallablePayloadSchema = <String, Object?>{
       'type': 'boolean',
     },
   },
+  'allOf': <Object?>[
+    <String, Object?>{
+      'if': <String, Object?>{
+        'required': <Object?>[
+          'legId',
+        ],
+      },
+      'then': <String, Object?>{
+        'required': <Object?>[
+          'expectedRevision',
+        ],
+      },
+    },
+  ],
 };

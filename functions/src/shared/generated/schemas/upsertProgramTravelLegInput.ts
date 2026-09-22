@@ -6,7 +6,7 @@ export const upsertProgramTravelLegCallablePayloadSchema: Record<string, unknown
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/upsert_program_travel_leg_payload.schema.json",
   "title": "UpsertProgramTravelLegCallablePayload",
-  "description": "Create or update one guest's travel leg. Planner/manager-owned; manual flight entries stay unresolved until the provider slice ships.",
+  "description": "Create or update one guest journey. Guest and journey kind are immutable; party membership is owned by upsertProgramTravelParty.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -36,14 +36,6 @@ export const upsertProgramTravelLegCallablePayloadSchema: Record<string, unknown
     },
     "guestId": {
       "type": "string",
-      "minLength": 1,
-      "maxLength": 180
-    },
-    "partyId": {
-      "type": [
-        "string",
-        "null"
-      ],
       "minLength": 1,
       "maxLength": 180
     },
@@ -101,7 +93,7 @@ export const upsertProgramTravelLegCallablePayloadSchema: Record<string, unknown
         "null"
       ],
       "minimum": 0,
-      "maximum": 9007199254740991
+      "maximum": 253402300799999
     },
     "international": {
       "type": [
@@ -159,5 +151,19 @@ export const upsertProgramTravelLegCallablePayloadSchema: Record<string, unknown
     "dedicatedVehicle": {
       "type": "boolean"
     }
-  }
+  },
+  "allOf": [
+    {
+      "if": {
+        "required": [
+          "legId"
+        ]
+      },
+      "then": {
+        "required": [
+          "expectedRevision"
+        ]
+      }
+    }
+  ]
 } as const;

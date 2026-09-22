@@ -75,7 +75,7 @@ const schemaProgramTravelLegDocumentSchema = <String, Object?>{
       ],
       'minLength': 1,
       'maxLength': 180,
-      'description': 'Optional ride-together travel party; null means this leg travels as a singleton.',
+      'description': 'Server-maintained membership index of the canonical party legIds. Only party membership commands and manifest import may change it.',
     },
     'kind': <String, Object?>{
       'type': 'string',

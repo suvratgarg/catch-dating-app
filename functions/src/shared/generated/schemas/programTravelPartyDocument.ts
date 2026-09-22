@@ -6,7 +6,7 @@ export const programTravelPartyDocumentSchema: Record<string, unknown> = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/program_travel_parties.schema.json",
   "title": "ProgramTravelPartyDocument",
-  "description": "Server-owned ride-together relationship across guest legs. Members are never split across suggested vehicles; oversized parties surface for review.",
+  "description": "Server-owned ride-together membership for specific travel legs. This is independent of invitation households and does not apply to a guest's other journeys.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "programTravelParties",
@@ -17,7 +17,7 @@ export const programTravelPartyDocumentSchema: Record<string, unknown> = {
     "programId",
     "organizerId",
     "label",
-    "memberGuestIds",
+    "legIds",
     "dedicatedVehicle",
     "createdAt",
     "updatedAt",
@@ -40,18 +40,6 @@ export const programTravelPartyDocumentSchema: Record<string, unknown> = {
         "null"
       ],
       "maxLength": 140
-    },
-    "memberGuestIds": {
-      "type": "array",
-      "minItems": 1,
-      "maxItems": 50,
-      "uniqueItems": true,
-      "items": {
-        "type": "string",
-        "minLength": 1,
-        "maxLength": 180
-      },
-      "description": "One to fifty people traveling together. A one-person party supports private transfers and staged manifest imports."
     },
     "dedicatedVehicle": {
       "type": "boolean"
@@ -100,6 +88,18 @@ export const programTravelPartyDocumentSchema: Record<string, unknown> = {
       "type": "integer",
       "minimum": 1,
       "maximum": 9007199254740991
+    },
+    "legIds": {
+      "type": "array",
+      "minItems": 0,
+      "maxItems": 50,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 180
+      },
+      "description": "Explicit travel legs in this ride-together party. Guest identities are derived from those legs. An existing un-dispatched party may be emptied to release its members."
     }
   }
 } as const;

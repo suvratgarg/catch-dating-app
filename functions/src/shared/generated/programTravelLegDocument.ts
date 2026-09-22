@@ -13,7 +13,7 @@ export interface ProgramTravelLegDocument {
    */
   guestId: string;
   /**
-   * Optional ride-together travel party; null means this leg travels as a singleton.
+   * Server-maintained membership index of the canonical party legIds. Only party membership commands and manifest import may change it.
    */
   partyId: string | null;
   kind: "inbound" | "outbound" | "ground";

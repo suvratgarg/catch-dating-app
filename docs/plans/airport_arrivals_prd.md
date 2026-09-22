@@ -1279,10 +1279,21 @@ Name-only matches, duplicate labels, duplicate matching journeys, and rows that
 target a dispatched journey require explicit review. A scheduled ground arrival
 with a stable guest reference also reuses its existing inbound leg.
 
-Households and travel parties remain distinct relationships. Both are bounded to
-50 members. A travel party may contain one person for a private transfer or a
-staged import. Moving a guest to another household updates both membership lists
-in the same transaction; import never implies invitation, consent, or RSVP.
+Households contain guests; travel parties contain specific journey `legIds`.
+Both are bounded to 50 members. A party has at most one leg per guest and shares
+one journey kind, pickup and destination. The leg's `partyId` is a server-owned
+lookup index maintained atomically with canonical party membership. Editing a
+party never adopts the same guest's other arrivals or departures. Detach a leg
+explicitly before moving it to another party or changing its route. Dispatched
+and arrived journeys cannot be regrouped. An existing empty party can release
+its last member; creating an empty party is rejected.
+
+Import rows naming a party create an explicit inbound leg even when itinerary
+details remain unresolved. Suggestions and dispatch require complete, consistent
+party membership. Legacy guest-only parties require explicit leg reconciliation
+before use; do not infer journeys when rolling out this schema change. Moving a
+guest to another household updates both household membership lists in the same
+transaction; import never implies invitation, consent, or RSVP.
 
 
 ### Provider observation boundaries
@@ -1298,7 +1309,9 @@ AeroDataBox runway and revised times may be estimates. Only a confirmed arrival
 status makes them actual arrival times. Each applied provider observation stores
 its update timestamp; replayed and older observations are ignored. Write-back
 runs against the current leg in a transaction, preserves operational edits, and
-advances the revision. Rebooking clears old provider facts while retaining the
+advances the revision. Rebooking also clears curb readiness, claims and manual curb observations.
+Unchanged itineraries preserve those observations. It clears old provider facts
+while retaining the
 subscription reference needed for cleanup. Manual refresh only polls status and binds the API key. The scheduled sweep
 owns subscription reconciliation and binds both the API key and webhook secret.
 

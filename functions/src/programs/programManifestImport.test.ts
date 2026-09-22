@@ -226,7 +226,8 @@ test("multirow imports create distinct people and complete group membership",
     assert.equal(legs.length, 2);
     const ids = guests.map(([key]) => key.split("/").pop()).sort();
     assert.deepEqual(entries("programHouseholds")[0][1].memberGuestIds, ids);
-    assert.deepEqual(entries("programTravelParties")[0][1].memberGuestIds, ids);
+    assert.deepEqual(entries("programTravelParties")[0][1].legIds,
+      entries("programTravelLegs").map(([path]) => path.split("/")[1]).sort());
     assert.deepEqual(legs.map(([, leg]) => leg.guestId).sort(), ids);
   });
 
@@ -418,3 +419,61 @@ test("materialized imports satisfy the generated document contracts",
       }
     }
   });
+
+for (const partyLabel of [undefined, row.partyLabel]) {
+  test(`import refuses party route change (label ${partyLabel})`, async () => {
+    const store = new MiniFirestore({...seed(),
+      "programHotels/other": {programId: "program-1", organizerId: "org-1",
+        name: "Other Hotel", active: true},
+    });
+    await importProgramManifestHandler(request({programId: "program-1",
+      mode: "commit", clientOperationId: "seed-party", rows: [row],
+    }), deps(store));
+    const changed = {...row, partyLabel, destinationHotelName: "Other Hotel"};
+    for (const mode of ["preview", "commit"]) {
+      const result = await importProgramManifestHandler(request({
+        programId: "program-1", mode, clientOperationId: "change-party-route",
+        rows: [changed],
+      }), deps(store));
+      assert.equal(result.legsUpdated, 0);
+      assert.ok(result.rowErrors.some((issue) => /before changing route/
+        .test(issue.message)));
+    }
+    assert.equal([...store.docs.entries()].find(([path]) =>
+      path.startsWith("programTravelLegs/"))![1].destinationHotelId, "hotel-1");
+  });
+}
+
+test("party-only imports create explicit unresolved journeys", async () => {
+  const store = new MiniFirestore(seed());
+  const result = await importProgramManifestHandler(request({
+    programId: "program-1", mode: "commit", clientOperationId: "party-only",
+    rows: [{displayName: "Asha", externalReference: "asha",
+      partyLabel: "Arrival group"}],
+  }), deps(store));
+  assert.equal(result.legsCreated, 1);
+  const leg = [...store.docs.entries()].find(([path]) =>
+    path.startsWith("programTravelLegs/"))!;
+  const party = [...store.docs.entries()].find(([path]) =>
+    path.startsWith("programTravelParties/"))![1];
+  assert.deepEqual(party.legIds, [leg[0].split("/")[1]]);
+  assert.equal(leg[1].scheduledArrivalAt, null);
+  assert.equal(leg[1].pickupPointId, null);
+});
+
+test("import rejects incompatible routes in a new party", async () => {
+  const store = new MiniFirestore({...seed(),
+    "programHotels/other": {programId: "program-1", organizerId: "org-1",
+      name: "Other Hotel", active: true},
+  });
+  const payload = {programId: "program-1", clientOperationId: "split-party",
+    rows: [row, {...row, displayName: "Other guest",
+      destinationHotelName: "Other Hotel"}]};
+  const preview = await importProgramManifestHandler(
+    request({...payload, mode: "preview"}), deps(store));
+  const commit = await importProgramManifestHandler(
+    request({...payload, mode: "commit"}), deps(store));
+  assert.deepEqual(commit.rowErrors, preview.rowErrors);
+  assert.equal(commit.guestsCreated, 1);
+  assert.match(commit.rowErrors[0].message, /same pickup and destination/);
+});

@@ -160,7 +160,8 @@ test("dispatch requires the complete ready party",
       pickupPointId: "pp-t3", readiness: "ready",
       readyAt: db.getDoc("programTravelLegs/leg-1")!.readyAt});
     db.setDoc("programTravelParties/party-1", {programId: "program-1",
-      memberGuestIds: ["guest-1", "guest-2"], dedicatedVehicle: true});
+      organizerId: "org-1", legIds: ["leg-1", "leg-2"],
+      dedicatedVehicle: true});
     await assert.rejects(dispatch(db), isCode("failed-precondition"));
     const complete = await dispatchProgramTripHandler(request({
       ...dispatchData(), legIds: ["leg-1", "leg-2"],
@@ -177,7 +178,7 @@ for (const party of [false, true]) {
       db.updateDoc("programTravelLegs/leg-1", party ? {partyId: "private"} :
         {dedicatedVehicle: true});
       db.setDoc("programTravelParties/private", {programId: "program-1",
-        memberGuestIds: ["guest-1"], dedicatedVehicle: true});
+        organizerId: "org-1", legIds: ["leg-1"], dedicatedVehicle: true});
       db.updateDoc("programTravelLegs/leg-2", {pickupPointId: "pp-t3",
         readiness: "ready",
         readyAt: db.getDoc("programTravelLegs/leg-1")!.readyAt});

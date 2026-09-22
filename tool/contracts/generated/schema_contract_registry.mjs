@@ -117871,7 +117871,7 @@ export const programTravelLegDocumentSchema = {
       ],
       "minLength": 1,
       "maxLength": 180,
-      "description": "Optional ride-together travel party; null means this leg travels as a singleton."
+      "description": "Server-maintained membership index of the canonical party legIds. Only party membership commands and manifest import may change it."
     },
     "kind": {
       "type": "string",
@@ -118402,7 +118402,7 @@ export const programTravelPartyDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/program_travel_parties.schema.json",
   "title": "ProgramTravelPartyDocument",
-  "description": "Server-owned ride-together relationship across guest legs. Members are never split across suggested vehicles; oversized parties surface for review.",
+  "description": "Server-owned ride-together membership for specific travel legs. This is independent of invitation households and does not apply to a guest's other journeys.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "programTravelParties",
@@ -118413,7 +118413,7 @@ export const programTravelPartyDocumentSchema = {
     "programId",
     "organizerId",
     "label",
-    "memberGuestIds",
+    "legIds",
     "dedicatedVehicle",
     "createdAt",
     "updatedAt",
@@ -118436,18 +118436,6 @@ export const programTravelPartyDocumentSchema = {
         "null"
       ],
       "maxLength": 140
-    },
-    "memberGuestIds": {
-      "type": "array",
-      "minItems": 1,
-      "maxItems": 50,
-      "uniqueItems": true,
-      "items": {
-        "type": "string",
-        "minLength": 1,
-        "maxLength": 180
-      },
-      "description": "One to fifty people traveling together. A one-person party supports private transfers and staged manifest imports."
     },
     "dedicatedVehicle": {
       "type": "boolean"
@@ -118496,6 +118484,18 @@ export const programTravelPartyDocumentSchema = {
       "type": "integer",
       "minimum": 1,
       "maximum": 9007199254740991
+    },
+    "legIds": {
+      "type": "array",
+      "minItems": 0,
+      "maxItems": 50,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 180
+      },
+      "description": "Explicit travel legs in this ride-together party. Guest identities are derived from those legs. An existing un-dispatched party may be emptied to release its members."
     }
   }
 };
@@ -120398,7 +120398,7 @@ export const upsertProgramTravelLegCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/upsert_program_travel_leg_payload.schema.json",
   "title": "UpsertProgramTravelLegCallablePayload",
-  "description": "Create or update one guest's travel leg. Planner/manager-owned; manual flight entries stay unresolved until the provider slice ships.",
+  "description": "Create or update one guest journey. Guest and journey kind are immutable; party membership is owned by upsertProgramTravelParty.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -120428,14 +120428,6 @@ export const upsertProgramTravelLegCallablePayloadSchema = {
     },
     "guestId": {
       "type": "string",
-      "minLength": 1,
-      "maxLength": 180
-    },
-    "partyId": {
-      "type": [
-        "string",
-        "null"
-      ],
       "minLength": 1,
       "maxLength": 180
     },
@@ -120493,7 +120485,7 @@ export const upsertProgramTravelLegCallablePayloadSchema = {
         "null"
       ],
       "minimum": 0,
-      "maximum": 9007199254740991
+      "maximum": 253402300799999
     },
     "international": {
       "type": [
@@ -120551,19 +120543,33 @@ export const upsertProgramTravelLegCallablePayloadSchema = {
     "dedicatedVehicle": {
       "type": "boolean"
     }
-  }
+  },
+  "allOf": [
+    {
+      "if": {
+        "required": [
+          "legId"
+        ]
+      },
+      "then": {
+        "required": [
+          "expectedRevision"
+        ]
+      }
+    }
+  ]
 };
 
 export const upsertProgramTravelPartyCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/upsert_program_travel_party_payload.schema.json",
   "title": "UpsertProgramTravelPartyCallablePayload",
-  "description": "Create or update a ride-together travel party.",
+  "description": "Server-owned ride-together membership for specific travel legs. This is independent of invitation households and does not apply to a guest's other journeys.",
   "type": "object",
   "additionalProperties": false,
   "required": [
     "programId",
-    "memberGuestIds",
+    "legIds",
     "dedicatedVehicle"
   ],
   "properties": {
@@ -120589,9 +120595,12 @@ export const upsertProgramTravelPartyCallablePayloadSchema = {
       ],
       "maxLength": 140
     },
-    "memberGuestIds": {
+    "dedicatedVehicle": {
+      "type": "boolean"
+    },
+    "legIds": {
       "type": "array",
-      "minItems": 1,
+      "minItems": 0,
       "maxItems": 50,
       "uniqueItems": true,
       "items": {
@@ -120599,12 +120608,23 @@ export const upsertProgramTravelPartyCallablePayloadSchema = {
         "minLength": 1,
         "maxLength": 180
       },
-      "description": "One to fifty people traveling together. A one-person party supports private transfers and staged manifest imports."
-    },
-    "dedicatedVehicle": {
-      "type": "boolean"
+      "description": "Explicit travel legs in this ride-together party. Guest identities are derived from those legs. An existing un-dispatched party may be emptied to release its members."
     }
-  }
+  },
+  "allOf": [
+    {
+      "if": {
+        "required": [
+          "partyId"
+        ]
+      },
+      "then": {
+        "required": [
+          "expectedRevision"
+        ]
+      }
+    }
+  ]
 };
 
 export const setProgramTravelReadinessCallablePayloadSchema = {

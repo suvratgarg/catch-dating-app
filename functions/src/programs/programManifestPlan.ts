@@ -1,3 +1,4 @@
+import {travelPartyRouteKey} from "../transport/travelPartyPolicy";
 import {normalizeFlightNumber} from "../transport/flightIdentity";
 import type {ImportProgramManifestCallablePayload} from
   "../shared/generated/importProgramManifestCallablePayload";
@@ -116,7 +117,13 @@ export function buildManifestPlans(
   const householdMembers = new Map([...households].map(([id, doc]) =>
     [id, new Set(doc.memberGuestIds)]));
   const partyMembers = new Map([...parties].map(([id, doc]) =>
-    [id, new Set(doc.memberGuestIds)]));
+    [id, new Set(doc.legIds ?? [])]));
+  const partyRoutes = new Map<string, string>();
+  for (const party of parties.values()) {
+    const first = legs.get(party.legIds?.[0] ?? "");
+    const label = normalizeLabel(party.label);
+    if (first && label) partyRoutes.set(label, travelPartyRouteKey(first));
+  }
 
   const guestsByRef = new Map<string, string[]>();
   const guestsByName = new Map<string, string[]>();
@@ -216,7 +223,9 @@ export function buildManifestPlans(
       }
     }
     const flight = normalizeManifestFlightNumber(row.flightNumber);
-    if (flight || row.scheduledArrivalAtMillis != null) {
+    if (flight || row.scheduledArrivalAtMillis != null || row.partyLabel ||
+        row.pickupPointLabel || row.destinationHotelName ||
+        row.destinationLabel) {
       const matches = plan.guestId ? legsByGuestFlight.get(legKey(
         plan.guestId, flight, row.scheduledArrivalAtMillis)) ?? [] : [];
       if (matches.length > 1) {
@@ -232,6 +241,7 @@ export function buildManifestPlans(
         }
       } else {
         plan.legAction = "create";
+        plan.legId = allocateId("programTravelLegs");
       }
     }
     for (const [labelValue, byLabel, members, kind] of [
@@ -245,9 +255,52 @@ export function buildManifestPlans(
         rowErrors.push(`Ambiguous ${kind} label; resolve it first.`);
       }
       if (id && (members.get(id)?.size ?? 0) >= 50 &&
-          !members.get(id)?.has(plan.guestId)) {
+          !members.get(id)?.has(kind === "household" ?
+            plan.guestId : plan.legId!)) {
         rowErrors.push(`The ${kind} already has 50 members.`);
       }
+    }
+    const route = travelPartyRouteKey({kind: "inbound",
+      pickupPointId: plan.pickupPointId ??
+        plan.existingLeg?.pickupPointId ?? null,
+      destinationHotelId: plan.hotelId ??
+        plan.existingLeg?.destinationHotelId ?? null,
+      destinationLabel: row.destinationLabel === undefined ?
+        plan.existingLeg?.destinationLabel ?? null : row.destinationLabel,
+    });
+    if (plan.existingLeg?.partyId) {
+      const currentParty = parties.get(plan.existingLeg.partyId);
+      if (!currentParty?.legIds?.includes(plan.legId!)) {
+        rowErrors.push("Party and journey membership need reconciliation.");
+      }
+      if (route !== travelPartyRouteKey(plan.existingLeg)) {
+        rowErrors.push(
+          "Remove this journey from its party before changing route.");
+      }
+    }
+    const partyLabel = normalizeLabel(row.partyLabel);
+    if (partyLabel) {
+      const partyId = partyByLabel.get(partyLabel);
+      const party = partyId ? parties.get(partyId) : undefined;
+      if (party && !Array.isArray(party.legIds)) {
+        rowErrors.push("Legacy party membership needs journey reconciliation.");
+      }
+      if (party?.legIds?.some((id) => {
+        const readiness = legs.get(id)?.readiness;
+        return readiness === "dispatched" || readiness === "arrived";
+      })) {
+        rowErrors.push("This party already departed; use a new party label.");
+      }
+      if (plan.existingLeg?.partyId && plan.existingLeg.partyId !== partyId) {
+        rowErrors.push(
+          "Remove this journey from its old party before moving it.");
+      }
+      if (partyRoutes.has(partyLabel) &&
+          partyRoutes.get(partyLabel) !== route) {
+        rowErrors.push(
+          "Travel party members need the same pickup and destination.");
+      }
+      if (rowErrors.length === 0) partyRoutes.set(partyLabel, route);
     }
     // An errored row never creates groups or alters existing membership.
     if (rowErrors.length > 0) {
@@ -287,7 +340,7 @@ export function buildManifestPlans(
     ] as const) {
       if (!id) continue;
       const group = members.get(id) ?? new Set<string>();
-      group.add(plan.guestId);
+      group.add(members === householdMembers ? plan.guestId : plan.legId!);
       members.set(id, group);
     }
     selectedGuests.add(plan.guestId);

@@ -1,8 +1,10 @@
+import {requireMutableTravelLeg, validateTravelPartyMembership}
+  from "../transport/travelPartyPolicy";
 import * as admin from "firebase-admin";
 import {nextRevision} from "../shared/programAuthority";
 import {nextFlightRefreshAt} from "../transport/flightRefreshPolicy";
-import {reconcileTravelLegFlightState} from
-  "../transport/travelLegFlightState";
+import {reconcileTravelLegState} from
+  "../transport/travelLegState";
 import type {
   ProgramGuestDocument, ProgramHouseholdDocument, ProgramTravelLegDocument,
   ProgramTravelPartyDocument,
@@ -18,7 +20,7 @@ export function buildManifestWrites(
   planned: ReturnType<typeof buildManifestPlans>,
   households: Map<string, ProgramHouseholdDocument>,
   parties: Map<string, ProgramTravelPartyDocument>,
-  db: FirebaseFirestore.Firestore,
+  legs: Map<string, ProgramTravelLegDocument>,
   now: FirebaseFirestore.Timestamp,
 ): Array<{path: string; data: object}> {
   const {plans, newHouseholds, newParties, newLabels} = planned;
@@ -62,16 +64,17 @@ export function buildManifestWrites(
       members.add(plan.guestId);
       householdMembers.set(plan.householdId, members);
     }
-    if (plan.partyId) {
-      const members = partyMembers.get(plan.partyId) ?? new Set();
-      members.add(plan.guestId);
-      partyMembers.set(plan.partyId, members);
+    const partyId = plan.partyId ?? plan.existingLeg?.partyId;
+    if (partyId) {
+      const members = partyMembers.get(partyId) ??
+        new Set(parties.get(partyId)?.legIds ?? []);
+      members.add(plan.legId!);
+      partyMembers.set(partyId, members);
     }
 
     if (plan.legAction === "create" || plan.legAction === "update") {
       const existingLeg = plan.existingLeg;
-      const legId = plan.legId ??
-        db.collection("programTravelLegs").doc().id;
+      const legId = plan.legId!;
       const scheduled = row.scheduledArrivalAtMillis != null ?
         admin.firestore.Timestamp.fromMillis(row.scheduledArrivalAtMillis) :
         existingLeg?.scheduledArrivalAt ?? null;
@@ -127,7 +130,7 @@ export function buildManifestWrites(
         revision: nextRevision(existingLeg?.revision, now),
       };
       writes.push({path: `programTravelLegs/${legId}`,
-        data: reconcileTravelLegFlightState(existingLeg, legDoc, now.toDate()),
+        data: reconcileTravelLegState(existingLeg, legDoc, now.toDate()),
       });
     }
   }
@@ -164,7 +167,7 @@ export function buildManifestWrites(
       programId,
       organizerId,
       label,
-      memberGuestIds: [...members].sort(),
+      legIds: [...members].sort(),
       dedicatedVehicle: false,
       createdAt: now,
       updatedAt: now,
@@ -189,16 +192,33 @@ export function buildManifestWrites(
   for (const [partyId, members] of partyMembers) {
     if (!parties.has(partyId)) continue;
     const existing = parties.get(partyId)!;
-    const merged = new Set<string>(existing.memberGuestIds);
-    for (const guestId of members) merged.add(guestId);
-    if (merged.size !== existing.memberGuestIds.length) {
+    const merged = new Set<string>(existing.legIds);
+    for (const legId of members) merged.add(legId);
+    if (merged.size !== existing.legIds.length) {
       writes.push({
         path: `programTravelParties/${partyId}`,
-        data: {...existing, memberGuestIds: [...merged].sort(),
+        data: {...existing, legIds: [...merged].sort(),
           updatedAt: now, revision: nextRevision(existing.revision, now)},
       });
     }
   }
 
+  const nextLegs = new Map(legs);
+  const nextParties = new Map(parties);
+  for (const write of writes) {
+    if (write.path.startsWith("programTravelLegs/")) {
+      nextLegs.set(write.path.split("/")[1],
+        write.data as ProgramTravelLegDocument);
+    }
+    if (write.path.startsWith("programTravelParties/")) {
+      nextParties.set(write.path.split("/")[1],
+        write.data as ProgramTravelPartyDocument);
+    }
+  }
+  for (const partyId of partyMembers.keys()) {
+    const members = validateTravelPartyMembership(
+      partyId, nextParties.get(partyId)!, nextLegs);
+    members.forEach((leg) => requireMutableTravelLeg(leg.doc));
+  }
   return writes;
 }
