@@ -7,14 +7,14 @@ import {validateCallableWithAjv} from "../shared/validation";
 import {
   assertRevision,
   dutyAssignments,
-  dutyCoversHotel,
-  dutyCoversPickupPoint,
+  dutyCoversTransportRoute,
   nextRevision,
   requireProgramAccess,
 } from "../shared/programAuthority";
 import {hashRequest} from "../shared/programOperationHash";
 import type {
   ProgramHotelDocument,
+  ProgramPickupPointDocument,
   ProgramTravelLegDocument,
   TransportActiveAssignmentDocument,
   TransportOperationReceiptDocument,
@@ -60,57 +60,17 @@ export async function dispatchProgramTripHandler(
     request, validateDispatchProgramTripCallablePayload, normalizePayload);
   const db = deps.firestore();
   await deps.checkRateLimit(db, actorUid, "dispatchProgramTrip");
-  const access = await requireProgramAccess({
-    db, programId: data.programId, actorUid, now: deps.now(),
-  });
-  const assignments = dutyAssignments(access, "transportDispatcher");
-  if (access.role !== "manager" && assignments.length === 0) {
-    throw new HttpsError(
-      "permission-denied",
-      "This account has no dispatcher duty for this program.");
-  }
-  if (access.role !== "manager" &&
-      !dutyCoversPickupPoint(assignments, data.pickupPointId)) {
-    throw new HttpsError(
-      "permission-denied",
-      "This station is outside your assigned scope.");
-  }
-  if (data.destinationHotelId) {
-    const hotelSnap = await db.collection("programHotels")
-      .doc(data.destinationHotelId).get();
-    const hotel = hotelSnap.data() as ProgramHotelDocument | undefined;
-    if (!hotel || hotel.programId !== data.programId) {
-      throw new HttpsError(
-        "invalid-argument", "Destination hotel is not in this program.");
-    }
-  }
-  const vehicleClass = access.program.transportSettings.vehicleClasses
-    .find((entry) => entry.id === data.vehicleClassId);
-  if (!vehicleClass) {
-    throw new HttpsError(
-      "invalid-argument",
-      `Unknown vehicle class "${data.vehicleClassId}".`);
-  }
-  let vendorName: string | null = null;
-  if (data.vendorId) {
-    const vendorSnap = await db.collection("transportVendors")
-      .doc(data.vendorId).get();
-    const vendor = vendorSnap.data() as TransportVendorDocument | undefined;
-    if (!vendor || vendor.organizerId !== access.program.organizerId ||
-        !vendor.programIds.includes(data.programId)) {
-      throw new HttpsError(
-        "invalid-argument", "Vendor is not bound to this program.");
-    }
-    vendorName = vendor.name;
-  }
   const requestHash = hashRequest({
-    programId: data.programId,
-    pickupPointId: data.pickupPointId,
+    ...data,
     destinationHotelId: data.destinationHotelId ?? null,
-    vehicleClassId: data.vehicleClassId,
-    plateDisplay: data.plateDisplay,
+    destinationLabel: data.destinationLabel ?? null,
     vendorId: data.vendorId ?? null,
+    kind: data.kind ?? "guestTransfer",
+    notes: data.notes ?? null,
     legIds: [...data.legIds].sort(),
+    expectedLegRevisions: data.expectedLegRevisions ?
+      [...data.expectedLegRevisions].sort((a, b) =>
+        a.legId.localeCompare(b.legId)) : null,
     departedAtMillis: data.departedAtMillis ?? null,
   });
   const receiptRef = db.collection("transportOperationReceipts").doc(
@@ -118,7 +78,22 @@ export async function dispatchProgramTripHandler(
   const tripRef = db.collection("transportTrips").doc();
   let result: DispatchProgramTripCallableResponse | null = null;
   await db.runTransaction(async (tx) => {
-    // All reads precede writes.
+    const access = await requireProgramAccess({
+      db, programId: data.programId, actorUid, now: deps.now(), transaction: tx,
+    });
+    const assignments = dutyAssignments(access, "transportDispatcher");
+    if (access.role !== "manager" && assignments.length === 0) {
+      throw new HttpsError(
+        "permission-denied",
+        "This account has no dispatcher duty for this program.");
+    }
+    if (access.role !== "manager" &&
+        !dutyCoversTransportRoute(assignments, data.pickupPointId,
+          data.destinationHotelId ?? null)) {
+      throw new HttpsError(
+        "permission-denied",
+        "This station is outside your assigned scope.");
+    }
     const receiptSnap = await tx.get(receiptRef);
     const receipt = receiptSnap.data() as
       TransportOperationReceiptDocument | undefined;
@@ -139,6 +114,47 @@ export async function dispatchProgramTripHandler(
         passengerCount: trip?.passengerCount ?? data.legIds.length,
       };
       return;
+    }
+    if (access.program.status !== "active" ||
+        !access.program.capabilities.includes("arrivalsTransport")) {
+      throw new HttpsError("failed-precondition",
+        "Transport dispatch requires an active arrivals program.");
+    }
+    const pickupSnap = await tx.get(db.collection("programPickupPoints")
+      .doc(data.pickupPointId));
+    const pickup = pickupSnap.data() as ProgramPickupPointDocument | undefined;
+    if (!pickup || pickup.programId !== data.programId || !pickup.active) {
+      throw new HttpsError("failed-precondition",
+        "Pickup point is not active in this program.");
+    }
+    if (data.destinationHotelId) {
+      const hotelSnap = await tx.get(db.collection("programHotels")
+        .doc(data.destinationHotelId));
+      const hotel = hotelSnap.data() as ProgramHotelDocument | undefined;
+      if (!hotel || hotel.programId !== data.programId || !hotel.active) {
+        throw new HttpsError(
+          "invalid-argument", "Destination hotel is not in this program.");
+      }
+    }
+    const vehicleClass = access.program.transportSettings.vehicleClasses
+      .find((entry) => entry.id === data.vehicleClassId);
+    if (!vehicleClass) {
+      throw new HttpsError(
+        "invalid-argument",
+        `Unknown vehicle class "${data.vehicleClassId}".`);
+    }
+    let vendorName: string | null = null;
+    if (data.vendorId) {
+      const vendorSnap = await tx.get(db.collection("transportVendors")
+        .doc(data.vendorId));
+      const vendor = vendorSnap.data() as TransportVendorDocument | undefined;
+      if (!vendor || !vendor.active ||
+          vendor.organizerId !== access.program.organizerId ||
+          !vendor.programIds.includes(data.programId)) {
+        throw new HttpsError(
+          "invalid-argument", "Vendor is not bound to this program.");
+      }
+      vendorName = vendor.name;
     }
     const legSnaps = await Promise.all(data.legIds.map((legId) =>
       tx.get(db.collection("programTravelLegs").doc(legId))));
@@ -280,9 +296,6 @@ async function tripActionHandler(
   const data = validateCallableWithAjv<ProgramTripActionCallablePayload>(
     request, validateProgramTripActionCallablePayload, normalizePayload);
   const db = deps.firestore();
-  const access = await requireProgramAccess({
-    db, programId: data.programId, actorUid, now: deps.now(),
-  });
   if (action === "void" && data.reason == null) {
     throw new HttpsError(
       "invalid-argument", "A void reason is required.");
@@ -299,10 +312,43 @@ async function tripActionHandler(
   const tripRef = db.collection("transportTrips").doc(data.tripId);
   let result: ProgramMutationCallableResponse | null = null;
   await db.runTransaction(async (tx) => {
+    const access = await requireProgramAccess({
+      db, programId: data.programId, actorUid, now: deps.now(), transaction: tx,
+    });
     const [receiptSnap, tripSnap] = await Promise.all([
       tx.get(receiptRef), tx.get(tripRef)]);
     const receipt = receiptSnap.data() as
       TransportOperationReceiptDocument | undefined;
+    const trip = tripSnap.data() as TransportTripDocument | undefined;
+    if (!trip || trip.programId !== data.programId) {
+      throw new HttpsError("not-found", "Trip not found in this program.");
+    }
+    if (access.role !== "manager") {
+      if (action === "markArrived") {
+        const hotelDuties = dutyAssignments(access, "hotelDesk");
+        const dispatcherDuties =
+          dutyAssignments(access, "transportDispatcher");
+        const allowed = dutyCoversTransportRoute(
+          hotelDuties, trip.pickupPointId,
+          trip.destinationHotelId) ||
+          dutyCoversTransportRoute(dispatcherDuties, trip.pickupPointId,
+            trip.destinationHotelId);
+        if (!allowed) {
+          throw new HttpsError(
+            "permission-denied",
+            "This trip is outside your assigned scope.");
+        }
+      } else {
+        const dispatcherDuties =
+          dutyAssignments(access, "transportDispatcher");
+        if (!dutyCoversTransportRoute(dispatcherDuties, trip.pickupPointId,
+          trip.destinationHotelId)) {
+          throw new HttpsError(
+            "permission-denied",
+            "Only the dispatching station can void this trip.");
+        }
+      }
+    }
     if (receipt) {
       if (receipt.requestHash !== requestHash ||
           receipt.actorUid !== actorUid) {
@@ -313,33 +359,6 @@ async function tripActionHandler(
       result = {entityId: data.tripId, revision: receipt.resultRevision,
         alreadyApplied: true};
       return;
-    }
-    const trip = tripSnap.data() as TransportTripDocument | undefined;
-    if (!trip || trip.programId !== data.programId) {
-      throw new HttpsError("not-found", "Trip not found in this program.");
-    }
-    if (access.role !== "manager") {
-      if (action === "markArrived") {
-        const hotelDuties = dutyAssignments(access, "hotelDesk");
-        const dispatcherDuties =
-          dutyAssignments(access, "transportDispatcher");
-        const allowed = dutyCoversHotel(hotelDuties,
-          trip.destinationHotelId ?? "") ||
-          dutyCoversPickupPoint(dispatcherDuties, trip.pickupPointId);
-        if (!allowed) {
-          throw new HttpsError(
-            "permission-denied",
-            "This trip is outside your assigned scope.");
-        }
-      } else {
-        const dispatcherDuties =
-          dutyAssignments(access, "transportDispatcher");
-        if (!dutyCoversPickupPoint(dispatcherDuties, trip.pickupPointId)) {
-          throw new HttpsError(
-            "permission-denied",
-            "Only the dispatching station can void this trip.");
-        }
-      }
     }
     assertRevision(trip.revision, data.expectedRevision);
     if (trip.status !== "enRoute") {
@@ -353,6 +372,21 @@ async function tripActionHandler(
         .doc(transportAssignmentId(data.programId, legId)))));
     const legSnaps = await Promise.all(trip.legIds.map((legId) =>
       tx.get(db.collection("programTravelLegs").doc(legId))));
+    for (let index = 0; index < trip.legIds.length; index++) {
+      const assignment = assignmentSnaps[index].data() as
+        TransportActiveAssignmentDocument | undefined;
+      const leg = legSnaps[index].data() as
+        ProgramTravelLegDocument | undefined;
+      if (!assignment || assignment.status !== "active" ||
+          assignment.tripId !== data.tripId ||
+          assignment.programId !== data.programId ||
+          assignment.legId !== trip.legIds[index] ||
+          !leg || leg.programId !== data.programId ||
+          leg.readiness !== "dispatched") {
+        throw new HttpsError("failed-precondition",
+          "Trip assignments changed. Reload and reconcile before continuing.");
+      }
+    }
     const tripUpdate: Record<string, unknown> = {
       updatedAt: now,
       revision: nextRevision(trip.revision, now),

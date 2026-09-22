@@ -134,6 +134,16 @@ export function dutyCoversHotel(assignments: ProgramDutyAssignment[],
     assignment.hotelIds.includes(hotelId));
 }
 
+/** Both resource restrictions must be met by the same duty assignment. */
+export function dutyCoversTransportRoute(assignments: ProgramDutyAssignment[],
+  pickupPointId: string, hotelId: string | null): boolean {
+  return assignments.some((assignment) =>
+    (assignment.pickupPointIds.length === 0 ||
+      assignment.pickupPointIds.includes(pickupPointId)) &&
+    (assignment.hotelIds.length === 0 ||
+      (hotelId !== null && assignment.hotelIds.includes(hotelId))));
+}
+
 export function allowedPickupPointIds(access: ProgramAccess,
   duty: ProgramStaffDuty): Set<string> | null {
   if (access.role === "manager") return null;
