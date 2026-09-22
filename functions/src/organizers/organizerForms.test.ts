@@ -2,7 +2,8 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import * as admin from "firebase-admin";
 import {validateOrganizerFormDefinition} from "./organizerForms";
-import {formAnswerDestination} from "./organizerFormCapabilities";
+import {formAnswerDestination, requireFreeFormSubmission} from
+  "./organizerFormCapabilities";
 
 type Definition = Parameters<typeof validateOrganizerFormDefinition>[0];
 type Question = Definition["sections"][number]["questions"][number];
@@ -18,6 +19,15 @@ test("legacy canonical fields remain organizer-only", () => {
   assert.equal(formAnswerDestination(value.sections[0].questions[0]),
     "organizerOnly");
   assert.deepEqual(validateOrganizerFormDefinition(value), []);
+});
+
+test("the free submission endpoint cannot bypass a published fee", () => {
+  assert.doesNotThrow(() => requireFreeFormSubmission({}));
+  assert.doesNotThrow(() => requireFreeFormSubmission({payment: null}));
+  assert.throws(() => requireFreeFormSubmission({payment: {
+    connectionId: "connection", amountPaise: 20000, currency: "INR",
+    description: "Application fee", refundPolicy: "Refunded on cancellation.",
+  }}), /Complete the form payment/u);
 });
 
 test("new consent, profile and payment features require phone verification",

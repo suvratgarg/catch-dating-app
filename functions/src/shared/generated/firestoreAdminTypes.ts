@@ -5852,6 +5852,113 @@ export interface OrganizerFormDocument {
 }
 
 /**
+ * Merchant-owned Razorpay OAuth connection. Secret values are held in the bound credential vault; this server-only document contains pinned references.
+ */
+export interface OrganizerPaymentConnectionDocument {
+  organizerId: string;
+  provider: "razorpay";
+  mode: "test" | "live";
+  status: "connecting" | "ready" | "needsAttention" | "disconnected";
+  accountId: string | null;
+  publicToken: string | null;
+  secretVersionResource: string | null;
+  tokenExpiresAt: FirebaseFirestore.Timestamp | null;
+  webhookId: string | null;
+  webhookUrl: string | null;
+  webhookVerifiedAt: FirebaseFirestore.Timestamp | null;
+  connectedByUid: string;
+  revision: number;
+  refreshLeaseUntil: FirebaseFirestore.Timestamp | null;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  disconnectedAt: FirebaseFirestore.Timestamp | null;
+  lastErrorCode: string | null;
+}
+
+/**
+ * Single-use hashed OAuth state bound to initiating user, organizer, connection and mode.
+ */
+export interface OrganizerPaymentOauthStateDocument {
+  organizerId: string;
+  connectionId: string;
+  actorUid: string;
+  mode: "test" | "live";
+  status: "pending" | "exchanging" | "completed" | "failed";
+  createdAt: FirebaseFirestore.Timestamp;
+  expiresAt: FirebaseFirestore.Timestamp;
+  completedAt: FirebaseFirestore.Timestamp | null;
+}
+
+/**
+ * Durable form fee ledger. Frozen answers remain in the revision-bound response draft; payment is separate from application review and event admission.
+ */
+export interface OrganizerFormPaymentDocument {
+  organizerId: string;
+  formId: string;
+  versionId: string;
+  draftId: string;
+  respondentUid: string;
+  connectionId: string;
+  accountId: string;
+  mode: "test" | "live";
+  draftRevision: number;
+  answersHash: string;
+  identity: {
+    displayName: string | null;
+    email: string | null;
+    phoneE164: string | null;
+    searchName: string | null;
+    origin: "anonymous" | "respondentGranted" | "organizerAcquired";
+  };
+  amountPaise: number;
+  currency: "INR";
+  description: string;
+  refundPolicy: string;
+  receipt: string;
+  status:
+    | "creatingOrder"
+    | "orderUnknown"
+    | "checkoutReady"
+    | "verifying"
+    | "captured"
+    | "submitted"
+    | "failed"
+    | "expired"
+    | "refundPending"
+    | "refunded"
+    | "reviewRequired";
+  providerOrderId: string | null;
+  providerPaymentId: string | null;
+  providerRefundId: string | null;
+  refundedAmountPaise: number;
+  responseId: string | null;
+  reservationReleased: boolean;
+  leaseUntil: FirebaseFirestore.Timestamp | null;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  checkoutExpiresAt: FirebaseFirestore.Timestamp;
+  capturedAt: FirebaseFirestore.Timestamp | null;
+  submittedAt: FirebaseFirestore.Timestamp | null;
+  lastErrorCode: string | null;
+}
+
+/**
+ * Deduplicated, verified merchant webhook receipt. Raw provider payloads and credentials are never stored.
+ */
+export interface OrganizerFormPaymentWebhookDocument {
+  connectionId: string;
+  accountId: string;
+  providerEventId: string;
+  event: string;
+  providerOrderId: string | null;
+  providerPaymentId: string | null;
+  status: "pending" | "processed" | "ignored";
+  createdAt: FirebaseFirestore.Timestamp;
+  processedAt: FirebaseFirestore.Timestamp | null;
+  expiresAt: FirebaseFirestore.Timestamp;
+}
+
+/**
  * Mutable optimistic-revision builder state for one organizer form.
  */
 export interface OrganizerFormDraftDocument {

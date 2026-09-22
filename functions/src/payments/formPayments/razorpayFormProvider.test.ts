@@ -115,6 +115,35 @@ test("checkout signature uses partner secret and persisted server order",
     false);
   });
 
+test("order recovery rejects partial receipt matches and duplicate orders",
+  async () => {
+    const order = {entity: "order", id: "order_one", amount: 10000,
+      currency: "INR", receipt: "form_attempt", status: "created"};
+    const {provider, calls} = fixture({entity: "collection", count: 1,
+      items: [order]});
+    const recovered = await provider.findOrderByReceipt("token",
+      "form_attempt");
+    assert.equal(recovered?.id,
+      "order_one");
+    assert.equal(calls[0].url,
+      "https://api.razorpay.com/v1/orders?receipt=form_attempt&count=2");
+    assert.equal(await fixture({entity: "collection", count: 0, items: []})
+      .provider.findOrderByReceipt("token", "form_attempt"), null);
+    for (const items of [[order, {...order, id: "order_two"}],
+      [{...order, receipt: "form_attempt_other"}]]) {
+      await assert.rejects(fixture({entity: "collection", count: items.length,
+        items}).provider.findOrderByReceipt("token", "form_attempt"));
+    }
+  });
+
+test("order reconciliation rejects another order's payments", async () => {
+  const body = {entity: "collection", count: 1, items: [paymentResponse]};
+  assert.equal((await fixture(body).provider.fetchOrderPayments("token",
+    "order_one"))[0].id, "pay_one");
+  await assert.rejects(fixture(body).provider.fetchOrderPayments("token",
+    "order_other"));
+});
+
 test("only exact captured, unrefunded INR payment is eligible", async () => {
   const {provider} = fixture(paymentResponse);
   const payment = await provider.fetchPayment("merchant-token", "pay_one");

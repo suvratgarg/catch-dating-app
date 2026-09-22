@@ -1,4 +1,5 @@
 import {createHash} from "crypto";
+import {requireFreeFormSubmission} from "./organizerFormCapabilities";
 import * as admin from "firebase-admin";
 import {CallableRequest, HttpsError, onCall} from
   "firebase-functions/v2/https";
@@ -641,6 +642,7 @@ export async function submitOrganizerFormResponseHandler(
       formSnap,
       "OrganizerFormDocument"
     );
+    requireFreeFormSubmission(version.definition);
     const availability = availabilityFor(form, version, deps.timestamp());
     if (availability.status !== "active") {
       throw new HttpsError("failed-precondition", availability.message);

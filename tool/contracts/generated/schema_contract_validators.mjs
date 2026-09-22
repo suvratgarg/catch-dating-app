@@ -205,6 +205,10 @@ import {
   organizerApplicationFormDocumentSchema,
   organizerApplicationFormVersionDocumentSchema,
   organizerFormDocumentSchema,
+  organizerPaymentConnectionDocumentSchema,
+  organizerPaymentOauthStateDocumentSchema,
+  organizerFormPaymentDocumentSchema,
+  organizerFormPaymentWebhookDocumentSchema,
   organizerFormDraftDocumentSchema,
   organizerFormVersionDocumentSchema,
   organizerFormResponseDraftDocumentSchema,
@@ -920,6 +924,10 @@ export const validateOrganizerProviderConnectionDocument = ajv.compile(organizer
 export const validateOrganizerApplicationFormDocument = ajv.compile(organizerApplicationFormDocumentSchema);
 export const validateOrganizerApplicationFormVersionDocument = ajv.compile(organizerApplicationFormVersionDocumentSchema);
 export const validateOrganizerFormDocument = ajv.compile(organizerFormDocumentSchema);
+export const validateOrganizerPaymentConnectionDocument = ajv.compile(organizerPaymentConnectionDocumentSchema);
+export const validateOrganizerPaymentOauthStateDocument = ajv.compile(organizerPaymentOauthStateDocumentSchema);
+export const validateOrganizerFormPaymentDocument = ajv.compile(organizerFormPaymentDocumentSchema);
+export const validateOrganizerFormPaymentWebhookDocument = ajv.compile(organizerFormPaymentWebhookDocumentSchema);
 export const validateOrganizerFormDraftDocument = ajv.compile(organizerFormDraftDocumentSchema);
 export const validateOrganizerFormVersionDocument = ajv.compile(organizerFormVersionDocumentSchema);
 export const validateOrganizerFormResponseDraftDocument = ajv.compile(organizerFormResponseDraftDocumentSchema);

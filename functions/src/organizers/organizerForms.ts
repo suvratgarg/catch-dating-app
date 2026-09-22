@@ -1,5 +1,7 @@
 import {createHash, randomBytes} from "crypto";
 import {validateFormCapabilities} from "./organizerFormCapabilities";
+import {requireReadyFormPaymentConnection} from
+  "../payments/formPayments/formPaymentConnectionPolicy";
 import * as admin from "firebase-admin";
 import {CallableRequest, HttpsError, onCall} from
   "firebase-functions/v2/https";
@@ -47,6 +49,7 @@ import type {
   OrganizerFormDocument,
   OrganizerFormDraftDocument,
   OrganizerFormVersionDocument,
+  OrganizerPaymentConnectionDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import {
   organizerFormTemplateCatalog,
@@ -505,6 +508,16 @@ export async function publishOrganizerFormHandler(
         "failed-precondition",
         `${error.message} (${error.path})`
       );
+    }
+    const payment = current.draft.definition.payment;
+    if (payment) {
+      const connectionSnap = await tx.get(
+        db.collection("organizerPaymentConnections").doc(payment.connectionId)
+      );
+      requireReadyFormPaymentConnection(connectionSnap.exists ?
+        requireDoc<OrganizerPaymentConnectionDocument>(connectionSnap,
+          "OrganizerPaymentConnectionDocument") : null,
+      data.organizerId, deps.timestamp().toMillis());
     }
     if (current.form.activeVersionId) {
       const activeSnap = await tx.get(

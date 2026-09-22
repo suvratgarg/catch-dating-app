@@ -80217,6 +80217,379 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const organizerFormPaymentDocumentAccountId = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.accountId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^acc_[A-Za-z0-9]+\$',
+  );
+
+  static const organizerFormPaymentDocumentAmountPaise = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.amountPaise',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 100,
+    maximum: 10000000,
+  );
+
+  static const organizerFormPaymentDocumentAnswersHash = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.answersHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const organizerFormPaymentDocumentCapturedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.capturedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerFormPaymentDocumentCapturedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.capturedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerFormPaymentDocumentCheckoutExpiresAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.checkoutExpiresAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerFormPaymentDocumentCheckoutExpiresAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.checkoutExpiresAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerFormPaymentDocumentConnectionId = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.connectionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormPaymentDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerFormPaymentDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerFormPaymentDocumentCurrency = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.currency',
+    required: true,
+  );
+
+  static const organizerFormPaymentDocumentDescription = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.description',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormPaymentDocumentDraftId = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.draftId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormPaymentDocumentDraftRevision = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.draftRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const organizerFormPaymentDocumentFormId = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.formId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormPaymentDocumentIdentityDisplayName = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.identity.displayName',
+    maxLength: 160,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormPaymentDocumentIdentityEmail = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.identity.email',
+    maxLength: 320,
+    valueTypes: <String>['string'],
+    format: 'email',
+  );
+
+  static const organizerFormPaymentDocumentIdentityOrigin = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.identity.origin',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['anonymous', 'respondentGranted', 'organizerAcquired'],
+  );
+
+  static const organizerFormPaymentDocumentIdentityPhoneE164 = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.identity.phoneE164',
+    valueTypes: <String>['string'],
+    pattern: '^\\+[1-9][0-9]{7,14}\$',
+  );
+
+  static const organizerFormPaymentDocumentIdentitySearchName = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.identity.searchName',
+    maxLength: 160,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormPaymentDocumentLastErrorCode = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.lastErrorCode',
+    maxLength: 80,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormPaymentDocumentLeaseUntilNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.leaseUntil._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerFormPaymentDocumentLeaseUntilSeconds = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.leaseUntil._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerFormPaymentDocumentMode = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.mode',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['test', 'live'],
+  );
+
+  static const organizerFormPaymentDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormPaymentDocumentProviderOrderId = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.providerOrderId',
+    valueTypes: <String>['string'],
+    pattern: '^order_[A-Za-z0-9]+\$',
+  );
+
+  static const organizerFormPaymentDocumentProviderPaymentId = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.providerPaymentId',
+    valueTypes: <String>['string'],
+    pattern: '^pay_[A-Za-z0-9]+\$',
+  );
+
+  static const organizerFormPaymentDocumentProviderRefundId = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.providerRefundId',
+    valueTypes: <String>['string'],
+    pattern: '^rfnd_[A-Za-z0-9]+\$',
+  );
+
+  static const organizerFormPaymentDocumentReceipt = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.receipt',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^cfp_[a-f0-9]{32}\$',
+  );
+
+  static const organizerFormPaymentDocumentRefundedAmountPaise = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.refundedAmountPaise',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 10000000,
+  );
+
+  static const organizerFormPaymentDocumentRefundPolicy = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.refundPolicy',
+    maxLength: 1000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormPaymentDocumentReservationReleased = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.reservationReleased',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerFormPaymentDocumentRespondentUid = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.respondentUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormPaymentDocumentResponseId = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.responseId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormPaymentDocumentStatus = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['creatingOrder', 'orderUnknown', 'checkoutReady', 'verifying', 'captured', 'submitted', 'failed', 'expired', 'refundPending', 'refunded', 'reviewRequired'],
+  );
+
+  static const organizerFormPaymentDocumentSubmittedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.submittedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerFormPaymentDocumentSubmittedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.submittedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerFormPaymentDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerFormPaymentDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerFormPaymentDocumentVersionId = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentDocument.versionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormPaymentWebhookDocumentAccountId = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentWebhookDocument.accountId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^acc_[A-Za-z0-9]+\$',
+  );
+
+  static const organizerFormPaymentWebhookDocumentConnectionId = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentWebhookDocument.connectionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormPaymentWebhookDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentWebhookDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerFormPaymentWebhookDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentWebhookDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerFormPaymentWebhookDocumentEvent = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentWebhookDocument.event',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormPaymentWebhookDocumentExpiresAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentWebhookDocument.expiresAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerFormPaymentWebhookDocumentExpiresAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentWebhookDocument.expiresAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerFormPaymentWebhookDocumentProcessedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentWebhookDocument.processedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerFormPaymentWebhookDocumentProcessedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentWebhookDocument.processedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerFormPaymentWebhookDocumentProviderEventId = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentWebhookDocument.providerEventId',
+    maxLength: 200,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormPaymentWebhookDocumentProviderOrderId = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentWebhookDocument.providerOrderId',
+    valueTypes: <String>['string'],
+    pattern: '^order_[A-Za-z0-9]+\$',
+  );
+
+  static const organizerFormPaymentWebhookDocumentProviderPaymentId = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentWebhookDocument.providerPaymentId',
+    valueTypes: <String>['string'],
+    pattern: '^pay_[A-Za-z0-9]+\$',
+  );
+
+  static const organizerFormPaymentWebhookDocumentStatus = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentWebhookDocument.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['pending', 'processed', 'ignored'],
+  );
+
   static const organizerFormResponseDocumentAnswers = CatchContractFieldConstraints(
     path: 'organizerFormResponseDocument.answers',
     required: true,
@@ -82993,6 +83366,252 @@ abstract final class CatchContractConstraints {
     path: 'organizerMessagingWebhookEventDocument.providerPhoneNumberId',
     valueTypes: <String>['string'],
     pattern: '^[0-9]{1,32}\$',
+  );
+
+  static const organizerPaymentConnectionDocumentAccountId = CatchContractFieldConstraints(
+    path: 'organizerPaymentConnectionDocument.accountId',
+    valueTypes: <String>['string'],
+    pattern: '^acc_[A-Za-z0-9]+\$',
+  );
+
+  static const organizerPaymentConnectionDocumentConnectedByUid = CatchContractFieldConstraints(
+    path: 'organizerPaymentConnectionDocument.connectedByUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerPaymentConnectionDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerPaymentConnectionDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerPaymentConnectionDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerPaymentConnectionDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerPaymentConnectionDocumentDisconnectedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerPaymentConnectionDocument.disconnectedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerPaymentConnectionDocumentDisconnectedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerPaymentConnectionDocument.disconnectedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerPaymentConnectionDocumentLastErrorCode = CatchContractFieldConstraints(
+    path: 'organizerPaymentConnectionDocument.lastErrorCode',
+    maxLength: 80,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerPaymentConnectionDocumentMode = CatchContractFieldConstraints(
+    path: 'organizerPaymentConnectionDocument.mode',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['test', 'live'],
+  );
+
+  static const organizerPaymentConnectionDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerPaymentConnectionDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerPaymentConnectionDocumentProvider = CatchContractFieldConstraints(
+    path: 'organizerPaymentConnectionDocument.provider',
+    required: true,
+  );
+
+  static const organizerPaymentConnectionDocumentPublicToken = CatchContractFieldConstraints(
+    path: 'organizerPaymentConnectionDocument.publicToken',
+    maxLength: 256,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerPaymentConnectionDocumentRefreshLeaseUntilNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerPaymentConnectionDocument.refreshLeaseUntil._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerPaymentConnectionDocumentRefreshLeaseUntilSeconds = CatchContractFieldConstraints(
+    path: 'organizerPaymentConnectionDocument.refreshLeaseUntil._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerPaymentConnectionDocumentRevision = CatchContractFieldConstraints(
+    path: 'organizerPaymentConnectionDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+  );
+
+  static const organizerPaymentConnectionDocumentSecretVersionResource = CatchContractFieldConstraints(
+    path: 'organizerPaymentConnectionDocument.secretVersionResource',
+    valueTypes: <String>['string'],
+    pattern: '^projects/[^/]+/secrets/[^/]+/versions/[1-9][0-9]*\$',
+  );
+
+  static const organizerPaymentConnectionDocumentStatus = CatchContractFieldConstraints(
+    path: 'organizerPaymentConnectionDocument.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['connecting', 'ready', 'needsAttention', 'disconnected'],
+  );
+
+  static const organizerPaymentConnectionDocumentTokenExpiresAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerPaymentConnectionDocument.tokenExpiresAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerPaymentConnectionDocumentTokenExpiresAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerPaymentConnectionDocument.tokenExpiresAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerPaymentConnectionDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerPaymentConnectionDocument.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerPaymentConnectionDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerPaymentConnectionDocument.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerPaymentConnectionDocumentWebhookId = CatchContractFieldConstraints(
+    path: 'organizerPaymentConnectionDocument.webhookId',
+    maxLength: 128,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerPaymentConnectionDocumentWebhookUrl = CatchContractFieldConstraints(
+    path: 'organizerPaymentConnectionDocument.webhookUrl',
+    maxLength: 255,
+    valueTypes: <String>['string'],
+    format: 'uri',
+  );
+
+  static const organizerPaymentConnectionDocumentWebhookVerifiedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerPaymentConnectionDocument.webhookVerifiedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerPaymentConnectionDocumentWebhookVerifiedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerPaymentConnectionDocument.webhookVerifiedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerPaymentOauthStateDocumentActorUid = CatchContractFieldConstraints(
+    path: 'organizerPaymentOauthStateDocument.actorUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerPaymentOauthStateDocumentCompletedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerPaymentOauthStateDocument.completedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerPaymentOauthStateDocumentCompletedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerPaymentOauthStateDocument.completedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerPaymentOauthStateDocumentConnectionId = CatchContractFieldConstraints(
+    path: 'organizerPaymentOauthStateDocument.connectionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerPaymentOauthStateDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerPaymentOauthStateDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerPaymentOauthStateDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerPaymentOauthStateDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerPaymentOauthStateDocumentExpiresAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerPaymentOauthStateDocument.expiresAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerPaymentOauthStateDocumentExpiresAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerPaymentOauthStateDocument.expiresAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerPaymentOauthStateDocumentMode = CatchContractFieldConstraints(
+    path: 'organizerPaymentOauthStateDocument.mode',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['test', 'live'],
+  );
+
+  static const organizerPaymentOauthStateDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'organizerPaymentOauthStateDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerPaymentOauthStateDocumentStatus = CatchContractFieldConstraints(
+    path: 'organizerPaymentOauthStateDocument.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['pending', 'exchanging', 'completed', 'failed'],
   );
 
   static const organizerPolicyGapReviewDecisionDocumentChecklistBehaviorStillDisabledAcknowledged = CatchContractFieldConstraints(
@@ -112414,6 +113033,59 @@ abstract final class CatchContractConstraints {
     'organizerFormExportDocument.updatedAt._nanoseconds': organizerFormExportDocumentUpdatedAtNanoseconds,
     'organizerFormExportDocument.updatedAt._seconds': organizerFormExportDocumentUpdatedAtSeconds,
     'organizerFormExportDocument.versionId': organizerFormExportDocumentVersionId,
+    'organizerFormPaymentDocument.accountId': organizerFormPaymentDocumentAccountId,
+    'organizerFormPaymentDocument.amountPaise': organizerFormPaymentDocumentAmountPaise,
+    'organizerFormPaymentDocument.answersHash': organizerFormPaymentDocumentAnswersHash,
+    'organizerFormPaymentDocument.capturedAt._nanoseconds': organizerFormPaymentDocumentCapturedAtNanoseconds,
+    'organizerFormPaymentDocument.capturedAt._seconds': organizerFormPaymentDocumentCapturedAtSeconds,
+    'organizerFormPaymentDocument.checkoutExpiresAt._nanoseconds': organizerFormPaymentDocumentCheckoutExpiresAtNanoseconds,
+    'organizerFormPaymentDocument.checkoutExpiresAt._seconds': organizerFormPaymentDocumentCheckoutExpiresAtSeconds,
+    'organizerFormPaymentDocument.connectionId': organizerFormPaymentDocumentConnectionId,
+    'organizerFormPaymentDocument.createdAt._nanoseconds': organizerFormPaymentDocumentCreatedAtNanoseconds,
+    'organizerFormPaymentDocument.createdAt._seconds': organizerFormPaymentDocumentCreatedAtSeconds,
+    'organizerFormPaymentDocument.currency': organizerFormPaymentDocumentCurrency,
+    'organizerFormPaymentDocument.description': organizerFormPaymentDocumentDescription,
+    'organizerFormPaymentDocument.draftId': organizerFormPaymentDocumentDraftId,
+    'organizerFormPaymentDocument.draftRevision': organizerFormPaymentDocumentDraftRevision,
+    'organizerFormPaymentDocument.formId': organizerFormPaymentDocumentFormId,
+    'organizerFormPaymentDocument.identity.displayName': organizerFormPaymentDocumentIdentityDisplayName,
+    'organizerFormPaymentDocument.identity.email': organizerFormPaymentDocumentIdentityEmail,
+    'organizerFormPaymentDocument.identity.origin': organizerFormPaymentDocumentIdentityOrigin,
+    'organizerFormPaymentDocument.identity.phoneE164': organizerFormPaymentDocumentIdentityPhoneE164,
+    'organizerFormPaymentDocument.identity.searchName': organizerFormPaymentDocumentIdentitySearchName,
+    'organizerFormPaymentDocument.lastErrorCode': organizerFormPaymentDocumentLastErrorCode,
+    'organizerFormPaymentDocument.leaseUntil._nanoseconds': organizerFormPaymentDocumentLeaseUntilNanoseconds,
+    'organizerFormPaymentDocument.leaseUntil._seconds': organizerFormPaymentDocumentLeaseUntilSeconds,
+    'organizerFormPaymentDocument.mode': organizerFormPaymentDocumentMode,
+    'organizerFormPaymentDocument.organizerId': organizerFormPaymentDocumentOrganizerId,
+    'organizerFormPaymentDocument.providerOrderId': organizerFormPaymentDocumentProviderOrderId,
+    'organizerFormPaymentDocument.providerPaymentId': organizerFormPaymentDocumentProviderPaymentId,
+    'organizerFormPaymentDocument.providerRefundId': organizerFormPaymentDocumentProviderRefundId,
+    'organizerFormPaymentDocument.receipt': organizerFormPaymentDocumentReceipt,
+    'organizerFormPaymentDocument.refundedAmountPaise': organizerFormPaymentDocumentRefundedAmountPaise,
+    'organizerFormPaymentDocument.refundPolicy': organizerFormPaymentDocumentRefundPolicy,
+    'organizerFormPaymentDocument.reservationReleased': organizerFormPaymentDocumentReservationReleased,
+    'organizerFormPaymentDocument.respondentUid': organizerFormPaymentDocumentRespondentUid,
+    'organizerFormPaymentDocument.responseId': organizerFormPaymentDocumentResponseId,
+    'organizerFormPaymentDocument.status': organizerFormPaymentDocumentStatus,
+    'organizerFormPaymentDocument.submittedAt._nanoseconds': organizerFormPaymentDocumentSubmittedAtNanoseconds,
+    'organizerFormPaymentDocument.submittedAt._seconds': organizerFormPaymentDocumentSubmittedAtSeconds,
+    'organizerFormPaymentDocument.updatedAt._nanoseconds': organizerFormPaymentDocumentUpdatedAtNanoseconds,
+    'organizerFormPaymentDocument.updatedAt._seconds': organizerFormPaymentDocumentUpdatedAtSeconds,
+    'organizerFormPaymentDocument.versionId': organizerFormPaymentDocumentVersionId,
+    'organizerFormPaymentWebhookDocument.accountId': organizerFormPaymentWebhookDocumentAccountId,
+    'organizerFormPaymentWebhookDocument.connectionId': organizerFormPaymentWebhookDocumentConnectionId,
+    'organizerFormPaymentWebhookDocument.createdAt._nanoseconds': organizerFormPaymentWebhookDocumentCreatedAtNanoseconds,
+    'organizerFormPaymentWebhookDocument.createdAt._seconds': organizerFormPaymentWebhookDocumentCreatedAtSeconds,
+    'organizerFormPaymentWebhookDocument.event': organizerFormPaymentWebhookDocumentEvent,
+    'organizerFormPaymentWebhookDocument.expiresAt._nanoseconds': organizerFormPaymentWebhookDocumentExpiresAtNanoseconds,
+    'organizerFormPaymentWebhookDocument.expiresAt._seconds': organizerFormPaymentWebhookDocumentExpiresAtSeconds,
+    'organizerFormPaymentWebhookDocument.processedAt._nanoseconds': organizerFormPaymentWebhookDocumentProcessedAtNanoseconds,
+    'organizerFormPaymentWebhookDocument.processedAt._seconds': organizerFormPaymentWebhookDocumentProcessedAtSeconds,
+    'organizerFormPaymentWebhookDocument.providerEventId': organizerFormPaymentWebhookDocumentProviderEventId,
+    'organizerFormPaymentWebhookDocument.providerOrderId': organizerFormPaymentWebhookDocumentProviderOrderId,
+    'organizerFormPaymentWebhookDocument.providerPaymentId': organizerFormPaymentWebhookDocumentProviderPaymentId,
+    'organizerFormPaymentWebhookDocument.status': organizerFormPaymentWebhookDocumentStatus,
     'organizerFormResponseDocument.answers': organizerFormResponseDocumentAnswers,
     'organizerFormResponseDocument.answerSnapshots': organizerFormResponseDocumentAnswerSnapshots,
     'organizerFormResponseDocument.answerSnapshots.items.answer': organizerFormResponseDocumentAnswerSnapshotsItemsAnswer,
@@ -112807,6 +113479,41 @@ abstract final class CatchContractConstraints {
     'organizerMessagingWebhookEventDocument.providerOccurredAt._nanoseconds': organizerMessagingWebhookEventDocumentProviderOccurredAtNanoseconds,
     'organizerMessagingWebhookEventDocument.providerOccurredAt._seconds': organizerMessagingWebhookEventDocumentProviderOccurredAtSeconds,
     'organizerMessagingWebhookEventDocument.providerPhoneNumberId': organizerMessagingWebhookEventDocumentProviderPhoneNumberId,
+    'organizerPaymentConnectionDocument.accountId': organizerPaymentConnectionDocumentAccountId,
+    'organizerPaymentConnectionDocument.connectedByUid': organizerPaymentConnectionDocumentConnectedByUid,
+    'organizerPaymentConnectionDocument.createdAt._nanoseconds': organizerPaymentConnectionDocumentCreatedAtNanoseconds,
+    'organizerPaymentConnectionDocument.createdAt._seconds': organizerPaymentConnectionDocumentCreatedAtSeconds,
+    'organizerPaymentConnectionDocument.disconnectedAt._nanoseconds': organizerPaymentConnectionDocumentDisconnectedAtNanoseconds,
+    'organizerPaymentConnectionDocument.disconnectedAt._seconds': organizerPaymentConnectionDocumentDisconnectedAtSeconds,
+    'organizerPaymentConnectionDocument.lastErrorCode': organizerPaymentConnectionDocumentLastErrorCode,
+    'organizerPaymentConnectionDocument.mode': organizerPaymentConnectionDocumentMode,
+    'organizerPaymentConnectionDocument.organizerId': organizerPaymentConnectionDocumentOrganizerId,
+    'organizerPaymentConnectionDocument.provider': organizerPaymentConnectionDocumentProvider,
+    'organizerPaymentConnectionDocument.publicToken': organizerPaymentConnectionDocumentPublicToken,
+    'organizerPaymentConnectionDocument.refreshLeaseUntil._nanoseconds': organizerPaymentConnectionDocumentRefreshLeaseUntilNanoseconds,
+    'organizerPaymentConnectionDocument.refreshLeaseUntil._seconds': organizerPaymentConnectionDocumentRefreshLeaseUntilSeconds,
+    'organizerPaymentConnectionDocument.revision': organizerPaymentConnectionDocumentRevision,
+    'organizerPaymentConnectionDocument.secretVersionResource': organizerPaymentConnectionDocumentSecretVersionResource,
+    'organizerPaymentConnectionDocument.status': organizerPaymentConnectionDocumentStatus,
+    'organizerPaymentConnectionDocument.tokenExpiresAt._nanoseconds': organizerPaymentConnectionDocumentTokenExpiresAtNanoseconds,
+    'organizerPaymentConnectionDocument.tokenExpiresAt._seconds': organizerPaymentConnectionDocumentTokenExpiresAtSeconds,
+    'organizerPaymentConnectionDocument.updatedAt._nanoseconds': organizerPaymentConnectionDocumentUpdatedAtNanoseconds,
+    'organizerPaymentConnectionDocument.updatedAt._seconds': organizerPaymentConnectionDocumentUpdatedAtSeconds,
+    'organizerPaymentConnectionDocument.webhookId': organizerPaymentConnectionDocumentWebhookId,
+    'organizerPaymentConnectionDocument.webhookUrl': organizerPaymentConnectionDocumentWebhookUrl,
+    'organizerPaymentConnectionDocument.webhookVerifiedAt._nanoseconds': organizerPaymentConnectionDocumentWebhookVerifiedAtNanoseconds,
+    'organizerPaymentConnectionDocument.webhookVerifiedAt._seconds': organizerPaymentConnectionDocumentWebhookVerifiedAtSeconds,
+    'organizerPaymentOauthStateDocument.actorUid': organizerPaymentOauthStateDocumentActorUid,
+    'organizerPaymentOauthStateDocument.completedAt._nanoseconds': organizerPaymentOauthStateDocumentCompletedAtNanoseconds,
+    'organizerPaymentOauthStateDocument.completedAt._seconds': organizerPaymentOauthStateDocumentCompletedAtSeconds,
+    'organizerPaymentOauthStateDocument.connectionId': organizerPaymentOauthStateDocumentConnectionId,
+    'organizerPaymentOauthStateDocument.createdAt._nanoseconds': organizerPaymentOauthStateDocumentCreatedAtNanoseconds,
+    'organizerPaymentOauthStateDocument.createdAt._seconds': organizerPaymentOauthStateDocumentCreatedAtSeconds,
+    'organizerPaymentOauthStateDocument.expiresAt._nanoseconds': organizerPaymentOauthStateDocumentExpiresAtNanoseconds,
+    'organizerPaymentOauthStateDocument.expiresAt._seconds': organizerPaymentOauthStateDocumentExpiresAtSeconds,
+    'organizerPaymentOauthStateDocument.mode': organizerPaymentOauthStateDocumentMode,
+    'organizerPaymentOauthStateDocument.organizerId': organizerPaymentOauthStateDocumentOrganizerId,
+    'organizerPaymentOauthStateDocument.status': organizerPaymentOauthStateDocumentStatus,
     'organizerPolicyGapReviewDecisionDocument.checklist.behaviorStillDisabledAcknowledged': organizerPolicyGapReviewDecisionDocumentChecklistBehaviorStillDisabledAcknowledged,
     'organizerPolicyGapReviewDecisionDocument.checklist.costAndSafetyReviewed': organizerPolicyGapReviewDecisionDocumentChecklistCostAndSafetyReviewed,
     'organizerPolicyGapReviewDecisionDocument.checklist.implementationOwnerReviewed': organizerPolicyGapReviewDecisionDocumentChecklistImplementationOwnerReviewed,

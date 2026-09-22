@@ -1090,6 +1090,26 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/organizerFormDocument.ts",
   },
   {
+    name: "OrganizerPaymentConnectionDocument",
+    source: "firestore/organizer_payment_connections.schema.json",
+    typeOutput: "functions/src/shared/generated/organizerPaymentConnectionDocument.ts",
+  },
+  {
+    name: "OrganizerPaymentOauthStateDocument",
+    source: "firestore/organizer_payment_oauth_states.schema.json",
+    typeOutput: "functions/src/shared/generated/organizerPaymentOauthStateDocument.ts",
+  },
+  {
+    name: "OrganizerFormPaymentDocument",
+    source: "firestore/organizer_form_payments.schema.json",
+    typeOutput: "functions/src/shared/generated/organizerFormPaymentDocument.ts",
+  },
+  {
+    name: "OrganizerFormPaymentWebhookDocument",
+    source: "firestore/organizer_form_payment_webhooks.schema.json",
+    typeOutput: "functions/src/shared/generated/organizerFormPaymentWebhookDocument.ts",
+  },
+  {
     name: "OrganizerFormDraftDocument",
     source: "firestore/organizer_form_drafts.schema.json",
     typeOutput:

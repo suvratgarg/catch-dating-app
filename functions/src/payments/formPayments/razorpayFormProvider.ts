@@ -125,6 +125,45 @@ export class RazorpayFormProvider {
     return order;
   }
 
+  /** Read-only recovery after order creation had an uncertain outcome. */
+  async findOrderByReceipt(accessToken: string, receipt: string):
+    Promise<FormPaymentOrder | null> {
+    if (!/^[A-Za-z0-9_-]{1,40}$/u.test(receipt)) invalidInput();
+    const query = new URLSearchParams({receipt, count: "2"});
+    const body = await this.api(accessToken, `/v1/orders?${query}`, "GET");
+    if (body.entity !== "collection" || !Array.isArray(body.items) ||
+        body.count !== body.items.length || body.items.length > 1) {
+      invalidResponse();
+    }
+    if (body.items.length === 0) return null;
+    const raw: unknown = body.items[0];
+    if (!raw || typeof raw !== "object" || Array.isArray(raw)) {
+      invalidResponse();
+    }
+    const order = parseOrder(raw as Record<string, unknown>);
+    if (order.receipt !== receipt) invalidResponse();
+    return order;
+  }
+
+  async fetchOrderPayments(accessToken: string, orderId: string):
+    Promise<FormProviderPayment[]> {
+    providerId(orderId, "order_");
+    const body = await this.api(accessToken,
+      `/v1/orders/${orderId}/payments`, "GET");
+    if (body.entity !== "collection" || !Array.isArray(body.items) ||
+        body.count !== body.items.length || body.items.length > 100) {
+      invalidResponse();
+    }
+    return body.items.map((raw: unknown) => {
+      if (!raw || typeof raw !== "object" || Array.isArray(raw)) {
+        invalidResponse();
+      }
+      const payment = parsePayment(raw as Record<string, unknown>);
+      if (payment.orderId !== orderId) invalidResponse();
+      return payment;
+    });
+  }
+
   async fetchPayment(accessToken: string, paymentId: string):
     Promise<FormProviderPayment> {
     providerId(paymentId, "pay_");

@@ -214,6 +214,10 @@ Do not edit it by hand.
 | OrganizerApplicationFormDocument | `firestore/organizer_application_forms.schema.json` | `functions/src/shared/generated/organizerApplicationFormDocument.ts` |
 | OrganizerApplicationFormVersionDocument | `firestore/organizer_application_form_versions.schema.json` | `functions/src/shared/generated/organizerApplicationFormVersionDocument.ts` |
 | OrganizerFormDocument | `firestore/organizer_forms.schema.json` | `functions/src/shared/generated/organizerFormDocument.ts` |
+| OrganizerPaymentConnectionDocument | `firestore/organizer_payment_connections.schema.json` | `functions/src/shared/generated/organizerPaymentConnectionDocument.ts` |
+| OrganizerPaymentOauthStateDocument | `firestore/organizer_payment_oauth_states.schema.json` | `functions/src/shared/generated/organizerPaymentOauthStateDocument.ts` |
+| OrganizerFormPaymentDocument | `firestore/organizer_form_payments.schema.json` | `functions/src/shared/generated/organizerFormPaymentDocument.ts` |
+| OrganizerFormPaymentWebhookDocument | `firestore/organizer_form_payment_webhooks.schema.json` | `functions/src/shared/generated/organizerFormPaymentWebhookDocument.ts` |
 | OrganizerFormDraftDocument | `firestore/organizer_form_drafts.schema.json` | `functions/src/shared/generated/organizerFormDraftDocument.ts` |
 | OrganizerFormVersionDocument | `firestore/organizer_form_versions.schema.json` | `functions/src/shared/generated/organizerFormVersionDocument.ts` |
 | OrganizerFormResponseDraftDocument | `firestore/organizer_form_response_drafts.schema.json` | `functions/src/shared/generated/organizerFormResponseDraftDocument.ts` |
@@ -910,6 +914,10 @@ Do not edit it by hand.
 | `schemaOrganizerApplicationFormDocumentSchema` | OrganizerApplicationFormDocument | `firestore/organizer_application_forms.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_application_form_document.g.dart` |
 | `schemaOrganizerApplicationFormVersionDocumentSchema` | OrganizerApplicationFormVersionDocument | `firestore/organizer_application_form_versions.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_application_form_version_document.g.dart` |
 | `schemaOrganizerFormDocumentSchema` | OrganizerFormDocument | `firestore/organizer_forms.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_form_document.g.dart` |
+| `schemaOrganizerPaymentConnectionDocumentSchema` | OrganizerPaymentConnectionDocument | `firestore/organizer_payment_connections.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_payment_connection_document.g.dart` |
+| `schemaOrganizerPaymentOauthStateDocumentSchema` | OrganizerPaymentOauthStateDocument | `firestore/organizer_payment_oauth_states.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_payment_oauth_state_document.g.dart` |
+| `schemaOrganizerFormPaymentDocumentSchema` | OrganizerFormPaymentDocument | `firestore/organizer_form_payments.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_form_payment_document.g.dart` |
+| `schemaOrganizerFormPaymentWebhookDocumentSchema` | OrganizerFormPaymentWebhookDocument | `firestore/organizer_form_payment_webhooks.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_form_payment_webhook_document.g.dart` |
 | `schemaOrganizerFormDraftDocumentSchema` | OrganizerFormDraftDocument | `firestore/organizer_form_drafts.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_form_draft_document.g.dart` |
 | `schemaOrganizerFormVersionDocumentSchema` | OrganizerFormVersionDocument | `firestore/organizer_form_versions.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_form_version_document.g.dart` |
 | `schemaOrganizerFormResponseDraftDocumentSchema` | OrganizerFormResponseDraftDocument | `firestore/organizer_form_response_drafts.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_form_response_draft_document.g.dart` |

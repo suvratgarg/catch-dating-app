@@ -2,6 +2,7 @@ import type {OrganizerFormDraftDocument} from
   "../shared/generated/organizerFormDraftDocument";
 import {personFieldCatalog} from
   "../shared/generated/catalogs/personFieldCatalog";
+import {HttpsError} from "firebase-functions/v2/https";
 
 type Definition = Pick<OrganizerFormDraftDocument["definition"],
   "identityPolicy" | "sections" | "payment" | "messagingConsent">;
@@ -12,6 +13,15 @@ type AddIssue = (code: string, path: string, message: string) => void;
 export function formAnswerDestination(question: Question):
   NonNullable<Question["answerDestination"]> {
   return question.answerDestination ?? "organizerOnly";
+}
+
+/** The free endpoint can never bypass a published fee. */
+export function requireFreeFormSubmission(definition: Pick<Definition,
+  "payment">): void {
+  if (definition.payment) {
+    throw new HttpsError("failed-precondition",
+      "Complete the form payment before submitting this response.");
+  }
 }
 
 export function validateFormCapabilities(definition: Definition,

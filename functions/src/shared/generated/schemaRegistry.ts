@@ -207,6 +207,10 @@ export {organizerProviderConnectionDocumentSchema} from "./schemas/organizerProv
 export {organizerApplicationFormDocumentSchema} from "./schemas/organizerApplicationFormDocument";
 export {organizerApplicationFormVersionDocumentSchema} from "./schemas/organizerApplicationFormVersionDocument";
 export {organizerFormDocumentSchema} from "./schemas/organizerFormDocument";
+export {organizerPaymentConnectionDocumentSchema} from "./schemas/organizerPaymentConnectionDocument";
+export {organizerPaymentOauthStateDocumentSchema} from "./schemas/organizerPaymentOauthStateDocument";
+export {organizerFormPaymentDocumentSchema} from "./schemas/organizerFormPaymentDocument";
+export {organizerFormPaymentWebhookDocumentSchema} from "./schemas/organizerFormPaymentWebhookDocument";
 export {organizerFormDraftDocumentSchema} from "./schemas/organizerFormDraftDocument";
 export {organizerFormVersionDocumentSchema} from "./schemas/organizerFormVersionDocument";
 export {organizerFormResponseDraftDocumentSchema} from "./schemas/organizerFormResponseDraftDocument";

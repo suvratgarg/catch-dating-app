@@ -207,6 +207,10 @@ export {validateOrganizerProviderConnectionDocument} from "./validators/organize
 export {validateOrganizerApplicationFormDocument} from "./validators/organizerApplicationFormDocument";
 export {validateOrganizerApplicationFormVersionDocument} from "./validators/organizerApplicationFormVersionDocument";
 export {validateOrganizerFormDocument} from "./validators/organizerFormDocument";
+export {validateOrganizerPaymentConnectionDocument} from "./validators/organizerPaymentConnectionDocument";
+export {validateOrganizerPaymentOauthStateDocument} from "./validators/organizerPaymentOauthStateDocument";
+export {validateOrganizerFormPaymentDocument} from "./validators/organizerFormPaymentDocument";
+export {validateOrganizerFormPaymentWebhookDocument} from "./validators/organizerFormPaymentWebhookDocument";
 export {validateOrganizerFormDraftDocument} from "./validators/organizerFormDraftDocument";
 export {validateOrganizerFormVersionDocument} from "./validators/organizerFormVersionDocument";
 export {validateOrganizerFormResponseDraftDocument} from "./validators/organizerFormResponseDraftDocument";
