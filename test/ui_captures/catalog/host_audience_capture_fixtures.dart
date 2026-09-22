@@ -172,10 +172,63 @@ class _AudienceCaptureResponses extends HostFormResponsesController {
   @override
   Future<HostFormResponsesState> build(
     HostFormResponseListRequest request,
-  ) async => HostFormResponsesState(
-    responses: [_audienceCaptureResponse.response],
-    nextCursor: null,
-  );
+  ) async {
+    final response = _audienceCaptureResponse.response;
+    final entries = <HostFormInboxEntry>[
+      for (final (index, status) in HostApplicationReviewStatus.values.indexed)
+        HostFormInboxEntry(
+          entryId: 'application:review-$index',
+          submittedAt: DateTime(2026, 9, 21, 12 - index),
+          response: index == 0 ? response : null,
+          application: HostApplicationSummary(
+            applicationId: 'review-$index',
+            formId: response.formId,
+            formVersionId: response.versionId,
+            targetKind: 'organizer',
+            targetId: null,
+            applicantDisplayName: [
+              'Maya Kapoor',
+              'Asha Mehta',
+              'Rohan Shah',
+              'Noor Ali',
+              'Dev Patel',
+              'Withdrawn applicant',
+            ][index],
+            reviewStatus: status,
+            sourceKind: index == 0
+                ? HostApplicationSourceKind.native
+                : HostApplicationSourceKind.tabularImport,
+            providerId: null,
+            submittedAt: DateTime(2026, 9, 21, 12 - index),
+            revision: 1,
+          ),
+        ),
+      HostFormInboxEntry.fromResponse(
+        HostFormResponseSummary.fromMap({
+          ...(_audienceCaptureDetailMap()['response']! as Map<String, Object?>),
+          'responseId': 'feedback-1',
+          'formTitle': 'Weekend feedback',
+          'identity': const {
+            'displayName': 'Sara Desai',
+            'email': null,
+            'phoneE164': null,
+            'origin': 'respondentGranted',
+          },
+        }),
+      ),
+    ];
+    return HostFormResponsesState(
+      responses: const [],
+      entries: entries
+          .where(
+            (entry) =>
+                request.reviewStatus == null ||
+                entry.application?.reviewStatus == request.reviewStatus,
+          )
+          .toList(),
+      nextCursor: null,
+    );
+  }
 }
 
 class _AudienceCaptureApplications extends HostApplicationsDirectoryController {

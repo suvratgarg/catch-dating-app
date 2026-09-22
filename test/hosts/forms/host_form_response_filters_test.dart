@@ -45,9 +45,13 @@ void main() {
         ),
       );
       await pumpFeatureUi(tester);
-      await tester.tap(find.text('Event city: All'));
+      await tester.tap(find.text('Filters'));
+      await pumpFeatureUi(tester);
+      await tester.tap(find.text('Event city'));
       await pumpFeatureUi(tester);
       await tester.tap(find.text('Mumbai'));
+      await pumpFeatureUiFor(tester, const Duration(milliseconds: 400));
+      await tester.tap(find.text('Done'));
       await pumpUntilFound(tester, find.text('Event city: Mumbai'));
       expect(requests.last.answerFilters, {'city': 'Mumbai'});
       expect(find.text('Event city: Mumbai'), findsOneWidget);
@@ -55,7 +59,9 @@ void main() {
       await pumpFeatureUi(tester);
       expect(find.text('Load more responses'), findsOneWidget);
       expect(find.text('No matching responses'), findsNothing);
-      await tester.tap(find.text('Newest first'));
+      await tester.tap(find.text('Sort: Newest first'));
+      await pumpFeatureUi(tester);
+      await tester.tap(find.text('Oldest first'));
       await pumpFeatureUi(tester);
       expect(requests.last.oldestFirst, isTrue);
       expect(requests.last.answerFilters, {'city': 'Mumbai'});
@@ -92,40 +98,34 @@ void main() {
         ),
       );
       await pumpFeatureUi(tester);
+      await tester.tap(find.text('Filters'));
+      await pumpFeatureUi(tester);
       for (final number in [6, 1, 2, 3, 4]) {
-        await tester.tap(find.text('Filter $number: All'));
+        await tester.tap(find.text('Filter $number'));
         await pumpFeatureUi(tester);
-        await tester.tap(find.text('Selected'));
+        await tester.tap(
+          find.descendant(
+            of: find.byType(CatchSelectionSheet<String>),
+            matching: find.text('Selected'),
+          ),
+        );
         await pumpFeatureUi(tester);
       }
       expect(requests.last.answerFilters.length, 5);
       expect(requests.last.answerFilters['q6'], 'selected');
-      expect(
-        tester
-            .widget<CatchButton>(
-              find.widgetWithText(CatchButton, 'Filter 5: All'),
-            )
-            .onPressed,
-        isNull,
-      );
-      await tester.tap(find.text('Filter 6: Selected'));
+      final sixth = find.widgetWithText(CatchField, 'Filter 5');
+      expect(tester.widget<CatchField>(sixth).onTap, isNull);
+      await tester.tap(find.text('Filter 6'));
       await pumpFeatureUi(tester);
       await tester.tap(
         find.descendant(
-          of: find.byType(CatchSheet),
+          of: find.byType(CatchSelectionSheet<String>),
           matching: find.text('All'),
         ),
       );
       await pumpFeatureUi(tester);
       expect(requests.last.answerFilters.length, 4);
-      expect(
-        tester
-            .widget<CatchButton>(
-              find.widgetWithText(CatchButton, 'Filter 5: All'),
-            )
-            .onPressed,
-        isNotNull,
-      );
+      expect(tester.widget<CatchField>(sixth).onTap, isNotNull);
       expect(tester.takeException(), isNull);
     },
   );

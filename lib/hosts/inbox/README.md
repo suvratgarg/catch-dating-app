@@ -9,7 +9,7 @@ Own organizer communication work: inquiry conversations, WhatsApp threads, outbo
 - Primary route: `hostInboxScreen` (`/host/inbox`)
 - Target root: `lib/hosts/inbox`
 - Migration status: target boundary defined; implementation still lives in listed legacy Host roots
-- Responsibility contract updated: 2026-09-02
+- Responsibility contract updated: 2026-09-22
 
 Current implementation roots:
 

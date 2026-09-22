@@ -365,14 +365,6 @@
       "leading": "backUnlessEmbedded"
     },
     {
-      "path": "lib/hosts/presentation/applications/host_applications_screen.dart",
-      "role": "compact",
-      "expression": "CatchTopBar.route",
-      "owner": "CatchTopBar",
-      "surface": "CatchRouteScaffold",
-      "leading": "back"
-    },
-    {
       "path": "lib/hosts/presentation/inbox/host_messaging_setup_screen.dart",
       "role": "compact",
       "expression": "CatchTopBar.route",

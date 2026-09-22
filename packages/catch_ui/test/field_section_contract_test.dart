@@ -7,6 +7,51 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   testWidgets(
+    'scrollable summary choices stay on one rail and select nullable All',
+    (tester) async {
+      String? selected = 'withdrawn';
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CatchTheme.light,
+          home: Scaffold(
+            body: StatefulBuilder(
+              builder: (context, update) => Align(
+                alignment: Alignment.topLeft,
+                child: SizedBox(
+                  width: 250,
+                  child: CatchChoiceInput<String?>.segmented(
+                    selected: selected,
+                    options: const [
+                      CatchOption(value: null, label: 'All'),
+                      CatchOption(value: 'submitted', label: 'Submitted'),
+                      CatchOption(value: 'review', label: 'In review'),
+                      CatchOption(value: 'withdrawn', label: 'Withdrawn'),
+                    ],
+                    variant: CatchChoiceInputVariant.summary,
+                    scrollable: true,
+                    contractExemption:
+                        'Test of nullable selection and horizontal summary geometry.',
+                    onChanged: (value) => update(() => selected = value),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      expect(
+        tester.getTopLeft(find.text('All')).dy,
+        tester.getTopLeft(find.text('Withdrawn')).dy,
+      );
+      expect(find.byType(SingleChildScrollView), findsOneWidget);
+      await tester.tap(find.text('All'));
+      await tester.pump();
+      expect(selected, isNull);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets(
     'legacy full-band declarations still require a proven paint extent',
     (tester) async {
       const key = ValueKey('unowned-full-band');

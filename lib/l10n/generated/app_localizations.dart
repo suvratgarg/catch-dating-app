@@ -22879,22 +22879,16 @@ abstract class AppLocalizations {
   /// **'Import responses'**
   String get hostApplicationsImport;
 
-  /// Accessible label and compact sheet title for application ordering.
-  ///
-  /// In en, this message translates to:
-  /// **'Sort applications'**
-  String get hostApplicationsSort;
-
   /// Application spreadsheet import sheet title.
   ///
   /// In en, this message translates to:
-  /// **'Import applications'**
+  /// **'Import responses'**
   String get hostApplicationsImportTitle;
 
   /// Explains provider-neutral automatic field mapping.
   ///
   /// In en, this message translates to:
-  /// **'Every column is preserved. Recognized profile fields can support future prefill; unique questions stay organizer-only.'**
+  /// **'Every column is preserved. Imported responses start in Submitted for review. Recognized profile fields can support future prefill; unique questions stay organizer-only.'**
   String get hostApplicationsImportSubtitle;
 
   /// Mapping label for a canonical participant intake field.
@@ -22912,7 +22906,7 @@ abstract class AppLocalizations {
   /// Confirms a bounded application spreadsheet import.
   ///
   /// In en, this message translates to:
-  /// **'Import {count, plural, =1{1 application} other{{count} applications}}'**
+  /// **'Import {count, plural, =1{1 response} other{{count} responses}}'**
   String hostApplicationsImportAction({required int count});
 
   /// Application import batch truncation explanation.
@@ -22936,7 +22930,7 @@ abstract class AppLocalizations {
   /// Application import result summary.
   ///
   /// In en, this message translates to:
-  /// **'{created, plural, =1{Imported 1 application} other{Imported {created} applications}} · {skipped, plural, =1{skipped 1} other{skipped {skipped}}}.'**
+  /// **'{created, plural, =1{Imported 1 response} other{Imported {created} responses}} · {skipped, plural, =1{skipped 1} other{skipped {skipped}}}.'**
   String hostApplicationsImportComplete({
     required int created,
     required int skipped,
@@ -22954,24 +22948,6 @@ abstract class AppLocalizations {
   /// **'The organizer may retain submitted answers for application review and customer history according to its stated policy.'**
   String get hostApplicationsRetentionCopy;
 
-  /// Application queue applicant-name search placeholder.
-  ///
-  /// In en, this message translates to:
-  /// **'Search by applicant name'**
-  String get hostApplicationsSearch;
-
-  /// Empty application queue title.
-  ///
-  /// In en, this message translates to:
-  /// **'No applications yet'**
-  String get hostApplicationsEmptyTitle;
-
-  /// Empty application queue guidance without favoring one form provider.
-  ///
-  /// In en, this message translates to:
-  /// **'Publish a Catch form or import responses from any spreadsheet. New submissions will appear here.'**
-  String get hostApplicationsEmptyBody;
-
   /// Application queue newest sort.
   ///
   /// In en, this message translates to:
@@ -22983,18 +22959,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Oldest first'**
   String get hostApplicationsSortOldest;
-
-  /// Application queue name sort.
-  ///
-  /// In en, this message translates to:
-  /// **'Applicant name'**
-  String get hostApplicationsSortName;
-
-  /// Application queue all-status filter.
-  ///
-  /// In en, this message translates to:
-  /// **'All'**
-  String get hostApplicationsFilterAll;
 
   /// Accessible title and tooltip for the application review-status filter.
   ///
@@ -27611,18 +27575,6 @@ abstract class AppLocalizations {
   /// **'Accepting adds this person to People. Event admission is handled separately.'**
   String get hostAudienceApplicationAdmission;
 
-  /// New applications
-  ///
-  /// In en, this message translates to:
-  /// **'New applications'**
-  String get hostAudienceApplicationsNew;
-
-  /// All applications
-  ///
-  /// In en, this message translates to:
-  /// **'All applications'**
-  String get hostAudienceApplicationsAll;
-
   /// Event application
   ///
   /// In en, this message translates to:
@@ -31990,11 +31942,11 @@ abstract class AppLocalizations {
   /// **'Recently updated'**
   String get hostAudienceRecentlyUpdated;
 
-  /// Submitted or withdrawn form response filter, distinct from application review status.
+  /// Active person filter on the unified responses list.
   ///
   /// In en, this message translates to:
-  /// **'Submission status'**
-  String get hostAudienceResponseStatus;
+  /// **'Selected person'**
+  String get hostAudienceSelectedPerson;
 }
 
 class _AppLocalizationsDelegate

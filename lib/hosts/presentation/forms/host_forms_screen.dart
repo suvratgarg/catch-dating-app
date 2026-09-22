@@ -13,7 +13,11 @@ import 'package:catch_dating_app/core/schema_contracts/generated/field_constrain
 import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_configuration.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_summary.dart';
+import 'package:catch_dating_app/hosts/domain/host_application_import.dart';
+import 'package:catch_dating_app/hosts/domain/host_roster_import.dart';
+import 'package:catch_dating_app/hosts/presentation/applications/host_applications_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_copy.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_responses_panel.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/host_audience_view.dart';
@@ -27,6 +31,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 part 'host_forms_filter_sheet.dart';
+part 'host_response_import.dart';
 
 enum _HostFormRowAction {
   analytics,
@@ -44,11 +49,13 @@ class HostFormsScreen extends ConsumerStatefulWidget {
     this.initialOrganizerId,
     this.initialResponses = false,
     this.initialFormId,
+    this.initialContactId,
   });
 
   final String? initialOrganizerId;
   final bool initialResponses;
   final String? initialFormId;
+  final String? initialContactId;
 
   @override
   ConsumerState<HostFormsScreen> createState() => _HostFormsScreenState();
@@ -64,6 +71,21 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
   late HostAudienceView _view;
   late final TabController _tabController;
   String? _responseFormId;
+  String? _responseContactId;
+  bool _importing = false;
+  int _importRevision = 0;
+
+  void _completeResponseImport() {
+    setState(() {
+      _responseFormId = null;
+      _responseContactId = null;
+      _responseQuery = null;
+      _importRevision++;
+    });
+    _syncRoute();
+  }
+
+  void _setImporting(bool value) => setState(() => _importing = value);
 
   @override
   void initState() {
@@ -77,6 +99,7 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
       vsync: this,
     )..addListener(_handleTabChanged);
     _responseFormId = widget.initialFormId;
+    _responseContactId = widget.initialContactId;
   }
 
   @override
@@ -85,6 +108,10 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
     if (oldWidget.initialFormId != widget.initialFormId ||
         oldWidget.initialOrganizerId != widget.initialOrganizerId) {
       _responseFormId = widget.initialFormId;
+    }
+    if (oldWidget.initialContactId != widget.initialContactId ||
+        oldWidget.initialOrganizerId != widget.initialOrganizerId) {
+      _responseContactId = widget.initialContactId;
     }
     if (oldWidget.initialOrganizerId != widget.initialOrganizerId) {
       _searchDebounce?.cancel();
@@ -204,7 +231,14 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
                   icon: CatchIcons.add,
                   onPressed: () => _openTemplates(selectedClub.id),
                 )
-              : null,
+              : CatchTopBarPrimaryButton(
+                  key: const ValueKey('host-responses-import'),
+                  label: context.l10n.hostApplicationsImport,
+                  icon: CatchIcons.downloadRounded,
+                  onPressed: _importing
+                      ? null
+                      : () => _pickApplicationImport(selectedClub.id),
+                ),
           search: CatchTopBarSearch(
             copy: catchSearchFieldCopy(context.l10n),
             value: activeSearchIsForms ? _query ?? '' : _responseQuery ?? '',
@@ -252,8 +286,14 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
               scrollKey: const PageStorageKey<String>('host-forms-responses'),
               children: [
                 HostFormResponsesPanel(
+                  key: ValueKey('responses-import-$_importRevision'),
                   organizerId: selectedClub.id,
                   query: _responseQuery,
+                  contactId: _responseContactId,
+                  onClearContactFilter: () {
+                    setState(() => _responseContactId = null);
+                    _syncRoute();
+                  },
                   formId: _responseFormId,
                   onFormChanged: (formId) {
                     setState(() => _responseFormId = formId);
@@ -319,6 +359,11 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
       query['formId'] = formId;
     } else {
       query.remove('formId');
+    }
+    if (_responseContactId case final contactId?) {
+      query['contactId'] = contactId;
+    } else {
+      query.remove('contactId');
     }
     final next = uri.replace(queryParameters: query);
     if (next != uri) router.replace(next.toString());

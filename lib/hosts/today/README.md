@@ -9,7 +9,7 @@ Act as the organizer command centre: show the live or next event, surface every 
 - Primary route: `hostTodayScreen` (`/host/today`)
 - Target root: `lib/hosts/today`
 - Migration status: implemented as a destination-owned vertical slice
-- Responsibility contract updated: 2026-09-02
+- Responsibility contract updated: 2026-09-22
 
 Current implementation roots:
 
@@ -21,7 +21,7 @@ Current implementation roots:
 - Fetch the bounded active-event context independently of the Events inventory controller.
 - Consume the manager-authorized attention callable, parse exhaustive coverage, and merge device-local attendance retry or conflict work.
 - Order work by urgency, consequence, deadline, and stable identity without inferring mandatory tasks from missing optional data.
-- Own the dedicated Dress Rehearsal entry point and typed handoffs to Events, Event Manage, Audience, Inbox, Applications, and Payouts.
+- Own the dedicated Dress Rehearsal entry point and typed handoffs to Events, Event Manage, Audience Responses, Inbox, and Payouts.
 - Keep incomplete attention sources visible so the screen cannot claim a false all-clear.
 
 ## This feature does not own
@@ -40,7 +40,6 @@ Typed handoffs:
 
 - `hostEventsScreen` — `/host/events`
 - `hostAppEventManageScreen` — `/host/organizers/:clubId/events/:eventId/manage`
-- `hostApplicationsScreen` — `/host/audience/applications`
 - `hostApplicationDetailScreen` — `/host/audience/applications/:applicationId`
 - `hostAudienceScreen` — `/host/audience`
 - `hostInboxScreen` — `/host/inbox`

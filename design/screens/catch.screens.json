@@ -1,7 +1,7 @@
 {
   "$schema": "./catch.screens.schema.json",
   "version": 1,
-  "updated": "2026-09-15",
+  "updated": "2026-09-22",
   "sourceOfTruth": {
     "purpose": "Screen contracts connect route state, controller ownership, section composition, captures, and design references.",
     "tokens": "Foundation values remain in design/tokens/catch.tokens.json.",
@@ -1000,17 +1000,6 @@
       "owners": [
         {
           "routes": [
-            "hostApplicationsScreen"
-          ],
-          "file": "lib/hosts/presentation/applications/host_applications_screen.dart",
-          "symbol": "_HostApplicationsScreenState",
-          "family": "pushed-route",
-          "expression": "CatchRouteScaffold",
-          "bodyGeometry": "standard",
-          "topEdge": "route-chrome"
-        },
-        {
-          "routes": [
             "hostApplicationDetailScreen"
           ],
           "file": "lib/hosts/presentation/applications/host_application_detail_screen.dart",
@@ -1021,7 +1010,7 @@
           "topEdge": "route-chrome"
         }
       ],
-      "reason": "Host application list and detail are independent canonical pushed routes."
+      "reason": "Application detail remains a canonical pushed route; the application directory redirects into Audience Responses."
     },
     "screen.host.event.rehearsal": {
       "owners": [
@@ -8418,7 +8407,7 @@
         {
           "id": "DS-MATCHES-CHAT-004",
           "status": "closed",
-          "nextAction": "Closed. Populated Messaging thread and Messaging \u00b7 New match (empty) references and masks are exported, registered, and within advisory threshold: populated thread mismatch 7.22%, meanDelta 8.50, maxDelta 240, masked 199692; new-match empty mismatch 5.01%, meanDelta 5.46, maxDelta 240, masked 46812. Keyboard-open, share-card, report/block dialog, and dynamic message-time references remain reference-only until canonical source panels exist."
+          "nextAction": "Closed. Populated Messaging thread and Messaging · New match (empty) references and masks are exported, registered, and within advisory threshold: populated thread mismatch 7.22%, meanDelta 8.50, maxDelta 240, masked 199692; new-match empty mismatch 5.01%, meanDelta 5.46, maxDelta 240, masked 46812. Keyboard-open, share-card, report/block dialog, and dynamic message-time references remain reference-only until canonical source panels exist."
         }
       ]
     },
@@ -9247,7 +9236,7 @@
           "kind": "repo",
           "status": "available",
           "path": "design/reference_screens/manifest.json",
-          "notes": "Public-profile PNG reference is regenerated from the current Profile \u00b7 other Claude panel, masked, registered, and within advisory threshold against public_profile_member on the claude-phone-390x812 capture device."
+          "notes": "Public-profile PNG reference is regenerated from the current Profile · other Claude panel, masked, registered, and within advisory threshold against public_profile_member on the claude-phone-390x812 capture device."
         }
       ],
       "captures": [
@@ -9398,7 +9387,7 @@
             "test/public_profile/public_profile_screen_test.dart",
             "test/swipes/profile_card_widget_test.dart"
           ],
-          "nextAction": "Advisory comparison is within threshold after refreshing the stale reference from the current Profile \u00b7 other handoff, using a poppable route capture, adding the claude-phone-390x812 capture device, and extending the hero-media mask: 13.40% mismatch / 17.15 meanDelta, maxDelta 240, masked 221520.",
+          "nextAction": "Advisory comparison is within threshold after refreshing the stale reference from the current Profile · other handoff, using a poppable route capture, adding the claude-phone-390x812 capture device, and extending the hero-media mask: 13.40% mismatch / 17.15 meanDelta, maxDelta 240, masked 221520.",
           "previewIds": [
             "PublicProfileScreen/Route states"
           ]
@@ -27213,36 +27202,30 @@
       "shell": {
         "owner": "host",
         "nestedScaffoldAllowed": true,
-        "reason": "Both pushed routes cover the Host shell on the root navigator and own their route scaffold."
+        "reason": "Application detail covers the Host shell on the root navigator and owns its route scaffold."
       },
       "topBar": {
         "role": "compact",
         "expression": "CatchTopBar",
-        "owner": "HostApplicationsScreen and HostApplicationDetailScreen",
-        "reason": "The queue and nested detail route share the canonical compact Host top bar with an explicit back action."
+        "owner": "HostApplicationDetailScreen",
+        "reason": "Application detail uses the canonical compact Host top bar with an explicit back action."
       },
       "statePolicy": {
         "requiredStates": [
           "data",
-          "empty",
           "error",
           "loading",
           "mutation",
           "offline",
           "permission"
         ],
-        "owner": "HostApplicationsDirectoryController, HostApplicationsController, and hostApplicationDetailProvider"
+        "owner": "HostApplicationsController and hostApplicationDetailProvider"
       },
-      "name": "Host Applications",
+      "name": "Host Application Detail",
       "owner": "hosts",
       "priority": "P1",
       "status": "in_progress",
       "routes": [
-        {
-          "id": "hostApplicationsScreen",
-          "path": "/host/audience/applications",
-          "role": "host"
-        },
         {
           "id": "hostApplicationDetailScreen",
           "path": "/host/audience/applications/:applicationId",
@@ -27250,16 +27233,12 @@
         }
       ],
       "source": {
-        "file": "lib/hosts/presentation/applications/host_applications_screen.dart",
-        "symbol": "HostApplicationsScreen"
+        "file": "lib/hosts/presentation/applications/host_application_detail_screen.dart",
+        "symbol": "HostApplicationDetailScreen"
       },
       "stateController": {
-        "primary": "hostApplicationsDirectoryControllerProvider + hostApplicationDetailProvider + hostApplicationsControllerProvider",
+        "primary": "hostApplicationDetailProvider + hostApplicationsControllerProvider",
         "files": [
-          {
-            "file": "lib/hosts/presentation/applications/host_applications_controller.dart",
-            "symbol": "HostApplicationsDirectoryController"
-          },
           {
             "file": "lib/hosts/data/host_application_repository.dart",
             "symbol": "hostApplicationDetail"
@@ -27271,7 +27250,7 @@
             "symbol": "HostApplicationsController"
           }
         ],
-        "notes": "The presentation layer never reaches the repository directly; import and review mutations cross the controller boundary."
+        "notes": "The presentation layer never reaches the repository directly; review mutations cross the controller boundary. Unified listing and import belong to Audience Responses."
       },
       "designRefs": [],
       "captures": [],
@@ -27280,42 +27259,25 @@
           "id": "host_applications_loading",
           "kind": "loading",
           "status": "implemented",
-          "source": "CatchSkeletonRows queue branch",
+          "source": "HostApplicationDetailScreen typed async loading branch",
           "nextAction": "Add a deterministic full-route capture."
         },
         {
-          "id": "host_applications_empty",
-          "kind": "empty",
-          "status": "implemented",
-          "source": "CatchEmptyState queue branch",
-          "nextAction": "Capture the first-import path."
-        },
-        {
-          "id": "host_applications_populated",
+          "id": "host_application_detail",
           "kind": "populated",
           "status": "implemented",
-          "source": "HostApplicationsDirectoryController and application list frame",
-          "tests": [
-            "test/hosts/host_application_import_test.dart"
+          "source": "HostApplicationDetailScreen immutable answers and review controls",
+          "captureIds": [
+            "host_application_detail"
           ],
-          "nextAction": "Add rendered queue interaction coverage."
+          "nextAction": "Maintain the deterministic detail capture while lifecycle list coverage belongs to Audience Responses."
         },
         {
           "id": "host_applications_error",
           "kind": "error",
           "status": "implemented",
-          "source": "CatchErrorState queue and detail branches",
+          "source": "HostApplicationDetailScreen typed async error branch",
           "nextAction": "Add deterministic callable-error capture."
-        },
-        {
-          "id": "host_applications_import",
-          "kind": "mutation",
-          "status": "tested",
-          "source": "HostApplicationsController provider-neutral import",
-          "tests": [
-            "test/hosts/host_application_import_test.dart"
-          ],
-          "nextAction": "Add mapping-sheet interaction coverage."
         },
         {
           "id": "host_application_review",
@@ -27343,37 +27305,9 @@
         }
       ],
       "composition": {
-        "currentLayout": "A canonical Host route presents search, status filters, global sorting, a flat application queue, and a provider-neutral CSV/XLSX mapping review. A nested canonical route presents immutable answers, validated outreach actions, a private note, and explicit review states.",
-        "targetLayout": "Keep providers at the ingestion edge while Catch owns one application queue, answer model, privacy boundary, and review language across imported and future native submissions.",
+        "currentLayout": "A canonical detail route presents immutable answers, validated outreach actions, a private note, and explicit review states. The unified queue, lifecycle filters, and import action live in Audience Responses.",
+        "targetLayout": "Keep one response review workflow with detailed submitted answers and server-authorized review actions.",
         "sections": [
-          {
-            "id": "section.host.applications.queue",
-            "name": "Application review queue and tabular import",
-            "status": "implemented_local",
-            "layer": "screen-adapter",
-            "claudeComponents": [],
-            "flutter": {
-              "file": "lib/hosts/presentation/applications/host_applications_screen.dart",
-              "symbol": "HostApplicationsScreen"
-            },
-            "currentOwner": "hosts.presentation.applications",
-            "targetOwner": "hosts.presentation.applications",
-            "dependencies": [
-              "catch.top_bar",
-              "catch.search_field",
-              "catch.chip",
-              "catch.surface",
-              "catch.sheet"
-            ],
-            "states": [
-              "host_applications_loading",
-              "host_applications_empty",
-              "host_applications_populated",
-              "host_applications_error",
-              "host_applications_import"
-            ],
-            "migration": "Keep CSV/XLSX parsing local, publish immutable provider-neutral form versions, and send all writes through HostApplicationsController."
-          },
           {
             "id": "section.host.applications.detail",
             "name": "Application answers, outreach, and review",

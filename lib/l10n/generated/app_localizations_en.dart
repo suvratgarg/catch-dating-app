@@ -14707,14 +14707,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostApplicationsImport => 'Import responses';
 
   @override
-  String get hostApplicationsSort => 'Sort applications';
-
-  @override
-  String get hostApplicationsImportTitle => 'Import applications';
+  String get hostApplicationsImportTitle => 'Import responses';
 
   @override
   String get hostApplicationsImportSubtitle =>
-      'Every column is preserved. Recognized profile fields can support future prefill; unique questions stay organizer-only.';
+      'Every column is preserved. Imported responses start in Submitted for review. Recognized profile fields can support future prefill; unique questions stay organizer-only.';
 
   @override
   String get hostApplicationsImportReusableField => 'Reusable profile field';
@@ -14727,8 +14724,8 @@ class AppLocalizationsEn extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count applications',
-      one: '1 application',
+      other: '$count responses',
+      one: '1 response',
     );
     return 'Import $_temp0';
   }
@@ -14760,8 +14757,8 @@ class AppLocalizationsEn extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       created,
       locale: localeName,
-      other: 'Imported $created applications',
-      one: 'Imported 1 application',
+      other: 'Imported $created responses',
+      one: 'Imported 1 response',
     );
     String _temp1 = intl.Intl.pluralLogic(
       skipped,
@@ -14781,26 +14778,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'The organizer may retain submitted answers for application review and customer history according to its stated policy.';
 
   @override
-  String get hostApplicationsSearch => 'Search by applicant name';
-
-  @override
-  String get hostApplicationsEmptyTitle => 'No applications yet';
-
-  @override
-  String get hostApplicationsEmptyBody =>
-      'Publish a Catch form or import responses from any spreadsheet. New submissions will appear here.';
-
-  @override
   String get hostApplicationsSortNewest => 'Newest first';
 
   @override
   String get hostApplicationsSortOldest => 'Oldest first';
-
-  @override
-  String get hostApplicationsSortName => 'Applicant name';
-
-  @override
-  String get hostApplicationsFilterAll => 'All';
 
   @override
   String get hostApplicationsReviewStatusFilter => 'Filter by review status';
@@ -17479,12 +17460,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Accepting adds this person to People. Event admission is handled separately.';
 
   @override
-  String get hostAudienceApplicationsNew => 'New applications';
-
-  @override
-  String get hostAudienceApplicationsAll => 'All applications';
-
-  @override
   String get hostAudienceApplicationEvent => 'Event application';
 
   @override
@@ -20116,5 +20091,5 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostAudienceRecentlyUpdated => 'Recently updated';
 
   @override
-  String get hostAudienceResponseStatus => 'Submission status';
+  String get hostAudienceSelectedPerson => 'Selected person';
 }

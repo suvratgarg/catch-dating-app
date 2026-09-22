@@ -1,7 +1,7 @@
 {
   "$schema": "./state_matrix.schema.json",
   "version": 1,
-  "updated": "2026-09-15",
+  "updated": "2026-09-22",
   "requiredStateKinds": [
     "loading",
     "populated",
@@ -5601,13 +5601,11 @@
         },
         {
           "id": "host.applications",
-          "routeId": "hostApplicationsScreen",
+          "routeId": "hostApplicationDetailScreen",
           "routeIds": [
-            "hostApplicationsScreen",
             "hostApplicationDetailScreen"
           ],
           "implementationPaths": [
-            "lib/hosts/presentation/applications/host_applications_screen.dart",
             "lib/hosts/presentation/applications/host_application_detail_screen.dart",
             "lib/hosts/presentation/applications/host_applications_controller.dart",
             "lib/hosts/data/host_application_repository.dart",
@@ -5626,44 +5624,28 @@
             "catch.surface",
             "catch.top_bar"
           ],
-          "captureIds": [],
+          "captureIds": [
+            "host_application_detail"
+          ],
           "designRefs": [],
           "states": [
             {
               "id": "host_applications_loading",
               "kind": "loading",
               "status": "implemented",
-              "notes": "The queue and nested detail routes use deterministic shared skeleton rows while their organizer-scoped callables resolve."
+              "notes": "The application detail route uses a typed loading state while its organizer-scoped callable resolves."
             },
             {
-              "id": "host_applications_empty",
-              "kind": "empty",
-              "status": "implemented",
-              "notes": "An empty organizer queue explains that no applications match the current search and review-status scope."
-            },
-            {
-              "id": "host_applications_populated",
+              "id": "host_application_detail",
               "kind": "populated",
-              "status": "tested",
-              "tests": [
-                "test/hosts/host_application_import_test.dart"
-              ],
-              "notes": "The organizer-scoped queue owns search, review filters, sorting, pagination, and navigation to immutable submitted answers."
+              "status": "implemented",
+              "notes": "Immutable submitted answers and review actions remain on the detail route; the review queue and import live in Audience Responses."
             },
             {
               "id": "host_applications_error",
               "kind": "error",
               "status": "implemented",
               "notes": "Queue and detail callable failures use the shared customer-context error state with route-scoped retry."
-            },
-            {
-              "id": "host_applications_import",
-              "kind": "mutation",
-              "status": "tested",
-              "tests": [
-                "test/hosts/host_application_import_test.dart"
-              ],
-              "notes": "Provider-neutral CSV and XLSX import maps canonical reusable fields separately from organizer-only questions before committing rows."
             },
             {
               "id": "host_application_review",

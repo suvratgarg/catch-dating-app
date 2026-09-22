@@ -1,8 +1,8 @@
 import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/hosts/data/host_application_repository.dart';
+import 'package:catch_dating_app/hosts/presentation/applications/host_application_detail_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/applications/host_applications_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/applications/host_applications_screen.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

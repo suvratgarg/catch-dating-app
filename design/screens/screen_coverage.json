@@ -1,7 +1,7 @@
 {
   "$schema": "./screen_coverage.schema.json",
   "version": 1,
-  "updated": "2026-09-21",
+  "updated": "2026-09-22",
   "generatedAgainst": "tool/ui_capture/route_inventory.json",
   "description": "Design screen coverage policy. Every route from the generated route inventory must be contracted, aliased to a canonical design surface, planned for future design-parity work, or explicitly excluded from baseline design parity. The schema admits planned as a lifecycle value, but the zero-debt UI composition gate accepts no planned route: rendered routes must be contracted or excluded with typed owners, and redirect-only routes must be aliases.",
   "routes": [
@@ -334,10 +334,10 @@
     },
     {
       "routeId": "hostApplicationsScreen",
-      "status": "contracted",
+      "status": "alias",
       "priority": "P1",
-      "reason": "Covered by screen.host.applications as the provider-neutral organizer application review queue and tabular import route.",
-      "screenId": "screen.host.applications"
+      "canonicalRouteId": "hostAudienceScreen",
+      "reason": "The retired Applications directory redirects to Audience Responses while preserving organizer, form, and contact scope."
     },
     {
       "routeId": "hostApplicationDetailScreen",

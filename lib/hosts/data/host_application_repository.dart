@@ -4,22 +4,14 @@ import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/hosts/domain/host_application_import.dart';
+import 'package:catch_dating_app/hosts/domain/host_application_summary.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+export 'package:catch_dating_app/hosts/domain/host_application_summary.dart';
+
 part 'host_application_repository.g.dart';
-
-enum HostApplicationReviewStatus {
-  submitted,
-  inReview,
-  approved,
-  waitlisted,
-  declined,
-  withdrawn,
-}
-
-enum HostApplicationSourceKind { native, tabularImport, connector }
 
 enum HostApplicationSort {
   newest,
@@ -90,57 +82,6 @@ class HostApplicationListRequest {
     sort,
     cursor,
   );
-}
-
-class HostApplicationSummary {
-  const HostApplicationSummary({
-    required this.applicationId,
-    required this.formId,
-    required this.formVersionId,
-    required this.targetKind,
-    required this.targetId,
-    required this.applicantDisplayName,
-    required this.reviewStatus,
-    required this.sourceKind,
-    required this.providerId,
-    required this.submittedAt,
-    required this.revision,
-  });
-
-  factory HostApplicationSummary.fromMap(Map<Object?, Object?> map) =>
-      HostApplicationSummary(
-        applicationId: _requiredString(map, 'applicationId'),
-        formId: _requiredString(map, 'formId'),
-        formVersionId: _requiredString(map, 'formVersionId'),
-        targetKind: _requiredString(map, 'targetKind'),
-        targetId: _nullableString(map['targetId']),
-        applicantDisplayName: _requiredString(map, 'applicantDisplayName'),
-        reviewStatus: _enumByName(
-          HostApplicationReviewStatus.values,
-          _requiredString(map, 'reviewStatus'),
-          'application review status',
-        ),
-        sourceKind: _enumByName(
-          HostApplicationSourceKind.values,
-          _requiredString(map, 'sourceKind'),
-          'application source',
-        ),
-        providerId: _nullableString(map['providerId']),
-        submittedAt: _requiredDateTimeFromMillis(map, 'submittedAtMillis'),
-        revision: _requiredInt(map, 'revision'),
-      );
-
-  final String applicationId;
-  final String formId;
-  final String formVersionId;
-  final String targetKind;
-  final String? targetId;
-  final String applicantDisplayName;
-  final HostApplicationReviewStatus reviewStatus;
-  final HostApplicationSourceKind sourceKind;
-  final String? providerId;
-  final DateTime submittedAt;
-  final int revision;
 }
 
 class HostApplicationPage {

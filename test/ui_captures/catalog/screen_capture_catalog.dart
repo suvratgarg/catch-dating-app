@@ -161,8 +161,8 @@ import 'package:catch_dating_app/hosts/domain/forms/host_form_share.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_summary.dart';
 import 'package:catch_dating_app/hosts/domain/host_profile.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_events_timeline_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/applications/host_application_detail_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/applications/host_applications_controller.dart';
-import 'package:catch_dating_app/hosts/presentation/applications/host_applications_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/create_club_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/create_club_draft_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/create_club_screen.dart';
@@ -300,6 +300,7 @@ import '../../events/events_test_helpers.dart';
 import '../../test_pump_helpers.dart';
 import '../fixtures/sales_demo_synthetic_fixtures.dart';
 import '../support/capture_device.dart';
+
 part 'host_audience_capture_fixtures.dart';
 
 class ScreenCaptureEntry {
@@ -15930,19 +15931,6 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       await tester.tap(find.byKey(const ValueKey('automation-create')));
       await pumpFeatureUi(tester);
     },
-  ),
-  ScreenCaptureEntry(
-    id: 'host_applications_populated',
-    routeIds: const <String>['hostApplicationsScreen'],
-    device: CaptureDevice.iphone17Pro,
-    builder: (_) => const HostApplicationsScreen(organizerId: 'org_1'),
-    providerOverrides: [
-      ..._audienceCaptureSources('org_1'),
-      hostApplicationsDirectoryControllerProvider.overrideWith2(
-        (_) => _AudienceCaptureApplications(),
-      ),
-    ],
-    includeOverlays: true,
   ),
   ScreenCaptureEntry(
     id: 'host_application_detail',

@@ -1,4 +1,24 @@
-part of 'host_applications_screen.dart';
+import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/external_links.dart';
+import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
+import 'package:catch_dating_app/hosts/data/crm/host_saved_audience_repository.dart';
+import 'package:catch_dating_app/hosts/data/host_application_repository.dart';
+import 'package:catch_dating_app/hosts/presentation/applications/host_application_context.dart';
+import 'package:catch_dating_app/hosts/presentation/applications/host_application_copy.dart';
+import 'package:catch_dating_app/hosts/presentation/applications/host_applications_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_dating_app/routing/go_router.dart';
+import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/catch_ui.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 
 class HostApplicationDetailScreen extends ConsumerStatefulWidget {
   const HostApplicationDetailScreen({
@@ -123,7 +143,7 @@ class _HostApplicationDetailScreenState
                                   context,
                                   application.reviewStatus,
                                 ),
-                                tone: _applicationStatusTone(
+                                tone: hostApplicationStatusTone(
                                   application.reviewStatus,
                                 ),
                               ),
@@ -269,7 +289,10 @@ class _HostApplicationDetailScreenState
                                   ),
                                   gapH8,
                                   Text(
-                                    _answerText(context, answer.value),
+                                    hostApplicationAnswerText(
+                                      context,
+                                      answer.value,
+                                    ),
                                     style: CatchTextStyles.recordBody(context),
                                   ),
                                 ],
@@ -400,6 +423,7 @@ class _HostApplicationDetailScreenState
         );
       }
       ref.invalidate(hostApplicationsDirectoryControllerProvider);
+      ref.invalidate(hostFormResponsesControllerProvider);
       if (mounted) {
         showCatchSnackBar(context, context.l10n.hostApplicationReviewUpdated);
       }

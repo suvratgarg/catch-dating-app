@@ -7,6 +7,8 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_localized_sliver_error_s
 import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_response.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_summary.dart';
+import 'package:catch_dating_app/hosts/domain/host_application_summary.dart';
+import 'package:catch_dating_app/hosts/presentation/applications/host_application_copy.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -21,6 +23,8 @@ class HostFormResponsesPanel extends ConsumerStatefulWidget {
     super.key,
     required this.organizerId,
     this.query,
+    this.contactId,
+    this.onClearContactFilter,
     this.formId,
     this.formTitle,
     this.onClearFormFilter,
@@ -30,6 +34,8 @@ class HostFormResponsesPanel extends ConsumerStatefulWidget {
 
   final String organizerId;
   final String? query;
+  final String? contactId;
+  final VoidCallback? onClearContactFilter;
   final String? formId;
   final String? formTitle;
   final VoidCallback? onClearFormFilter;
@@ -43,7 +49,7 @@ class HostFormResponsesPanel extends ConsumerStatefulWidget {
 
 class _HostFormResponsesPanelState
     extends ConsumerState<HostFormResponsesPanel> {
-  HostFormResponseStatus? _status;
+  HostApplicationReviewStatus? _status;
   bool _oldestFirst = false;
   final Map<String, String> _answerFilters = {};
   List<HostFormResponseFilterOption> _filterOptions = const [];
@@ -63,7 +69,9 @@ class _HostFormResponsesPanelState
     final request = HostFormResponseListRequest(
       organizerId: widget.organizerId,
       formId: widget.formId,
-      statuses: _status == null ? const {} : {_status!},
+      includeApplications: true,
+      reviewStatus: _status,
+      contactId: widget.contactId,
       query: widget.query,
       answerFilters: Map.unmodifiable(_answerFilters),
       oldestFirst: _oldestFirst,
@@ -74,7 +82,7 @@ class _HostFormResponsesPanelState
     final activeFilters = [
       if (widget.showFormContext && widget.formId != null)
         _formLabel(context, loaded),
-      if (_status != null) _statusLabel(context),
+      if (widget.contactId != null) context.l10n.hostAudienceSelectedPerson,
       for (final entry in _answerFilters.entries)
         for (final option in _filterOptions.where(
           (item) => item.questionId == entry.key,
@@ -83,6 +91,37 @@ class _HostFormResponsesPanelState
     ];
     return SliverMainAxisGroup(
       slivers: [
+        SliverToBoxAdapter(
+          child: CatchSection.content(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                CatchChoiceInput<HostApplicationReviewStatus?>.segmented(
+                  key: const ValueKey('host-responses-lifecycle'),
+                  options: [
+                    CatchOption(
+                      value: null,
+                      label: context.l10n.hostFormsFilterAll,
+                    ),
+                    for (final status in HostApplicationReviewStatus.values)
+                      CatchOption(
+                        value: status,
+                        label: hostApplicationStatusLabel(context, status),
+                      ),
+                  ],
+                  selected: _status,
+                  variant: CatchChoiceInputVariant.summary,
+                  contractExemption:
+                      'Review lifecycle maps directly to the unified response request reviewStatus; All includes responses without application review.',
+                  onChanged: (status) => setState(() => _status = status),
+                  scrollable: true,
+                  showDivider: false,
+                ),
+                gapH16,
+              ],
+            ),
+          ),
+        ),
         SliverToBoxAdapter(
           child: CatchSection.controls(
             sortLabel: context.l10n.hostCustomersSortControl(
@@ -103,33 +142,13 @@ class _HostFormResponsesPanelState
                 ? null
                 : () {
                     setState(() {
-                      _status = null;
                       _answerFilters.clear();
                     });
+                    widget.onClearContactFilter?.call();
                     if (widget.showFormContext) {
                       widget.onClearFormFilter?.call();
                     }
                   },
-          ),
-        ),
-        SliverToBoxAdapter(
-          child: CatchSection.rows(
-            children: [
-              CatchField.navigate(
-                key: const ValueKey('host-form-responses-review-applications'),
-                content: CatchRecordLayout(
-                  title: context.l10n.hostApplicationsTitle,
-                  icon: CatchIcons.factCheckOutlined,
-                ),
-                onActivate: () => context.pushNamed(
-                  Routes.hostApplicationsScreen.name,
-                  queryParameters: {
-                    'organizerId': widget.organizerId,
-                    if (widget.formId != null) 'formId': widget.formId!,
-                  },
-                ),
-              ),
-            ],
           ),
         ),
         CatchAsyncBoundary<HostFormResponsesState>.sliver(
@@ -152,7 +171,7 @@ class _HostFormResponsesPanelState
                 onRetry: onBoundaryRetry,
               ),
           builder: (context, state) {
-            if (state.responses.isEmpty &&
+            if (state.inboxEntries.isEmpty &&
                 !state.canLoadMore &&
                 !state.loadingMore &&
                 state.loadMoreError == null) {
@@ -173,56 +192,74 @@ class _HostFormResponsesPanelState
             return SliverMainAxisGroup(
               slivers: [
                 CatchSection.sliverRows(
-                  itemCount: state.responses.length,
+                  itemCount: state.inboxEntries.length,
                   indexForKeyBuilder: (key) {
-                    final index = state.responses.indexWhere(
-                      (response) =>
+                    final index = state.inboxEntries.indexWhere(
+                      (entry) =>
                           key ==
-                          ValueKey('host-form-response-${response.responseId}'),
+                          ValueKey('host-response-entry-${entry.entryId}'),
                     );
                     return index < 0 ? null : index;
                   },
                   itemBuilder: (context, index) {
-                    final response = state.responses[index];
+                    final entry = state.inboxEntries[index];
+                    final response = entry.response;
+                    final application = entry.application;
                     return CatchField.navigate(
-                      key: ValueKey(
-                        'host-form-response-${response.responseId}',
-                      ),
+                      key: ValueKey('host-response-entry-${entry.entryId}'),
                       content: CatchPersonLayout(
                         name:
-                            response.identity.primaryLabel ??
+                            application?.applicantDisplayName ??
+                            response?.identity.primaryLabel ??
                             context.l10n.hostFormResponsesAnonymous,
-                        supportingText: response.highlights.isEmpty
-                            ? response.formTitle
-                            : response.highlights
-                                  .where(
-                                    (highlight) =>
-                                        highlight.answer !=
-                                        response.identity.primaryLabel,
-                                  )
-                                  .map(
-                                    (highlight) =>
-                                        '${highlight.label}: ${highlight.answer is List ? (highlight.answer as List).join(', ') : highlight.answer ?? ''}',
-                                  )
-                                  .join(' · '),
+                        supportingText: response?.formTitle,
                         context:
-                            '${AppTimeFormatters.compactRelativeTime(response.submittedAt)} · ${response.sourceLabel ?? context.l10n.hostFormResponseDirectSource}',
+                            '${AppTimeFormatters.compactRelativeTime(entry.submittedAt)} · ${application == null ? response?.sourceLabel ?? context.l10n.hostFormResponseDirectSource : hostApplicationSourceLabel(context, application.sourceKind)}',
                         badges: [
-                          CatchRowBadge(
-                            label:
-                                response.status ==
-                                    HostFormResponseStatus.withdrawn
-                                ? context.l10n.hostFormResponsesWithdrawn
-                                : context.l10n.hostFormResponsesSubmitted,
-                            tone: CatchBadgeTone.neutral,
-                          ),
+                          if (application != null)
+                            CatchRowBadge(
+                              label: hostApplicationStatusLabel(
+                                context,
+                                application.reviewStatus,
+                              ),
+                              tone: hostApplicationStatusTone(
+                                application.reviewStatus,
+                              ),
+                            )
+                          else if (response?.status ==
+                              HostFormResponseStatus.withdrawn)
+                            CatchRowBadge(
+                              label: context.l10n.hostFormResponsesWithdrawn,
+                              tone: CatchBadgeTone.neutral,
+                            ),
                         ],
                       ),
-                      onActivate: () => context.pushNamed(
-                        Routes.hostFormResponseDetailScreen.name,
-                        pathParameters: {'responseId': response.responseId},
-                        queryParameters: {'organizerId': widget.organizerId},
-                      ),
+                      onActivate: () async {
+                        if (application != null) {
+                          await context.pushNamed(
+                            Routes.hostApplicationDetailScreen.name,
+                            pathParameters: {
+                              'applicationId': application.applicationId,
+                            },
+                            queryParameters: {
+                              'organizerId': widget.organizerId,
+                            },
+                          );
+                        } else {
+                          await context.pushNamed(
+                            Routes.hostFormResponseDetailScreen.name,
+                            pathParameters: {
+                              'responseId': response!.responseId,
+                            },
+                            queryParameters: {
+                              'organizerId': widget.organizerId,
+                            },
+                          );
+                        }
+                        if (mounted) {
+                          ref.invalidate(hostFormResponsesControllerProvider);
+                        }
+                      },
                     );
                   },
                 ),
@@ -266,12 +303,6 @@ class _HostFormResponsesPanelState
       ],
     );
   }
-
-  String _statusLabel(BuildContext context) => switch (_status) {
-    HostFormResponseStatus.submitted => context.l10n.hostFormResponsesSubmitted,
-    HostFormResponseStatus.withdrawn => context.l10n.hostFormResponsesWithdrawn,
-    null => context.l10n.hostAudienceAllStatuses,
-  };
 
   String _formLabel(BuildContext context, HostFormResponsesState? loaded) =>
       widget.formId == null
@@ -323,15 +354,6 @@ class _HostFormResponsesPanelState
                         if (context.mounted) updateSheet(() {});
                       },
               ),
-            CatchField.nav(
-              copy: catchFieldCopy(context.l10n),
-              title: context.l10n.hostAudienceResponseStatus,
-              valueText: _statusLabel(context),
-              onTap: () async {
-                await _selectStatus();
-                if (context.mounted) updateSheet(() {});
-              },
-            ),
             for (final filter in _filterOptions)
               CatchField.nav(
                 copy: catchFieldCopy(context.l10n),
@@ -381,35 +403,6 @@ class _HostFormResponsesPanelState
         _answerFilters[filter.questionId] = selected;
       }
     });
-  }
-
-  Future<void> _selectStatus() async {
-    final selected = await showCatchSelectionSheet<String>(
-      context: context,
-      title: context.l10n.hostAudienceResponseStatus,
-      value: _status?.name ?? 'all',
-      items: [
-        CatchSelectionMenuItem(
-          value: 'all',
-          label: context.l10n.hostAudienceAllStatuses,
-        ),
-        CatchSelectionMenuItem(
-          value: HostFormResponseStatus.submitted.name,
-          label: context.l10n.hostFormResponsesSubmitted,
-        ),
-        CatchSelectionMenuItem(
-          value: HostFormResponseStatus.withdrawn.name,
-          label: context.l10n.hostFormResponsesWithdrawn,
-        ),
-      ],
-    );
-    if (selected != null && mounted) {
-      setState(
-        () => _status = selected == 'all'
-            ? null
-            : HostFormResponseStatus.values.byName(selected),
-      );
-    }
   }
 
   Future<void> _chooseForm() async {
