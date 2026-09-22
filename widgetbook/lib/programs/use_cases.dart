@@ -11,6 +11,8 @@ import 'package:catch_dating_app/programs/domain/travel_leg_revision.dart';
 import 'package:catch_dating_app/programs/presentation/program_arrivals_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_dispatch_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_hotel_desk_screen.dart';
+import 'package:catch_dating_app/programs/presentation/program_operations_controller.dart';
+import 'package:catch_dating_app/programs/presentation/program_operations_notice.dart';
 import 'package:catch_dating_app/programs/presentation/program_trips_screen.dart';
 import 'package:catch_dating_app/programs/presentation/program_work_screen.dart';
 import 'package:flutter/material.dart';
@@ -216,7 +218,7 @@ ProgramOperationOutboxStore _previewJournal() {
   final storage = MemoryCommandJournalStorage();
   return createProgramOperationJournal(
     storage: () async => storage,
-    currentAccountId: () => 'preview-account',
+    currentAccountId: () => 'uid_greeter',
   );
 }
 
@@ -284,10 +286,7 @@ List<Override> _programOverrides() {
       _hotelId,
     ).overrideWithValue(AsyncData(_inbound)),
     programTripListProvider(_programId).overrideWithValue(AsyncData(_trips)),
-    programTransportVendorsProvider(
-      _programId,
-      _pickupPointId,
-    ).overrideWithValue(
+    programTransportVendorsProvider('org_1', _programId).overrideWithValue(
       const AsyncData(<ProgramVendorOption>[
         ProgramVendorOption(
           vendorId: 'vendor_meru',
@@ -452,12 +451,12 @@ Widget programArrivalRowStates(BuildContext context) {
     children: [
       ProgramArrivalRow(
         row: _roster.rows[0],
-        queuedAction: null,
+        queuedStatus: null,
         onAction: (_, action, {manualCurbNote}) async {},
       ),
       ProgramArrivalRow(
         row: _roster.rows[2],
-        queuedAction: 'markReady',
+        queuedStatus: ProgramOperationOutboxStatus.pending,
         onAction: (_, action, {manualCurbNote}) async {},
       ),
     ],
@@ -547,6 +546,7 @@ Widget programDispatchSheetStates(BuildContext context) {
     child: ProviderScope(
       overrides: _programOverrides(),
       child: ProgramDispatchSheet(
+        accountId: 'uid_greeter',
         programId: _programId,
         pickupPointId: _pickupPointId,
         organizerId: 'org_1',
@@ -603,3 +603,62 @@ Widget programTripLedgerRowStates(BuildContext context) {
 Widget programTripVoidSheetStates(BuildContext context) {
   return const WidgetbookUtilitySheetFrame(child: ProgramTripVoidSheet());
 }
+
+ProgramOperationsState _reviewOperationsState() => ProgramOperationsState(
+  outbox: ProgramOperationOutboxSummary([
+    ProgramOperationOutboxEntry.legObservation(
+      programId: _programId,
+      legId: _roster.rows.first.legId,
+      action: 'markReady',
+      clientOperationId: 'review-preview',
+      createdAt: _now,
+      expectedRevision: 1,
+    ).copyWith(status: ProgramOperationOutboxStatus.needsReview),
+  ]),
+);
+
+@widgetbook.UseCase(
+  name: 'Notice states',
+  type: ProgramOperationsNotice,
+  path: '[P1 product surfaces]/Program arrivals',
+)
+Widget programOperationsNoticeStates(BuildContext context) => ProviderScope(
+  overrides: [
+    ..._programOverrides(),
+    programOperationsStateProvider(
+      _programId,
+    ).overrideWithValue(AsyncData(_reviewOperationsState())),
+  ],
+  child: const WidgetbookCatalogFrame(
+    title: 'ProgramOperationsNotice',
+    catalogId: 'screen.programs.arrivals',
+    children: [
+      ProgramOperationsNotice(
+        programId: _programId,
+        pickupPointId: _pickupPointId,
+      ),
+    ],
+  ),
+);
+
+@widgetbook.UseCase(
+  name: 'Review states',
+  type: ProgramOperationReviewSheet,
+  path: '[P1 product surfaces]/Program arrivals',
+)
+Widget programOperationReviewSheetStates(BuildContext context) =>
+    WidgetbookUtilitySheetFrame(
+      child: ProviderScope(
+        overrides: [
+          ..._programOverrides(),
+          programOperationsStateProvider(
+            _programId,
+          ).overrideWithValue(AsyncData(_reviewOperationsState())),
+        ],
+        child: const ProgramOperationReviewSheet(
+          programId: _programId,
+          accountId: 'uid_greeter',
+          pickupPointId: _pickupPointId,
+        ),
+      ),
+    );

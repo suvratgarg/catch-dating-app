@@ -1,6 +1,7 @@
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
-import 'package:catch_dating_app/core/connectivity_service.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -8,9 +9,14 @@ import 'package:catch_dating_app/programs/data/program_operations_outbox.dart';
 import 'package:catch_dating_app/programs/data/program_snapshot_reader.dart';
 import 'package:catch_dating_app/programs/data/program_work_repository.dart';
 import 'package:catch_dating_app/programs/domain/program_models.dart';
+import 'package:catch_dating_app/programs/domain/program_operation_projection.dart';
+import 'package:catch_dating_app/programs/presentation/program_operations_controller.dart';
+import 'package:catch_dating_app/programs/presentation/program_operations_notice.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+export 'program_operations_notice.dart' show ProgramArrivalsOutboxBanner;
 
 /// The greeter's live arrivals roster for one pickup station.
 ///
@@ -19,7 +25,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// greeters never greet the same party. Mutations go through the offline
 /// outbox: a claim taken in a dead zone is replayed with the same
 /// `clientOperationId` so the server cannot double-apply it.
-class ProgramArrivalsScreen extends ConsumerStatefulWidget {
+class ProgramArrivalsScreen extends ConsumerWidget {
   const ProgramArrivalsScreen({
     super.key,
     required this.programId,
@@ -32,126 +38,26 @@ class ProgramArrivalsScreen extends ConsumerStatefulWidget {
   final String stationLabel;
 
   @override
-  ConsumerState<ProgramArrivalsScreen> createState() =>
-      _ProgramArrivalsScreenState();
-}
-
-class _ProgramArrivalsScreenState extends ConsumerState<ProgramArrivalsScreen> {
-  ProgramOperationOutboxSummary _outbox = const ProgramOperationOutboxSummary(
-    [],
-  );
-  Object? _mutationError;
-  bool _outboxBusy = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _reloadOutbox();
-  }
-
-  Future<void> _reloadOutbox() async {
-    final accountId = programWorkAccountId(
-      ref,
-      action: 'load pending program operations',
+  Widget build(BuildContext context, WidgetRef ref) {
+    final uidState = catchAsyncStateFromAsyncValue(ref.watch(uidProvider));
+    final accountId = uidState.isSettledData ? uidState.value : null;
+    final operations = catchAsyncStateFromAsyncValue(
+      ref.watch(programOperationsStateProvider(programId)),
     );
-    final summary = await ref
-        .read(programOperationsOutboxProvider)
-        .loadForProgram(accountId: accountId, programId: widget.programId);
-    if (mounted) setState(() => _outbox = summary);
-  }
-
-  Future<void> _enqueueObservation(
-    ArrivalsRosterRow row,
-    String action, {
-    String? manualCurbNote,
-  }) async {
-    final accountId = programWorkAccountId(
-      ref,
-      action: 'record an arrival observation',
-    );
-    final operationId =
-        'arrival_${action}_${row.legId.hashCode.abs().toRadixString(36)}_'
-        '${DateTime.now().microsecondsSinceEpoch.toRadixString(36)}';
-    try {
-      final summary = await ref
-          .read(programOperationsOutboxProvider)
-          .enqueueAndAttempt(
-            accountId: accountId,
-            offline: ref.read(isObviouslyOfflineProvider),
-            entry: ProgramOperationOutboxEntry.legObservation(
-              programId: widget.programId,
-              legId: row.legId,
-              action: action,
-              clientOperationId: operationId,
-              createdAt: DateTime.now(),
-              expectedRevision: row.revision,
-              manualCurbAtMillis:
-                  action == 'markReady' || action == 'markDisrupted'
-                  ? DateTime.now().millisecondsSinceEpoch
-                  : null,
-              manualCurbNote: manualCurbNote,
-            ),
-          );
-      if (mounted) {
-        setState(() {
-          _outbox = summary;
-          _mutationError = null;
-        });
-      }
-      ref.invalidate(
-        programArrivalsRosterProvider(widget.programId, widget.pickupPointId),
-      );
-    } on Object catch (error) {
-      if (mounted) setState(() => _mutationError = error);
-    }
-  }
-
-  Future<void> _clearOutboxReview() async {
-    final accountId = programWorkAccountId(
-      ref,
-      action: 'clear stale program operations',
-    );
-    final summary = await ref
-        .read(programOperationsOutboxProvider)
-        .clearNeedsReview(accountId: accountId, programId: widget.programId);
-    if (mounted) setState(() => _outbox = summary);
-  }
-
-  Future<void> _flushOutbox() async {
-    if (_outboxBusy) return;
-    setState(() => _outboxBusy = true);
-    try {
-      final accountId = programWorkAccountId(
-        ref,
-        action: 'sync pending program operations',
-      );
-      final summary = await ref
-          .read(programOperationsOutboxProvider)
-          .flushProgram(accountId: accountId, programId: widget.programId);
-      if (mounted) setState(() => _outbox = summary);
-      ref.invalidate(
-        programArrivalsRosterProvider(widget.programId, widget.pickupPointId),
-      );
-    } on Object catch (error) {
-      if (mounted) setState(() => _mutationError = error);
-    } finally {
-      if (mounted) setState(() => _outboxBusy = false);
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
+    final outbox =
+        operations.value?.outbox ?? const ProgramOperationOutboxSummary([]);
+    final busy = !operations.isSettledData || (operations.value?.busy ?? true);
     final rosterAsync = ref.watch(
-      programArrivalsRosterViewProvider(widget.programId, widget.pickupPointId),
+      programArrivalsRosterViewProvider(programId, pickupPointId),
     );
     return CatchAsyncBoundary<ProgramReadView<ProgramArrivalsRoster>>(
       value: rosterAsync,
       onRetry: () => ref.invalidate(
-        programArrivalsRosterProvider(widget.programId, widget.pickupPointId),
+        programArrivalsRosterProvider(programId, pickupPointId),
       ),
       loadingBuilder: (_) => CatchRouteScaffold(
         topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
-          title: widget.stationLabel,
+          title: stationLabel,
           subtitle: context.l10n.programsArrivalsTitle,
           emphasis: scrolledUnder
               ? CatchTopBarEmphasis.divided
@@ -166,7 +72,7 @@ class _ProgramArrivalsScreenState extends ConsumerState<ProgramArrivalsScreen> {
       ),
       errorBuilder: (_, error, _, onBoundaryRetry) => CatchRouteScaffold(
         topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
-          title: widget.stationLabel,
+          title: stationLabel,
           subtitle: context.l10n.programsArrivalsTitle,
           emphasis: scrolledUnder
               ? CatchTopBarEmphasis.divided
@@ -185,7 +91,7 @@ class _ProgramArrivalsScreenState extends ConsumerState<ProgramArrivalsScreen> {
       ),
       builder: (context, result) => CatchRouteScaffold(
         topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
-          title: widget.stationLabel,
+          title: stationLabel,
           subtitle: context.l10n.programsArrivalsTitle,
           emphasis: scrolledUnder
               ? CatchTopBarEmphasis.divided
@@ -207,15 +113,29 @@ class _ProgramArrivalsScreenState extends ConsumerState<ProgramArrivalsScreen> {
                   tone: CatchBannerTone.warning,
                 ),
               ),
+            if (operations.hasError || operations.value?.hasStatus == true)
+              CatchSectionListItem(
+                child: ProgramOperationsNotice(
+                  programId: programId,
+                  pickupPointId: pickupPointId,
+                ),
+              ),
             ..._rosterSections(
               context,
               roster: result.value,
-              outbox: _outbox,
-              mutationError: _mutationError,
-              outboxBusy: _outboxBusy,
-              onFlushOutbox: _flushOutbox,
-              onClearReview: _clearOutboxReview,
-              onAction: _enqueueObservation,
+              outbox: outbox,
+              busy: busy,
+              onAction: (row, action, {manualCurbNote}) async {
+                if (accountId == null) return;
+                await ref
+                    .read(
+                      programOperationsControllerProvider(
+                        programId,
+                        accountId,
+                      ).notifier,
+                    )
+                    .observe(row, action, manualCurbNote: manualCurbNote);
+              },
             ),
           ],
         ),
@@ -228,10 +148,7 @@ List<CatchSectionListItem> _rosterSections(
   BuildContext context, {
   required ProgramArrivalsRoster roster,
   required ProgramOperationOutboxSummary outbox,
-  required Object? mutationError,
-  required bool outboxBusy,
-  required VoidCallback onFlushOutbox,
-  required VoidCallback onClearReview,
+  required bool busy,
   required Future<void> Function(
     ArrivalsRosterRow row,
     String action, {
@@ -239,11 +156,16 @@ List<CatchSectionListItem> _rosterSections(
   })
   onAction,
 }) {
-  final attention = roster.rows
+  final projected = {
+    for (final row in roster.rows)
+      row.legId: projectProgramArrival(row, outbox),
+  };
+  final rows = projected.values.map((view) => view.row);
+  final attention = rows
       .where((row) => row.needsAttention)
       .toList(growable: false);
   final ready =
-      roster.rows
+      rows
           .where(
             (row) =>
                 !row.needsAttention &&
@@ -255,7 +177,7 @@ List<CatchSectionListItem> _rosterSections(
               .compareTo(b.curbAt ?? DateTime.fromMillisecondsSinceEpoch(0)),
         );
   final expected =
-      roster.rows
+      rows
           .where(
             (row) =>
                 !row.needsAttention &&
@@ -268,21 +190,6 @@ List<CatchSectionListItem> _rosterSections(
         );
 
   return <CatchSectionListItem>[
-    if (outbox.pendingCount + outbox.needsReviewCount > 0)
-      CatchSectionListItem(
-        child: ProgramArrivalsOutboxBanner(
-          outbox: outbox,
-          busy: outboxBusy,
-          onFlush: onFlushOutbox,
-          onClearReview: onClearReview,
-        ),
-      ),
-    if (mutationError != null)
-      CatchSectionListItem(
-        child: CatchBanner.error(
-          message: appErrorMessage(mutationError, l10n: context.l10n),
-        ),
-      ),
     if (attention.isNotEmpty)
       CatchSectionListItem(
         child: CatchSection.contained(
@@ -293,8 +200,8 @@ List<CatchSectionListItem> _rosterSections(
               for (final row in attention)
                 ProgramArrivalRow(
                   row: row,
-                  queuedAction:
-                      outbox.forLeg(row.legId)?.payload['action'] as String?,
+                  blocked: busy || projected[row.legId]!.blocked,
+                  queuedStatus: outbox.forLeg(row.legId)?.status,
                   onAction: onAction,
                 ),
             ],
@@ -316,9 +223,8 @@ List<CatchSectionListItem> _rosterSections(
                   for (final row in ready)
                     ProgramArrivalRow(
                       row: row,
-                      queuedAction:
-                          outbox.forLeg(row.legId)?.payload['action']
-                              as String?,
+                      blocked: busy || projected[row.legId]!.blocked,
+                      queuedStatus: outbox.forLeg(row.legId)?.status,
                       onAction: onAction,
                     ),
                 ],
@@ -340,9 +246,8 @@ List<CatchSectionListItem> _rosterSections(
                   for (final row in expected)
                     ProgramArrivalRow(
                       row: row,
-                      queuedAction:
-                          outbox.forLeg(row.legId)?.payload['action']
-                              as String?,
+                      blocked: busy || projected[row.legId]!.blocked,
+                      queuedStatus: outbox.forLeg(row.legId)?.status,
                       onAction: onAction,
                     ),
                 ],
@@ -352,64 +257,18 @@ List<CatchSectionListItem> _rosterSections(
   ];
 }
 
-class ProgramArrivalsOutboxBanner extends StatelessWidget {
-  const ProgramArrivalsOutboxBanner({
-    super.key,
-    required this.outbox,
-    required this.busy,
-    required this.onFlush,
-    required this.onClearReview,
-  });
-
-  final ProgramOperationOutboxSummary outbox;
-  final bool busy;
-  final VoidCallback onFlush;
-  final VoidCallback onClearReview;
-
-  @override
-  Widget build(BuildContext context) {
-    final pending = outbox.pendingCount;
-    final review = outbox.needsReviewCount;
-    final message = review > 0
-        ? context.l10n.programsArrivalsOutboxReview(
-            pending: pending,
-            review: review,
-          )
-        : context.l10n.programsArrivalsOutboxPending(count: pending);
-    return CatchBanner(
-      title: context.l10n.programsArrivalsOutboxTitle,
-      message: message,
-      icon: CatchIcons.wifiOffRounded,
-      tone: review > 0 ? CatchBannerTone.danger : CatchBannerTone.warning,
-      actions: [
-        CatchButton(
-          label: context.l10n.programsArrivalsOutboxSync,
-          size: CatchButtonSize.sm,
-          status: busy ? CatchButtonStatus.loading : CatchButtonStatus.idle,
-          onPressed: onFlush,
-        ),
-        if (review > 0)
-          CatchButton(
-            label: context.l10n.programsArrivalsOutboxClear,
-            size: CatchButtonSize.sm,
-            variant: CatchButtonVariant.secondary,
-            onPressed: onClearReview,
-          ),
-      ],
-    );
-  }
-}
-
 class ProgramArrivalRow extends StatelessWidget {
   const ProgramArrivalRow({
     super.key,
     required this.row,
-    required this.queuedAction,
+    required this.queuedStatus,
+    this.blocked = false,
     required this.onAction,
   });
 
   final ArrivalsRosterRow row;
-  final String? queuedAction;
+  final ProgramOperationOutboxStatus? queuedStatus;
+  final bool blocked;
   final Future<void> Function(
     ArrivalsRosterRow row,
     String action, {
@@ -448,10 +307,15 @@ class ProgramArrivalRow extends StatelessWidget {
                         ),
                   tone: CatchBadgeTone.brand,
                 ),
-              if (queuedAction != null)
+              if (queuedStatus != null)
                 CatchBadge(
-                  label: context.l10n.programsArrivalsQueued,
-                  tone: CatchBadgeTone.warning,
+                  label:
+                      queuedStatus == ProgramOperationOutboxStatus.needsReview
+                      ? context.l10n.programsOperationsReviewBadge
+                      : context.l10n.programsArrivalsQueued,
+                  tone: queuedStatus == ProgramOperationOutboxStatus.needsReview
+                      ? CatchBadgeTone.danger
+                      : CatchBadgeTone.warning,
                   icon: CatchIcons.wifiOffRounded,
                 ),
             ],
@@ -460,7 +324,7 @@ class ProgramArrivalRow extends StatelessWidget {
       ),
       trailing: ProgramArrivalActionMenu(
         row: row,
-        queued: queuedAction != null,
+        queued: blocked,
         onAction: onAction,
       ),
     );
@@ -573,7 +437,8 @@ class ProgramArrivalActionMenu extends StatelessWidget {
             value: ProgramArrivalActionKind.unclaim,
             label: context.l10n.programsArrivalsUnclaimAction,
           ),
-        if (row.readiness == TravelLegReadiness.expected)
+        if (row.readiness == TravelLegReadiness.expected ||
+            row.readiness == TravelLegReadiness.disrupted)
           CatchActionMenuItem(
             value: ProgramArrivalActionKind.ready,
             label: context.l10n.programsArrivalsReadyAction,

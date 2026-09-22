@@ -20207,13 +20207,63 @@ class AppLocalizationsEn extends AppLocalizations {
       'No more guests expected at this station.';
 
   @override
+  String get programsOperationsReviewBadge => 'Needs review';
+
+  @override
+  String get programsOperationsReviewTitle => 'Review saved changes';
+
+  @override
+  String get programsOperationsReviewBody =>
+      'Check the current arrivals and trip records before dismissing a change. Dismissal stops this saved change from syncing; it does not undo work already recorded. Record any correction from the current journey.';
+
+  @override
+  String get programsOperationsReviewEmpty =>
+      'No changes need review for this account.';
+
+  @override
+  String get programsOperationsGuestUnavailable =>
+      'Guest details unavailable at this station';
+
+  @override
+  String get programsOperationsDismiss => 'Dismiss this saved change';
+
+  @override
+  String programsOperationsDeparture({required String plate}) {
+    return 'Departure · $plate';
+  }
+
+  @override
+  String get programsOperationsClaim => 'Claim guest';
+
+  @override
+  String get programsOperationsUnclaim => 'Release guest claim';
+
+  @override
+  String get programsOperationsReady => 'Guest ready at curb';
+
+  @override
+  String get programsOperationsDisrupted => 'Guest journey disrupted';
+
+  @override
+  String get programsOperationsNeedsReview =>
+      'This saved change needs review. Check the current journey and trip records before recording more work.';
+
+  @override
+  String get programsOperationsReloadManifest =>
+      'Reload the complete arrivals roster before dispatching this vehicle.';
+
+  @override
+  String get programsOperationsPassengersNotReady =>
+      'Every passenger must be marked ready at the curb before this vehicle departs.';
+
+  @override
   String get programsArrivalsOutboxTitle => 'Offline queue';
 
   @override
   String get programsArrivalsOutboxSync => 'Sync now';
 
   @override
-  String get programsArrivalsOutboxClear => 'Clear stale';
+  String get programsArrivalsOutboxClear => 'Review changes';
 
   @override
   String get programsArrivalsClaimedByMe => 'Claimed by you';
@@ -20277,9 +20327,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get programsDispatchTitle => 'Dispatch desk';
-
-  @override
-  String get programsDispatchOutboxTitle => 'Offline queue';
 
   @override
   String get programsDispatchGroupsTitle => 'Suggested vehicles';
@@ -20439,17 +20486,12 @@ class AppLocalizationsEn extends AppLocalizations {
     required int pending,
     required int review,
   }) {
-    return '$pending pending, $review need review after a week offline.';
+    return '$pending pending, $review need review before they can sync.';
   }
 
   @override
   String programsArrivalsClaimedBy({required Object name}) {
     return 'Claimed by $name';
-  }
-
-  @override
-  String programsDispatchOutboxPending({required int count}) {
-    return '$count dispatch(es) queued while offline.';
   }
 
   @override

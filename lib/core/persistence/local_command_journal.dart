@@ -162,15 +162,6 @@ class LocalCommandJournal<E> {
     return records;
   }
 
-  static Object? _canonical(Object? value) {
-    if (value is Map) {
-      final keys = value.keys.cast<String>().toList()..sort();
-      return {for (final key in keys) key: _canonical(value[key])};
-    }
-    if (value is List) return value.map(_canonical).toList();
-    return value;
-  }
-
   String _hash(Map<String, Object?> command) => sha256
       .convert(
         utf8.encode(
@@ -403,17 +394,34 @@ class LocalCommandJournal<E> {
       });
 
   /// Explicit operator dismissal retains the original observation for recovery.
-  Future<void> dismissReview(String accountId, String scope) async {
+  Future<void> dismissReview(
+    String accountId,
+    String scope, {
+    String? commandId,
+  }) async {
     _requireAccount(accountId);
     await _initialize(accountId);
     await _transaction(accountId, (state) {
       _requireAccount(accountId);
       for (final record in _records(state)) {
-        if (record['scope'] == scope && record['status'] == 'needsReview') {
+        if (record['scope'] == scope &&
+            record['status'] == 'needsReview' &&
+            (commandId == null || record['id'] == commandId)) {
           record['status'] = 'dismissed';
           record['terminalAtMillis'] = DateTime.now().millisecondsSinceEpoch;
         }
       }
     });
   }
+}
+
+Object? _canonical(Object? value) {
+  if (value is Map) return _canonicalMap(value);
+  if (value is List) return value.map(_canonical).toList();
+  return value;
+}
+
+Map<String, Object?> _canonicalMap(Map<Object?, Object?> value) {
+  final keys = value.keys.cast<String>().toList()..sort();
+  return {for (final key in keys) key: _canonical(value[key])};
 }

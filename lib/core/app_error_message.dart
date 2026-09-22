@@ -149,6 +149,12 @@ String _localizedExceptionMessage(
     };
   }
   return switch (exception.code) {
+    'program-operation-needs-review' ||
+    'arrival-observation-needs-review' => l10n.programsOperationsNeedsReview,
+    'program-manifest-reload-required' ||
+    'dispatch-manifest-needs-review' => l10n.programsOperationsReloadManifest,
+    'dispatch-passengers-not-ready' =>
+      l10n.programsOperationsPassengersNotReady,
     'invalid-phone-number' =>
       l10n.coreAppErrorMessageVisiblecopyPleaseEnterAValid,
     'invalid-verification-code' =>

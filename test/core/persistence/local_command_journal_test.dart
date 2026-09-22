@@ -170,7 +170,9 @@ void main() {
             everyElement(ProgramOperationOutboxStatus.needsReview),
           );
           expect(pending.last.lastErrorCode, 'dependency-needs-review');
-          await journal.dismissReview('a', 'p1');
+          await journal.dismissReview('a', 'p1', commandId: 'claim');
+          expect((await journal.load('a')).single.clientOperationId, 'ready');
+          await journal.dismissReview('a', 'p1', commandId: 'ready');
           expect(await journal.load('a'), isEmpty);
         },
       );

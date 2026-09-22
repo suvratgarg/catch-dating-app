@@ -1,14 +1,17 @@
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
-import 'package:catch_dating_app/core/connectivity_service.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/programs/data/program_operations_outbox.dart';
 import 'package:catch_dating_app/programs/data/program_snapshot_reader.dart';
 import 'package:catch_dating_app/programs/data/program_work_repository.dart';
-import 'package:catch_dating_app/programs/domain/dispatch_manifest.dart';
 import 'package:catch_dating_app/programs/domain/program_models.dart';
+import 'package:catch_dating_app/programs/presentation/program_operations_controller.dart';
+import 'package:catch_dating_app/programs/presentation/program_operations_notice.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -35,77 +38,71 @@ class ProgramDispatchScreen extends ConsumerStatefulWidget {
 }
 
 class _ProgramDispatchScreenState extends ConsumerState<ProgramDispatchScreen> {
-  ProgramOperationOutboxSummary _outbox = const ProgramOperationOutboxSummary(
-    [],
-  );
-  Object? _mutationError;
-
-  @override
-  void initState() {
-    super.initState();
-    _reloadOutbox();
-  }
-
-  Future<void> _reloadOutbox() async {
-    final accountId = programWorkAccountId(
-      ref,
-      action: 'load pending dispatches',
-    );
-    final summary = await ref
-        .read(programOperationsOutboxProvider)
-        .loadForProgram(accountId: accountId, programId: widget.programId);
-    if (mounted) setState(() => _outbox = summary);
-  }
+  Object? _openingError;
+  String? _openingErrorAccount;
 
   Future<void> _openDispatchSheet(
     TransportGroupSuggestion group,
     ProgramTransportPlan plan,
+    String? accountId,
   ) async {
-    final access = await ref.read(
-      programWorkAccessProvider(widget.programId).future,
-    );
-    if (!mounted) return;
-    // Ready groups may hold for expected parties bound for the same
-    // destination; the dispatcher, not the suggestion engine, makes that call.
-    final holdCandidates = group.readiness == TransportGroupReadiness.ready
-        ? plan.groups
-              .where(
-                (candidate) =>
-                    candidate.readiness == TransportGroupReadiness.expected &&
-                    _sameDestination(group, candidate),
-              )
-              .toList(growable: false)
-        : const <TransportGroupSuggestion>[];
-    await showCatchBottomSheet<void>(
-      context: context,
-      builder: (sheetContext) => ProgramDispatchSheet(
-        programId: widget.programId,
-        pickupPointId: widget.pickupPointId,
-        organizerId: access.organizerId,
-        group: group,
-        holdCandidates: holdCandidates,
-        vehicleClasses: access.vehicleClasses,
-        onDispatched: (summary, error) {
-          if (!mounted) return;
-          setState(() {
-            if (summary != null) _outbox = summary;
-            _mutationError = error;
-          });
-          ref.invalidate(
-            programTransportPlanProvider(
-              widget.programId,
-              widget.pickupPointId,
-            ),
-          );
-          ref.invalidate(programTripListProvider(widget.programId));
-        },
-      ),
-    );
-    await _reloadOutbox();
+    if (accountId == null || ref.read(uidProvider).asData?.value != accountId) {
+      return;
+    }
+    try {
+      final access = await ref.read(
+        programWorkAccessProvider(widget.programId).future,
+      );
+      if (!mounted || ref.read(uidProvider).asData?.value != accountId) return;
+      // Ready groups may hold for expected parties bound for the same
+      // destination; the dispatcher, not the suggestion engine, makes that call.
+      final holdCandidates = group.readiness == TransportGroupReadiness.ready
+          ? plan.groups
+                .where(
+                  (candidate) =>
+                      candidate.readiness == TransportGroupReadiness.expected &&
+                      _sameDestination(group, candidate),
+                )
+                .toList(growable: false)
+          : const <TransportGroupSuggestion>[];
+      await showCatchBottomSheet<void>(
+        context: context,
+        builder: (sheetContext) => ProgramDispatchSheet(
+          programId: widget.programId,
+          accountId: accountId,
+          pickupPointId: widget.pickupPointId,
+          organizerId: access.organizerId,
+          group: group,
+          holdCandidates: holdCandidates,
+          vehicleClasses: access.vehicleClasses,
+          onDispatched: (summary, error) {
+            if (!mounted) return;
+            if (ref.read(uidProvider).asData?.value != accountId) return;
+            setState(() {
+              _openingError = error;
+              _openingErrorAccount = accountId;
+            });
+          },
+        ),
+      );
+    } on Object catch (error) {
+      if (mounted && ref.read(uidProvider).asData?.value == accountId) {
+        setState(() {
+          _openingError = error;
+          _openingErrorAccount = accountId;
+        });
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final uidState = catchAsyncStateFromAsyncValue(ref.watch(uidProvider));
+    final accountId = uidState.isSettledData ? uidState.value : null;
+    final operations = catchAsyncStateFromAsyncValue(
+      ref.watch(programOperationsStateProvider(widget.programId)),
+    );
+    final current = operations.value;
     final planAsync = ref.watch(
       programTransportPlanViewProvider(widget.programId, widget.pickupPointId),
     );
@@ -172,12 +169,25 @@ class _ProgramDispatchScreenState extends ConsumerState<ProgramDispatchScreen> {
                   tone: CatchBannerTone.warning,
                 ),
               ),
+            if (operations.hasError || operations.value?.hasStatus == true)
+              CatchSectionListItem(
+                child: ProgramOperationsNotice(
+                  programId: widget.programId,
+                  pickupPointId: widget.pickupPointId,
+                ),
+              ),
             ..._planSections(
               context,
               plan: result.value,
-              outbox: _outbox,
-              mutationError: _mutationError,
-              onDispatch: (group) => _openDispatchSheet(group, result.value),
+              outbox:
+                  current?.outbox ?? const ProgramOperationOutboxSummary([]),
+              busy:
+                  !operations.isSettledData || current == null || current.busy,
+              mutationError: _openingErrorAccount == accountId
+                  ? _openingError
+                  : null,
+              onDispatch: (group) =>
+                  _openDispatchSheet(group, result.value, accountId),
             ),
           ],
         ),
@@ -205,7 +215,7 @@ class ProgramDispatchGroupTile extends StatelessWidget {
   });
 
   final TransportGroupSuggestion group;
-  final VoidCallback onDispatch;
+  final VoidCallback? onDispatch;
 
   @override
   Widget build(BuildContext context) {
@@ -274,6 +284,7 @@ class ProgramDispatchSheet extends ConsumerStatefulWidget {
     required this.programId,
     required this.pickupPointId,
     required this.organizerId,
+    required this.accountId,
     required this.group,
     required this.holdCandidates,
     required this.vehicleClasses,
@@ -283,6 +294,7 @@ class ProgramDispatchSheet extends ConsumerStatefulWidget {
   final String programId;
   final String pickupPointId;
   final String organizerId;
+  final String accountId;
   final TransportGroupSuggestion group;
 
   /// Expected-readiness suggestions bound for the same destination; toggling
@@ -303,6 +315,7 @@ class _ProgramDispatchSheetState extends ConsumerState<ProgramDispatchSheet> {
   final Set<int> _heldCandidates = {};
   String? _vendorId;
   bool _busy = false;
+  Object? _error;
 
   List<String> get _dispatchLegIds => [
     ...widget.group.legIds,
@@ -329,52 +342,53 @@ class _ProgramDispatchSheetState extends ConsumerState<ProgramDispatchSheet> {
     super.dispose();
   }
 
-  Future<List<DispatchLegRevision>> _legRevisionFences() async {
-    final view = await ref.read(
-      programArrivalsRosterViewProvider(
-        widget.programId,
-        widget.pickupPointId,
-      ).future,
-    );
-    return captureDispatchLegRevisions(view.value, _dispatchLegIds);
-  }
-
   Future<void> _dispatch() async {
     if (_busy) return;
-    setState(() => _busy = true);
+    setState(() {
+      _busy = true;
+      _error = null;
+    });
     try {
-      final accountId = programWorkAccountId(
-        ref,
-        action: 'dispatch a program vehicle',
+      if (ref.read(uidProvider).asData?.value != widget.accountId) {
+        throw const SignInRequiredException('dispatch this saved manifest');
+      }
+      final view = await ref.read(
+        programArrivalsRosterViewProvider(
+          widget.programId,
+          widget.pickupPointId,
+        ).future,
       );
-      final operationId =
-          'dispatch_${widget.pickupPointId.hashCode.abs().toRadixString(36)}_'
-          '${DateTime.now().microsecondsSinceEpoch.toRadixString(36)}';
-      final fences = await _legRevisionFences();
-      final summary = await ref
-          .read(programOperationsOutboxProvider)
-          .enqueueAndAttempt(
-            accountId: accountId,
-            offline: ref.read(isObviouslyOfflineProvider),
-            entry: ProgramOperationOutboxEntry.dispatch(
-              programId: widget.programId,
-              pickupPointId: widget.pickupPointId,
-              vehicleClassId: _vehicleClassId,
-              plateDisplay: _plateController.text.trim(),
-              legIds: _dispatchLegIds,
-              destinationHotelId: widget.group.destinationHotelId,
-              destinationLabel: widget.group.destinationLabel,
-              vendorId: _vendorId,
-              expectedLegRevisions: fences,
-              clientOperationId: operationId,
-              createdAt: DateTime.now(),
-            ),
+      if (!mounted) return;
+      if (ref.read(uidProvider).asData?.value != widget.accountId) {
+        throw const SignInRequiredException('dispatch this saved manifest');
+      }
+      final provider = programOperationsControllerProvider(
+        widget.programId,
+        widget.accountId,
+      );
+      final accepted = await ref
+          .read(provider.notifier)
+          .dispatch(
+            roster: view.value,
+            pickupPointId: widget.pickupPointId,
+            vehicleClassId: _vehicleClassId,
+            plateDisplay: _plateController.text.trim(),
+            legIds: _dispatchLegIds,
+            destinationHotelId: widget.group.destinationHotelId,
+            destinationLabel: widget.group.destinationLabel,
+            vendorId: _vendorId,
           );
-      widget.onDispatched(summary, null);
-      if (mounted) Navigator.of(context).pop();
+      if (!mounted) return;
+      if (accepted) {
+        widget.onDispatched(ref.read(provider).asData?.value.outbox, null);
+        Navigator.of(context).pop();
+      } else {
+        setState(() => _error = ref.read(provider).asData?.value.error);
+      }
     } on Object catch (error) {
-      widget.onDispatched(null, error);
-      if (mounted) Navigator.of(context).pop();
+      if (mounted) setState(() => _error = error);
+    } finally {
+      if (mounted) setState(() => _busy = false);
     }
   }
 
@@ -385,7 +399,18 @@ class _ProgramDispatchSheetState extends ConsumerState<ProgramDispatchSheet> {
     );
     final classes = [...widget.vehicleClasses]
       ..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
-    final canDispatch = _plateController.text.trim().isNotEmpty && !_busy;
+    final uidState = catchAsyncStateFromAsyncValue(ref.watch(uidProvider));
+    final accountMatches =
+        uidState.isSettledData && uidState.value == widget.accountId;
+    final operations = catchAsyncStateFromAsyncValue(
+      ref.watch(programOperationsStateProvider(widget.programId)),
+    );
+    final canDispatch =
+        accountMatches &&
+        operations.isSettledData &&
+        operations.value?.busy == false &&
+        _plateController.text.trim().isNotEmpty &&
+        !_busy;
     return CatchSheet(
       title: context.l10n.programsDispatchSheetTitle,
       subtitle: context.l10n.programsDispatchSheetSubtitle(
@@ -397,6 +422,10 @@ class _ProgramDispatchSheetState extends ConsumerState<ProgramDispatchSheet> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          if (_error != null)
+            CatchBanner.error(
+              message: appErrorMessage(_error!, l10n: context.l10n),
+            ),
           CatchMetaRow(
             icon: CatchIcons.group,
             label: context.l10n.programsDispatchGroupMeta(
@@ -526,20 +555,10 @@ List<CatchSectionListItem> _planSections(
   required ProgramTransportPlan plan,
   required ProgramOperationOutboxSummary outbox,
   required Object? mutationError,
+  required bool busy,
   required void Function(TransportGroupSuggestion group) onDispatch,
 }) {
   return [
-    if (outbox.pendingCount > 0)
-      CatchSectionListItem(
-        child: CatchBanner(
-          title: context.l10n.programsDispatchOutboxTitle,
-          message: context.l10n.programsDispatchOutboxPending(
-            count: outbox.pendingCount,
-          ),
-          icon: CatchIcons.wifiOffRounded,
-          tone: CatchBannerTone.warning,
-        ),
-      ),
     if (mutationError != null)
       CatchSectionListItem(
         child: CatchBanner.error(
@@ -561,7 +580,18 @@ List<CatchSectionListItem> _planSections(
                   for (final group in plan.groups) ...[
                     ProgramDispatchGroupTile(
                       group: group,
-                      onDispatch: () => onDispatch(group),
+                      onDispatch:
+                          busy ||
+                              outbox.entries.any(
+                                (entry) =>
+                                    entry.kind ==
+                                        ProgramOperationKind.dispatch &&
+                                    (entry.payload['legIds']! as List).any(
+                                      group.legIds.contains,
+                                    ),
+                              )
+                          ? null
+                          : () => onDispatch(group),
                     ),
                     gapH8,
                   ],

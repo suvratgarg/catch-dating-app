@@ -17,7 +17,13 @@ final commandJournalStorageProvider =
           );
         }
       });
-      return () => opening ??= openCommandJournalStorage();
+      return () => opening ??= openCommandJournalStorage().onError<Object>((
+        error,
+        stack,
+      ) {
+        opening = null;
+        Error.throwWithStackTrace(error, stack);
+      });
     });
 
 Future<String?> loadLegacyCommandJournal(

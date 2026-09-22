@@ -1,5 +1,7 @@
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/programs/domain/program_models.dart';
+import 'package:catch_dating_app/programs/domain/program_operation_projection.dart';
+import 'package:catch_dating_app/programs/domain/program_operations.dart';
 import 'package:catch_dating_app/programs/domain/travel_leg_revision.dart';
 
 export 'travel_leg_revision.dart';
@@ -27,20 +29,36 @@ void validateDispatchRevisionFences(
 /// The server revalidates every revision when this immutable command replays.
 List<DispatchLegRevision> captureDispatchLegRevisions(
   ProgramArrivalsRoster roster,
-  List<String> legIds,
-) {
+  List<String> legIds, {
+  ProgramOperationOutboxSummary outbox = const ProgramOperationOutboxSummary(
+    [],
+  ),
+}) {
   final rows = {for (final row in roster.rows) row.legId: row};
   final fences = <DispatchLegRevision>[];
   for (final legId in legIds) {
     final row = rows[legId];
-    if (row == null || row.readiness != TravelLegReadiness.ready) {
+    final projected = row == null ? null : projectProgramArrival(row, outbox);
+    if (projected?.blocked == true) {
+      throw const ValidationException(
+        'Review this journey before dispatch.',
+        code: 'program-operation-needs-review',
+      );
+    }
+    if (row == null || projected?.row.readiness != TravelLegReadiness.ready) {
       throw const ValidationException(
         'Every passenger must be marked ready before the vehicle departs. '
         'Refresh the arrivals roster after the waiting guests reach the curb.',
         code: 'dispatch-passengers-not-ready',
       );
     }
-    fences.add(DispatchLegRevision(legId: legId, revision: row.revision));
+    fences.add(
+      DispatchLegRevision(
+        legId: legId,
+        revision: row.revision,
+        afterObservation: projected!.afterObservation,
+      ),
+    );
   }
   validateDispatchRevisionFences(legIds, fences);
   return fences;

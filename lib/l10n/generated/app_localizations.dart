@@ -32146,6 +32146,90 @@ abstract class AppLocalizations {
   /// **'No more guests expected at this station.'**
   String get programsArrivalsExpectedEmpty;
 
+  /// Saved operation conflict status.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs review'**
+  String get programsOperationsReviewBadge;
+
+  /// Program saved operation review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Review saved changes'**
+  String get programsOperationsReviewTitle;
+
+  /// Program saved operation review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Check the current arrivals and trip records before dismissing a change. Dismissal stops this saved change from syncing; it does not undo work already recorded. Record any correction from the current journey.'**
+  String get programsOperationsReviewBody;
+
+  /// Program saved operation review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'No changes need review for this account.'**
+  String get programsOperationsReviewEmpty;
+
+  /// Program saved operation review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest details unavailable at this station'**
+  String get programsOperationsGuestUnavailable;
+
+  /// Program saved operation review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Dismiss this saved change'**
+  String get programsOperationsDismiss;
+
+  /// Program saved operation review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Departure · {plate}'**
+  String programsOperationsDeparture({required String plate});
+
+  /// Program saved operation review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Claim guest'**
+  String get programsOperationsClaim;
+
+  /// Program saved operation review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Release guest claim'**
+  String get programsOperationsUnclaim;
+
+  /// Program saved operation review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest ready at curb'**
+  String get programsOperationsReady;
+
+  /// Program saved operation review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest journey disrupted'**
+  String get programsOperationsDisrupted;
+
+  /// Program saved operation review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'This saved change needs review. Check the current journey and trip records before recording more work.'**
+  String get programsOperationsNeedsReview;
+
+  /// Program saved operation review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Reload the complete arrivals roster before dispatching this vehicle.'**
+  String get programsOperationsReloadManifest;
+
+  /// Program saved operation review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Every passenger must be marked ready at the curb before this vehicle departs.'**
+  String get programsOperationsPassengersNotReady;
+
   /// Program operations copy: programsArrivalsOutboxTitle.
   ///
   /// In en, this message translates to:
@@ -32161,7 +32245,7 @@ abstract class AppLocalizations {
   /// Program operations copy: programsArrivalsOutboxClear.
   ///
   /// In en, this message translates to:
-  /// **'Clear stale'**
+  /// **'Review changes'**
   String get programsArrivalsOutboxClear;
 
   /// Program operations copy: programsArrivalsClaimedByMe.
@@ -32289,12 +32373,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Dispatch desk'**
   String get programsDispatchTitle;
-
-  /// Program operations copy: programsDispatchOutboxTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Offline queue'**
-  String get programsDispatchOutboxTitle;
 
   /// Program operations copy: programsDispatchGroupsTitle.
   ///
@@ -32569,7 +32647,7 @@ abstract class AppLocalizations {
   /// Program operations copy: programsArrivalsOutboxReview.
   ///
   /// In en, this message translates to:
-  /// **'{pending} pending, {review} need review after a week offline.'**
+  /// **'{pending} pending, {review} need review before they can sync.'**
   String programsArrivalsOutboxReview({
     required int pending,
     required int review,
@@ -32580,12 +32658,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Claimed by {name}'**
   String programsArrivalsClaimedBy({required Object name});
-
-  /// Program operations copy: programsDispatchOutboxPending.
-  ///
-  /// In en, this message translates to:
-  /// **'{count} dispatch(es) queued while offline.'**
-  String programsDispatchOutboxPending({required int count});
 
   /// Program operations copy: programsDispatchGroupMeta.
   ///

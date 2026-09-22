@@ -1095,14 +1095,14 @@
       "hostWorkArrivalsScreen"
      ],
      "file": "lib/programs/presentation/program_arrivals_screen.dart",
-     "symbol": "_ProgramArrivalsScreenState",
+     "symbol": "ProgramArrivalsScreen",
      "family": "pushed-route",
      "expression": "CatchRouteScaffold",
      "bodyGeometry": "standard",
      "topEdge": "route-chrome"
     }
    ],
-   "reason": "Pushed arrivals roster route rendered by CatchRouteScaffold through ProgramArrivalsScaffold."
+   "reason": "Pushed arrivals roster route rendered by ProgramArrivalsScreen with CatchRouteScaffold."
   },
   "screen.programs.dispatch": {
    "owners": [
@@ -27920,7 +27920,7 @@
     "owner": "program providers, ProgramTripActions, ProgramOperationsOutbox and CatchAsyncBoundary"
    },
    "stateController": {
-    "primary": "programArrivalsRosterProvider + programOperationsOutboxProvider",
+    "primary": "programArrivalsRosterProvider + programOperationsControllerProvider",
     "files": [
      {
       "file": "lib/programs/presentation/program_arrivals_screen.dart",
@@ -27933,12 +27933,16 @@
      {
       "file": "lib/programs/data/program_operations_outbox.dart",
       "symbol": "programOperationsOutbox"
+     },
+     {
+      "file": "lib/programs/presentation/program_operations_controller.dart",
+      "symbol": "ProgramOperationsController"
      }
     ],
     "mutationOwners": [
      {
-      "file": "lib/programs/data/program_operations_outbox.dart",
-      "symbol": "ProgramOperationsOutbox"
+      "file": "lib/programs/presentation/program_operations_controller.dart",
+      "symbol": "ProgramOperationsController"
      }
     ],
     "notes": "Every greeter write is an idempotent outbox operation; claims are exclusive server-side."
@@ -28021,7 +28025,7 @@
        "file": "lib/programs/presentation/program_arrivals_screen.dart",
        "symbol": "ProgramArrivalsScreen"
       },
-      "currentOwner": "ProgramArrivalsScreen + programArrivalsRosterProvider + programOperationsOutboxProvider",
+      "currentOwner": "ProgramArrivalsScreen + programArrivalsRosterProvider + programOperationsControllerProvider",
       "targetOwner": "provider-free arrivals lanes",
       "dependencies": [
        "catch.top_bar",
@@ -28093,7 +28097,7 @@
     "owner": "program providers, ProgramTripActions, ProgramOperationsOutbox and CatchAsyncBoundary"
    },
    "stateController": {
-    "primary": "programTransportPlanProvider + programOperationsOutboxProvider",
+    "primary": "programTransportPlanProvider + programOperationsControllerProvider",
     "files": [
      {
       "file": "lib/programs/presentation/program_dispatch_screen.dart",
@@ -28106,12 +28110,16 @@
      {
       "file": "lib/programs/data/program_operations_outbox.dart",
       "symbol": "programOperationsOutbox"
+     },
+     {
+      "file": "lib/programs/presentation/program_operations_controller.dart",
+      "symbol": "ProgramOperationsController"
      }
     ],
     "mutationOwners": [
      {
-      "file": "lib/programs/data/program_operations_outbox.dart",
-      "symbol": "ProgramOperationsOutbox"
+      "file": "lib/programs/presentation/program_operations_controller.dart",
+      "symbol": "ProgramOperationsController"
      }
     ],
     "notes": "Dispatch is the reconciliation atom: plate, vendor and class are captured at departure inside one transactional write."
@@ -28194,7 +28202,7 @@
        "file": "lib/programs/presentation/program_dispatch_screen.dart",
        "symbol": "ProgramDispatchScreen"
       },
-      "currentOwner": "ProgramDispatchScreen + programTransportPlanProvider + programOperationsOutboxProvider",
+      "currentOwner": "ProgramDispatchScreen + programTransportPlanProvider + programOperationsControllerProvider",
       "targetOwner": "provider-free dispatch cards",
       "dependencies": [
        "catch.top_bar",

@@ -12278,6 +12278,26 @@ final directories = <_widgetbook.WidgetbookNode>[
               ),
             ],
           ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramOperationReviewSheet',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Review states',
+                builder: _widgetbook_workspace_programs_use_cases
+                    .programOperationReviewSheetStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramOperationsNotice',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Notice states',
+                builder: _widgetbook_workspace_programs_use_cases
+                    .programOperationsNoticeStates,
+              ),
+            ],
+          ),
         ],
       ),
       _widgetbook.WidgetbookFolder(
