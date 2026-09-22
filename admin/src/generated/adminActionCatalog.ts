@@ -1,7 +1,7 @@
 // GENERATED FILE. Run: node tool/admin/generate_admin_action_catalog.mjs
 export const adminActionCatalog = {
   "schemaVersion": 1,
-  "catalogVersion": "1.4.0",
+  "catalogVersion": "1.5.0",
   "actions": [
     {
       "actionId": "overview.get",
@@ -195,6 +195,38 @@ export const adminActionCatalog = {
         "finance"
       ],
       "summary": "Stage one still-current approved messaging decision as two paused channel ceilings without granting spend, dispatch, or worker activation.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "finance.grant-organizer-entitlement",
+      "callable": "adminGrantOrganizerEntitlement",
+      "workflowIds": [
+        "finance"
+      ],
+      "guiPath": "/finance",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "adminOwner",
+        "finance"
+      ],
+      "summary": "Grant one entitlement SKU to an organizer after manual invoice reconciliation; idempotent on operationId and grants no dispatch authority.",
+      "controlPlane": false
+    },
+    {
+      "actionId": "finance.revoke-organizer-entitlement-grant",
+      "callable": "adminRevokeOrganizerEntitlementGrant",
+      "workflowIds": [
+        "finance"
+      ],
+      "guiPath": "/finance",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": [
+        "adminOwner",
+        "finance"
+      ],
+      "summary": "Revoke one existing entitlement grant for an organizer; idempotent on operationId and fails closed on unknown or already-revoked grants.",
       "controlPlane": false
     },
     {
@@ -908,7 +940,9 @@ export const adminActionCatalog = {
         "analytics.host",
         "finance.review-event-messaging-budget",
         "finance.decide-event-messaging-budget",
-        "finance.stage-event-messaging-budget"
+        "finance.stage-event-messaging-budget",
+        "finance.grant-organizer-entitlement",
+        "finance.revoke-organizer-entitlement-grant"
       ],
       "blockedCapabilities": [
         "retry_payment",

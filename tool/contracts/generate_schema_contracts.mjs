@@ -3164,6 +3164,10 @@ const schemaSpecs = [
     typeOutput:
       "functions/src/shared/generated/" +
       "adminGrantOrganizerEntitlementCallablePayload.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/" +
+      "adminGrantOrganizerEntitlementCallablePayload.ts",
+    ],
   },
   {
     name: "AdminRevokeOrganizerEntitlementGrantCallablePayload",
@@ -3173,6 +3177,10 @@ const schemaSpecs = [
     typeOutput:
       "functions/src/shared/generated/" +
       "adminRevokeOrganizerEntitlementGrantCallablePayload.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/" +
+      "adminRevokeOrganizerEntitlementGrantCallablePayload.ts",
+    ],
   },
   {
     name: "GetOrganizerEntitlementCallablePayload",
@@ -3180,6 +3188,10 @@ const schemaSpecs = [
     typeOutput:
       "functions/src/shared/generated/" +
       "getOrganizerEntitlementCallablePayload.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/" +
+      "getOrganizerEntitlementCallablePayload.ts",
+    ],
   },
   {
     name: "OrganizerEntitlementMutationCallableResponse",
@@ -3189,6 +3201,10 @@ const schemaSpecs = [
     typeOutput:
       "functions/src/shared/generated/" +
       "organizerEntitlementMutationCallableResponse.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/" +
+      "organizerEntitlementMutationCallableResponse.ts",
+    ],
   },
   {
     name: "OrganizerEntitlementCallableResponse",
@@ -3197,6 +3213,10 @@ const schemaSpecs = [
     typeOutput:
       "functions/src/shared/generated/" +
       "organizerEntitlementCallableResponse.ts",
+    additionalTypeOutputs: [
+      "admin/src/generated/contracts/" +
+      "organizerEntitlementCallableResponse.ts",
+    ],
   },
   {
     name: "AdminGetEventDetailsCallablePayload",

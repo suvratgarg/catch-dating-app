@@ -27,6 +27,7 @@ const model = {
     "adminGetOverview",
     "adminGetSafetyTriageDetails",
     "adminGetUserAnalytics",
+    "adminGrantOrganizerEntitlement",
     "adminListActionExecutions",
     "adminListAdminRoleAssignments",
     "adminListCrossPathsShowcaseCandidates",
@@ -41,6 +42,7 @@ const model = {
     "adminRecordOrganizerCuration",
     "adminResolveOrganizerEventLocation",
     "adminReviewEventMessagingBudget",
+    "adminRevokeOrganizerEntitlementGrant",
     "adminSetAdminUserRoles",
     "adminSetCrossPathsShowcaseEligibility",
     "adminSetOrganizerIndexStatus",
@@ -14035,6 +14037,212 @@ const model = {
     },
     {
       "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_grant_organizer_entitlement_payload.schema.json",
+      "title": "AdminGrantOrganizerEntitlementCallablePayload",
+      "description": "Admin-authorized grant of one entitlement SKU to an organizer. operationId makes the mutation idempotent across retries; server stamps grantedAt and grantedBy.",
+      "type": "object",
+      "additionalProperties": false,
+      "x-owner": "Admin console finance ops",
+      "required": [
+        "organizerId",
+        "operationId",
+        "sku",
+        "unit",
+        "quantityTotal",
+        "source"
+      ],
+      "properties": {
+        "organizerId": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        },
+        "operationId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{16,120}$"
+        },
+        "sku": {
+          "$ref": "../shared/organizer_entitlement_common.schema.json#/definitions/entitlementSku"
+        },
+        "unit": {
+          "$ref": "../shared/organizer_entitlement_common.schema.json#/definitions/entitlementUnit"
+        },
+        "quantityTotal": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000
+        },
+        "validFromMillis": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "validUntilMillis": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "source": {
+          "$ref": "../shared/organizer_entitlement_common.schema.json#/definitions/entitlementSource"
+        },
+        "receiptRef": {
+          "type": "string",
+          "maxLength": 180
+        },
+        "note": {
+          "type": "string",
+          "maxLength": 500
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/shared/organizer_entitlement_common.schema.json",
+      "title": "Organizer entitlement common contract definitions",
+      "description": "Shared enum and embedded definitions for organizer entitlement grants, meters, and receipts. SKUs and limits are versioned in contracts/catalogs/organizer_entitlement_skus.json.",
+      "definitions": {
+        "entitlementSku": {
+          "type": "string",
+          "enum": [
+            "wedding_essentials",
+            "wedding_pro",
+            "wedding_signature",
+            "wedding_transport_addon",
+            "planner_annual"
+          ]
+        },
+        "entitlementUnit": {
+          "type": "string",
+          "enum": [
+            "program",
+            "organizerYear"
+          ]
+        },
+        "entitlementSource": {
+          "type": "string",
+          "enum": [
+            "manualInvoice",
+            "checkout",
+            "promo"
+          ]
+        },
+        "entitlementGrant": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "grantId",
+            "sku",
+            "unit",
+            "quantityTotal",
+            "quantityConsumed",
+            "validFrom",
+            "validUntil",
+            "source",
+            "receiptRef",
+            "note",
+            "grantedBy",
+            "grantedAt",
+            "revokedAt",
+            "revokedBy",
+            "revokeReason"
+          ],
+          "properties": {
+            "grantId": {
+              "$ref": "event_common.schema.json#/definitions/documentId"
+            },
+            "sku": {
+              "$ref": "#/definitions/entitlementSku"
+            },
+            "unit": {
+              "$ref": "#/definitions/entitlementUnit"
+            },
+            "quantityTotal": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000000
+            },
+            "quantityConsumed": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000
+            },
+            "validFrom": {
+              "$ref": "event_common.schema.json#/definitions/timestamp"
+            },
+            "validUntil": {
+              "$ref": "event_common.schema.json#/definitions/nullableTimestamp"
+            },
+            "source": {
+              "$ref": "#/definitions/entitlementSource"
+            },
+            "receiptRef": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 180
+            },
+            "note": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 500
+            },
+            "grantedBy": {
+              "$ref": "event_common.schema.json#/definitions/documentId"
+            },
+            "grantedAt": {
+              "$ref": "event_common.schema.json#/definitions/timestamp"
+            },
+            "revokedAt": {
+              "$ref": "event_common.schema.json#/definitions/nullableTimestamp"
+            },
+            "revokedBy": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 180
+            },
+            "revokeReason": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 500
+            }
+          }
+        },
+        "entitlementMeters": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "flightDaysUsed",
+            "waConversationsUsed",
+            "periodStartsAt"
+          ],
+          "properties": {
+            "flightDaysUsed": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000
+            },
+            "waConversationsUsed": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100000000
+            },
+            "periodStartsAt": {
+              "$ref": "event_common.schema.json#/definitions/timestamp"
+            }
+          }
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
       "$id": "https://catch.app/contracts/callables/admin_list_action_executions_payload.schema.json",
       "title": "AdminListActionExecutionsCallablePayload",
       "type": "object",
@@ -15208,6 +15416,38 @@ const model = {
         },
         "purpose": {
           "$ref": "../operations/event_messaging_setup_review.schema.json#/definitions/purpose"
+        }
+      }
+    },
+    {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "https://catch.app/contracts/callables/admin_revoke_organizer_entitlement_grant_payload.schema.json",
+      "title": "AdminRevokeOrganizerEntitlementGrantCallablePayload",
+      "description": "Admin-authorized revocation of one existing entitlement grant. operationId makes the mutation idempotent across retries; revoke of an unknown or already-revoked grant fails closed.",
+      "type": "object",
+      "additionalProperties": false,
+      "x-owner": "Admin console finance ops",
+      "required": [
+        "organizerId",
+        "operationId",
+        "grantId",
+        "reason"
+      ],
+      "properties": {
+        "organizerId": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        },
+        "operationId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{16,120}$"
+        },
+        "grantId": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
         }
       }
     },
@@ -24723,6 +24963,11 @@ const model = {
       "additionalProperties": true
     },
     {
+      "$id": "https://catch.app/contracts/admin_runtime/adminGrantOrganizerEntitlement_response.schema.json",
+      "type": "object",
+      "additionalProperties": true
+    },
+    {
       "$id": "https://catch.app/contracts/admin_runtime/adminListAdminRoleAssignments_response.schema.json",
       "type": "object",
       "additionalProperties": true
@@ -24764,6 +25009,11 @@ const model = {
     },
     {
       "$id": "https://catch.app/contracts/admin_runtime/adminResolveOrganizerEventLocation_response.schema.json",
+      "type": "object",
+      "additionalProperties": true
+    },
+    {
+      "$id": "https://catch.app/contracts/admin_runtime/adminRevokeOrganizerEntitlementGrant_response.schema.json",
       "type": "object",
       "additionalProperties": true
     },
@@ -24812,6 +25062,7 @@ const model = {
     "adminGetOverview": "https://catch.app/contracts/callables/admin_get_overview_payload.schema.json",
     "adminGetSafetyTriageDetails": "https://catch.app/contracts/callables/admin_get_safety_triage_details_payload.schema.json",
     "adminGetUserAnalytics": "https://catch.app/contracts/callables/user_analytics_query_payload.schema.json",
+    "adminGrantOrganizerEntitlement": "https://catch.app/contracts/callables/admin_grant_organizer_entitlement_payload.schema.json",
     "adminListActionExecutions": "https://catch.app/contracts/callables/admin_list_action_executions_payload.schema.json",
     "adminListAdminRoleAssignments": "https://catch.app/contracts/callables/admin_list_admin_role_assignments_payload.schema.json",
     "adminListCrossPathsShowcaseCandidates": "https://catch.app/contracts/callables/admin_list_cross_paths_showcase_candidates_payload.schema.json",
@@ -24826,6 +25077,7 @@ const model = {
     "adminRecordOrganizerCuration": "https://catch.app/contracts/callables/admin_record_organizer_curation_payload.schema.json",
     "adminResolveOrganizerEventLocation": "https://catch.app/contracts/callables/admin_resolve_organizer_event_location_payload.schema.json",
     "adminReviewEventMessagingBudget": "https://catch.app/contracts/callables/admin_review_event_messaging_budget_payload.schema.json",
+    "adminRevokeOrganizerEntitlementGrant": "https://catch.app/contracts/callables/admin_revoke_organizer_entitlement_grant_payload.schema.json",
     "adminSetAdminUserRoles": "https://catch.app/contracts/callables/admin_set_admin_user_roles_payload.schema.json",
     "adminSetCrossPathsShowcaseEligibility": "https://catch.app/contracts/callables/admin_set_cross_paths_showcase_eligibility_payload.schema.json",
     "adminSetOrganizerIndexStatus": "https://catch.app/contracts/callables/admin_set_club_index_status_payload.schema.json",
@@ -24857,6 +25109,7 @@ const model = {
     "adminGetOverview": "https://catch.app/contracts/callable_responses/admin_get_overview_response.schema.json",
     "adminGetSafetyTriageDetails": "https://catch.app/contracts/admin_runtime/adminGetSafetyTriageDetails_response.schema.json",
     "adminGetUserAnalytics": "https://catch.app/contracts/callable_responses/user_analytics_response.schema.json",
+    "adminGrantOrganizerEntitlement": "https://catch.app/contracts/admin_runtime/adminGrantOrganizerEntitlement_response.schema.json",
     "adminListActionExecutions": "https://catch.app/contracts/callable_responses/admin_list_action_executions_response.schema.json",
     "adminListAdminRoleAssignments": "https://catch.app/contracts/admin_runtime/adminListAdminRoleAssignments_response.schema.json",
     "adminListCrossPathsShowcaseCandidates": "https://catch.app/contracts/callable_responses/admin_list_cross_paths_showcase_candidates_response.schema.json",
@@ -24871,6 +25124,7 @@ const model = {
     "adminRecordOrganizerCuration": "https://catch.app/contracts/admin_runtime/adminRecordOrganizerCuration_response.schema.json",
     "adminResolveOrganizerEventLocation": "https://catch.app/contracts/admin_runtime/adminResolveOrganizerEventLocation_response.schema.json",
     "adminReviewEventMessagingBudget": "https://catch.app/contracts/callable_responses/admin_review_event_messaging_budget_response.schema.json",
+    "adminRevokeOrganizerEntitlementGrant": "https://catch.app/contracts/admin_runtime/adminRevokeOrganizerEntitlementGrant_response.schema.json",
     "adminSetAdminUserRoles": "https://catch.app/contracts/callable_responses/admin_set_admin_user_roles_response.schema.json",
     "adminSetCrossPathsShowcaseEligibility": "https://catch.app/contracts/callable_responses/admin_set_cross_paths_showcase_eligibility_response.schema.json",
     "adminSetOrganizerIndexStatus": "https://catch.app/contracts/admin_runtime/adminSetOrganizerIndexStatus_response.schema.json",
@@ -24902,6 +25156,7 @@ const model = {
     "adminGetOverview",
     "adminGetSafetyTriageDetails",
     "adminGetUserAnalytics",
+    "adminGrantOrganizerEntitlement",
     "adminListActionExecutions",
     "adminListAdminRoleAssignments",
     "adminListCrossPathsShowcaseCandidates",
@@ -24916,6 +25171,7 @@ const model = {
     "adminRecordOrganizerCuration",
     "adminResolveOrganizerEventLocation",
     "adminReviewEventMessagingBudget",
+    "adminRevokeOrganizerEntitlementGrant",
     "adminSetAdminUserRoles",
     "adminSetCrossPathsShowcaseEligibility",
     "adminSetOrganizerIndexStatus",

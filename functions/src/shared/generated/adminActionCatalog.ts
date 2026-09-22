@@ -109,6 +109,24 @@ export const ADMIN_ACTION_CATALOG = {
       "finance"
     ]
   },
+  "finance.grant-organizer-entitlement": {
+    "callable": "adminGrantOrganizerEntitlement",
+    "controlPlane": false,
+    "kind": "mutation",
+    "roles": [
+      "adminOwner",
+      "finance"
+    ]
+  },
+  "finance.revoke-organizer-entitlement-grant": {
+    "callable": "adminRevokeOrganizerEntitlementGrant",
+    "controlPlane": false,
+    "kind": "mutation",
+    "roles": [
+      "adminOwner",
+      "finance"
+    ]
+  },
   "cross-paths-showcase.list": {
     "callable": "adminListCrossPathsShowcaseCandidates",
     "controlPlane": false,

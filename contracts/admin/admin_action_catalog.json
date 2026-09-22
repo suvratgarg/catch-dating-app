@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "catalogVersion": "1.4.0",
-  "updated": "2026-09-16",
+  "catalogVersion": "1.5.0",
+  "updated": "2026-09-22",
   "owner": "operations_platform",
   "program": "catch-admin",
   "actions": [
@@ -146,6 +146,34 @@
       "requestSchema": "contracts/callables/admin_apply_event_messaging_budget_payload.schema.json",
       "summary": "Stage one still-current approved messaging decision as two paused channel ceilings without granting spend, dispatch, or worker activation.",
       "example": {"requestId": "example-budget-application", "decisionId": "message-budget-decision:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "expectedDecisionRevision": 1, "note": "Stage both reviewed ceilings in paused state."}
+    },
+    {
+      "actionId": "finance.grant-organizer-entitlement",
+      "callable": "adminGrantOrganizerEntitlement",
+      "workflowIds": ["finance"],
+      "guiPath": "/finance",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": ["adminOwner", "finance"],
+      "confirmation": "action-and-target",
+      "targetField": "organizerId",
+      "requestSchema": "contracts/callables/admin_grant_organizer_entitlement_payload.schema.json",
+      "summary": "Grant one entitlement SKU to an organizer after manual invoice reconciliation; idempotent on operationId and grants no dispatch authority.",
+      "example": {"organizerId": "example-organizer", "operationId": "example-grant-operation-0001", "sku": "wedding_pro", "unit": "program", "quantityTotal": 1, "source": "manualInvoice", "receiptRef": "invoice-2026-0042", "note": "Manual invoice INV-2026-0042 reconciled."}
+    },
+    {
+      "actionId": "finance.revoke-organizer-entitlement-grant",
+      "callable": "adminRevokeOrganizerEntitlementGrant",
+      "workflowIds": ["finance"],
+      "guiPath": "/finance",
+      "kind": "mutation",
+      "risk": "high",
+      "roles": ["adminOwner", "finance"],
+      "confirmation": "action-and-target",
+      "targetField": "grantId",
+      "requestSchema": "contracts/callables/admin_revoke_organizer_entitlement_grant_payload.schema.json",
+      "summary": "Revoke one existing entitlement grant for an organizer; idempotent on operationId and fails closed on unknown or already-revoked grants.",
+      "example": {"organizerId": "example-organizer", "operationId": "example-revoke-operation-0001", "grantId": "grant_example-grant-operation-0001", "reason": "Invoice INV-2026-0042 was reversed before activation."}
     },
     {
       "actionId": "cross-paths-showcase.list",
@@ -600,7 +628,7 @@
     {"workflowId": "external-events", "label": "External events", "guiPath": "/events/external", "actions": ["external-events.list", "external-events.readiness", "external-events.publish", "external-events.takedown"]},
     {"workflowId": "users", "label": "Users", "guiPath": "/users", "actions": ["analytics.user"]},
     {"workflowId": "cross-paths-showcase", "label": "Cross Paths showcase", "guiPath": "/cross-paths", "actions": ["cross-paths-showcase.list", "cross-paths-showcase.set-eligibility"]},
-    {"workflowId": "finance", "label": "Finance", "guiPath": "/finance", "actions": ["overview.get", "analytics.host", "finance.review-event-messaging-budget", "finance.decide-event-messaging-budget", "finance.stage-event-messaging-budget"], "blockedCapabilities": ["retry_payment", "refund", "payout_mutation", "settlement_mutation", "messaging_budget_activation"]},
+    {"workflowId": "finance", "label": "Finance", "guiPath": "/finance", "actions": ["overview.get", "analytics.host", "finance.review-event-messaging-budget", "finance.decide-event-messaging-budget", "finance.stage-event-messaging-budget", "finance.grant-organizer-entitlement", "finance.revoke-organizer-entitlement-grant"], "blockedCapabilities": ["retry_payment", "refund", "payout_mutation", "settlement_mutation", "messaging_budget_activation"]},
     {"workflowId": "data-quality", "label": "Data quality", "guiPath": "/quality", "actions": ["overview.get", "analytics.host", "marketing.get", "event-intake.get", "external-events.readiness"]},
     {"workflowId": "admin-roles", "label": "Admin roles", "guiPath": "/admin-roles", "actions": ["admin-roles.list", "admin-roles.get", "admin-roles.set"]},
     {"workflowId": "agent-activity", "label": "Agent activity", "guiPath": "/operations", "actions": ["operations.list-executions"]}
