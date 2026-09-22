@@ -23,6 +23,13 @@ import {
   fetchFlightStatus,
 } from "./aeroDataBox";
 import {
+  createFlightSubscription,
+  defaultAlertBaseUrl,
+  deleteFlightSubscription,
+  flightWebhookSecret,
+  syncLegAlertSubscription,
+} from "./flightAlerts";
+import {
   refreshDueFlightLegs,
   refreshTravelLegForRequest,
   FlightRefreshDeps,
@@ -39,6 +46,14 @@ const defaultRefreshDeps: RefreshDeps = {
   now: () => new Date(),
   apiKey: () => aeroDataBoxApiKey.value(),
   fetchStatus: fetchFlightStatus,
+  syncAlert: (legRef, leg, tier, legId) => syncLegAlertSubscription(
+    legRef, leg, tier, legId, {
+      apiKey: () => aeroDataBoxApiKey.value(),
+      secret: () => flightWebhookSecret.value(),
+      baseUrl: defaultAlertBaseUrl,
+      createSubscription: createFlightSubscription,
+      deleteSubscription: deleteFlightSubscription,
+    }),
 };
 
 export async function refreshProgramTravelLegHandler(
@@ -82,7 +97,7 @@ export const refreshProgramFlightStatuses = onSchedule(
   {
     schedule: "every 15 minutes",
     timeZone: "Asia/Kolkata",
-    secrets: [aeroDataBoxApiKey],
+    secrets: [aeroDataBoxApiKey, flightWebhookSecret],
   },
   async () => {
     const summary = await refreshDueFlightLegs(

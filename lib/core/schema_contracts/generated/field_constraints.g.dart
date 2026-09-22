@@ -90335,6 +90335,12 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
+  static const programTravelLegDocumentFlightAlertSubscriptionId = CatchContractFieldConstraints(
+    path: 'programTravelLegDocument.flightAlertSubscriptionId',
+    maxLength: 128,
+    valueTypes: <String>['string'],
+  );
+
   static const programTravelLegDocumentFlightInstanceId = CatchContractFieldConstraints(
     path: 'programTravelLegDocument.flightInstanceId',
     maxLength: 180,
@@ -118781,6 +118787,7 @@ abstract final class CatchContractConstraints {
     'programTravelLegDocument.destinationLabel': programTravelLegDocumentDestinationLabel,
     'programTravelLegDocument.estimatedArrivalAt._nanoseconds': programTravelLegDocumentEstimatedArrivalAtNanoseconds,
     'programTravelLegDocument.estimatedArrivalAt._seconds': programTravelLegDocumentEstimatedArrivalAtSeconds,
+    'programTravelLegDocument.flightAlertSubscriptionId': programTravelLegDocumentFlightAlertSubscriptionId,
     'programTravelLegDocument.flightInstanceId': programTravelLegDocumentFlightInstanceId,
     'programTravelLegDocument.flightNextRefreshAt._nanoseconds': programTravelLegDocumentFlightNextRefreshAtNanoseconds,
     'programTravelLegDocument.flightNextRefreshAt._seconds': programTravelLegDocumentFlightNextRefreshAtSeconds,

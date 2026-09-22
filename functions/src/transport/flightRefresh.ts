@@ -126,6 +126,13 @@ export interface FlightRefreshDeps {
   now: () => Date;
   apiKey: () => string;
   fetchStatus: typeof fetchFlightStatus;
+  /** Webhook subscription plumbing; omitted in tests and dry contexts. */
+  syncAlert?: (
+    legRef: FirebaseFirestore.DocumentReference,
+    leg: ProgramTravelLegDocument,
+    tier: FlightRefreshTier,
+    legId: string,
+  ) => Promise<void>;
 }
 
 export type RefreshOutcome =
@@ -144,6 +151,7 @@ export async function refreshTravelLeg(
   const tier = flightRefreshTier(leg, nowMillis);
   if (tier === "settled") {
     await legRef.update({flightNextRefreshAt: null});
+    await deps.syncAlert?.(legRef, leg, "settled", legId);
     return "settled";
   }
 
@@ -182,6 +190,25 @@ export async function refreshTravelLeg(
     return "failed";
   }
 
+  const nextTier = await writeFlightSnapshot(legRef, leg, patch, nowMillis);
+  await deps.syncAlert?.(
+    legRef, {...leg, ...patch} as ProgramTravelLegDocument,
+    nextTier, legId);
+  return "updated";
+}
+
+/**
+ * Persists a provider-derived patch onto a leg: recomputes the refresh
+ * cadence for the merged doc, bumps revision, and stamps the update.
+ * Shared by the polling sweep and the webhook receiver so both paths
+ * honour the same write-back guards.
+ */
+export async function writeFlightSnapshot(
+  legRef: FirebaseFirestore.DocumentReference,
+  leg: ProgramTravelLegDocument,
+  patch: Partial<ProgramTravelLegDocument>,
+  nowMillis: number,
+): Promise<FlightRefreshTier> {
   const nextTier = flightRefreshTier(
     {...leg, ...patch} as ProgramTravelLegDocument, nowMillis);
   const delay = TIER_DELAY_MILLIS[nextTier];
@@ -190,7 +217,7 @@ export async function refreshTravelLeg(
   patch.updatedAt = admin.firestore.Timestamp.fromMillis(nowMillis);
   patch.revision = (leg.revision ?? 0) + 1;
   await legRef.update(patch);
-  return "updated";
+  return nextTier;
 }
 
 export async function refreshDueFlightLegs(

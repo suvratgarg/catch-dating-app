@@ -118308,6 +118308,14 @@ export const programTravelLegDocumentSchema = {
         }
       ],
       "description": "Scheduler cursor: refresh once this passes. Null for non-flight or terminal-state legs."
+    },
+    "flightAlertSubscriptionId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 128,
+      "description": "AeroDataBox webhook subscription bound to this leg while it is in the hot refresh window; null once settled or unsubscribed."
     }
   }
 };

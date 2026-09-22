@@ -20,7 +20,11 @@ export interface FlightStatusSnapshot {
 
 export type FetchImpl = (
   url: string,
-  init: {headers: Record<string, string>},
+  init: {
+    headers: Record<string, string>;
+    method?: string;
+    body?: string;
+  },
 ) => Promise<{status: number; json: () => Promise<unknown>}>;
 
 interface MovementTime {
@@ -97,6 +101,18 @@ export async function fetchFlightStatus({
   const flights = (await response.json()) as AeroDataBoxFlight[];
   const flight = flights.find((item) => item?.arrival) ?? flights[0];
   if (!flight) return null;
+  return normalizeAeroFlight(flight);
+}
+
+/**
+ * Normalizes one AeroDataBox flight object (from a status response or a
+ * webhook push) into the leg write-back shape. Returns null when the
+ * object is not a flight record at all.
+ */
+export function normalizeAeroFlight(
+  flight: AeroDataBoxFlight | undefined,
+): FlightStatusSnapshot | null {
+  if (!flight || typeof flight !== "object") return null;
   const arrival = flight.arrival ?? {};
   return {
     status: statusMap[flight.status ?? "Unknown"] ?? "unknown",
@@ -109,4 +125,16 @@ export async function fetchFlightStatus({
     baggageBelt: arrival.baggageBelt ?? null,
     providerUpdatedAtMillis: millis(flight.lastUpdatedUtc),
   };
+}
+
+/**
+ * The provider-facing flight number a webhook push or subscription
+ * identifies, e.g. `flight.number` ("AI 847") or `flight.callSign`.
+ */
+export function aeroFlightNumber(flight: unknown): string | null {
+  if (!flight || typeof flight !== "object") return null;
+  const record = flight as {number?: unknown; callSign?: unknown};
+  const raw = typeof record.number === "string" ? record.number :
+    typeof record.callSign === "string" ? record.callSign : null;
+  return raw ? normalizeFlightNumber(raw) : null;
 }
