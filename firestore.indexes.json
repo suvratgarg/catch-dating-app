@@ -2055,6 +2055,34 @@
           "order": "DESCENDING"
         }
       ]
+    },
+    {
+      "collectionGroup": "transportTrips",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "programId", "order": "ASCENDING"},
+        {"fieldPath": "pickupPointId", "order": "ASCENDING"},
+        {"fieldPath": "departedAt", "order": "DESCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "transportTrips",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "programId", "order": "ASCENDING"},
+        {"fieldPath": "destinationHotelId", "order": "ASCENDING"},
+        {"fieldPath": "departedAt", "order": "DESCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "transportTrips",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "programId", "order": "ASCENDING"},
+        {"fieldPath": "pickupPointId", "order": "ASCENDING"},
+        {"fieldPath": "destinationHotelId", "order": "ASCENDING"},
+        {"fieldPath": "departedAt", "order": "DESCENDING"}
+      ]
     }
   ],
   "fieldOverrides": [

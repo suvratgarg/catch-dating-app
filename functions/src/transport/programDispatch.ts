@@ -1,26 +1,9 @@
-/* firestore-index: transportTrips (
-  programId:ASCENDING,
-  destinationHotelId:ASCENDING,
-  status:ASCENDING,
-  departedAt:ASCENDING
-) */
-/* firestore-index: programTravelLegs (
-  programId:ASCENDING,
-  destinationHotelId:ASCENDING,
-  readiness:ASCENDING
-) */
-/* firestore-index: transportTrips (
-  programId:ASCENDING,
-  departedAt:DESCENDING
-) */
 import * as admin from "firebase-admin";
 import {CallableRequest, HttpsError, onCall} from
   "firebase-functions/v2/https";
 import {requireAuth} from "../shared/auth";
 import {appCheckCallableOptionsWithLimits} from "../shared/callableOptions";
-import {checkRateLimit} from "../shared/rateLimit";
 import {validateCallableWithAjv} from "../shared/validation";
-import {staffTimestampMillis} from "../shared/eventOperatorAuthority";
 import {
   assertRevision,
   dutyAssignments,
@@ -29,14 +12,10 @@ import {
   nextRevision,
   requireProgramAccess,
 } from "../shared/programAuthority";
-import type {ProgramDutyAssignment} from "../shared/programAuthority";
 import {hashRequest} from "../shared/programOperationHash";
-import {legTiming} from "./programArrivals";
 import type {
-  ProgramGuestDocument,
   ProgramHotelDocument,
   ProgramTravelLegDocument,
-  ProgramTravelPartyDocument,
   TransportActiveAssignmentDocument,
   TransportOperationReceiptDocument,
   TransportTripDocument,
@@ -46,46 +25,22 @@ import type {DispatchProgramTripCallablePayload} from
   "../shared/generated/dispatchProgramTripCallablePayload";
 import type {ProgramTripActionCallablePayload} from
   "../shared/generated/programTripActionCallablePayload";
-import type {GetProgramHotelInboundCallablePayload} from
-  "../shared/generated/getProgramHotelInboundCallablePayload";
-import type {ProgramIdCallablePayload} from
-  "../shared/generated/programIdCallablePayload";
 import type {DispatchProgramTripCallableResponse} from
   "../shared/generated/dispatchProgramTripCallableResponse";
-import type {ProgramHotelInboundCallableResponse} from
-  "../shared/generated/programHotelInboundCallableResponse";
 import type {ProgramMutationCallableResponse} from
   "../shared/generated/programMutationCallableResponse";
-import type {ProgramTripListCallableResponse} from
-  "../shared/generated/programTripListCallableResponse";
 import {
   validateDispatchProgramTripCallablePayload,
 } from "../shared/generated/validators/dispatchProgramTripInput";
 import {
   validateProgramTripActionCallablePayload,
 } from "../shared/generated/validators/programTripActionInput";
-import {
-  validateGetProgramHotelInboundCallablePayload,
-} from "../shared/generated/validators/getProgramHotelInboundInput";
-import {
-  validateProgramIdCallablePayload,
-} from "../shared/generated/validators/programIdInput";
 
-interface DispatchDeps {
-  firestore: () => FirebaseFirestore.Firestore;
-  checkRateLimit: typeof checkRateLimit;
-  now: () => FirebaseFirestore.Timestamp;
-}
-
-const defaultDeps: DispatchDeps = {
-  firestore: () => admin.firestore(),
-  checkRateLimit,
-  now: () => admin.firestore.Timestamp.now(),
-};
+import {defaultProgramDataDeps} from "../shared/programDataDeps";
+import type {ProgramDataDeps} from "../shared/programDataDeps";
 
 const dispatchCallableLimits = {timeoutSeconds: 60, maxInstances: 40};
 const receiptRetentionMillis = 7 * 24 * 60 * 60 * 1000;
-const tripListCap = 200;
 
 export function transportAssignmentId(programId: string,
   legId: string): string {
@@ -98,7 +53,7 @@ export function normalizePlate(plate: string): string {
 
 export async function dispatchProgramTripHandler(
   request: CallableRequest<unknown>,
-  deps: DispatchDeps = defaultDeps
+  deps: ProgramDataDeps = defaultProgramDataDeps
 ): Promise<DispatchProgramTripCallableResponse> {
   const actorUid = requireAuth(request);
   const data = validateCallableWithAjv<DispatchProgramTripCallablePayload>(
@@ -319,7 +274,7 @@ export async function dispatchProgramTripHandler(
 async function tripActionHandler(
   request: CallableRequest<unknown>,
   action: "markArrived" | "void",
-  deps: DispatchDeps = defaultDeps
+  deps: ProgramDataDeps = defaultProgramDataDeps
 ): Promise<ProgramMutationCallableResponse> {
   const actorUid = requireAuth(request);
   const data = validateCallableWithAjv<ProgramTripActionCallablePayload>(
@@ -457,7 +412,7 @@ async function tripActionHandler(
 
 export async function markProgramTripArrivedHandler(
   request: CallableRequest<unknown>,
-  deps: DispatchDeps = defaultDeps
+  deps: ProgramDataDeps = defaultProgramDataDeps
 ): Promise<ProgramMutationCallableResponse> {
   const actorUid = requireAuth(request);
   await deps.checkRateLimit(
@@ -467,223 +422,12 @@ export async function markProgramTripArrivedHandler(
 
 export async function voidProgramTripHandler(
   request: CallableRequest<unknown>,
-  deps: DispatchDeps = defaultDeps
+  deps: ProgramDataDeps = defaultProgramDataDeps
 ): Promise<ProgramMutationCallableResponse> {
   const actorUid = requireAuth(request);
   await deps.checkRateLimit(
     deps.firestore(), actorUid, "voidProgramTrip");
   return tripActionHandler(request, "void", deps);
-}
-
-export async function getProgramHotelInboundHandler(
-  request: CallableRequest<unknown>,
-  deps: DispatchDeps = defaultDeps
-): Promise<ProgramHotelInboundCallableResponse> {
-  const actorUid = requireAuth(request);
-  const data =
-    validateCallableWithAjv<GetProgramHotelInboundCallablePayload>(
-      request, validateGetProgramHotelInboundCallablePayload,
-      normalizePayload);
-  const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "getProgramHotelInbound");
-  const access = await requireProgramAccess({
-    db, programId: data.programId, actorUid, now: deps.now(),
-  });
-  if (access.role !== "manager") {
-    const hotelDuties = dutyAssignments(access, "hotelDesk");
-    if (!dutyCoversHotel(hotelDuties, data.hotelId)) {
-      throw new HttpsError(
-        "permission-denied",
-        "This hotel is outside your assigned scope.");
-    }
-  }
-  const hotelSnap = await db.collection("programHotels")
-    .doc(data.hotelId).get();
-  const hotel = hotelSnap.data() as ProgramHotelDocument | undefined;
-  if (!hotel || hotel.programId !== data.programId) {
-    throw new HttpsError("not-found", "Hotel not found in this program.");
-  }
-  const [tripsSnap, legsSnap] = await Promise.all([
-    db.collection("transportTrips")
-      .where("programId", "==", data.programId)
-      .where("destinationHotelId", "==", data.hotelId)
-      .where("status", "==", "enRoute")
-      .orderBy("departedAt")
-      .limit(tripListCap)
-      .get(),
-    db.collection("programTravelLegs")
-      .where("programId", "==", data.programId)
-      .where("destinationHotelId", "==", data.hotelId)
-      .where("readiness", "in", ["expected", "ready"])
-      .limit(500)
-      .get(),
-  ]);
-  const legs = new Map<string, ProgramTravelLegDocument>();
-  const guestIds = new Set<string>();
-  for (const doc of legsSnap.docs) {
-    const leg = doc.data() as ProgramTravelLegDocument;
-    legs.set(doc.id, leg);
-    guestIds.add(leg.guestId);
-  }
-  const trips = tripsSnap.docs.map((doc) => ({
-    id: doc.id, doc: doc.data() as TransportTripDocument}));
-  for (const trip of trips) {
-    for (const legId of trip.doc.legIds) {
-      const legSnap = await db.collection("programTravelLegs")
-        .doc(legId).get();
-      const leg = legSnap.data() as ProgramTravelLegDocument | undefined;
-      if (leg && leg.programId === data.programId) {
-        legs.set(legId, leg);
-        guestIds.add(leg.guestId);
-      }
-    }
-  }
-  const partyIds = [...new Set([...legs.values()]
-    .map((leg) => leg.partyId)
-    .filter((id): id is string => id !== null))];
-  const [guestSnaps, partySnaps] = await Promise.all([
-    Promise.all([...guestIds].map((id) =>
-      db.collection("programGuests").doc(id).get())),
-    Promise.all(partyIds.map((id) =>
-      db.collection("programTravelParties").doc(id).get())),
-  ]);
-  const guests = new Map<string, ProgramGuestDocument>();
-  for (const snap of guestSnaps) {
-    const guest = snap.data() as ProgramGuestDocument | undefined;
-    if (guest && guest.programId === data.programId) {
-      guests.set(snap.id, guest);
-    }
-  }
-  const parties = new Map<string, ProgramTravelPartyDocument>();
-  for (const snap of partySnaps) {
-    const party = snap.data() as ProgramTravelPartyDocument | undefined;
-    if (party && party.programId === data.programId) {
-      parties.set(snap.id, party);
-    }
-  }
-  const settings = access.program.transportSettings;
-  const now = deps.now();
-  return {
-    programId: data.programId,
-    hotelId: data.hotelId,
-    hotelName: hotel.name,
-    generatedAtMillis: now.toMillis(),
-    trips: trips.map((trip) => ({
-      tripId: trip.id,
-      plateDisplay: trip.doc.plateDisplay,
-      vehicleClassId: trip.doc.vehicleClassId,
-      vendorName: trip.doc.vendorNameSnapshot,
-      departedAtMillis: staffTimestampMillis(trip.doc.departedAt),
-      estimatedArriveAtMillis: null,
-      passengerCount: trip.doc.passengerCount,
-      guestNames: trip.doc.legIds
-        .map((legId) => legs.get(legId)?.guestId)
-        .map((guestId) => guestId ? guests.get(guestId)?.displayName :
-          undefined)
-        .filter((name): name is string => name !== undefined),
-      status: trip.doc.status,
-      revision: trip.doc.revision,
-    })),
-    expectedLegs: legsSnap.docs.map((doc) => {
-      const leg = legs.get(doc.id)!;
-      const timing = legTiming(leg, settings);
-      return {
-        legId: doc.id,
-        guestDisplayName: guests.get(leg.guestId)?.displayName ?? "Guest",
-        partyLabel: leg.partyId ? parties.get(leg.partyId)?.label ??
-          null : null,
-        passengers: leg.passengers,
-        curbAtMillis: timing.kind === "available" ?
-          timing.curbAtMillis : null,
-        readiness: leg.readiness,
-      };
-    }),
-  };
-}
-
-export async function listProgramTripsHandler(
-  request: CallableRequest<unknown>,
-  deps: DispatchDeps = defaultDeps
-): Promise<ProgramTripListCallableResponse> {
-  const actorUid = requireAuth(request);
-  const data = validateCallableWithAjv<ProgramIdCallablePayload>(
-    request, validateProgramIdCallablePayload, normalizePayload);
-  const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "listProgramTrips");
-  const access = await requireProgramAccess({
-    db, programId: data.programId, actorUid, now: deps.now(),
-  });
-  if (access.role !== "manager") {
-    const duties: ProgramDutyAssignment[] = [
-      ...dutyAssignments(access, "reconciliationViewer"),
-      ...dutyAssignments(access, "transportDispatcher"),
-    ];
-    if (duties.length === 0) {
-      throw new HttpsError(
-        "permission-denied",
-        "This account has no reconciliation or dispatcher duty.");
-    }
-  }
-  const tripsSnap = await db.collection("transportTrips")
-    .where("programId", "==", data.programId)
-    .orderBy("departedAt", "desc")
-    .limit(tripListCap)
-    .get();
-  const guestIds = new Set<string>();
-  const legIds = new Set<string>();
-  for (const doc of tripsSnap.docs) {
-    for (const legId of (doc.data() as TransportTripDocument).legIds) {
-      legIds.add(legId);
-    }
-  }
-  const legSnaps = await Promise.all([...legIds].map((id) =>
-    db.collection("programTravelLegs").doc(id).get()));
-  const legs = new Map<string, ProgramTravelLegDocument>();
-  for (const snap of legSnaps) {
-    const leg = snap.data() as ProgramTravelLegDocument | undefined;
-    if (leg && leg.programId === data.programId) {
-      legs.set(snap.id, leg);
-      guestIds.add(leg.guestId);
-    }
-  }
-  const guestSnaps = await Promise.all([...guestIds].map((id) =>
-    db.collection("programGuests").doc(id).get()));
-  const guests = new Map<string, ProgramGuestDocument>();
-  for (const snap of guestSnaps) {
-    const guest = snap.data() as ProgramGuestDocument | undefined;
-    if (guest && guest.programId === data.programId) {
-      guests.set(snap.id, guest);
-    }
-  }
-  return {
-    programId: data.programId,
-    trips: tripsSnap.docs.map((doc) => {
-      const trip = doc.data() as TransportTripDocument;
-      return {
-        tripId: doc.id,
-        pickupPointId: trip.pickupPointId,
-        destinationHotelId: trip.destinationHotelId,
-        destinationLabel: trip.destinationLabel ?? "Unassigned",
-        vehicleClassId: trip.vehicleClassId,
-        plateDisplay: trip.plateDisplay,
-        vendorId: trip.vendorId,
-        vendorName: trip.vendorNameSnapshot,
-        kind: trip.kind,
-        status: trip.status,
-        passengerCount: trip.passengerCount,
-        departedAtMillis: staffTimestampMillis(trip.departedAt),
-        arrivedAtMillis: trip.arrivedAt ?
-          staffTimestampMillis(trip.arrivedAt) : null,
-        voidReason: trip.voidReason,
-        guestNames: trip.legIds
-          .map((legId) => legs.get(legId)?.guestId)
-          .map((guestId) => guestId ? guests.get(guestId)?.displayName :
-            undefined)
-          .filter((name): name is string => name !== undefined),
-        revision: trip.revision,
-      };
-    }),
-  };
 }
 
 function normalizePayload(value: unknown): unknown {
@@ -714,11 +458,5 @@ export const voidProgramTrip = onCall(
   appCheckCallableOptionsWithLimits(dispatchCallableLimits),
   (request) => voidProgramTripHandler(request)
 );
-export const getProgramHotelInbound = onCall(
-  appCheckCallableOptionsWithLimits(dispatchCallableLimits),
-  (request) => getProgramHotelInboundHandler(request)
-);
-export const listProgramTrips = onCall(
-  appCheckCallableOptionsWithLimits(dispatchCallableLimits),
-  (request) => listProgramTripsHandler(request)
-);
+export {getProgramHotelInbound, getProgramHotelInboundHandler,
+  listProgramTrips, listProgramTripsHandler} from "./programTripReads";
