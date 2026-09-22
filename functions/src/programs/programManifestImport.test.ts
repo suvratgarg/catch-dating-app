@@ -15,6 +15,9 @@ type FakeData = Record<string, unknown>;
 class FakeDocRef {
   constructor(private readonly store: MiniFirestore,
     readonly path: string) {}
+  get id() {
+    return this.path.split("/").pop()!;
+  }
   async get() {
     const data = this.store.docs.get(this.path);
     return {exists: data !== undefined, data: () => data,
@@ -24,6 +27,7 @@ class FakeDocRef {
 
 class MiniFirestore {
   readonly docs = new Map<string, FakeData>();
+  private nextId = 0;
   constructor(seed: Record<string, FakeData>) {
     for (const [k, v] of Object.entries(seed)) this.docs.set(k, v);
   }
@@ -33,7 +37,7 @@ class MiniFirestore {
   collection(path: string) {
     return {
       doc: (id?: string) =>
-        new FakeDocRef(this, `${path}/${id ?? `auto-${this.docs.size}`}`),
+        new FakeDocRef(this, `${path}/${id ?? `auto-${++this.nextId}`}`),
       where: (field: string, op: string, value: unknown) => ({
         get: async () => {
           const prefix = `${path}/`;
@@ -239,4 +243,63 @@ test("staff without coordinator duty cannot import", async () => {
     (error: unknown) =>
       error instanceof Error && error.message.includes("programCoordinator"),
   );
+});
+
+test("multirow imports create distinct people and complete group membership",
+  async () => {
+    const store = new MiniFirestore(seed());
+    await importProgramManifestHandler(request({
+      programId: "program-1", mode: "commit",
+      clientOperationId: "import-multirow-0001",
+      rows: [row, {...row, displayName: "Priya Sharma"}],
+    }), deps(store));
+    const entries = (collection: string) => [...store.docs.entries()]
+      .filter(([key]) => key.startsWith(`${collection}/`));
+    const guests = entries("programGuests");
+    const legs = entries("programTravelLegs");
+    assert.equal(guests.length, 2);
+    assert.equal(legs.length, 2);
+    const ids = guests.map(([key]) => key.split("/").pop()).sort();
+    assert.deepEqual(entries("programHouseholds")[0][1].memberGuestIds, ids);
+    assert.deepEqual(entries("programTravelParties")[0][1].memberGuestIds, ids);
+    assert.deepEqual(legs.map(([, leg]) => leg.guestId).sort(), ids);
+  });
+
+test("different external references preserve distinct same-name guests",
+  async () => {
+    const store = new MiniFirestore(seed());
+    for (const externalReference of ["person-A", "person-B"]) {
+      await importProgramManifestHandler(request({
+        programId: "program-1", mode: "commit",
+        clientOperationId: `import-${externalReference}`,
+        rows: [{...row, externalReference}],
+      }), deps(store));
+    }
+    const guests = [...store.docs.entries()]
+      .filter(([key]) => key.startsWith("programGuests/"));
+    assert.deepEqual(guests.map(([, guest]) => guest.externalReference).sort(),
+      ["person-A", "person-B"]);
+    const ambiguous = await importProgramManifestHandler(request({
+      programId: "program-1", mode: "preview",
+      clientOperationId: "import-ambiguous", rows: [row],
+    }), deps(store));
+    assert.equal(ambiguous.guestsUpdated, 0);
+    assert.match(ambiguous.rowErrors[0].message, /Ambiguous/);
+  });
+
+test("an existing name alone never authorizes a guest merge", async () => {
+  const store = new MiniFirestore(seed());
+  await importProgramManifestHandler(request({
+    programId: "program-1", mode: "commit",
+    clientOperationId: "import-original",
+    rows: [row],
+  }), deps(store));
+  const result = await importProgramManifestHandler(request({
+    programId: "program-1", mode: "commit",
+    clientOperationId: "import-name-only",
+    rows: [{displayName: row.displayName, phoneE164: "+919999999999"}],
+  }), deps(store));
+  assert.equal(result.guestsUpdated, 0);
+  assert.equal(result.guestsCreated, 0);
+  assert.match(result.rowErrors[0].message, /Name alone/);
 });

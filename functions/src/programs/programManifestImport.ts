@@ -97,9 +97,8 @@ async function listByProgram<T>(
 
 /**
  * Dedup keys: externalReference wins; a flight leg keys on
- * name + flight + arrival day; a flightless row keys on name alone only when
- * it cannot be ambiguous. Same-name rows without references are errors, not
- * merges — the PRD forbids phone/name-based person merging.
+ * name + flight + arrival day only when exactly one candidate exists.
+ * Name-only matches require review and never merge people.
  */
 function guestDedupKey(row: ManifestRow): {
   key: string; ambiguous: boolean;
@@ -136,6 +135,7 @@ function buildPlans(
   const issues: RowIssue[] = [];
   const plans: RowPlan[] = [];
   const seenKeys = new Set<string>();
+  const selectedGuests = new Set<string>();
   const householdByLabel = new Map<string, string>();
   const partyByLabel = new Map<string, string>();
   const hotelByName = new Map<string, string>();
@@ -160,11 +160,12 @@ function buildPlans(
     if (label && !pickupByLabel.has(label)) pickupByLabel.set(label, id);
   }
 
-  const guestsByRef = new Map<string, string>();
+  const guestsByRef = new Map<string, string[]>();
   const guestsByName = new Map<string, string[]>();
   for (const [id, guest] of guests) {
     if (guest.externalReference) {
-      guestsByRef.set(`ref:${guest.externalReference}`, id);
+      const key = `ref:${guest.externalReference}`;
+      guestsByRef.set(key, [...(guestsByRef.get(key) ?? []), id]);
     }
     const name = normalizeLabel(guest.displayName);
     if (name) {
@@ -200,28 +201,38 @@ function buildPlans(
     }
     seenKeys.add(dedup.key);
 
-    let guestId = dedup.key.startsWith("ref:") ?
-      guestsByRef.get(dedup.key) : undefined;
-    // A referenced row that misses still falls back to name+flight+day so
-    // re-imports converge onto guests created before the reference existed.
-    if (!guestId && row.flightNumber) {
+    if (!row.displayName.trim()) rowErrors.push("Guest name is required.");
+    const referenceMatches = dedup.key.startsWith("ref:") ?
+      guestsByRef.get(dedup.key) ?? [] : [];
+    let guestId = referenceMatches.length === 1 ?
+      referenceMatches[0] : undefined;
+    if (referenceMatches.length > 1) {
+      rowErrors.push("Multiple guests share this reference; resolve it first.");
+    }
+    // A new upstream reference may adopt exactly one unreferenced guest.
+    // It must never overwrite a different reference or choose an arbitrary
+    // same-name person. Flight-only evidence also requires a service date.
+    if (!guestId && referenceMatches.length === 0 && row.flightNumber &&
+        row.scheduledArrivalAtMillis != null) {
       const name = normalizeLabel(row.displayName)!;
       const flight = normalizeFlightNumber(row.flightNumber)!;
       const day = arrivalDayBucket(row.scheduledArrivalAtMillis);
-      for (const id of guestsByName.get(name) ?? []) {
-        if (legsByGuestFlight.has(`${id}|${flight}|${day}`)) {
-          guestId = id;
-          break;
-        }
-      }
-    }
-    if (!guestId && dedup.ambiguous) {
-      const candidates = guestsByName.get(dedup.key.slice(5)) ?? [];
+      const candidates = (guestsByName.get(name) ?? []).filter((id) =>
+        (!row.externalReference || !guests.get(id)!.externalReference) &&
+        legsByGuestFlight.has(`${id}|${flight}|${day}`));
       if (candidates.length === 1) guestId = candidates[0];
       if (candidates.length > 1) {
-        rowErrors.push(
-          "Multiple existing guests share this name; use externalReference.");
+        rowErrors.push("Ambiguous guest and flight; use externalReference.");
       }
+    }
+    if (!guestId && !row.externalReference &&
+        (!row.flightNumber || row.scheduledArrivalAtMillis == null) &&
+        (guestsByName.get(normalizeLabel(row.displayName)!) ?? []).length > 0) {
+      rowErrors.push(
+        "Name alone cannot identify a guest; use externalReference.");
+    }
+    if (guestId && selectedGuests.has(guestId)) {
+      rowErrors.push("Multiple rows target the same guest; resolve the rows.");
     }
     if (guestId) {
       plan.guestId = guestId;
@@ -294,6 +305,7 @@ function buildPlans(
     if (!plan.guestId) {
       plan.guestId = db.collection("programGuests").doc().id;
     }
+    selectedGuests.add(plan.guestId);
     plans.push(plan);
   }
   return {plans, issues, newHouseholds, newParties, newLabels};
@@ -389,8 +401,8 @@ export async function importProgramManifestHandler(
       phoneE164: row.phoneE164 === undefined ?
         existing?.phoneE164 ?? null : row.phoneE164,
       email: row.email === undefined ? existing?.email ?? null : row.email,
-      externalReference: row.externalReference === undefined ?
-        existing?.externalReference ?? null : row.externalReference,
+      externalReference: row.externalReference ||
+        existing?.externalReference || null,
       invitationStatus: existing?.invitationStatus ?? "notInvited",
       rsvpStatus: existing?.rsvpStatus ?? "pending",
       source: existing?.source ?? "import",
@@ -439,6 +451,8 @@ export async function importProgramManifestHandler(
         flightInstanceId: existingLeg?.flightInstanceId ?? null,
         arrivalTerminal: existingLeg?.arrivalTerminal ?? null,
         flightRefreshedAt: existingLeg?.flightRefreshedAt ?? null,
+        flightAlertSubscriptionId:
+          existingLeg?.flightAlertSubscriptionId ?? null,
         flightNextRefreshAt: nextFlightRefreshAt(
           row.flightNumber !== undefined ?
             normalizeFlightNumber(row.flightNumber) :
@@ -513,7 +527,7 @@ export async function importProgramManifestHandler(
   }
   // Existing households/parties gain new members without losing old ones.
   for (const [householdId, members] of householdMembers) {
-    if (newHouseholds.has(householdId)) continue;
+    if (!households.has(householdId)) continue;
     const existing = households.get(householdId)!;
     const merged = new Set<string>(existing.memberGuestIds);
     for (const guestId of members) merged.add(guestId);
@@ -526,7 +540,7 @@ export async function importProgramManifestHandler(
     }
   }
   for (const [partyId, members] of partyMembers) {
-    if (newParties.has(partyId)) continue;
+    if (!parties.has(partyId)) continue;
     const existing = parties.get(partyId)!;
     const merged = new Set<string>(existing.memberGuestIds);
     for (const guestId of members) merged.add(guestId);
