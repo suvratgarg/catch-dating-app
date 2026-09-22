@@ -1,0 +1,25 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/program_id_payload.schema.json",
+  "title": "ProgramIdCallablePayload",
+  "description": "Program-scoped read payload shared by simple program callables.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-callable-aliases": [
+    "getOrganizerProgram",
+    "getProgramWorkAccess",
+    "listProgramStaff",
+    "listProgramHouseholds",
+    "listProgramTrips"
+  ],
+  "required": [
+    "programId"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+}

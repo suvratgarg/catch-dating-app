@@ -8452,6 +8452,10 @@ export interface ProgramTravelLegDocument {
    * Resolved provider flight instance once flight tracking ships; null for manual entries.
    */
   flightInstanceId: string | null;
+  /**
+   * True for international sectors; selects the program's international exit lag. Null/false uses the domestic lag.
+   */
+  international?: boolean | null;
   pickupPointId: string | null;
   destinationHotelId: string | null;
   /**
@@ -8573,6 +8577,14 @@ export interface TransportTripDocument {
   departedAt: FirebaseFirestore.Timestamp;
   departedByUid: string;
   arrivedAt: FirebaseFirestore.Timestamp | null;
+  /**
+   * Dispatcher/manager who voided the trip.
+   */
+  voidedByUid: string | null;
+  /**
+   * Required reason recorded when a dispatch is voided; reviewed in reconciliation.
+   */
+  voidReason: string | null;
   arrivedByUid: string | null;
   /**
    * Optional agreed rate frozen at dispatch; commercial terms ship with the reconciliation slice.

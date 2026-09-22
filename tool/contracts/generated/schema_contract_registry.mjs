@@ -117771,6 +117771,13 @@ export const programTravelLegDocumentSchema = {
       "maxLength": 180,
       "description": "Resolved provider flight instance once flight tracking ships; null for manual entries."
     },
+    "international": {
+      "type": [
+        "boolean",
+        "null"
+      ],
+      "description": "True for international sectors; selects the program's international exit lag. Null/false uses the domestic lag."
+    },
     "pickupPointId": {
       "type": [
         "string",
@@ -118236,6 +118243,8 @@ export const transportTripDocumentSchema = {
     "status",
     "departedAt",
     "departedByUid",
+    "voidedByUid",
+    "voidReason",
     "arrivedAt",
     "arrivedByUid",
     "rateSnapshot",
@@ -118401,6 +118410,23 @@ export const transportTripDocumentSchema = {
           "type": "null"
         }
       ]
+    },
+    "voidedByUid": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Dispatcher/manager who voided the trip."
+    },
+    "voidReason": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 280,
+      "description": "Required reason recorded when a dispatch is voided; reviewed in reconciliation."
     },
     "arrivedByUid": {
       "type": [
@@ -118717,6 +118743,3406 @@ export const transportOperationReceiptDocumentSchema = {
           "type": "integer",
           "minimum": 0,
           "maximum": 999999999
+        }
+      }
+    }
+  }
+};
+
+export const programIdCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/program_id_payload.schema.json",
+  "title": "ProgramIdCallablePayload",
+  "description": "Program-scoped read payload shared by simple program callables.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-callable-aliases": [
+    "getOrganizerProgram",
+    "getProgramWorkAccess",
+    "listProgramStaff",
+    "listProgramHouseholds",
+    "listProgramTrips"
+  ],
+  "required": [
+    "programId"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+};
+
+export const listOrganizerProgramsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/list_organizer_programs_payload.schema.json",
+  "title": "ListOrganizerProgramsCallablePayload",
+  "description": "Manager-scoped listing of an organizer's private programs.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 50
+    }
+  }
+};
+
+export const createOrganizerProgramCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/create_organizer_program_payload.schema.json",
+  "title": "CreateOrganizerProgramCallablePayload",
+  "description": "Create a private wedding/corporate program. Manager-only.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "kind",
+    "title",
+    "timezone",
+    "startsAtMillis",
+    "endsAtMillis",
+    "capabilities"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "wedding",
+        "corporate",
+        "social",
+        "other"
+      ]
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 140
+    },
+    "timezone": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 60
+    },
+    "startsAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "endsAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "capabilities": {
+      "type": "array",
+      "maxItems": 8,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "arrivalsTransport",
+          "accommodation",
+          "forms",
+          "messaging"
+        ]
+      }
+    },
+    "transportSettings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "bandWindowMillis",
+        "maxReadyWaitMillis",
+        "domesticExitLagMillis",
+        "internationalExitLagMillis",
+        "vehicleClasses"
+      ],
+      "properties": {
+        "bandWindowMillis": {
+          "type": "integer",
+          "minimum": 300000,
+          "maximum": 7200000,
+          "description": "Anchored curb-time window used by grouping suggestions. Default 30 minutes."
+        },
+        "maxReadyWaitMillis": {
+          "type": "integer",
+          "minimum": 60000,
+          "maximum": 3600000,
+          "description": "Ceiling on how long a physically ready party waits before a group is flagged overdue. Default 10 minutes for premium events."
+        },
+        "domesticExitLagMillis": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 7200000,
+          "description": "Default landing-to-curb lag for domestic arrivals."
+        },
+        "internationalExitLagMillis": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 14400000,
+          "description": "Default landing-to-curb lag for international arrivals."
+        },
+        "vehicleClasses": {
+          "type": "array",
+          "maxItems": 16,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "label",
+              "passengerCapacity",
+              "luggageCapacity",
+              "capabilities",
+              "sortOrder"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 60,
+                "pattern": "^[a-z0-9][a-z0-9_-]{0,59}$"
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 60
+              },
+              "passengerCapacity": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 200
+              },
+              "luggageCapacity": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 500
+              },
+              "capabilities": {
+                "type": "array",
+                "maxItems": 12,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "wheelchairAccessible",
+                    "extraLuggage",
+                    "childSeat"
+                  ]
+                }
+              },
+              "sortOrder": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1000
+              }
+            }
+          },
+          "description": "Program-scoped vehicle catalog consumed by grouping suggestions; ids are unique per program."
+        }
+      }
+    }
+  }
+};
+
+export const updateOrganizerProgramCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/update_organizer_program_payload.schema.json",
+  "title": "UpdateOrganizerProgramCallablePayload",
+  "description": "Patch program fields. Omitted fields are unchanged; expectedRevision fences concurrent edits.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "expectedRevision"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 140
+    },
+    "timezone": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 60
+    },
+    "startsAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "endsAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "active",
+        "completed",
+        "archived"
+      ]
+    },
+    "capabilities": {
+      "type": "array",
+      "maxItems": 8,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "arrivalsTransport",
+          "accommodation",
+          "forms",
+          "messaging"
+        ]
+      }
+    },
+    "transportSettings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "bandWindowMillis",
+        "maxReadyWaitMillis",
+        "domesticExitLagMillis",
+        "internationalExitLagMillis",
+        "vehicleClasses"
+      ],
+      "properties": {
+        "bandWindowMillis": {
+          "type": "integer",
+          "minimum": 300000,
+          "maximum": 7200000,
+          "description": "Anchored curb-time window used by grouping suggestions. Default 30 minutes."
+        },
+        "maxReadyWaitMillis": {
+          "type": "integer",
+          "minimum": 60000,
+          "maximum": 3600000,
+          "description": "Ceiling on how long a physically ready party waits before a group is flagged overdue. Default 10 minutes for premium events."
+        },
+        "domesticExitLagMillis": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 7200000,
+          "description": "Default landing-to-curb lag for domestic arrivals."
+        },
+        "internationalExitLagMillis": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 14400000,
+          "description": "Default landing-to-curb lag for international arrivals."
+        },
+        "vehicleClasses": {
+          "type": "array",
+          "maxItems": 16,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "label",
+              "passengerCapacity",
+              "luggageCapacity",
+              "capabilities",
+              "sortOrder"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 60,
+                "pattern": "^[a-z0-9][a-z0-9_-]{0,59}$"
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 60
+              },
+              "passengerCapacity": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 200
+              },
+              "luggageCapacity": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 500
+              },
+              "capabilities": {
+                "type": "array",
+                "maxItems": 12,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "wheelchairAccessible",
+                    "extraLuggage",
+                    "childSeat"
+                  ]
+                }
+              },
+              "sortOrder": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1000
+              }
+            }
+          },
+          "description": "Program-scoped vehicle catalog consumed by grouping suggestions; ids are unique per program."
+        }
+      }
+    }
+  }
+};
+
+export const grantProgramStaffCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/grant_program_staff_payload.schema.json",
+  "title": "GrantProgramStaffCallablePayload",
+  "description": "Grant named, station-scoped program duties to a signed-in account. Manager-only.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "phoneNumber",
+    "duties",
+    "expiresAtMillis"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "phoneNumber": {
+      "type": "string",
+      "minLength": 4,
+      "maxLength": 32
+    },
+    "duties": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 8,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "duty",
+          "pickupPointIds",
+          "hotelIds"
+        ],
+        "properties": {
+          "duty": {
+            "type": "string",
+            "enum": [
+              "programCoordinator",
+              "airportGreeter",
+              "hotelDesk",
+              "transportDispatcher",
+              "reconciliationViewer"
+            ]
+          },
+          "pickupPointIds": {
+            "type": "array",
+            "maxItems": 32,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "description": "Station scope for airportGreeter/transportDispatcher duties. Empty means all pickup points in the program."
+          },
+          "hotelIds": {
+            "type": "array",
+            "maxItems": 64,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "description": "Hotel scope for hotelDesk duties. Empty means all hotels in the program."
+          }
+        }
+      }
+    },
+    "expiresAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  }
+};
+
+export const revokeProgramStaffCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/revoke_program_staff_payload.schema.json",
+  "title": "RevokeProgramStaffCallablePayload",
+  "description": "Revoke a program staff grant with revision fencing. Manager-only.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "uid",
+    "expectedRevision"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    }
+  }
+};
+
+export const upsertProgramGuestCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/upsert_program_guest_payload.schema.json",
+  "title": "UpsertProgramGuestCallablePayload",
+  "description": "Create or update one program guest. guestId absent creates; expectedRevision fences updates. A shared phone never merges guests.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "displayName"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "guestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "displayName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 140
+    },
+    "householdId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "phoneE164": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 20
+    },
+    "email": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 320
+    },
+    "externalReference": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 180
+    },
+    "rsvpStatus": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "attending",
+        "declined",
+        "maybe"
+      ]
+    }
+  }
+};
+
+export const listProgramGuestsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/list_program_guests_payload.schema.json",
+  "title": "ListProgramGuestsCallablePayload",
+  "description": "Manager/coordinator paginated guest listing.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 200
+    },
+    "cursor": {
+      "type": "string",
+      "maxLength": 240,
+      "description": "Opaque cursor returned by the previous page."
+    }
+  }
+};
+
+export const upsertProgramHouseholdCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/upsert_program_household_payload.schema.json",
+  "title": "UpsertProgramHouseholdCallablePayload",
+  "description": "Create or update a household/party grouping for program guests.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "label",
+    "primaryContactName",
+    "memberGuestIds"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "householdId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "label": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 140
+    },
+    "primaryContactName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 140
+    },
+    "primaryPhoneE164": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 20
+    },
+    "primaryEmail": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 320
+    },
+    "memberGuestIds": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 50,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 180
+      }
+    },
+    "deliveryPreference": {
+      "type": "string",
+      "enum": [
+        "whatsapp",
+        "sms",
+        "email",
+        "none"
+      ]
+    }
+  }
+};
+
+export const upsertProgramFunctionCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/upsert_program_function_payload.schema.json",
+  "title": "UpsertProgramFunctionCallablePayload",
+  "description": "Create or update a private program function (ceremony, reception, session).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "name",
+    "startsAtMillis",
+    "endsAtMillis",
+    "venueName"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "functionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 140
+    },
+    "startsAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "endsAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "venueName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "venueNotes": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 500
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "scheduled",
+        "completed",
+        "cancelled"
+      ]
+    }
+  }
+};
+
+export const upsertProgramPickupPointCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/upsert_program_pickup_point_payload.schema.json",
+  "title": "UpsertProgramPickupPointCallablePayload",
+  "description": "Create or update a program pickup station such as an airport terminal arrivals zone.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "kind",
+    "label"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "pickupPointId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "airport",
+        "railway",
+        "venue",
+        "other"
+      ]
+    },
+    "label": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 140
+    },
+    "iataCode": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "terminal": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 40
+    },
+    "meetingZone": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 140
+    },
+    "latitude": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": -90,
+      "maximum": 90
+    },
+    "longitude": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": -180,
+      "maximum": 180
+    },
+    "instructions": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 500
+    },
+    "active": {
+      "type": "boolean"
+    }
+  }
+};
+
+export const upsertProgramHotelCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/upsert_program_hotel_payload.schema.json",
+  "title": "UpsertProgramHotelCallablePayload",
+  "description": "Create or update a program accommodation property.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "name",
+    "address"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "hotelId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 140
+    },
+    "address": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 300
+    },
+    "latitude": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": -90,
+      "maximum": 90
+    },
+    "longitude": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": -180,
+      "maximum": 180
+    },
+    "receptionContact": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 140
+    },
+    "notes": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 500
+    },
+    "active": {
+      "type": "boolean"
+    }
+  }
+};
+
+export const upsertTransportVendorCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/upsert_transport_vendor_payload.schema.json",
+  "title": "UpsertTransportVendorCallablePayload",
+  "description": "Create or update an organizer-level transport vendor and bind it to programs.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "name"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "vendorId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 140
+    },
+    "contactName": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 140
+    },
+    "phoneE164": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 20
+    },
+    "programIds": {
+      "type": "array",
+      "maxItems": 100,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 180
+      }
+    },
+    "active": {
+      "type": "boolean"
+    },
+    "notes": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 500
+    }
+  }
+};
+
+export const upsertProgramTravelLegCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/upsert_program_travel_leg_payload.schema.json",
+  "title": "UpsertProgramTravelLegCallablePayload",
+  "description": "Create or update one guest's travel leg. Planner/manager-owned; manual flight entries stay unresolved until the provider slice ships.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "guestId",
+    "kind",
+    "passengers",
+    "luggageUnits",
+    "requiredCapabilities",
+    "dedicatedVehicle"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "legId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "guestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "partyId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "inbound",
+        "outbound",
+        "ground"
+      ]
+    },
+    "flightNumber": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[A-Z0-9]{2,3}-?[0-9]{1,4}[A-Z]?$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "carrierCode": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 3
+    },
+    "originIata": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "destinationIata": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "scheduledArrivalAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "international": {
+      "type": [
+        "boolean",
+        "null"
+      ],
+      "description": "True for international sectors; selects the program's international exit lag."
+    },
+    "pickupPointId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "destinationHotelId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "destinationLabel": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 140
+    },
+    "passengers": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 200
+    },
+    "luggageUnits": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 500
+    },
+    "requiredCapabilities": {
+      "type": "array",
+      "maxItems": 12,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "wheelchairAccessible",
+          "extraLuggage",
+          "childSeat"
+        ]
+      }
+    },
+    "dedicatedVehicle": {
+      "type": "boolean"
+    }
+  }
+};
+
+export const upsertProgramTravelPartyCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/upsert_program_travel_party_payload.schema.json",
+  "title": "UpsertProgramTravelPartyCallablePayload",
+  "description": "Create or update a ride-together travel party.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "memberGuestIds",
+    "dedicatedVehicle"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "partyId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "label": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 140
+    },
+    "memberGuestIds": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 50,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 180
+      }
+    },
+    "dedicatedVehicle": {
+      "type": "boolean"
+    }
+  }
+};
+
+export const setProgramTravelReadinessCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/set_program_travel_readiness_payload.schema.json",
+  "title": "SetProgramTravelReadinessCallablePayload",
+  "description": "Greeter/dispatcher leg observation: claim, unclaim, mark ready at curb, or flag disruption. clientOperationId makes offline replays safe.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "legId",
+    "action",
+    "clientOperationId"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "legId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "action": {
+      "type": "string",
+      "enum": [
+        "markReady",
+        "claim",
+        "unclaim",
+        "markDisrupted"
+      ]
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "manualCurbAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "description": "Reviewed curb estimate set alongside markDisrupted or planner correction."
+    },
+    "manualCurbNote": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 280
+    },
+    "clientOperationId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 120
+    }
+  }
+};
+
+export const dispatchProgramTripCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/dispatch_program_trip_payload.schema.json",
+  "title": "DispatchProgramTripCallablePayload",
+  "description": "Dispatch a vehicle: snapshot plate, vendor, class and manifest in one transaction that also writes per-leg active assignments and an idempotency receipt.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "pickupPointId",
+    "vehicleClassId",
+    "plateDisplay",
+    "legIds",
+    "clientOperationId"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "pickupPointId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "destinationHotelId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "destinationLabel": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 140
+    },
+    "vehicleClassId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 60
+    },
+    "plateDisplay": {
+      "type": "string",
+      "minLength": 4,
+      "maxLength": 16
+    },
+    "vendorId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "guestTransfer",
+        "repositioning"
+      ]
+    },
+    "legIds": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 50,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 180
+      }
+    },
+    "expectedLegRevisions": {
+      "type": "array",
+      "maxItems": 50,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "legId",
+          "revision"
+        ],
+        "properties": {
+          "legId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          }
+        }
+      },
+      "description": "Optional revision fence per boarded leg; a stale roster aborts the dispatch instead of splitting a party."
+    },
+    "departedAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "description": "Explicit departure timestamp for late offline sync; defaults to server now."
+    },
+    "notes": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 280
+    },
+    "clientOperationId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 120
+    }
+  }
+};
+
+export const programTripActionCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/program_trip_action_payload.schema.json",
+  "title": "ProgramTripActionCallablePayload",
+  "description": "Post-dispatch trip lifecycle payload shared by markProgramTripArrived and voidProgramTrip; the callable name carries the action.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-callable-aliases": [
+    "markProgramTripArrived",
+    "voidProgramTrip"
+  ],
+  "required": [
+    "programId",
+    "tripId",
+    "expectedRevision",
+    "clientOperationId"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "tripId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "reason": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 280,
+      "description": "Required for voidProgramTrip; recorded on the trip for reconciliation review."
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "clientOperationId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 120
+    }
+  }
+};
+
+export const programStationScopeCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/program_station_scope_payload.schema.json",
+  "title": "ProgramStationScopeCallablePayload",
+  "description": "Pickup-station scoped program read shared by the arrivals roster and transport plan callables.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-callable-aliases": [
+    "getProgramArrivalsRoster",
+    "getProgramTransportPlan"
+  ],
+  "required": [
+    "programId"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "pickupPointId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Requested station. Staff are still intersected with their granted station scope; managers may read any station."
+    }
+  }
+};
+
+export const getProgramHotelInboundCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_program_hotel_inbound_payload.schema.json",
+  "title": "GetProgramHotelInboundCallablePayload",
+  "description": "Hotel-desk scoped inbound view: trips en route and expected guests for one hotel only.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "hotelId"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "hotelId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+};
+
+export const listTransportVendorsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/list_transport_vendors_payload.schema.json",
+  "title": "ListTransportVendorsCallablePayload",
+  "description": "List organizer vendors, optionally narrowed to those bound to a program.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "programId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+};
+
+export const programMutationCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/program_mutation_response.schema.json",
+  "title": "ProgramMutationCallableResponse",
+  "description": "Generic program mutation acknowledgement carrying the committed entity id and revision.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-callable-aliases": [
+    "createOrganizerProgram",
+    "updateOrganizerProgram",
+    "upsertProgramGuest",
+    "upsertProgramHousehold",
+    "upsertProgramFunction",
+    "upsertProgramPickupPoint",
+    "upsertProgramHotel",
+    "upsertTransportVendor",
+    "upsertProgramTravelLeg",
+    "upsertProgramTravelParty",
+    "setProgramTravelReadiness",
+    "markProgramTripArrived",
+    "voidProgramTrip"
+  ],
+  "required": [
+    "entityId",
+    "revision",
+    "alreadyApplied"
+  ],
+  "properties": {
+    "entityId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "alreadyApplied": {
+      "type": "boolean",
+      "description": "True when an exact clientOperationId replay returned the original result."
+    }
+  }
+};
+
+export const organizerProgramListCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/organizer_program_list_response.schema.json",
+  "title": "OrganizerProgramListCallableResponse",
+  "description": "Manager's program inventory: summaries only, no guest or logistics data.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programs"
+  ],
+  "properties": {
+    "programs": {
+      "type": "array",
+      "maxItems": 50,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "programId",
+          "kind",
+          "title",
+          "status",
+          "startsAtMillis",
+          "endsAtMillis",
+          "capabilities",
+          "revision"
+        ],
+        "properties": {
+          "programId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "wedding",
+              "corporate",
+              "social",
+              "other"
+            ]
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 140
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "active",
+              "completed",
+              "archived"
+            ]
+          },
+          "startsAtMillis": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "endsAtMillis": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "capabilities": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "arrivalsTransport",
+                "accommodation",
+                "forms",
+                "messaging"
+              ]
+            }
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      }
+    }
+  }
+};
+
+export const programAccessCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/program_access_response.schema.json",
+  "title": "ProgramAccessCallableResponse",
+  "description": "Work-shell bootstrap: the caller's role, duties, station scopes and labeled program resources. Staff receive only operational fields.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "organizerId",
+    "title",
+    "kind",
+    "timezone",
+    "status",
+    "actorRole",
+    "duties",
+    "grantExpiresAtMillis",
+    "capabilities",
+    "pickupPoints",
+    "hotels",
+    "vehicleClasses"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 140
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "wedding",
+        "corporate",
+        "social",
+        "other"
+      ]
+    },
+    "timezone": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 60
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "active",
+        "completed",
+        "archived"
+      ]
+    },
+    "actorRole": {
+      "type": "string",
+      "enum": [
+        "manager",
+        "staff"
+      ]
+    },
+    "duties": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "duty",
+          "pickupPointIds",
+          "hotelIds"
+        ],
+        "properties": {
+          "duty": {
+            "type": "string",
+            "enum": [
+              "programCoordinator",
+              "airportGreeter",
+              "hotelDesk",
+              "transportDispatcher",
+              "reconciliationViewer"
+            ]
+          },
+          "pickupPointIds": {
+            "type": "array",
+            "maxItems": 32,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "description": "Station scope for airportGreeter/transportDispatcher duties. Empty means all pickup points in the program."
+          },
+          "hotelIds": {
+            "type": "array",
+            "maxItems": 64,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "description": "Hotel scope for hotelDesk duties. Empty means all hotels in the program."
+          }
+        }
+      },
+      "description": "Managers receive an empty list meaning unrestricted; staff receive their granted duties."
+    },
+    "grantExpiresAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "capabilities": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "arrivalsTransport",
+          "accommodation",
+          "forms",
+          "messaging"
+        ]
+      }
+    },
+    "pickupPoints": {
+      "type": "array",
+      "maxItems": 32,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "pickupPointId",
+          "label",
+          "kind",
+          "iataCode",
+          "terminal"
+        ],
+        "properties": {
+          "pickupPointId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 140
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "airport",
+              "railway",
+              "venue",
+              "other"
+            ]
+          },
+          "iataCode": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "terminal": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      }
+    },
+    "hotels": {
+      "type": "array",
+      "maxItems": 64,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "hotelId",
+          "name"
+        ],
+        "properties": {
+          "hotelId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 140
+          }
+        }
+      }
+    },
+    "vehicleClasses": {
+      "type": "array",
+      "maxItems": 16,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "label",
+          "passengerCapacity",
+          "luggageCapacity",
+          "capabilities",
+          "sortOrder"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 60,
+            "pattern": "^[a-z0-9][a-z0-9_-]{0,59}$"
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 60
+          },
+          "passengerCapacity": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 200
+          },
+          "luggageCapacity": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 500
+          },
+          "capabilities": {
+            "type": "array",
+            "maxItems": 12,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "enum": [
+                "wheelchairAccessible",
+                "extraLuggage",
+                "childSeat"
+              ]
+            }
+          },
+          "sortOrder": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000
+          }
+        }
+      }
+    }
+  }
+};
+
+export const organizerProgramCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/organizer_program_response.schema.json",
+  "title": "OrganizerProgramCallableResponse",
+  "description": "Manager-facing program detail: settings, resources and coverage counts. No guest rows.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "program",
+    "functions",
+    "pickupPoints",
+    "hotels",
+    "counts"
+  ],
+  "properties": {
+    "program": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "programId",
+        "kind",
+        "title",
+        "timezone",
+        "status",
+        "startsAtMillis",
+        "endsAtMillis",
+        "capabilities",
+        "transportSettings",
+        "revision"
+      ],
+      "properties": {
+        "programId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "wedding",
+            "corporate",
+            "social",
+            "other"
+          ]
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "timezone": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 60
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "draft",
+            "active",
+            "completed",
+            "archived"
+          ]
+        },
+        "startsAtMillis": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "endsAtMillis": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "capabilities": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "arrivalsTransport",
+              "accommodation",
+              "forms",
+              "messaging"
+            ]
+          }
+        },
+        "transportSettings": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "bandWindowMillis",
+            "maxReadyWaitMillis",
+            "domesticExitLagMillis",
+            "internationalExitLagMillis",
+            "vehicleClasses"
+          ],
+          "properties": {
+            "bandWindowMillis": {
+              "type": "integer",
+              "minimum": 300000,
+              "maximum": 7200000,
+              "description": "Anchored curb-time window used by grouping suggestions. Default 30 minutes."
+            },
+            "maxReadyWaitMillis": {
+              "type": "integer",
+              "minimum": 60000,
+              "maximum": 3600000,
+              "description": "Ceiling on how long a physically ready party waits before a group is flagged overdue. Default 10 minutes for premium events."
+            },
+            "domesticExitLagMillis": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 7200000,
+              "description": "Default landing-to-curb lag for domestic arrivals."
+            },
+            "internationalExitLagMillis": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 14400000,
+              "description": "Default landing-to-curb lag for international arrivals."
+            },
+            "vehicleClasses": {
+              "type": "array",
+              "maxItems": 16,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id",
+                  "label",
+                  "passengerCapacity",
+                  "luggageCapacity",
+                  "capabilities",
+                  "sortOrder"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 60,
+                    "pattern": "^[a-z0-9][a-z0-9_-]{0,59}$"
+                  },
+                  "label": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 60
+                  },
+                  "passengerCapacity": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 200
+                  },
+                  "luggageCapacity": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 500
+                  },
+                  "capabilities": {
+                    "type": "array",
+                    "maxItems": 12,
+                    "uniqueItems": true,
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "wheelchairAccessible",
+                        "extraLuggage",
+                        "childSeat"
+                      ]
+                    }
+                  },
+                  "sortOrder": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 1000
+                  }
+                }
+              },
+              "description": "Program-scoped vehicle catalog consumed by grouping suggestions; ids are unique per program."
+            }
+          }
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "functions": {
+      "type": "array",
+      "maxItems": 40,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "functionId",
+          "name",
+          "startsAtMillis",
+          "endsAtMillis",
+          "venueName",
+          "status"
+        ],
+        "properties": {
+          "functionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 140
+          },
+          "startsAtMillis": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "endsAtMillis": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "venueName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "scheduled",
+              "completed",
+              "cancelled"
+            ]
+          }
+        }
+      }
+    },
+    "pickupPoints": {
+      "type": "array",
+      "maxItems": 32,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "pickupPointId",
+          "kind",
+          "label",
+          "active",
+          "revision"
+        ],
+        "properties": {
+          "pickupPointId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "airport",
+              "railway",
+              "venue",
+              "other"
+            ]
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 140
+          },
+          "iataCode": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "terminal": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "meetingZone": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "instructions": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      }
+    },
+    "hotels": {
+      "type": "array",
+      "maxItems": 64,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "hotelId",
+          "name",
+          "address",
+          "active",
+          "revision"
+        ],
+        "properties": {
+          "hotelId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 140
+          },
+          "address": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 300
+          },
+          "receptionContact": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      }
+    },
+    "counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "guests",
+        "households",
+        "inboundLegs",
+        "activeStaff"
+      ],
+      "properties": {
+        "guests": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "households": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "inboundLegs": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "activeStaff": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    }
+  }
+};
+
+export const programStaffListCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/program_staff_list_response.schema.json",
+  "title": "ProgramStaffListCallableResponse",
+  "description": "Manager's view of program staff grants.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "members"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "members": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "uid",
+          "displayName",
+          "phoneLastFour",
+          "duties",
+          "status",
+          "expiresAtMillis",
+          "revision"
+        ],
+        "properties": {
+          "uid": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "displayName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "phoneLastFour": {
+            "type": "string",
+            "pattern": "^[0-9]{4}$"
+          },
+          "duties": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "duty",
+                "pickupPointIds",
+                "hotelIds"
+              ],
+              "properties": {
+                "duty": {
+                  "type": "string",
+                  "enum": [
+                    "programCoordinator",
+                    "airportGreeter",
+                    "hotelDesk",
+                    "transportDispatcher",
+                    "reconciliationViewer"
+                  ]
+                },
+                "pickupPointIds": {
+                  "type": "array",
+                  "maxItems": 32,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  "description": "Station scope for airportGreeter/transportDispatcher duties. Empty means all pickup points in the program."
+                },
+                "hotelIds": {
+                  "type": "array",
+                  "maxItems": 64,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  "description": "Hotel scope for hotelDesk duties. Empty means all hotels in the program."
+                }
+              }
+            }
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "expired",
+              "revoked"
+            ]
+          },
+          "expiresAtMillis": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      }
+    }
+  }
+};
+
+export const programGuestListCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/program_guest_list_response.schema.json",
+  "title": "ProgramGuestListCallableResponse",
+  "description": "Manager/coordinator guest inventory with household labels. Contact fields are present because this surface requires the programCoordinator duty or organizer management.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "guests",
+    "households",
+    "nextCursor"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "guests": {
+      "type": "array",
+      "maxItems": 200,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "guestId",
+          "displayName",
+          "householdId",
+          "phoneE164",
+          "email",
+          "externalReference",
+          "invitationStatus",
+          "rsvpStatus",
+          "revision"
+        ],
+        "properties": {
+          "guestId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "displayName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 140
+          },
+          "householdId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 180
+          },
+          "phoneE164": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 20
+          },
+          "email": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 320
+          },
+          "externalReference": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 180
+          },
+          "invitationStatus": {
+            "type": "string",
+            "enum": [
+              "notInvited",
+              "invited",
+              "delivered",
+              "responded"
+            ]
+          },
+          "rsvpStatus": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "attending",
+              "declined",
+              "maybe"
+            ]
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      }
+    },
+    "households": {
+      "type": "array",
+      "maxItems": 500,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "householdId",
+          "label",
+          "memberGuestIds",
+          "revision"
+        ],
+        "properties": {
+          "householdId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 140
+          },
+          "memberGuestIds": {
+            "type": "array",
+            "maxItems": 50,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            }
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      }
+    },
+    "nextCursor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 240
+    }
+  }
+};
+
+export const programArrivalsRosterCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/program_arrivals_roster_response.schema.json",
+  "title": "ProgramArrivalsRosterCallableResponse",
+  "description": "Station-scoped, duty-redacted arrivals roster. Greeter/dispatcher rows carry operational fields only: no phone numbers, emails, RSVP internals or other stations' legs.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "pickupPointId",
+    "generatedAtMillis",
+    "rows",
+    "vehicleClasses"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "pickupPointId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "The station this page covers; null when the duty spans all stations."
+    },
+    "generatedAtMillis": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "rows": {
+      "type": "array",
+      "maxItems": 500,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "legId",
+          "guestId",
+          "partyId",
+          "guestDisplayName",
+          "partyLabel",
+          "partyGuestIds",
+          "passengers",
+          "luggageUnits",
+          "flightNumber",
+          "originIata",
+          "flightStatus",
+          "curbAtMillis",
+          "curbSource",
+          "readiness",
+          "claimedByDisplay",
+          "destinationHotelId",
+          "destinationLabel",
+          "requiredCapabilities",
+          "dedicatedVehicle",
+          "revision"
+        ],
+        "properties": {
+          "legId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "guestId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "partyId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 180
+          },
+          "guestDisplayName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 140
+          },
+          "partyLabel": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 140
+          },
+          "partyGuestIds": {
+            "type": "array",
+            "maxItems": 50,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "description": "Ride-together membership for dispatcher merge decisions."
+          },
+          "passengers": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 200
+          },
+          "luggageUnits": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 500
+          },
+          "flightNumber": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 8
+          },
+          "originIata": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 3
+          },
+          "flightStatus": {
+            "type": "string",
+            "enum": [
+              "scheduled",
+              "enroute",
+              "landed",
+              "delayed",
+              "cancelled",
+              "diverted",
+              "unknown"
+            ]
+          },
+          "curbAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "description": "Resolved curb estimate from arrivalTiming; null means unusable timing (cancelled, diverted or missing)."
+          },
+          "curbSource": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "ready",
+              "manual",
+              "actualLanding",
+              "estimatedLanding",
+              "scheduledLanding",
+              null
+            ]
+          },
+          "unavailableReason": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "cancelled",
+              "diverted",
+              "missingTiming",
+              null
+            ]
+          },
+          "readiness": {
+            "type": "string",
+            "enum": [
+              "expected",
+              "ready",
+              "dispatched",
+              "arrived",
+              "disrupted",
+              "noShow"
+            ]
+          },
+          "claimedByDisplay": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 120,
+            "description": "Claiming staff member's display name, never their uid beyond the caller's own claim flag."
+          },
+          "claimedByMe": {
+            "type": "boolean"
+          },
+          "destinationHotelId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 180
+          },
+          "destinationLabel": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 140
+          },
+          "requiredCapabilities": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "wheelchairAccessible",
+                "extraLuggage",
+                "childSeat"
+              ]
+            }
+          },
+          "dedicatedVehicle": {
+            "type": "boolean"
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      }
+    },
+    "vehicleClasses": {
+      "type": "array",
+      "maxItems": 16,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "label",
+          "passengerCapacity",
+          "luggageCapacity",
+          "capabilities",
+          "sortOrder"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 60,
+            "pattern": "^[a-z0-9][a-z0-9_-]{0,59}$"
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 60
+          },
+          "passengerCapacity": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 200
+          },
+          "luggageCapacity": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 500
+          },
+          "capabilities": {
+            "type": "array",
+            "maxItems": 12,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "enum": [
+                "wheelchairAccessible",
+                "extraLuggage",
+                "childSeat"
+              ]
+            }
+          },
+          "sortOrder": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000
+          }
+        }
+      }
+    }
+  }
+};
+
+export const programTransportPlanCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/program_transport_plan_response.schema.json",
+  "title": "ProgramTransportPlanCallableResponse",
+  "description": "Deterministic grouping suggestions from the transport policy, recomputed per request. Suggestions are not reservations; dispatch is a separate command.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "pickupPointId",
+    "generatedAtMillis",
+    "groups",
+    "unassigned"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "pickupPointId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "generatedAtMillis": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "groups": {
+      "type": "array",
+      "maxItems": 200,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "legIds",
+          "partyIds",
+          "destinationHotelId",
+          "destinationLabel",
+          "readiness",
+          "vehicleClassId",
+          "vehicleClassLabel",
+          "passengers",
+          "luggageUnits",
+          "earliestCurbAtMillis",
+          "latestCurbAtMillis",
+          "dispatchByMillis",
+          "waitOverdue"
+        ],
+        "properties": {
+          "legIds": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 50,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            }
+          },
+          "partyIds": {
+            "type": "array",
+            "maxItems": 50,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            }
+          },
+          "destinationHotelId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 180
+          },
+          "destinationLabel": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 140
+          },
+          "readiness": {
+            "type": "string",
+            "enum": [
+              "expected",
+              "ready"
+            ]
+          },
+          "vehicleClassId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 60
+          },
+          "vehicleClassLabel": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 60
+          },
+          "passengers": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 200
+          },
+          "luggageUnits": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 500
+          },
+          "earliestCurbAtMillis": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "latestCurbAtMillis": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "dispatchByMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "waitOverdue": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "unassigned": {
+      "type": "array",
+      "maxItems": 500,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "legId",
+          "reason"
+        ],
+        "properties": {
+          "legId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "reason": {
+            "type": "string",
+            "enum": [
+              "missingTime",
+              "noSuitableVehicle",
+              "missingScope"
+            ]
+          }
+        }
+      }
+    }
+  }
+};
+
+export const programHotelInboundCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/program_hotel_inbound_response.schema.json",
+  "title": "ProgramHotelInboundCallableResponse",
+  "description": "Hotel-desk projection for one property: en-route trips and guests still expected. No phone numbers, flight internals or other hotels' data.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "hotelId",
+    "hotelName",
+    "generatedAtMillis",
+    "trips",
+    "expectedLegs"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "hotelId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "hotelName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 140
+    },
+    "generatedAtMillis": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "trips": {
+      "type": "array",
+      "maxItems": 200,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "tripId",
+          "plateDisplay",
+          "vehicleClassId",
+          "vendorName",
+          "departedAtMillis",
+          "estimatedArriveAtMillis",
+          "passengerCount",
+          "guestNames",
+          "status",
+          "revision"
+        ],
+        "properties": {
+          "tripId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "plateDisplay": {
+            "type": "string",
+            "minLength": 4,
+            "maxLength": 16
+          },
+          "vehicleClassId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 60
+          },
+          "vendorName": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 140
+          },
+          "departedAtMillis": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "estimatedArriveAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "description": "Route ETA once the Maps adapter ships; null until then."
+          },
+          "passengerCount": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 200
+          },
+          "guestNames": {
+            "type": "array",
+            "maxItems": 50,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 140
+            }
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "enRoute",
+              "arrived",
+              "cancelled",
+              "voided"
+            ]
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      }
+    },
+    "expectedLegs": {
+      "type": "array",
+      "maxItems": 500,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "legId",
+          "guestDisplayName",
+          "partyLabel",
+          "passengers",
+          "curbAtMillis",
+          "readiness"
+        ],
+        "properties": {
+          "legId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "guestDisplayName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 140
+          },
+          "partyLabel": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 140
+          },
+          "passengers": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 200
+          },
+          "curbAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "readiness": {
+            "type": "string",
+            "enum": [
+              "expected",
+              "ready",
+              "dispatched",
+              "arrived",
+              "disrupted",
+              "noShow"
+            ]
+          }
+        }
+      }
+    }
+  }
+};
+
+export const dispatchProgramTripCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/dispatch_program_trip_response.schema.json",
+  "title": "DispatchProgramTripCallableResponse",
+  "description": "Committed dispatch result; an exact replay returns the original trip id and revision.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "tripId",
+    "revision",
+    "alreadyApplied",
+    "passengerCount"
+  ],
+  "properties": {
+    "tripId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "alreadyApplied": {
+      "type": "boolean"
+    },
+    "passengerCount": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 200
+    }
+  }
+};
+
+export const transportVendorListCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/transport_vendor_list_response.schema.json",
+  "title": "TransportVendorListCallableResponse",
+  "description": "Operational vendor picker data: id, name and program binding only. Contact and commercial fields stay on manager surfaces.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "vendors"
+  ],
+  "properties": {
+    "vendors": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "vendorId",
+          "name",
+          "active",
+          "boundToProgram"
+        ],
+        "properties": {
+          "vendorId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 140
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "boundToProgram": {
+            "type": "boolean"
+          }
+        }
+      }
+    }
+  }
+};
+
+export const programTripListCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/program_trip_list_response.schema.json",
+  "title": "ProgramTripListCallableResponse",
+  "description": "Manager/dispatcher/reconciliation trip ledger: the dispatch record that drives vendor reconciliation.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-callable-aliases": [
+    "listProgramTrips"
+  ],
+  "required": [
+    "programId",
+    "trips"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "trips": {
+      "type": "array",
+      "maxItems": 200,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "tripId",
+          "pickupPointId",
+          "destinationHotelId",
+          "destinationLabel",
+          "vehicleClassId",
+          "plateDisplay",
+          "vendorId",
+          "kind",
+          "status",
+          "passengerCount",
+          "departedAtMillis",
+          "arrivedAtMillis",
+          "voidReason",
+          "guestNames",
+          "revision"
+        ],
+        "properties": {
+          "tripId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "pickupPointId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "destinationHotelId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 180
+          },
+          "destinationLabel": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 140
+          },
+          "vehicleClassId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 60
+          },
+          "plateDisplay": {
+            "type": "string",
+            "minLength": 4,
+            "maxLength": 16
+          },
+          "vendorId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 180
+          },
+          "vendorName": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 140
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "guestTransfer",
+              "repositioning"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "enRoute",
+              "arrived",
+              "cancelled",
+              "voided"
+            ]
+          },
+          "passengerCount": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 200
+          },
+          "departedAtMillis": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "arrivedAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "voidReason": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 280
+          },
+          "guestNames": {
+            "type": "array",
+            "maxItems": 50,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 140
+            }
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1
+          }
         }
       }
     }

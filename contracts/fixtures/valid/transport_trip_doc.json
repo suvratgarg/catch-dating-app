@@ -10,18 +10,34 @@
   "vendorNameSnapshot": "Sharma Cabs",
   "plateNormalized": "DL1T4471",
   "plateDisplay": "DL-1T-4471",
-  "partyIds": ["party-1"],
-  "legIds": ["leg-1", "leg-2"],
+  "partyIds": [
+    "party-1"
+  ],
+  "legIds": [
+    "leg-1",
+    "leg-2"
+  ],
   "passengerCount": 5,
   "status": "enRoute",
-  "departedAt": {"_seconds": 1786629000, "_nanoseconds": 0},
+  "departedAt": {
+    "_seconds": 1786629000,
+    "_nanoseconds": 0
+  },
   "departedByUid": "dispatcher-1",
   "arrivedAt": null,
   "arrivedByUid": null,
   "rateSnapshot": null,
   "clientOperationId": "op-dispatch-0001",
   "notes": null,
-  "createdAt": {"_seconds": 1786629000, "_nanoseconds": 0},
-  "updatedAt": {"_seconds": 1786629000, "_nanoseconds": 0},
-  "revision": 1
+  "createdAt": {
+    "_seconds": 1786629000,
+    "_nanoseconds": 0
+  },
+  "updatedAt": {
+    "_seconds": 1786629000,
+    "_nanoseconds": 0
+  },
+  "revision": 1,
+  "voidedByUid": null,
+  "voidReason": null
 }

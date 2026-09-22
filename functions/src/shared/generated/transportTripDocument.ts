@@ -46,6 +46,14 @@ export interface TransportTripDocument {
     _seconds: number;
     _nanoseconds: number;
   } | null;
+  /**
+   * Dispatcher/manager who voided the trip.
+   */
+  voidedByUid: string | null;
+  /**
+   * Required reason recorded when a dispatch is voided; reviewed in reconciliation.
+   */
+  voidReason: string | null;
   arrivedByUid: string | null;
   /**
    * Optional agreed rate frozen at dispatch; commercial terms ship with the reconciliation slice.

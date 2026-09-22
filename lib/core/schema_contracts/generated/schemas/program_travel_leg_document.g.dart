@@ -224,6 +224,13 @@ const schemaProgramTravelLegDocumentSchema = <String, Object?>{
       'maxLength': 180,
       'description': 'Resolved provider flight instance once flight tracking ships; null for manual entries.',
     },
+    'international': <String, Object?>{
+      'type': <Object?>[
+        'boolean',
+        'null',
+      ],
+      'description': 'True for international sectors; selects the program\'s international exit lag. Null/false uses the domestic lag.',
+    },
     'pickupPointId': <String, Object?>{
       'type': <Object?>[
         'string',

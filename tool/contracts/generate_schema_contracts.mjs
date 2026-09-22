@@ -1445,6 +1445,227 @@ const schemaSpecs = [
       "transportOperationReceiptDocument.ts",
   },
   {
+    name: "ProgramIdCallablePayload",
+    source: "callables/program_id_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/programIdCallablePayload.ts",
+  },
+  {
+    name: "ListOrganizerProgramsCallablePayload",
+    source: "callables/list_organizer_programs_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "listOrganizerProgramsCallablePayload.ts",
+  },
+  {
+    name: "CreateOrganizerProgramCallablePayload",
+    source: "callables/create_organizer_program_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "createOrganizerProgramCallablePayload.ts",
+  },
+  {
+    name: "UpdateOrganizerProgramCallablePayload",
+    source: "callables/update_organizer_program_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "updateOrganizerProgramCallablePayload.ts",
+  },
+  {
+    name: "GrantProgramStaffCallablePayload",
+    source: "callables/grant_program_staff_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/grantProgramStaffCallablePayload.ts",
+  },
+  {
+    name: "RevokeProgramStaffCallablePayload",
+    source: "callables/revoke_program_staff_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/revokeProgramStaffCallablePayload.ts",
+  },
+  {
+    name: "UpsertProgramGuestCallablePayload",
+    source: "callables/upsert_program_guest_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/upsertProgramGuestCallablePayload.ts",
+  },
+  {
+    name: "ListProgramGuestsCallablePayload",
+    source: "callables/list_program_guests_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/listProgramGuestsCallablePayload.ts",
+  },
+  {
+    name: "UpsertProgramHouseholdCallablePayload",
+    source: "callables/upsert_program_household_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "upsertProgramHouseholdCallablePayload.ts",
+  },
+  {
+    name: "UpsertProgramFunctionCallablePayload",
+    source: "callables/upsert_program_function_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "upsertProgramFunctionCallablePayload.ts",
+  },
+  {
+    name: "UpsertProgramPickupPointCallablePayload",
+    source: "callables/upsert_program_pickup_point_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "upsertProgramPickupPointCallablePayload.ts",
+  },
+  {
+    name: "UpsertProgramHotelCallablePayload",
+    source: "callables/upsert_program_hotel_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/upsertProgramHotelCallablePayload.ts",
+  },
+  {
+    name: "UpsertTransportVendorCallablePayload",
+    source: "callables/upsert_transport_vendor_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "upsertTransportVendorCallablePayload.ts",
+  },
+  {
+    name: "UpsertProgramTravelLegCallablePayload",
+    source: "callables/upsert_program_travel_leg_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "upsertProgramTravelLegCallablePayload.ts",
+  },
+  {
+    name: "UpsertProgramTravelPartyCallablePayload",
+    source: "callables/upsert_program_travel_party_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "upsertProgramTravelPartyCallablePayload.ts",
+  },
+  {
+    name: "SetProgramTravelReadinessCallablePayload",
+    source: "callables/set_program_travel_readiness_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "setProgramTravelReadinessCallablePayload.ts",
+  },
+  {
+    name: "DispatchProgramTripCallablePayload",
+    source: "callables/dispatch_program_trip_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "dispatchProgramTripCallablePayload.ts",
+  },
+  {
+    name: "ProgramTripActionCallablePayload",
+    source: "callables/program_trip_action_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/programTripActionCallablePayload.ts",
+  },
+  {
+    name: "ProgramStationScopeCallablePayload",
+    source: "callables/program_station_scope_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "programStationScopeCallablePayload.ts",
+  },
+  {
+    name: "GetProgramHotelInboundCallablePayload",
+    source: "callables/get_program_hotel_inbound_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "getProgramHotelInboundCallablePayload.ts",
+  },
+  {
+    name: "ListTransportVendorsCallablePayload",
+    source: "callables/list_transport_vendors_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "listTransportVendorsCallablePayload.ts",
+  },
+  {
+    name: "ProgramMutationCallableResponse",
+    source: "callable_responses/program_mutation_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/programMutationCallableResponse.ts",
+  },
+  {
+    name: "OrganizerProgramListCallableResponse",
+    source: "callable_responses/organizer_program_list_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "organizerProgramListCallableResponse.ts",
+  },
+  {
+    name: "ProgramAccessCallableResponse",
+    source: "callable_responses/program_access_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/programAccessCallableResponse.ts",
+  },
+  {
+    name: "OrganizerProgramCallableResponse",
+    source: "callable_responses/organizer_program_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "organizerProgramCallableResponse.ts",
+  },
+  {
+    name: "ProgramStaffListCallableResponse",
+    source: "callable_responses/program_staff_list_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "programStaffListCallableResponse.ts",
+  },
+  {
+    name: "ProgramGuestListCallableResponse",
+    source: "callable_responses/program_guest_list_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "programGuestListCallableResponse.ts",
+  },
+  {
+    name: "ProgramArrivalsRosterCallableResponse",
+    source: "callable_responses/program_arrivals_roster_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "programArrivalsRosterCallableResponse.ts",
+  },
+  {
+    name: "ProgramTransportPlanCallableResponse",
+    source:
+      "callable_responses/program_transport_plan_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "programTransportPlanCallableResponse.ts",
+  },
+  {
+    name: "ProgramHotelInboundCallableResponse",
+    source: "callable_responses/program_hotel_inbound_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "programHotelInboundCallableResponse.ts",
+  },
+  {
+    name: "DispatchProgramTripCallableResponse",
+    source: "callable_responses/dispatch_program_trip_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "dispatchProgramTripCallableResponse.ts",
+  },
+  {
+    name: "TransportVendorListCallableResponse",
+    source: "callable_responses/transport_vendor_list_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "transportVendorListCallableResponse.ts",
+  },
+  {
+    name: "ProgramTripListCallableResponse",
+    source: "callable_responses/program_trip_list_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/programTripListCallableResponse.ts",
+  },
+  {
     name: "EventAttendeeAttendanceReceiptDocument",
     source: "firestore/event_attendee_attendance_receipts.schema.json",
     typeOutput:

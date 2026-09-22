@@ -585,3 +585,46 @@ export {getEventAssistanceCheckpoint, recordEventAssistanceCheckpoint} from
 
 export {getEventRcsWithdrawal, withdrawEventRcs} from
   "./eventSuccess/operations/rcsWithdrawalHandlers";
+
+// Private programs (weddings/corporate offsites) and arrivals transport.
+export {
+  createOrganizerProgram,
+  updateOrganizerProgram,
+  listOrganizerPrograms,
+  getOrganizerProgram,
+} from "./programs/programs";
+export {
+  getProgramWorkAccess,
+  listProgramStaff,
+  grantProgramStaff,
+  revokeProgramStaff,
+} from "./programs/programStaff";
+export {
+  upsertProgramGuest,
+  listProgramGuests,
+  upsertProgramHousehold,
+  listProgramHouseholds,
+} from "./programs/programGuests";
+export {
+  upsertProgramFunction,
+  upsertProgramPickupPoint,
+  upsertProgramHotel,
+  upsertTransportVendor,
+  listTransportVendors,
+} from "./programs/programResources";
+export {
+  upsertProgramTravelLeg,
+  upsertProgramTravelParty,
+} from "./transport/programTravel";
+export {
+  getProgramArrivalsRoster,
+  getProgramTransportPlan,
+  setProgramTravelReadiness,
+} from "./transport/programArrivals";
+export {
+  dispatchProgramTrip,
+  markProgramTripArrived,
+  voidProgramTrip,
+  getProgramHotelInbound,
+  listProgramTrips,
+} from "./transport/programDispatch";

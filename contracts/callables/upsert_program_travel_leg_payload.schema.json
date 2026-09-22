@@ -1,0 +1,146 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/upsert_program_travel_leg_payload.schema.json",
+  "title": "UpsertProgramTravelLegCallablePayload",
+  "description": "Create or update one guest's travel leg. Planner/manager-owned; manual flight entries stay unresolved until the provider slice ships.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "guestId",
+    "kind",
+    "passengers",
+    "luggageUnits",
+    "requiredCapabilities",
+    "dedicatedVehicle"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "legId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "guestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "partyId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "kind": {
+      "$ref": "../shared/program_common.schema.json#/definitions/travelLegKind"
+    },
+    "flightNumber": {
+      "anyOf": [
+        {
+          "$ref": "../shared/program_common.schema.json#/definitions/flightDesignator"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "carrierCode": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 3
+    },
+    "originIata": {
+      "anyOf": [
+        {
+          "$ref": "../shared/program_common.schema.json#/definitions/iataCode"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "destinationIata": {
+      "anyOf": [
+        {
+          "$ref": "../shared/program_common.schema.json#/definitions/iataCode"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "scheduledArrivalAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "international": {
+      "type": [
+        "boolean",
+        "null"
+      ],
+      "description": "True for international sectors; selects the program's international exit lag."
+    },
+    "pickupPointId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "destinationHotelId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "destinationLabel": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 140
+    },
+    "passengers": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 200
+    },
+    "luggageUnits": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 500
+    },
+    "requiredCapabilities": {
+      "type": "array",
+      "maxItems": 12,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "../shared/program_common.schema.json#/definitions/vehicleCapability"
+      }
+    },
+    "dedicatedVehicle": {
+      "type": "boolean"
+    }
+  }
+}

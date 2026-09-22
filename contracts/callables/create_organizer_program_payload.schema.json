@@ -1,0 +1,58 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/create_organizer_program_payload.schema.json",
+  "title": "CreateOrganizerProgramCallablePayload",
+  "description": "Create a private wedding/corporate program. Manager-only.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "kind",
+    "title",
+    "timezone",
+    "startsAtMillis",
+    "endsAtMillis",
+    "capabilities"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "kind": {
+      "$ref": "../shared/program_common.schema.json#/definitions/programKind"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 140
+    },
+    "timezone": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 60
+    },
+    "startsAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "endsAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "capabilities": {
+      "type": "array",
+      "maxItems": 8,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "../shared/program_common.schema.json#/definitions/programCapability"
+      }
+    },
+    "transportSettings": {
+      "$ref": "../shared/program_common.schema.json#/definitions/programTransportSettings"
+    }
+  }
+}

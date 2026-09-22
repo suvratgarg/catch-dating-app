@@ -45,6 +45,10 @@ export interface ProgramTravelLegDocument {
    * Resolved provider flight instance once flight tracking ships; null for manual entries.
    */
   flightInstanceId: string | null;
+  /**
+   * True for international sectors; selects the program's international exit lag. Null/false uses the domestic lag.
+   */
+  international?: boolean | null;
   pickupPointId: string | null;
   destinationHotelId: string | null;
   /**

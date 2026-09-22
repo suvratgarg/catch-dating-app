@@ -222,6 +222,13 @@ export const programTravelLegDocumentSchema: Record<string, unknown> = {
       "maxLength": 180,
       "description": "Resolved provider flight instance once flight tracking ships; null for manual entries."
     },
+    "international": {
+      "type": [
+        "boolean",
+        "null"
+      ],
+      "description": "True for international sectors; selects the program's international exit lag. Null/false uses the domestic lag."
+    },
     "pickupPointId": {
       "type": [
         "string",

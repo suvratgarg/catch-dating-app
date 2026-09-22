@@ -1,0 +1,74 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/program_staff_list_response.schema.json",
+  "title": "ProgramStaffListCallableResponse",
+  "description": "Manager's view of program staff grants.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "members"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "members": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "uid",
+          "displayName",
+          "phoneLastFour",
+          "duties",
+          "status",
+          "expiresAtMillis",
+          "revision"
+        ],
+        "properties": {
+          "uid": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "displayName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "phoneLastFour": {
+            "type": "string",
+            "pattern": "^[0-9]{4}$"
+          },
+          "duties": {
+            "type": "array",
+            "items": {
+              "$ref": "../shared/program_common.schema.json#/definitions/programStaffDutyAssignment"
+            }
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "expired",
+              "revoked"
+            ]
+          },
+          "expiresAtMillis": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      }
+    }
+  }
+}

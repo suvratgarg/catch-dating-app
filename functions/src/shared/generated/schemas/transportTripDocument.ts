@@ -31,6 +31,8 @@ export const transportTripDocumentSchema: Record<string, unknown> = {
     "status",
     "departedAt",
     "departedByUid",
+    "voidedByUid",
+    "voidReason",
     "arrivedAt",
     "arrivedByUid",
     "rateSnapshot",
@@ -196,6 +198,23 @@ export const transportTripDocumentSchema: Record<string, unknown> = {
           "type": "null"
         }
       ]
+    },
+    "voidedByUid": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Dispatcher/manager who voided the trip."
+    },
+    "voidReason": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 280,
+      "description": "Required reason recorded when a dispatch is voided; reviewed in reconciliation."
     },
     "arrivedByUid": {
       "type": [
