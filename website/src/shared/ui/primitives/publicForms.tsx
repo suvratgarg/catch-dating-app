@@ -1,4 +1,4 @@
-import {useEffect, useRef, useState} from "react";
+import {useEffect, useId, useRef, useState} from "react";
 import type {ChangeEvent, FormHTMLAttributes, PointerEvent, ReactNode} from "react";
 import {Button, PlainLink} from "./actions";
 import {Form} from "./forms";
@@ -111,21 +111,25 @@ export function PublicFormSection({
 
 export function PublicFormQuestion({
   children,
+  disclosure,
   error,
   help,
   label,
   requiredLabel,
 }: {
   children: ReactNode;
+  disclosure?: ReactNode;
   error?: ReactNode;
   help?: ReactNode;
   label: ReactNode;
   requiredLabel?: ReactNode;
 }) {
+  const disclosureId = useId();
   return (
-    <fieldset className="public-form__question">
+    <fieldset aria-describedby={disclosure ? disclosureId : undefined} className="public-form__question">
       <legend>{label}{requiredLabel ? <small>{requiredLabel}</small> : null}</legend>
       {help ? <p>{help}</p> : null}
+      {disclosure ? <p id={disclosureId}>{disclosure}</p> : null}
       {children}
       {error ? <p className="public-form__error" role="alert">{error}</p> : null}
     </fieldset>

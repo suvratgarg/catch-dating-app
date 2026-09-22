@@ -36,6 +36,9 @@ export function PublicFormPage() {
   const {publicFormId = ""} = useParams<{publicFormId: string}>();
   const controller = usePublicFormController(publicFormId);
   const organizerName = controller.form?.organizer.name;
+  const hasProfileFields = controller.form?.definition.sections?.some((section) =>
+    section.questions.some((question) => question.answerDestination === "catchProfile" ||
+      question.answerDestination === "organizerCard")) ?? false;
 
   return (
     <PublicFormFrame
@@ -51,7 +54,7 @@ export function PublicFormPage() {
         brandWord={publicFormsCopy.brandWord}
         poweredByLabel={publicFormsCopy.poweredBy}
       >
-        {publicFormsCopy.privacyNote}
+        {hasProfileFields ? publicFormsCopy.profilePrivacyNote : publicFormsCopy.privacyNote}
       </PublicFormPrivacy>
     </PublicFormFrame>
   );
@@ -314,10 +317,16 @@ function QuestionField({
   question: Question;
   upload?: {status: "uploading" | "ready" | "error"; label: string};
 }) {
-  const requiredLabel = question.required ? publicFormsCopy.requiredSuffix : undefined;
+  const requiredLabel = question.required ? publicFormsCopy.requiredSuffix :
+    publicFormsCopy.optionalSuffix;
+  const disclosure = question.answerDestination === "catchProfile" ?
+    publicFormsCopy.profileFieldDisclosure :
+    question.answerDestination === "organizerCard" ?
+      publicFormsCopy.organizerCardFieldDisclosure : undefined;
   const common = {
     error,
     help: question.helpText,
+    disclosure,
     label: question.label,
     requiredLabel,
   };
