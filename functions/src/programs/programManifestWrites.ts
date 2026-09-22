@@ -1,7 +1,10 @@
 import {requireMutableTravelLeg, validateTravelPartyMembership}
   from "../transport/travelPartyPolicy";
 import * as admin from "firebase-admin";
+import {HttpsError} from "firebase-functions/v2/https";
 import {nextRevision} from "../shared/programAuthority";
+import {planHouseholdMembership, type HouseholdMembershipChange} from
+  "./programHouseholdMembership";
 import {nextFlightRefreshAt} from "../transport/flightRefreshPolicy";
 import {reconcileTravelLegState} from
   "../transport/travelLegState";
@@ -24,7 +27,7 @@ export function buildManifestWrites(
   now: FirebaseFirestore.Timestamp,
 ): Array<{path: string; data: object}> {
   const {plans, newHouseholds, newParties, newLabels} = planned;
-  const householdMembers = new Map<string, Set<string>>();
+  const householdChanges: HouseholdMembershipChange[] = [];
   const partyMembers = new Map<string, Set<string>>();
 
   const writes: Array<{path: string; data: object}> = [];
@@ -32,6 +35,11 @@ export function buildManifestWrites(
   for (const plan of plans) {
     const row = plan.row;
     const existing = plan.existingGuest;
+    if (existing && (existing.programId !== programId ||
+        existing.organizerId !== organizerId)) {
+      throw new HttpsError("failed-precondition",
+        "Guest ownership needs reconciliation.");
+    }
     const guestDoc: ProgramGuestDocument = {
       programId,
       organizerId,
@@ -51,19 +59,9 @@ export function buildManifestWrites(
       revision: nextRevision(existing?.revision, now),
     };
     writes.push({path: `programGuests/${plan.guestId}`, data: guestDoc});
-    if (plan.householdId && existing?.householdId &&
-        plan.householdId !== existing.householdId) {
-      const old = householdMembers.get(existing.householdId) ??
-        new Set(households.get(existing.householdId)?.memberGuestIds ?? []);
-      old.delete(plan.guestId);
-      householdMembers.set(existing.householdId, old);
-    }
-    if (plan.householdId) {
-      const members = householdMembers.get(plan.householdId) ??
-        new Set(households.get(plan.householdId)?.memberGuestIds ?? []);
-      members.add(plan.guestId);
-      householdMembers.set(plan.householdId, members);
-    }
+    householdChanges.push({guestId: plan.guestId,
+      previousHouseholdId: existing?.householdId ?? null,
+      nextHouseholdId: guestDoc.householdId});
     const partyId = plan.partyId ?? plan.existingLeg?.partyId;
     if (partyId) {
       const members = partyMembers.get(partyId) ??
@@ -135,13 +133,9 @@ export function buildManifestWrites(
     }
   }
 
+  const nextHouseholds = new Map(households);
   for (const [normalizedLabel, householdId] of newHouseholds) {
     const label = newLabels.get(householdId) ?? normalizedLabel;
-    const existingMembers = new Set<string>(
-      households.get(householdId)?.memberGuestIds ?? []);
-    for (const guestId of householdMembers.get(householdId) ?? []) {
-      existingMembers.add(guestId);
-    }
     const firstMember = plans.find((plan) =>
       plan.householdId === householdId);
     const householdDoc: ProgramHouseholdDocument = {
@@ -151,14 +145,22 @@ export function buildManifestWrites(
       primaryContactName: firstMember?.row.displayName.trim() ?? label,
       primaryPhoneE164: firstMember?.row.phoneE164 ?? null,
       primaryEmail: firstMember?.row.email ?? null,
-      memberGuestIds: [...existingMembers].sort(),
+      memberGuestIds: [],
       deliveryPreference: "none",
       createdAt: now,
       updatedAt: now,
       revision: 1,
     };
-    writes.push({
-      path: `programHouseholds/${householdId}`, data: householdDoc});
+    nextHouseholds.set(householdId, householdDoc);
+  }
+  const memberships = planHouseholdMembership(programId, organizerId,
+    nextHouseholds, householdChanges);
+  for (const [id, memberGuestIds] of memberships) {
+    const existing = nextHouseholds.get(id)!;
+    writes.push({path: `programHouseholds/${id}`,
+      data: {...existing, memberGuestIds, updatedAt: now,
+        revision: households.has(id) ?
+          nextRevision(existing.revision, now) : existing.revision}});
   }
   for (const [normalizedLabel, partyId] of newParties) {
     const label = newLabels.get(partyId) ?? normalizedLabel;
@@ -175,20 +177,7 @@ export function buildManifestWrites(
     };
     writes.push({path: `programTravelParties/${partyId}`, data: partyDoc});
   }
-  // Existing households/parties gain new members without losing old ones.
-  for (const [householdId, members] of householdMembers) {
-    if (!households.has(householdId)) continue;
-    const existing = households.get(householdId)!;
-    const merged = members;
-    if (merged.size !== existing.memberGuestIds.length ||
-        [...merged].some((id) => !existing.memberGuestIds.includes(id))) {
-      writes.push({
-        path: `programHouseholds/${householdId}`,
-        data: {...existing, memberGuestIds: [...merged].sort(),
-          updatedAt: now, revision: nextRevision(existing.revision, now)},
-      });
-    }
-  }
+  // Existing parties gain new journeys without losing old ones.
   for (const [partyId, members] of partyMembers) {
     if (!parties.has(partyId)) continue;
     const existing = parties.get(partyId)!;

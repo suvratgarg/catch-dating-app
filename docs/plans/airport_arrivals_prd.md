@@ -1298,7 +1298,13 @@ details remain unresolved. Suggestions and dispatch require complete, consistent
 party membership. Legacy guest-only parties require explicit leg reconciliation
 before use; do not infer journeys when rolling out this schema change. Moving a
 guest to another household updates both household membership lists in the same
-transaction; import never implies invitation, consent, or RSVP.
+transaction. Manual guest edits, household replacement and imports share one
+membership policy. Removal clears the guest lookup; adding an existing guest
+removes it from its prior household. Capacity and current authority are checked
+inside the transaction. Empty households retain their contact record and can
+be reused; an empty membership never grants a guest response or delivery right.
+Import never implies invitation, consent, or RSVP. Guest pagination uses the
+document snapshot cursor so equal display names do not hide subsequent guests.
 
 
 ### Offline observation fences

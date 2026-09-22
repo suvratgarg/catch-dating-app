@@ -116930,7 +116930,7 @@ export const programHouseholdDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/program_households.schema.json",
   "title": "ProgramHouseholdDocument",
-  "description": "Server-owned household/party grouping for program guests. Carries the invited party's primary contact and delivery preference; member guest ids are bounded.",
+  "description": "Server-owned household invitation grouping for program guests. Carries the invited party's primary contact and delivery preference; member guest ids are bounded.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "programHouseholds",
@@ -116988,7 +116988,7 @@ export const programHouseholdDocumentSchema = {
     },
     "memberGuestIds": {
       "type": "array",
-      "minItems": 1,
+      "minItems": 0,
       "maxItems": 50,
       "uniqueItems": true,
       "items": {
@@ -120026,7 +120026,7 @@ export const upsertProgramHouseholdCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/upsert_program_household_payload.schema.json",
   "title": "UpsertProgramHouseholdCallablePayload",
-  "description": "Create or update a household/party grouping for program guests.",
+  "description": "Create or update a household invitation grouping for program guests.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -120077,7 +120077,7 @@ export const upsertProgramHouseholdCallablePayloadSchema = {
     },
     "memberGuestIds": {
       "type": "array",
-      "minItems": 1,
+      "minItems": 0,
       "maxItems": 50,
       "uniqueItems": true,
       "items": {

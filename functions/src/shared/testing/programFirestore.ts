@@ -160,16 +160,25 @@ export class FakeFirestore {
           String(a.data()?.[field] ?? "");
         const bv = timestampMillis(b.data()?.[field]) ||
           String(b.data()?.[field] ?? "");
-        const order = av < bv ? -1 : av > bv ? 1 : 0;
+        const order = av < bv ? -1 : av > bv ? 1 :
+          a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
         return dir === "desc" ? -order : order;
       });
     }
     let filtered = docs;
     if (query.startAfterValue !== null && query.order) {
       const field = query.order.field;
+      const cursor = query.startAfterValue;
+      const cursorValue = cursor instanceof FakeDocSnapshot ?
+        cursor.data()?.[field] : cursor;
       filtered = docs.filter((doc) => {
         const value = doc.data()?.[field];
-        return String(value) > String(query.startAfterValue);
+        const av = timestampMillis(value) || String(value ?? "");
+        const bv = timestampMillis(cursorValue) || String(cursorValue ?? "");
+        const order = av < bv ? -1 : av > bv ? 1 :
+          cursor instanceof FakeDocSnapshot ?
+            doc.id < cursor.id ? -1 : doc.id > cursor.id ? 1 : 0 : 0;
+        return query.order!.dir === "desc" ? order < 0 : order > 0;
       });
     }
     const limited = query.limitN === null ?

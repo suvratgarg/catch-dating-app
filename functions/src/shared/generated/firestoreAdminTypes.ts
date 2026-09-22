@@ -8303,7 +8303,7 @@ export interface ProgramGuestDocument {
 }
 
 /**
- * Server-owned household/party grouping for program guests. Carries the invited party's primary contact and delivery preference; member guest ids are bounded.
+ * Server-owned household invitation grouping for program guests. Carries the invited party's primary contact and delivery preference; member guest ids are bounded.
  */
 export interface ProgramHouseholdDocument {
   programId: string;
@@ -8316,7 +8316,7 @@ export interface ProgramHouseholdDocument {
   primaryPhoneE164: string | null;
   primaryEmail: string | null;
   /**
-   * @minItems 1
+   * @minItems 0
    * @maxItems 50
    */
   memberGuestIds: string[];

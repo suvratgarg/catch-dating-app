@@ -89292,7 +89292,7 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['array'],
     itemValueTypes: <String>['string'],
-    minItems: 1,
+    minItems: 0,
     maxItems: 50,
     uniqueItems: true,
   );
@@ -103504,7 +103504,7 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['array'],
     itemValueTypes: <String>['string'],
-    minItems: 1,
+    minItems: 0,
     maxItems: 50,
     uniqueItems: true,
   );

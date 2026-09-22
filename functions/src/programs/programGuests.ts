@@ -3,6 +3,8 @@
   displayName:ASCENDING
 ) */
 import * as admin from "firebase-admin";
+import {householdMemberIds, planHouseholdMembership} from
+  "./programHouseholdMembership";
 import {CallableRequest, HttpsError, onCall} from
   "firebase-functions/v2/https";
 import {requireAuth} from "../shared/auth";
@@ -68,18 +70,15 @@ export async function upsertProgramGuestHandler(
     request, validateUpsertProgramGuestCallablePayload, normalizePayload);
   const db = deps.firestore();
   await deps.checkRateLimit(db, actorUid, "upsertProgramGuest");
-  const access = await requireProgramAccess({
-    db, programId: data.programId, actorUid, now: deps.now(),
-  });
-  requireProgramDuty(access, "programCoordinator");
-  if (data.householdId) {
-    await requireHouseholdInProgram(db, data.programId, data.householdId);
-  }
   const ref = data.guestId ?
     db.collection("programGuests").doc(data.guestId) :
     db.collection("programGuests").doc();
   let committedRevision = 0;
   await db.runTransaction(async (tx) => {
+    const access = await requireProgramAccess({
+      db, programId: data.programId, actorUid, now: deps.now(), transaction: tx,
+    });
+    requireProgramDuty(access, "programCoordinator");
     const snap = await tx.get(ref);
     const existing = snap.data() as ProgramGuestDocument | undefined;
     if (snap.exists &&
@@ -116,6 +115,17 @@ export async function upsertProgramGuestHandler(
       updatedAt: now,
       revision: nextRevision(existing?.revision, now),
     };
+    const households = await readHouseholds(db, tx,
+      [existing?.householdId, document.householdId]);
+    const memberships = planHouseholdMembership(data.programId,
+      access.program.organizerId, households, [{guestId: ref.id,
+        previousHouseholdId: existing?.householdId ?? null,
+        nextHouseholdId: document.householdId}]);
+    for (const [id, memberGuestIds] of memberships) {
+      tx.update(db.collection("programHouseholds").doc(id), {memberGuestIds,
+        updatedAt: now, revision: nextRevision(households.get(id)!.revision,
+          now)});
+    }
     committedRevision = document.revision;
     tx.set(ref, document);
   });
@@ -145,10 +155,11 @@ export async function listProgramGuestsHandler(
     const cursorRef = db.collection("programGuests").doc(data.cursor);
     const cursorSnap = await cursorRef.get();
     const cursorDoc = cursorSnap.data() as ProgramGuestDocument | undefined;
-    if (!cursorDoc || cursorDoc.programId !== data.programId) {
+    if (!cursorDoc || cursorDoc.programId !== data.programId ||
+        cursorDoc.organizerId !== access.program.organizerId) {
       throw new HttpsError("invalid-argument", "Unknown page cursor.");
     }
-    query = query.startAfter(cursorDoc.displayName);
+    query = query.startAfter(cursorSnap);
   }
   const snap = await query.get();
   const page = snap.docs.slice(0, limit);
@@ -161,7 +172,11 @@ export async function listProgramGuestsHandler(
   const households = await Promise.all(householdIds.map(async (id) => {
     const snap = await db.collection("programHouseholds").doc(id).get();
     const doc = snap.data() as ProgramHouseholdDocument | undefined;
-    if (!doc || doc.programId !== data.programId) return null;
+    if (!doc || doc.programId !== data.programId ||
+        doc.organizerId !== access.program.organizerId) {
+      throw new HttpsError("failed-precondition",
+        "Guest household ownership needs reconciliation.");
+    }
     return {
       householdId: id,
       label: doc.label,
@@ -174,6 +189,10 @@ export async function listProgramGuestsHandler(
     guests: page.map((doc) => {
       const guest = requireDoc<ProgramGuestDocument>(
         doc, "ProgramGuestDocument");
+      if (guest.organizerId !== access.program.organizerId) {
+        throw new HttpsError("failed-precondition",
+          "Guest ownership needs reconciliation.");
+      }
       return {
         guestId: doc.id,
         displayName: guest.displayName,
@@ -200,35 +219,49 @@ export async function upsertProgramHouseholdHandler(
     request, validateUpsertProgramHouseholdCallablePayload, normalizePayload);
   const db = deps.firestore();
   await deps.checkRateLimit(db, actorUid, "upsertProgramHousehold");
-  const access = await requireProgramAccess({
-    db, programId: data.programId, actorUid, now: deps.now(),
-  });
-  requireProgramDuty(access, "programCoordinator");
-  for (const guestId of data.memberGuestIds) {
-    const snap = await db.collection("programGuests").doc(guestId).get();
-    const guest = snap.data() as ProgramGuestDocument | undefined;
-    if (!guest || guest.programId !== data.programId) {
-      throw new HttpsError(
-        "invalid-argument",
-        `Guest ${guestId} is not in this program.`);
-    }
-  }
   const ref = data.householdId ?
     db.collection("programHouseholds").doc(data.householdId) :
     db.collection("programHouseholds").doc();
   let committedRevision = 0;
   await db.runTransaction(async (tx) => {
-    // All transaction reads must precede writes.
+    const access = await requireProgramAccess({
+      db, programId: data.programId, actorUid, now: deps.now(), transaction: tx,
+    });
+    requireProgramDuty(access, "programCoordinator");
     const snap = await tx.get(ref);
-    const guestSnaps = await Promise.all(data.memberGuestIds.map(
-      (guestId) => tx.get(db.collection("programGuests").doc(guestId))));
     const existing = snap.data() as ProgramHouseholdDocument | undefined;
-    if (snap.exists && existing!.programId !== data.programId) {
-      throw new HttpsError(
-        "not-found", "Household not found in this program.");
+    if (existing && (existing.programId !== data.programId ||
+        existing.organizerId !== access.program.organizerId)) {
+      throw new HttpsError("not-found", "Household not found in this program.");
     }
-    assertRevision(existing?.revision ?? 0, snap.exists ?
-      data.expectedRevision : undefined);
+    if (!existing && data.expectedRevision !== undefined) {
+      throw new HttpsError("failed-precondition",
+        "Household does not exist yet.");
+    }
+    assertRevision(existing?.revision ?? 0, data.expectedRevision);
+    if (existing) householdMemberIds(existing);
+    const selected = new Set(data.memberGuestIds);
+    const guestIds = [...new Set([
+      ...(existing?.memberGuestIds ?? []), ...selected])];
+    const guestSnaps = await Promise.all(guestIds.map((id) =>
+      tx.get(db.collection("programGuests").doc(id))));
+    const guests = new Map<string, ProgramGuestDocument>();
+    for (const guestSnap of guestSnaps) {
+      const guest = guestSnap.data() as ProgramGuestDocument | undefined;
+      if (!guest || guest.programId !== data.programId ||
+          guest.organizerId !== access.program.organizerId) {
+        throw new HttpsError("failed-precondition",
+          "Household guests need reconciliation.");
+      }
+      if (!selected.has(guestSnap.id) && guest.householdId !== ref.id) {
+        throw new HttpsError("failed-precondition",
+          "Household and guest membership disagree; reconcile them first.");
+      }
+      guests.set(guestSnap.id, guest);
+    }
+    const households = await readHouseholds(db, tx,
+      [...guests.values()].map((guest) => guest.householdId)
+        .filter((id) => id !== ref.id));
     const now = deps.now();
     const document: ProgramHouseholdDocument = {
       programId: data.programId,
@@ -239,26 +272,33 @@ export async function upsertProgramHouseholdHandler(
         existing?.primaryPhoneE164 ?? null : data.primaryPhoneE164,
       primaryEmail: data.primaryEmail === undefined ?
         existing?.primaryEmail ?? null : data.primaryEmail,
-      memberGuestIds: data.memberGuestIds,
+      memberGuestIds: existing?.memberGuestIds ?? [],
       deliveryPreference: data.deliveryPreference ??
         existing?.deliveryPreference ?? "none",
       createdAt: existing?.createdAt ?? now,
       updatedAt: now,
       revision: nextRevision(existing?.revision, now),
     };
+    households.set(ref.id, document);
+    const memberships = planHouseholdMembership(data.programId,
+      access.program.organizerId, households, [...guests].map(([id, guest]) =>
+        ({guestId: id, previousHouseholdId: guest.householdId,
+          nextHouseholdId: selected.has(id) ? ref.id : null})));
+    document.memberGuestIds = memberships.get(ref.id) ??
+      document.memberGuestIds;
     committedRevision = document.revision;
     tx.set(ref, document);
-    // Keep guests' householdId in step so projections stay consistent.
-    for (const guestSnap of guestSnaps) {
-      const guest = guestSnap.data() as ProgramGuestDocument | undefined;
-      if (guest && guest.programId === data.programId &&
-          guest.householdId !== ref.id) {
-        tx.update(guestSnap.ref, {
-          householdId: ref.id,
-          updatedAt: now,
-          revision: nextRevision(guest.revision, now),
-        });
-      }
+    for (const [id, memberGuestIds] of memberships) {
+      if (id === ref.id) continue;
+      tx.update(db.collection("programHouseholds").doc(id), {memberGuestIds,
+        updatedAt: now, revision: nextRevision(households.get(id)!.revision,
+          now)});
+    }
+    for (const [id, guest] of guests) {
+      const householdId = selected.has(id) ? ref.id : null;
+      if (guest.householdId === householdId) continue;
+      tx.update(db.collection("programGuests").doc(id), {householdId,
+        updatedAt: now, revision: nextRevision(guest.revision, now)});
     }
   });
   return {entityId: ref.id, revision: committedRevision,
@@ -280,13 +320,21 @@ export async function listProgramHouseholdsHandler(
   requireProgramDuty(access, "programCoordinator");
   const snap = await db.collection("programHouseholds")
     .where("programId", "==", data.programId)
-    .limit(500)
+    .limit(501)
     .get();
+  if (snap.size > 500) {
+    throw new HttpsError("resource-exhausted",
+      "Household inventory exceeds its 500-record limit.");
+  }
   return {
     programId: data.programId,
     guests: [],
     households: snap.docs.map((doc) => {
       const household = doc.data() as ProgramHouseholdDocument;
+      if (household.organizerId !== access.program.organizerId) {
+        throw new HttpsError("failed-precondition",
+          "Household ownership needs reconciliation.");
+      }
       return {
         householdId: doc.id,
         label: household.label,
@@ -298,17 +346,16 @@ export async function listProgramHouseholdsHandler(
   };
 }
 
-async function requireHouseholdInProgram(
+async function readHouseholds(
   db: FirebaseFirestore.Firestore,
-  programId: string,
-  householdId: string
-): Promise<void> {
-  const snap = await db.collection("programHouseholds").doc(householdId).get();
-  const household = snap.data() as ProgramHouseholdDocument | undefined;
-  if (!household || household.programId !== programId) {
-    throw new HttpsError(
-      "invalid-argument", "Household is not in this program.");
-  }
+  tx: FirebaseFirestore.Transaction,
+  ids: Array<string | null | undefined>,
+): Promise<Map<string, ProgramHouseholdDocument>> {
+  const unique = [...new Set(ids.filter((id): id is string => !!id))];
+  const snaps = await Promise.all(unique.map((id) =>
+    tx.get(db.collection("programHouseholds").doc(id))));
+  return new Map(snaps.filter((snap) => snap.exists).map((snap) =>
+    [snap.id, snap.data() as ProgramHouseholdDocument]));
 }
 
 function normalizePayload(value: unknown): unknown {

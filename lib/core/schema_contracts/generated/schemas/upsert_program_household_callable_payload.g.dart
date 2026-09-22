@@ -8,7 +8,7 @@ const schemaUpsertProgramHouseholdCallablePayloadSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
   '\$id': 'https://catch.app/contracts/callables/upsert_program_household_payload.schema.json',
   'title': 'UpsertProgramHouseholdCallablePayload',
-  'description': 'Create or update a household/party grouping for program guests.',
+  'description': 'Create or update a household invitation grouping for program guests.',
   'type': 'object',
   'additionalProperties': false,
   'required': <Object?>[
@@ -59,7 +59,7 @@ const schemaUpsertProgramHouseholdCallablePayloadSchema = <String, Object?>{
     },
     'memberGuestIds': <String, Object?>{
       'type': 'array',
-      'minItems': 1,
+      'minItems': 0,
       'maxItems': 50,
       'uniqueItems': true,
       'items': <String, Object?>{

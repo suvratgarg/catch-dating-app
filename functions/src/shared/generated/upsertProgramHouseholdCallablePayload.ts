@@ -3,7 +3,7 @@
 // Regenerate with: node tool/contracts/generate_schema_contracts.mjs
 
 /**
- * Create or update a household/party grouping for program guests.
+ * Create or update a household invitation grouping for program guests.
  */
 export interface UpsertProgramHouseholdCallablePayload {
   programId: string;
@@ -14,7 +14,7 @@ export interface UpsertProgramHouseholdCallablePayload {
   primaryPhoneE164?: string | null;
   primaryEmail?: string | null;
   /**
-   * @minItems 1
+   * @minItems 0
    * @maxItems 50
    */
   memberGuestIds: string[];
