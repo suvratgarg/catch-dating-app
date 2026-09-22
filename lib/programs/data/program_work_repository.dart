@@ -7,6 +7,7 @@ import 'package:catch_dating_app/programs/data/program_read_snapshots.dart';
 import 'package:catch_dating_app/programs/data/program_snapshot_reader.dart';
 import 'package:catch_dating_app/programs/domain/program_access_policy.dart';
 import 'package:catch_dating_app/programs/domain/program_models.dart';
+import 'package:catch_dating_app/programs/domain/travel_leg_revision.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -90,13 +91,17 @@ class ProgramWorkRepository {
     required String programId,
     required String legId,
     required String clientOperationId,
-    int? expectedRevision,
+    required int expectedRevision,
+    required DateTime observedAt,
+    TravelLegObservationReference? afterObservation,
   }) => _readiness(
     programId: programId,
     legId: legId,
     action: 'claim',
     clientOperationId: clientOperationId,
     expectedRevision: expectedRevision,
+    observedAt: observedAt,
+    afterObservation: afterObservation,
     label: 'claim the guest',
   );
 
@@ -104,13 +109,17 @@ class ProgramWorkRepository {
     required String programId,
     required String legId,
     required String clientOperationId,
-    int? expectedRevision,
+    required int expectedRevision,
+    required DateTime observedAt,
+    TravelLegObservationReference? afterObservation,
   }) => _readiness(
     programId: programId,
     legId: legId,
     action: 'unclaim',
     clientOperationId: clientOperationId,
     expectedRevision: expectedRevision,
+    observedAt: observedAt,
+    afterObservation: afterObservation,
     label: 'release the claim',
   );
 
@@ -118,7 +127,9 @@ class ProgramWorkRepository {
     required String programId,
     required String legId,
     required String clientOperationId,
-    int? expectedRevision,
+    required int expectedRevision,
+    required DateTime observedAt,
+    TravelLegObservationReference? afterObservation,
     DateTime? manualCurbAt,
     String? manualCurbNote,
   }) => _readiness(
@@ -127,6 +138,8 @@ class ProgramWorkRepository {
     action: 'markReady',
     clientOperationId: clientOperationId,
     expectedRevision: expectedRevision,
+    observedAt: observedAt,
+    afterObservation: afterObservation,
     manualCurbAt: manualCurbAt,
     manualCurbNote: manualCurbNote,
     label: 'mark the guest ready',
@@ -136,7 +149,9 @@ class ProgramWorkRepository {
     required String programId,
     required String legId,
     required String clientOperationId,
-    int? expectedRevision,
+    required int expectedRevision,
+    required DateTime observedAt,
+    TravelLegObservationReference? afterObservation,
     DateTime? manualCurbAt,
     String? manualCurbNote,
   }) => _readiness(
@@ -145,6 +160,8 @@ class ProgramWorkRepository {
     action: 'markDisrupted',
     clientOperationId: clientOperationId,
     expectedRevision: expectedRevision,
+    observedAt: observedAt,
+    afterObservation: afterObservation,
     manualCurbAt: manualCurbAt,
     manualCurbNote: manualCurbNote,
     label: 'flag the disruption',
@@ -160,7 +177,7 @@ class ProgramWorkRepository {
     String? destinationHotelId,
     String? destinationLabel,
     String? vendorId,
-    required List<({String legId, int revision})> expectedLegRevisions,
+    required List<DispatchLegRevision> expectedLegRevisions,
     DateTime? departedAt,
     String? notes,
   }) => _call(
@@ -175,7 +192,7 @@ class ProgramWorkRepository {
       vendorId: vendorId,
       legIds: legIds,
       expectedLegRevisions: expectedLegRevisions
-          .map((fence) => {'legId': fence.legId, 'revision': fence.revision})
+          .map((fence) => fence.toJson())
           .toList(growable: false),
       departedAtMillis: departedAt?.millisecondsSinceEpoch,
       notes: notes,
@@ -268,7 +285,9 @@ class ProgramWorkRepository {
     required String action,
     required String clientOperationId,
     required String label,
-    int? expectedRevision,
+    required int expectedRevision,
+    required DateTime observedAt,
+    TravelLegObservationReference? afterObservation,
     DateTime? manualCurbAt,
     String? manualCurbNote,
   }) => _call(
@@ -278,6 +297,8 @@ class ProgramWorkRepository {
       legId: legId,
       action: action,
       expectedRevision: expectedRevision,
+      observedAtMillis: observedAt.millisecondsSinceEpoch,
+      afterObservation: afterObservation?.toJson(),
       manualCurbAtMillis: manualCurbAt?.millisecondsSinceEpoch,
       manualCurbNote: manualCurbNote,
       clientOperationId: clientOperationId,

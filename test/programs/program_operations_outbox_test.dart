@@ -3,6 +3,7 @@ import 'package:catch_dating_app/core/persistence/memory_command_journal_storage
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/programs/data/program_operations_outbox.dart';
 import 'package:catch_dating_app/programs/domain/program_models.dart';
+import 'package:catch_dating_app/programs/domain/travel_leg_revision.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 class MemoryOutboxStore
@@ -34,6 +35,9 @@ class FakeProgramMutator implements ProgramOperationsMutator {
   Object? error;
   bool failOnce = false;
   DateTime? lastDeparture;
+  DateTime? lastObservation;
+  final List<TravelLegObservationReference?> observationPredecessors = [];
+  List<DispatchLegRevision> lastFences = [];
 
   Object? _maybeError() {
     if (failOnce) {
@@ -50,11 +54,15 @@ class FakeProgramMutator implements ProgramOperationsMutator {
     required String legId,
     required String action,
     required String clientOperationId,
-    int? expectedRevision,
+    required int expectedRevision,
+    required DateTime observedAt,
+    TravelLegObservationReference? afterObservation,
     int? manualCurbAtMillis,
     String? manualCurbNote,
   }) async {
     calls.add('obs:$legId:$action:$clientOperationId');
+    lastObservation = observedAt;
+    observationPredecessors.add(afterObservation);
     if (_maybeError() case final failure?) throw failure;
     return const ProgramMutationResult(
       entityId: 'leg',
@@ -75,10 +83,11 @@ class FakeProgramMutator implements ProgramOperationsMutator {
     String? destinationHotelId,
     String? destinationLabel,
     String? vendorId,
-    required List<({String legId, int revision})> expectedLegRevisions,
+    required List<DispatchLegRevision> expectedLegRevisions,
   }) async {
     calls.add('dispatch:$plateDisplay:$clientOperationId');
     lastDeparture = departedAt;
+    lastFences = expectedLegRevisions;
     if (_maybeError() case final failure?) throw failure;
     return const DispatchResult(
       tripId: 'trip_1',
@@ -97,6 +106,7 @@ ProgramOperationOutboxEntry legObservation({
   programId: 'program-1',
   legId: legId,
   action: 'markReady',
+  expectedRevision: 1,
   clientOperationId: operationId,
   createdAt: createdAt ?? DateTime.now(),
 );
@@ -152,7 +162,9 @@ void main() {
             vehicleClassId: 'innova',
             plateDisplay: 'DL-1T-4421',
             legIds: const ['leg-1'],
-            expectedLegRevisions: const [(legId: 'leg-1', revision: 2)],
+            expectedLegRevisions: const [
+              DispatchLegRevision(legId: 'leg-1', revision: 2),
+            ],
             clientOperationId: 'op_dispatch',
             createdAt: DateTime.now().add(const Duration(seconds: 1)),
           ),
@@ -232,7 +244,9 @@ void main() {
         vehicleClassId: 'suv',
         plateDisplay: 'DL1234',
         legIds: ['leg-1'],
-        expectedLegRevisions: [(legId: 'leg-1', revision: 1)],
+        expectedLegRevisions: [
+          const DispatchLegRevision(legId: 'leg-1', revision: 1),
+        ],
         clientOperationId: 'legacy',
         createdAt: DateTime.now(),
       ).toJson();
@@ -264,7 +278,9 @@ void main() {
             vehicleClassId: 'suv',
             plateDisplay: 'DL1234',
             legIds: ['leg-1'],
-            expectedLegRevisions: [(legId: 'leg-1', revision: 1)],
+            expectedLegRevisions: [
+              const DispatchLegRevision(legId: 'leg-1', revision: 1),
+            ],
             clientOperationId: 'departure',
             createdAt: departedAt,
           ),
@@ -273,6 +289,104 @@ void main() {
         expect(
           mutator.lastDeparture?.millisecondsSinceEpoch,
           departedAt.millisecondsSinceEpoch,
+        );
+      },
+    );
+
+    test(
+      'receipt references and observed time survive journal reload',
+      () async {
+        final observedAt = DateTime.now().subtract(const Duration(hours: 2));
+        const claimRef = TravelLegObservationReference(
+          clientOperationId: 'offline-claim',
+          action: 'claim',
+        );
+        const readyRef = TravelLegObservationReference(
+          clientOperationId: 'offline-ready',
+          action: 'markReady',
+        );
+        await outbox.enqueueAndAttempt(
+          accountId: 'acct',
+          offline: true,
+          entry: ProgramOperationOutboxEntry.legObservation(
+            programId: 'program-1',
+            legId: 'leg-1',
+            action: 'claim',
+            clientOperationId: claimRef.clientOperationId,
+            expectedRevision: 1,
+            createdAt: observedAt,
+          ),
+        );
+        await outbox.enqueueAndAttempt(
+          accountId: 'acct',
+          offline: true,
+          entry: ProgramOperationOutboxEntry.legObservation(
+            programId: 'program-1',
+            legId: 'leg-1',
+            action: 'markReady',
+            clientOperationId: readyRef.clientOperationId,
+            expectedRevision: 1,
+            createdAt: observedAt,
+            afterObservation: claimRef,
+          ),
+        );
+        await outbox.enqueueAndAttempt(
+          accountId: 'acct',
+          offline: true,
+          entry: ProgramOperationOutboxEntry.dispatch(
+            programId: 'program-1',
+            pickupPointId: 'pickup',
+            vehicleClassId: 'suv',
+            plateDisplay: 'DL1234',
+            legIds: ['leg-1'],
+            expectedLegRevisions: [
+              const DispatchLegRevision(
+                legId: 'leg-1',
+                revision: 1,
+                afterObservation: readyRef,
+              ),
+            ],
+            clientOperationId: 'offline-dispatch',
+            createdAt: observedAt,
+          ),
+        );
+        final reloaded = ProgramOperationsOutbox(store, mutator);
+        final result = await reloaded.flushProgram(
+          accountId: 'acct',
+          programId: 'program-1',
+        );
+        expect(result.entries, isEmpty);
+        expect(mutator.observationPredecessors.map((ref) => ref?.toJson()), [
+          null,
+          claimRef.toJson(),
+        ]);
+        expect(
+          mutator.lastFences.single.afterObservation?.toJson(),
+          readyRef.toJson(),
+        );
+        expect(mutator.lastFences.single.revision, 1);
+        expect(
+          mutator.lastObservation?.millisecondsSinceEpoch,
+          observedAt.millisecondsSinceEpoch,
+        );
+      },
+    );
+
+    test(
+      'legacy observations without a revision are retained for review',
+      () async {
+        final raw = legObservation(legId: 'leg-1').toJson();
+        (raw['payload']! as Map<String, Object?>).remove('expectedRevision');
+        await store.save('acct', [ProgramOperationOutboxEntry.fromJson(raw)]);
+        final result = await outbox.flushProgram(
+          accountId: 'acct',
+          programId: 'program-1',
+        );
+        expect(mutator.calls, isEmpty);
+        expect(result.needsReviewCount, 1);
+        expect(
+          result.entries.single.lastErrorCode,
+          'arrival-observation-needs-review',
         );
       },
     );

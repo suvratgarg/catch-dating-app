@@ -9,11 +9,22 @@ export interface SetProgramTravelReadinessCallablePayload {
   programId: string;
   legId: string;
   action: "markReady" | "claim" | "unclaim" | "markDisrupted";
-  expectedRevision?: number;
+  expectedRevision: number;
   /**
    * Reviewed curb estimate set alongside markDisrupted or planner correction.
    */
   manualCurbAtMillis?: number | null;
   manualCurbNote?: string | null;
   clientOperationId: string;
+  /**
+   * A preceding observation by the same actor on the same journey. Its receipt result revision must still equal the current leg revision.
+   */
+  afterObservation?: {
+    clientOperationId: string;
+    action: "claim" | "unclaim" | "markReady" | "markDisrupted";
+  };
+  /**
+   * Immutable device observation time; accepted up to seven days late with five minutes of clock skew.
+   */
+  observedAtMillis: number;
 }

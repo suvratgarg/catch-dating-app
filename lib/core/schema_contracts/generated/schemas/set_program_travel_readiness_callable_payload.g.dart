@@ -16,6 +16,8 @@ const schemaSetProgramTravelReadinessCallablePayloadSchema = <String, Object?>{
     'legId',
     'action',
     'clientOperationId',
+    'expectedRevision',
+    'observedAtMillis',
   ],
   'properties': <String, Object?>{
     'programId': <String, Object?>{
@@ -48,7 +50,7 @@ const schemaSetProgramTravelReadinessCallablePayloadSchema = <String, Object?>{
         'null',
       ],
       'minimum': 0,
-      'maximum': 9007199254740991,
+      'maximum': 253402300799999,
       'description': 'Reviewed curb estimate set alongside markDisrupted or planner correction.',
     },
     'manualCurbNote': <String, Object?>{
@@ -62,6 +64,37 @@ const schemaSetProgramTravelReadinessCallablePayloadSchema = <String, Object?>{
       'type': 'string',
       'minLength': 8,
       'maxLength': 120,
+    },
+    'afterObservation': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'clientOperationId',
+        'action',
+      ],
+      'description': 'A preceding observation by the same actor on the same journey. Its receipt result revision must still equal the current leg revision.',
+      'properties': <String, Object?>{
+        'clientOperationId': <String, Object?>{
+          'type': 'string',
+          'minLength': 8,
+          'maxLength': 120,
+        },
+        'action': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'claim',
+            'unclaim',
+            'markReady',
+            'markDisrupted',
+          ],
+        },
+      },
+    },
+    'observedAtMillis': <String, Object?>{
+      'type': 'integer',
+      'minimum': 0,
+      'maximum': 253402300799999,
+      'description': 'Immutable device observation time; accepted up to seven days late with five minutes of clock skew.',
     },
   },
 };

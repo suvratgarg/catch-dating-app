@@ -213,6 +213,8 @@ test("claims are exclusive, releasable, and replay-safe", async () => {
     programId: "program-1",
     legId: "leg-1",
     action: "claim",
+    observedAtMillis: now.toMillis(),
+    expectedRevision: 1,
     clientOperationId: "op-claim-1",
   }, "greeter-1"), greeterDeps);
   assert.equal(claim.alreadyApplied, false);
@@ -221,6 +223,8 @@ test("claims are exclusive, releasable, and replay-safe", async () => {
     programId: "program-1",
     legId: "leg-1",
     action: "claim",
+    observedAtMillis: now.toMillis(),
+    expectedRevision: 1,
     clientOperationId: "op-claim-1",
   }, "greeter-1"), greeterDeps);
   assert.equal(replay.alreadyApplied, true);
@@ -231,6 +235,8 @@ test("claims are exclusive, releasable, and replay-safe", async () => {
       programId: "program-1",
       legId: "leg-1",
       action: "claim",
+      observedAtMillis: now.toMillis(),
+      expectedRevision: claim.revision,
       clientOperationId: "op-claim-2",
     }, "greeter-2"), greeterDeps),
     (error: unknown) =>
@@ -242,6 +248,7 @@ test("claims are exclusive, releasable, and replay-safe", async () => {
       programId: "program-1",
       legId: "leg-1",
       action: "claim",
+      observedAtMillis: now.toMillis(),
       expectedRevision: 7,
       clientOperationId: "op-claim-1",
     }, "greeter-1"), greeterDeps),
@@ -253,6 +260,8 @@ test("claims are exclusive, releasable, and replay-safe", async () => {
     programId: "program-1",
     legId: "leg-1",
     action: "unclaim",
+    observedAtMillis: now.toMillis(),
+    expectedRevision: claim.revision,
     clientOperationId: "op-unclaim-1",
   }, "greeter-1"), greeterDeps);
   assert.equal(
@@ -263,6 +272,8 @@ test("claims are exclusive, releasable, and replay-safe", async () => {
       programId: "program-1",
       legId: "leg-2",
       action: "claim",
+      observedAtMillis: now.toMillis(),
+      expectedRevision: 1,
       clientOperationId: "op-claim-3",
     }, "greeter-1"), greeterDeps),
     (error: unknown) =>

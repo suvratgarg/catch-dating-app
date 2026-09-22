@@ -11,27 +11,33 @@ final class SetProgramTravelReadinessCallableRequest {
     required this.programId,
     required this.legId,
     required this.action,
-    this.expectedRevision,
+    required this.expectedRevision,
     this.manualCurbAtMillis,
     this.manualCurbNote,
     required this.clientOperationId,
+    this.afterObservation,
+    required this.observedAtMillis,
   });
 
   final String programId;
   final String legId;
   final String action;
-  final int? expectedRevision;
+  final int expectedRevision;
   final int? manualCurbAtMillis;
   final String? manualCurbNote;
   final String clientOperationId;
+  final Map<String, Object?>? afterObservation;
+  final int observedAtMillis;
 
   Map<String, Object?> toJson() => {
     'programId': programId,
     'legId': legId,
     'action': action,
-    'expectedRevision': ?expectedRevision,
+    'expectedRevision': expectedRevision,
     'manualCurbAtMillis': ?manualCurbAtMillis,
     'manualCurbNote': ?manualCurbNote,
     'clientOperationId': clientOperationId,
+    'afterObservation': ?afterObservation,
+    'observedAtMillis': observedAtMillis,
   };
 }

@@ -1,7 +1,8 @@
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/programs/domain/program_models.dart';
+import 'package:catch_dating_app/programs/domain/travel_leg_revision.dart';
 
-typedef DispatchLegRevision = ({String legId, int revision});
+export 'travel_leg_revision.dart';
 
 void validateDispatchRevisionFences(
   List<String> legIds,
@@ -39,7 +40,7 @@ List<DispatchLegRevision> captureDispatchLegRevisions(
         code: 'dispatch-passengers-not-ready',
       );
     }
-    fences.add((legId: legId, revision: row.revision));
+    fences.add(DispatchLegRevision(legId: legId, revision: row.revision));
   }
   validateDispatchRevisionFences(legIds, fences);
   return fences;

@@ -14336,6 +14336,21 @@ abstract final class CatchContractConstraints {
     uniqueItems: true,
   );
 
+  static const dispatchProgramTripCallablePayloadExpectedLegRevisionsItemsAfterObservationAction = CatchContractFieldConstraints(
+    path: 'dispatchProgramTripCallablePayload.expectedLegRevisions.items.afterObservation.action',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['claim', 'unclaim', 'markReady', 'markDisrupted'],
+  );
+
+  static const dispatchProgramTripCallablePayloadExpectedLegRevisionsItemsAfterObservationClientOperationId = CatchContractFieldConstraints(
+    path: 'dispatchProgramTripCallablePayload.expectedLegRevisions.items.afterObservation.clientOperationId',
+    maxLength: 120,
+    minLength: 8,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const dispatchProgramTripCallablePayloadExpectedLegRevisionsItemsLegId = CatchContractFieldConstraints(
     path: 'dispatchProgramTripCallablePayload.expectedLegRevisions.items.legId',
     maxLength: 180,
@@ -96251,6 +96266,21 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['markReady', 'claim', 'unclaim', 'markDisrupted'],
   );
 
+  static const setProgramTravelReadinessCallablePayloadAfterObservationAction = CatchContractFieldConstraints(
+    path: 'setProgramTravelReadinessCallablePayload.afterObservation.action',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['claim', 'unclaim', 'markReady', 'markDisrupted'],
+  );
+
+  static const setProgramTravelReadinessCallablePayloadAfterObservationClientOperationId = CatchContractFieldConstraints(
+    path: 'setProgramTravelReadinessCallablePayload.afterObservation.clientOperationId',
+    maxLength: 120,
+    minLength: 8,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const setProgramTravelReadinessCallablePayloadClientOperationId = CatchContractFieldConstraints(
     path: 'setProgramTravelReadinessCallablePayload.clientOperationId',
     maxLength: 120,
@@ -96261,6 +96291,7 @@ abstract final class CatchContractConstraints {
 
   static const setProgramTravelReadinessCallablePayloadExpectedRevision = CatchContractFieldConstraints(
     path: 'setProgramTravelReadinessCallablePayload.expectedRevision',
+    required: true,
     valueTypes: <String>['integer'],
     minimum: 1,
     maximum: 9007199254740991,
@@ -96278,13 +96309,21 @@ abstract final class CatchContractConstraints {
     path: 'setProgramTravelReadinessCallablePayload.manualCurbAtMillis',
     valueTypes: <String>['integer'],
     minimum: 0,
-    maximum: 9007199254740991,
+    maximum: 253402300799999,
   );
 
   static const setProgramTravelReadinessCallablePayloadManualCurbNote = CatchContractFieldConstraints(
     path: 'setProgramTravelReadinessCallablePayload.manualCurbNote',
     maxLength: 280,
     valueTypes: <String>['string'],
+  );
+
+  static const setProgramTravelReadinessCallablePayloadObservedAtMillis = CatchContractFieldConstraints(
+    path: 'setProgramTravelReadinessCallablePayload.observedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 253402300799999,
   );
 
   static const setProgramTravelReadinessCallablePayloadProgramId = CatchContractFieldConstraints(
@@ -108641,6 +108680,8 @@ abstract final class CatchContractConstraints {
     'dispatchProgramTripCallablePayload.destinationHotelId': dispatchProgramTripCallablePayloadDestinationHotelId,
     'dispatchProgramTripCallablePayload.destinationLabel': dispatchProgramTripCallablePayloadDestinationLabel,
     'dispatchProgramTripCallablePayload.expectedLegRevisions': dispatchProgramTripCallablePayloadExpectedLegRevisions,
+    'dispatchProgramTripCallablePayload.expectedLegRevisions.items.afterObservation.action': dispatchProgramTripCallablePayloadExpectedLegRevisionsItemsAfterObservationAction,
+    'dispatchProgramTripCallablePayload.expectedLegRevisions.items.afterObservation.clientOperationId': dispatchProgramTripCallablePayloadExpectedLegRevisionsItemsAfterObservationClientOperationId,
     'dispatchProgramTripCallablePayload.expectedLegRevisions.items.legId': dispatchProgramTripCallablePayloadExpectedLegRevisionsItemsLegId,
     'dispatchProgramTripCallablePayload.expectedLegRevisions.items.revision': dispatchProgramTripCallablePayloadExpectedLegRevisionsItemsRevision,
     'dispatchProgramTripCallablePayload.kind': dispatchProgramTripCallablePayloadKind,
@@ -119713,11 +119754,14 @@ abstract final class CatchContractConstraints {
     'setOrganizerNotificationPreferenceCallablePayload.enabled': setOrganizerNotificationPreferenceCallablePayloadEnabled,
     'setOrganizerNotificationPreferenceCallablePayload.organizerId': setOrganizerNotificationPreferenceCallablePayloadOrganizerId,
     'setProgramTravelReadinessCallablePayload.action': setProgramTravelReadinessCallablePayloadAction,
+    'setProgramTravelReadinessCallablePayload.afterObservation.action': setProgramTravelReadinessCallablePayloadAfterObservationAction,
+    'setProgramTravelReadinessCallablePayload.afterObservation.clientOperationId': setProgramTravelReadinessCallablePayloadAfterObservationClientOperationId,
     'setProgramTravelReadinessCallablePayload.clientOperationId': setProgramTravelReadinessCallablePayloadClientOperationId,
     'setProgramTravelReadinessCallablePayload.expectedRevision': setProgramTravelReadinessCallablePayloadExpectedRevision,
     'setProgramTravelReadinessCallablePayload.legId': setProgramTravelReadinessCallablePayloadLegId,
     'setProgramTravelReadinessCallablePayload.manualCurbAtMillis': setProgramTravelReadinessCallablePayloadManualCurbAtMillis,
     'setProgramTravelReadinessCallablePayload.manualCurbNote': setProgramTravelReadinessCallablePayloadManualCurbNote,
+    'setProgramTravelReadinessCallablePayload.observedAtMillis': setProgramTravelReadinessCallablePayloadObservedAtMillis,
     'setProgramTravelReadinessCallablePayload.programId': setProgramTravelReadinessCallablePayloadProgramId,
     'setReviewResponseCallablePayload.message': setReviewResponseCallablePayloadMessage,
     'setReviewResponseCallablePayload.reviewId': setReviewResponseCallablePayloadReviewId,

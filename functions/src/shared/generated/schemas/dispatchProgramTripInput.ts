@@ -100,6 +100,31 @@ export const dispatchProgramTripCallablePayloadSchema: Record<string, unknown> =
             "type": "integer",
             "minimum": 1,
             "maximum": 9007199254740991
+          },
+          "afterObservation": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "clientOperationId",
+              "action"
+            ],
+            "description": "A preceding observation by the same actor on the same journey. Its receipt result revision must still equal the current leg revision.",
+            "properties": {
+              "clientOperationId": {
+                "type": "string",
+                "minLength": 8,
+                "maxLength": 120
+              },
+              "action": {
+                "type": "string",
+                "enum": [
+                  "claim",
+                  "unclaim",
+                  "markReady",
+                  "markDisrupted"
+                ]
+              }
+            }
           }
         }
       },

@@ -28,9 +28,14 @@ ProgramArrivalsRoster roster(String readiness) =>
 
 void main() {
   test('dispatch captures revisions from a ready saved roster', () {
-    expect(captureDispatchLegRevisions(roster('ready'), ['leg']), [
-      (legId: 'leg', revision: 42),
-    ]);
+    expect(
+      captureDispatchLegRevisions(roster('ready'), [
+        'leg',
+      ]).map((fence) => fence.toJson()),
+      [
+        {'legId': 'leg', 'revision': 42},
+      ],
+    );
   });
   for (final state in ['expected', 'disrupted', 'dispatched', 'arrived']) {
     test('dispatch cannot queue a $state passenger', () {

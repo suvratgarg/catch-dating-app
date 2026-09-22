@@ -8,7 +8,8 @@ import {setProgramTravelReadinessHandler} from "./programReadiness";
 
 function data(action = "markReady") {
   return {programId: "program-1", legId: "leg-1", action,
-    expectedRevision: 1, clientOperationId: "readiness-operation"};
+    expectedRevision: 1, observedAtMillis: now.toMillis(),
+    clientOperationId: "readiness-operation"};
 }
 function isCode(code: string) {
   return (error: unknown) => error instanceof HttpsError && error.code === code;

@@ -286,6 +286,29 @@
       "type": "string",
       "minLength": 8,
       "maxLength": 120
+    },
+    "travelLegObservationReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "clientOperationId",
+        "action"
+      ],
+      "description": "A preceding observation by the same actor on the same journey. Its receipt result revision must still equal the current leg revision.",
+      "properties": {
+        "clientOperationId": {
+          "$ref": "#/definitions/clientOperationId"
+        },
+        "action": {
+          "type": "string",
+          "enum": [
+            "claim",
+            "unclaim",
+            "markReady",
+            "markDisrupted"
+          ]
+        }
+      }
     }
   }
 }

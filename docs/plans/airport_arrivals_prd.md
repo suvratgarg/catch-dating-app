@@ -1296,6 +1296,22 @@ guest to another household updates both household membership lists in the same
 transaction; import never implies invitation, consent, or RSVP.
 
 
+### Offline observation fences
+
+Every new arrival observation carries a roster revision and its immutable device
+observation time. A subsequent offline command can reference this actor's prior
+observation receipt for the same leg. Readiness and dispatch resolve that receipt
+inside their transaction and require its resulting revision to remain current.
+Another actor's receipt, a different journey, a missing receipt, or an intervening
+provider/planner/staff write causes review; the client never silently rebases.
+
+Claims and readiness use the observed time rather than the later sync time.
+Observations over seven days old or over five minutes in the future require
+review; accepted positive clock skew is clamped to server time. Replays bind both
+the time and predecessor reference. Legacy queued observations lacking a revision
+remain preserved for review. The command adapter shares typed observation
+references and manifest fences with the repository so wire fields cannot drift.
+
 ### Suggested manifest integrity
 
 A party becomes available when its slowest member is ready, while its wait

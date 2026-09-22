@@ -28,6 +28,13 @@ export interface DispatchProgramTripCallablePayload {
   expectedLegRevisions: {
     legId: string;
     revision: number;
+    /**
+     * A preceding observation by the same actor on the same journey. Its receipt result revision must still equal the current leg revision.
+     */
+    afterObservation?: {
+      clientOperationId: string;
+      action: "claim" | "unclaim" | "markReady" | "markDisrupted";
+    };
   }[];
   /**
    * Explicit departure timestamp for late offline sync; defaults to server now.

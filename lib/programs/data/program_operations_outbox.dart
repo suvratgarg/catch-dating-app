@@ -30,7 +30,9 @@ abstract interface class ProgramOperationsMutator {
     required String legId,
     required String action,
     required String clientOperationId,
-    int? expectedRevision,
+    required int expectedRevision,
+    required DateTime observedAt,
+    TravelLegObservationReference? afterObservation,
     int? manualCurbAtMillis,
     String? manualCurbNote,
   });
@@ -46,7 +48,7 @@ abstract interface class ProgramOperationsMutator {
     String? destinationHotelId,
     String? destinationLabel,
     String? vendorId,
-    required List<({String legId, int revision})> expectedLegRevisions,
+    required List<DispatchLegRevision> expectedLegRevisions,
   });
 }
 
@@ -61,7 +63,9 @@ class RepositoryProgramOperationsMutator implements ProgramOperationsMutator {
     required String legId,
     required String action,
     required String clientOperationId,
-    int? expectedRevision,
+    required int expectedRevision,
+    required DateTime observedAt,
+    TravelLegObservationReference? afterObservation,
     int? manualCurbAtMillis,
     String? manualCurbNote,
   }) {
@@ -74,18 +78,24 @@ class RepositoryProgramOperationsMutator implements ProgramOperationsMutator {
         legId: legId,
         clientOperationId: clientOperationId,
         expectedRevision: expectedRevision,
+        observedAt: observedAt,
+        afterObservation: afterObservation,
       ),
       'unclaim' => _repository.unclaimLeg(
         programId: programId,
         legId: legId,
         clientOperationId: clientOperationId,
         expectedRevision: expectedRevision,
+        observedAt: observedAt,
+        afterObservation: afterObservation,
       ),
       'markReady' => _repository.markLegReady(
         programId: programId,
         legId: legId,
         clientOperationId: clientOperationId,
         expectedRevision: expectedRevision,
+        observedAt: observedAt,
+        afterObservation: afterObservation,
         manualCurbAt: manualCurbAt,
         manualCurbNote: manualCurbNote,
       ),
@@ -94,6 +104,8 @@ class RepositoryProgramOperationsMutator implements ProgramOperationsMutator {
         legId: legId,
         clientOperationId: clientOperationId,
         expectedRevision: expectedRevision,
+        observedAt: observedAt,
+        afterObservation: afterObservation,
         manualCurbAt: manualCurbAt,
         manualCurbNote: manualCurbNote,
       ),
@@ -113,7 +125,7 @@ class RepositoryProgramOperationsMutator implements ProgramOperationsMutator {
     String? destinationHotelId,
     String? destinationLabel,
     String? vendorId,
-    required List<({String legId, int revision})> expectedLegRevisions,
+    required List<DispatchLegRevision> expectedLegRevisions,
   }) => _repository.dispatchTrip(
     programId: programId,
     pickupPointId: pickupPointId,
@@ -150,7 +162,8 @@ class ProgramOperationOutboxEntry {
     required String action,
     required String clientOperationId,
     required DateTime createdAt,
-    int? expectedRevision,
+    required int expectedRevision,
+    TravelLegObservationReference? afterObservation,
     int? manualCurbAtMillis,
     String? manualCurbNote,
   }) => ProgramOperationOutboxEntry._(
@@ -163,6 +176,8 @@ class ProgramOperationOutboxEntry {
       'legId': legId,
       'action': action,
       'expectedRevision': expectedRevision,
+      if (afterObservation != null)
+        'afterObservation': afterObservation.toJson(),
       'manualCurbAtMillis': manualCurbAtMillis,
       'manualCurbNote': manualCurbNote,
     },
@@ -179,7 +194,7 @@ class ProgramOperationOutboxEntry {
     String? destinationHotelId,
     String? destinationLabel,
     String? vendorId,
-    required List<({String legId, int revision})> expectedLegRevisions,
+    required List<DispatchLegRevision> expectedLegRevisions,
   }) => ProgramOperationOutboxEntry._(
     kind: ProgramOperationKind.dispatch,
     programId: programId,
@@ -195,12 +210,7 @@ class ProgramOperationOutboxEntry {
       'destinationLabel': destinationLabel,
       'vendorId': vendorId,
       'expectedLegRevisions': expectedLegRevisions
-          .map(
-            (fence) => <String, Object?>{
-              'legId': fence.legId,
-              'revision': fence.revision,
-            },
-          )
+          .map((fence) => fence.toJson())
           .toList(growable: false),
     },
   );
@@ -239,6 +249,11 @@ class ProgramOperationOutboxEntry {
             throw const FormatException('Invalid observation revision or time');
           }
         }
+        if (payload['afterObservation'] != null) {
+          TravelLegObservationReference.fromJson(
+            requiredMap(payload['afterObservation'], 'preceding observation'),
+          );
+        }
         if (payload['manualCurbNote'] != null &&
             payload['manualCurbNote'] is! String) {
           throw const FormatException('Invalid observation note');
@@ -269,10 +284,7 @@ class ProgramOperationOutboxEntry {
             payload['expectedLegRevisions'],
             'revision fences',
           )) {
-            requiredString(fence, 'legId');
-            if (fence['revision'] is! int || (fence['revision']! as int) < 0) {
-              throw const FormatException('Invalid dispatch revision');
-            }
+            DispatchLegRevision.fromJson(fence);
           }
         }
     }
@@ -426,12 +438,28 @@ class ProgramOperationsOutbox {
   Future<void> _execute(ProgramOperationOutboxEntry entry) async {
     switch (entry.kind) {
       case ProgramOperationKind.legObservation:
+        final revision = entry.payload['expectedRevision'];
+        if (revision is! int || revision < 1) {
+          throw const ValidationException(
+            'This saved observation needs a reviewed journey revision.',
+            code: 'arrival-observation-needs-review',
+          );
+        }
         await _mutator.setReadiness(
           programId: entry.programId,
           legId: entry.payload['legId']! as String,
           action: entry.payload['action']! as String,
           clientOperationId: entry.clientOperationId,
-          expectedRevision: entry.payload['expectedRevision'] as int?,
+          expectedRevision: revision,
+          observedAt: entry.createdAt,
+          afterObservation: entry.payload['afterObservation'] == null
+              ? null
+              : TravelLegObservationReference.fromJson(
+                  requiredMap(
+                    entry.payload['afterObservation'],
+                    'preceding observation',
+                  ),
+                ),
           manualCurbAtMillis: entry.payload['manualCurbAtMillis'] as int?,
           manualCurbNote: entry.payload['manualCurbNote'] as String?,
         );
@@ -439,13 +467,11 @@ class ProgramOperationsOutbox {
         final legs = (entry.payload['legIds']! as List<Object?>).cast<String>();
         final fences =
             (entry.payload['expectedLegRevisions'] as List<Object?>? ?? [])
-                .map((fence) {
-                  final map = fence! as Map<Object?, Object?>;
-                  return (
-                    legId: map['legId']! as String,
-                    revision: map['revision']! as int,
-                  );
-                })
+                .map(
+                  (fence) => DispatchLegRevision.fromJson(
+                    requiredMap(fence, 'revision fence'),
+                  ),
+                )
                 .toList(growable: false);
         validateDispatchRevisionFences(legs, fences);
         await _mutator.dispatchTrip(

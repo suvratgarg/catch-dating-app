@@ -1,3 +1,4 @@
+import {assertTravelLegRevision} from "./travelLegRevision";
 import {validateTravelPartyMembership} from "./travelPartyPolicy";
 import * as admin from "firebase-admin";
 import {CallableRequest, HttpsError, onCall} from
@@ -193,7 +194,7 @@ export async function dispatchProgramTripHandler(
       tx.get(db.collection("transportActiveAssignments")
         .doc(transportAssignmentId(data.programId, legId)))));
     const revisionFences = new Map(data.expectedLegRevisions
-      .map((fence) => [fence.legId, fence.revision]));
+      .map((fence) => [fence.legId, fence]));
     if (revisionFences.size !== data.legIds.length ||
         data.expectedLegRevisions.length !== data.legIds.length ||
         !data.legIds.every((id) => revisionFences.has(id))) {
@@ -208,7 +209,10 @@ export async function dispatchProgramTripHandler(
           "not-found", `Leg ${snap.id} is not in this program.`);
       }
       const fence = revisionFences.get(snap.id);
-      assertRevision(leg.revision, fence!);
+      await assertTravelLegRevision({db, tx, programId: data.programId,
+        legId: snap.id, actorUid, actualRevision: leg.revision,
+        expectedRevision: fence!.revision,
+        afterObservation: fence!.afterObservation});
       if (leg.pickupPointId !== data.pickupPointId) {
         throw new HttpsError(
           "failed-precondition",

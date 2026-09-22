@@ -103,6 +103,31 @@ const schemaDispatchProgramTripCallablePayloadSchema = <String, Object?>{
             'minimum': 1,
             'maximum': 9007199254740991,
           },
+          'afterObservation': <String, Object?>{
+            'type': 'object',
+            'additionalProperties': false,
+            'required': <Object?>[
+              'clientOperationId',
+              'action',
+            ],
+            'description': 'A preceding observation by the same actor on the same journey. Its receipt result revision must still equal the current leg revision.',
+            'properties': <String, Object?>{
+              'clientOperationId': <String, Object?>{
+                'type': 'string',
+                'minLength': 8,
+                'maxLength': 120,
+              },
+              'action': <String, Object?>{
+                'type': 'string',
+                'enum': <Object?>[
+                  'claim',
+                  'unclaim',
+                  'markReady',
+                  'markDisrupted',
+                ],
+              },
+            },
+          },
         },
       },
       'description': 'Exactly one revision fence for every selected leg; missing, duplicate, extraneous or stale fences abort dispatch.',

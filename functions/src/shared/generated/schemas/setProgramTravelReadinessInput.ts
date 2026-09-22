@@ -13,7 +13,9 @@ export const setProgramTravelReadinessCallablePayloadSchema: Record<string, unkn
     "programId",
     "legId",
     "action",
-    "clientOperationId"
+    "clientOperationId",
+    "expectedRevision",
+    "observedAtMillis"
   ],
   "properties": {
     "programId": {
@@ -46,7 +48,7 @@ export const setProgramTravelReadinessCallablePayloadSchema: Record<string, unkn
         "null"
       ],
       "minimum": 0,
-      "maximum": 9007199254740991,
+      "maximum": 253402300799999,
       "description": "Reviewed curb estimate set alongside markDisrupted or planner correction."
     },
     "manualCurbNote": {
@@ -60,6 +62,37 @@ export const setProgramTravelReadinessCallablePayloadSchema: Record<string, unkn
       "type": "string",
       "minLength": 8,
       "maxLength": 120
+    },
+    "afterObservation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "clientOperationId",
+        "action"
+      ],
+      "description": "A preceding observation by the same actor on the same journey. Its receipt result revision must still equal the current leg revision.",
+      "properties": {
+        "clientOperationId": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 120
+        },
+        "action": {
+          "type": "string",
+          "enum": [
+            "claim",
+            "unclaim",
+            "markReady",
+            "markDisrupted"
+          ]
+        }
+      }
+    },
+    "observedAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 253402300799999,
+      "description": "Immutable device observation time; accepted up to seven days late with five minutes of clock skew."
     }
   }
 } as const;

@@ -1,3 +1,4 @@
+import {assertTravelLegRevision} from "./travelLegRevision";
 import * as admin from "firebase-admin";
 import {CallableRequest, HttpsError, onCall} from "firebase-functions/v2/https";
 import {requireAuth} from "../shared/auth";
@@ -6,7 +7,7 @@ import {validateCallableWithAjv} from "../shared/validation";
 import {hashRequest} from "../shared/programOperationHash";
 import {defaultProgramDataDeps} from "../shared/programDataDeps";
 import type {ProgramDataDeps} from "../shared/programDataDeps";
-import {assertRevision, dutyAssignments, dutyCoversTransportRoute, nextRevision}
+import {dutyAssignments, dutyCoversTransportRoute, nextRevision}
   from "../shared/programAuthority";
 import {requireStationAccess} from "../shared/programStationAuthority";
 import type {ProgramTravelLegDocument, ProgramPickupPointDocument,
@@ -36,7 +37,9 @@ export async function setProgramTravelReadinessHandler(
     programId: data.programId,
     legId: data.legId,
     action: data.action,
-    expectedRevision: data.expectedRevision ?? null,
+    expectedRevision: data.expectedRevision,
+    afterObservation: data.afterObservation ?? null,
+    observedAtMillis: data.observedAtMillis,
     manualCurbAtMillis: data.manualCurbAtMillis ?? null,
     manualCurbNote: data.manualCurbNote ?? null,
   });
@@ -52,7 +55,8 @@ export async function setProgramTravelReadinessHandler(
     const receipt = receiptSnap.data() as
       TransportOperationReceiptDocument | undefined;
     const leg = legSnap.data() as ProgramTravelLegDocument | undefined;
-    if (!leg || leg.programId !== data.programId) {
+    if (!leg || leg.programId !== data.programId ||
+        leg.organizerId !== access.program.organizerId) {
       throw new HttpsError("not-found", "Leg not found in this program.");
     }
     // Re-check duty scope inside the transaction against the stored leg.
@@ -95,13 +99,24 @@ export async function setProgramTravelReadinessHandler(
         data.manualCurbAtMillis > 253402300799999) {
       throw new HttpsError("invalid-argument", "Invalid curb estimate time.");
     }
-    assertRevision(leg.revision, data.expectedRevision);
+    await assertTravelLegRevision({db, tx, programId: data.programId,
+      legId: data.legId, actorUid, actualRevision: leg.revision,
+      expectedRevision: data.expectedRevision,
+      afterObservation: data.afterObservation});
     if (["dispatched", "arrived"].includes(leg.readiness)) {
       throw new HttpsError(
         "failed-precondition",
         "This guest is already dispatched.");
     }
     const now = deps.now();
+    if (data.observedAtMillis < now.toMillis() - receiptRetentionMillis ||
+        data.observedAtMillis > now.toMillis() + 5 * 60_000) {
+      throw new HttpsError("failed-precondition",
+        "This observation time needs review before it can be applied.");
+    }
+    // Clamp small positive clock skew so a physical ready fact is never future.
+    const observedAt = admin.firestore.Timestamp.fromMillis(
+      Math.min(data.observedAtMillis, now.toMillis()));
     const update: Record<string, unknown> = {
       updatedAt: now,
       revision: nextRevision(leg.revision, now),
@@ -113,7 +128,8 @@ export async function setProgramTravelReadinessHandler(
           "already-exists", "Another greeter has claimed this guest.");
       }
       update.claimedByUid = actorUid;
-      update.claimedAt = now;
+      update.claimedAt = leg.claimedByUid === actorUid && leg.claimedAt ?
+        leg.claimedAt : observedAt;
       break;
     case "unclaim":
       if (leg.claimedByUid && leg.claimedByUid !== actorUid &&
@@ -130,7 +146,7 @@ export async function setProgramTravelReadinessHandler(
     case "markReady":
       update.readiness = "ready";
       update.readyAt = leg.readiness === "ready" && leg.readyAt ?
-        leg.readyAt : now;
+        leg.readyAt : observedAt;
       if (data.manualCurbAtMillis !== undefined &&
             data.manualCurbAtMillis !== null) {
         update.manualCurbAt = admin.firestore.Timestamp.fromMillis(

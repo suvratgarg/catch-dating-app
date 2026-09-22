@@ -90,6 +90,9 @@
             "type": "integer",
             "minimum": 1,
             "maximum": 9007199254740991
+          },
+          "afterObservation": {
+            "$ref": "../shared/program_common.schema.json#/definitions/travelLegObservationReference"
           }
         }
       },

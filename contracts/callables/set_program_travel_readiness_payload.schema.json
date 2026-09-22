@@ -9,7 +9,9 @@
     "programId",
     "legId",
     "action",
-    "clientOperationId"
+    "clientOperationId",
+    "expectedRevision",
+    "observedAtMillis"
   ],
   "properties": {
     "programId": {
@@ -42,7 +44,7 @@
         "null"
       ],
       "minimum": 0,
-      "maximum": 9007199254740991,
+      "maximum": 253402300799999,
       "description": "Reviewed curb estimate set alongside markDisrupted or planner correction."
     },
     "manualCurbNote": {
@@ -54,6 +56,15 @@
     },
     "clientOperationId": {
       "$ref": "../shared/program_common.schema.json#/definitions/clientOperationId"
+    },
+    "afterObservation": {
+      "$ref": "../shared/program_common.schema.json#/definitions/travelLegObservationReference"
+    },
+    "observedAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 253402300799999,
+      "description": "Immutable device observation time; accepted up to seven days late with five minutes of clock skew."
     }
   }
 }
