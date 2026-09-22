@@ -7201,6 +7201,25 @@
           "node"
         ]
       }
+    },
+    {
+      "id": "demo:rsvp-live-fixture",
+      "category": "demo",
+      "path": "tool/demo/rsvp_escape/live_fixture.mjs",
+      "command": "node tool/demo/rsvp_escape/live_fixture.mjs",
+      "safety": "remote-write-apply-guarded",
+      "status": "active",
+      "role": "generator",
+      "description": "Dry-run-first, fixed-target synthetic RSVP applications through ordinary Chrome controls and live App Check; receipt journal blocks duplicate and uncertain retries.",
+      "impactPaths": [
+        "tool/demo/rsvp_escape/live_fixture.mjs",
+        "tool/demo/rsvp_escape/live_fixture.test.mjs",
+        "tool/demo/rsvp_escape/LIVE_FIXTURE.md"
+      ],
+      "checks": [
+        "node --check tool/demo/rsvp_escape/live_fixture.mjs",
+        "node --test tool/demo/rsvp_escape/live_fixture.test.mjs"
+      ]
     }
   ]
 }
