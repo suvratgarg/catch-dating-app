@@ -38,6 +38,11 @@ const schemaOrganizerFormDocumentSchema = <String, Object?>{
     'lastResponseAt',
   ],
   'properties': <String, Object?>{
+    'pendingPaymentCount': <String, Object?>{
+      'type': 'integer',
+      'minimum': 0,
+      'description': 'Unreleased form response reservations awaiting a fee. Legacy omitted means zero.',
+    },
     'organizerId': <String, Object?>{
       'type': 'string',
       'minLength': 1,

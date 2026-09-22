@@ -101339,6 +101339,11 @@ export const organizerFormDocumentSchema = {
     "lastResponseAt"
   ],
   "properties": {
+    "pendingPaymentCount": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Unreleased form response reservations awaiting a fee. Legacy omitted means zero."
+    },
     "organizerId": {
       "type": "string",
       "minLength": 1,
@@ -104367,6 +104372,19 @@ export const organizerFormResponseDraftDocumentSchema = {
     "submittedResponseId"
   ],
   "properties": {
+    "paymentAttemptId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Server-only checkout lock; prevents edits while a fee is unresolved."
+    },
     "organizerId": {
       "type": "string",
       "minLength": 1,

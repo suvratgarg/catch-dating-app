@@ -192,6 +192,36 @@ test("webhook verification binds merchant, URL, activation and required events",
     }
   });
 
+test("refund retries use identical merchant request and idempotency key",
+  async () => {
+    const body = {entity: "refund", id: "rfnd_one", payment_id: "pay_one",
+      amount: 10000, currency: "INR", status: "pending"};
+    const {provider, calls} = fixture(body);
+    const input = {paymentId: "pay_one", amount: 10000,
+      idempotencyKey: "form_refund_attempt_1"};
+    assert.equal((await provider.refundPayment("merchant-token", input)).status,
+      "pending");
+    await provider.refundPayment("merchant-token", input);
+    assert.equal(calls[0].url,
+      "https://api.razorpay.com/v1/payments/pay_one/refund");
+    assert.equal(calls[0].init.body, calls[1].init.body);
+    assert.deepEqual(JSON.parse(String(calls[0].init.body)), {
+      amount: 10000, speed: "normal"});
+    const headers = new Headers(calls[0].init.headers);
+    assert.equal(headers.get("Authorization"), "Bearer merchant-token");
+    assert.equal(headers.get("X-Refund-Idempotency"), input.idempotencyKey);
+    for (const patch of [{payment_id: "pay_other"}, {amount: 20000},
+      {currency: "USD"}, {status: "unknown"}]) {
+      await assert.rejects(fixture({...body, ...patch}).provider
+        .refundPayment("merchant-token", input));
+    }
+    await assert.rejects(provider.refundPayment("merchant-token", {...input,
+      idempotencyKey: "invalid key"}));
+    assert.equal((await provider.fetchRefund("token", "rfnd_one")).paymentId,
+      "pay_one");
+    await assert.rejects(provider.fetchRefund("token", "rfnd_other"));
+  });
+
 test("provider errors sanitize bodies; uncertain POSTs are never auto-retried",
   async () => {
     for (const status of [400, 401, 429, 500, 503]) {

@@ -29,6 +29,19 @@ export const organizerFormResponseDraftDocumentSchema: Record<string, unknown> =
     "submittedResponseId"
   ],
   "properties": {
+    "paymentAttemptId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Server-only checkout lock; prevents edits while a fee is unresolved."
+    },
     "organizerId": {
       "type": "string",
       "minLength": 1,

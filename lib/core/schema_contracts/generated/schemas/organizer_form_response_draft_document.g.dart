@@ -31,6 +31,19 @@ const schemaOrganizerFormResponseDraftDocumentSchema = <String, Object?>{
     'submittedResponseId',
   ],
   'properties': <String, Object?>{
+    'paymentAttemptId': <String, Object?>{
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+        },
+        <String, Object?>{
+          'type': 'null',
+        },
+      ],
+      'description': 'Server-only checkout lock; prevents edits while a fee is unresolved.',
+    },
     'organizerId': <String, Object?>{
       'type': 'string',
       'minLength': 1,

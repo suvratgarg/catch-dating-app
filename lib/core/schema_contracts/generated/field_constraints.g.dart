@@ -79362,6 +79362,12 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
+  static const organizerFormDocumentPendingPaymentCount = CatchContractFieldConstraints(
+    path: 'organizerFormDocument.pendingPaymentCount',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
   static const organizerFormDocumentPublicFormId = CatchContractFieldConstraints(
     path: 'organizerFormDocument.publicFormId',
     required: true,
@@ -80869,6 +80875,13 @@ abstract final class CatchContractConstraints {
     maxLength: 180,
     minLength: 1,
     required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormResponseDraftDocumentPaymentAttemptId = CatchContractFieldConstraints(
+    path: 'organizerFormResponseDraftDocument.paymentAttemptId',
+    maxLength: 180,
+    minLength: 1,
     valueTypes: <String>['string'],
   );
 
@@ -112914,6 +112927,7 @@ abstract final class CatchContractConstraints {
     'organizerFormDocument.organizerId': organizerFormDocumentOrganizerId,
     'organizerFormDocument.pausedAt._nanoseconds': organizerFormDocumentPausedAtNanoseconds,
     'organizerFormDocument.pausedAt._seconds': organizerFormDocumentPausedAtSeconds,
+    'organizerFormDocument.pendingPaymentCount': organizerFormDocumentPendingPaymentCount,
     'organizerFormDocument.publicFormId': organizerFormDocumentPublicFormId,
     'organizerFormDocument.publishedAt._nanoseconds': organizerFormDocumentPublishedAtNanoseconds,
     'organizerFormDocument.publishedAt._seconds': organizerFormDocumentPublishedAtSeconds,
@@ -113125,6 +113139,7 @@ abstract final class CatchContractConstraints {
     'organizerFormResponseDraftDocument.formId': organizerFormResponseDraftDocumentFormId,
     'organizerFormResponseDraftDocument.identityKind': organizerFormResponseDraftDocumentIdentityKind,
     'organizerFormResponseDraftDocument.organizerId': organizerFormResponseDraftDocumentOrganizerId,
+    'organizerFormResponseDraftDocument.paymentAttemptId': organizerFormResponseDraftDocumentPaymentAttemptId,
     'organizerFormResponseDraftDocument.publicFormId': organizerFormResponseDraftDocumentPublicFormId,
     'organizerFormResponseDraftDocument.respondentUid': organizerFormResponseDraftDocumentRespondentUid,
     'organizerFormResponseDraftDocument.revision': organizerFormResponseDraftDocumentRevision,

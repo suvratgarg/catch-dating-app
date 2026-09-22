@@ -33,6 +33,13 @@ export interface FormProviderPayment {
   amountRefunded: number;
 }
 
+export interface FormProviderRefund {
+  id: string;
+  paymentId: string;
+  amount: number;
+  status: "pending" | "processed" | "failed";
+}
+
 export const formWebhookEvents = [
   "payment.authorized", "payment.captured", "payment.failed",
   "refund.created", "refund.failed", "refund.processed",
@@ -185,6 +192,36 @@ export class RazorpayFormProvider {
       invalidResponse();
     }
     return payment;
+  }
+
+  /** Reuses the persisted key and amount after uncertain outcomes. */
+  async refundPayment(accessToken: string, input: {
+    paymentId: string; amount: number; idempotencyKey: string;
+  }): Promise<FormProviderRefund> {
+    assertToken(accessToken);
+    providerId(input.paymentId, "pay_");
+    assertAmount(input.amount);
+    if (!/^[A-Za-z0-9_-]{10,100}$/u.test(input.idempotencyKey)) invalidInput();
+    const refund = parseRefund(await this.request(
+      `https://api.razorpay.com/v1/payments/${input.paymentId}/refund`, {
+        method: "POST", headers: {"Authorization": `Bearer ${accessToken}`,
+          "X-Refund-Idempotency": input.idempotencyKey},
+        body: JSON.stringify({amount: input.amount, speed: "normal"}),
+      }));
+    if (refund.paymentId !== input.paymentId ||
+        refund.amount !== input.amount) {
+      invalidResponse();
+    }
+    return refund;
+  }
+
+  async fetchRefund(accessToken: string, refundId: string):
+    Promise<FormProviderRefund> {
+    providerId(refundId, "rfnd_");
+    const refund = parseRefund(await this.api(accessToken,
+      `/v1/refunds/${refundId}`, "GET"));
+    if (refund.id !== refundId) invalidResponse();
+    return refund;
   }
 
   verifyCheckout(input: {
@@ -342,6 +379,18 @@ function parsePayment(body: Record<string, unknown>): FormProviderPayment {
     currency: body.currency,
     status: body.status as FormProviderPayment["status"],
     captured: body.captured, amountRefunded: body.amount_refunded};
+}
+
+function parseRefund(body: Record<string, unknown>): FormProviderRefund {
+  if (body.entity !== "refund" || body.currency !== "INR" ||
+      typeof body.amount !== "number" || !Number.isSafeInteger(body.amount) ||
+      body.amount < 100 ||
+      !["pending", "processed", "failed"].includes(String(body.status))) {
+    invalidResponse();
+  }
+  return {id: providerId(body.id, "rfnd_"),
+    paymentId: providerId(body.payment_id, "pay_"), amount: body.amount,
+    status: body.status as FormProviderRefund["status"]};
 }
 
 function assertWebhook(body: Record<string, unknown>,

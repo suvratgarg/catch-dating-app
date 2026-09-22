@@ -6,6 +6,10 @@
  * Expiring version-bound respondent autosave state.
  */
 export interface OrganizerFormResponseDraftDocument {
+  /**
+   * Server-only checkout lock; prevents edits while a fee is unresolved.
+   */
+  paymentAttemptId?: string | null;
   organizerId: string;
   formId: string;
   versionId: string;

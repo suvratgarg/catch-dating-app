@@ -7,6 +7,7 @@
   "additionalProperties": false,
   "required": ["organizerId", "formId", "versionId", "publicFormId", "status", "revision", "identityKind", "respondentUid", "draftTokenHash", "answers", "consentAccepted", "consentVersion", "sourceLinkId", "createdAt", "updatedAt", "expiresAt", "submittedResponseId"],
   "properties": {
+    "paymentAttemptId": {"anyOf": [{"$ref": "../shared/event_common.schema.json#/definitions/documentId"}, {"type": "null"}], "description": "Server-only checkout lock; prevents edits while a fee is unresolved."},
     "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
     "formId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
     "versionId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},

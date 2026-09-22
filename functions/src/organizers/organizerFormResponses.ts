@@ -667,61 +667,14 @@ export async function submitOrganizerFormResponseHandler(
       definition: version.definition,
       answers: submittedAnswers,
     });
-    const response: OrganizerFormResponseDocument = {
-      organizerId: draft.organizerId,
-      formId: draft.formId,
-      versionId: draft.versionId,
-      publicFormId: draft.publicFormId,
-      draftId: data.draftId,
-      status: "submitted",
-      identityKind: draft.identityKind,
-      respondentUid: draft.respondentUid,
-      identity: responseIdentitySnapshot(
-        version.definition,
-        submittedAnswers,
-        request
-      ),
+    const {response} = persistOrganizerFormSubmission({
+      tx, db, draftId: data.draftId, draft, version, submittedAnswers,
+      identity: responseIdentitySnapshot(version.definition,
+        submittedAnswers, request),
       withdrawalTokenHash: draft.respondentUid === null ?
         hashToken(withdrawalToken) : null,
-      answers: submittedAnswers,
-      answerSnapshots: answerSnapshots(version.definition, submittedAnswers),
-      consentVersion: draft.consentVersion,
-      sourceLinkId: draft.sourceLinkId,
-      completionMillis: Math.max(
-        0,
-        Math.min(
-          responseDraftLifetimeMs,
-          now.toMillis() - draft.createdAt.toMillis()
-        )
-      ),
-      submittedAt: now,
-      withdrawnAt: null,
-    };
-    tx.create(responseRef, response);
-    for (const assetRef of submittedAssetRefs) {
-      tx.update(assetRef, {
-        expiresAt: admin.firestore.Timestamp.fromMillis(
-          now.toMillis() + submittedAssetLifetimeMs
-        ),
-      });
-    }
-    tx.set(draftRef, {
-      ...draft,
-      status: "submitted",
-      submittedResponseId: responseId,
-      updatedAt: now,
-    } satisfies OrganizerFormResponseDraftDocument);
-    tx.update(db.collection("organizerForms").doc(draft.formId), {
-      submittedResponseCount: admin.firestore.FieldValue.increment(1),
-      lastResponseAt: now,
-      updatedAt: now,
+      submittedAssetRefs, now,
     });
-    if (draft.sourceLinkId) {
-      tx.update(
-        db.collection("organizerFormShareLinks").doc(draft.sourceLinkId),
-        {submissionCount: admin.firestore.FieldValue.increment(1)}
-      );
-    }
     return {response, version};
   });
   return responseReceipt(
@@ -732,7 +685,78 @@ export async function submitOrganizerFormResponseHandler(
   );
 }
 
-function responseIdentitySnapshot(
+/** Writes a previously validated submission inside its caller's transaction. */
+export function persistOrganizerFormSubmission(params: {
+  tx: FirebaseFirestore.Transaction;
+  db: FirebaseFirestore.Firestore;
+  draftId: string;
+  draft: OrganizerFormResponseDraftDocument;
+  version: OrganizerFormVersionDocument;
+  submittedAnswers: AnswerMap;
+  identity: OrganizerFormResponseDocument["identity"];
+  withdrawalTokenHash: string | null;
+  submittedAssetRefs: FirebaseFirestore.DocumentReference[];
+  now: FirebaseFirestore.Timestamp;
+}): {responseId: string; response: OrganizerFormResponseDocument} {
+  const {tx, db, draftId, draft, version, submittedAnswers, identity,
+    withdrawalTokenHash, submittedAssetRefs, now} = params;
+  const responseId = deterministicId("formresponse", draftId);
+  const responseRef = db.collection("organizerFormResponses").doc(responseId);
+  const draftRef = db.collection("organizerFormResponseDrafts").doc(draftId);
+  const response: OrganizerFormResponseDocument = {
+    organizerId: draft.organizerId,
+    formId: draft.formId,
+    versionId: draft.versionId,
+    publicFormId: draft.publicFormId,
+    draftId: draftId,
+    status: "submitted",
+    identityKind: draft.identityKind,
+    respondentUid: draft.respondentUid,
+    identity,
+    withdrawalTokenHash,
+    answers: submittedAnswers,
+    answerSnapshots: answerSnapshots(version.definition, submittedAnswers),
+    consentVersion: draft.consentVersion,
+    sourceLinkId: draft.sourceLinkId,
+    completionMillis: Math.max(
+      0,
+      Math.min(
+        responseDraftLifetimeMs,
+        now.toMillis() - draft.createdAt.toMillis()
+      )
+    ),
+    submittedAt: now,
+    withdrawnAt: null,
+  };
+  tx.create(responseRef, response);
+  for (const assetRef of submittedAssetRefs) {
+    tx.update(assetRef, {
+      expiresAt: admin.firestore.Timestamp.fromMillis(
+        now.toMillis() + submittedAssetLifetimeMs
+      ),
+    });
+  }
+  tx.set(draftRef, {
+    ...draft,
+    status: "submitted",
+    submittedResponseId: responseId,
+    updatedAt: now,
+  } satisfies OrganizerFormResponseDraftDocument);
+  tx.update(db.collection("organizerForms").doc(draft.formId), {
+    submittedResponseCount: admin.firestore.FieldValue.increment(1),
+    lastResponseAt: now,
+    updatedAt: now,
+  });
+  if (draft.sourceLinkId) {
+    tx.update(
+      db.collection("organizerFormShareLinks").doc(draft.sourceLinkId),
+      {submissionCount: admin.firestore.FieldValue.increment(1)}
+    );
+  }
+  return {responseId, response};
+}
+
+export function responseIdentitySnapshot(
   definition: FormDefinition,
   answers: AnswerMap,
   request: CallableRequest<unknown>
@@ -999,7 +1023,7 @@ async function organizerPresentation(
   return {organizerId, name: "Organizer", logoUrl: null};
 }
 
-function availabilityFor(
+export function availabilityFor(
   form: OrganizerFormDocument,
   version: OrganizerFormVersionDocument,
   now: FirebaseFirestore.Timestamp
@@ -1024,7 +1048,8 @@ function availabilityFor(
     return {status: "closed", message: closedCopy};
   }
   const limit = version.definition.availability.responseLimit;
-  if (limit !== null && form.submittedResponseCount >= limit) {
+  if (limit !== null && form.submittedResponseCount +
+      (form.pendingPaymentCount ?? 0) >= limit) {
     return {status: "full", message: closedCopy};
   }
   return {status: "active", message: "This form is accepting responses."};
@@ -1040,7 +1065,7 @@ function assertAcceptingResponses(projection: PublicFormProjection): void {
   }
 }
 
-function requireResponseIdentity(
+export function requireResponseIdentity(
   request: CallableRequest<unknown>,
   policy: FormDefinition["identityPolicy"]
 ): {
@@ -1093,7 +1118,7 @@ function requireActiveDraft(
     snapshot,
     "OrganizerFormResponseDraftDocument"
   );
-  if (draft.status !== "active") {
+  if (draft.status !== "active" || draft.paymentAttemptId) {
     throw new HttpsError(
       "failed-precondition",
       "This response draft is no longer editable."
@@ -1276,7 +1301,7 @@ function validateQuestionAnswer(
   }
 }
 
-async function requireReadyAssets(params: {
+export async function requireReadyAssets(params: {
   tx: FirebaseFirestore.Transaction;
   db: FirebaseFirestore.Firestore;
   draftId: string;
