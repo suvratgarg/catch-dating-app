@@ -7,6 +7,7 @@ import {appCheckCallableOptionsWithLimits} from "../shared/callableOptions";
 import {checkRateLimit} from "../shared/rateLimit";
 import {validateCallableWithAjv} from "../shared/validation";
 import {
+  loadProgramBundle,
   nextRevision,
   programStaffGrantId,
 } from "../shared/programAuthority";
@@ -18,7 +19,7 @@ import {
   maxProgramStaff,
   requireProgramManager,
   validateDutyStations,
-} from "./programStaff";
+} from "./programStaffPolicy";
 import type {
   ProgramStaffGrantDocument,
   ProgramStaffInviteDocument,
@@ -175,6 +176,12 @@ export async function claimProgramStaffInviteHandler(
         "This invite was sent to a different phone number."
       );
     }
+    const {program} = await loadProgramBundle({
+      db, programId: invite.programId, transaction: tx,
+    });
+    if (program.organizerId !== invite.organizerId) {
+      throw new HttpsError("failed-precondition", "Invite ownership changed.");
+    }
     const grantRef = db.collection("programStaffGrants")
       .doc(programStaffGrantId(invite.programId, uid));
     const [grantSnap, activeSnap] = await Promise.all([
@@ -186,21 +193,26 @@ export async function claimProgramStaffInviteHandler(
         .limit(maxProgramStaff)),
     ]);
     const current = grantSnap.data() as ProgramStaffGrantDocument | undefined;
+    const committedAt = deps.now();
+    if (staffTimestampMillis(invite.expiresAt) <= committedAt.toMillis()) {
+      throw new HttpsError("failed-precondition", "Staff invite expired.");
+    }
     const currentActive = current?.status === "active" &&
-      staffTimestampMillis(current.expiresAt) > now.toMillis();
+      current.programId === invite.programId &&
+      current.organizerId === invite.organizerId && current.uid === uid &&
+      staffTimestampMillis(current.expiresAt) > committedAt.toMillis();
     if (!currentActive && activeSnap.size >= maxProgramStaff) {
       throw new HttpsError(
         "resource-exhausted",
         "This program already has the maximum number of staff grants."
       );
     }
-    const committedAt = deps.now();
     const mergedDuties = dedupeDuties([
-      ...(current?.duties ?? []),
+      ...(currentActive ? current!.duties : []),
       ...invite.duties,
     ]);
     const grantExpiryMillis = Math.max(
-      current ? staffTimestampMillis(current.expiresAt) : 0,
+      currentActive ? staffTimestampMillis(current!.expiresAt) : 0,
       staffTimestampMillis(invite.expiresAt));
     const grant: ProgramStaffGrantDocument = {
       organizerId: invite.organizerId,

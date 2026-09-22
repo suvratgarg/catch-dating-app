@@ -316,3 +316,62 @@ test("non-managers cannot invite or revoke", async () => {
       return true;
     });
 });
+
+for (const status of ["revoked", "expired"] as const) {
+  test(`claim does not restore ${status} duties or their expiry`, async () => {
+    const store = new FakeFirestore(seed());
+    store.setDoc("programStaffGrants/program-1__greeter-1", {
+      programId: "program-1", organizerId: "org-1", uid: "greeter-1",
+      status: status === "revoked" ? "revoked" : "active",
+      duties: [{duty: "programCoordinator", pickupPointIds: [], hotelIds: []}],
+      expiresAt: ts(status === "revoked" ? EXPIRES + 3600_000 : NOW - 1),
+      revision: 8,
+    });
+    const invite = await inviteProgramStaffHandler(
+      request(invitePayload), deps(store));
+    await claimProgramStaffInviteHandler(
+      request({inviteId: invite.entityId}, "greeter-1", "+919900001111"),
+      deps(store));
+    const grant = store.getDoc("programStaffGrants/program-1__greeter-1")!;
+    assert.deepEqual(grant.duties, invitePayload.duties);
+    assert.equal(timestampMillis(grant.expiresAt), EXPIRES);
+    assert.equal(grant.status, "active");
+    assert.ok((grant.revision as number) > 8);
+  });
+}
+
+test("claim preserves only still-active existing authority", async () => {
+  const store = new FakeFirestore(seed());
+  store.setDoc("programStaffGrants/program-1__greeter-1", {
+    programId: "program-1", organizerId: "org-1", uid: "greeter-1",
+    status: "active", expiresAt: ts(EXPIRES + 3600_000), revision: 8,
+    duties: [{duty: "airportGreeter", pickupPointIds: [], hotelIds: []}],
+  });
+  const invite = await inviteProgramStaffHandler(
+    request(invitePayload), deps(store));
+  await claimProgramStaffInviteHandler(
+    request({inviteId: invite.entityId}, "greeter-1", "+919900001111"),
+    deps(store));
+  const grant = store.getDoc("programStaffGrants/program-1__greeter-1")!;
+  assert.deepEqual(grant.duties, [
+    {duty: "airportGreeter", pickupPointIds: [], hotelIds: []},
+  ]);
+  assert.equal(timestampMillis(grant.expiresAt), EXPIRES + 3600_000);
+});
+
+test("claim fails when the program no longer belongs to the invite owner",
+  async () => {
+    const store = new FakeFirestore(seed());
+    const invite = await inviteProgramStaffHandler(
+      request(invitePayload), deps(store));
+    store.setDoc("organizerPrograms/program-1", {organizerId: "org-2"});
+    store.setDoc("organizers/org-2", {ownerUserId: "another-manager"});
+    await assert.rejects(claimProgramStaffInviteHandler(
+      request({inviteId: invite.entityId}, "greeter-1", "+919900001111"),
+      deps(store)), (error: unknown) =>
+      error instanceof HttpsError && error.code === "failed-precondition");
+    assert.equal(store.getDoc(`programStaffInvites/${invite.entityId}`)?.status,
+      "pending");
+    assert.equal(store.getDoc("programStaffGrants/program-1__greeter-1"),
+      undefined);
+  });
