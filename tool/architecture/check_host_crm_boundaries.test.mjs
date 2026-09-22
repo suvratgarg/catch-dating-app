@@ -57,7 +57,7 @@ test("flags modal, contained, or duplicate saved-audience presentation", () => {
     customersSource: [
       "CatchRootScreenScaffold.withPrimaryRail(",
       "HostSavedAudiencesWorkspace(",
-      "actions: peopleView",
+      "primaryAction: peopleView",
       "HostSavedAudiencesSheet()",
     ].join("\n"),
     workspacePath: "workspace.dart",
@@ -95,10 +95,11 @@ test("saved-audience directories require the canonical typed row APIs", () => {
     customersSource: [
       "CatchRootScreenScaffold.withPrimaryRail(",
       "HostSavedAudiencesWorkspace(",
-      "actions: peopleView",
+      "primaryAction: peopleView",
+      "ValueKey('host-saved-audience-create')",
     ].join("\n"),
     workspacePath: "workspace.dart",
-    workspaceSource: workspaceSource + "ValueKey('host-saved-audience-create')",
+    workspaceSource,
     editorSheetsPath: "sheets.dart",
     editorSheetsSource: "",
     routeContractPath: "routes.dart",
@@ -112,6 +113,9 @@ test("saved-audience directories require the canonical typed row APIs", () => {
       `CatchSection.${section}( CatchField.navigate(`,
     ), []);
   }
+  assert.ok(scanWorkspace(
+    "CatchSection.sliverRows( CatchField.navigate( ValueKey('host-saved-audience-create')",
+  ).some((item) => /exactly one New group action/u.test(item.reason)));
   for (const source of [
     "CatchSection.containedRows( CatchField.navigate(",
     "CatchSection.content( CatchField.navigate(",

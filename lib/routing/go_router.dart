@@ -24,7 +24,7 @@ import 'package:catch_dating_app/events/shared/event_detail_route_transition.dar
 import 'package:catch_dating_app/explore/presentation/explore_map_screen.dart';
 import 'package:catch_dating_app/explore/presentation/explore_screen.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_saved_audience.dart';
-import 'package:catch_dating_app/hosts/presentation/applications/host_applications_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/applications/host_application_detail_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/host_create_club_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_detail_route_arguments.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_detail_screen.dart';
@@ -110,6 +110,7 @@ Widget hostAudienceScreenForUri(Uri uri, {String? initialContactDisplayName}) {
       initialOrganizerId: uri.queryParameters['organizerId'],
       initialResponses: view == HostAudienceView.responses,
       initialFormId: uri.queryParameters['formId'],
+      initialContactId: uri.queryParameters['contactId'],
     ),
     HostAudienceView.people ||
     HostAudienceView.audiences => HostCustomersScreen(
@@ -683,23 +684,16 @@ GoRoute _hostAudienceRoute(_RouterNavigatorKeys keys) {
       GoRoute(
         path: 'applications',
         name: Routes.hostApplicationsScreen.name,
+        redirect: (context, state) => hostApplicationsLegacyRedirect(state.uri),
+      ),
+      GoRoute(
+        path: 'applications/:applicationId',
+        name: Routes.hostApplicationDetailScreen.name,
         parentNavigatorKey: keys.root,
-        builder: (context, state) => HostApplicationsScreen(
+        builder: (context, state) => HostApplicationDetailScreen(
           organizerId: state.uri.queryParameters['organizerId'] ?? '',
-          formId: state.uri.queryParameters['formId'],
-          contactId: state.uri.queryParameters['contactId'],
+          applicationId: state.pathParameters['applicationId']!,
         ),
-        routes: [
-          GoRoute(
-            path: ':applicationId',
-            name: Routes.hostApplicationDetailScreen.name,
-            parentNavigatorKey: keys.root,
-            builder: (context, state) => HostApplicationDetailScreen(
-              organizerId: state.uri.queryParameters['organizerId'] ?? '',
-              applicationId: state.pathParameters['applicationId']!,
-            ),
-          ),
-        ],
       ),
       GoRoute(
         path: 'people/new',

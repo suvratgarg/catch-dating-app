@@ -21,13 +21,14 @@ import 'package:catch_dating_app/hosts/domain/forms/host_form_definition.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_editor.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_response.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_summary.dart';
-import 'package:catch_dating_app/hosts/presentation/applications/host_applications_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/applications/host_application_detail_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_detail_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_builder_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_preview_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_detail_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_workspace_state.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_forms_screen.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
@@ -107,8 +108,16 @@ Future<void> main() async {
       GoRoute(
         path: '/applications',
         name: Routes.hostApplicationsScreen.name,
-        builder: (_, _) =>
-            HostApplicationsScreen(organizerId: organizerId, formId: formId),
+        redirect: (_, _) => '/audience?view=responses',
+      ),
+      GoRoute(
+        path: '/audience',
+        name: Routes.hostAudienceScreen.name,
+        builder: (_, state) => HostFormsScreen(
+          initialOrganizerId: organizerId,
+          initialFormId: formId,
+          initialResponses: state.uri.queryParameters['view'] == 'responses',
+        ),
       ),
       GoRoute(
         path: '/applications/:applicationId',

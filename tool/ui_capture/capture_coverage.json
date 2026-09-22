@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-09-21",
+  "updated": "2026-09-22",
   "generatedAgainst": "tool/ui_capture/route_inventory.json",
   "description": "Phase 1 UI capture coverage policy. Every route from go_router.dart must be captured, aliased to a canonical capture surface, planned, or explicitly excluded.",
   "routes": [
@@ -792,12 +792,10 @@
     },
     {
       "routeId": "hostApplicationsScreen",
-      "status": "captured",
+      "status": "alias",
       "priority": "P1",
-      "reason": "Deterministic production-widget captures cover the listed Audience states in light and dark themes. Additional pending, failure and interaction states remain covered by focused widget tests where listed in feature contracts.",
-      "captureIds": [
-        "host_applications_populated"
-      ]
+      "canonicalRouteId": "hostAudienceScreen",
+      "reason": "The retired Applications directory redirects to Audience Responses while preserving organizer, form, and contact scope."
     },
     {
       "routeId": "hostApplicationDetailScreen",

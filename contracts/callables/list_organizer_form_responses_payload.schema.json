@@ -29,6 +29,30 @@
         }
       }
     },
-    "limit": {"type": "integer", "minimum": 1, "maximum": 100}
+    "limit": {"type": "integer", "minimum": 1, "maximum": 100},
+    "includeApplications": {
+      "type": "boolean",
+      "description": "Opt into the unified response and application review inbox."
+    },
+    "reviewStatus": {
+      "anyOf": [
+        {
+          "$ref": "../callable_responses/list_organizer_applications_response.schema.json#/definitions/application/properties/reviewStatus"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "contactId": {
+      "anyOf": [
+        {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
   }
 }

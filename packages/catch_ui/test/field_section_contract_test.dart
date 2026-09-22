@@ -7,6 +7,51 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   testWidgets(
+    'scrollable summary choices stay on one rail and select nullable All',
+    (tester) async {
+      String? selected = 'withdrawn';
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CatchTheme.light,
+          home: Scaffold(
+            body: StatefulBuilder(
+              builder: (context, update) => Align(
+                alignment: Alignment.topLeft,
+                child: SizedBox(
+                  width: 250,
+                  child: CatchChoiceInput<String?>.segmented(
+                    selected: selected,
+                    options: const [
+                      CatchOption(value: null, label: 'All'),
+                      CatchOption(value: 'submitted', label: 'Submitted'),
+                      CatchOption(value: 'review', label: 'In review'),
+                      CatchOption(value: 'withdrawn', label: 'Withdrawn'),
+                    ],
+                    variant: CatchChoiceInputVariant.summary,
+                    scrollable: true,
+                    contractExemption:
+                        'Test of nullable selection and horizontal summary geometry.',
+                    onChanged: (value) => update(() => selected = value),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      expect(
+        tester.getTopLeft(find.text('All')).dy,
+        tester.getTopLeft(find.text('Withdrawn')).dy,
+      );
+      expect(find.byType(SingleChildScrollView), findsOneWidget);
+      await tester.tap(find.text('All'));
+      await tester.pump();
+      expect(selected, isNull);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets(
     'legacy full-band declarations still require a proven paint extent',
     (tester) async {
       const key = ValueKey('unowned-full-band');
@@ -371,8 +416,10 @@ void main() {
     await tester.pumpWidget(
       host(
         CatchSection.controls(
-          leading: Text('Sort: Last seen'),
-          trailing: Text('Filters'),
+          sortLabel: 'Sort: Last seen',
+          onSort: () {},
+          filtersLabel: 'Filters',
+          onFilters: () {},
         ),
       ),
     );
@@ -387,6 +434,54 @@ void main() {
     expect(upper.bottom, lessThan(tester.getRect(find.text('Filters')).top));
     expect(lower.top, greaterThan(tester.getRect(find.text('Filters')).bottom));
   });
+
+  for (final scale in [1.0, 2.0]) {
+    for (final direction in TextDirection.values) {
+      testWidgets(
+        'collection controls own roles and wrap at $scale $direction',
+        (tester) async {
+          var sorts = 0;
+          var filters = 0;
+          var clears = 0;
+          await tester.pumpWidget(
+            host(
+              MediaQuery(
+                data: MediaQueryData(textScaler: TextScaler.linear(scale)),
+                child: CatchSection.controls(
+                  sortLabel: 'Sort: Recently checked',
+                  onSort: () => sorts++,
+                  filtersLabel: 'Filters',
+                  onFilters: () => filters++,
+                  activeFilters: 'Automatic groups',
+                  clearLabel: 'Clear',
+                  onClear: () => clears++,
+                ),
+              ),
+              direction: direction,
+            ),
+          );
+          final sort = tester.getRect(find.text('Sort: Recently checked'));
+          final filter = tester.getRect(find.text('Filters'));
+          if ((sort.center.dy - filter.center.dy).abs() < 10) {
+            expect(
+              direction == TextDirection.ltr
+                  ? sort.right <= filter.left
+                  : filter.right <= sort.left,
+              isTrue,
+            );
+          } else {
+            expect(sort.top, lessThan(filter.top));
+          }
+          await tester.tap(find.text('Sort: Recently checked'));
+          await tester.tap(find.text('Filters'));
+          await tester.tap(find.text('Clear'));
+          expect([sorts, filters, clears], [1, 1, 1]);
+          expect(find.byType(CatchDivider), findsNWidgets(2));
+          expect(tester.takeException(), isNull);
+        },
+      );
+    }
+  }
 
   testWidgets('loading rows reuse field and section geometry', (tester) async {
     Widget screen({required bool loading}) => host(

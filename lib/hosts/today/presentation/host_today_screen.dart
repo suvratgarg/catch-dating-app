@@ -207,10 +207,14 @@ class _HostTodayScreenState extends ConsumerState<HostTodayScreen> {
         final applicationId = destination.applicationId;
         context.pushNamed(
           applicationId == null
-              ? Routes.hostApplicationsScreen.name
+              ? Routes.hostAudienceScreen.name
               : Routes.hostApplicationDetailScreen.name,
           pathParameters: {'applicationId': ?applicationId},
-          queryParameters: {'organizerId': organizer.id},
+          queryParameters: {
+            'organizerId': organizer.id,
+            if (applicationId == null) 'view': 'responses',
+            'formId': ?destination.formId,
+          },
         );
         return;
       case HostAttentionDestinationRoute.hostOrganizerPayments:

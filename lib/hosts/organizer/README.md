@@ -9,7 +9,7 @@ Own the organizer as an operating entity: profile and media, publication readine
 - Primary route: `hostOrganizerScreen` (`/host/organizer`)
 - Target root: `lib/hosts/organizer`
 - Migration status: target boundary defined; implementation still lives in listed legacy Host roots
-- Responsibility contract updated: 2026-09-02
+- Responsibility contract updated: 2026-09-22
 
 Current implementation roots:
 

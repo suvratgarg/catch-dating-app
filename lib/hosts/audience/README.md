@@ -2,7 +2,7 @@
 
 # Host Audience
 
-Own the participant relationship system as one destination: People, saved Audiences, Forms, Responses, and organizer Applications, with shared organizer scope and deliberate handoff to Inbox for delivery.
+Own the participant relationship system as one destination: People, saved Audiences, Forms, and unified Responses review, with shared organizer scope and deliberate handoff to Inbox for delivery.
 
 ## Product guide
 
@@ -121,7 +121,7 @@ These are schema declarations, not independent proof of runtime limits.
 - Primary route: `hostAudienceScreen` (`/host/audience`)
 - Target root: `lib/hosts/audience`
 - Migration status: target boundary defined; implementation still lives in listed legacy Host roots
-- Responsibility contract updated: 2026-09-02
+- Responsibility contract updated: 2026-09-22
 - Product guide updated: 2026-09-05
 
 Current implementation roots:
@@ -161,7 +161,6 @@ Owned routes:
 - `hostFormAnalyticsScreen` — `/host/audience/forms/:formId/analytics`
 - `hostFormAutomationsScreen` — `/host/audience/forms/:formId/automations`
 - `hostAudienceAutomationsScreen` — `/host/audience/automations`
-- `hostApplicationsScreen` — `/host/audience/applications`
 - `hostApplicationDetailScreen` — `/host/audience/applications/:applicationId`
 - `hostCustomerDetailScreen` — `/host/audience/people/:contactId`
 
@@ -174,8 +173,8 @@ Typed handoffs:
 
 | Owner | Source | Responsibility |
 |---|---|---|
-| `HostCustomersScreen` | `lib/hosts/presentation/customers/host_customers_screen.dart` | Feature-contract actions: switch_customers_view, retry_directory, switch_organizer, search_customers, open_customer_filters, filter_customers, sort_customers, message_filtered_customers, review_whatsapp_sender_setup, open_customer, review_duplicate_customers. |
-| `HostSavedAudiencesWorkspace` | `lib/hosts/presentation/customers/host_saved_audiences_workspace.dart` | Feature-contract actions: search_saved_audiences, open_saved_audience_create, open_saved_audience_detail. |
+| `HostCustomersScreen` | `lib/hosts/presentation/customers/host_customers_screen.dart` | Feature-contract actions: switch_customers_view, open_saved_audience_create, retry_directory, switch_organizer, search_customers, open_customer_filters, filter_customers, sort_customers, message_filtered_customers, review_whatsapp_sender_setup, open_customer, review_duplicate_customers. |
+| `HostSavedAudiencesWorkspace` | `lib/hosts/presentation/customers/host_saved_audiences_workspace.dart` | Feature-contract actions: search_saved_audiences, open_saved_audience_detail. |
 | `HostSavedAudienceEditorScreen` | `lib/hosts/presentation/customers/host_saved_audience_editor.dart` | Feature-contract actions: save_saved_audience, archive_saved_audience. |
 | `HostAddCustomerScreen` | `lib/hosts/presentation/customers/host_customer_editor.dart` | Structural owner from feature.host_customers. |
 | `HostCustomersDirectoryController` | `lib/hosts/presentation/customers/host_customers_controller.dart` | Feature-contract actions: load_more. |
