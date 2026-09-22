@@ -6,8 +6,6 @@ import {Form} from "./forms";
 export function PublicFormFrame({
   activityKind,
   appearance,
-  brandLabel,
-  brandWord,
   children,
   embed,
   logoUrl,
@@ -15,31 +13,35 @@ export function PublicFormFrame({
 }: {
   activityKind?: string | null;
   appearance?: "editorial" | "minimal" | "activity";
-  brandLabel: string;
-  brandWord: string;
   children: ReactNode;
   embed: boolean;
   logoUrl?: string | null;
   organizerName?: string | null;
 }) {
+  const [failedLogoUrl, setFailedLogoUrl] = useState<string | null>(null);
+  const organizerLogo = logoUrl?.trim();
+  const showLogo = organizerLogo && organizerLogo !== failedLogoUrl;
+
   return (
     <div
       className="public-form"
       data-appearance={appearance ?? "minimal"}
       data-embed={embed || undefined}
     >
-      <header className="public-form__brand">
-        <PlainLink aria-label={brandLabel} href="/">
-          {brandWord}<span>●</span>
-        </PlainLink>
-        {organizerName ? (
-          <span className="public-form__organizer">
-            {logoUrl ? <img alt="" src={logoUrl} /> : null}
-            <span>{organizerName}</span>
+      {organizerName ? (
+        <header className="public-form__brand">
+          <div className="public-form__organizer">
+            {showLogo ? (
+              <img
+                alt={organizerName}
+                onError={() => setFailedLogoUrl(organizerLogo)}
+                src={organizerLogo}
+              />
+            ) : <span>{organizerName}</span>}
             {activityKind ? <small>{activityKind}</small> : null}
-          </span>
-        ) : null}
-      </header>
+          </div>
+        </header>
+      ) : null}
       {children}
     </div>
   );
@@ -156,8 +158,28 @@ export function PublicFormConsent({children}: {children: ReactNode}) {
   return <aside className="public-form__consent">{children}</aside>;
 }
 
-export function PublicFormPrivacy({children}: {children: ReactNode}) {
-  return <footer className="public-form__privacy">{children}</footer>;
+export function PublicFormPrivacy({
+  brandLabel,
+  brandWord,
+  children,
+  poweredByLabel,
+}: {
+  brandLabel: string;
+  brandWord: string;
+  children: ReactNode;
+  poweredByLabel: string;
+}) {
+  return (
+    <footer className="public-form__privacy">
+      <div className="public-form__powered-by">
+        <span>{poweredByLabel}</span>
+        <PlainLink aria-label={brandLabel} href="/">
+          {brandWord}<span aria-hidden="true">●</span>
+        </PlainLink>
+      </div>
+      <p>{children}</p>
+    </footer>
+  );
 }
 
 export function PublicFormForm(

@@ -39,8 +39,6 @@ export function PublicFormPage() {
 
   return (
     <PublicFormFrame
-      brandLabel={publicFormsCopy.brand}
-      brandWord={publicFormsCopy.brandWord}
       embed={controller.embed}
       appearance={controller.form?.definition.appearance.preset}
       activityKind={controller.form?.definition.appearance.activityKind}
@@ -48,7 +46,13 @@ export function PublicFormPage() {
       organizerName={organizerName}
     >
       <PublicFormStage controller={controller} />
-      <PublicFormPrivacy>{publicFormsCopy.privacyNote}</PublicFormPrivacy>
+      <PublicFormPrivacy
+        brandLabel={publicFormsCopy.brand}
+        brandWord={publicFormsCopy.brandWord}
+        poweredByLabel={publicFormsCopy.poweredBy}
+      >
+        {publicFormsCopy.privacyNote}
+      </PublicFormPrivacy>
     </PublicFormFrame>
   );
 }

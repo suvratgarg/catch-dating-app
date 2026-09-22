@@ -56,7 +56,8 @@ export const publicFormsCopy = {
   withdrawing: "Withdrawing",
   withdrawnTitle: "Response withdrawn",
   withdrawnBody: "The organizer can no longer treat this response as active.",
-  privacyNote: "Powered by Catch. Answers are sent only to the organizer named above.",
+  poweredBy: "Powered by",
+  privacyNote: "Answers are sent only to the organizer named above.",
   stepLabel: "Form progress",
   genericError: "Something went wrong. Please try again.",
 } as const;

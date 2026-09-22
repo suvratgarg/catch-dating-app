@@ -990,8 +990,8 @@ async function organizerPresentation(
     return {
       organizerId,
       name: organizer.name,
-      logoUrl: organizer.logoPhoto?.url ?? organizer.profileImageUrl ??
-        organizer.imageUrl,
+      logoUrl: organizer.logoPhoto?.url?.trim() ||
+        organizer.profileImageUrl?.trim() || null,
     };
   }
   return {organizerId, name: "Organizer", logoUrl: null};
