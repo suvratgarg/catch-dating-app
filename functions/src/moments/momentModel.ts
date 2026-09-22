@@ -83,6 +83,7 @@ export interface RunRecord {
   dueAtMillis: number;
   anchorRevision: number;
   status: RunStatus;
+  targetFunctionId?: string;
 }
 
 export function requireMillis(value: number): void {

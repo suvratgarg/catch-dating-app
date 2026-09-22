@@ -69,7 +69,10 @@ function evaluateLateArrival(
   }
   const trigger = moment.trigger as {functionId: string | null};
   const target = trigger.functionId !== null ?
-    facts.functions[trigger.functionId] : currentFunction(facts, nowMillis);
+    (facts.functions[trigger.functionId] === undefined ? null : {
+      functionId: trigger.functionId,
+      ...facts.functions[trigger.functionId],
+    }) : currentFunction(facts, nowMillis);
   if (!target) return {kind: "noFire", reason: "noCurrentFunction"};
   if (target.cancelled) {
     return {kind: "noFire", reason: "functionCancelled"};
@@ -87,6 +90,7 @@ function evaluateLateArrival(
       dueAtMillis: nowMillis,
       anchorRevision: target.revision,
       status: "planned",
+      targetFunctionId: target.functionId,
     },
   };
 }
@@ -113,6 +117,8 @@ function evaluateFlightDisruption(
       dueAtMillis: nowMillis,
       anchorRevision: revision,
       status: "planned",
+      ...(trigger.functionId === null ?
+        {} : {targetFunctionId: trigger.functionId}),
     },
   };
 }
@@ -120,21 +126,22 @@ function evaluateFlightDisruption(
 function currentFunction(
   facts: AnchorFacts,
   nowMillis: number,
-): {startsAtMillis: number; endsAtMillis: number; revision: number;
-    cancelled: boolean} | null {
+): {functionId: string; startsAtMillis: number; endsAtMillis: number;
+    revision: number; cancelled: boolean} | null {
   let best: {
+    functionId: string;
     startsAtMillis: number;
     endsAtMillis: number;
     revision: number;
     cancelled: boolean;
   } | null = null;
-  for (const fn of Object.values(facts.functions)) {
+  for (const [functionId, fn] of Object.entries(facts.functions)) {
     if (fn.cancelled) continue;
     if (fn.startsAtMillis > nowMillis || fn.endsAtMillis <= nowMillis) {
       continue;
     }
     if (best === null || fn.startsAtMillis < best.startsAtMillis) {
-      best = fn;
+      best = {functionId, ...fn};
     }
   }
   return best;

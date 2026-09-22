@@ -74,6 +74,7 @@ test("late arrival fires inside the targeted function window", () => {
     dueAtMillis: 2_100_000,
     anchorRevision: 7,
     status: "planned",
+    targetFunctionId: "sangeet",
   });
 });
 
@@ -86,7 +87,10 @@ test("null functionId resolves the current function", () => {
   const result = evaluateCondition(floating, arrived, facts, 2_100_000);
   // sangeet 2_000_000-2_400_000 is the only live window; mehendi cancelled.
   assert.equal(result.kind, "fire");
-  if (result.kind === "fire") assert.equal(result.run.anchorRevision, 7);
+  if (result.kind === "fire") {
+    assert.equal(result.run.anchorRevision, 7);
+    assert.equal(result.run.targetFunctionId, "sangeet");
+  }
 });
 
 test("arrival before start, with no live function, or cancelled", () => {
@@ -137,6 +141,7 @@ test("flight disruption fires only on transition into the bad set", () => {
     if (result.kind === "fire") {
       assert.equal(result.run.runId, `mLate_leg9_${flightStatus}`);
       assert.equal(result.run.anchorRevision, 0);
+      assert.equal(result.run.targetFunctionId, undefined);
     }
   }
   const delayed: TravelLegEvent = {

@@ -240,3 +240,31 @@ test("resolveFireDisposition checks each guard in order", () => {
   assert.equal(resolveFireDisposition(good, baseMoment, moved),
     "skip:staleAnchor");
 });
+
+test("condition runs ignore the stale-anchor fence", () => {
+  const condition: MomentDefinition = {...baseMoment, trigger: {
+    kind: "conditionAnchor", conditionKind: "lateArrivalAtHotel",
+    functionId: null,
+  }, audience: {kind: "staffDuty", duty: "functionCheckIn",
+    scopeIds: null}, action: {kind: "staffAttention",
+    duty: "functionCheckIn", severity: "warning",
+    titleTemplate: "late"}};
+  // anchorRevision 3 while every fact entity sits at a newer revision.
+  const eventRun = run({anchorRevision: 3});
+  assert.equal(resolveFireDisposition(eventRun, condition, facts),
+    "dispatch");
+  const cancelledAudience: MomentDefinition = {...condition, audience: {
+    kind: "functionGuests", functionId: "haldi",
+    rsvp: ["attending"], householdDedupe: true,
+  }};
+  assert.equal(resolveFireDisposition(eventRun, cancelledAudience, facts),
+    "skip:functionCancelled");
+  const silent: AnchorFacts = {...facts, program: {...facts.program,
+    messagingEnabled: false}};
+  assert.equal(resolveFireDisposition(eventRun, condition, silent),
+    "dispatch"); // staffAttention is not a message
+  const conditionTemplate: MomentDefinition = {...condition,
+    action: baseMoment.action};
+  assert.equal(resolveFireDisposition(eventRun, conditionTemplate, silent),
+    "skip:messagingDisabled");
+});

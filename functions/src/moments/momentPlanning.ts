@@ -206,6 +206,9 @@ export function resolveFireDisposition(
       return "skip:functionCancelled";
     }
   }
+  if (moment.trigger.kind === "conditionAnchor") {
+    return "dispatch";
+  }
   const currentRevision = currentAnchorRevision(moment.trigger, facts);
   if (currentRevision === null || currentRevision !== run.anchorRevision) {
     return "skip:staleAnchor";
@@ -214,13 +217,9 @@ export function resolveFireDisposition(
 }
 
 function currentAnchorRevision(
-  trigger: MomentTrigger,
+  trigger: Extract<MomentTrigger, {kind: "timeAnchor"}>,
   facts: AnchorFacts,
 ): number | null {
-  if (trigger.kind === "conditionAnchor") {
-    if (trigger.functionId === null) return 0;
-    return facts.functions[trigger.functionId]?.revision ?? null;
-  }
   switch (trigger.anchorKind) {
   case "functionStart":
   case "functionEnd":
