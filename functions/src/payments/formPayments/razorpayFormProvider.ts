@@ -25,7 +25,7 @@ export interface FormPaymentOrder {
 
 export interface FormProviderPayment {
   id: string;
-  orderId: string;
+  orderId: string | null;
   amount: number;
   currency: string;
   status: "created" | "authorized" | "captured" | "refunded" | "failed";
@@ -375,7 +375,9 @@ function parsePayment(body: Record<string, unknown>): FormProviderPayment {
       !Number.isSafeInteger(body.amount_refunded) || body.amount_refunded < 0 ||
       body.amount_refunded > body.amount) invalidResponse();
   return {id: providerId(body.id, "pay_"),
-    orderId: providerId(body.order_id, "order_"), amount: body.amount,
+    orderId: body.order_id === null ? null : providerId(body.order_id,
+      "order_"),
+    amount: body.amount,
     currency: body.currency,
     status: body.status as FormProviderPayment["status"],
     captured: body.captured, amountRefunded: body.amount_refunded};

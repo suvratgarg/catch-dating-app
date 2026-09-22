@@ -19,14 +19,30 @@ export class FormPaymentTestStore {
   private tail: Promise<unknown> = Promise.resolve();
 
   collection(name: string) {
-    return {doc: (id: string) => this.ref(`${name}/${id}`)};
+    return {...this.query(name),
+      doc: (id: string) => this.ref(`${name}/${id}`)};
+  }
+  private query(name: string, filters: Array<[string, unknown]> = [],
+    limit = 100) {
+    return {
+      where: (field: string, operator: string, value: unknown) => {
+        assert.equal(operator, "==");
+        return this.query(name, [...filters, [field, value]], limit);
+      },
+      limit: (value: number) => this.query(name, filters, value),
+      get: async () => ({docs: [...this.records.entries()]
+        .filter(([path, data]) => path.startsWith(`${name}/`) &&
+          filters.every(([field, value]) => data[field] === value))
+        .slice(0, limit).map(([path]) => this.snapshot(path))}),
+    };
   }
   ref(path: string) {
     return {path, get: async () => this.snapshot(path)};
   }
   snapshot(path: string) {
     const value = this.records.get(path);
-    return {exists: value !== undefined, ref: this.ref(path),
+    return {id: path.split("/").at(-1),
+      exists: value !== undefined, ref: this.ref(path),
       data: () => value && {...value}};
   }
   async runTransaction<T>(work: (tx: {
