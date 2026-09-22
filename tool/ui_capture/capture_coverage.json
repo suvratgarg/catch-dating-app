@@ -729,7 +729,10 @@
         "host_form_response_application",
         "host_form_response_intake",
         "host_form_response_withdrawn",
-        "host_form_response_large_text"
+        "host_form_response_large_text",
+        "host_response_review_submitted",
+        "host_response_review_imported",
+        "host_response_review_revoked"
       ]
     },
     {

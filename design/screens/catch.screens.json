@@ -1002,15 +1002,15 @@
           "routes": [
             "hostApplicationDetailScreen"
           ],
-          "file": "lib/hosts/presentation/applications/host_application_detail_screen.dart",
-          "symbol": "_HostApplicationDetailScreenState",
+          "file": "lib/hosts/presentation/forms/host_form_response_detail_screen.dart",
+          "symbol": "_HostFormResponseDetailScreenState",
           "family": "pushed-route",
           "expression": "CatchRouteScaffold",
           "bodyGeometry": "standard",
           "topEdge": "route-chrome"
         }
       ],
-      "reason": "Application detail remains a canonical pushed route; the application directory redirects into Audience Responses."
+      "reason": "Existing application links render the unified response detail; the application directory redirects into Audience Responses."
     },
     "screen.host.event.rehearsal": {
       "owners": [
