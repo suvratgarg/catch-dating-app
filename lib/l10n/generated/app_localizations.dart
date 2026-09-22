@@ -23020,23 +23020,11 @@ abstract class AppLocalizations {
   /// **'Connected form'**
   String get hostApplicationsSourceConnector;
 
-  /// Application submitted date metadata.
-  ///
-  /// In en, this message translates to:
-  /// **'Submitted {date}'**
-  String hostApplicationsSubmittedOn({required String date});
-
   /// Application queue pagination action.
   ///
   /// In en, this message translates to:
   /// **'Load more applications'**
   String get hostApplicationsLoadMore;
-
-  /// Application detail answers section title.
-  ///
-  /// In en, this message translates to:
-  /// **'Answers'**
-  String get hostApplicationAnswersTitle;
 
   /// Empty optional application answer value.
   ///
@@ -23062,12 +23050,6 @@ abstract class AppLocalizations {
   /// **'{count, plural, =1{1 file} other{{count} files}}'**
   String hostApplicationAnswerFiles({required int count});
 
-  /// Application detail validated outreach actions title.
-  ///
-  /// In en, this message translates to:
-  /// **'Contact applicant'**
-  String get hostApplicationOutreachTitle;
-
   /// Calls a validated E.164 application phone number.
   ///
   /// In en, this message translates to:
@@ -23091,12 +23073,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'LinkedIn'**
   String get hostApplicationLinkedin;
-
-  /// Application detail absence of validated outreach data.
-  ///
-  /// In en, this message translates to:
-  /// **'This form did not grant a usable phone, email, Instagram, or LinkedIn destination.'**
-  String get hostApplicationNoOutreach;
 
   /// Organizer-only application review note label.
   ///
@@ -26852,12 +26828,6 @@ abstract class AppLocalizations {
   /// **'Open person'**
   String get hostApplicationOpenPerson;
 
-  /// Audience intake workflow label.
-  ///
-  /// In en, this message translates to:
-  /// **'Open original response'**
-  String get hostApplicationOpenResponse;
-
   /// Saved audience overview label.
   ///
   /// In en, this message translates to:
@@ -27551,18 +27521,6 @@ abstract class AppLocalizations {
   /// **'Submission details'**
   String get hostAudienceSubmissionDetails;
 
-  /// Review application
-  ///
-  /// In en, this message translates to:
-  /// **'Review application'**
-  String get hostAudienceReviewApplication;
-
-  /// Application
-  ///
-  /// In en, this message translates to:
-  /// **'Application'**
-  String get hostAudienceApplicationTitle;
-
   /// Accepted into People. Event admission is handled separately.
   ///
   /// In en, this message translates to:
@@ -27586,12 +27544,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Organizer application'**
   String get hostAudienceApplicationOrganizer;
-
-  /// Activity
-  ///
-  /// In en, this message translates to:
-  /// **'Activity'**
-  String get hostAudienceApplicationActivity;
 
   /// Selected people
   ///
