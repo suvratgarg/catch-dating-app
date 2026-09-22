@@ -1218,6 +1218,18 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // Entitlement grants and meters are billing state. Only admin-authorized
+    // callables write them; managers receive a bounded callable projection.
+    match /organizerEntitlements/{organizerId} {
+      allow read, write: if false;
+    }
+
+    // Mutation receipts are idempotency records for admin callables and are
+    // never client-visible.
+    match /organizerEntitlementReceipts/{receiptId} {
+      allow read, write: if false;
+    }
+
     match /organizerContactIdentityLinks/{identityLinkId} {
       allow read, write: if false;
     }

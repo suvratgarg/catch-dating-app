@@ -5933,6 +5933,64 @@ export interface OrganizerAttentionItemDocument {
 }
 
 /**
+ * Server-owned entitlement document at organizerEntitlements/{organizerId} holding purchased plan grants and metered usage. Written only by admin grant/revoke callables in the pilot; managers receive a bounded callable projection.
+ */
+export interface OrganizerEntitlementsDocument {
+  schemaVersion: 1;
+  organizerId: string;
+  /**
+   * @maxItems 50
+   */
+  grants: {
+    grantId: string;
+    sku:
+      | "wedding_essentials"
+      | "wedding_pro"
+      | "wedding_signature"
+      | "wedding_transport_addon"
+      | "planner_annual";
+    unit: "program" | "organizerYear";
+    quantityTotal: number;
+    quantityConsumed: number;
+    validFrom: FirebaseFirestore.Timestamp;
+    validUntil: FirebaseFirestore.Timestamp | null;
+    source: "manualInvoice" | "checkout" | "promo";
+    receiptRef: string | null;
+    note: string | null;
+    grantedBy: string;
+    grantedAt: FirebaseFirestore.Timestamp;
+    revokedAt: FirebaseFirestore.Timestamp | null;
+    revokedBy: string | null;
+    revokeReason: string | null;
+  }[];
+  meters: {
+    flightDaysUsed: number;
+    waConversationsUsed: number;
+    periodStartsAt: FirebaseFirestore.Timestamp;
+  };
+  revision: number;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Idempotency receipt at organizerEntitlementReceipts/{receiptId} for admin entitlement mutations. receiptId is organizerId_operationId; a matching contentHash replays the stored result, a different hash fails closed.
+ */
+export interface OrganizerEntitlementReceiptDocument {
+  schemaVersion: 1;
+  receiptId: string;
+  operationId: string;
+  organizerId: string;
+  actorUid: string;
+  action: "grant" | "revoke";
+  contentHash: string;
+  resultRevision: number;
+  grantId: string;
+  createdAt: FirebaseFirestore.Timestamp;
+  expiresAt: FirebaseFirestore.Timestamp;
+}
+
+/**
  * Server-only identity evidence edge used for keyed candidate lookup. Hashes are restricted identifiers, not anonymous data.
  */
 export interface OrganizerContactIdentityLinkDocument {

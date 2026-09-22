@@ -1,0 +1,78 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/shared/organizer_entitlement_common.schema.json",
+  "title": "Organizer entitlement common contract definitions",
+  "description": "Shared enum and embedded definitions for organizer entitlement grants, meters, and receipts. SKUs and limits are versioned in contracts/catalogs/organizer_entitlement_skus.json.",
+  "definitions": {
+    "entitlementSku": {
+      "type": "string",
+      "enum": [
+        "wedding_essentials",
+        "wedding_pro",
+        "wedding_signature",
+        "wedding_transport_addon",
+        "planner_annual"
+      ]
+    },
+    "entitlementUnit": {
+      "type": "string",
+      "enum": ["program", "organizerYear"]
+    },
+    "entitlementSource": {
+      "type": "string",
+      "enum": ["manualInvoice", "checkout", "promo"]
+    },
+    "entitlementGrant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "grantId",
+        "sku",
+        "unit",
+        "quantityTotal",
+        "quantityConsumed",
+        "validFrom",
+        "validUntil",
+        "source",
+        "receiptRef",
+        "note",
+        "grantedBy",
+        "grantedAt",
+        "revokedAt",
+        "revokedBy",
+        "revokeReason"
+      ],
+      "properties": {
+        "grantId": {"$ref": "event_common.schema.json#/definitions/documentId"},
+        "sku": {"$ref": "#/definitions/entitlementSku"},
+        "unit": {"$ref": "#/definitions/entitlementUnit"},
+        "quantityTotal": {"type": "integer", "minimum": 1, "maximum": 1000000},
+        "quantityConsumed": {"type": "integer", "minimum": 0, "maximum": 1000000},
+        "validFrom": {"$ref": "event_common.schema.json#/definitions/timestamp"},
+        "validUntil": {"$ref": "event_common.schema.json#/definitions/nullableTimestamp"},
+        "source": {"$ref": "#/definitions/entitlementSource"},
+        "receiptRef": {"type": ["string", "null"], "maxLength": 180},
+        "note": {"type": ["string", "null"], "maxLength": 500},
+        "grantedBy": {"$ref": "event_common.schema.json#/definitions/documentId"},
+        "grantedAt": {"$ref": "event_common.schema.json#/definitions/timestamp"},
+        "revokedAt": {"$ref": "event_common.schema.json#/definitions/nullableTimestamp"},
+        "revokedBy": {"type": ["string", "null"], "maxLength": 180},
+        "revokeReason": {"type": ["string", "null"], "maxLength": 500}
+      }
+    },
+    "entitlementMeters": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "flightDaysUsed",
+        "waConversationsUsed",
+        "periodStartsAt"
+      ],
+      "properties": {
+        "flightDaysUsed": {"type": "integer", "minimum": 0, "maximum": 1000000},
+        "waConversationsUsed": {"type": "integer", "minimum": 0, "maximum": 100000000},
+        "periodStartsAt": {"$ref": "event_common.schema.json#/definitions/timestamp"}
+      }
+    }
+  }
+}

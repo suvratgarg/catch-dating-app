@@ -112945,6 +112945,450 @@ export const organizerAttentionItemDocumentSchema = {
   }
 };
 
+export const organizerEntitlementsDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_entitlements.schema.json",
+  "title": "OrganizerEntitlementsDocument",
+  "description": "Server-owned entitlement document at organizerEntitlements/{organizerId} holding purchased plan grants and metered usage. Written only by admin grant/revoke callables in the pilot; managers receive a bounded callable projection.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerEntitlements",
+  "x-firestore-path": "organizerEntitlements/{organizerId}",
+  "x-document-id-field": "organizerId",
+  "x-owner": "organizer entitlement admin callables",
+  "required": [
+    "schemaVersion",
+    "organizerId",
+    "grants",
+    "meters",
+    "revision",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1,
+      "x-catch-ownership": "server-only"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "grants": {
+      "type": "array",
+      "maxItems": 50,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "grantId",
+          "sku",
+          "unit",
+          "quantityTotal",
+          "quantityConsumed",
+          "validFrom",
+          "validUntil",
+          "source",
+          "receiptRef",
+          "note",
+          "grantedBy",
+          "grantedAt",
+          "revokedAt",
+          "revokedBy",
+          "revokeReason"
+        ],
+        "properties": {
+          "grantId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "sku": {
+            "type": "string",
+            "enum": [
+              "wedding_essentials",
+              "wedding_pro",
+              "wedding_signature",
+              "wedding_transport_addon",
+              "planner_annual"
+            ]
+          },
+          "unit": {
+            "type": "string",
+            "enum": [
+              "program",
+              "organizerYear"
+            ]
+          },
+          "quantityTotal": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000000
+          },
+          "quantityConsumed": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000000
+          },
+          "validFrom": {
+            "type": "object",
+            "description": "Serialized Firestore Timestamp fixture shape.",
+            "x-firestore-type": "timestamp",
+            "additionalProperties": false,
+            "required": [
+              "_seconds",
+              "_nanoseconds"
+            ],
+            "properties": {
+              "_seconds": {
+                "type": "integer"
+              },
+              "_nanoseconds": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 999999999
+              }
+            }
+          },
+          "validUntil": {
+            "anyOf": [
+              {
+                "type": "object",
+                "description": "Serialized Firestore Timestamp fixture shape.",
+                "x-firestore-type": "timestamp",
+                "additionalProperties": false,
+                "required": [
+                  "_seconds",
+                  "_nanoseconds"
+                ],
+                "properties": {
+                  "_seconds": {
+                    "type": "integer"
+                  },
+                  "_nanoseconds": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 999999999
+                  }
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "manualInvoice",
+              "checkout",
+              "promo"
+            ]
+          },
+          "receiptRef": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 180
+          },
+          "note": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 500
+          },
+          "grantedBy": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "grantedAt": {
+            "type": "object",
+            "description": "Serialized Firestore Timestamp fixture shape.",
+            "x-firestore-type": "timestamp",
+            "additionalProperties": false,
+            "required": [
+              "_seconds",
+              "_nanoseconds"
+            ],
+            "properties": {
+              "_seconds": {
+                "type": "integer"
+              },
+              "_nanoseconds": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 999999999
+              }
+            }
+          },
+          "revokedAt": {
+            "anyOf": [
+              {
+                "type": "object",
+                "description": "Serialized Firestore Timestamp fixture shape.",
+                "x-firestore-type": "timestamp",
+                "additionalProperties": false,
+                "required": [
+                  "_seconds",
+                  "_nanoseconds"
+                ],
+                "properties": {
+                  "_seconds": {
+                    "type": "integer"
+                  },
+                  "_nanoseconds": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 999999999
+                  }
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "revokedBy": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 180
+          },
+          "revokeReason": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 500
+          }
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "meters": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "flightDaysUsed",
+        "waConversationsUsed",
+        "periodStartsAt"
+      ],
+      "properties": {
+        "flightDaysUsed": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000
+        },
+        "waConversationsUsed": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000000
+        },
+        "periodStartsAt": {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "server-only"
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "server-only"
+    }
+  }
+};
+
+export const organizerEntitlementReceiptDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/organizer_entitlement_receipts.schema.json",
+  "title": "OrganizerEntitlementReceiptDocument",
+  "description": "Idempotency receipt at organizerEntitlementReceipts/{receiptId} for admin entitlement mutations. receiptId is organizerId_operationId; a matching contentHash replays the stored result, a different hash fails closed.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "organizerEntitlementReceipts",
+  "x-firestore-path": "organizerEntitlementReceipts/{receiptId}",
+  "x-document-id-field": "receiptId",
+  "x-owner": "organizer entitlement admin callables",
+  "required": [
+    "schemaVersion",
+    "receiptId",
+    "operationId",
+    "organizerId",
+    "actorUid",
+    "action",
+    "contentHash",
+    "resultRevision",
+    "grantId",
+    "createdAt",
+    "expiresAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1,
+      "x-catch-ownership": "server-only"
+    },
+    "receiptId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "operationId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "actorUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "action": {
+      "type": "string",
+      "enum": [
+        "grant",
+        "revoke"
+      ],
+      "x-catch-ownership": "server-only"
+    },
+    "contentHash": {
+      "type": "string",
+      "minLength": 16,
+      "maxLength": 128,
+      "x-catch-ownership": "server-only"
+    },
+    "resultRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "server-only"
+    },
+    "grantId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "x-catch-ownership": "server-only"
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-catch-ownership": "server-only"
+    },
+    "expiresAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      },
+      "x-firestore-ttl": true,
+      "x-catch-ownership": "server-only"
+    }
+  }
+};
+
 export const organizerContactIdentityLinkDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/organizer_contact_identity_links.schema.json",
@@ -181926,6 +182370,458 @@ export const adminUpdateOrganizerDetailsCallablePayloadSchema = {
         "null"
       ],
       "maxLength": 1000
+    }
+  }
+};
+
+export const adminGrantOrganizerEntitlementCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_grant_organizer_entitlement_payload.schema.json",
+  "title": "AdminGrantOrganizerEntitlementCallablePayload",
+  "description": "Admin-authorized grant of one entitlement SKU to an organizer. operationId makes the mutation idempotent across retries; server stamps grantedAt and grantedBy.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-owner": "Admin console finance ops",
+  "required": [
+    "organizerId",
+    "operationId",
+    "sku",
+    "unit",
+    "quantityTotal",
+    "source"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "operationId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{16,120}$"
+    },
+    "sku": {
+      "type": "string",
+      "enum": [
+        "wedding_essentials",
+        "wedding_pro",
+        "wedding_signature",
+        "wedding_transport_addon",
+        "planner_annual"
+      ]
+    },
+    "unit": {
+      "type": "string",
+      "enum": [
+        "program",
+        "organizerYear"
+      ]
+    },
+    "quantityTotal": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000000
+    },
+    "validFromMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "validUntilMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "manualInvoice",
+        "checkout",
+        "promo"
+      ]
+    },
+    "receiptRef": {
+      "type": "string",
+      "maxLength": 180
+    },
+    "note": {
+      "type": "string",
+      "maxLength": 500
+    }
+  }
+};
+
+export const adminRevokeOrganizerEntitlementGrantCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/admin_revoke_organizer_entitlement_grant_payload.schema.json",
+  "title": "AdminRevokeOrganizerEntitlementGrantCallablePayload",
+  "description": "Admin-authorized revocation of one existing entitlement grant. operationId makes the mutation idempotent across retries; revoke of an unknown or already-revoked grant fails closed.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-owner": "Admin console finance ops",
+  "required": [
+    "organizerId",
+    "operationId",
+    "grantId",
+    "reason"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "operationId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{16,120}$"
+    },
+    "grantId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500
+    }
+  }
+};
+
+export const getOrganizerEntitlementCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_organizer_entitlement_payload.schema.json",
+  "title": "GetOrganizerEntitlementCallablePayload",
+  "description": "Requests the bounded entitlement projection (grants, meters, SKU catalog) for one managed organizer.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-owner": "Host organizer plan surface",
+  "required": [
+    "organizerId"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+};
+
+export const organizerEntitlementMutationCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/organizer_entitlement_mutation_response.schema.json",
+  "title": "OrganizerEntitlementMutationCallableResponse",
+  "description": "Result of an admin entitlement grant or revoke mutation, including idempotent replay marker.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "organizerId",
+    "revision",
+    "grantId",
+    "replayed"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "integer",
+      "const": 1
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "grantId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "replayed": {
+      "type": "boolean"
+    }
+  }
+};
+
+export const organizerEntitlementCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/organizer_entitlement_response.schema.json",
+  "title": "OrganizerEntitlementCallableResponse",
+  "description": "Bounded manager-facing entitlement projection: grants without admin internals, metered usage, and the versioned SKU catalog so clients render limits and prices without a second fetch.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "organizerId",
+    "catalogVersion",
+    "revision",
+    "grants",
+    "meters",
+    "skuCatalog"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "integer",
+      "const": 1
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "catalogVersion": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000000
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "grants": {
+      "type": "array",
+      "maxItems": 50,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "grantId",
+          "sku",
+          "skuLabel",
+          "unit",
+          "quantityTotal",
+          "quantityConsumed",
+          "quantityRemaining",
+          "validFromMillis",
+          "validUntilMillis",
+          "source",
+          "active",
+          "revoked"
+        ],
+        "properties": {
+          "grantId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "sku": {
+            "type": "string",
+            "enum": [
+              "wedding_essentials",
+              "wedding_pro",
+              "wedding_signature",
+              "wedding_transport_addon",
+              "planner_annual"
+            ]
+          },
+          "skuLabel": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "unit": {
+            "type": "string",
+            "enum": [
+              "program",
+              "organizerYear"
+            ]
+          },
+          "quantityTotal": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000000
+          },
+          "quantityConsumed": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000000
+          },
+          "quantityRemaining": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000000
+          },
+          "validFromMillis": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "validUntilMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "manualInvoice",
+              "checkout",
+              "promo"
+            ]
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "revoked": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "meters": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "flightDaysUsed",
+        "waConversationsUsed"
+      ],
+      "properties": {
+        "flightDaysUsed": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000
+        },
+        "waConversationsUsed": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000000
+        }
+      }
+    },
+    "skuCatalog": {
+      "type": "object",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^(wedding_essentials|wedding_pro|wedding_signature|wedding_transport_addon|planner_annual)$": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "label",
+            "unit",
+            "priceMinor",
+            "currency",
+            "limits",
+            "capabilitiesAllowed",
+            "includedFlightDays",
+            "includedWaConversations",
+            "stakeholderSeats"
+          ],
+          "properties": {
+            "label": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "unit": {
+              "type": "string",
+              "enum": [
+                "program",
+                "organizerYear"
+              ]
+            },
+            "priceMinor": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 100000000
+            },
+            "currency": {
+              "type": "string",
+              "const": "INR"
+            },
+            "limits": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "guests",
+                "functions",
+                "staffAssignments",
+                "momentsPerFunction"
+              ],
+              "properties": {
+                "guests": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 1,
+                  "maximum": 1000000
+                },
+                "functions": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 1,
+                  "maximum": 1000000
+                },
+                "staffAssignments": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 1,
+                  "maximum": 1000000
+                },
+                "momentsPerFunction": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 1,
+                  "maximum": 1000000
+                }
+              }
+            },
+            "capabilitiesAllowed": {
+              "type": "array",
+              "maxItems": 4,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "enum": [
+                  "arrivalsTransport",
+                  "accommodation",
+                  "forms",
+                  "messaging"
+                ]
+              }
+            },
+            "includedFlightDays": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000
+            },
+            "includedWaConversations": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100000000
+            },
+            "stakeholderSeats": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 1,
+              "maximum": 1000000
+            }
+          }
+        }
+      }
     }
   }
 };
@@ -260972,6 +261868,113 @@ export const hostAttentionPolicyCatalog = {
       "readinessReason": "Offer status, payment snapshot, manual payment review, and expiry are canonical server-owned offer facts."
     }
   ]
+};
+
+export const organizerEntitlementSkuCatalog = {
+  "catalogVersion": 1,
+  "kind": "organizerEntitlementSkus",
+  "skus": {
+    "wedding_essentials": {
+      "label": "Wedding Essentials",
+      "unit": "program",
+      "priceMinor": 2499900,
+      "currency": "INR",
+      "limits": {
+        "guests": 150,
+        "functions": 5,
+        "staffAssignments": 10,
+        "momentsPerFunction": 3
+      },
+      "capabilitiesAllowed": [
+        "forms",
+        "messaging"
+      ],
+      "includedFlightDays": 0,
+      "includedWaConversations": 0,
+      "stakeholderSeats": 2
+    },
+    "wedding_pro": {
+      "label": "Wedding Pro",
+      "unit": "program",
+      "priceMinor": 5999900,
+      "currency": "INR",
+      "limits": {
+        "guests": 400,
+        "functions": 10,
+        "staffAssignments": 30,
+        "momentsPerFunction": null
+      },
+      "capabilitiesAllowed": [
+        "arrivalsTransport",
+        "accommodation",
+        "forms",
+        "messaging"
+      ],
+      "includedFlightDays": 0,
+      "includedWaConversations": 0,
+      "stakeholderSeats": 6
+    },
+    "wedding_signature": {
+      "label": "Wedding Signature",
+      "unit": "program",
+      "priceMinor": 14999900,
+      "currency": "INR",
+      "limits": {
+        "guests": 1000,
+        "functions": null,
+        "staffAssignments": 100,
+        "momentsPerFunction": null
+      },
+      "capabilitiesAllowed": [
+        "arrivalsTransport",
+        "accommodation",
+        "forms",
+        "messaging"
+      ],
+      "includedFlightDays": 300,
+      "includedWaConversations": 3000,
+      "stakeholderSeats": null
+    },
+    "wedding_transport_addon": {
+      "label": "Arrivals desk + dispatch add-on",
+      "unit": "program",
+      "priceMinor": 1499900,
+      "currency": "INR",
+      "limits": {
+        "guests": null,
+        "functions": null,
+        "staffAssignments": null,
+        "momentsPerFunction": null
+      },
+      "capabilitiesAllowed": [
+        "arrivalsTransport"
+      ],
+      "includedFlightDays": 0,
+      "includedWaConversations": 0,
+      "stakeholderSeats": null
+    },
+    "planner_annual": {
+      "label": "Planner annual (quote)",
+      "unit": "organizerYear",
+      "priceMinor": null,
+      "currency": "INR",
+      "limits": {
+        "guests": null,
+        "functions": null,
+        "staffAssignments": null,
+        "momentsPerFunction": null
+      },
+      "capabilitiesAllowed": [
+        "arrivalsTransport",
+        "accommodation",
+        "forms",
+        "messaging"
+      ],
+      "includedFlightDays": 0,
+      "includedWaConversations": 0,
+      "stakeholderSeats": null
+    }
+  }
 };
 
 export const photoPromptCatalog = {

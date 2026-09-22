@@ -817,6 +817,43 @@
       ]
     },
     {
+      "id": "organizerEntitlements",
+      "path": "organizerEntitlements/{organizerId}",
+      "rulesMatch": "/organizerEntitlements/{organizerId}",
+      "typescriptInterface": "OrganizerEntitlementsDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps organizer entitlement state server-only"
+      ],
+      "owner": "admin organizer entitlement grant/revoke callables",
+      "read": "server only; managers receive a bounded callable projection",
+      "write": "server only; admin-authorized grant and revoke callables",
+      "migrationNotes": [
+        "Entitlements are admin-written in the pilot (manual invoice then grant); self-serve checkout writes the same document later.",
+        "Limits from contracts/catalogs/organizer_entitlement_skus.json are enforced inside the owning callables (import commit, grant staff, arm moment), never in UI or rules.",
+        "quantityConsumed is a server-side ledger of plan units already spent on programs; managers see only the bounded projection."
+      ]
+    },
+    {
+      "id": "organizerEntitlementReceipts",
+      "path": "organizerEntitlementReceipts/{receiptId}",
+      "rulesMatch": "/organizerEntitlementReceipts/{receiptId}",
+      "typescriptInterface": "OrganizerEntitlementReceiptDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps organizer entitlement state server-only"
+      ],
+      "owner": "admin organizer entitlement grant/revoke callables",
+      "read": "server only",
+      "write": "server only; idempotency receipts for admin entitlement mutations",
+      "migrationNotes": [
+        "receiptId is organizerId_operationId; a matching contentHash replays the stored result and a different hash fails closed.",
+        "expiresAt is a TTL tombstone thirty days after creation."
+      ]
+    },
+    {
       "id": "organizerForms",
       "path": "organizerForms/{formId}",
       "rulesMatch": "/organizerForms/{formId}",
