@@ -562,6 +562,12 @@ export {
   adminApplyEventMessagingBudget,
 } from "./admin/eventMessagingBudgetApplication";
 export {
+  adminGrantOrganizerEntitlement,
+  adminRevokeOrganizerEntitlementGrant,
+} from "./admin/organizerEntitlements";
+export {getOrganizerEntitlement} from
+  "./entitlements/organizerEntitlementRead";
+export {
   adminCreateMarketingContentDraft,
   adminGetMarketingOpsDashboard,
   adminRecordMarketingReviewDecision,
