@@ -254,6 +254,19 @@ import {
   eventParticipationDocumentSchema,
   eventAttendeeDocumentSchema,
   eventStaffGrantDocumentSchema,
+  organizerProgramDocumentSchema,
+  programFunctionDocumentSchema,
+  programGuestDocumentSchema,
+  programHouseholdDocumentSchema,
+  programStaffGrantDocumentSchema,
+  programPickupPointDocumentSchema,
+  programHotelDocumentSchema,
+  programTravelLegDocumentSchema,
+  programTravelPartyDocumentSchema,
+  transportVendorDocumentSchema,
+  transportTripDocumentSchema,
+  transportActiveAssignmentDocumentSchema,
+  transportOperationReceiptDocumentSchema,
   eventAttendeeAttendanceReceiptDocumentSchema,
   eventAttendeeImportDocumentSchema,
   eventRosterHandoffDocumentSchema,
@@ -969,6 +982,19 @@ export const validateEventInviteAttributionDocument = ajv.compile(eventInviteAtt
 export const validateEventParticipationDocument = ajv.compile(eventParticipationDocumentSchema);
 export const validateEventAttendeeDocument = ajv.compile(eventAttendeeDocumentSchema);
 export const validateEventStaffGrantDocument = ajv.compile(eventStaffGrantDocumentSchema);
+export const validateOrganizerProgramDocument = ajv.compile(organizerProgramDocumentSchema);
+export const validateProgramFunctionDocument = ajv.compile(programFunctionDocumentSchema);
+export const validateProgramGuestDocument = ajv.compile(programGuestDocumentSchema);
+export const validateProgramHouseholdDocument = ajv.compile(programHouseholdDocumentSchema);
+export const validateProgramStaffGrantDocument = ajv.compile(programStaffGrantDocumentSchema);
+export const validateProgramPickupPointDocument = ajv.compile(programPickupPointDocumentSchema);
+export const validateProgramHotelDocument = ajv.compile(programHotelDocumentSchema);
+export const validateProgramTravelLegDocument = ajv.compile(programTravelLegDocumentSchema);
+export const validateProgramTravelPartyDocument = ajv.compile(programTravelPartyDocumentSchema);
+export const validateTransportVendorDocument = ajv.compile(transportVendorDocumentSchema);
+export const validateTransportTripDocument = ajv.compile(transportTripDocumentSchema);
+export const validateTransportActiveAssignmentDocument = ajv.compile(transportActiveAssignmentDocumentSchema);
+export const validateTransportOperationReceiptDocument = ajv.compile(transportOperationReceiptDocumentSchema);
 export const validateEventAttendeeAttendanceReceiptDocument = ajv.compile(eventAttendeeAttendanceReceiptDocumentSchema);
 export const validateEventAttendeeImportDocument = ajv.compile(eventAttendeeImportDocumentSchema);
 export const validateEventRosterHandoffDocument = ajv.compile(eventRosterHandoffDocumentSchema);

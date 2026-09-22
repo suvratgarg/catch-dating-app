@@ -1,0 +1,60 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/program_travel_parties.schema.json",
+  "title": "ProgramTravelPartyDocument",
+  "description": "Server-owned ride-together relationship across guest legs. Members are never split across suggested vehicles; oversized parties surface for review.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "programTravelParties",
+  "x-firestore-path": "programTravelParties/{partyId}",
+  "x-document-id-field": "partyId",
+  "x-owner": "program travel callables",
+  "required": [
+    "programId",
+    "organizerId",
+    "label",
+    "memberGuestIds",
+    "dedicatedVehicle",
+    "createdAt",
+    "updatedAt",
+    "revision"
+  ],
+  "properties": {
+    "programId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "label": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 140
+    },
+    "memberGuestIds": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 50,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+      }
+    },
+    "dedicatedVehicle": {
+      "type": "boolean"
+    },
+    "createdAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+    },
+    "updatedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    }
+  }
+}

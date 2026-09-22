@@ -1376,6 +1376,75 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/eventStaffGrantDocument.ts",
   },
   {
+    name: "OrganizerProgramDocument",
+    source: "firestore/organizer_programs.schema.json",
+    typeOutput: "functions/src/shared/generated/organizerProgramDocument.ts",
+  },
+  {
+    name: "ProgramFunctionDocument",
+    source: "firestore/program_functions.schema.json",
+    typeOutput: "functions/src/shared/generated/programFunctionDocument.ts",
+  },
+  {
+    name: "ProgramGuestDocument",
+    source: "firestore/program_guests.schema.json",
+    typeOutput: "functions/src/shared/generated/programGuestDocument.ts",
+  },
+  {
+    name: "ProgramHouseholdDocument",
+    source: "firestore/program_households.schema.json",
+    typeOutput: "functions/src/shared/generated/programHouseholdDocument.ts",
+  },
+  {
+    name: "ProgramStaffGrantDocument",
+    source: "firestore/program_staff_grants.schema.json",
+    typeOutput: "functions/src/shared/generated/programStaffGrantDocument.ts",
+  },
+  {
+    name: "ProgramPickupPointDocument",
+    source: "firestore/program_pickup_points.schema.json",
+    typeOutput: "functions/src/shared/generated/programPickupPointDocument.ts",
+  },
+  {
+    name: "ProgramHotelDocument",
+    source: "firestore/program_hotels.schema.json",
+    typeOutput: "functions/src/shared/generated/programHotelDocument.ts",
+  },
+  {
+    name: "ProgramTravelLegDocument",
+    source: "firestore/program_travel_legs.schema.json",
+    typeOutput: "functions/src/shared/generated/programTravelLegDocument.ts",
+  },
+  {
+    name: "ProgramTravelPartyDocument",
+    source: "firestore/program_travel_parties.schema.json",
+    typeOutput: "functions/src/shared/generated/programTravelPartyDocument.ts",
+  },
+  {
+    name: "TransportVendorDocument",
+    source: "firestore/transport_vendors.schema.json",
+    typeOutput: "functions/src/shared/generated/transportVendorDocument.ts",
+  },
+  {
+    name: "TransportTripDocument",
+    source: "firestore/transport_trips.schema.json",
+    typeOutput: "functions/src/shared/generated/transportTripDocument.ts",
+  },
+  {
+    name: "TransportActiveAssignmentDocument",
+    source: "firestore/transport_active_assignments.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "transportActiveAssignmentDocument.ts",
+  },
+  {
+    name: "TransportOperationReceiptDocument",
+    source: "firestore/transport_operation_receipts.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "transportOperationReceiptDocument.ts",
+  },
+  {
     name: "EventAttendeeAttendanceReceiptDocument",
     source: "firestore/event_attendee_attendance_receipts.schema.json",
     typeOutput:

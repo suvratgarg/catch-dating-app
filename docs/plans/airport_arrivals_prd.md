@@ -1,6 +1,6 @@
 ---
 doc_id: airport_arrivals_prd
-version: 0.2.0
+version: 0.3.0
 updated: 2026-09-22
 owner: product
 status: draft
@@ -1197,25 +1197,39 @@ coordinator replaying an offline operation; a scoped campaign widening its
 saved audience; a shared phone collapsing two children; a stale provider response
 undoing physical departure; and a changed rate card rewriting a historical bill.
 
-### 15. Initial implementation boundary and remaining decisions
+### 15. Implementation status and remaining decisions
 
-The initial source slice is confined to pure server-side transport policy under
-`functions/src/transport`, with adjacent Node tests. It introduces no Firestore
-collection, deployable function, third-party call, new library, security-rule
-change, Flutter route or production feature flag. Inputs are internal policy
-values, not hand-written substitutes for future persisted/wire schemas. Generated
-contracts will be added when their owning commands and repositories are built.
+Landed slices, in order:
 
-The complete initial policy boundary is: landing-time precedence, cancellation/
+1. **A0 transport policy** — `functions/src/transport/` timing precedence and
+   deterministic grouping, covered by adjacent Node tests.
+2. **A1 contract foundation (partial)** — private program Firestore contracts
+   in `contracts/firestore/` (`organizerPrograms`, `programFunctions`,
+   `programGuests`, `programHouseholds`, `programStaffGrants`,
+   `programPickupPoints`, `programHotels`, `programTravelLegs`,
+   `programTravelParties`, `transportVendors`, `transportTrips`,
+   `transportActiveAssignments`, `transportOperationReceipts`), the shared
+   `contracts/shared/program_common.schema.json`, deny-by-default rules with
+   emulator-verified tests, contract registry entries and generated
+   Functions/Dart types. Staff may read only their own derived grant document.
+   Vehicle classes are a bounded embedded catalog on the program so grouping
+   needs no extra collection. Rate cards, room blocks, stays, import staging,
+   flight instances and reconciliation tables remain deferred.
+
+Not yet landed: program management/staff callables, scoped roster and dispatch
+projections, the restricted work shell, offline transport outbox, provider
+adapters, and any client route. `exportedFunctions` entries and callable
+payload/response contracts ship with their owning Functions commit, not before.
+
+The complete policy boundary is: landing-time precedence, cancellation/
 diversion handling, reviewed manual/ready-time precedence, deterministic
 program/pickup/destination/readiness partitioning, anchored time bands, ready-wait
 ceilings, party integrity, seat/luggage/capability fitting and explicit no-fit
 results. The planner produces suggestions, not reservations or dispatches.
 
-Remaining structural slices A1–A8 are not implemented by that foundation. Their
-scope and acceptance above remain the delivery backlog. Provider choice/credentials,
-retention periods, whether coordinators may send program-bound invitations in the
-first pilot, and the native/web offline-storage choice need resolution before
-the relevant integrations are enabled. They do not block provider-independent
-policy work. The private program is the recommended architecture; do not silently
+Remaining structural slices A1–A8 not listed above remain the delivery backlog.
+Provider choice/credentials, retention periods, whether coordinators may send
+program-bound invitations in the first pilot, and the native/web
+offline-storage choice need resolution before the relevant integrations are
+enabled. The private program is the recommended architecture; do not silently
 convert existing public Events or organizer contacts during implementation.

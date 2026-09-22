@@ -1,0 +1,290 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/shared/program_common.schema.json",
+  "title": "Program and transport common contract definitions",
+  "description": "Shared enum, scalar, and embedded definitions for private wedding/corporate program and transport contracts.",
+  "definitions": {
+    "programKind": {
+      "type": "string",
+      "enum": [
+        "wedding",
+        "corporate",
+        "social",
+        "other"
+      ]
+    },
+    "programStatus": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "active",
+        "completed",
+        "archived"
+      ]
+    },
+    "programCapability": {
+      "type": "string",
+      "enum": [
+        "arrivalsTransport",
+        "accommodation",
+        "forms",
+        "messaging"
+      ]
+    },
+    "programStaffDuty": {
+      "type": "string",
+      "enum": [
+        "programCoordinator",
+        "airportGreeter",
+        "hotelDesk",
+        "transportDispatcher",
+        "reconciliationViewer"
+      ]
+    },
+    "programStaffDutyAssignment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "duty",
+        "pickupPointIds",
+        "hotelIds"
+      ],
+      "properties": {
+        "duty": {
+          "$ref": "#/definitions/programStaffDuty"
+        },
+        "pickupPointIds": {
+          "type": "array",
+          "maxItems": 32,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "event_common.schema.json#/definitions/documentId"
+          },
+          "description": "Station scope for airportGreeter/transportDispatcher duties. Empty means all pickup points in the program."
+        },
+        "hotelIds": {
+          "type": "array",
+          "maxItems": 64,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "event_common.schema.json#/definitions/documentId"
+          },
+          "description": "Hotel scope for hotelDesk duties. Empty means all hotels in the program."
+        }
+      }
+    },
+    "programVehicleClass": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "label",
+        "passengerCapacity",
+        "luggageCapacity",
+        "capabilities",
+        "sortOrder"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 60,
+          "pattern": "^[a-z0-9][a-z0-9_-]{0,59}$"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 60
+        },
+        "passengerCapacity": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200
+        },
+        "luggageCapacity": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 500
+        },
+        "capabilities": {
+          "type": "array",
+          "maxItems": 12,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/definitions/vehicleCapability"
+          }
+        },
+        "sortOrder": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000
+        }
+      }
+    },
+    "vehicleCapability": {
+      "type": "string",
+      "enum": [
+        "wheelchairAccessible",
+        "extraLuggage",
+        "childSeat"
+      ]
+    },
+    "programTransportSettings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "bandWindowMillis",
+        "maxReadyWaitMillis",
+        "domesticExitLagMillis",
+        "internationalExitLagMillis",
+        "vehicleClasses"
+      ],
+      "properties": {
+        "bandWindowMillis": {
+          "type": "integer",
+          "minimum": 300000,
+          "maximum": 7200000,
+          "description": "Anchored curb-time window used by grouping suggestions. Default 30 minutes."
+        },
+        "maxReadyWaitMillis": {
+          "type": "integer",
+          "minimum": 60000,
+          "maximum": 3600000,
+          "description": "Ceiling on how long a physically ready party waits before a group is flagged overdue. Default 10 minutes for premium events."
+        },
+        "domesticExitLagMillis": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 7200000,
+          "description": "Default landing-to-curb lag for domestic arrivals."
+        },
+        "internationalExitLagMillis": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 14400000,
+          "description": "Default landing-to-curb lag for international arrivals."
+        },
+        "vehicleClasses": {
+          "type": "array",
+          "maxItems": 16,
+          "items": {
+            "$ref": "#/definitions/programVehicleClass"
+          },
+          "description": "Program-scoped vehicle catalog consumed by grouping suggestions; ids are unique per program."
+        }
+      }
+    },
+    "programGuestSource": {
+      "type": "string",
+      "enum": [
+        "manual",
+        "import",
+        "formResponse"
+      ]
+    },
+    "programRsvpStatus": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "attending",
+        "declined",
+        "maybe"
+      ]
+    },
+    "programInvitationStatus": {
+      "type": "string",
+      "enum": [
+        "notInvited",
+        "invited",
+        "delivered",
+        "responded"
+      ]
+    },
+    "travelLegKind": {
+      "type": "string",
+      "enum": [
+        "inbound",
+        "outbound",
+        "ground"
+      ]
+    },
+    "travelLegFlightStatus": {
+      "type": "string",
+      "enum": [
+        "scheduled",
+        "enroute",
+        "landed",
+        "delayed",
+        "cancelled",
+        "diverted",
+        "unknown"
+      ]
+    },
+    "travelLegReadiness": {
+      "type": "string",
+      "enum": [
+        "expected",
+        "ready",
+        "dispatched",
+        "arrived",
+        "disrupted",
+        "noShow"
+      ]
+    },
+    "transportTripStatus": {
+      "type": "string",
+      "enum": [
+        "enRoute",
+        "arrived",
+        "cancelled",
+        "voided"
+      ]
+    },
+    "transportTripKind": {
+      "type": "string",
+      "enum": [
+        "guestTransfer",
+        "repositioning"
+      ]
+    },
+    "transportOperationKind": {
+      "type": "string",
+      "enum": [
+        "markReady",
+        "claim",
+        "unclaim",
+        "markDisrupted",
+        "dispatch",
+        "markArrived",
+        "voidTrip"
+      ]
+    },
+    "pickupPointKind": {
+      "type": "string",
+      "enum": [
+        "airport",
+        "railway",
+        "venue",
+        "other"
+      ]
+    },
+    "iataCode": {
+      "type": "string",
+      "pattern": "^[A-Z]{3}$"
+    },
+    "flightDesignator": {
+      "type": "string",
+      "pattern": "^[A-Z0-9]{2,3}-?[0-9]{1,4}[A-Z]?$"
+    },
+    "vehiclePlate": {
+      "type": "string",
+      "minLength": 4,
+      "maxLength": 16
+    },
+    "clientOperationId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 120
+    }
+  }
+}

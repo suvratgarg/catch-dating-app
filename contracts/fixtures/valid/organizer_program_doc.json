@@ -1,0 +1,38 @@
+{
+  "organizerId": "org-1",
+  "kind": "wedding",
+  "title": "Mehta-Kapoor Wedding",
+  "timezone": "Asia/Kolkata",
+  "startsAt": {"_seconds": 1786625400, "_nanoseconds": 0},
+  "endsAt": {"_seconds": 1786884600, "_nanoseconds": 0},
+  "status": "active",
+  "capabilities": ["arrivalsTransport", "accommodation"],
+  "transportSettings": {
+    "bandWindowMillis": 1800000,
+    "maxReadyWaitMillis": 600000,
+    "domesticExitLagMillis": 1500000,
+    "internationalExitLagMillis": 3600000,
+    "vehicleClasses": [
+      {
+        "id": "sedan",
+        "label": "Sedan",
+        "passengerCapacity": 3,
+        "luggageCapacity": 3,
+        "capabilities": [],
+        "sortOrder": 0
+      },
+      {
+        "id": "innova",
+        "label": "Innova",
+        "passengerCapacity": 6,
+        "luggageCapacity": 8,
+        "capabilities": ["extraLuggage"],
+        "sortOrder": 1
+      }
+    ]
+  },
+  "createdBy": "host-1",
+  "createdAt": {"_seconds": 1786625400, "_nanoseconds": 0},
+  "updatedAt": {"_seconds": 1786625400, "_nanoseconds": 0},
+  "revision": 1
+}

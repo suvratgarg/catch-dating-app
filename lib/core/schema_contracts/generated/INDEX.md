@@ -263,6 +263,19 @@ Do not edit it by hand.
 | EventParticipationDocument | `firestore/event_participations.schema.json` | `functions/src/shared/generated/eventParticipationDocument.ts` |
 | EventAttendeeDocument | `firestore/event_attendees.schema.json` | `functions/src/shared/generated/eventAttendeeDocument.ts` |
 | EventStaffGrantDocument | `firestore/event_staff_grants.schema.json` | `functions/src/shared/generated/eventStaffGrantDocument.ts` |
+| OrganizerProgramDocument | `firestore/organizer_programs.schema.json` | `functions/src/shared/generated/organizerProgramDocument.ts` |
+| ProgramFunctionDocument | `firestore/program_functions.schema.json` | `functions/src/shared/generated/programFunctionDocument.ts` |
+| ProgramGuestDocument | `firestore/program_guests.schema.json` | `functions/src/shared/generated/programGuestDocument.ts` |
+| ProgramHouseholdDocument | `firestore/program_households.schema.json` | `functions/src/shared/generated/programHouseholdDocument.ts` |
+| ProgramStaffGrantDocument | `firestore/program_staff_grants.schema.json` | `functions/src/shared/generated/programStaffGrantDocument.ts` |
+| ProgramPickupPointDocument | `firestore/program_pickup_points.schema.json` | `functions/src/shared/generated/programPickupPointDocument.ts` |
+| ProgramHotelDocument | `firestore/program_hotels.schema.json` | `functions/src/shared/generated/programHotelDocument.ts` |
+| ProgramTravelLegDocument | `firestore/program_travel_legs.schema.json` | `functions/src/shared/generated/programTravelLegDocument.ts` |
+| ProgramTravelPartyDocument | `firestore/program_travel_parties.schema.json` | `functions/src/shared/generated/programTravelPartyDocument.ts` |
+| TransportVendorDocument | `firestore/transport_vendors.schema.json` | `functions/src/shared/generated/transportVendorDocument.ts` |
+| TransportTripDocument | `firestore/transport_trips.schema.json` | `functions/src/shared/generated/transportTripDocument.ts` |
+| TransportActiveAssignmentDocument | `firestore/transport_active_assignments.schema.json` | `functions/src/shared/generated/transportActiveAssignmentDocument.ts` |
+| TransportOperationReceiptDocument | `firestore/transport_operation_receipts.schema.json` | `functions/src/shared/generated/transportOperationReceiptDocument.ts` |
 | EventAttendeeAttendanceReceiptDocument | `firestore/event_attendee_attendance_receipts.schema.json` | `functions/src/shared/generated/eventAttendeeAttendanceReceiptDocument.ts` |
 | EventAttendeeImportDocument | `firestore/event_attendee_imports.schema.json` | `functions/src/shared/generated/eventAttendeeImportDocument.ts` |
 | EventRosterHandoffDocument | `firestore/event_roster_handoffs.schema.json` | `functions/src/shared/generated/eventRosterHandoffDocument.ts` |
@@ -959,6 +972,19 @@ Do not edit it by hand.
 | `schemaEventParticipationDocumentSchema` | EventParticipationDocument | `firestore/event_participations.schema.json` | `lib/core/schema_contracts/generated/schemas/event_participation_document.g.dart` |
 | `schemaEventAttendeeDocumentSchema` | EventAttendeeDocument | `firestore/event_attendees.schema.json` | `lib/core/schema_contracts/generated/schemas/event_attendee_document.g.dart` |
 | `schemaEventStaffGrantDocumentSchema` | EventStaffGrantDocument | `firestore/event_staff_grants.schema.json` | `lib/core/schema_contracts/generated/schemas/event_staff_grant_document.g.dart` |
+| `schemaOrganizerProgramDocumentSchema` | OrganizerProgramDocument | `firestore/organizer_programs.schema.json` | `lib/core/schema_contracts/generated/schemas/organizer_program_document.g.dart` |
+| `schemaProgramFunctionDocumentSchema` | ProgramFunctionDocument | `firestore/program_functions.schema.json` | `lib/core/schema_contracts/generated/schemas/program_function_document.g.dart` |
+| `schemaProgramGuestDocumentSchema` | ProgramGuestDocument | `firestore/program_guests.schema.json` | `lib/core/schema_contracts/generated/schemas/program_guest_document.g.dart` |
+| `schemaProgramHouseholdDocumentSchema` | ProgramHouseholdDocument | `firestore/program_households.schema.json` | `lib/core/schema_contracts/generated/schemas/program_household_document.g.dart` |
+| `schemaProgramStaffGrantDocumentSchema` | ProgramStaffGrantDocument | `firestore/program_staff_grants.schema.json` | `lib/core/schema_contracts/generated/schemas/program_staff_grant_document.g.dart` |
+| `schemaProgramPickupPointDocumentSchema` | ProgramPickupPointDocument | `firestore/program_pickup_points.schema.json` | `lib/core/schema_contracts/generated/schemas/program_pickup_point_document.g.dart` |
+| `schemaProgramHotelDocumentSchema` | ProgramHotelDocument | `firestore/program_hotels.schema.json` | `lib/core/schema_contracts/generated/schemas/program_hotel_document.g.dart` |
+| `schemaProgramTravelLegDocumentSchema` | ProgramTravelLegDocument | `firestore/program_travel_legs.schema.json` | `lib/core/schema_contracts/generated/schemas/program_travel_leg_document.g.dart` |
+| `schemaProgramTravelPartyDocumentSchema` | ProgramTravelPartyDocument | `firestore/program_travel_parties.schema.json` | `lib/core/schema_contracts/generated/schemas/program_travel_party_document.g.dart` |
+| `schemaTransportVendorDocumentSchema` | TransportVendorDocument | `firestore/transport_vendors.schema.json` | `lib/core/schema_contracts/generated/schemas/transport_vendor_document.g.dart` |
+| `schemaTransportTripDocumentSchema` | TransportTripDocument | `firestore/transport_trips.schema.json` | `lib/core/schema_contracts/generated/schemas/transport_trip_document.g.dart` |
+| `schemaTransportActiveAssignmentDocumentSchema` | TransportActiveAssignmentDocument | `firestore/transport_active_assignments.schema.json` | `lib/core/schema_contracts/generated/schemas/transport_active_assignment_document.g.dart` |
+| `schemaTransportOperationReceiptDocumentSchema` | TransportOperationReceiptDocument | `firestore/transport_operation_receipts.schema.json` | `lib/core/schema_contracts/generated/schemas/transport_operation_receipt_document.g.dart` |
 | `schemaEventAttendeeAttendanceReceiptDocumentSchema` | EventAttendeeAttendanceReceiptDocument | `firestore/event_attendee_attendance_receipts.schema.json` | `lib/core/schema_contracts/generated/schemas/event_attendee_attendance_receipt_document.g.dart` |
 | `schemaEventAttendeeImportDocumentSchema` | EventAttendeeImportDocument | `firestore/event_attendee_imports.schema.json` | `lib/core/schema_contracts/generated/schemas/event_attendee_import_document.g.dart` |
 | `schemaEventRosterHandoffDocumentSchema` | EventRosterHandoffDocument | `firestore/event_roster_handoffs.schema.json` | `lib/core/schema_contracts/generated/schemas/event_roster_handoff_document.g.dart` |

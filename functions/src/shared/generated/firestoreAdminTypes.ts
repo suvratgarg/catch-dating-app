@@ -8194,6 +8194,447 @@ export interface EventStaffGrantDocument {
 }
 
 /**
+ * Server-owned private wedding/corporate program root. Holds organizer ownership, lifecycle, enabled capabilities and transport tuning. Never publicly readable; guest logistics live in program-scoped collections.
+ */
+export interface OrganizerProgramDocument {
+  organizerId: string;
+  kind: "wedding" | "corporate" | "social" | "other";
+  title: string;
+  /**
+   * IANA timezone identifier used for display and time-band boundaries.
+   */
+  timezone: string;
+  startsAt: FirebaseFirestore.Timestamp;
+  endsAt: FirebaseFirestore.Timestamp;
+  status: "draft" | "active" | "completed" | "archived";
+  /**
+   * @maxItems 8
+   */
+  capabilities: (
+    | "arrivalsTransport"
+    | "accommodation"
+    | "forms"
+    | "messaging"
+  )[];
+  transportSettings: {
+    /**
+     * Anchored curb-time window used by grouping suggestions. Default 30 minutes.
+     */
+    bandWindowMillis: number;
+    /**
+     * Ceiling on how long a physically ready party waits before a group is flagged overdue. Default 10 minutes for premium events.
+     */
+    maxReadyWaitMillis: number;
+    /**
+     * Default landing-to-curb lag for domestic arrivals.
+     */
+    domesticExitLagMillis: number;
+    /**
+     * Default landing-to-curb lag for international arrivals.
+     */
+    internationalExitLagMillis: number;
+    /**
+     * Program-scoped vehicle catalog consumed by grouping suggestions; ids are unique per program.
+     *
+     * @maxItems 16
+     */
+    vehicleClasses: {
+      id: string;
+      label: string;
+      passengerCapacity: number;
+      luggageCapacity: number;
+      /**
+       * @maxItems 12
+       */
+      capabilities: ("wheelchairAccessible" | "extraLuggage" | "childSeat")[];
+      sortOrder: number;
+    }[];
+  };
+  createdBy: string;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  revision: number;
+}
+
+/**
+ * Server-owned private function (ceremony, reception, offsite session) inside a program. Separate from public events documents; no public read surface exists.
+ */
+export interface ProgramFunctionDocument {
+  programId: string;
+  organizerId: string;
+  name: string;
+  startsAt: FirebaseFirestore.Timestamp;
+  endsAt: FirebaseFirestore.Timestamp;
+  venueName: string;
+  venueNotes?: string | null;
+  status: "scheduled" | "completed" | "cancelled";
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  revision: number;
+}
+
+/**
+ * Server-owned person-level wedding/corporate guest record. One document per invited person; household membership and optional CRM contact links are explicit. A shared phone number never merges two guests.
+ */
+export interface ProgramGuestDocument {
+  programId: string;
+  organizerId: string;
+  displayName: string;
+  householdId: string | null;
+  /**
+   * Optional link to organizerContacts. Absence never blocks guest operations.
+   */
+  contactId: string | null;
+  /**
+   * Optional reachable phone for this person. Shared family phones do not merge identities.
+   */
+  phoneE164: string | null;
+  email: string | null;
+  /**
+   * Planner-side reference such as a spreadsheet id or invitation code.
+   */
+  externalReference: string | null;
+  invitationStatus: "notInvited" | "invited" | "delivered" | "responded";
+  rsvpStatus: "pending" | "attending" | "declined" | "maybe";
+  source: "manual" | "import" | "formResponse";
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  revision: number;
+}
+
+/**
+ * Server-owned household/party grouping for program guests. Carries the invited party's primary contact and delivery preference; member guest ids are bounded.
+ */
+export interface ProgramHouseholdDocument {
+  programId: string;
+  organizerId: string;
+  /**
+   * Human label such as 'The Sharma family' used on invitations and rosters.
+   */
+  label: string;
+  primaryContactName: string;
+  primaryPhoneE164: string | null;
+  primaryEmail: string | null;
+  /**
+   * @minItems 1
+   * @maxItems 50
+   */
+  memberGuestIds: string[];
+  /**
+   * Invitation delivery preference; does not grant messaging consent by itself.
+   */
+  deliveryPreference: "whatsapp" | "sms" | "email" | "none";
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  revision: number;
+}
+
+/**
+ * Server-owned, expiring program staff access. Duties are named and station-scoped; a grant never confers organizer, CRM, messaging or cross-program authority.
+ */
+export interface ProgramStaffGrantDocument {
+  organizerId: string;
+  programId: string;
+  uid: string;
+  displayName: string;
+  phoneLastFour: string;
+  /**
+   * At most one assignment per duty; each duty independently scopes pickup points and hotels.
+   *
+   * @minItems 1
+   * @maxItems 8
+   */
+  duties: {
+    duty:
+      | "programCoordinator"
+      | "airportGreeter"
+      | "hotelDesk"
+      | "transportDispatcher"
+      | "reconciliationViewer";
+    /**
+     * Station scope for airportGreeter/transportDispatcher duties. Empty means all pickup points in the program.
+     *
+     * @maxItems 32
+     */
+    pickupPointIds: string[];
+    /**
+     * Hotel scope for hotelDesk duties. Empty means all hotels in the program.
+     *
+     * @maxItems 64
+     */
+    hotelIds: string[];
+  }[];
+  status: "active" | "revoked";
+  createdBy: string;
+  createdAt: FirebaseFirestore.Timestamp;
+  expiresAt: FirebaseFirestore.Timestamp;
+  revokedBy: string | null;
+  revokedAt: FirebaseFirestore.Timestamp | null;
+  updatedAt: FirebaseFirestore.Timestamp;
+  revision: number;
+}
+
+/**
+ * Server-owned program pickup station such as an airport terminal arrivals zone. Scopes greeter and dispatcher duties and transport grouping.
+ */
+export interface ProgramPickupPointDocument {
+  programId: string;
+  organizerId: string;
+  kind: "airport" | "railway" | "venue" | "other";
+  /**
+   * Station label such as 'DEL T3 arrivals exit 4'.
+   */
+  label: string;
+  iataCode: string | null;
+  terminal: string | null;
+  meetingZone: string | null;
+  latitude: number | null;
+  longitude: number | null;
+  /**
+   * Guest-facing pickup instructions shown on travel confirmations.
+   */
+  instructions: string | null;
+  active: boolean;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  revision: number;
+}
+
+/**
+ * Server-owned program accommodation property. Scopes hotel-desk duties, guest stays and transport destinations.
+ */
+export interface ProgramHotelDocument {
+  programId: string;
+  organizerId: string;
+  name: string;
+  address: string;
+  latitude: number | null;
+  longitude: number | null;
+  receptionContact: string | null;
+  notes: string | null;
+  active: boolean;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  revision: number;
+}
+
+/**
+ * Server-owned per-guest travel leg. Carries itinerary facts, flight status snapshots, readiness/claim state and reviewed manual overrides. Provider facts are linked, never copied over manual observations.
+ */
+export interface ProgramTravelLegDocument {
+  programId: string;
+  organizerId: string;
+  /**
+   * Exactly one guest per leg; companions get their own legs sharing a party.
+   */
+  guestId: string;
+  /**
+   * Optional ride-together travel party; null means this leg travels as a singleton.
+   */
+  partyId: string | null;
+  kind: "inbound" | "outbound" | "ground";
+  flightNumber: string | null;
+  carrierCode: string | null;
+  originIata: string | null;
+  destinationIata: string | null;
+  scheduledArrivalAt: FirebaseFirestore.Timestamp | null;
+  estimatedArrivalAt: FirebaseFirestore.Timestamp | null;
+  actualArrivalAt: FirebaseFirestore.Timestamp | null;
+  flightStatus:
+    | "scheduled"
+    | "enroute"
+    | "landed"
+    | "delayed"
+    | "cancelled"
+    | "diverted"
+    | "unknown";
+  /**
+   * Resolved provider flight instance once flight tracking ships; null for manual entries.
+   */
+  flightInstanceId: string | null;
+  pickupPointId: string | null;
+  destinationHotelId: string | null;
+  /**
+   * Free-text destination when the drop is not a configured hotel.
+   */
+  destinationLabel: string | null;
+  readiness:
+    | "expected"
+    | "ready"
+    | "dispatched"
+    | "arrived"
+    | "disrupted"
+    | "noShow";
+  /**
+   * Observed curb-ready timestamp; outranks every estimate.
+   */
+  readyAt: FirebaseFirestore.Timestamp | null;
+  claimedByUid: string | null;
+  claimedAt: FirebaseFirestore.Timestamp | null;
+  /**
+   * Reviewed manual curb estimate; outranks flight-derived timing.
+   */
+  manualCurbAt: FirebaseFirestore.Timestamp | null;
+  manualCurbNote: string | null;
+  /**
+   * Seats this leg consumes, including children without their own guest record.
+   */
+  passengers: number;
+  luggageUnits: number;
+  /**
+   * @maxItems 12
+   */
+  requiredCapabilities: (
+    | "wheelchairAccessible"
+    | "extraLuggage"
+    | "childSeat"
+  )[];
+  /**
+   * VIP/private transfers never share a suggested vehicle.
+   */
+  dedicatedVehicle: boolean;
+  source: "manual" | "import" | "formResponse" | "planner";
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  revision: number;
+}
+
+/**
+ * Server-owned ride-together relationship across guest legs. Members are never split across suggested vehicles; oversized parties surface for review.
+ */
+export interface ProgramTravelPartyDocument {
+  programId: string;
+  organizerId: string;
+  label: string | null;
+  /**
+   * @minItems 2
+   * @maxItems 50
+   */
+  memberGuestIds: string[];
+  dedicatedVehicle: boolean;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  revision: number;
+}
+
+/**
+ * Server-owned organizer-level taxi/coach subcontractor identity. Program use requires an explicit binding; rate cards and commercial terms ship with the reconciliation slice.
+ */
+export interface TransportVendorDocument {
+  organizerId: string;
+  name: string;
+  contactName: string | null;
+  phoneE164: string | null;
+  /**
+   * Programs this vendor is bound to; dispatch may only snapshot bound vendors.
+   *
+   * @maxItems 100
+   */
+  programIds: string[];
+  active: boolean;
+  notes: string | null;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  revision: number;
+}
+
+/**
+ * Server-owned dispatched vehicle record. The dispatch act is the reconciliation atom: plate, vendor, class and manifest are snapshotted at departure. Airport, hotel and finance surfaces read field-redacted projections.
+ */
+export interface TransportTripDocument {
+  programId: string;
+  organizerId: string;
+  kind: "guestTransfer" | "repositioning";
+  pickupPointId: string;
+  destinationHotelId: string | null;
+  destinationLabel: string | null;
+  /**
+   * Program vehicle-class catalog id snapshotted at dispatch.
+   */
+  vehicleClassId: string;
+  vendorId: string | null;
+  vendorNameSnapshot: string | null;
+  /**
+   * Uppercased plate with separators stripped; the reconciliation join key.
+   */
+  plateNormalized: string;
+  plateDisplay: string;
+  /**
+   * @maxItems 50
+   */
+  partyIds: string[];
+  /**
+   * @minItems 1
+   * @maxItems 50
+   */
+  legIds: string[];
+  passengerCount: number;
+  status: "enRoute" | "arrived" | "cancelled" | "voided";
+  departedAt: FirebaseFirestore.Timestamp;
+  departedByUid: string;
+  arrivedAt: FirebaseFirestore.Timestamp | null;
+  arrivedByUid: string | null;
+  /**
+   * Optional agreed rate frozen at dispatch; commercial terms ship with the reconciliation slice.
+   */
+  rateSnapshot: {
+    currency: string;
+    amountMinor: number;
+    pricingKind: "perTrip" | "perVehicleDay" | "custom";
+  } | null;
+  /**
+   * Idempotent dispatch key; a replay returns the original trip.
+   */
+  clientOperationId: string;
+  notes: string | null;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  revision: number;
+}
+
+/**
+ * Server-owned unique binding from a travel leg to its active trip. Created in the same transaction as dispatch so two staff cannot board one leg twice.
+ */
+export interface TransportActiveAssignmentDocument {
+  programId: string;
+  legId: string;
+  tripId: string;
+  status: "active" | "released";
+  assignedAt: FirebaseFirestore.Timestamp;
+  releasedAt: FirebaseFirestore.Timestamp | null;
+  revision: number;
+}
+
+/**
+ * Server-owned idempotency receipt for offline-replayed transport mutations. An exact retry returns the original result; a conflicting reuse of the client operation id fails closed.
+ */
+export interface TransportOperationReceiptDocument {
+  programId: string;
+  operationKind:
+    | "markReady"
+    | "claim"
+    | "unclaim"
+    | "markDisrupted"
+    | "dispatch"
+    | "markArrived"
+    | "voidTrip";
+  clientOperationId: string;
+  actorUid: string;
+  /**
+   * Stable hash of the mutation payload; a same-id different-payload replay is rejected.
+   */
+  requestHash: string;
+  tripId: string | null;
+  legId: string | null;
+  /**
+   * Committed entity revision returned to a replayed caller.
+   */
+  resultRevision: number;
+  createdAt: FirebaseFirestore.Timestamp;
+  expiresAt: FirebaseFirestore.Timestamp;
+}
+
+/**
  * Short-lived server-only idempotency receipt for one absolute Host attendance operation.
  */
 export interface EventAttendeeAttendanceReceiptDocument {
