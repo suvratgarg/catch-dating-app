@@ -89,6 +89,9 @@ dependencies:
   flutter_native_splash: ^2.4.7
   flutter_timezone: ^5.1.0
   xml: ^7.0.1
+  sqlite3: ^3.4.1
+  idb_shim: ^2.9.9
+  path_provider: ^2.1.6
 
 
 dev_dependencies:

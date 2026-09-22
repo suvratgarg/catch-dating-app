@@ -260,33 +260,23 @@ class _ThrowingAttentionRepository implements HostAttentionRepository {
   }
 }
 
-class _MemoryOutboxStore implements HostAttendanceOutboxStore {
+class _MemoryOutboxStore extends Fake implements HostAttendanceOutboxStore {
   List<HostAttendanceOutboxEntry> entries = [];
-
   @override
-  Future<List<HostAttendanceOutboxEntry>> load(String accountId) async =>
-      List<HostAttendanceOutboxEntry>.of(entries);
-
-  @override
-  Future<void> save(
-    String accountId,
-    List<HostAttendanceOutboxEntry> entries,
-  ) async {
-    this.entries = List<HostAttendanceOutboxEntry>.of(entries);
-  }
+  Future<List<HostAttendanceOutboxEntry>> load(
+    String accountId, {
+    String? scope,
+    DateTime? now,
+  }) async => List.of(entries);
 }
 
-class _ThrowingOutboxStore implements HostAttendanceOutboxStore {
+class _ThrowingOutboxStore extends Fake implements HostAttendanceOutboxStore {
   @override
-  Future<List<HostAttendanceOutboxEntry>> load(String accountId) async {
-    throw StateError('outbox unavailable');
-  }
-
-  @override
-  Future<void> save(
-    String accountId,
-    List<HostAttendanceOutboxEntry> entries,
-  ) async {}
+  Future<List<HostAttendanceOutboxEntry>> load(
+    String accountId, {
+    String? scope,
+    DateTime? now,
+  }) async => throw StateError('outbox unavailable');
 }
 
 class _NoopAttendanceMutator implements HostAttendanceMutator {

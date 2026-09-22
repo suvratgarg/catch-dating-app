@@ -1,21 +1,31 @@
+import 'package:catch_dating_app/core/persistence/local_command_journal.dart';
+import 'package:catch_dating_app/core/persistence/memory_command_journal_storage.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/programs/data/program_operations_outbox.dart';
 import 'package:catch_dating_app/programs/domain/program_models.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-class MemoryOutboxStore implements ProgramOperationOutboxStore {
-  final Map<String, List<ProgramOperationOutboxEntry>> values = {};
-
-  @override
-  Future<List<ProgramOperationOutboxEntry>> load(String accountId) async =>
-      List.of(values[accountId] ?? const []);
-
-  @override
+class MemoryOutboxStore
+    extends LocalCommandJournal<ProgramOperationOutboxEntry> {
+  MemoryOutboxStore() : this._(MemoryCommandJournalStorage());
+  MemoryOutboxStore._(MemoryCommandJournalStorage memory)
+    : super(
+        storage: () async => memory,
+        namespace: 'test',
+        currentAccountId: () => accountId,
+        codec: createProgramOperationJournal(
+          storage: () async => memory,
+          currentAccountId: () => accountId,
+        ).codec,
+      );
+  static String accountId = 'acct';
   Future<void> save(
     String accountId,
     List<ProgramOperationOutboxEntry> entries,
   ) async {
-    values[accountId] = List.of(entries);
+    for (final entry in entries) {
+      await append(accountId, entry);
+    }
   }
 }
 
@@ -100,7 +110,7 @@ void main() {
       outbox = ProgramOperationsOutbox(store, mutator);
     });
 
-    test('a newer leg observation supersedes a queued one', () async {
+    test('each leg observation retains its own immutable command', () async {
       await outbox.enqueueAndAttempt(
         accountId: 'acct',
         entry: legObservation(legId: 'leg-1', operationId: 'op_old'),
@@ -116,8 +126,10 @@ void main() {
         accountId: 'acct',
         programId: 'program-1',
       );
-      expect(summary.entries, hasLength(1));
-      expect(summary.entries.single.clientOperationId, 'op_new');
+      expect(summary.entries.map((e) => e.clientOperationId), [
+        'op_old',
+        'op_new',
+      ]);
       expect(mutator.calls, isEmpty);
     });
 
@@ -209,10 +221,10 @@ void main() {
       },
     );
 
-    test('entries age into needsReview and expire after thirty days', () async {
+    test('old entries remain available for explicit review', () async {
       final stale = DateTime(2026, 2);
       final ancient = DateTime(2026);
-      store.values['acct'] = [
+      await store.save('acct', [
         legObservation(
           legId: 'leg-stale',
           operationId: 'op_stale',
@@ -223,17 +235,17 @@ void main() {
           operationId: 'op_old',
           createdAt: ancient,
         ),
-      ];
+      ]);
 
       final summary = await outbox.loadForProgram(
         accountId: 'acct',
         programId: 'program-1',
         now: DateTime(2026, 2, 20),
       );
-      expect(summary.entries, hasLength(1));
+      expect(summary.entries, hasLength(2));
       expect(
-        summary.entries.single.status,
-        ProgramOperationOutboxStatus.needsReview,
+        summary.entries.map((entry) => entry.status),
+        everyElement(ProgramOperationOutboxStatus.needsReview),
       );
     });
   });

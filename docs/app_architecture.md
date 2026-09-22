@@ -1803,6 +1803,49 @@ Foreground payload validation cannot retract an OS notification already handed
 off before logout. Real-device background/terminated delivery remains a release
 verification step, not something widget tests prove.
 
+### Durable Local Commands
+
+`core/persistence/local_command_journal.dart` owns the offline command policy for
+both event attendance and private-program operations. Feature adapters own typed
+payload validation, resource keys and callable execution; neither domain owns a
+second persistence or retry algorithm. Account-scoped journals retain immutable
+operation IDs, payload hashes, expected revisions and dependencies. Append,
+claim, acknowledge and conflict transitions are storage transactions. Short
+persisted replay leases prevent two tabs from concurrently draining the same
+scope; server operation receipts remain the cross-device idempotency authority.
+Current account identity is checked before each replay. Reconnect always uses the
+server's current authorization, never a cached grant.
+
+The storage interface wraps native SQLite (`sqlite3`, FULL synchronous commits)
+and browser IndexedDB (`idb_shim`, awaited transaction completion). Native writes
+are synchronous and bounded by a 1 MiB journal limit; profile a full journal on
+pilot devices before expanding that limit. IndexedDB has browser-controlled
+quota, eviction and power-loss guarantees; private/ephemeral browsing is not a
+durable shift recorder. There is no in-memory production fallback. The explicit
+memory implementation exists for tests and Widgetbook only.
+
+SharedPreferences was rejected for commands because a read/list/write sequence
+can lose concurrent work and does not provide transactional durability. A plain
+Sembast file was rejected for its lazy file writes and single-process boundary.
+Drift remains a reasonable future choice for relational local data, but this
+bounded key/value journal needs no ORM or SQLite web worker/WASM deployment.
+The selected platform bindings delegate persistence to established databases and
+keep the domain replay algorithm shared. See the
+[SQLite binding](https://pub.dev/packages/sqlite3) and
+[IndexedDB binding](https://pub.dev/packages/idb_shim) for platform constraints.
+
+Pending or conflicted observations never expire or get trimmed to make room.
+After seven days, unresolved observations require explicit review. Capacity
+rejects new writes visibly; it never discards accepted work. Commands touching a
+shared resource depend on earlier unresolved commands. Conflicted predecessors
+quarantine their dependents without rebasing immutable revision fences. Explicit
+dismissal hides a reviewed observation but retains it for recovery. Acknowledged
+and dismissed records may be pruned after 30 days only when no retained command
+depends on them. Corrupt legacy payloads remain quarantined; healthy migration
+commits before deleting the legacy copy. Account changes never expose another
+account's queue. Read-only snapshots have a separate bounded lease and are not
+command storage.
+
 ### Logging And Telemetry
 
 Current reporting path:

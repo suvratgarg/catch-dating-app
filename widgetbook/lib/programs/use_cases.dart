@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/persistence/memory_command_journal_storage.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/connectivity_service.dart';
 import 'package:catch_dating_app/programs/data/program_operations_outbox.dart';
@@ -211,20 +212,12 @@ final _inbound = ProgramHotelInbound(
 
 final _trips = ProgramTripList(programId: _programId, trips: [_trip]);
 
-class _PreviewOutboxStore implements ProgramOperationOutboxStore {
-  final Map<String, List<ProgramOperationOutboxEntry>> values = {};
-
-  @override
-  Future<List<ProgramOperationOutboxEntry>> load(String accountId) async =>
-      List.of(values[accountId] ?? const []);
-
-  @override
-  Future<void> save(
-    String accountId,
-    List<ProgramOperationOutboxEntry> entries,
-  ) async {
-    values[accountId] = List.of(entries);
-  }
+ProgramOperationOutboxStore _previewJournal() {
+  final storage = MemoryCommandJournalStorage();
+  return createProgramOperationJournal(
+    storage: () async => storage,
+    currentAccountId: () => 'preview-account',
+  );
 }
 
 class _PreviewMutator implements ProgramOperationsMutator {
@@ -267,7 +260,7 @@ List<Override> _programOverrides() {
   return [
     uidProvider.overrideWithValue(const AsyncData<String?>('uid_greeter')),
     programOperationsOutboxProvider.overrideWithValue(
-      ProgramOperationsOutbox(_PreviewOutboxStore(), _PreviewMutator()),
+      ProgramOperationsOutbox(_previewJournal(), _PreviewMutator()),
     ),
     isObviouslyOfflineProvider.overrideWithValue(false),
     programWorkAccessProvider(_programId).overrideWithValue(AsyncData(_access)),

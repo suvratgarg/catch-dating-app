@@ -1,13 +1,13 @@
-import 'dart:convert';
-
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
-import 'package:catch_dating_app/core/app_error_context.dart';
+import 'package:catch_dating_app/core/firebase_providers.dart';
+import 'package:catch_dating_app/core/persistence/command_journal_provider.dart';
+import 'package:catch_dating_app/core/persistence/command_journal_storage.dart';
+import 'package:catch_dating_app/core/persistence/local_command_journal.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/programs/data/program_work_repository.dart';
 import 'package:catch_dating_app/programs/domain/program_models.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 part 'program_operations_outbox.g.dart';
 
@@ -127,7 +127,7 @@ class RepositoryProgramOperationsMutator implements ProgramOperationsMutator {
 
 enum ProgramOperationKind { legObservation, dispatch }
 
-enum ProgramOperationOutboxStatus { pending, needsReview }
+typedef ProgramOperationOutboxStatus = LocalCommandStatus;
 
 class ProgramOperationOutboxEntry {
   const ProgramOperationOutboxEntry._({
@@ -201,21 +201,79 @@ class ProgramOperationOutboxEntry {
     },
   );
 
-  factory ProgramOperationOutboxEntry.fromJson(Map<String, Object?> json) =>
-      ProgramOperationOutboxEntry._(
-        kind: ProgramOperationKind.values.byName(json['kind']! as String),
-        programId: json['programId']! as String,
-        clientOperationId: json['clientOperationId']! as String,
-        createdAt: DateTime.fromMillisecondsSinceEpoch(
-          json['createdAtMillis']! as int,
-        ),
-        status: ProgramOperationOutboxStatus.values.byName(
-          json['status']! as String,
-        ),
-        payload: (json['payload']! as Map<Object?, Object?>)
-            .cast<String, Object?>(),
-        lastErrorCode: json['lastErrorCode'] as String?,
-      );
+  factory ProgramOperationOutboxEntry.fromJson(Map<String, Object?> json) {
+    final entry = ProgramOperationOutboxEntry._(
+      kind: ProgramOperationKind.values.byName(json['kind']! as String),
+      programId: json['programId']! as String,
+      clientOperationId: json['clientOperationId']! as String,
+      createdAt: DateTime.fromMillisecondsSinceEpoch(
+        json['createdAtMillis']! as int,
+      ),
+      status: ProgramOperationOutboxStatus.values.byName(
+        json['status']! as String,
+      ),
+      payload: (json['payload']! as Map<Object?, Object?>)
+          .cast<String, Object?>(),
+      lastErrorCode: json['lastErrorCode'] as String?,
+    );
+
+    final payload = entry.payload;
+    switch (entry.kind) {
+      case ProgramOperationKind.legObservation:
+        requiredString(payload, 'legId');
+        if (!{
+          'claim',
+          'unclaim',
+          'markReady',
+          'markDisrupted',
+        }.contains(payload['action'])) {
+          throw const FormatException('Invalid leg action');
+        }
+        for (final key in ['expectedRevision', 'manualCurbAtMillis']) {
+          if (payload[key] != null &&
+              (payload[key] is! int || (payload[key]! as int) < 0)) {
+            throw const FormatException('Invalid observation revision or time');
+          }
+        }
+        if (payload['manualCurbNote'] != null &&
+            payload['manualCurbNote'] is! String) {
+          throw const FormatException('Invalid observation note');
+        }
+      case ProgramOperationKind.dispatch:
+        for (final key in ['pickupPointId', 'vehicleClassId', 'plateDisplay']) {
+          requiredString(payload, key);
+        }
+        final legs = stringList(payload['legIds']);
+        if (legs.isEmpty ||
+            legs.any((id) => id.isEmpty) ||
+            legs.toSet().length != legs.length) {
+          throw const FormatException('Invalid dispatch legs');
+        }
+        for (final key in [
+          'destinationHotelId',
+          'destinationLabel',
+          'vendorId',
+        ]) {
+          if (payload[key] != null && payload[key] is! String) {
+            throw const FormatException(
+              'Invalid dispatch destination or vendor',
+            );
+          }
+        }
+        if (payload['expectedLegRevisions'] != null) {
+          for (final fence in mapList(
+            payload['expectedLegRevisions'],
+            'revision fences',
+          )) {
+            requiredString(fence, 'legId');
+            if (fence['revision'] is! int || (fence['revision']! as int) < 0) {
+              throw const FormatException('Invalid dispatch revision');
+            }
+          }
+        }
+    }
+    return entry;
+  }
 
   final ProgramOperationKind kind;
   final String programId;
@@ -274,7 +332,7 @@ class ProgramOperationOutboxSummary {
       )
       .length;
 
-  /// One in-flight observation per leg; a newer observation supersedes.
+  /// Most recent local observation; earlier commands remain in the journal.
   ProgramOperationOutboxEntry? forLeg(String legId) {
     for (final entry in entries.reversed) {
       if (entry.kind == ProgramOperationKind.legObservation &&
@@ -293,122 +351,55 @@ class ProgramOperationOutboxSummary {
   );
 }
 
-abstract interface class ProgramOperationOutboxStore {
-  Future<List<ProgramOperationOutboxEntry>> load(String accountId);
-  Future<void> save(
-    String accountId,
-    List<ProgramOperationOutboxEntry> entries,
-  );
-}
+typedef ProgramOperationOutboxStore =
+    LocalCommandJournal<ProgramOperationOutboxEntry>;
 
-class SharedPreferencesProgramOperationOutboxStore
-    implements ProgramOperationOutboxStore {
-  SharedPreferences? _preferences;
-
-  static const _keyPrefix = 'program_operations_outbox_v1_';
-
-  Future<SharedPreferences> get _prefs async {
-    final cached = _preferences;
-    if (cached != null) return cached;
-    final loaded = await withAppErrorContext(
-      SharedPreferences.getInstance,
-      context: const AppErrorContext(
-        operation: AppOperation.localPersistence,
-        action: 'open program operations replay queue',
-        resource: 'shared_preferences',
-      ),
-    );
-    _preferences = loaded;
-    return loaded;
-  }
-
-  @override
-  Future<List<ProgramOperationOutboxEntry>> load(String accountId) async {
-    final raw = (await _prefs).getString('$_keyPrefix$accountId');
-    if (raw == null) return const [];
-    try {
-      final values = jsonDecode(raw) as List<Object?>;
-      return values
-          .map(
-            (value) => ProgramOperationOutboxEntry.fromJson(
-              (value! as Map<Object?, Object?>).cast<String, Object?>(),
-            ),
-          )
-          .toList(growable: false);
-    } on Object {
-      await (await _prefs).remove('$_keyPrefix$accountId');
-      return const [];
-    }
-  }
-
-  @override
-  Future<void> save(
-    String accountId,
-    List<ProgramOperationOutboxEntry> entries,
-  ) async {
-    final prefs = await _prefs;
-    final key = '$_keyPrefix$accountId';
-    if (entries.isEmpty) {
-      await prefs.remove(key);
-      return;
-    }
-    await prefs.setString(
-      key,
-      jsonEncode(entries.map((entry) => entry.toJson()).toList()),
-    );
-  }
-}
+ProgramOperationOutboxStore createProgramOperationJournal({
+  required Future<CommandJournalStorage> Function() storage,
+  required String? Function() currentAccountId,
+  Future<String?> Function(String)? loadLegacy,
+  Future<void> Function(String)? clearLegacy,
+}) => LocalCommandJournal(
+  storage: storage,
+  namespace: 'program_operations',
+  currentAccountId: currentAccountId,
+  loadLegacy: loadLegacy,
+  clearLegacy: clearLegacy,
+  codec: LocalCommandCodec(
+    encode: (entry) => entry.toJson(),
+    decode: ProgramOperationOutboxEntry.fromJson,
+    scope: (entry) => entry.programId,
+    resources: (entry) => {
+      if (entry.kind == ProgramOperationKind.legObservation)
+        'leg:${entry.payload['legId']}'
+      else ...[
+        for (final legId in (entry.payload['legIds']! as List)) 'leg:$legId',
+        'vehicle:${(entry.payload['plateDisplay']! as String).toUpperCase().replaceAll(RegExp(r'[^A-Z0-9]'), '')}',
+      ],
+    },
+  ),
+);
 
 class ProgramOperationsOutbox {
-  const ProgramOperationsOutbox(this._store, this._mutator);
-
-  static const maxEntries = 200;
-  static const reviewAfter = Duration(days: 7);
-  static const deleteAfter = Duration(days: 30);
-
-  final ProgramOperationOutboxStore _store;
+  const ProgramOperationsOutbox(this._journal, this._mutator);
+  final ProgramOperationOutboxStore _journal;
   final ProgramOperationsMutator _mutator;
 
   Future<ProgramOperationOutboxSummary> loadForProgram({
     required String accountId,
     required String programId,
     DateTime? now,
-  }) async {
-    final normalized = _normalize(
-      await _store.load(accountId),
-      now ?? DateTime.now(),
-    );
-    await _store.save(accountId, normalized);
-    return ProgramOperationOutboxSummary(
-      normalized
-          .where((entry) => entry.programId == programId)
-          .toList(growable: false),
-    );
-  }
+  }) async => ProgramOperationOutboxSummary(
+    await _journal.load(accountId, scope: programId, now: now),
+  );
 
   Future<ProgramOperationOutboxSummary> enqueueAndAttempt({
     required String accountId,
     required ProgramOperationOutboxEntry entry,
     required bool offline,
   }) async {
-    final entries = _normalize(await _store.load(accountId), DateTime.now());
-    if (entry.kind == ProgramOperationKind.legObservation) {
-      // A newer observation for the same leg supersedes a queued one.
-      entries.removeWhere(
-        (item) =>
-            item.kind == ProgramOperationKind.legObservation &&
-            item.payload['legId'] == entry.payload['legId'] &&
-            item.programId == entry.programId,
-      );
-    } else {
-      entries.removeWhere(
-        (item) => item.clientOperationId == entry.clientOperationId,
-      );
-    }
-    entries.add(entry);
-    _trim(entries);
-    await _store.save(accountId, entries);
-    if (!offline) await _attempt(accountId, entries, entry);
+    await _journal.append(accountId, entry);
+    if (!offline) await _journal.flush(accountId, entry.programId, _execute);
     return loadForProgram(accountId: accountId, programId: entry.programId);
   }
 
@@ -416,16 +407,7 @@ class ProgramOperationsOutbox {
     required String accountId,
     required String programId,
   }) async {
-    final entries = _normalize(await _store.load(accountId), DateTime.now());
-    for (final entry in List<ProgramOperationOutboxEntry>.of(entries)) {
-      if (entry.programId != programId ||
-          entry.status != ProgramOperationOutboxStatus.pending) {
-        continue;
-      }
-      final shouldContinue = await _attempt(accountId, entries, entry);
-      if (!shouldContinue) break;
-    }
-    await _store.save(accountId, entries);
+    await _journal.flush(accountId, programId, _execute);
     return loadForProgram(accountId: accountId, programId: programId);
   }
 
@@ -433,116 +415,63 @@ class ProgramOperationsOutbox {
     required String accountId,
     required String programId,
   }) async {
-    final entries = (await _store.load(accountId))
-      ..removeWhere(
-        (entry) =>
-            entry.programId == programId &&
-            entry.status == ProgramOperationOutboxStatus.needsReview,
-      );
-    await _store.save(accountId, entries);
-    return ProgramOperationOutboxSummary(
-      entries
-          .where((entry) => entry.programId == programId)
-          .toList(growable: false),
-    );
+    await _journal.dismissReview(accountId, programId);
+    return loadForProgram(accountId: accountId, programId: programId);
   }
 
-  Future<bool> _attempt(
-    String accountId,
-    List<ProgramOperationOutboxEntry> entries,
-    ProgramOperationOutboxEntry entry,
-  ) async {
-    try {
-      switch (entry.kind) {
-        case ProgramOperationKind.legObservation:
-          await _mutator.setReadiness(
-            programId: entry.programId,
-            legId: entry.payload['legId']! as String,
-            action: entry.payload['action']! as String,
-            clientOperationId: entry.clientOperationId,
-            expectedRevision: entry.payload['expectedRevision'] as int?,
-            manualCurbAtMillis: entry.payload['manualCurbAtMillis'] as int?,
-            manualCurbNote: entry.payload['manualCurbNote'] as String?,
-          );
-        case ProgramOperationKind.dispatch:
-          await _mutator.dispatchTrip(
-            programId: entry.programId,
-            pickupPointId: entry.payload['pickupPointId']! as String,
-            vehicleClassId: entry.payload['vehicleClassId']! as String,
-            plateDisplay: entry.payload['plateDisplay']! as String,
-            legIds: (entry.payload['legIds']! as List<Object?>).cast<String>(),
-            clientOperationId: entry.clientOperationId,
-            destinationHotelId: entry.payload['destinationHotelId'] as String?,
-            destinationLabel: entry.payload['destinationLabel'] as String?,
-            vendorId: entry.payload['vendorId'] as String?,
-            expectedLegRevisions:
-                (entry.payload['expectedLegRevisions'] as List<Object?>?)
-                    ?.map((fence) {
-                      final map = fence! as Map<Object?, Object?>;
-                      return (
-                        legId: map['legId']! as String,
-                        revision: map['revision']! as int,
-                      );
-                    })
-                    .toList(growable: false),
-          );
-      }
-      entries.removeWhere(
-        (item) => item.clientOperationId == entry.clientOperationId,
-      );
-      await _store.save(accountId, entries);
-      return true;
-    } on AppException catch (error) {
-      if (error.retryable && error.code != 'aborted') return false;
-      final index = entries.indexWhere(
-        (item) => item.clientOperationId == entry.clientOperationId,
-      );
-      if (index >= 0) {
-        entries[index] = entry.copyWith(
-          status: ProgramOperationOutboxStatus.needsReview,
-          lastErrorCode: error.code,
+  Future<void> _execute(ProgramOperationOutboxEntry entry) async {
+    switch (entry.kind) {
+      case ProgramOperationKind.legObservation:
+        await _mutator.setReadiness(
+          programId: entry.programId,
+          legId: entry.payload['legId']! as String,
+          action: entry.payload['action']! as String,
+          clientOperationId: entry.clientOperationId,
+          expectedRevision: entry.payload['expectedRevision'] as int?,
+          manualCurbAtMillis: entry.payload['manualCurbAtMillis'] as int?,
+          manualCurbNote: entry.payload['manualCurbNote'] as String?,
         );
-      }
-      await _store.save(accountId, entries);
-      return true;
-    }
-  }
-
-  List<ProgramOperationOutboxEntry> _normalize(
-    List<ProgramOperationOutboxEntry> source,
-    DateTime now,
-  ) {
-    final entries = <ProgramOperationOutboxEntry>[];
-    for (final entry in source) {
-      final age = now.difference(entry.createdAt);
-      if (age > deleteAfter) continue;
-      entries.add(
-        age > reviewAfter &&
-                entry.status == ProgramOperationOutboxStatus.pending
-            ? entry.copyWith(status: ProgramOperationOutboxStatus.needsReview)
-            : entry,
-      );
-    }
-    _trim(entries);
-    return entries;
-  }
-
-  void _trim(List<ProgramOperationOutboxEntry> entries) {
-    entries.sort((left, right) => left.createdAt.compareTo(right.createdAt));
-    if (entries.length > maxEntries) {
-      entries.removeRange(0, entries.length - maxEntries);
+      case ProgramOperationKind.dispatch:
+        await _mutator.dispatchTrip(
+          programId: entry.programId,
+          pickupPointId: entry.payload['pickupPointId']! as String,
+          vehicleClassId: entry.payload['vehicleClassId']! as String,
+          plateDisplay: entry.payload['plateDisplay']! as String,
+          legIds: (entry.payload['legIds']! as List<Object?>).cast<String>(),
+          clientOperationId: entry.clientOperationId,
+          destinationHotelId: entry.payload['destinationHotelId'] as String?,
+          destinationLabel: entry.payload['destinationLabel'] as String?,
+          vendorId: entry.payload['vendorId'] as String?,
+          expectedLegRevisions:
+              (entry.payload['expectedLegRevisions'] as List<Object?>?)
+                  ?.map((fence) {
+                    final map = fence! as Map<Object?, Object?>;
+                    return (
+                      legId: map['legId']! as String,
+                      revision: map['revision']! as int,
+                    );
+                  })
+                  .toList(growable: false),
+        );
     }
   }
 }
 
-// keepalive: a single local store preserves queued program operations while
-// staff move between roster, dispatch and hotel surfaces.
+// keepalive: one journal shared by arrivals, dispatch, and hotel operations.
 @Riverpod(keepAlive: true)
-ProgramOperationOutboxStore programOperationOutboxStore(Ref ref) =>
-    SharedPreferencesProgramOperationOutboxStore();
+ProgramOperationOutboxStore programOperationOutboxStore(Ref ref) {
+  final auth = ref.watch(firebaseAuthProvider);
+  return createProgramOperationJournal(
+    storage: ref.watch(commandJournalStorageProvider),
+    currentAccountId: () => auth.currentUser?.uid,
+    loadLegacy: (accountId) =>
+        loadLegacyCommandJournal('program_operations_outbox_v1_', accountId),
+    clearLegacy: (accountId) =>
+        clearLegacyCommandJournal('program_operations_outbox_v1_', accountId),
+  );
+}
 
-// keepalive: the replay coordinator must retain one serialized queue for the
-// lifetime of the Host application process.
+// keepalive: commands survive navigation between program work surfaces.
 @Riverpod(keepAlive: true)
 ProgramOperationsOutbox programOperationsOutbox(Ref ref) =>
     ProgramOperationsOutbox(

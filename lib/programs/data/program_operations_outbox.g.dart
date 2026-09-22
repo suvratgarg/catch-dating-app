@@ -56,7 +56,7 @@ final class ProgramOperationOutboxStoreProvider
 }
 
 String _$programOperationOutboxStoreHash() =>
-    r'e3d92356f1e85fd482fab38bc2649d1294b6fb2a';
+    r'64058cac4164a5d82c4da2695a4e7931784d67b7';
 
 @ProviderFor(programOperationsOutbox)
 final programOperationsOutboxProvider = ProgramOperationsOutboxProvider._();

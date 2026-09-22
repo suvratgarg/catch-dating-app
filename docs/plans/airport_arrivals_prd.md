@@ -940,10 +940,12 @@ remove a guest from the old projection and fence stale updates by revision.
 
 Offline mode separates 'observed here' from 'confirmed by server'. The outbox is
 an append-only local command journal with stable ids, payload hashes, dependencies,
-auth/program scope and expected revisions. It requires transactional durable
-storage, capacity alarms and explicit conflict quarantine; no oldest-entry
-trimming and no silent clearing on parse failure. Select a storage library only
-after reviewing existing dependencies and native/web durability constraints.
+auth/program scope and expected revisions. It uses the shared `core/persistence/local_command_journal.dart` policy with
+transactional SQLite on native and IndexedDB on web, capacity rejection and
+explicit conflict quarantine; no oldest-entry trimming and no silent clearing
+on parse failure. Event attendance uses the same journal. The storage decision,
+retention and browser durability limits are owned by
+[app architecture](../app_architecture.md#durable-local-commands).
 A read-only encrypted/minimized snapshot cache is separate from commands and
 expires with the duty/session lease. No raw PII in analytics/error logs.
 

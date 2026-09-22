@@ -1,21 +1,30 @@
+import 'package:catch_dating_app/core/persistence/local_command_journal.dart';
+import 'package:catch_dating_app/core/persistence/memory_command_journal_storage.dart';
 import 'package:catch_dating_app/events/data/event_attendee_repository.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/hosts/data/host_attendance_outbox.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-class MemoryOutboxStore implements HostAttendanceOutboxStore {
-  final Map<String, List<HostAttendanceOutboxEntry>> values = {};
-
-  @override
-  Future<List<HostAttendanceOutboxEntry>> load(String accountId) async =>
-      List.of(values[accountId] ?? const []);
-
-  @override
+class MemoryOutboxStore extends LocalCommandJournal<HostAttendanceOutboxEntry> {
+  MemoryOutboxStore() : this._(MemoryCommandJournalStorage());
+  MemoryOutboxStore._(MemoryCommandJournalStorage memory)
+    : super(
+        storage: () async => memory,
+        namespace: 'test',
+        currentAccountId: () => accountId,
+        codec: createHostAttendanceJournal(
+          storage: () async => memory,
+          currentAccountId: () => accountId,
+        ).codec,
+      );
+  static String accountId = 'staff-1';
   Future<void> save(
     String accountId,
     List<HostAttendanceOutboxEntry> entries,
   ) async {
-    values[accountId] = List.of(entries);
+    for (final entry in entries) {
+      await append(accountId, entry);
+    }
   }
 }
 
@@ -80,7 +89,7 @@ void main() {
 
     expect(summary.pendingCount, 1);
     expect(mutator.calls, isEmpty);
-    final json = store.values['staff-1']!.single.toJson();
+    final json = (await store.load('staff-1')).single.toJson();
     expect(json.keys, {
       'eventId',
       'attendeeId',
@@ -156,29 +165,36 @@ void main() {
     expect(summary.entries.single.lastErrorCode, 'aborted');
   });
 
-  test('stale pending entries become review items then expire', () async {
-    final store = MemoryOutboxStore();
-    final outbox = HostAttendanceOutbox(store, FakeAttendanceMutator());
-    await store.save('staff-1', [
-      entry(createdAt: DateTime(2026, 8)),
-      entry(operationId: 'operation_0987654321', createdAt: DateTime(2026, 6)),
-    ]);
+  test(
+    'old observations require review and are never silently deleted',
+    () async {
+      final store = MemoryOutboxStore();
+      final outbox = HostAttendanceOutbox(store, FakeAttendanceMutator());
+      await store.save('staff-1', [
+        entry(createdAt: DateTime(2026, 8)),
+        entry(
+          operationId: 'operation_0987654321',
+          createdAt: DateTime(2026, 6),
+        ),
+      ]);
 
-    final summary = await outbox.loadForEvent(
-      accountId: 'staff-1',
-      eventId: 'event-1',
-      now: DateTime(2026, 8, 12),
-    );
+      final summary = await outbox.loadForEvent(
+        accountId: 'staff-1',
+        eventId: 'event-1',
+        now: DateTime(2026, 8, 12),
+      );
 
-    expect(summary.entries, hasLength(1));
-    expect(summary.needsReviewCount, 1);
-  });
+      expect(summary.entries, hasLength(2));
+      expect(summary.needsReviewCount, 2);
+    },
+  );
 
   test('outboxes stay isolated between signed-in accounts', () async {
     final store = MemoryOutboxStore();
     final outbox = HostAttendanceOutbox(store, FakeAttendanceMutator());
     await store.save('staff-1', [entry()]);
 
+    MemoryOutboxStore.accountId = 'staff-2';
     final other = await outbox.loadForEvent(
       accountId: 'staff-2',
       eventId: 'event-1',
@@ -186,6 +202,7 @@ void main() {
     );
 
     expect(other.entries, isEmpty);
+    MemoryOutboxStore.accountId = 'staff-1';
   });
 
   test(
@@ -216,7 +233,7 @@ void main() {
         'event-2',
       ]);
       expect(summary.needsReviewCount, 1);
-      expect(store.values['staff-1'], hasLength(2));
+      expect(await store.load('staff-1'), hasLength(2));
     },
   );
 }
