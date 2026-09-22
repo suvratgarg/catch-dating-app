@@ -27479,5 +27479,11 @@
   "programsTripsRowTimingArrived": "Departed {departed} · arrived {arrived}",
   "@programsTripsRowTimingArrived": {"description": "Program operations copy: programsTripsRowTimingArrived.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_trips_screen", "placeholders": {"departed": {}, "arrived": {}}},
   "programsTripsRowTimingDeparted": "Departed {departed} · still en route",
-  "@programsTripsRowTimingDeparted": {"description": "Program operations copy: programsTripsRowTimingDeparted.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_trips_screen", "placeholders": {"departed": {}}}
+  "@programsTripsRowTimingDeparted": {"description": "Program operations copy: programsTripsRowTimingDeparted.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_trips_screen", "placeholders": {"departed": {}}},
+  "programsDispatchHoldTitle": "Hold for expected arrivals",
+  "@programsDispatchHoldTitle": {"description": "Program operations copy: programsDispatchHoldTitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_dispatch_screen"},
+  "programsDispatchHoldSubtitle": "Still inbound to {destination} — adding them makes this vehicle wait.",
+  "@programsDispatchHoldSubtitle": {"description": "Program operations copy: programsDispatchHoldSubtitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_dispatch_screen", "placeholders": {"destination": {}}},
+  "programsDispatchHoldOption": "{time} · {passengers} pax",
+  "@programsDispatchHoldOption": {"description": "Program operations copy: programsDispatchHoldOption.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_dispatch_screen", "placeholders": {"time": {}, "passengers": {"type": "int"}}}
 }

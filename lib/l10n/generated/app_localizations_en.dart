@@ -20520,4 +20520,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String programsTripsRowTimingDeparted({required Object departed}) {
     return 'Departed $departed · still en route';
   }
+
+  @override
+  String get programsDispatchHoldTitle => 'Hold for expected arrivals';
+
+  @override
+  String programsDispatchHoldSubtitle({required Object destination}) {
+    return 'Still inbound to $destination — adding them makes this vehicle wait.';
+  }
+
+  @override
+  String programsDispatchHoldOption({
+    required Object time,
+    required int passengers,
+  }) {
+    return '$time · $passengers pax';
+  }
 }

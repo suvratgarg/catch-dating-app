@@ -55,11 +55,25 @@ class _ProgramDispatchScreenState extends ConsumerState<ProgramDispatchScreen> {
     if (mounted) setState(() => _outbox = summary);
   }
 
-  Future<void> _openDispatchSheet(TransportGroupSuggestion group) async {
+  Future<void> _openDispatchSheet(
+    TransportGroupSuggestion group,
+    ProgramTransportPlan plan,
+  ) async {
     final access = await ref.read(
       programWorkAccessProvider(widget.programId).future,
     );
     if (!mounted) return;
+    // Ready groups may hold for expected parties bound for the same
+    // destination; the dispatcher, not the suggestion engine, makes that call.
+    final holdCandidates = group.readiness == TransportGroupReadiness.ready
+        ? plan.groups
+              .where(
+                (candidate) =>
+                    candidate.readiness == TransportGroupReadiness.expected &&
+                    _sameDestination(group, candidate),
+              )
+              .toList(growable: false)
+        : const <TransportGroupSuggestion>[];
     await showCatchBottomSheet<void>(
       context: context,
       builder: (sheetContext) => ProgramDispatchSheet(
@@ -67,6 +81,7 @@ class _ProgramDispatchScreenState extends ConsumerState<ProgramDispatchScreen> {
         pickupPointId: widget.pickupPointId,
         organizerId: access.organizerId,
         group: group,
+        holdCandidates: holdCandidates,
         vehicleClasses: access.vehicleClasses,
         onDispatched: (summary, error) {
           if (!mounted) return;
@@ -176,7 +191,7 @@ class _ProgramDispatchScreenState extends ConsumerState<ProgramDispatchScreen> {
                           for (final group in plan.groups) ...[
                             ProgramDispatchGroupTile(
                               group: group,
-                              onDispatch: () => _openDispatchSheet(group),
+                              onDispatch: () => _openDispatchSheet(group, plan),
                             ),
                             gapH8,
                           ],
@@ -207,6 +222,17 @@ class _ProgramDispatchScreenState extends ConsumerState<ProgramDispatchScreen> {
         ),
       ),
     );
+  }
+
+  bool _sameDestination(
+    TransportGroupSuggestion a,
+    TransportGroupSuggestion b,
+  ) {
+    if (a.destinationHotelId != null || b.destinationHotelId != null) {
+      return a.destinationHotelId != null &&
+          a.destinationHotelId == b.destinationHotelId;
+    }
+    return a.destinationLabel == b.destinationLabel;
   }
 
   String _unassignedReason(
@@ -302,6 +328,7 @@ class ProgramDispatchSheet extends ConsumerStatefulWidget {
     required this.pickupPointId,
     required this.organizerId,
     required this.group,
+    required this.holdCandidates,
     required this.vehicleClasses,
     required this.onDispatched,
   });
@@ -310,6 +337,10 @@ class ProgramDispatchSheet extends ConsumerStatefulWidget {
   final String pickupPointId;
   final String organizerId;
   final TransportGroupSuggestion group;
+
+  /// Expected-readiness suggestions bound for the same destination; toggling
+  /// one pins its legs into this dispatch so the vehicle waits for them.
+  final List<TransportGroupSuggestion> holdCandidates;
   final List<ProgramVehicleClass> vehicleClasses;
   final void Function(ProgramOperationOutboxSummary? summary, Object? error)
   onDispatched;
@@ -322,13 +353,54 @@ class ProgramDispatchSheet extends ConsumerStatefulWidget {
 class _ProgramDispatchSheetState extends ConsumerState<ProgramDispatchSheet> {
   final _plateController = TextEditingController();
   late String _vehicleClassId = widget.group.vehicleClassId;
+  final Set<int> _heldCandidates = {};
   String? _vendorId;
   bool _busy = false;
+
+  List<String> get _dispatchLegIds => [
+    ...widget.group.legIds,
+    for (final index in _heldCandidates) ...widget.holdCandidates[index].legIds,
+  ];
+
+  int get _passengers =>
+      widget.group.passengers +
+      _heldCandidates.fold(
+        0,
+        (sum, index) => sum + widget.holdCandidates[index].passengers,
+      );
+
+  int get _luggageUnits =>
+      widget.group.luggageUnits +
+      _heldCandidates.fold(
+        0,
+        (sum, index) => sum + widget.holdCandidates[index].luggageUnits,
+      );
 
   @override
   void dispose() {
     _plateController.dispose();
     super.dispose();
+  }
+
+  Future<List<({String legId, int revision})>?> _legRevisionFences() async {
+    try {
+      final roster = await ref.read(
+        programArrivalsRosterProvider(
+          widget.programId,
+          widget.pickupPointId,
+        ).future,
+      );
+      final revisions = {
+        for (final row in roster.rows) row.legId: row.revision,
+      };
+      return [
+        for (final legId in _dispatchLegIds)
+          if (revisions[legId] case final revision?)
+            (legId: legId, revision: revision),
+      ];
+    } on Object {
+      return null;
+    }
   }
 
   Future<void> _dispatch() async {
@@ -342,6 +414,7 @@ class _ProgramDispatchSheetState extends ConsumerState<ProgramDispatchSheet> {
       final operationId =
           'dispatch_${widget.pickupPointId.hashCode.abs().toRadixString(36)}_'
           '${DateTime.now().microsecondsSinceEpoch.toRadixString(36)}';
+      final fences = await _legRevisionFences();
       final summary = await ref
           .read(programOperationsOutboxProvider)
           .enqueueAndAttempt(
@@ -352,10 +425,11 @@ class _ProgramDispatchSheetState extends ConsumerState<ProgramDispatchSheet> {
               pickupPointId: widget.pickupPointId,
               vehicleClassId: _vehicleClassId,
               plateDisplay: _plateController.text.trim(),
-              legIds: widget.group.legIds,
+              legIds: _dispatchLegIds,
               destinationHotelId: widget.group.destinationHotelId,
               destinationLabel: widget.group.destinationLabel,
               vendorId: _vendorId,
+              expectedLegRevisions: fences,
               clientOperationId: operationId,
               createdAt: DateTime.now(),
             ),
@@ -390,11 +464,54 @@ class _ProgramDispatchSheetState extends ConsumerState<ProgramDispatchSheet> {
           CatchMetaRow(
             icon: CatchIcons.group,
             label: context.l10n.programsDispatchGroupMeta(
-              passengers: widget.group.passengers,
-              luggage: widget.group.luggageUnits,
-              legs: widget.group.legIds.length,
+              passengers: _passengers,
+              luggage: _luggageUnits,
+              legs: _dispatchLegIds.length,
             ),
           ),
+          if (widget.holdCandidates.isNotEmpty) ...[
+            gapH16,
+            Text(
+              context.l10n.programsDispatchHoldTitle,
+              style: Theme.of(context).textTheme.titleSmall,
+            ),
+            gapH4,
+            Text(
+              context.l10n.programsDispatchHoldSubtitle(
+                destination: widget.group.destinationLabel,
+              ),
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+            gapH8,
+            Wrap(
+              spacing: CatchSpacing.s2,
+              runSpacing: CatchSpacing.s2,
+              children: [
+                for (
+                  var index = 0;
+                  index < widget.holdCandidates.length;
+                  index += 1
+                )
+                  CatchChoiceButton<int>(
+                    option: CatchOption(
+                      value: index,
+                      label: context.l10n.programsDispatchHoldOption(
+                        time: AppTimeFormatters.time(
+                          widget.holdCandidates[index].earliestCurbAt,
+                        ),
+                        passengers: widget.holdCandidates[index].passengers,
+                      ),
+                    ),
+                    selected: _heldCandidates.contains(index),
+                    onTap: () => setState(() {
+                      if (!_heldCandidates.remove(index)) {
+                        _heldCandidates.add(index);
+                      }
+                    }),
+                  ),
+              ],
+            ),
+          ],
           gapH16,
           CatchTextInput(
             controller: _plateController,

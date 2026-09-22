@@ -32662,6 +32662,27 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Departed {departed} · still en route'**
   String programsTripsRowTimingDeparted({required Object departed});
+
+  /// Program operations copy: programsDispatchHoldTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Hold for expected arrivals'**
+  String get programsDispatchHoldTitle;
+
+  /// Program operations copy: programsDispatchHoldSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Still inbound to {destination} — adding them makes this vehicle wait.'**
+  String programsDispatchHoldSubtitle({required Object destination});
+
+  /// Program operations copy: programsDispatchHoldOption.
+  ///
+  /// In en, this message translates to:
+  /// **'{time} · {passengers} pax'**
+  String programsDispatchHoldOption({
+    required Object time,
+    required int passengers,
+  });
 }
 
 class _AppLocalizationsDelegate

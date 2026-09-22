@@ -44,6 +44,7 @@ abstract interface class ProgramOperationsMutator {
     String? destinationHotelId,
     String? destinationLabel,
     String? vendorId,
+    List<({String legId, int revision})>? expectedLegRevisions,
   });
 }
 
@@ -109,6 +110,7 @@ class RepositoryProgramOperationsMutator implements ProgramOperationsMutator {
     String? destinationHotelId,
     String? destinationLabel,
     String? vendorId,
+    List<({String legId, int revision})>? expectedLegRevisions,
   }) => _repository.dispatchTrip(
     programId: programId,
     pickupPointId: pickupPointId,
@@ -119,6 +121,7 @@ class RepositoryProgramOperationsMutator implements ProgramOperationsMutator {
     destinationHotelId: destinationHotelId,
     destinationLabel: destinationLabel,
     vendorId: vendorId,
+    expectedLegRevisions: expectedLegRevisions,
   );
 }
 
@@ -172,6 +175,7 @@ class ProgramOperationOutboxEntry {
     String? destinationHotelId,
     String? destinationLabel,
     String? vendorId,
+    List<({String legId, int revision})>? expectedLegRevisions,
   }) => ProgramOperationOutboxEntry._(
     kind: ProgramOperationKind.dispatch,
     programId: programId,
@@ -186,6 +190,14 @@ class ProgramOperationOutboxEntry {
       'destinationHotelId': destinationHotelId,
       'destinationLabel': destinationLabel,
       'vendorId': vendorId,
+      'expectedLegRevisions': expectedLegRevisions
+          ?.map(
+            (fence) => <String, Object?>{
+              'legId': fence.legId,
+              'revision': fence.revision,
+            },
+          )
+          .toList(growable: false),
     },
   );
 
@@ -463,6 +475,16 @@ class ProgramOperationsOutbox {
             destinationHotelId: entry.payload['destinationHotelId'] as String?,
             destinationLabel: entry.payload['destinationLabel'] as String?,
             vendorId: entry.payload['vendorId'] as String?,
+            expectedLegRevisions:
+                (entry.payload['expectedLegRevisions'] as List<Object?>?)
+                    ?.map((fence) {
+                      final map = fence! as Map<Object?, Object?>;
+                      return (
+                        legId: map['legId']! as String,
+                        revision: map['revision']! as int,
+                      );
+                    })
+                    .toList(growable: false),
           );
       }
       entries.removeWhere(

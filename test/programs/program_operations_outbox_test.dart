@@ -63,6 +63,7 @@ class FakeProgramMutator implements ProgramOperationsMutator {
     String? destinationHotelId,
     String? destinationLabel,
     String? vendorId,
+    List<({String legId, int revision})>? expectedLegRevisions,
   }) async {
     calls.add('dispatch:$plateDisplay:$clientOperationId');
     if (_maybeError() case final failure?) throw failure;
