@@ -57,6 +57,7 @@ export async function recordFormPaymentWebhook(input: {
     providerPaymentId: event.paymentId,
     status: event.supported ? "pending" : "ignored",
     createdAt: now, processedAt: event.supported ? null : now,
+    nextAttemptAt: now,
     expiresAt: Timestamp.fromMillis(now.toMillis() + 45 * 86400_000),
   };
   await deps.db.runTransaction(async (tx) => {

@@ -102483,7 +102483,8 @@ export const organizerFormPaymentWebhookDocumentSchema = {
     "status",
     "createdAt",
     "processedAt",
-    "expiresAt"
+    "expiresAt",
+    "nextAttemptAt"
   ],
   "properties": {
     "connectionId": {
@@ -102575,6 +102576,26 @@ export const organizerFormPaymentWebhookDocumentSchema = {
       ]
     },
     "expiresAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "nextAttemptAt": {
       "type": "object",
       "description": "Serialized Firestore Timestamp fixture shape.",
       "x-firestore-type": "timestamp",
@@ -198449,6 +198470,698 @@ export const finalizeOrganizerFormAssetCallableResponseSchema = {
       "type": "integer",
       "minimum": 1,
       "maximum": 26214400
+    }
+  }
+};
+
+export const prepareOrganizerFormPaymentCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/prepare_organizer_form_payment_payload.schema.json",
+  "title": "PrepareOrganizerFormPaymentCallablePayload",
+  "description": "Freezes a completed phone-verified draft and prepares its merchant checkout.",
+  "allOf": [
+    {
+      "title": "SubmitOrganizerFormResponseCallablePayload",
+      "description": "Idempotently submits one completed version-bound draft.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "draftId",
+        "draftToken",
+        "expectedRevision",
+        "requestId"
+      ],
+      "properties": {
+        "draftId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "draftToken": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[A-Za-z0-9_-]{32,160}$"
+        },
+        "expectedRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "requestId": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{16,120}$"
+        }
+      }
+    }
+  ]
+};
+
+export const prepareOrganizerFormPaymentCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/prepare_organizer_form_payment_response.schema.json",
+  "title": "PrepareOrganizerFormPaymentCallableResponse",
+  "description": "Owner-only safe payment projection.",
+  "allOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "paymentId",
+        "status",
+        "amountPaise",
+        "currency",
+        "mode",
+        "refundPolicy",
+        "refundedAmountPaise",
+        "checkout",
+        "receipt"
+      ],
+      "properties": {
+        "paymentId": {
+          "type": "string",
+          "pattern": "^fp_[a-f0-9]{32}$"
+        },
+        "status": {
+          "enum": [
+            "creatingOrder",
+            "orderUnknown",
+            "checkoutReady",
+            "verifying",
+            "captured",
+            "submitted",
+            "failed",
+            "expired",
+            "refundPending",
+            "refunded",
+            "reviewRequired"
+          ],
+          "type": "string"
+        },
+        "amountPaise": {
+          "type": "integer",
+          "minimum": 100,
+          "maximum": 10000000
+        },
+        "currency": {
+          "const": "INR"
+        },
+        "mode": {
+          "type": "string",
+          "enum": [
+            "test",
+            "live"
+          ]
+        },
+        "refundPolicy": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "refundedAmountPaise": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "checkout": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "publicToken",
+                "orderId",
+                "amountPaise",
+                "currency",
+                "description",
+                "expiresAtMillis"
+              ],
+              "properties": {
+                "publicToken": {
+                  "type": "string",
+                  "pattern": "^rzp_(test|live)_oauth_[A-Za-z0-9]+$"
+                },
+                "orderId": {
+                  "type": "string",
+                  "pattern": "^order_[A-Za-z0-9]+$"
+                },
+                "amountPaise": {
+                  "type": "integer",
+                  "minimum": 100,
+                  "maximum": 10000000
+                },
+                "currency": {
+                  "const": "INR"
+                },
+                "description": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160
+                },
+                "expiresAtMillis": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "receipt": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "responseId",
+                "formId",
+                "versionId",
+                "status",
+                "submittedAtMillis",
+                "withdrawalToken",
+                "completion"
+              ],
+              "properties": {
+                "responseId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "formId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "versionId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "submitted",
+                    "withdrawn"
+                  ]
+                },
+                "submittedAtMillis": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "withdrawalToken": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "pattern": "^[A-Za-z0-9_-]{32,160}$"
+                },
+                "completion": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "title",
+                    "message",
+                    "actionKind",
+                    "actionLabel",
+                    "actionUrl"
+                  ],
+                  "properties": {
+                    "title": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160
+                    },
+                    "message": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "maxLength": 1000
+                    },
+                    "actionKind": {
+                      "type": "string",
+                      "enum": [
+                        "none",
+                        "externalUrl",
+                        "event",
+                        "eventRuntime"
+                      ]
+                    },
+                    "actionLabel": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "maxLength": 80
+                    },
+                    "actionUrl": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "format": "uri",
+                      "maxLength": 500
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    }
+  ]
+};
+
+export const getOrganizerFormPaymentCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_organizer_form_payment_payload.schema.json",
+  "title": "GetOrganizerFormPaymentCallablePayload",
+  "description": "Owner-only payment status or signed checkout callback; success still requires server capture verification.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "paymentId",
+    "callback"
+  ],
+  "properties": {
+    "paymentId": {
+      "type": "string",
+      "pattern": "^fp_[a-f0-9]{32}$"
+    },
+    "callback": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "paymentId",
+            "signature"
+          ],
+          "properties": {
+            "paymentId": {
+              "type": "string",
+              "pattern": "^pay_[A-Za-z0-9]+$"
+            },
+            "signature": {
+              "type": "string",
+              "pattern": "^[a-fA-F0-9]{64}$"
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+};
+
+export const getOrganizerFormPaymentCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/get_organizer_form_payment_response.schema.json",
+  "title": "GetOrganizerFormPaymentCallableResponse",
+  "description": "Owner-only safe payment projection.",
+  "allOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "paymentId",
+        "status",
+        "amountPaise",
+        "currency",
+        "mode",
+        "refundPolicy",
+        "refundedAmountPaise",
+        "checkout",
+        "receipt"
+      ],
+      "properties": {
+        "paymentId": {
+          "type": "string",
+          "pattern": "^fp_[a-f0-9]{32}$"
+        },
+        "status": {
+          "enum": [
+            "creatingOrder",
+            "orderUnknown",
+            "checkoutReady",
+            "verifying",
+            "captured",
+            "submitted",
+            "failed",
+            "expired",
+            "refundPending",
+            "refunded",
+            "reviewRequired"
+          ],
+          "type": "string"
+        },
+        "amountPaise": {
+          "type": "integer",
+          "minimum": 100,
+          "maximum": 10000000
+        },
+        "currency": {
+          "const": "INR"
+        },
+        "mode": {
+          "type": "string",
+          "enum": [
+            "test",
+            "live"
+          ]
+        },
+        "refundPolicy": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "refundedAmountPaise": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "checkout": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "publicToken",
+                "orderId",
+                "amountPaise",
+                "currency",
+                "description",
+                "expiresAtMillis"
+              ],
+              "properties": {
+                "publicToken": {
+                  "type": "string",
+                  "pattern": "^rzp_(test|live)_oauth_[A-Za-z0-9]+$"
+                },
+                "orderId": {
+                  "type": "string",
+                  "pattern": "^order_[A-Za-z0-9]+$"
+                },
+                "amountPaise": {
+                  "type": "integer",
+                  "minimum": 100,
+                  "maximum": 10000000
+                },
+                "currency": {
+                  "const": "INR"
+                },
+                "description": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160
+                },
+                "expiresAtMillis": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "receipt": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "responseId",
+                "formId",
+                "versionId",
+                "status",
+                "submittedAtMillis",
+                "withdrawalToken",
+                "completion"
+              ],
+              "properties": {
+                "responseId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "formId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "versionId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "submitted",
+                    "withdrawn"
+                  ]
+                },
+                "submittedAtMillis": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "withdrawalToken": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "pattern": "^[A-Za-z0-9_-]{32,160}$"
+                },
+                "completion": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "title",
+                    "message",
+                    "actionKind",
+                    "actionLabel",
+                    "actionUrl"
+                  ],
+                  "properties": {
+                    "title": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160
+                    },
+                    "message": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "maxLength": 1000
+                    },
+                    "actionKind": {
+                      "type": "string",
+                      "enum": [
+                        "none",
+                        "externalUrl",
+                        "event",
+                        "eventRuntime"
+                      ]
+                    },
+                    "actionLabel": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "maxLength": 80
+                    },
+                    "actionUrl": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "format": "uri",
+                      "maxLength": 500
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    }
+  ]
+};
+
+export const manageOrganizerFormPaymentConnectionCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/manage_organizer_form_payment_connection_payload.schema.json",
+  "title": "ManageOrganizerFormPaymentConnectionCallablePayload",
+  "description": "Manager-only merchant connection setup, safe listing, and local disconnection.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "action",
+    "connectionId"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "action": {
+      "type": "string",
+      "enum": [
+        "begin",
+        "list",
+        "disconnect"
+      ]
+    },
+    "connectionId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^rpc_[a-f0-9]{32}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+};
+
+export const manageOrganizerFormPaymentConnectionCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/manage_organizer_form_payment_connection_response.schema.json",
+  "title": "ManageOrganizerFormPaymentConnectionCallableResponse",
+  "description": "Safe connection status and one-use OAuth link. No merchant credentials.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "available",
+    "authorizationUrl",
+    "connectionId",
+    "expiresAtMillis",
+    "connections"
+  ],
+  "properties": {
+    "available": {
+      "type": "boolean"
+    },
+    "authorizationUrl": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uri",
+          "maxLength": 4000
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "connectionId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "expiresAtMillis": {
+      "anyOf": [
+        {
+          "type": "integer",
+          "minimum": 0
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "connections": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "connectionId",
+          "status",
+          "mode",
+          "accountId",
+          "webhookVerified",
+          "lastErrorCode"
+        ],
+        "properties": {
+          "connectionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "connecting",
+              "ready",
+              "needsAttention",
+              "disconnected"
+            ]
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "test",
+              "live"
+            ]
+          },
+          "accountId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "webhookVerified": {
+            "type": "boolean"
+          },
+          "lastErrorCode": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      }
     }
   }
 };

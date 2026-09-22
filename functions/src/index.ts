@@ -8,6 +8,12 @@ admin.initializeApp();
 export {createRazorpayOrder} from "./payments/createRazorpayOrder";
 export {verifyRazorpayPayment} from "./payments/verifyRazorpayPayment";
 export {razorpayWebhook} from "./payments/razorpayWebhook";
+export {prepareOrganizerFormPayment, getOrganizerFormPayment,
+  manageOrganizerFormPaymentConnection} from
+  "./payments/formPayments/formPaymentHandlers";
+export {organizerFormPaymentOauthCallback, organizerFormPaymentWebhook,
+  onOrganizerFormPaymentWebhook, reconcileOrganizerFormPayments} from
+  "./payments/formPayments/formPaymentTriggers";
 export {
   reconcileRazorpayOrders,
 } from "./payments/reconcileRazorpayOrders";

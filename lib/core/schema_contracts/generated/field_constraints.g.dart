@@ -61604,6 +61604,27 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const getOrganizerFormPaymentCallablePayloadCallbackPaymentId = CatchContractFieldConstraints(
+    path: 'getOrganizerFormPaymentCallablePayload.callback.paymentId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^pay_[A-Za-z0-9]+\$',
+  );
+
+  static const getOrganizerFormPaymentCallablePayloadCallbackSignature = CatchContractFieldConstraints(
+    path: 'getOrganizerFormPaymentCallablePayload.callback.signature',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-fA-F0-9]{64}\$',
+  );
+
+  static const getOrganizerFormPaymentCallablePayloadPaymentId = CatchContractFieldConstraints(
+    path: 'getOrganizerFormPaymentCallablePayload.paymentId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^fp_[a-f0-9]{32}\$',
+  );
+
   static const getOrganizerFormResponseDetailCallablePayloadOrganizerId = CatchContractFieldConstraints(
     path: 'getOrganizerFormResponseDetailCallablePayload.organizerId',
     maxLength: 180,
@@ -69176,6 +69197,103 @@ abstract final class CatchContractConstraints {
   static const listSuvbotDemoActionsCallableResponseActionsItemsRequiresText = CatchContractFieldConstraints(
     path: 'listSuvbotDemoActionsCallableResponse.actions.items.requiresText',
     valueTypes: <String>['boolean'],
+  );
+
+  static const manageOrganizerFormPaymentConnectionCallablePayloadAction = CatchContractFieldConstraints(
+    path: 'manageOrganizerFormPaymentConnectionCallablePayload.action',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['begin', 'list', 'disconnect'],
+  );
+
+  static const manageOrganizerFormPaymentConnectionCallablePayloadConnectionId = CatchContractFieldConstraints(
+    path: 'manageOrganizerFormPaymentConnectionCallablePayload.connectionId',
+    valueTypes: <String>['string'],
+    pattern: '^rpc_[a-f0-9]{32}\$',
+  );
+
+  static const manageOrganizerFormPaymentConnectionCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'manageOrganizerFormPaymentConnectionCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const manageOrganizerFormPaymentConnectionCallableResponseAuthorizationUrl = CatchContractFieldConstraints(
+    path: 'manageOrganizerFormPaymentConnectionCallableResponse.authorizationUrl',
+    maxLength: 4000,
+    valueTypes: <String>['string'],
+    format: 'uri',
+  );
+
+  static const manageOrganizerFormPaymentConnectionCallableResponseAvailable = CatchContractFieldConstraints(
+    path: 'manageOrganizerFormPaymentConnectionCallableResponse.available',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const manageOrganizerFormPaymentConnectionCallableResponseConnectionId = CatchContractFieldConstraints(
+    path: 'manageOrganizerFormPaymentConnectionCallableResponse.connectionId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const manageOrganizerFormPaymentConnectionCallableResponseConnections = CatchContractFieldConstraints(
+    path: 'manageOrganizerFormPaymentConnectionCallableResponse.connections',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 100,
+  );
+
+  static const manageOrganizerFormPaymentConnectionCallableResponseConnectionsItemsAccountId = CatchContractFieldConstraints(
+    path: 'manageOrganizerFormPaymentConnectionCallableResponse.connections.items.accountId',
+    maxLength: 160,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const manageOrganizerFormPaymentConnectionCallableResponseConnectionsItemsConnectionId = CatchContractFieldConstraints(
+    path: 'manageOrganizerFormPaymentConnectionCallableResponse.connections.items.connectionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const manageOrganizerFormPaymentConnectionCallableResponseConnectionsItemsLastErrorCode = CatchContractFieldConstraints(
+    path: 'manageOrganizerFormPaymentConnectionCallableResponse.connections.items.lastErrorCode',
+    maxLength: 80,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const manageOrganizerFormPaymentConnectionCallableResponseConnectionsItemsMode = CatchContractFieldConstraints(
+    path: 'manageOrganizerFormPaymentConnectionCallableResponse.connections.items.mode',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['test', 'live'],
+  );
+
+  static const manageOrganizerFormPaymentConnectionCallableResponseConnectionsItemsStatus = CatchContractFieldConstraints(
+    path: 'manageOrganizerFormPaymentConnectionCallableResponse.connections.items.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['connecting', 'ready', 'needsAttention', 'disconnected'],
+  );
+
+  static const manageOrganizerFormPaymentConnectionCallableResponseConnectionsItemsWebhookVerified = CatchContractFieldConstraints(
+    path: 'manageOrganizerFormPaymentConnectionCallableResponse.connections.items.webhookVerified',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const manageOrganizerFormPaymentConnectionCallableResponseExpiresAtMillis = CatchContractFieldConstraints(
+    path: 'manageOrganizerFormPaymentConnectionCallableResponse.expiresAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
   );
 
   static const markEventAttendanceCallablePayloadEventId = CatchContractFieldConstraints(
@@ -80551,6 +80669,20 @@ abstract final class CatchContractConstraints {
 
   static const organizerFormPaymentWebhookDocumentExpiresAtSeconds = CatchContractFieldConstraints(
     path: 'organizerFormPaymentWebhookDocument.expiresAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const organizerFormPaymentWebhookDocumentNextAttemptAtNanoseconds = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentWebhookDocument.nextAttemptAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const organizerFormPaymentWebhookDocumentNextAttemptAtSeconds = CatchContractFieldConstraints(
+    path: 'organizerFormPaymentWebhookDocument.nextAttemptAt._seconds',
     required: true,
     valueTypes: <String>['integer'],
   );
@@ -110476,6 +110608,9 @@ abstract final class CatchContractConstraints {
     'getOrganizerFormAnalyticsCallableResponse.withdrawals': getOrganizerFormAnalyticsCallableResponseWithdrawals,
     'getOrganizerFormEditorCallablePayload.formId': getOrganizerFormEditorCallablePayloadFormId,
     'getOrganizerFormEditorCallablePayload.organizerId': getOrganizerFormEditorCallablePayloadOrganizerId,
+    'getOrganizerFormPaymentCallablePayload.callback.paymentId': getOrganizerFormPaymentCallablePayloadCallbackPaymentId,
+    'getOrganizerFormPaymentCallablePayload.callback.signature': getOrganizerFormPaymentCallablePayloadCallbackSignature,
+    'getOrganizerFormPaymentCallablePayload.paymentId': getOrganizerFormPaymentCallablePayloadPaymentId,
     'getOrganizerFormResponseDetailCallablePayload.organizerId': getOrganizerFormResponseDetailCallablePayloadOrganizerId,
     'getOrganizerFormResponseDetailCallablePayload.responseId': getOrganizerFormResponseDetailCallablePayloadResponseId,
     'getOrganizerFormResponseDetailCallableResponse.answers': getOrganizerFormResponseDetailCallableResponseAnswers,
@@ -111523,6 +111658,20 @@ abstract final class CatchContractConstraints {
     'listSuvbotDemoActionsCallableResponse.actions.items.id': listSuvbotDemoActionsCallableResponseActionsItemsId,
     'listSuvbotDemoActionsCallableResponse.actions.items.label': listSuvbotDemoActionsCallableResponseActionsItemsLabel,
     'listSuvbotDemoActionsCallableResponse.actions.items.requiresText': listSuvbotDemoActionsCallableResponseActionsItemsRequiresText,
+    'manageOrganizerFormPaymentConnectionCallablePayload.action': manageOrganizerFormPaymentConnectionCallablePayloadAction,
+    'manageOrganizerFormPaymentConnectionCallablePayload.connectionId': manageOrganizerFormPaymentConnectionCallablePayloadConnectionId,
+    'manageOrganizerFormPaymentConnectionCallablePayload.organizerId': manageOrganizerFormPaymentConnectionCallablePayloadOrganizerId,
+    'manageOrganizerFormPaymentConnectionCallableResponse.authorizationUrl': manageOrganizerFormPaymentConnectionCallableResponseAuthorizationUrl,
+    'manageOrganizerFormPaymentConnectionCallableResponse.available': manageOrganizerFormPaymentConnectionCallableResponseAvailable,
+    'manageOrganizerFormPaymentConnectionCallableResponse.connectionId': manageOrganizerFormPaymentConnectionCallableResponseConnectionId,
+    'manageOrganizerFormPaymentConnectionCallableResponse.connections': manageOrganizerFormPaymentConnectionCallableResponseConnections,
+    'manageOrganizerFormPaymentConnectionCallableResponse.connections.items.accountId': manageOrganizerFormPaymentConnectionCallableResponseConnectionsItemsAccountId,
+    'manageOrganizerFormPaymentConnectionCallableResponse.connections.items.connectionId': manageOrganizerFormPaymentConnectionCallableResponseConnectionsItemsConnectionId,
+    'manageOrganizerFormPaymentConnectionCallableResponse.connections.items.lastErrorCode': manageOrganizerFormPaymentConnectionCallableResponseConnectionsItemsLastErrorCode,
+    'manageOrganizerFormPaymentConnectionCallableResponse.connections.items.mode': manageOrganizerFormPaymentConnectionCallableResponseConnectionsItemsMode,
+    'manageOrganizerFormPaymentConnectionCallableResponse.connections.items.status': manageOrganizerFormPaymentConnectionCallableResponseConnectionsItemsStatus,
+    'manageOrganizerFormPaymentConnectionCallableResponse.connections.items.webhookVerified': manageOrganizerFormPaymentConnectionCallableResponseConnectionsItemsWebhookVerified,
+    'manageOrganizerFormPaymentConnectionCallableResponse.expiresAtMillis': manageOrganizerFormPaymentConnectionCallableResponseExpiresAtMillis,
     'markEventAttendanceCallablePayload.eventId': markEventAttendanceCallablePayloadEventId,
     'markEventAttendanceCallablePayload.userId': markEventAttendanceCallablePayloadUserId,
     'markEventAttendanceCallableResponse.attended': markEventAttendanceCallableResponseAttended,
@@ -113094,6 +113243,8 @@ abstract final class CatchContractConstraints {
     'organizerFormPaymentWebhookDocument.event': organizerFormPaymentWebhookDocumentEvent,
     'organizerFormPaymentWebhookDocument.expiresAt._nanoseconds': organizerFormPaymentWebhookDocumentExpiresAtNanoseconds,
     'organizerFormPaymentWebhookDocument.expiresAt._seconds': organizerFormPaymentWebhookDocumentExpiresAtSeconds,
+    'organizerFormPaymentWebhookDocument.nextAttemptAt._nanoseconds': organizerFormPaymentWebhookDocumentNextAttemptAtNanoseconds,
+    'organizerFormPaymentWebhookDocument.nextAttemptAt._seconds': organizerFormPaymentWebhookDocumentNextAttemptAtSeconds,
     'organizerFormPaymentWebhookDocument.processedAt._nanoseconds': organizerFormPaymentWebhookDocumentProcessedAtNanoseconds,
     'organizerFormPaymentWebhookDocument.processedAt._seconds': organizerFormPaymentWebhookDocumentProcessedAtSeconds,
     'organizerFormPaymentWebhookDocument.providerEventId': organizerFormPaymentWebhookDocumentProviderEventId,

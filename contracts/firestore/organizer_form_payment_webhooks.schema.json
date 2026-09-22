@@ -15,7 +15,8 @@
     "status",
     "createdAt",
     "processedAt",
-    "expiresAt"
+    "expiresAt",
+    "nextAttemptAt"
   ],
   "properties": {
     "connectionId": {
@@ -64,6 +65,9 @@
       "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"
     },
     "expiresAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+    },
+    "nextAttemptAt": {
       "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
     }
   },

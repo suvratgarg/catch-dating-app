@@ -2450,6 +2450,32 @@ feedback, and survey definitions. The existing application collections below
 remain the application-review projection and import compatibility boundary;
 they are not the generic response store.
 
+### Organizer-connected form payments
+
+`organizerPaymentConnections` binds one organizer to one Razorpay merchant,
+mode, verified merchant webhook and pinned Secret Manager credential version.
+`organizerPaymentOauthStates` stores only a hash of one-use, manager-bound,
+expiring OAuth state. Tokens and webhook secrets never enter Firestore or
+client projections. Refresh rotation has an exclusive durable lease; uncertain
+rotation requires reconnection. Disconnection blocks new checkouts while
+retaining server access to settle existing payments.
+
+`organizerFormPayments` freezes the fee, merchant, verified respondent,
+version, draft revision and answer hash before creating an order. The draft's
+`paymentAttemptId` prevents editing; `organizerForms.pendingPaymentCount`
+reserves capacity (legacy omission means zero). Finalization decrements the
+reservation and creates exactly one normal response in the same transaction.
+A late capture after release, or a missing/changed frozen submission, enters
+idempotent refund processing rather than creating an application.
+
+`organizerFormPaymentWebhooks` stores minimal signed-event receipts. Raw bytes
+are verified against the bound merchant secret and account before persistence;
+provider state is then re-read by a retrying worker or recovery sweep. Only a
+persisted response yields completion/redirect data. Checkout callbacks, fees,
+CRM conversion, review, event admission and room membership are separate.
+All four collections deny direct client reads and writes. The source and
+partner setup boundary is specified in [Host Forms](host_forms.md).
+
 ### Organizer Application Intake
 
 Organizer applications are a provider-neutral intake domain. A Google Form,

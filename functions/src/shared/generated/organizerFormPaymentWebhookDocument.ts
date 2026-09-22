@@ -31,4 +31,11 @@ export interface OrganizerFormPaymentWebhookDocument {
     _seconds: number;
     _nanoseconds: number;
   };
+  /**
+   * Serialized Firestore Timestamp fixture shape.
+   */
+  nextAttemptAt: {
+    _seconds: number;
+    _nanoseconds: number;
+  };
 }

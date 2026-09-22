@@ -538,6 +538,12 @@ export {createOrganizerFormAssetIntentCallablePayloadSchema} from "./schemas/cre
 export {createOrganizerFormAssetIntentCallableResponseSchema} from "./schemas/createOrganizerFormAssetIntentOutput";
 export {finalizeOrganizerFormAssetCallablePayloadSchema} from "./schemas/finalizeOrganizerFormAssetInput";
 export {finalizeOrganizerFormAssetCallableResponseSchema} from "./schemas/finalizeOrganizerFormAssetOutput";
+export {prepareOrganizerFormPaymentCallablePayloadSchema} from "./schemas/prepareOrganizerFormPaymentInput";
+export {prepareOrganizerFormPaymentCallableResponseSchema} from "./schemas/prepareOrganizerFormPaymentOutput";
+export {getOrganizerFormPaymentCallablePayloadSchema} from "./schemas/getOrganizerFormPaymentInput";
+export {getOrganizerFormPaymentCallableResponseSchema} from "./schemas/getOrganizerFormPaymentOutput";
+export {manageOrganizerFormPaymentConnectionCallablePayloadSchema} from "./schemas/manageOrganizerFormPaymentConnectionInput";
+export {manageOrganizerFormPaymentConnectionCallableResponseSchema} from "./schemas/manageOrganizerFormPaymentConnectionOutput";
 export {submitOrganizerFormResponseCallablePayloadSchema} from "./schemas/submitOrganizerFormResponseInput";
 export {submitOrganizerFormResponseCallableResponseSchema} from "./schemas/submitOrganizerFormResponseOutput";
 export {withdrawOrganizerFormResponseCallablePayloadSchema} from "./schemas/withdrawOrganizerFormResponseInput";

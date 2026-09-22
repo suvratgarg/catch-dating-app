@@ -19,7 +19,8 @@ export const organizerFormPaymentWebhookDocumentSchema: Record<string, unknown> 
     "status",
     "createdAt",
     "processedAt",
-    "expiresAt"
+    "expiresAt",
+    "nextAttemptAt"
   ],
   "properties": {
     "connectionId": {
@@ -111,6 +112,26 @@ export const organizerFormPaymentWebhookDocumentSchema: Record<string, unknown> 
       ]
     },
     "expiresAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "nextAttemptAt": {
       "type": "object",
       "description": "Serialized Firestore Timestamp fixture shape.",
       "x-firestore-type": "timestamp",

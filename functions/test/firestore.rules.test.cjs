@@ -1116,6 +1116,28 @@ describe("firestore.rules", () => {
       )));
     });
 
+    it("keeps form payment state server-only", async () => {
+      for (const collectionName of ["organizerPaymentConnections",
+        "organizerPaymentOauthStates", "organizerFormPayments",
+        "organizerFormPaymentWebhooks"]) {
+        await seed([collectionName, "payment-1"], {
+          organizerId: "organizer-1", respondentUid: "owner-1",
+          status: "submitted",
+        });
+        for (const uid of ["owner-1", "owner-2"]) {
+          const db = authedDb(uid);
+          const ref = doc(db, collectionName, "payment-1");
+          await assertFails(getDoc(ref));
+          await assertFails(updateDoc(ref, {status: "captured"}));
+          await assertFails(setDoc(doc(db, collectionName, "forged"), {
+            organizerId: "organizer-1", respondentUid: uid,
+          }));
+          await assertFails(getDocs(query(collection(db, collectionName),
+            where("respondentUid", "==", uid))));
+        }
+      }
+    });
+
     it("keeps contact merge review decisions callable-only", async () => {
       const reviewedAt = Timestamp.fromDate(
         new Date("2026-08-16T10:00:00.000Z"),

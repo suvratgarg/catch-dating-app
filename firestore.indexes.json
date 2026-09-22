@@ -1,5 +1,11 @@
 {
   "indexes": [
+    {"collectionGroup": "organizerPaymentConnections","queryScope": "COLLECTION","fields": [{"fieldPath": "organizerId","order": "ASCENDING"},{"fieldPath": "createdAt","order": "DESCENDING"}]},
+    {"collectionGroup": "organizerFormPaymentWebhooks","queryScope": "COLLECTION","fields": [{"fieldPath": "status","order": "ASCENDING"},{"fieldPath": "nextAttemptAt","order": "ASCENDING"}]},
+    {"collectionGroup": "organizerFormPayments","queryScope": "COLLECTION","fields": [{"fieldPath": "status","order": "ASCENDING"},{"fieldPath": "updatedAt","order": "ASCENDING"}]},
+    {"collectionGroup": "organizerFormPayments","queryScope": "COLLECTION","fields": [{"fieldPath": "status","order": "ASCENDING"},{"fieldPath": "createdAt","order": "ASCENDING"},{"fieldPath": "updatedAt","order": "ASCENDING"}]},
+    {"collectionGroup": "organizerFormPayments","queryScope": "COLLECTION","fields": [{"fieldPath": "connectionId","order": "ASCENDING"},{"fieldPath": "receipt","order": "ASCENDING"}]},
+
     {
       "collectionGroup": "eventRehearsals",
       "queryScope": "COLLECTION",

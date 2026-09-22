@@ -1255,6 +1255,21 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // Only server payment operations can access merchant bindings, OAuth
+    // state, financial ledgers and signed webhook receipts.
+    match /organizerPaymentConnections/{connectionId} {
+      allow read, write: if false;
+    }
+    match /organizerPaymentOauthStates/{stateId} {
+      allow read, write: if false;
+    }
+    match /organizerFormPayments/{paymentId} {
+      allow read, write: if false;
+    }
+    match /organizerFormPaymentWebhooks/{receiptId} {
+      allow read, write: if false;
+    }
+
     match /organizerFormResponses/{responseId} {
       allow read, write: if false;
     }

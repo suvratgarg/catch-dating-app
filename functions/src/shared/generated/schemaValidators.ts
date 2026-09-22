@@ -538,6 +538,12 @@ export {validateCreateOrganizerFormAssetIntentCallablePayload} from "./validator
 export {validateCreateOrganizerFormAssetIntentCallableResponse} from "./validators/createOrganizerFormAssetIntentOutput";
 export {validateFinalizeOrganizerFormAssetCallablePayload} from "./validators/finalizeOrganizerFormAssetInput";
 export {validateFinalizeOrganizerFormAssetCallableResponse} from "./validators/finalizeOrganizerFormAssetOutput";
+export {validatePrepareOrganizerFormPaymentCallablePayload} from "./validators/prepareOrganizerFormPaymentInput";
+export {validatePrepareOrganizerFormPaymentCallableResponse} from "./validators/prepareOrganizerFormPaymentOutput";
+export {validateGetOrganizerFormPaymentCallablePayload} from "./validators/getOrganizerFormPaymentInput";
+export {validateGetOrganizerFormPaymentCallableResponse} from "./validators/getOrganizerFormPaymentOutput";
+export {validateManageOrganizerFormPaymentConnectionCallablePayload} from "./validators/manageOrganizerFormPaymentConnectionInput";
+export {validateManageOrganizerFormPaymentConnectionCallableResponse} from "./validators/manageOrganizerFormPaymentConnectionOutput";
 export {validateSubmitOrganizerFormResponseCallablePayload} from "./validators/submitOrganizerFormResponseInput";
 export {validateSubmitOrganizerFormResponseCallableResponse} from "./validators/submitOrganizerFormResponseOutput";
 export {validateWithdrawOrganizerFormResponseCallablePayload} from "./validators/withdrawOrganizerFormResponseInput";

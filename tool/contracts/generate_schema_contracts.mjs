@@ -3235,6 +3235,36 @@ const schemaSpecs = [
       "finalizeOrganizerFormAssetCallableResponse.ts",
   },
   {
+    name: "PrepareOrganizerFormPaymentCallablePayload",
+    source: "callables/prepare_organizer_form_payment_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/prepareOrganizerFormPaymentCallablePayload.ts",
+  },
+  {
+    name: "PrepareOrganizerFormPaymentCallableResponse",
+    source: "callable_responses/prepare_organizer_form_payment_response.schema.json",
+    typeOutput: "functions/src/shared/generated/prepareOrganizerFormPaymentCallableResponse.ts",
+  },
+  {
+    name: "GetOrganizerFormPaymentCallablePayload",
+    source: "callables/get_organizer_form_payment_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/getOrganizerFormPaymentCallablePayload.ts",
+  },
+  {
+    name: "GetOrganizerFormPaymentCallableResponse",
+    source: "callable_responses/get_organizer_form_payment_response.schema.json",
+    typeOutput: "functions/src/shared/generated/getOrganizerFormPaymentCallableResponse.ts",
+  },
+  {
+    name: "ManageOrganizerFormPaymentConnectionCallablePayload",
+    source: "callables/manage_organizer_form_payment_connection_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/manageOrganizerFormPaymentConnectionCallablePayload.ts",
+  },
+  {
+    name: "ManageOrganizerFormPaymentConnectionCallableResponse",
+    source: "callable_responses/manage_organizer_form_payment_connection_response.schema.json",
+    typeOutput: "functions/src/shared/generated/manageOrganizerFormPaymentConnectionCallableResponse.ts",
+  },
+  {
     name: "SubmitOrganizerFormResponseCallablePayload",
     source: "callables/submit_organizer_form_response_payload.schema.json",
     typeOutput:

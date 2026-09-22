@@ -1,0 +1,125 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/shared/organizer_form_payment_common.schema.json",
+  "title": "Organizer form payment projections",
+  "description": "Safe checkout and receipt data; excludes tokens, credential references and answer copies.",
+  "definitions": {
+    "paymentProjection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "paymentId",
+        "status",
+        "amountPaise",
+        "currency",
+        "mode",
+        "refundPolicy",
+        "refundedAmountPaise",
+        "checkout",
+        "receipt"
+      ],
+      "properties": {
+        "paymentId": {
+          "type": "string",
+          "pattern": "^fp_[a-f0-9]{32}$"
+        },
+        "status": {
+          "enum": [
+            "creatingOrder",
+            "orderUnknown",
+            "checkoutReady",
+            "verifying",
+            "captured",
+            "submitted",
+            "failed",
+            "expired",
+            "refundPending",
+            "refunded",
+            "reviewRequired"
+          ],
+          "type": "string"
+        },
+        "amountPaise": {
+          "type": "integer",
+          "minimum": 100,
+          "maximum": 10000000
+        },
+        "currency": {
+          "const": "INR"
+        },
+        "mode": {
+          "type": "string",
+          "enum": [
+            "test",
+            "live"
+          ]
+        },
+        "refundPolicy": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "refundedAmountPaise": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "checkout": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "publicToken",
+                "orderId",
+                "amountPaise",
+                "currency",
+                "description",
+                "expiresAtMillis"
+              ],
+              "properties": {
+                "publicToken": {
+                  "type": "string",
+                  "pattern": "^rzp_(test|live)_oauth_[A-Za-z0-9]+$"
+                },
+                "orderId": {
+                  "type": "string",
+                  "pattern": "^order_[A-Za-z0-9]+$"
+                },
+                "amountPaise": {
+                  "type": "integer",
+                  "minimum": 100,
+                  "maximum": 10000000
+                },
+                "currency": {
+                  "const": "INR"
+                },
+                "description": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160
+                },
+                "expiresAtMillis": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "receipt": {
+          "anyOf": [
+            {
+              "$ref": "organizer_form_response_common.schema.json#/definitions/responseReceipt"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

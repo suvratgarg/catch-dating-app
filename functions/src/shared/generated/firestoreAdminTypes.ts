@@ -5960,6 +5960,7 @@ export interface OrganizerFormPaymentWebhookDocument {
   createdAt: FirebaseFirestore.Timestamp;
   processedAt: FirebaseFirestore.Timestamp | null;
   expiresAt: FirebaseFirestore.Timestamp;
+  nextAttemptAt: FirebaseFirestore.Timestamp;
 }
 
 /**

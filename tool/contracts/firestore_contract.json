@@ -3,6 +3,81 @@
   "description": "Canonical Firestore ownership contract for Dart models, Functions TypeScript types, Firestore rules, and client mutation boundaries.",
   "collections": [
     {
+      "id": "organizerPaymentConnections",
+      "path": "organizerPaymentConnections/{connectionId}",
+      "rulesMatch": "/organizerPaymentConnections/{connectionId}",
+      "typescriptInterface": "OrganizerPaymentConnectionDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps form payment state server-only"
+      ],
+      "owner": "organizer form payment server operations",
+      "read": "server only; owner and manager callable projections omit credentials",
+      "write": "server only",
+      "exportedFunctions": [
+        "manageOrganizerFormPaymentConnection",
+        "organizerFormPaymentOauthCallback"
+      ]
+    },
+    {
+      "id": "organizerPaymentOauthStates",
+      "path": "organizerPaymentOauthStates/{stateId}",
+      "rulesMatch": "/organizerPaymentOauthStates/{stateId}",
+      "typescriptInterface": "OrganizerPaymentOauthStateDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps form payment state server-only"
+      ],
+      "owner": "organizer form payment server operations",
+      "read": "server only; owner and manager callable projections omit credentials",
+      "write": "server only",
+      "exportedFunctions": [
+        "manageOrganizerFormPaymentConnection",
+        "organizerFormPaymentOauthCallback"
+      ]
+    },
+    {
+      "id": "organizerFormPayments",
+      "path": "organizerFormPayments/{paymentId}",
+      "rulesMatch": "/organizerFormPayments/{paymentId}",
+      "typescriptInterface": "OrganizerFormPaymentDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps form payment state server-only"
+      ],
+      "owner": "organizer form payment server operations",
+      "read": "server only; owner and manager callable projections omit credentials",
+      "write": "server only",
+      "exportedFunctions": [
+        "prepareOrganizerFormPayment",
+        "getOrganizerFormPayment",
+        "reconcileOrganizerFormPayments"
+      ]
+    },
+    {
+      "id": "organizerFormPaymentWebhooks",
+      "path": "organizerFormPaymentWebhooks/{receiptId}",
+      "rulesMatch": "/organizerFormPaymentWebhooks/{receiptId}",
+      "typescriptInterface": "OrganizerFormPaymentWebhookDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps form payment state server-only"
+      ],
+      "owner": "organizer form payment server operations",
+      "read": "server only; owner and manager callable projections omit credentials",
+      "write": "server only",
+      "exportedFunctions": [
+        "organizerFormPaymentWebhook",
+        "onOrganizerFormPaymentWebhook",
+        "reconcileOrganizerFormPayments"
+      ]
+    },
+
+    {
       "id": "config_cities",
       "path": "config/cities",
       "rulesMatch": "/config/cities",
