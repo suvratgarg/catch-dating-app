@@ -105,6 +105,17 @@ class _ProgramArrivalsScreenState extends ConsumerState<ProgramArrivalsScreen> {
     }
   }
 
+  Future<void> _clearOutboxReview() async {
+    final accountId = programWorkAccountId(
+      ref,
+      action: 'clear stale program operations',
+    );
+    final summary = await ref
+        .read(programOperationsOutboxProvider)
+        .clearNeedsReview(accountId: accountId, programId: widget.programId);
+    if (mounted) setState(() => _outbox = summary);
+  }
+
   Future<void> _flushOutbox() async {
     if (_outboxBusy) return;
     setState(() => _outboxBusy = true);
@@ -130,9 +141,11 @@ class _ProgramArrivalsScreenState extends ConsumerState<ProgramArrivalsScreen> {
   @override
   Widget build(BuildContext context) {
     final rosterAsync = ref.watch(
-      programArrivalsRosterProvider(widget.programId, widget.pickupPointId),
+      programArrivalsRosterViewProvider(widget.programId, widget.pickupPointId),
     );
-    return CatchAsyncBoundary<ProgramArrivalsRoster>(
+    return CatchAsyncBoundary<
+      ({ProgramArrivalsRoster roster, DateTime? snapshotAt})
+    >(
       value: rosterAsync,
       onRetry: () => ref.invalidate(
         programArrivalsRosterProvider(widget.programId, widget.pickupPointId),
@@ -171,7 +184,7 @@ class _ProgramArrivalsScreenState extends ConsumerState<ProgramArrivalsScreen> {
           ),
         ),
       ),
-      builder: (context, roster) => CatchRouteScaffold(
+      builder: (context, result) => CatchRouteScaffold(
         topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
           title: widget.stationLabel,
           subtitle: context.l10n.programsArrivalsTitle,
@@ -183,28 +196,29 @@ class _ProgramArrivalsScreenState extends ConsumerState<ProgramArrivalsScreen> {
           ),
         ),
         body: CatchRouteBody.standardSections(
-          sections: _rosterSections(
-            context,
-            roster: roster,
-            outbox: _outbox,
-            mutationError: _mutationError,
-            outboxBusy: _outboxBusy,
-            onFlushOutbox: _flushOutbox,
-            onClearReview: () async {
-              final accountId = programWorkAccountId(
-                ref,
-                action: 'clear stale program operations',
-              );
-              final summary = await ref
-                  .read(programOperationsOutboxProvider)
-                  .clearNeedsReview(
-                    accountId: accountId,
-                    programId: widget.programId,
-                  );
-              if (mounted) setState(() => _outbox = summary);
-            },
-            onAction: _enqueueObservation,
-          ),
+          sections: [
+            if (result.snapshotAt != null)
+              CatchSectionListItem(
+                child: CatchBanner(
+                  title: context.l10n.programsSnapshotTitle,
+                  message: context.l10n.programsSnapshotBanner(
+                    time: AppTimeFormatters.time(result.snapshotAt!),
+                  ),
+                  icon: CatchIcons.wifiOffRounded,
+                  tone: CatchBannerTone.warning,
+                ),
+              ),
+            ..._rosterSections(
+              context,
+              roster: result.roster,
+              outbox: _outbox,
+              mutationError: _mutationError,
+              outboxBusy: _outboxBusy,
+              onFlushOutbox: _flushOutbox,
+              onClearReview: _clearOutboxReview,
+              onAction: _enqueueObservation,
+            ),
+          ],
         ),
       ),
     );

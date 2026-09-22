@@ -1,7 +1,11 @@
+import 'dart:async';
+
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/programs/data/program_read_snapshots.dart';
 import 'package:catch_dating_app/programs/domain/program_models.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -14,15 +18,21 @@ part 'program_work_repository.g.dart';
 /// All reads are server-side scoped projections; the client never reads the
 /// program collections directly.
 class ProgramWorkRepository {
-  const ProgramWorkRepository(this._functions);
+  const ProgramWorkRepository(this._functions, this._snapshots);
 
   final FirebaseFunctions _functions;
+  final ProgramReadSnapshotStore _snapshots;
 
-  Future<ProgramWorkAccess> getWorkAccess(String programId) => _call(
+  Future<ProgramWorkAccess> getWorkAccess(
+    String programId, {
+    String? snapshotAccountId,
+  }) => _call(
     name: 'getProgramWorkAccess',
     payload: ProgramIdCallableRequest(programId: programId).toJson(),
     action: 'load program access',
     parse: ProgramWorkAccess.fromCallableData,
+    snapshotScope: programSnapshotScope('work', programId),
+    snapshotAccountId: snapshotAccountId,
   );
 
   /// Redeems a staff invite for the signed-in account. The callable requires
@@ -40,6 +50,7 @@ class ProgramWorkRepository {
   Future<ProgramArrivalsRoster> getArrivalsRoster({
     required String programId,
     String? pickupPointId,
+    String? snapshotAccountId,
   }) => _call(
     name: 'getProgramArrivalsRoster',
     payload: ProgramStationScopeCallableRequest(
@@ -48,11 +59,14 @@ class ProgramWorkRepository {
     ).toJson(),
     action: 'load the arrivals roster',
     parse: ProgramArrivalsRoster.fromCallableData,
+    snapshotScope: programSnapshotScope('arrivals', programId, pickupPointId),
+    snapshotAccountId: snapshotAccountId,
   );
 
   Future<ProgramTransportPlan> getTransportPlan({
     required String programId,
     String? pickupPointId,
+    String? snapshotAccountId,
   }) => _call(
     name: 'getProgramTransportPlan',
     payload: ProgramStationScopeCallableRequest(
@@ -61,6 +75,8 @@ class ProgramWorkRepository {
     ).toJson(),
     action: 'load the transport plan',
     parse: ProgramTransportPlan.fromCallableData,
+    snapshotScope: programSnapshotScope('plan', programId, pickupPointId),
+    snapshotAccountId: snapshotAccountId,
   );
 
   /// Claim a guest for greeting. `clientOperationId` makes offline retries
@@ -291,11 +307,20 @@ class ProgramWorkRepository {
     required Map<String, Object?> payload,
     required String action,
     required T Function(Object?) parse,
+    String? snapshotScope,
+    String? snapshotAccountId,
   }) => withBackendErrorContext(
     () async {
       final result = await _functions
           .httpsCallable(name)
           .call<Object?>(payload);
+      if (snapshotScope != null && snapshotAccountId != null) {
+        unawaited(
+          _snapshots
+              .save(snapshotAccountId, snapshotScope, result.data)
+              .onError<Object>((_, _) => null),
+        );
+      }
       return parse(result.data);
     },
     context: BackendErrorContext(
@@ -309,12 +334,18 @@ class ProgramWorkRepository {
 // keepalive: the keep-alive operations outbox watches this repository, so it
 // must outlive any individual screen subscription.
 @Riverpod(keepAlive: true)
-ProgramWorkRepository programWorkRepository(Ref ref) =>
-    ProgramWorkRepository(ref.watch(firebaseFunctionsProvider));
+ProgramWorkRepository programWorkRepository(Ref ref) => ProgramWorkRepository(
+  ref.watch(firebaseFunctionsProvider),
+  ref.watch(programReadSnapshotStoreProvider),
+);
 
 @riverpod
-Future<ProgramWorkAccess> programWorkAccess(Ref ref, String programId) =>
-    ref.read(programWorkRepositoryProvider).getWorkAccess(programId);
+Future<ProgramWorkAccess> programWorkAccess(Ref ref, String programId) => ref
+    .read(programWorkRepositoryProvider)
+    .getWorkAccess(
+      programId,
+      snapshotAccountId: ref.read(uidProvider).asData?.value,
+    );
 
 /// Work-shell entry: claims a staff invite when the deep link carries one,
 /// then resolves access for the invite's program.
@@ -328,7 +359,10 @@ Future<ProgramWorkAccess> programWorkEntry(
   final resolvedProgramId = inviteId == null || inviteId.isEmpty
       ? programId
       : await repository.claimStaffInvite(inviteId);
-  return repository.getWorkAccess(resolvedProgramId);
+  return repository.getWorkAccess(
+    resolvedProgramId,
+    snapshotAccountId: ref.read(uidProvider).asData?.value,
+  );
 }
 
 @riverpod
@@ -338,7 +372,43 @@ Future<ProgramArrivalsRoster> programArrivalsRoster(
   String? pickupPointId,
 ) => ref
     .read(programWorkRepositoryProvider)
-    .getArrivalsRoster(programId: programId, pickupPointId: pickupPointId);
+    .getArrivalsRoster(
+      programId: programId,
+      pickupPointId: pickupPointId,
+      snapshotAccountId: ref.read(uidProvider).asData?.value,
+    );
+
+/// Roster with offline fallback: a live failure resolves to the last saved
+/// snapshot for this station, marked with its capture time so the UI can
+/// label it as saved data rather than live.
+@riverpod
+Future<({ProgramArrivalsRoster roster, DateTime? snapshotAt})>
+programArrivalsRosterView(
+  Ref ref,
+  String programId,
+  String? pickupPointId,
+) async {
+  try {
+    final roster = await ref.watch(
+      programArrivalsRosterProvider(programId, pickupPointId).future,
+    );
+    return (roster: roster, snapshotAt: null);
+  } on Object {
+    final accountId = ref.read(uidProvider).asData?.value;
+    if (accountId == null || accountId.isEmpty) rethrow;
+    final snapshot = await ref
+        .read(programReadSnapshotStoreProvider)
+        .load(
+          accountId,
+          programSnapshotScope('arrivals', programId, pickupPointId),
+        );
+    if (snapshot == null) rethrow;
+    return (
+      roster: ProgramArrivalsRoster.fromCallableData(snapshot.data),
+      snapshotAt: snapshot.savedAt,
+    );
+  }
+}
 
 @riverpod
 Future<ProgramTransportPlan> programTransportPlan(
@@ -347,7 +417,41 @@ Future<ProgramTransportPlan> programTransportPlan(
   String? pickupPointId,
 ) => ref
     .read(programWorkRepositoryProvider)
-    .getTransportPlan(programId: programId, pickupPointId: pickupPointId);
+    .getTransportPlan(
+      programId: programId,
+      pickupPointId: pickupPointId,
+      snapshotAccountId: ref.read(uidProvider).asData?.value,
+    );
+
+/// Transport plan with the same snapshot fallback as the roster.
+@riverpod
+Future<({ProgramTransportPlan plan, DateTime? snapshotAt})>
+programTransportPlanView(
+  Ref ref,
+  String programId,
+  String? pickupPointId,
+) async {
+  try {
+    final plan = await ref.watch(
+      programTransportPlanProvider(programId, pickupPointId).future,
+    );
+    return (plan: plan, snapshotAt: null);
+  } on Object {
+    final accountId = ref.read(uidProvider).asData?.value;
+    if (accountId == null || accountId.isEmpty) rethrow;
+    final snapshot = await ref
+        .read(programReadSnapshotStoreProvider)
+        .load(
+          accountId,
+          programSnapshotScope('plan', programId, pickupPointId),
+        );
+    if (snapshot == null) rethrow;
+    return (
+      plan: ProgramTransportPlan.fromCallableData(snapshot.data),
+      snapshotAt: snapshot.savedAt,
+    );
+  }
+}
 
 @riverpod
 Future<ProgramHotelInbound> programHotelInbound(

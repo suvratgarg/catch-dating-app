@@ -55,7 +55,7 @@ final class ProgramWorkRepositoryProvider
 }
 
 String _$programWorkRepositoryHash() =>
-    r'2d26b84c3c769ea2a4509d6045eec8d147ce56e8';
+    r'b9cd95eb60098449d55718c6cabae3e979725965';
 
 @ProviderFor(programWorkAccess)
 final programWorkAccessProvider = ProgramWorkAccessFamily._();
@@ -114,7 +114,7 @@ final class ProgramWorkAccessProvider
   }
 }
 
-String _$programWorkAccessHash() => r'b6a3c82098b1c64bae203772f4aaa13c6d84111a';
+String _$programWorkAccessHash() => r'5823dddfc078e3c4c64ffb99d3ac23b1de89d21a';
 
 final class ProgramWorkAccessFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<ProgramWorkAccess>, String> {
@@ -199,7 +199,7 @@ final class ProgramWorkEntryProvider
   }
 }
 
-String _$programWorkEntryHash() => r'60136c4e308f9a2ba55cde4c70270fc1f88f52f6';
+String _$programWorkEntryHash() => r'0511854dec410c2dd18eef4cacee37e17237ecff';
 
 /// Work-shell entry: claims a staff invite when the deep link carries one,
 /// then resolves access for the invite's program.
@@ -287,7 +287,7 @@ final class ProgramArrivalsRosterProvider
 }
 
 String _$programArrivalsRosterHash() =>
-    r'7ef10ea9bb81515d181b8af1c84f143a57c1ad49';
+    r'ceecb0900c432aec367433a81754bf6c0df1ab7f';
 
 final class ProgramArrivalsRosterFamily extends $Family
     with
@@ -312,6 +312,116 @@ final class ProgramArrivalsRosterFamily extends $Family
 
   @override
   String toString() => r'programArrivalsRosterProvider';
+}
+
+/// Roster with offline fallback: a live failure resolves to the last saved
+/// snapshot for this station, marked with its capture time so the UI can
+/// label it as saved data rather than live.
+
+@ProviderFor(programArrivalsRosterView)
+final programArrivalsRosterViewProvider = ProgramArrivalsRosterViewFamily._();
+
+/// Roster with offline fallback: a live failure resolves to the last saved
+/// snapshot for this station, marked with its capture time so the UI can
+/// label it as saved data rather than live.
+
+final class ProgramArrivalsRosterViewProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<({ProgramArrivalsRoster roster, DateTime? snapshotAt})>,
+          ({ProgramArrivalsRoster roster, DateTime? snapshotAt}),
+          FutureOr<({ProgramArrivalsRoster roster, DateTime? snapshotAt})>
+        >
+    with
+        $FutureModifier<({ProgramArrivalsRoster roster, DateTime? snapshotAt})>,
+        $FutureProvider<
+          ({ProgramArrivalsRoster roster, DateTime? snapshotAt})
+        > {
+  /// Roster with offline fallback: a live failure resolves to the last saved
+  /// snapshot for this station, marked with its capture time so the UI can
+  /// label it as saved data rather than live.
+  ProgramArrivalsRosterViewProvider._({
+    required ProgramArrivalsRosterViewFamily super.from,
+    required (String, String?) super.argument,
+  }) : super(
+         retry: null,
+         name: r'programArrivalsRosterViewProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$programArrivalsRosterViewHash();
+
+  @override
+  String toString() {
+    return r'programArrivalsRosterViewProvider'
+        ''
+        '$argument';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<({ProgramArrivalsRoster roster, DateTime? snapshotAt})>
+  $createElement($ProviderPointer pointer) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<({ProgramArrivalsRoster roster, DateTime? snapshotAt})> create(
+    Ref ref,
+  ) {
+    final argument = this.argument as (String, String?);
+    return programArrivalsRosterView(ref, argument.$1, argument.$2);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is ProgramArrivalsRosterViewProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$programArrivalsRosterViewHash() =>
+    r'6110d2b4deff67a41673b101dfe2af63b6abf0c4';
+
+/// Roster with offline fallback: a live failure resolves to the last saved
+/// snapshot for this station, marked with its capture time so the UI can
+/// label it as saved data rather than live.
+
+final class ProgramArrivalsRosterViewFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          FutureOr<({ProgramArrivalsRoster roster, DateTime? snapshotAt})>,
+          (String, String?)
+        > {
+  ProgramArrivalsRosterViewFamily._()
+    : super(
+        retry: null,
+        name: r'programArrivalsRosterViewProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// Roster with offline fallback: a live failure resolves to the last saved
+  /// snapshot for this station, marked with its capture time so the UI can
+  /// label it as saved data rather than live.
+
+  ProgramArrivalsRosterViewProvider call(
+    String programId,
+    String? pickupPointId,
+  ) => ProgramArrivalsRosterViewProvider._(
+    argument: (programId, pickupPointId),
+    from: this,
+  );
+
+  @override
+  String toString() => r'programArrivalsRosterViewProvider';
 }
 
 @ProviderFor(programTransportPlan)
@@ -372,7 +482,7 @@ final class ProgramTransportPlanProvider
 }
 
 String _$programTransportPlanHash() =>
-    r'c0a528a799d77e547ce7d933c9069ce0554728c1';
+    r'35a5c164277ec62806f47e80fe2d292fef6fc294';
 
 final class ProgramTransportPlanFamily extends $Family
     with
@@ -397,6 +507,104 @@ final class ProgramTransportPlanFamily extends $Family
 
   @override
   String toString() => r'programTransportPlanProvider';
+}
+
+/// Transport plan with the same snapshot fallback as the roster.
+
+@ProviderFor(programTransportPlanView)
+final programTransportPlanViewProvider = ProgramTransportPlanViewFamily._();
+
+/// Transport plan with the same snapshot fallback as the roster.
+
+final class ProgramTransportPlanViewProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<({ProgramTransportPlan plan, DateTime? snapshotAt})>,
+          ({ProgramTransportPlan plan, DateTime? snapshotAt}),
+          FutureOr<({ProgramTransportPlan plan, DateTime? snapshotAt})>
+        >
+    with
+        $FutureModifier<({ProgramTransportPlan plan, DateTime? snapshotAt})>,
+        $FutureProvider<({ProgramTransportPlan plan, DateTime? snapshotAt})> {
+  /// Transport plan with the same snapshot fallback as the roster.
+  ProgramTransportPlanViewProvider._({
+    required ProgramTransportPlanViewFamily super.from,
+    required (String, String?) super.argument,
+  }) : super(
+         retry: null,
+         name: r'programTransportPlanViewProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$programTransportPlanViewHash();
+
+  @override
+  String toString() {
+    return r'programTransportPlanViewProvider'
+        ''
+        '$argument';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<({ProgramTransportPlan plan, DateTime? snapshotAt})>
+  $createElement($ProviderPointer pointer) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<({ProgramTransportPlan plan, DateTime? snapshotAt})> create(
+    Ref ref,
+  ) {
+    final argument = this.argument as (String, String?);
+    return programTransportPlanView(ref, argument.$1, argument.$2);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is ProgramTransportPlanViewProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$programTransportPlanViewHash() =>
+    r'1a55ec83841c1a2d1098e751d13f55d0facac535';
+
+/// Transport plan with the same snapshot fallback as the roster.
+
+final class ProgramTransportPlanViewFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          FutureOr<({ProgramTransportPlan plan, DateTime? snapshotAt})>,
+          (String, String?)
+        > {
+  ProgramTransportPlanViewFamily._()
+    : super(
+        retry: null,
+        name: r'programTransportPlanViewProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// Transport plan with the same snapshot fallback as the roster.
+
+  ProgramTransportPlanViewProvider call(
+    String programId,
+    String? pickupPointId,
+  ) => ProgramTransportPlanViewProvider._(
+    argument: (programId, pickupPointId),
+    from: this,
+  );
+
+  @override
+  String toString() => r'programTransportPlanViewProvider';
 }
 
 @ProviderFor(programHotelInbound)

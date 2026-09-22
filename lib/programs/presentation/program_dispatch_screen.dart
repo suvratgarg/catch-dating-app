@@ -105,9 +105,11 @@ class _ProgramDispatchScreenState extends ConsumerState<ProgramDispatchScreen> {
   @override
   Widget build(BuildContext context) {
     final planAsync = ref.watch(
-      programTransportPlanProvider(widget.programId, widget.pickupPointId),
+      programTransportPlanViewProvider(widget.programId, widget.pickupPointId),
     );
-    return CatchAsyncBoundary<ProgramTransportPlan>(
+    return CatchAsyncBoundary<
+      ({ProgramTransportPlan plan, DateTime? snapshotAt})
+    >(
       value: planAsync,
       onRetry: () => ref.invalidate(
         programTransportPlanProvider(widget.programId, widget.pickupPointId),
@@ -146,7 +148,7 @@ class _ProgramDispatchScreenState extends ConsumerState<ProgramDispatchScreen> {
           ),
         ),
       ),
-      builder: (context, plan) => CatchRouteScaffold(
+      builder: (context, result) => CatchRouteScaffold(
         topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
           title: widget.stationLabel,
           subtitle: context.l10n.programsDispatchTitle,
@@ -159,65 +161,24 @@ class _ProgramDispatchScreenState extends ConsumerState<ProgramDispatchScreen> {
         ),
         body: CatchRouteBody.standardSections(
           sections: [
-            if (_outbox.pendingCount > 0)
+            if (result.snapshotAt != null)
               CatchSectionListItem(
                 child: CatchBanner(
-                  title: context.l10n.programsDispatchOutboxTitle,
-                  message: context.l10n.programsDispatchOutboxPending(
-                    count: _outbox.pendingCount,
+                  title: context.l10n.programsSnapshotTitle,
+                  message: context.l10n.programsSnapshotBanner(
+                    time: AppTimeFormatters.time(result.snapshotAt!),
                   ),
                   icon: CatchIcons.wifiOffRounded,
                   tone: CatchBannerTone.warning,
                 ),
               ),
-            if (_mutationError != null)
-              CatchSectionListItem(
-                child: CatchBanner.error(
-                  message: appErrorMessage(_mutationError!, l10n: context.l10n),
-                ),
-              ),
-            CatchSectionListItem(
-              child: CatchSection.contained(
-                title: context.l10n.programsDispatchGroupsTitle,
-                subtitle: context.l10n.programsDispatchGroupsSubtitle,
-                child: plan.groups.isEmpty
-                    ? CatchEmptyState(
-                        icon: CatchIcons.taxi,
-                        message: context.l10n.programsDispatchGroupsEmpty,
-                        variant: CatchEmptyStateVariant.inline,
-                      )
-                    : Column(
-                        children: [
-                          for (final group in plan.groups) ...[
-                            ProgramDispatchGroupTile(
-                              group: group,
-                              onDispatch: () => _openDispatchSheet(group, plan),
-                            ),
-                            gapH8,
-                          ],
-                        ],
-                      ),
-              ),
+            ..._planSections(
+              context,
+              plan: result.plan,
+              outbox: _outbox,
+              mutationError: _mutationError,
+              onDispatch: (group) => _openDispatchSheet(group, result.plan),
             ),
-            if (plan.unassigned.isNotEmpty)
-              CatchSectionListItem(
-                child: CatchSection.contained(
-                  title: context.l10n.programsDispatchUnassignedTitle,
-                  subtitle: context.l10n.programsDispatchUnassignedSubtitle,
-                  child: Column(
-                    children: [
-                      for (final item in plan.unassigned)
-                        CatchFieldRow.standard(
-                          leading: Icon(CatchIcons.warningAmberRounded),
-                          body: Text(
-                            _unassignedReason(context, item.reason),
-                            style: Theme.of(context).textTheme.bodyMedium,
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-              ),
           ],
         ),
       ),
@@ -233,20 +194,6 @@ class _ProgramDispatchScreenState extends ConsumerState<ProgramDispatchScreen> {
           a.destinationHotelId == b.destinationHotelId;
     }
     return a.destinationLabel == b.destinationLabel;
-  }
-
-  String _unassignedReason(
-    BuildContext context,
-    TransportUnassignedReason reason,
-  ) {
-    return switch (reason) {
-      TransportUnassignedReason.missingTime =>
-        context.l10n.programsDispatchReasonMissingTime,
-      TransportUnassignedReason.noSuitableVehicle =>
-        context.l10n.programsDispatchReasonNoVehicle,
-      TransportUnassignedReason.missingScope =>
-        context.l10n.programsDispatchReasonMissingScope,
-    };
   }
 }
 
@@ -583,4 +530,88 @@ class _ProgramDispatchSheetState extends ConsumerState<ProgramDispatchSheet> {
       ),
     );
   }
+}
+
+List<CatchSectionListItem> _planSections(
+  BuildContext context, {
+  required ProgramTransportPlan plan,
+  required ProgramOperationOutboxSummary outbox,
+  required Object? mutationError,
+  required void Function(TransportGroupSuggestion group) onDispatch,
+}) {
+  return [
+    if (outbox.pendingCount > 0)
+      CatchSectionListItem(
+        child: CatchBanner(
+          title: context.l10n.programsDispatchOutboxTitle,
+          message: context.l10n.programsDispatchOutboxPending(
+            count: outbox.pendingCount,
+          ),
+          icon: CatchIcons.wifiOffRounded,
+          tone: CatchBannerTone.warning,
+        ),
+      ),
+    if (mutationError != null)
+      CatchSectionListItem(
+        child: CatchBanner.error(
+          message: appErrorMessage(mutationError, l10n: context.l10n),
+        ),
+      ),
+    CatchSectionListItem(
+      child: CatchSection.contained(
+        title: context.l10n.programsDispatchGroupsTitle,
+        subtitle: context.l10n.programsDispatchGroupsSubtitle,
+        child: plan.groups.isEmpty
+            ? CatchEmptyState(
+                icon: CatchIcons.taxi,
+                message: context.l10n.programsDispatchGroupsEmpty,
+                variant: CatchEmptyStateVariant.inline,
+              )
+            : Column(
+                children: [
+                  for (final group in plan.groups) ...[
+                    ProgramDispatchGroupTile(
+                      group: group,
+                      onDispatch: () => onDispatch(group),
+                    ),
+                    gapH8,
+                  ],
+                ],
+              ),
+      ),
+    ),
+    if (plan.unassigned.isNotEmpty)
+      CatchSectionListItem(
+        child: CatchSection.contained(
+          title: context.l10n.programsDispatchUnassignedTitle,
+          subtitle: context.l10n.programsDispatchUnassignedSubtitle,
+          child: Column(
+            children: [
+              for (final item in plan.unassigned)
+                CatchFieldRow.standard(
+                  leading: Icon(CatchIcons.warningAmberRounded),
+                  body: Text(
+                    _unassignedReasonText(context, item.reason),
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
+  ];
+}
+
+String _unassignedReasonText(
+  BuildContext context,
+  TransportUnassignedReason reason,
+) {
+  return switch (reason) {
+    TransportUnassignedReason.missingTime =>
+      context.l10n.programsDispatchReasonMissingTime,
+    TransportUnassignedReason.noSuitableVehicle =>
+      context.l10n.programsDispatchReasonNoVehicle,
+    TransportUnassignedReason.missingScope =>
+      context.l10n.programsDispatchReasonMissingScope,
+  };
 }

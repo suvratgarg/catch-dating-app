@@ -32683,6 +32683,18 @@ abstract class AppLocalizations {
     required Object time,
     required int passengers,
   });
+
+  /// Program operations copy: programsSnapshotTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved view'**
+  String get programsSnapshotTitle;
+
+  /// Program operations copy: programsSnapshotBanner.
+  ///
+  /// In en, this message translates to:
+  /// **'Last synced at {time} — your changes queue until you are back online.'**
+  String programsSnapshotBanner({required Object time});
 }
 
 class _AppLocalizationsDelegate

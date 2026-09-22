@@ -211,12 +211,71 @@ final _inbound = ProgramHotelInbound(
 
 final _trips = ProgramTripList(programId: _programId, trips: [_trip]);
 
+class _PreviewOutboxStore implements ProgramOperationOutboxStore {
+  final Map<String, List<ProgramOperationOutboxEntry>> values = {};
+
+  @override
+  Future<List<ProgramOperationOutboxEntry>> load(String accountId) async =>
+      List.of(values[accountId] ?? const []);
+
+  @override
+  Future<void> save(
+    String accountId,
+    List<ProgramOperationOutboxEntry> entries,
+  ) async {
+    values[accountId] = List.of(entries);
+  }
+}
+
+class _PreviewMutator implements ProgramOperationsMutator {
+  @override
+  Future<ProgramMutationResult> setReadiness({
+    required String programId,
+    required String legId,
+    required String action,
+    required String clientOperationId,
+    int? expectedRevision,
+    int? manualCurbAtMillis,
+    String? manualCurbNote,
+  }) async => const ProgramMutationResult(
+    entityId: 'leg',
+    revision: 2,
+    alreadyApplied: false,
+  );
+
+  @override
+  Future<DispatchResult> dispatchTrip({
+    required String programId,
+    required String pickupPointId,
+    required String vehicleClassId,
+    required String plateDisplay,
+    required List<String> legIds,
+    required String clientOperationId,
+    String? destinationHotelId,
+    String? destinationLabel,
+    String? vendorId,
+    List<({String legId, int revision})>? expectedLegRevisions,
+  }) async => const DispatchResult(
+    tripId: 'trip_preview',
+    revision: 1,
+    alreadyApplied: false,
+    passengerCount: 0,
+  );
+}
+
 List<Override> _programOverrides() {
   return [
     uidProvider.overrideWithValue(const AsyncData<String?>('uid_greeter')),
+    programOperationsOutboxProvider.overrideWithValue(
+      ProgramOperationsOutbox(_PreviewOutboxStore(), _PreviewMutator()),
+    ),
     isObviouslyOfflineProvider.overrideWithValue(false),
     programWorkAccessProvider(
       _programId,
+    ).overrideWithValue(AsyncData(_access)),
+    programWorkEntryProvider(
+      _programId,
+      null,
     ).overrideWithValue(AsyncData(_access)),
     programArrivalsRosterProvider(
       _programId,
@@ -500,6 +559,7 @@ Widget programDispatchSheetStates(BuildContext context) {
         pickupPointId: _pickupPointId,
         organizerId: 'org_1',
         group: _plan.groups.first,
+        holdCandidates: const [],
         vehicleClasses: _vehicleClasses,
         onDispatched: (_, error) {},
       ),

@@ -20536,4 +20536,12 @@ class AppLocalizationsEn extends AppLocalizations {
   }) {
     return '$time · $passengers pax';
   }
+
+  @override
+  String get programsSnapshotTitle => 'Saved view';
+
+  @override
+  String programsSnapshotBanner({required Object time}) {
+    return 'Last synced at $time — your changes queue until you are back online.';
+  }
 }

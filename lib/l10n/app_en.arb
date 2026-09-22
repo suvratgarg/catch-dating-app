@@ -27485,5 +27485,9 @@
   "programsDispatchHoldSubtitle": "Still inbound to {destination} — adding them makes this vehicle wait.",
   "@programsDispatchHoldSubtitle": {"description": "Program operations copy: programsDispatchHoldSubtitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_dispatch_screen", "placeholders": {"destination": {}}},
   "programsDispatchHoldOption": "{time} · {passengers} pax",
-  "@programsDispatchHoldOption": {"description": "Program operations copy: programsDispatchHoldOption.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_dispatch_screen", "placeholders": {"time": {}, "passengers": {"type": "int"}}}
+  "@programsDispatchHoldOption": {"description": "Program operations copy: programsDispatchHoldOption.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_dispatch_screen", "placeholders": {"time": {}, "passengers": {"type": "int"}}},
+  "programsSnapshotTitle": "Saved view",
+  "@programsSnapshotTitle": {"description": "Program operations copy: programsSnapshotTitle.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_arrivals_screen"},
+  "programsSnapshotBanner": "Last synced at {time} — your changes queue until you are back online.",
+  "@programsSnapshotBanner": {"description": "Program operations copy: programsSnapshotBanner.", "x-audience": "host", "x-owner": "product", "x-surface": "programs.presentation.program_arrivals_screen", "placeholders": {"time": {}}}
 }
