@@ -122,6 +122,18 @@ export async function manageOrganizerFormPaymentConnectionHandler(
     if (!data.connectionId) invalidAction();
     const {connections} = await deps.runtime();
     await connections.disconnect(data.organizerId, uid, data.connectionId);
+  } else if (data.action === "refresh") {
+    if (!data.connectionId) invalidAction();
+    const current = requireDoc<Connection>(await db
+      .collection("organizerPaymentConnections").doc(data.connectionId).get(),
+    "OrganizerPaymentConnectionDocument");
+    if (current.organizerId !== data.organizerId) unavailable();
+    if (current.status === "ready" && current.accountId) {
+      const {credentials} = await deps.runtime();
+      await credentials.access({organizerId: data.organizerId,
+        connectionId: data.connectionId, accountId: current.accountId,
+        mode: current.mode});
+    }
   } else if (data.connectionId !== null) invalidAction();
   const snaps = await db.collection("organizerPaymentConnections")
     .where("organizerId", "==", data.organizerId)

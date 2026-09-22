@@ -69203,7 +69203,7 @@ abstract final class CatchContractConstraints {
     path: 'manageOrganizerFormPaymentConnectionCallablePayload.action',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['begin', 'list', 'disconnect'],
+    enumValues: <String>['begin', 'list', 'disconnect', 'refresh'],
   );
 
   static const manageOrganizerFormPaymentConnectionCallablePayloadConnectionId = CatchContractFieldConstraints(

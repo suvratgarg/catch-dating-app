@@ -199008,7 +199008,7 @@ export const manageOrganizerFormPaymentConnectionCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/manage_organizer_form_payment_connection_payload.schema.json",
   "title": "ManageOrganizerFormPaymentConnectionCallablePayload",
-  "description": "Manager-only merchant connection setup, safe listing, and local disconnection.",
+  "description": "Manager-only merchant connection setup, safe listing, credential refresh, and local disconnection.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -199027,7 +199027,8 @@ export const manageOrganizerFormPaymentConnectionCallablePayloadSchema = {
       "enum": [
         "begin",
         "list",
-        "disconnect"
+        "disconnect",
+        "refresh"
       ]
     },
     "connectionId": {

@@ -235,6 +235,8 @@ import 'package:widgetbook_workspace/hosts/host_booking_provider_use_cases.dart'
     as _widgetbook_workspace_hosts_host_booking_provider_use_cases;
 import 'package:widgetbook_workspace/hosts/host_form_editor_use_cases.dart'
     as _widgetbook_workspace_hosts_host_form_editor_use_cases;
+import 'package:widgetbook_workspace/hosts/host_form_payment_use_cases.dart'
+    as _widgetbook_workspace_hosts_host_form_payment_use_cases;
 import 'package:widgetbook_workspace/hosts/host_form_workspace_use_cases.dart'
     as _widgetbook_workspace_hosts_host_form_workspace_use_cases;
 import 'package:widgetbook_workspace/hosts/host_inbox_use_cases.dart'
@@ -10495,6 +10497,39 @@ final directories = <_widgetbook.WidgetbookNode>[
                     builder:
                         _widgetbook_workspace_hosts_host_form_workspace_use_cases
                             .hostFormWorkspaceOverviewPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostFormPaymentSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Manager connection boundary',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_payment_use_cases
+                            .hostFormPaymentSectionPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostFormPaymentSetupSection',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Unconfigured and connected account',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_payment_use_cases
+                            .hostFormPaymentSetupPreview,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'HostFormPaymentSheet',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Amount and mandatory refund policy',
+                    builder:
+                        _widgetbook_workspace_hosts_host_form_payment_use_cases
+                            .hostFormPaymentSheetPreview,
                   ),
                 ],
               ),

@@ -10,6 +10,7 @@ import 'package:catch_dating_app/hosts/domain/forms/host_form_conversion.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_definition.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_editor.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_export.dart';
+import 'package:catch_dating_app/hosts/domain/forms/host_form_payment.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_response.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_share.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_summary.dart';
@@ -44,6 +45,21 @@ class HostFormsRepository {
   const HostFormsRepository(this._functions);
 
   final FirebaseFunctions _functions;
+
+  Future<HostFormPaymentSetup> managePaymentConnection({
+    required String organizerId,
+    required HostFormPaymentConnectionAction action,
+    String? connectionId,
+  }) => _call(
+    name: 'manageOrganizerFormPaymentConnection',
+    payload: ManageOrganizerFormPaymentConnectionCallableRequest(
+      organizerId: organizerId,
+      action: action.name,
+      connectionId: connectionId,
+    ).toJson(),
+    action: 'manage form payment connection',
+    parse: HostFormPaymentSetup.fromCallableData,
+  );
 
   Future<HostFormPage> listForms(HostFormListRequest request) => _call(
     name: 'listOrganizerForms',

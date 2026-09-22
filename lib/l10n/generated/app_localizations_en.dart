@@ -20092,4 +20092,101 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostAudienceSelectedPerson => 'Selected person';
+
+  @override
+  String get hostFormPaymentTitle => 'Form payment';
+
+  @override
+  String get hostFormPaymentFree => 'No payment required';
+
+  @override
+  String get hostFormPaymentHelp =>
+      'Collect a submission fee in your own Razorpay account. Payment does not accept an application or book an event.';
+
+  @override
+  String get hostFormPaymentUnavailable =>
+      'Form payments are not available yet. Catch must finish its Razorpay connection setup. You can continue using free forms.';
+
+  @override
+  String get hostFormPaymentConnect => 'Connect Razorpay';
+
+  @override
+  String get hostFormPaymentConnectHelp =>
+      'Authorize your existing Razorpay account in your browser, then return and check the connection.';
+
+  @override
+  String get hostFormPaymentRefresh => 'Check connection';
+
+  @override
+  String get hostFormPaymentReady => 'Ready for payments';
+
+  @override
+  String get hostFormPaymentConnecting => 'Finish connecting in your browser';
+
+  @override
+  String get hostFormPaymentAttention =>
+      'Reconnect Razorpay to restore payments';
+
+  @override
+  String get hostFormPaymentDisconnected => 'Disconnected';
+
+  @override
+  String get hostFormPaymentTest => 'Test mode — no real money';
+
+  @override
+  String get hostFormPaymentLive => 'Live payments';
+
+  @override
+  String get hostFormPaymentConfigure => 'Set a submission fee';
+
+  @override
+  String get hostFormPaymentEdit => 'Edit submission fee';
+
+  @override
+  String get hostFormPaymentRemove => 'Remove fee from draft';
+
+  @override
+  String get hostFormPaymentPhoneRequired =>
+      'Choose verified phone in Access before adding a fee. This lets applicants recover their payment and response securely.';
+
+  @override
+  String get hostFormPaymentConnectionRequired =>
+      'Connect a ready Razorpay account before setting a fee.';
+
+  @override
+  String get hostFormPaymentAmount => 'Amount (INR)';
+
+  @override
+  String get hostFormPaymentAmountHelp =>
+      'Enter ₹1 to ₹100,000, with up to two decimal places. For example, 100 or 200.';
+
+  @override
+  String get hostFormPaymentDescription => 'What is the fee for?';
+
+  @override
+  String get hostFormPaymentDescriptionDefault => 'Application fee';
+
+  @override
+  String get hostFormPaymentRefundPolicy => 'Refund policy';
+
+  @override
+  String get hostFormPaymentRefundHelp =>
+      'Explain when you will refund the fee, including if an application is declined. Applicants see this before paying.';
+
+  @override
+  String get hostFormPaymentSave => 'Save fee';
+
+  @override
+  String get hostFormPaymentDisconnect => 'Disconnect account';
+
+  @override
+  String get hostFormPaymentDisconnectHelp =>
+      'This stops new checkouts on every form using this account. Existing payments and refunds will still be reconciled.';
+
+  @override
+  String get hostFormPaymentPublishHelp =>
+      'This fee applies to new submissions after publishing. Previously started checkouts keep their original fee.';
+
+  @override
+  String get hostFormPaymentAccount => 'Razorpay account';
 }

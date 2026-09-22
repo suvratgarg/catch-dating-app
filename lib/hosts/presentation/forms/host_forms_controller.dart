@@ -10,6 +10,7 @@ import 'package:catch_dating_app/hosts/domain/forms/host_form_definition.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_editor.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_export.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_logic.dart';
+import 'package:catch_dating_app/hosts/domain/forms/host_form_payment.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_question.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_response.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_section.dart';
@@ -153,6 +154,9 @@ class HostFormEditorController extends _$HostFormEditorController {
         .getEditor(organizerId: organizerId, formId: formId);
     return HostFormEditorState(editor: editor);
   }
+
+  void updatePayment(HostFormPayment? payment) =>
+      _mutate((definition) => definition.withPayment(payment));
 
   void updateMetadata({
     String? title,

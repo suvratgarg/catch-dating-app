@@ -31947,6 +31947,180 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Selected person'**
   String get hostAudienceSelectedPerson;
+
+  /// Form payment setup: Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Form payment'**
+  String get hostFormPaymentTitle;
+
+  /// Form payment setup: Free.
+  ///
+  /// In en, this message translates to:
+  /// **'No payment required'**
+  String get hostFormPaymentFree;
+
+  /// Form payment setup: Help.
+  ///
+  /// In en, this message translates to:
+  /// **'Collect a submission fee in your own Razorpay account. Payment does not accept an application or book an event.'**
+  String get hostFormPaymentHelp;
+
+  /// Form payment setup: Unavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Form payments are not available yet. Catch must finish its Razorpay connection setup. You can continue using free forms.'**
+  String get hostFormPaymentUnavailable;
+
+  /// Form payment setup: Connect.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect Razorpay'**
+  String get hostFormPaymentConnect;
+
+  /// Form payment setup: ConnectHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Authorize your existing Razorpay account in your browser, then return and check the connection.'**
+  String get hostFormPaymentConnectHelp;
+
+  /// Form payment setup: Refresh.
+  ///
+  /// In en, this message translates to:
+  /// **'Check connection'**
+  String get hostFormPaymentRefresh;
+
+  /// Form payment setup: Ready.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready for payments'**
+  String get hostFormPaymentReady;
+
+  /// Form payment setup: Connecting.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish connecting in your browser'**
+  String get hostFormPaymentConnecting;
+
+  /// Form payment setup: Attention.
+  ///
+  /// In en, this message translates to:
+  /// **'Reconnect Razorpay to restore payments'**
+  String get hostFormPaymentAttention;
+
+  /// Form payment setup: Disconnected.
+  ///
+  /// In en, this message translates to:
+  /// **'Disconnected'**
+  String get hostFormPaymentDisconnected;
+
+  /// Form payment setup: Test.
+  ///
+  /// In en, this message translates to:
+  /// **'Test mode — no real money'**
+  String get hostFormPaymentTest;
+
+  /// Form payment setup: Live.
+  ///
+  /// In en, this message translates to:
+  /// **'Live payments'**
+  String get hostFormPaymentLive;
+
+  /// Form payment setup: Configure.
+  ///
+  /// In en, this message translates to:
+  /// **'Set a submission fee'**
+  String get hostFormPaymentConfigure;
+
+  /// Form payment setup: Edit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit submission fee'**
+  String get hostFormPaymentEdit;
+
+  /// Form payment setup: Remove.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove fee from draft'**
+  String get hostFormPaymentRemove;
+
+  /// Form payment setup: PhoneRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose verified phone in Access before adding a fee. This lets applicants recover their payment and response securely.'**
+  String get hostFormPaymentPhoneRequired;
+
+  /// Form payment setup: ConnectionRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect a ready Razorpay account before setting a fee.'**
+  String get hostFormPaymentConnectionRequired;
+
+  /// Form payment setup: Amount.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount (INR)'**
+  String get hostFormPaymentAmount;
+
+  /// Form payment setup: AmountHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter ₹1 to ₹100,000, with up to two decimal places. For example, 100 or 200.'**
+  String get hostFormPaymentAmountHelp;
+
+  /// Form payment setup: Description.
+  ///
+  /// In en, this message translates to:
+  /// **'What is the fee for?'**
+  String get hostFormPaymentDescription;
+
+  /// Form payment setup: DescriptionDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'Application fee'**
+  String get hostFormPaymentDescriptionDefault;
+
+  /// Form payment setup: RefundPolicy.
+  ///
+  /// In en, this message translates to:
+  /// **'Refund policy'**
+  String get hostFormPaymentRefundPolicy;
+
+  /// Form payment setup: RefundHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Explain when you will refund the fee, including if an application is declined. Applicants see this before paying.'**
+  String get hostFormPaymentRefundHelp;
+
+  /// Form payment setup: Save.
+  ///
+  /// In en, this message translates to:
+  /// **'Save fee'**
+  String get hostFormPaymentSave;
+
+  /// Form payment setup: Disconnect.
+  ///
+  /// In en, this message translates to:
+  /// **'Disconnect account'**
+  String get hostFormPaymentDisconnect;
+
+  /// Form payment setup: DisconnectHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'This stops new checkouts on every form using this account. Existing payments and refunds will still be reconciled.'**
+  String get hostFormPaymentDisconnectHelp;
+
+  /// Form payment setup: PublishHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'This fee applies to new submissions after publishing. Previously started checkouts keep their original fee.'**
+  String get hostFormPaymentPublishHelp;
+
+  /// Connected merchant selector label.
+  ///
+  /// In en, this message translates to:
+  /// **'Razorpay account'**
+  String get hostFormPaymentAccount;
 }
 
 class _AppLocalizationsDelegate

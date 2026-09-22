@@ -216,6 +216,7 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
                     ),
                     Expanded(
                       child: HostFormEditorViewport(
+                        organizerId: widget.organizerId,
                         state: value,
                         notifier: notifier,
                         sectionIndex: sectionIndex,
@@ -270,6 +271,7 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
                   children: [
                     HostFormEditorNotice(state: value, notifier: notifier),
                     HostFormSettingsSectionList(
+                      organizerId: widget.organizerId,
                       definition: value.editor.definition,
                       notifier: notifier,
                     ),
@@ -469,6 +471,16 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
               title: context.l10n.hostFormMessagingPermissionTitle,
               body: context.l10n.hostFormConsequenceNoMessagingPermission,
               bodyMaxLines: 4,
+            ),
+            CatchField.read(
+              copy: catchFieldCopy(context.l10n),
+              title: context.l10n.hostFormPaymentTitle,
+              body: definition.payment == null
+                  ? context.l10n.hostFormPaymentFree
+                  : '₹${definition.payment!.rupees} · ${definition.payment!.description}\n'
+                        '${definition.payment!.refundPolicy}\n'
+                        '${context.l10n.hostFormPaymentPublishHelp}',
+              bodyMaxLines: 12,
             ),
             CatchField.read(
               copy: catchFieldCopy(context.l10n),

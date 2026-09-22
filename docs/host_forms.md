@@ -321,6 +321,17 @@ rendered phone/desktop, light/dark and large-text review states. Existing free
 forms and legacy organizer-only mappings must retain their behavior. This work
 does not authorize sharing private CRM data or implicitly buying event admission.
 
+The Host builder places form payment setup under Settings, after Access, on
+phone and desktop. It distinguishes unavailable partner setup, an unfinished
+connection, a ready test/live merchant, reconnect-required state, and a
+disconnected account. Fee editing requires a ready account and verified-phone
+identity; the amount is entered as decimal INR and converted exactly to integer
+paise. Description and refund policy are mandatory. Removing a fee changes only
+the draft until publishing. Disconnecting requires confirmation because it stops
+new checkouts across all forms using that connection, while settlement recovery
+continues. Returning from OAuth only refreshes server status; it never marks a
+merchant ready locally.
+
 Live Razorpay setup remains external: create Catch's Technology Partner
 application, register the HTTPS callback, provision its client credentials and
 vault permissions, connect the organizer account, and create and verify the

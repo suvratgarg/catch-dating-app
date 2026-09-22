@@ -6,6 +6,7 @@ import 'package:catch_dating_app/hosts/domain/forms/host_form_logic.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_question.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_availability_field.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_copy.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_payment_section.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -14,10 +15,12 @@ import 'package:flutter/material.dart';
 class HostFormSettingsSectionList extends StatelessWidget {
   const HostFormSettingsSectionList({
     super.key,
+    required this.organizerId,
     required this.definition,
     required this.notifier,
   });
 
+  final String organizerId;
   final HostFormDefinition definition;
   final HostFormEditorController notifier;
 
@@ -90,6 +93,12 @@ class HostFormSettingsSectionList extends StatelessWidget {
             bodyMaxLines: 5,
           ),
         ],
+      ),
+      gapH20,
+      HostFormPaymentSection(
+        organizerId: organizerId,
+        definition: definition,
+        onChanged: notifier.updatePayment,
       ),
       gapH20,
       CatchSection.fieldRows(

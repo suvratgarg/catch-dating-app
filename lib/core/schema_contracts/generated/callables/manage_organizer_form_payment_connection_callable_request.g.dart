@@ -5,7 +5,7 @@
 // Typed callable request DTO emitted from callables/manage_organizer_form_payment_connection_payload.schema.json.
 // Re-exported by lib/core/schema_contracts/generated/callable_request_dtos.g.dart.
 
-/// Manager-only merchant connection setup, safe listing, and local disconnection.
+/// Manager-only merchant connection setup, safe listing, credential refresh, and local disconnection.
 final class ManageOrganizerFormPaymentConnectionCallableRequest {
   const ManageOrganizerFormPaymentConnectionCallableRequest({
     required this.organizerId,

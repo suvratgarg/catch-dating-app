@@ -29,6 +29,11 @@ export class FormPaymentTestStore {
         assert.equal(operator, "==");
         return this.query(name, [...filters, [field, value]], limit);
       },
+      orderBy: (field: string, direction: string) => {
+        assert.equal(field, "createdAt");
+        assert.equal(direction, "desc");
+        return this.query(name, filters, limit);
+      },
       limit: (value: number) => this.query(name, filters, value),
       get: async () => ({docs: [...this.records.entries()]
         .filter(([path, data]) => path.startsWith(`${name}/`) &&
