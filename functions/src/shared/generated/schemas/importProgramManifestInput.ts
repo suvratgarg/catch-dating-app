@@ -91,11 +91,15 @@ export const importProgramManifestCallablePayloadSchema: Record<string, unknown>
             "description": "Ride-together travel party label; matched or created per program."
           },
           "flightNumber": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "maxLength": 10
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[A-Z0-9]{2,3}-?[0-9]{1,4}[A-Z]?$"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "originIata": {
             "anyOf": [
@@ -125,7 +129,7 @@ export const importProgramManifestCallablePayloadSchema: Record<string, unknown>
               "null"
             ],
             "minimum": 1,
-            "maximum": 9007199254740991
+            "maximum": 253402300799999
           },
           "international": {
             "type": [

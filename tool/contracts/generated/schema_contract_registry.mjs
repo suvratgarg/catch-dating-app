@@ -118361,14 +118361,15 @@ export const programTravelPartyDocumentSchema = {
     },
     "memberGuestIds": {
       "type": "array",
-      "minItems": 2,
+      "minItems": 1,
       "maxItems": 50,
       "uniqueItems": true,
       "items": {
         "type": "string",
         "minLength": 1,
         "maxLength": 180
-      }
+      },
+      "description": "One to fifty people traveling together. A one-person party supports private transfers and staged manifest imports."
     },
     "dedicatedVehicle": {
       "type": "boolean"
@@ -119077,8 +119078,25 @@ export const transportOperationReceiptDocumentSchema = {
         "string",
         "null"
       ],
-      "maxLength": 20000,
+      "maxLength": 200000,
       "description": "Serialized operation response for exact replay of compound results (e.g. manifest import summaries). Null for scalar-result operations."
+    },
+    "completedRows": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 500,
+      "description": "For manifestImport only: rows committed atomically with this progress receipt. Retries resume at this input offset; absent on legacy completed receipts."
+    },
+    "importedGuestIds": {
+      "type": "array",
+      "maxItems": 500,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 180
+      },
+      "description": "Guests already applied by a resumable manifest import; prevents two source rows updating one person across chunks."
     }
   }
 };
@@ -120392,14 +120410,15 @@ export const upsertProgramTravelPartyCallablePayloadSchema = {
     },
     "memberGuestIds": {
       "type": "array",
-      "minItems": 2,
+      "minItems": 1,
       "maxItems": 50,
       "uniqueItems": true,
       "items": {
         "type": "string",
         "minLength": 1,
         "maxLength": 180
-      }
+      },
+      "description": "One to fifty people traveling together. A one-person party supports private transfers and staged manifest imports."
     },
     "dedicatedVehicle": {
       "type": "boolean"
@@ -120733,11 +120752,15 @@ export const importProgramManifestCallablePayloadSchema = {
             "description": "Ride-together travel party label; matched or created per program."
           },
           "flightNumber": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "maxLength": 10
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[A-Z0-9]{2,3}-?[0-9]{1,4}[A-Z]?$"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "originIata": {
             "anyOf": [
@@ -120767,7 +120790,7 @@ export const importProgramManifestCallablePayloadSchema = {
               "null"
             ],
             "minimum": 1,
-            "maximum": 9007199254740991
+            "maximum": 253402300799999
           },
           "international": {
             "type": [

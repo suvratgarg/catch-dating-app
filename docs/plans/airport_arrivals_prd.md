@@ -1252,3 +1252,25 @@ program-bound invitations in the first pilot, and the native/web
 offline-storage choice need resolution before the relevant integrations are
 enabled. The private program is the recommended architecture; do not silently
 convert existing public Events or organizer contacts during implementation.
+
+
+### Manifest persistence and identity boundaries
+
+Manifest planning, document materialization, and callable persistence are separate
+modules. The existing operation-receipt collection carries import progress;
+there is no additional import journal. Each transaction commits at most 50 source
+rows with their group updates and receipt cursor. Retrying the same request
+resumes after its last committed chunk, and concurrent retries serialize through
+the receipt. Preview is advisory; commit validates current authority and source
+records again. Earlier committed chunks remain applied if a later chunk fails.
+
+An external reference identifies a person. A new reference may adopt exactly one
+unreferenced name/flight/service-day match; distinct references never merge.
+Name-only matches, duplicate labels, duplicate matching journeys, and rows that
+target a dispatched journey require explicit review. A scheduled ground arrival
+with a stable guest reference also reuses its existing inbound leg.
+
+Households and travel parties remain distinct relationships. Both are bounded to
+50 members. A travel party may contain one person for a private transfer or a
+staged import. Moving a guest to another household updates both membership lists
+in the same transaction; import never implies invitation, consent, or RSVP.

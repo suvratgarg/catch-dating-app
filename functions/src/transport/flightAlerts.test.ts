@@ -62,34 +62,8 @@ function leg(overrides: Partial<ProgramTravelLegDocument> = {}):
   } as ProgramTravelLegDocument;
 }
 
-type FakeData = Record<string, unknown>;
-
-class FakeDocRef {
-  constructor(private readonly firestore: MiniFirestore,
-    readonly path: string) {}
-  async get() {
-    const data = this.firestore.docs.get(this.path);
-    return {exists: data !== undefined, data: () => data,
-      id: this.path.split("/").pop()!};
-  }
-  async update(data: FakeData) {
-    const existing = this.firestore.docs.get(this.path);
-    if (!existing) throw new Error(`missing ${this.path}`);
-    this.firestore.docs.set(this.path, {...existing, ...data});
-  }
-}
-
-class MiniFirestore {
-  readonly docs = new Map<string, FakeData>();
-  constructor(seed: Record<string, FakeData>) {
-    for (const [k, v] of Object.entries(seed)) this.docs.set(k, v);
-  }
-  collection(path: string) {
-    return {
-      doc: (id: string) => new FakeDocRef(this, `${path}/${id}`),
-    };
-  }
-}
+import {FakeFirestore as MiniFirestore, type FakeData, FakeDocRef} from
+  "../shared/testing/programFirestore";
 
 function pushBody(overrides: Record<string, unknown> = {}) {
   return {

@@ -128,8 +128,25 @@ export const transportOperationReceiptDocumentSchema: Record<string, unknown> = 
         "string",
         "null"
       ],
-      "maxLength": 20000,
+      "maxLength": 200000,
       "description": "Serialized operation response for exact replay of compound results (e.g. manifest import summaries). Null for scalar-result operations."
+    },
+    "completedRows": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 500,
+      "description": "For manifestImport only: rows committed atomically with this progress receipt. Retries resume at this input offset; absent on legacy completed receipts."
+    },
+    "importedGuestIds": {
+      "type": "array",
+      "maxItems": 500,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 180
+      },
+      "description": "Guests already applied by a resumable manifest import; prevents two source rows updating one person across chunks."
     }
   }
 } as const;

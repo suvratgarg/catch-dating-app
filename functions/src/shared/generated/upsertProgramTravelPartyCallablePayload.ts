@@ -11,7 +11,9 @@ export interface UpsertProgramTravelPartyCallablePayload {
   expectedRevision?: number;
   label?: string | null;
   /**
-   * @minItems 2
+   * One to fifty people traveling together. A one-person party supports private transfers and staged manifest imports.
+   *
+   * @minItems 1
    * @maxItems 50
    */
   memberGuestIds: string[];

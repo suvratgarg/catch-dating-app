@@ -46,4 +46,14 @@ export interface TransportOperationReceiptDocument {
    * Serialized operation response for exact replay of compound results (e.g. manifest import summaries). Null for scalar-result operations.
    */
   resultJson: string | null;
+  /**
+   * For manifestImport only: rows committed atomically with this progress receipt. Retries resume at this input offset; absent on legacy completed receipts.
+   */
+  completedRows?: number;
+  /**
+   * Guests already applied by a resumable manifest import; prevents two source rows updating one person across chunks.
+   *
+   * @maxItems 500
+   */
+  importedGuestIds?: string[];
 }

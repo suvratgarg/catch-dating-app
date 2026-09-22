@@ -93,11 +93,15 @@ const schemaImportProgramManifestCallablePayloadSchema = <String, Object?>{
             'description': 'Ride-together travel party label; matched or created per program.',
           },
           'flightNumber': <String, Object?>{
-            'type': <Object?>[
-              'string',
-              'null',
+            'anyOf': <Object?>[
+              <String, Object?>{
+                'type': 'string',
+                'pattern': '^[A-Z0-9]{2,3}-?[0-9]{1,4}[A-Z]?\$',
+              },
+              <String, Object?>{
+                'type': 'null',
+              },
             ],
-            'maxLength': 10,
           },
           'originIata': <String, Object?>{
             'anyOf': <Object?>[
@@ -127,7 +131,7 @@ const schemaImportProgramManifestCallablePayloadSchema = <String, Object?>{
               'null',
             ],
             'minimum': 1,
-            'maximum': 9007199254740991,
+            'maximum': 253402300799999,
           },
           'international': <String, Object?>{
             'type': <Object?>[

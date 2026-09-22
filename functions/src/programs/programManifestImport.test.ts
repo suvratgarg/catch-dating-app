@@ -1,3 +1,22 @@
+import {validateProgramGuestDocument} from
+  "../shared/generated/validators/programGuestDocument";
+import {validateProgramTravelLegDocument} from
+  "../shared/generated/validators/programTravelLegDocument";
+import {validateProgramHouseholdDocument} from
+  "../shared/generated/validators/programHouseholdDocument";
+import {validateProgramTravelPartyDocument} from
+  "../shared/generated/validators/programTravelPartyDocument";
+import {validateTransportOperationReceiptDocument} from
+  "../shared/generated/validators/transportOperationReceiptDocument";
+import type {ValidateFunction} from "ajv";
+
+const validators: Record<string, ValidateFunction> = {
+  programGuests: validateProgramGuestDocument,
+  programTravelLegs: validateProgramTravelLegDocument,
+  programHouseholds: validateProgramHouseholdDocument,
+  programTravelParties: validateProgramTravelPartyDocument,
+  transportOperationReceipts: validateTransportOperationReceiptDocument,
+};
 import assert from "node:assert/strict";
 import test from "node:test";
 import * as admin from "firebase-admin";
@@ -10,62 +29,8 @@ import {ProgramTravelLegDocument} from
 const ts = (millis: number) => admin.firestore.Timestamp.fromMillis(millis);
 const NOW = 1_800_000_000_000;
 
-type FakeData = Record<string, unknown>;
-
-class FakeDocRef {
-  constructor(private readonly store: MiniFirestore,
-    readonly path: string) {}
-  get id() {
-    return this.path.split("/").pop()!;
-  }
-  async get() {
-    const data = this.store.docs.get(this.path);
-    return {exists: data !== undefined, data: () => data,
-      id: this.path.split("/").pop()!};
-  }
-}
-
-class MiniFirestore {
-  readonly docs = new Map<string, FakeData>();
-  private nextId = 0;
-  constructor(seed: Record<string, FakeData>) {
-    for (const [k, v] of Object.entries(seed)) this.docs.set(k, v);
-  }
-  doc(path: string) {
-    return new FakeDocRef(this, path);
-  }
-  collection(path: string) {
-    return {
-      doc: (id?: string) =>
-        new FakeDocRef(this, `${path}/${id ?? `auto-${++this.nextId}`}`),
-      where: (field: string, op: string, value: unknown) => ({
-        get: async () => {
-          const prefix = `${path}/`;
-          const docs = [] as Array<{id: string; data: () => FakeData}>;
-          for (const [p, data] of this.docs) {
-            if (!p.startsWith(prefix) ||
-                p.slice(prefix.length).includes("/")) continue;
-            if (op === "==" && data[field] === value) {
-              docs.push({id: p.slice(prefix.length), data: () => data});
-            }
-          }
-          return {docs};
-        },
-      }),
-    };
-  }
-  batch() {
-    const writes: Array<() => void> = [];
-    return {
-      set: (ref: FakeDocRef, data: FakeData) => {
-        writes.push(() => this.docs.set(ref.path, {...data}));
-      },
-      commit: async () => {
-        for (const write of writes) write();
-      },
-    };
-  }
-}
+import {FakeFirestore as MiniFirestore, type FakeData} from
+  "../shared/testing/programFirestore";
 
 function seed(): Record<string, FakeData> {
   return {
@@ -303,3 +268,153 @@ test("an existing name alone never authorizes a guest merge", async () => {
   assert.equal(result.guestsCreated, 0);
   assert.match(result.rowErrors[0].message, /Name alone/);
 });
+
+test("failed later chunks resume without duplicating rows or losing groups",
+  async () => {
+    const store = new MiniFirestore(seed());
+    const payload = {
+      programId: "program-1", mode: "commit",
+      clientOperationId: "resume-import-1",
+      rows: Array.from({length: 65}, (_, index) => ({
+        ...row, displayName: `Guest ${index}`,
+        externalReference: `ref-${index}`,
+        householdLabel: `Family ${index % 2}`, partyLabel: `Party ${index % 2}`,
+      })),
+    };
+    store.beforeCommit = async () => {
+      if (store.transactionCommits === 1) throw new Error("connection lost");
+    };
+    await assert.rejects(importProgramManifestHandler(request(payload),
+      deps(store)), /connection lost/);
+    const records = (collection: string) => [...store.docs.entries()]
+      .filter(([key]) => key.startsWith(`${collection}/`));
+    assert.equal(records("programGuests").length, 50);
+    assert.equal(records("programTravelLegs").length, 50);
+    assert.equal((records("programHouseholds")[0][1].memberGuestIds as string[])
+      .length, 25);
+    store.beforeCommit = undefined;
+    const resumed = await importProgramManifestHandler(request(payload),
+      deps(store));
+    assert.equal(resumed.guestsCreated, 65);
+    assert.equal(resumed.legsCreated, 65);
+    assert.equal(resumed.householdsCreated, 2);
+    assert.equal(resumed.partiesCreated, 2);
+    assert.equal(records("programGuests").length, 65);
+    assert.equal(records("programTravelLegs").length, 65);
+    assert.equal((records("programHouseholds")[0][1].memberGuestIds as string[])
+      .length, 33);
+    const replay = await importProgramManifestHandler(request(payload),
+      deps(store));
+    assert.deepEqual(replay, {...resumed, alreadyApplied: true});
+  });
+
+test("concurrent retries commit a manifest only once", async () => {
+  const store = new MiniFirestore(seed());
+  const payload = {
+    programId: "program-1", mode: "commit",
+    clientOperationId: "concurrent-import",
+    rows: [{...row, externalReference: "ref-one"}],
+  };
+  const results = await Promise.all([
+    importProgramManifestHandler(request(payload), deps(store)),
+    importProgramManifestHandler(request(payload), deps(store)),
+  ]);
+  assert.deepEqual(results.map((r) => r.alreadyApplied).sort(), [false, true]);
+  assert.equal([...store.docs.keys()]
+    .filter((key) => key.startsWith("programGuests/")).length, 1);
+});
+
+test("duplicate source rows across chunk boundaries remain row errors",
+  async () => {
+    const store = new MiniFirestore(seed());
+    const rows = Array.from({length: 50}, (_, index) => ({
+      ...row, displayName: `Guest ${index}`,
+      externalReference: `ref-${index}`,
+    }));
+    rows.push(rows[0]);
+    const result = await importProgramManifestHandler(request({
+      programId: "program-1", mode: "commit",
+      clientOperationId: "boundary-import", rows,
+    }), deps(store));
+    assert.equal(result.guestsCreated, 50);
+    assert.equal(result.rowErrors[0].index, 50);
+  });
+
+test("preview and chunked commit reject groups exceeding the contract limit",
+  async () => {
+    const store = new MiniFirestore(seed());
+    const payload = {
+      programId: "program-1", clientOperationId: "group-limit-import",
+      rows: Array.from({length: 51}, (_, i) => ({
+        ...row, displayName: `Guest ${i}`, externalReference: `ref-${i}`,
+      })),
+    };
+    const preview = await importProgramManifestHandler(
+      request({...payload, mode: "preview"}), deps(store));
+    const committed = await importProgramManifestHandler(
+      request({...payload, mode: "commit"}), deps(store));
+    assert.deepEqual(committed, {...preview, mode: "commit"});
+    assert.equal(committed.guestsCreated, 50);
+    assert.equal(committed.rowErrors.length, 2);
+    assert.equal(committed.rowErrors[0].index, 50);
+  });
+
+test("imports refuse to replace dispatched journeys", async () => {
+  const store = new MiniFirestore(seed());
+  const payload = {programId: "program-1", mode: "commit", rows: [row]};
+  await importProgramManifestHandler(request({...payload,
+    clientOperationId: "dispatch-seed"}), deps(store));
+  const [path, leg] = [...store.docs.entries()]
+    .find(([key]) => key.startsWith("programTravelLegs/"))!;
+  store.updateDoc(path, {readiness: "dispatched"});
+  const response = await importProgramManifestHandler(request({...payload,
+    rows: [{...row, passengers: 15}],
+    clientOperationId: "dispatch-overwrite"}), deps(store));
+  assert.match(response.rowErrors[0].message, /dispatched/);
+  assert.deepEqual(store.getDoc(path), {...leg, readiness: "dispatched"});
+});
+
+test("scheduled ground legs re-import without duplicates", async () => {
+  const store = new MiniFirestore(seed());
+  const payload = {programId: "program-1", mode: "commit",
+    rows: [{...row, externalReference: "ground-guest", flightNumber: null}]};
+  await importProgramManifestHandler(request({...payload,
+    clientOperationId: "ground-seed"}), deps(store));
+  const response = await importProgramManifestHandler(request({...payload,
+    clientOperationId: "ground-reimport"}), deps(store));
+  assert.equal(response.legsCreated, 0);
+  assert.equal(response.legsUpdated, 1);
+});
+
+test("ambiguous group labels never silently pick a household", async () => {
+  const store = new MiniFirestore({...seed(),
+    "programHouseholds/first": {programId: "program-1", label: "Sharma Family",
+      memberGuestIds: []},
+    "programHouseholds/second": {programId: "program-1", label: "Sharma Family",
+      memberGuestIds: []},
+  });
+  const response = await importProgramManifestHandler(request({
+    programId: "program-1", mode: "commit", rows: [row],
+    clientOperationId: "ambiguous-household",
+  }), deps(store));
+  assert.equal(response.guestsCreated, 0);
+  assert.match(response.rowErrors[0].message, /Ambiguous household/);
+});
+
+
+test("materialized imports satisfy the generated document contracts",
+  async () => {
+    const store = new MiniFirestore(seed());
+    await importProgramManifestHandler(request({
+      programId: "program-1", mode: "commit", rows: [row],
+      clientOperationId: "contract-import",
+    }), deps(store));
+    for (const [path, data] of store.docs) {
+      const collection = path.split("/")[0];
+      const validate = validators[collection];
+      if (validate) {
+        assert.ok(validate(data),
+          `${path}: ${JSON.stringify(validate.errors)}`);
+      }
+    }
+  });

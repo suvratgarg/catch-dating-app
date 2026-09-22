@@ -76,56 +76,8 @@ function snapshot(overrides: Partial<FlightStatusSnapshot> = {}):
   };
 }
 
-type FakeData = Record<string, unknown>;
-
-class FakeDocRef {
-  constructor(private readonly firestore: MiniFirestore,
-    readonly path: string) {}
-  async get() {
-    const data = this.firestore.docs.get(this.path);
-    return {exists: data !== undefined, data: () => data,
-      id: this.path.split("/").pop()!};
-  }
-  async update(data: FakeData) {
-    const existing = this.firestore.docs.get(this.path);
-    if (!existing) throw new Error(`missing ${this.path}`);
-    this.firestore.docs.set(this.path, {...existing, ...data});
-  }
-}
-
-class MiniFirestore {
-  readonly docs = new Map<string, FakeData>();
-  constructor(seed: Record<string, FakeData>) {
-    for (const [k, v] of Object.entries(seed)) this.docs.set(k, v);
-  }
-  collection(path: string) {
-    return {
-      doc: (id: string) => new FakeDocRef(this, `${path}/${id}`),
-      where: (field: string, op: string, value: unknown) => ({
-        orderBy: () => ({
-          limit: (n: number) => ({
-            get: async () => {
-              const prefix = `${path}/`;
-              const hits: Array<{id: string}> = [];
-              for (const [p, data] of this.docs) {
-                if (!p.startsWith(prefix)) continue;
-                const fieldValue = data[field] as
-                  admin.firestore.Timestamp | null | undefined;
-                if (fieldValue == null) continue;
-                if (op === "<=" &&
-                    fieldValue.toMillis() <=
-                      (value as admin.firestore.Timestamp).toMillis()) {
-                  hits.push({id: p.slice(prefix.length)});
-                }
-              }
-              return {docs: hits.slice(0, n)};
-            },
-          }),
-        }),
-      }),
-    };
-  }
-}
+import {FakeFirestore as MiniFirestore, type FakeData} from
+  "../shared/testing/programFirestore";
 
 test("normalizeFlightNumber strips separators and uppercases", () => {
   assert.equal(normalizeFlightNumber("AI-847"), "AI847");

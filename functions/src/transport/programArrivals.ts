@@ -1,5 +1,5 @@
 import * as admin from "firebase-admin";
-import {createHash} from "node:crypto";
+import {hashRequest} from "../shared/programOperationHash";
 import {CallableRequest, HttpsError, onCall} from
   "firebase-functions/v2/https";
 import {requireAuth} from "../shared/auth";
@@ -567,14 +567,6 @@ export async function setProgramTravelReadinessHandler(
     alreadyApplied: result!.alreadyApplied};
 }
 
-export function hashRequest(payload: Record<string, unknown>): string {
-  const stable = Object.keys(payload).sort().reduce<Record<string, unknown>>(
-    (acc, key) => {
-      acc[key] = payload[key];
-      return acc;
-    }, {});
-  return createHash("sha256").update(JSON.stringify(stable)).digest("hex");
-}
 
 function normalizePayload(value: unknown): unknown {
   if (!value || typeof value !== "object" || Array.isArray(value)) {

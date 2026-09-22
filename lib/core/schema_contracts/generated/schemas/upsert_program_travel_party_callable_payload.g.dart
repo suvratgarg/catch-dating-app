@@ -41,7 +41,7 @@ const schemaUpsertProgramTravelPartyCallablePayloadSchema = <String, Object?>{
     },
     'memberGuestIds': <String, Object?>{
       'type': 'array',
-      'minItems': 2,
+      'minItems': 1,
       'maxItems': 50,
       'uniqueItems': true,
       'items': <String, Object?>{
@@ -49,6 +49,7 @@ const schemaUpsertProgramTravelPartyCallablePayloadSchema = <String, Object?>{
         'minLength': 1,
         'maxLength': 180,
       },
+      'description': 'One to fifty people traveling together. A one-person party supports private transfers and staged manifest imports.',
     },
     'dedicatedVehicle': <String, Object?>{
       'type': 'boolean',

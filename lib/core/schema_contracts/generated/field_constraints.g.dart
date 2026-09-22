@@ -64908,8 +64908,8 @@ abstract final class CatchContractConstraints {
 
   static const importProgramManifestCallablePayloadRowsItemsFlightNumber = CatchContractFieldConstraints(
     path: 'importProgramManifestCallablePayload.rows.items.flightNumber',
-    maxLength: 10,
     valueTypes: <String>['string'],
+    pattern: '^[A-Z0-9]{2,3}-?[0-9]{1,4}[A-Z]?\$',
   );
 
   static const importProgramManifestCallablePayloadRowsItemsHouseholdLabel = CatchContractFieldConstraints(
@@ -64965,7 +64965,7 @@ abstract final class CatchContractConstraints {
     path: 'importProgramManifestCallablePayload.rows.items.scheduledArrivalAtMillis',
     valueTypes: <String>['integer'],
     minimum: 1,
-    maximum: 9007199254740991,
+    maximum: 253402300799999,
   );
 
   static const injectEventRehearsalBehaviorCallablePayloadActorId = CatchContractFieldConstraints(
@@ -90593,7 +90593,7 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['array'],
     itemValueTypes: <String>['string'],
-    minItems: 2,
+    minItems: 1,
     maxItems: 50,
     uniqueItems: true,
   );
@@ -97655,6 +97655,13 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const transportOperationReceiptDocumentCompletedRows = CatchContractFieldConstraints(
+    path: 'transportOperationReceiptDocument.completedRows',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 500,
+  );
+
   static const transportOperationReceiptDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
     path: 'transportOperationReceiptDocument.createdAt._nanoseconds',
     required: true,
@@ -97681,6 +97688,22 @@ abstract final class CatchContractConstraints {
     path: 'transportOperationReceiptDocument.expiresAt._seconds',
     required: true,
     valueTypes: <String>['integer'],
+  );
+
+  static const transportOperationReceiptDocumentImportedGuestIds = CatchContractFieldConstraints(
+    path: 'transportOperationReceiptDocument.importedGuestIds',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 500,
+    uniqueItems: true,
+  );
+
+  static const transportOperationReceiptDocumentImportedGuestIdsItems = CatchContractFieldConstraints(
+    path: 'transportOperationReceiptDocument.importedGuestIds.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
   );
 
   static const transportOperationReceiptDocumentLegId = CatchContractFieldConstraints(
@@ -97715,7 +97738,7 @@ abstract final class CatchContractConstraints {
 
   static const transportOperationReceiptDocumentResultJson = CatchContractFieldConstraints(
     path: 'transportOperationReceiptDocument.resultJson',
-    maxLength: 20000,
+    maxLength: 200000,
     valueTypes: <String>['string'],
   );
 
@@ -103594,7 +103617,7 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['array'],
     itemValueTypes: <String>['string'],
-    minItems: 2,
+    minItems: 1,
     maxItems: 50,
     uniqueItems: true,
   );
@@ -119766,10 +119789,13 @@ abstract final class CatchContractConstraints {
     'transportActiveAssignmentDocument.tripId': transportActiveAssignmentDocumentTripId,
     'transportOperationReceiptDocument.actorUid': transportOperationReceiptDocumentActorUid,
     'transportOperationReceiptDocument.clientOperationId': transportOperationReceiptDocumentClientOperationId,
+    'transportOperationReceiptDocument.completedRows': transportOperationReceiptDocumentCompletedRows,
     'transportOperationReceiptDocument.createdAt._nanoseconds': transportOperationReceiptDocumentCreatedAtNanoseconds,
     'transportOperationReceiptDocument.createdAt._seconds': transportOperationReceiptDocumentCreatedAtSeconds,
     'transportOperationReceiptDocument.expiresAt._nanoseconds': transportOperationReceiptDocumentExpiresAtNanoseconds,
     'transportOperationReceiptDocument.expiresAt._seconds': transportOperationReceiptDocumentExpiresAtSeconds,
+    'transportOperationReceiptDocument.importedGuestIds': transportOperationReceiptDocumentImportedGuestIds,
+    'transportOperationReceiptDocument.importedGuestIds.items': transportOperationReceiptDocumentImportedGuestIdsItems,
     'transportOperationReceiptDocument.legId': transportOperationReceiptDocumentLegId,
     'transportOperationReceiptDocument.operationKind': transportOperationReceiptDocumentOperationKind,
     'transportOperationReceiptDocument.programId': transportOperationReceiptDocumentProgramId,

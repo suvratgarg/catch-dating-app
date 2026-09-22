@@ -15,7 +15,8 @@ import {
   requireProgramAccess,
 } from "../shared/programAuthority";
 import type {ProgramDutyAssignment} from "../shared/programAuthority";
-import {hashRequest, legTiming} from "./programArrivals";
+import {hashRequest} from "../shared/programOperationHash";
+import {legTiming} from "./programArrivals";
 import type {
   ProgramGuestDocument,
   ProgramHotelDocument,
