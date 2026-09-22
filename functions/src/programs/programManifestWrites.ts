@@ -1,6 +1,8 @@
 import * as admin from "firebase-admin";
 import {nextRevision} from "../shared/programAuthority";
-import {nextFlightRefreshAt} from "../transport/flightRefresh";
+import {nextFlightRefreshAt} from "../transport/flightRefreshPolicy";
+import {reconcileTravelLegFlightState} from
+  "../transport/travelLegFlightState";
 import type {
   ProgramGuestDocument, ProgramHouseholdDocument, ProgramTravelLegDocument,
   ProgramTravelPartyDocument,
@@ -124,7 +126,9 @@ export function buildManifestWrites(
         updatedAt: now,
         revision: nextRevision(existingLeg?.revision, now),
       };
-      writes.push({path: `programTravelLegs/${legId}`, data: legDoc});
+      writes.push({path: `programTravelLegs/${legId}`,
+        data: reconcileTravelLegFlightState(existingLeg, legDoc, now.toDate()),
+      });
     }
   }
 

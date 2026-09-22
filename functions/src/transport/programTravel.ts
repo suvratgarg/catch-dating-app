@@ -11,7 +11,7 @@ import {
   requireProgramAccess,
   requireProgramDuty,
 } from "../shared/programAuthority";
-import {nextFlightRefreshAt} from "./flightRefresh";
+import {reconcileTravelLegFlightState} from "./travelLegFlightState";
 import type {
   ProgramGuestDocument,
   ProgramTravelLegDocument,
@@ -152,13 +152,10 @@ export async function upsertProgramTravelLegHandler(
       updatedAt: now,
       revision: nextRevision(existing?.revision, now),
     };
-    // New flight legs, or legs whose number changed, join the refresh queue.
-    if (!snap.exists || document.flightNumber !== existing?.flightNumber) {
-      document.flightNextRefreshAt = nextFlightRefreshAt(
-        document.flightNumber, document.scheduledArrivalAt, now.toDate());
-    }
-    committedRevision = document.revision;
-    tx.set(ref, document);
+    const reconciled = reconcileTravelLegFlightState(
+      existing, document, now.toDate());
+    committedRevision = reconciled.revision;
+    tx.set(ref, reconciled);
   });
   return {entityId: ref.id, revision: committedRevision,
     alreadyApplied: false};

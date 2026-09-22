@@ -1274,3 +1274,23 @@ Households and travel parties remain distinct relationships. Both are bounded to
 50 members. A travel party may contain one person for a private transfer or a
 staged import. Moving a guest to another household updates both membership lists
 in the same transaction; import never implies invitation, consent, or RSVP.
+
+
+### Provider observation boundaries
+
+Flight normalization and refresh cadence are shared by import, planner edits,
+polling and webhook updates. An update must match flight number, destination,
+known origin and the exact scheduled arrival instant. Schedule corrections need
+planner review; estimates never change the identity anchor. Polling requests the
+arrival date in the program timezone. Stations in another timezone can produce a
+safe provider miss and need explicit timezone support before that pilot.
+
+AeroDataBox runway and revised times may be estimates. Only a confirmed arrival
+status makes them actual arrival times. Each applied provider observation stores
+its update timestamp; replayed and older observations are ignored. Write-back
+runs against the current leg in a transaction, preserves operational edits, and
+advances the revision. Rebooking clears old provider facts while retaining the
+subscription reference needed for cleanup. Both manual refresh and the scheduled
+sweep bind the API key and webhook secret.
+
+Provider semantics: [AeroDataBox OpenAPI](https://doc.aerodatabox.com/docs/openapi-direct-v1.json).

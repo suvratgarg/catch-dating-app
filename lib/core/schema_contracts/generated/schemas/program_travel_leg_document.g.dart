@@ -225,7 +225,7 @@ const schemaProgramTravelLegDocumentSchema = <String, Object?>{
       ],
       'minLength': 1,
       'maxLength': 180,
-      'description': 'Resolved provider flight instance once flight tracking ships; null for manual entries.',
+      'description': 'Resolved flight identity for enrichment: flight number, airports and scheduled arrival instant. Shared across passengers on that flight.',
     },
     'international': <String, Object?>{
       'type': <Object?>[
@@ -520,6 +520,34 @@ const schemaProgramTravelLegDocumentSchema = <String, Object?>{
       ],
       'maxLength': 128,
       'description': 'AeroDataBox webhook subscription bound to this leg while it is in the hot refresh window; null once settled or unsubscribed.',
+    },
+    'flightProviderUpdatedAt': <String, Object?>{
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'type': 'object',
+          'description': 'Serialized Firestore Timestamp fixture shape.',
+          'x-firestore-type': 'timestamp',
+          'additionalProperties': false,
+          'required': <Object?>[
+            '_seconds',
+            '_nanoseconds',
+          ],
+          'properties': <String, Object?>{
+            '_seconds': <String, Object?>{
+              'type': 'integer',
+            },
+            '_nanoseconds': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 999999999,
+            },
+          },
+        },
+        <String, Object?>{
+          'type': 'null',
+        },
+      ],
+      'description': 'Latest applied provider observation timestamp; older or replayed observations cannot overwrite current facts.',
     },
   },
 };

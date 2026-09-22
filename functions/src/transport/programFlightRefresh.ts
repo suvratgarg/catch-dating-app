@@ -88,7 +88,7 @@ export async function refreshProgramTravelLegHandler(
 }
 
 export const refreshProgramTravelLeg = onCall(
-  appCheckCallableOptionsWithSecrets([aeroDataBoxApiKey],
+  appCheckCallableOptionsWithSecrets([aeroDataBoxApiKey, flightWebhookSecret],
     {timeoutSeconds: 30}),
   async (request) => refreshProgramTravelLegHandler(request),
 );

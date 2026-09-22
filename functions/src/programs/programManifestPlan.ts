@@ -1,3 +1,4 @@
+import {normalizeFlightNumber} from "../transport/flightIdentity";
 import type {ImportProgramManifestCallablePayload} from
   "../shared/generated/importProgramManifestCallablePayload";
 import type {
@@ -42,7 +43,7 @@ function arrivalDayBucket(millis: number | null | undefined): string {
 export function normalizeManifestFlightNumber(
   value: string | null | undefined
 ): string | null {
-  const normalized = value?.replace(/[\s-]+/g, "").toUpperCase();
+  const normalized = value ? normalizeFlightNumber(value) : null;
   return normalized ? normalized : null;
 }
 

@@ -388,7 +388,8 @@
       "requiredWhen": {
         "anyDeployTarget": [
           "functions:refreshProgramTravelLeg",
-          "functions:refreshProgramFlightStatuses"
+          "functions:refreshProgramFlightStatuses",
+          "functions:flightAlertWebhook"
         ]
       },
       "acceptedStates": [
@@ -411,7 +412,8 @@
       "requiredWhen": {
         "anyDeployTarget": [
           "functions:flightAlertWebhook",
-          "functions:refreshProgramFlightStatuses"
+          "functions:refreshProgramFlightStatuses",
+          "functions:refreshProgramTravelLeg"
         ]
       },
       "acceptedStates": [

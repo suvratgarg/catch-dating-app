@@ -1,3 +1,4 @@
+import {reconcileTravelLegFlightState} from "./travelLegFlightState";
 import assert from "node:assert/strict";
 import test from "node:test";
 import * as admin from "firebase-admin";
@@ -65,6 +66,7 @@ function leg(overrides: Partial<ProgramTravelLegDocument> = {}):
 function snapshot(overrides: Partial<FlightStatusSnapshot> = {}):
   FlightStatusSnapshot {
   return {
+    flightNumber: "AI847", originIata: "BOM", destinationIata: "DEL",
     status: "enroute",
     scheduledArrivalMillis: NOW + 2 * 60 * 60 * 1000,
     estimatedArrivalMillis: NOW + 2 * 60 * 60 * 1000 + 600_000,
@@ -90,6 +92,8 @@ test("fetchFlightStatus maps provider fields to a normalized snapshot",
     const result = await fetchFlightStatus({
       flightNumber: "AI-847",
       dateLocal: "2026-02-14",
+      destinationIata: "DEL", originIata: "BOM",
+      scheduledArrivalMillis: Date.parse("2026-02-14T10:00:00Z"),
       apiKey: "key",
       fetchImpl: async (url) => {
         seen.push(url);
@@ -97,10 +101,11 @@ test("fetchFlightStatus maps provider fields to a normalized snapshot",
           status: 200,
           json: async () => [{
             number: "AI 847",
+            departure: {airport: {iata: "BOM"}},
             status: "Delayed",
             lastUpdatedUtc: "2026-02-14T09:00:00Z",
             arrival: {
-              terminal: "3",
+              airport: {iata: "DEL"}, terminal: "3",
               baggageBelt: "7",
               scheduledTime: {utc: "2026-02-14T10:00:00Z"},
               revisedTime: {utc: "2026-02-14T10:40:00Z"},
@@ -121,13 +126,19 @@ test("fetchFlightStatus returns null on empty or missing results",
   async () => {
     for (const status of [204, 404]) {
       const result = await fetchFlightStatus({
-        flightNumber: "XX1", dateLocal: "2026-02-14", apiKey: "key",
+        flightNumber: "XX1", dateLocal: "2026-02-14",
+        destinationIata: "DEL", originIata: "BOM",
+        scheduledArrivalMillis: Date.parse("2026-02-14T10:00:00Z"),
+        apiKey: "key",
         fetchImpl: async () => ({status, json: async () => []}),
       });
       assert.equal(result, null);
     }
     const empty = await fetchFlightStatus({
-      flightNumber: "XX1", dateLocal: "2026-02-14", apiKey: "key",
+      flightNumber: "XX1", dateLocal: "2026-02-14",
+      destinationIata: "DEL", originIata: "BOM",
+      scheduledArrivalMillis: Date.parse("2026-02-14T10:00:00Z"),
+      apiKey: "key",
       fetchImpl: async () => ({status: 200, json: async () => []}),
     });
     assert.equal(empty, null);
@@ -277,3 +288,123 @@ test("the sweep only refreshes legs whose cursor is due", async () => {
     ProgramTravelLegDocument;
   assert.equal(future.flightRefreshedAt, null);
 });
+
+test("estimated runway time is not an actual landing", async () => {
+  const response = await fetchFlightStatus({
+    flightNumber: "AI847", dateLocal: "2026-02-14",
+    destinationIata: "DEL", scheduledArrivalMillis: NOW + 2 * 3600_000,
+    apiKey: "key", fetchImpl: async (url) => {
+      assert.match(url, /dateLocalRole=Arrival/);
+      return {status: 200, json: async () => [{
+        number: "AI847", status: "EnRoute",
+        lastUpdatedUtc: new Date(NOW).toISOString(),
+        arrival: {airport: {iata: "DEL"},
+          scheduledTime: {utc: new Date(NOW + 2 * 3600_000).toISOString()},
+          runwayTime: {utc: new Date(NOW + 3 * 3600_000).toISOString()}},
+      }]};
+    },
+  });
+  assert.equal(response?.actualArrivalMillis, null);
+  assert.equal(response?.estimatedArrivalMillis, NOW + 3 * 3600_000);
+});
+
+test("polling selects an exact flight instance and refuses ambiguity",
+  async () => {
+    const arrival = {airport: {iata: "DEL"}, scheduledTime:
+      {utc: new Date(NOW + 2 * 3600_000).toISOString()}};
+    const flight = {number: "AI847", status: "EnRoute", arrival,
+      lastUpdatedUtc: new Date(NOW).toISOString()};
+    const run = (flights: unknown[]) => fetchFlightStatus({
+      flightNumber: "AI847", dateLocal: "2027-01-15",
+      scheduledArrivalMillis: NOW + 2 * 3600_000, destinationIata: "DEL",
+      apiKey: "key", fetchImpl: async () =>
+        ({status: 200, json: async () => flights}),
+    });
+    assert.equal((await run([
+      {...flight, arrival: {...arrival, airport: {iata: "BOM"}}}, flight,
+    ]))?.destinationIata, "DEL");
+    assert.equal(await run([flight, flight]), null);
+    assert.equal(await run([{...flight, arrival: {airport: {iata: "DEL"}}}]),
+      null);
+  });
+
+test("late poll responses preserve newer webhook facts and revision",
+  async () => {
+    const store = new MiniFirestore({
+      "programTravelLegs/leg-1": leg() as unknown as FakeData,
+      "organizerPrograms/program-1": {timezone: "Asia/Kolkata"},
+    });
+    await refreshTravelLeg(store as never, "leg-1", {
+      now: () => new Date(NOW), apiKey: () => "key",
+      fetchStatus: async () => {
+        store.updateDoc("programTravelLegs/leg-1", {
+          revision: NOW + 10, flightStatus: "landed",
+          flightProviderUpdatedAt: ts(NOW), flightRefreshedAt: ts(NOW),
+          actualArrivalAt: ts(NOW - 1000), flightNextRefreshAt: null,
+        });
+        return snapshot();
+      },
+    });
+    const stored = store.getDoc("programTravelLegs/leg-1")!;
+    assert.equal(stored.revision, NOW + 10);
+    assert.equal(stored.flightStatus, "landed");
+    assert.equal(stored.flightNextRefreshAt, null);
+  });
+
+test("an itinerary edit fences an in-flight provider request", async () => {
+  const store = new MiniFirestore({
+    "programTravelLegs/leg-1": leg() as unknown as FakeData,
+    "organizerPrograms/program-1": {timezone: "Asia/Kolkata"},
+  });
+  await refreshTravelLeg(store as never, "leg-1", {
+    now: () => new Date(NOW), apiKey: () => "key",
+    fetchStatus: async () => {
+      store.updateDoc("programTravelLegs/leg-1", {
+        flightNumber: "AI999", revision: NOW + 1,
+      });
+      return snapshot({status: "landed", actualArrivalMillis: NOW - 1000});
+    },
+  });
+  assert.equal(store.getDoc("programTravelLegs/leg-1")!.actualArrivalAt, null);
+  assert.equal(store.getDoc("programTravelLegs/leg-1")!.revision, NOW + 1);
+});
+
+test("provider writes merge concurrent operational edits monotonically",
+  async () => {
+    const store = new MiniFirestore({
+      "programTravelLegs/leg-1": leg() as unknown as FakeData,
+      "organizerPrograms/program-1": {timezone: "Asia/Kolkata"},
+    });
+    await refreshTravelLeg(store as never, "leg-1", {
+      now: () => new Date(NOW), apiKey: () => "key",
+      fetchStatus: async () => {
+        store.updateDoc("programTravelLegs/leg-1", {
+          readiness: "dispatched", claimedByUid: "greeter", revision: NOW + 1,
+        });
+        return snapshot();
+      },
+    });
+    const stored = store.getDoc("programTravelLegs/leg-1")!;
+    assert.equal(stored.revision, NOW + 2);
+    assert.equal(stored.readiness, "dispatched");
+    assert.equal(stored.claimedByUid, "greeter");
+    assert.equal(stored.flightNextRefreshAt, null);
+  });
+
+test("rebooking resets old flight facts while retaining subscription cleanup",
+  async () => {
+    const old = leg({flightStatus: "landed", actualArrivalAt: ts(NOW - 1000),
+      flightAlertSubscriptionId: "old-sub", flightProviderUpdatedAt: ts(NOW)});
+    const next = reconcileTravelLegFlightState(old,
+      {...old, flightNumber: "AI999", updatedAt: ts(NOW)}, new Date(NOW));
+    assert.equal(next.actualArrivalAt, null);
+    assert.equal(next.flightProviderUpdatedAt, null);
+    assert.equal(next.flightStatus, "scheduled");
+    assert.equal(next.flightAlertSubscriptionId, "old-sub");
+    assert.equal(next.flightNextRefreshAt!.toMillis(), NOW);
+    const unchanged = reconcileTravelLegFlightState(old,
+      {...old, passengers: 3}, new Date(NOW));
+    assert.equal(unchanged.actualArrivalAt, old.actualArrivalAt);
+    assert.equal(unchanged.flightProviderUpdatedAt,
+      old.flightProviderUpdatedAt);
+  });

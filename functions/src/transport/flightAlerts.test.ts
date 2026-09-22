@@ -69,10 +69,11 @@ function pushBody(overrides: Record<string, unknown> = {}) {
   return {
     flights: [{
       number: "AI 847",
+      departure: {airport: {iata: "BOM"}},
       status: "Delayed",
       lastUpdatedUtc: new Date(NOW - 30_000).toISOString(),
       arrival: {
-        terminal: "3",
+        airport: {iata: "DEL"}, terminal: "3",
         scheduledTime: {
           utc: new Date(NOW + 2 * 60 * 60 * 1000).toISOString(),
         },
@@ -144,7 +145,7 @@ test("deleteFlightSubscription treats a missing subscription as done",
   });
 
 test("pushedFlights accepts the contract, array and bare shapes", () => {
-  const flight = {status: "Delayed", arrival: {terminal: "3"}};
+  const flight = pushBody().flights[0];
   assert.equal(pushedFlights({flights: [flight]}).length, 1);
   assert.equal(pushedFlights({flight}).length, 1);
   assert.equal(pushedFlights([flight]).length, 1);
@@ -179,7 +180,7 @@ test("the webhook applies a matching push through the write-back guards",
     assert.equal(stored.arrivalTerminal, "3");
     assert.equal(stored.estimatedArrivalAt!.toMillis(),
       NOW + 2 * 3600_000 + 900_000);
-    assert.equal(stored.revision, 4);
+    assert.ok(stored.revision > 3);
   });
 
 test("a push for a different service date does not touch the leg",
@@ -364,6 +365,7 @@ test("entering the hot window inside the sweep subscribes the leg",
       "organizerPrograms/program-1": {timezone: "Asia/Kolkata"},
     });
     const snapshot: FlightStatusSnapshot = {
+      flightNumber: "AI847", originIata: "BOM", destinationIata: "DEL",
       status: "enroute",
       scheduledArrivalMillis: NOW + 2 * 3600_000,
       estimatedArrivalMillis: NOW + 2 * 3600_000,

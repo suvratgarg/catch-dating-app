@@ -90368,6 +90368,20 @@ abstract final class CatchContractConstraints {
     pattern: '^[A-Z0-9]{2,3}-?[0-9]{1,4}[A-Z]?\$',
   );
 
+  static const programTravelLegDocumentFlightProviderUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'programTravelLegDocument.flightProviderUpdatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const programTravelLegDocumentFlightProviderUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'programTravelLegDocument.flightProviderUpdatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
   static const programTravelLegDocumentFlightRefreshedAtNanoseconds = CatchContractFieldConstraints(
     path: 'programTravelLegDocument.flightRefreshedAt._nanoseconds',
     required: true,
@@ -118815,6 +118829,8 @@ abstract final class CatchContractConstraints {
     'programTravelLegDocument.flightNextRefreshAt._nanoseconds': programTravelLegDocumentFlightNextRefreshAtNanoseconds,
     'programTravelLegDocument.flightNextRefreshAt._seconds': programTravelLegDocumentFlightNextRefreshAtSeconds,
     'programTravelLegDocument.flightNumber': programTravelLegDocumentFlightNumber,
+    'programTravelLegDocument.flightProviderUpdatedAt._nanoseconds': programTravelLegDocumentFlightProviderUpdatedAtNanoseconds,
+    'programTravelLegDocument.flightProviderUpdatedAt._seconds': programTravelLegDocumentFlightProviderUpdatedAtSeconds,
     'programTravelLegDocument.flightRefreshedAt._nanoseconds': programTravelLegDocumentFlightRefreshedAtNanoseconds,
     'programTravelLegDocument.flightRefreshedAt._seconds': programTravelLegDocumentFlightRefreshedAtSeconds,
     'programTravelLegDocument.flightStatus': programTravelLegDocumentFlightStatus,

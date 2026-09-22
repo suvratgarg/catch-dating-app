@@ -4,19 +4,10 @@ export const aeroDataBoxApiKey = defineSecret("AERODATABOX_API_KEY");
 
 const endpoint = "https://api.aerodatabox.com/flights/number";
 
-export type TravelLegFlightStatus =
-  | "scheduled" | "enroute" | "landed" | "delayed" | "cancelled"
-  | "diverted" | "unknown";
-
-export interface FlightStatusSnapshot {
-  status: TravelLegFlightStatus;
-  scheduledArrivalMillis: number | null;
-  estimatedArrivalMillis: number | null;
-  actualArrivalMillis: number | null;
-  arrivalTerminal: string | null;
-  baggageBelt: string | null;
-  providerUpdatedAtMillis: number | null;
-}
+import {FlightStatusSnapshot, TravelLegFlightStatus,
+  normalizeFlightNumber} from "./flightIdentity";
+export {normalizeFlightNumber} from "./flightIdentity";
+export type {FlightStatusSnapshot} from "./flightIdentity";
 
 export type FetchImpl = (
   url: string,
@@ -32,9 +23,12 @@ interface MovementTime {
 }
 
 interface AeroDataBoxFlight {
+  number?: string;
+  departure?: {airport?: {iata?: string}};
   status?: string;
   lastUpdatedUtc?: string;
   arrival?: {
+    airport?: {iata?: string};
     terminal?: string;
     baggageBelt?: string;
     scheduledTime?: MovementTime;
@@ -61,14 +55,9 @@ const statusMap: Record<string, TravelLegFlightStatus> = {
 };
 
 function millis(value: string | undefined): number | null {
-  if (!value) return null;
+  if (typeof value !== "string" || !value) return null;
   const parsed = Date.parse(value);
   return Number.isNaN(parsed) ? null : parsed;
-}
-
-/** "AI-847", "ai 847" → "AI847"; the API accepts loose formats upstream. */
-export function normalizeFlightNumber(flightNumber: string): string {
-  return flightNumber.replace(/[\s-]+/g, "").toUpperCase();
 }
 
 /**
@@ -79,18 +68,25 @@ export function normalizeFlightNumber(flightNumber: string): string {
 export async function fetchFlightStatus({
   flightNumber,
   dateLocal,
+  scheduledArrivalMillis,
+  destinationIata,
+  originIata,
   apiKey,
   fetchImpl = fetch,
 }: {
   flightNumber: string;
   dateLocal: string;
+  scheduledArrivalMillis: number;
+  destinationIata: string;
+  originIata?: string | null;
   apiKey: string;
   fetchImpl?: FetchImpl;
 }): Promise<FlightStatusSnapshot | null> {
   const response = await fetchImpl(
     `${endpoint}/${encodeURIComponent(normalizeFlightNumber(flightNumber))}` +
       `/${encodeURIComponent(dateLocal)}` +
-      "?withAircraftImage=false&withLocation=false&withFlightPlan=false",
+      "?dateLocalRole=Arrival&withAircraftImage=false" +
+      "&withLocation=false&withFlightPlan=false",
     {headers: {"X-Api-Key": apiKey}},
   );
   if (response.status === 204 || response.status === 404) return null;
@@ -98,10 +94,15 @@ export async function fetchFlightStatus({
     throw new Error(
       `AeroDataBox flight status failed with HTTP ${response.status}`);
   }
-  const flights = (await response.json()) as AeroDataBoxFlight[];
-  const flight = flights.find((item) => item?.arrival) ?? flights[0];
-  if (!flight) return null;
-  return normalizeAeroFlight(flight);
+  const body = await response.json();
+  if (!Array.isArray(body)) throw new Error("Invalid flight status response.");
+  const matches = body.map(normalizeAeroFlight).filter((snapshot) =>
+    snapshot && snapshot.flightNumber === normalizeFlightNumber(flightNumber) &&
+    snapshot.destinationIata === destinationIata &&
+    (!originIata || snapshot.originIata === originIata) &&
+    snapshot.scheduledArrivalMillis === scheduledArrivalMillis);
+  // Several instances must be reviewed, never selected by array order.
+  return matches.length === 1 ? matches[0] : null;
 }
 
 /**
@@ -113,28 +114,27 @@ export function normalizeAeroFlight(
   flight: AeroDataBoxFlight | undefined,
 ): FlightStatusSnapshot | null {
   if (!flight || typeof flight !== "object") return null;
-  const arrival = flight.arrival ?? {};
+  const arrival = flight.arrival;
+  if (!arrival || typeof arrival !== "object" ||
+      typeof flight.number !== "string") return null;
+  const status = statusMap[flight.status ?? "Unknown"] ?? "unknown";
+  const observed = millis(flight.lastUpdatedUtc);
+  if (observed == null) return null;
   return {
-    status: statusMap[flight.status ?? "Unknown"] ?? "unknown",
+    flightNumber: normalizeFlightNumber(flight.number),
+    destinationIata: arrival.airport?.iata ?? null,
+    originIata: flight.departure?.airport?.iata ?? null,
+    status,
     scheduledArrivalMillis: millis(arrival.scheduledTime?.utc),
     estimatedArrivalMillis:
       millis(arrival.revisedTime?.utc) ??
-      millis(arrival.predictedTime?.utc),
-    actualArrivalMillis: millis(arrival.runwayTime?.utc),
-    arrivalTerminal: arrival.terminal ?? null,
+      millis(arrival.predictedTime?.utc) ?? millis(arrival.runwayTime?.utc),
+    actualArrivalMillis: status === "landed" ?
+      (millis(arrival.runwayTime?.utc) ??
+        millis(arrival.revisedTime?.utc)) : null,
+    arrivalTerminal: typeof arrival.terminal === "string" ?
+      arrival.terminal.slice(0, 8) : null,
     baggageBelt: arrival.baggageBelt ?? null,
-    providerUpdatedAtMillis: millis(flight.lastUpdatedUtc),
+    providerUpdatedAtMillis: observed,
   };
-}
-
-/**
- * The provider-facing flight number a webhook push or subscription
- * identifies, e.g. `flight.number` ("AI 847") or `flight.callSign`.
- */
-export function aeroFlightNumber(flight: unknown): string | null {
-  if (!flight || typeof flight !== "object") return null;
-  const record = flight as {number?: unknown; callSign?: unknown};
-  const raw = typeof record.number === "string" ? record.number :
-    typeof record.callSign === "string" ? record.callSign : null;
-  return raw ? normalizeFlightNumber(raw) : null;
 }

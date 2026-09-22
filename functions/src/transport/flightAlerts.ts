@@ -1,4 +1,5 @@
 import * as admin from "firebase-admin";
+import {snapshotMatchesLeg} from "./flightIdentity";
 import * as logger from "firebase-functions/logger";
 import {onRequest} from "firebase-functions/v2/https";
 import {defineSecret, defineString} from "firebase-functions/params";
@@ -7,14 +8,12 @@ import type {ProgramTravelLegDocument} from
   "../shared/generated/firestoreAdminTypes";
 import {
   aeroDataBoxApiKey,
-  aeroFlightNumber,
   FetchImpl,
   FlightStatusSnapshot,
   normalizeAeroFlight,
   normalizeFlightNumber,
 } from "./aeroDataBox";
 import {
-  applyFlightSnapshot,
   FlightRefreshTier,
   writeFlightSnapshot,
 } from "./flightRefresh";
@@ -210,16 +209,10 @@ export function pushedFlights(body: unknown): PushedFlight[] {
     const snapshot = normalizeAeroFlight(
       candidate as Parameters<typeof normalizeAeroFlight>[0]);
     if (snapshot) {
-      parsed.push({snapshot, flightNumber: aeroFlightNumber(candidate)});
+      parsed.push({snapshot, flightNumber: snapshot.flightNumber});
     }
   }
   return parsed;
-}
-
-function localDateFor(millis: number, timezone: string): string {
-  return new Intl.DateTimeFormat("en-CA", {
-    timeZone: timezone, year: "numeric", month: "2-digit", day: "2-digit",
-  }).format(new Date(millis));
 }
 
 export interface FlightAlertWebhookDeps {
@@ -249,11 +242,11 @@ export async function flightAlertWebhookHandler(
   body: unknown,
   deps: FlightAlertWebhookDeps = defaultFlightAlertWebhookDeps,
 ): Promise<FlightAlertOutcome> {
-  if (query["key"] !== deps.secret()) {
+  if (!deps.secret() || query["key"] !== deps.secret()) {
     throw new FlightAlertAuthError();
   }
   const legId = typeof query["leg"] === "string" ? query["leg"] : null;
-  if (!legId) return "no-match";
+  if (!legId || legId.includes("/") || legId.length > 180) return "no-match";
   const flights = pushedFlights(body);
   if (flights.length === 0) return "no-match";
 
@@ -263,30 +256,8 @@ export async function flightAlertWebhookHandler(
   const leg = legSnap.data() as ProgramTravelLegDocument | undefined;
   if (!leg) return "missing-leg";
 
-  const programSnap =
-    await db.collection("organizerPrograms").doc(leg.programId).get();
-  const timezone =
-    (programSnap.data() as {timezone?: string} | undefined)?.timezone ??
-      "UTC";
-  const legArrivalMillis =
-    leg.estimatedArrivalAt?.toMillis() ?? leg.scheduledArrivalAt?.toMillis();
-  const legDate = legArrivalMillis == null ? null :
-    localDateFor(legArrivalMillis, timezone);
-  const legFlight = leg.flightNumber ?
-    normalizeFlightNumber(leg.flightNumber) : null;
-
-  const matching = flights.filter((flight) => {
-    if (legFlight && flight.flightNumber &&
-      flight.flightNumber !== legFlight) {
-      return false;
-    }
-    if (legDate && flight.snapshot.scheduledArrivalMillis != null &&
-      localDateFor(flight.snapshot.scheduledArrivalMillis, timezone) !==
-        legDate) {
-      return false;
-    }
-    return true;
-  });
+  const matching = flights.filter((flight) =>
+    snapshotMatchesLeg(leg, flight.snapshot));
   if (matching.length === 0) return "no-match";
 
   // Latest provider observation wins within one delivery.
@@ -295,9 +266,8 @@ export async function flightAlertWebhookHandler(
     (b.snapshot.providerUpdatedAtMillis ?? 0));
   const snapshot = matching[matching.length - 1].snapshot;
   const nowMillis = deps.now().getTime();
-  const patch = applyFlightSnapshot(leg, snapshot, nowMillis);
-  await writeFlightSnapshot(legRef, leg, patch, nowMillis);
-  return "applied";
+  const written = await writeFlightSnapshot(legRef, leg, snapshot, nowMillis);
+  return written ? "applied" : "skipped";
 }
 
 export class FlightAlertAuthError extends Error {

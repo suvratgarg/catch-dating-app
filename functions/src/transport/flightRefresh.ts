@@ -9,73 +9,18 @@ import {
   FlightStatusSnapshot,
 } from "./aeroDataBox";
 
-export type FlightRefreshTier = "hot" | "warm" | "cold" | "settled";
+import {
+  flightRefreshTier, FlightRefreshTier, TIER_DELAY_MILLIS,
+  timestampMillis, toTimestamp,
+} from "./flightRefreshPolicy";
+export {flightRefreshTier, nextFlightRefreshAt} from "./flightRefreshPolicy";
+export type {FlightRefreshTier} from "./flightRefreshPolicy";
+import {flightIdentity, flightInstanceKey, snapshotMatchesLeg} from
+  "./flightIdentity";
+import {nextRevision} from "../shared/programAuthority";
 
-const HOT_WINDOW_MILLIS = 6 * 60 * 60 * 1000;
-const WARM_WINDOW_MILLIS = 24 * 60 * 60 * 1000;
-const LANDED_GRACE_MILLIS = 4 * 60 * 60 * 1000;
 const RETRY_BACKOFF_MILLIS = 15 * 60 * 1000;
 const NO_MATCH_BACKOFF_MILLIS = 6 * 60 * 60 * 1000;
-
-const TIER_DELAY_MILLIS: Record<FlightRefreshTier, number | null> = {
-  hot: 10 * 60 * 1000,
-  warm: 60 * 60 * 1000,
-  cold: 12 * 60 * 60 * 1000,
-  settled: null,
-};
-
-function timestampMillis(
-  value: admin.firestore.Timestamp | null | undefined,
-): number | null {
-  return value ? value.toMillis() : null;
-}
-
-function toTimestamp(millis: number | null): admin.firestore.Timestamp | null {
-  return millis == null ? null :
-    admin.firestore.Timestamp.fromMillis(millis);
-}
-
-/**
- * Refresh cadence keyed to arrival proximity, not a fixed interval: legs far
- * out cost ~2 calls/day, the ~6h pre-landing window polls every 10 minutes,
- * and legs with an observed or provider-confirmed arrival stop entirely.
- */
-export function flightRefreshTier(
-  leg: Pick<ProgramTravelLegDocument,
-    "flightNumber" | "scheduledArrivalAt" | "estimatedArrivalAt" |
-    "actualArrivalAt" | "readiness">,
-  nowMillis: number,
-): FlightRefreshTier {
-  if (!leg.flightNumber ||
-      ["dispatched", "arrived"].includes(leg.readiness) ||
-      leg.actualArrivalAt) {
-    return "settled";
-  }
-  const arrivalMillis = timestampMillis(leg.estimatedArrivalAt) ??
-    timestampMillis(leg.scheduledArrivalAt);
-  if (arrivalMillis == null) return "cold";
-  const delta = arrivalMillis - nowMillis;
-  if (delta <= HOT_WINDOW_MILLIS && delta >= -LANDED_GRACE_MILLIS) {
-    return "hot";
-  }
-  if (delta < -LANDED_GRACE_MILLIS) return "cold";
-  return delta <= WARM_WINDOW_MILLIS ? "warm" : "cold";
-}
-
-export function nextFlightRefreshAt(
-  flightNumber: string | null,
-  scheduledArrivalAt: admin.firestore.Timestamp | null,
-  now: Date,
-): admin.firestore.Timestamp | null {
-  const tier = flightRefreshTier(
-    {flightNumber, scheduledArrivalAt, estimatedArrivalAt: null,
-      actualArrivalAt: null, readiness: "expected"},
-    now.getTime(),
-  );
-  const delay = TIER_DELAY_MILLIS[tier];
-  return delay == null ? null :
-    admin.firestore.Timestamp.fromMillis(now.getTime() + delay);
-}
 
 /**
  * Provider write-back rules: enrichment never clears an observed or
@@ -94,13 +39,14 @@ export function applyFlightSnapshot(
   if (snapshot.arrivalTerminal) {
     patch.arrivalTerminal = snapshot.arrivalTerminal;
   }
-  if (snapshot.scheduledArrivalMillis != null) {
-    patch.scheduledArrivalAt =
-      admin.firestore.Timestamp.fromMillis(snapshot.scheduledArrivalMillis);
-  }
+  // The planner's scheduled instant anchors flight identity. Provider
+  // estimates must not move it to another day's flight.
+  patch.flightProviderUpdatedAt = toTimestamp(snapshot.providerUpdatedAtMillis);
+  patch.flightInstanceId = flightInstanceKey(leg);
 
-  const legHasLanded = leg.actualArrivalAt != null;
-  if (snapshot.actualArrivalMillis != null) {
+  const legHasLanded = leg.actualArrivalAt != null ||
+    leg.flightStatus === "landed";
+  if (snapshot.status === "landed" && snapshot.actualArrivalMillis != null) {
     if (!legHasLanded) {
       patch.actualArrivalAt =
         admin.firestore.Timestamp.fromMillis(snapshot.actualArrivalMillis);
@@ -150,7 +96,7 @@ export async function refreshTravelLeg(
   const nowMillis = deps.now().getTime();
   const tier = flightRefreshTier(leg, nowMillis);
   if (tier === "settled") {
-    await legRef.update({flightNextRefreshAt: null});
+    await rescheduleFlight(legRef, leg, nowMillis, null);
     await deps.syncAlert?.(legRef, leg, "settled", legId);
     return "settled";
   }
@@ -160,64 +106,103 @@ export async function refreshTravelLeg(
   const timezone =
     (programSnap.data() as {timezone?: string} | undefined)?.timezone ??
       "UTC";
-  const arrivalMillis = timestampMillis(leg.estimatedArrivalAt) ??
-    timestampMillis(leg.scheduledArrivalAt) ?? nowMillis;
+  const arrivalMillis = timestampMillis(leg.scheduledArrivalAt);
+  if (arrivalMillis == null || !leg.destinationIata) {
+    await rescheduleFlight(legRef, leg, nowMillis, NO_MATCH_BACKOFF_MILLIS);
+    return "no-match";
+  }
   const dateLocal = new Intl.DateTimeFormat("en-CA", {
     timeZone: timezone, year: "numeric", month: "2-digit", day: "2-digit",
   }).format(new Date(arrivalMillis));
 
-  let patch: Partial<ProgramTravelLegDocument>;
+  let snapshot: FlightStatusSnapshot | null;
   try {
-    const snapshot = await deps.fetchStatus({
+    snapshot = await deps.fetchStatus({
       flightNumber: leg.flightNumber!,
       dateLocal,
+      scheduledArrivalMillis: arrivalMillis,
+      destinationIata: leg.destinationIata,
+      originIata: leg.originIata,
       apiKey: deps.apiKey(),
     });
-    if (!snapshot) {
-      patch = {flightNextRefreshAt:
-        toTimestamp(nowMillis + NO_MATCH_BACKOFF_MILLIS)};
-      await legRef.update(patch);
-      return "no-match";
-    }
-    patch = applyFlightSnapshot(leg, snapshot, nowMillis);
   } catch (error) {
     logger.warn("Flight status refresh failed", {
       legId, flightNumber: leg.flightNumber,
       error: error instanceof Error ? error.message : String(error),
     });
-    await legRef.update({flightNextRefreshAt:
-      toTimestamp(nowMillis + RETRY_BACKOFF_MILLIS)});
+    await rescheduleFlight(legRef, leg, nowMillis, RETRY_BACKOFF_MILLIS);
     return "failed";
   }
 
-  const nextTier = await writeFlightSnapshot(legRef, leg, patch, nowMillis);
-  await deps.syncAlert?.(
-    legRef, {...leg, ...patch} as ProgramTravelLegDocument,
-    nextTier, legId);
+  if (!snapshot || !snapshotMatchesLeg(leg, snapshot)) {
+    await rescheduleFlight(legRef, leg, nowMillis, NO_MATCH_BACKOFF_MILLIS);
+    return "no-match";
+  }
+  const written = await writeFlightSnapshot(legRef, leg, snapshot, nowMillis);
+  if (!written) {
+    await rescheduleFlight(legRef, leg, nowMillis, TIER_DELAY_MILLIS[tier]);
+    return "no-match";
+  }
+  await deps.syncAlert?.(legRef, written,
+    flightRefreshTier(written, nowMillis), legId);
   return "updated";
 }
 
-/**
- * Persists a provider-derived patch onto a leg: recomputes the refresh
- * cadence for the merged doc, bumps revision, and stamps the update.
- * Shared by the polling sweep and the webhook receiver so both paths
- * honour the same write-back guards.
- */
-export async function writeFlightSnapshot(
-  legRef: FirebaseFirestore.DocumentReference,
-  leg: ProgramTravelLegDocument,
-  patch: Partial<ProgramTravelLegDocument>,
+/** Keep cleanup runnable after landing until the provider is unsubscribed. */
+function nextCursor(leg: ProgramTravelLegDocument,
+  nowMillis: number, delay: number | null) {
+  return toTimestamp(delay == null ?
+    leg.flightAlertSubscriptionId ? nowMillis + RETRY_BACKOFF_MILLIS : null :
+    nowMillis + delay);
+}
+
+async function rescheduleFlight(
+  ref: FirebaseFirestore.DocumentReference,
+  original: ProgramTravelLegDocument,
   nowMillis: number,
-): Promise<FlightRefreshTier> {
-  const nextTier = flightRefreshTier(
-    {...leg, ...patch} as ProgramTravelLegDocument, nowMillis);
-  const delay = TIER_DELAY_MILLIS[nextTier];
-  patch.flightNextRefreshAt =
-    delay == null ? null : toTimestamp(nowMillis + delay);
-  patch.updatedAt = admin.firestore.Timestamp.fromMillis(nowMillis);
-  patch.revision = (leg.revision ?? 0) + 1;
-  await legRef.update(patch);
-  return nextTier;
+  delay: number | null,
+): Promise<void> {
+  await ref.firestore.runTransaction(async (tx) => {
+    const current = (await tx.get(ref)).data() as
+      ProgramTravelLegDocument | undefined;
+    if (!current || flightIdentity(current) !== flightIdentity(original) ||
+        timestampMillis(current.flightRefreshedAt) !==
+          timestampMillis(original.flightRefreshedAt)) return;
+    const settled = flightRefreshTier(current, nowMillis) === "settled";
+    tx.update(ref, {flightNextRefreshAt:
+      nextCursor(current, nowMillis, settled ? null : delay)});
+  });
+}
+
+/** Merge each observation against current state under a transaction. */
+export async function writeFlightSnapshot(
+  ref: FirebaseFirestore.DocumentReference,
+  original: ProgramTravelLegDocument,
+  snapshot: FlightStatusSnapshot,
+  nowMillis: number,
+): Promise<ProgramTravelLegDocument | null> {
+  return ref.firestore.runTransaction(async (tx) => {
+    const current = (await tx.get(ref)).data() as
+      ProgramTravelLegDocument | undefined;
+    if (!current || flightIdentity(current) !== flightIdentity(original) ||
+        !snapshotMatchesLeg(current, snapshot)) return null;
+    const observed = snapshot.providerUpdatedAtMillis;
+    const lastObserved = timestampMillis(current.flightProviderUpdatedAt);
+    if (observed == null || observed > nowMillis + 300_000 ||
+        (snapshot.actualArrivalMillis ?? 0) > nowMillis + 300_000 ||
+        (lastObserved != null && observed <= lastObserved)) {
+      return null;
+    }
+    const patch = applyFlightSnapshot(current, snapshot, nowMillis);
+    const merged = {...current, ...patch};
+    patch.flightNextRefreshAt = nextCursor(merged, nowMillis,
+      TIER_DELAY_MILLIS[flightRefreshTier(merged, nowMillis)]);
+    patch.updatedAt = toTimestamp(Math.max(nowMillis,
+      timestampMillis(current.updatedAt) ?? 0))!;
+    patch.revision = nextRevision(current.revision, patch.updatedAt);
+    tx.update(ref, patch);
+    return {...current, ...patch};
+  });
 }
 
 export async function refreshDueFlightLegs(

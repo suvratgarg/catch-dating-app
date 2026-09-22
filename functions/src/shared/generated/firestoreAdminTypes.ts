@@ -8496,7 +8496,7 @@ export interface ProgramTravelLegDocument {
     | "diverted"
     | "unknown";
   /**
-   * Resolved provider flight instance once flight tracking ships; null for manual entries.
+   * Resolved flight identity for enrichment: flight number, airports and scheduled arrival instant. Shared across passengers on that flight.
    */
   flightInstanceId: string | null;
   /**
@@ -8564,6 +8564,10 @@ export interface ProgramTravelLegDocument {
    * AeroDataBox webhook subscription bound to this leg while it is in the hot refresh window; null once settled or unsubscribed.
    */
   flightAlertSubscriptionId?: string | null;
+  /**
+   * Latest applied provider observation timestamp; older or replayed observations cannot overwrite current facts.
+   */
+  flightProviderUpdatedAt?: FirebaseFirestore.Timestamp | null;
 }
 
 /**
