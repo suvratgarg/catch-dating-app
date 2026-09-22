@@ -451,3 +451,35 @@ RSVP and transport-only duties get baked into UI.
 5. **Family stakeholder view is in v1** as the `stakeholderViewer` duty
    (read-only counts, no PII, no finance).
 6. **Flight provider** — remains open on the airport branch; unchanged here.
+
+---
+
+## 10. Implementation status (updated 2026-09-22, evening)
+
+Foundations landed on sibling branches — none merged to `main` yet:
+
+| Branch / worktree | Contents | State |
+|---|---|---|
+| `codex/airport-arrivals-prd-20260922` | Program contracts, `functions/src/programs` + `functions/src/transport` callables, `lib/programs` arrivals/dispatch/hotel-desk screens, operations outbox | In progress (other thread); uncommitted contract regen |
+| `codex/moments-engine-core-20260922` | `functions/src/moments`: pure engine (planning, conditions, audience, guard rails) + `momentTemplates` wedding pack (function-start, dress, transport-ready, RSVP chase, gate alert, flight disruption). 40 tests | Committed `6b84eac`; awaiting callable wiring (W4) |
+| `codex/program-schedule-domain-20260922` | `functions/src/programSchedule`: timeline ordering, overlap/gap detection, tz day grouping, live-function + late-arrival classification, per-guest/household itineraries, per-function headcounts, `.ics` feed serializer. 26 tests | Committed `b518e3a`; consumed by W1/W3/W4 |
+| `codex/organizer-entitlements-20260922` | `organizerEntitlements` + receipts contracts, SKU catalog, rules, generated types, grant/revoke/read callables (`02e9bca80`), admin finance panel in progress | Callables committed; admin UI in flight |
+
+Still needed for W0 (all contract-layer, sequenced after the airport branch
+to avoid regenerating shared outputs concurrently): `programFunctionGuests`,
+function dress-code/instructions fields, wider `programStaffDuty` values +
+`functionIds` scope, `programHouseholds.side`, campaign `recipientSource`.
+
+Notes:
+
+- The airport branch did add client code, but it is transport-duty scoped;
+  the W0 risk is confined to the program-wide `rsvpStatus` on
+  `programGuests`, which W0 must migrate rather than extend.
+- WhatsApp template bodies are provider-side (Meta) artifacts; the moment
+  template keys (`program_function_starting`, `program_get_ready`,
+  `program_transport_ready`, `program_rsvp_deadline_reminder`) each need an
+  approved `organizerMessageTemplates` doc per sender connection before a
+  `sendTemplate` run can deliver. That is runbook/setup work, not code.
+- Host UI (`HostWorkShell`, routing) is blocked on the
+  `audience-directory-consistency` claim over `lib/routing`,
+  `lib/hosts/presentation`, `test`, `packages/catch_ui` (PR #402).
