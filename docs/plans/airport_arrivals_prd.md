@@ -1,6 +1,6 @@
 ---
 doc_id: airport_arrivals_prd
-version: 0.1.0
+version: 0.2.0
 updated: 2026-09-22
 owner: product
 status: draft
@@ -9,7 +9,10 @@ status: draft
 # Airport Arrivals Coordination — Product Requirements
 
 Working name: **Arrivals Desk**. Name is provisional; this document owns the
-product requirements, not the brand.
+product requirements and the proposed wedding/corporate extension architecture,
+not the brand. The product lives inside **Catch Host**, as confirmed by the
+product owner on 2026-09-22. The architecture below distinguishes inspected
+source behavior from proposed functionality; it is not a deployment claim.
 
 ## Problem
 
@@ -90,8 +93,9 @@ dating graph, clubs, or consumer booking flows.
 - Payments, vendor billing settlement, or guest payment of any kind.
 - Route optimization across multiple stops; vehicles run airport → single
   hotel.
-- Multi-event concurrent operations for one planner (v1 assumes one active
-  event per planner team at a time).
+- Cross-program fleet optimization in v1. A planner can own several weddings
+  or corporate programs; every query, selection, grant and draft must retain
+  its explicit program scope even when the pilot exercises only one.
 
 ## Users and surfaces
 
@@ -109,9 +113,13 @@ state.
 
 ## Core concepts
 
-### Event
+### Event / private program
 
-A multi-day organizer event (wedding, offsite, conference) with:
+In the product narrative, 'event' means the wedding or corporate engagement.
+The architecture below stores that private engagement as a **program**, not as
+one of today's publicly readable `events` documents.
+
+A multi-day organizer program (wedding, offsite, conference) has:
 
 - One or more arrival airports (v1: typically one; model must not assume
   exactly one) and optional per-terminal notes.
@@ -150,9 +158,14 @@ flight:
   `diverted` as overlaying states; scheduled vs estimated vs actual times
   kept distinct.
 - Terminal/arrival info where the API provides it.
-- **Curb ETA** = max(scheduled, estimated, actual landing) + exit lag.
+- **Curb ETA** = actual landing, else estimated landing, else scheduled
+  landing, plus exit lag. Actual/estimated times may be earlier than schedule;
+  taking their maximum would incorrectly retain an obsolete delay. An active
+  reviewed manual curb estimate supersedes this derived estimate. Cancelled or
+  diverted flight data alone produces no usable pickup estimate.
   Exit lag defaults: domestic ≈ 25 min, international ≈ 60 min;
-  planner-adjustable per flight or per event.
+  planner-adjustable per flight or per program. These are planning assumptions,
+  not evidence that the guest has exited or is ready to board.
 - Polling cadence ramps with proximity (e.g., hourly at T-24h, ~15 min at
   T-3h, tightest once airborne), subject to the provider's push/webhook
   capability — see Integrations.
@@ -177,7 +190,7 @@ flight:
 
 ```text
 scheduled ──→ en_route ──→ landed ──→ greeted ──→ grouped ──→ dispatched ──→ arrived ──→ checked_in
-                │                                                    
+                │
    overlays: delayed · cancelled · diverted · rescheduled
    exceptions: no_show (landed, not found) · self_transport · split_party · wrong_terminal
 ```
@@ -187,8 +200,9 @@ scheduled ──→ en_route ──→ landed ──→ greeted ──→ groupe
 - Every transition is timestamped and attributed (which staff member) —
   this is what makes downstream reconciliation and post-event reporting
   trustworthy.
-- `self_transport` and `no_show` are terminal states that still reconcile
-  (vendor claims can't invent trips for guests who never boarded).
+- `self_transport` and `no_show` are explicit leg dispositions, not proof of
+  a billed taxi trip. A late arrival can be re-queued with a recorded correction;
+  historical observations and reconciliation exceptions remain visible.
 
 ## Surface requirements
 
@@ -256,7 +270,9 @@ before their shift.
 
 Deterministic, inspectable, and always overridable:
 
-1. Partition un-dispatched guests by destination (hotel or custom).
+1. Partition un-dispatched travel parties by program, pickup point (airport
+   and terminal/meeting zone), destination, and readiness lane. Never group
+   separate airports merely because guests share a hotel.
 2. Within a destination, order by curb ETA and sweep a configurable time
    band (default 45 min, planner-tunable per event — the core trade-off
    between guest wait and vehicle utilization).
@@ -289,9 +305,13 @@ human decision that produces a durable record.
 
 ## Non-functional requirements
 
-- **Connectivity**: airport-terminal-grade. Roster readable offline;
-  writes queued; sync conflicts resolved last-writer-wins for status,
-  append-only for dispatch records. Dispatch must be impossible to lose.
+- **Connectivity**: roster snapshots are purpose-scoped and time-limited;
+  locally recorded actions are durably queued with visible pending status.
+  Server mutations use expected revisions and idempotency receipts, never
+  last-write-wins for passenger or vehicle assignment. Conflicts require
+  explicit review. Offline capture is not server-confirmed dispatch and cannot
+  prevent another disconnected device from recording the same guest. Device
+  destruction or app-data deletion before sync remains an explicit limitation.
 - **Concurrency**: N greeters × M hotel desks × planner on one event
   state; claims and dispatch records prevent double-handling.
 - **Device/UX**: phone + tablet, sunlight-readable contrast, large type
@@ -319,18 +339,19 @@ human decision that produces a durable record.
 
 ## Architecture fit
 
-- **Surfaces**: planner console fits the existing React admin/host-web
-  pattern or the host app; greeter + hotel desk are new role-scoped
-  surfaces — likely a separate lightweight Flutter entrypoint or PWA
-  (decision pending) given temp-staff install friction.
-- **State**: Firestore real-time listeners are a natural fit for the
-  shared roster; dispatch/greet/claim mutations go through callable
-  Functions per the existing write-ownership rules.
-- **Data**: new event-scoped collections (manifest, flights, dispatches,
-  vendors, staff) must go through the contracts pipeline and
-  `docs/data_contracts.md` alignment, not ad-hoc client writes.
-- **Flight polling**: scheduled Functions + provider webhooks; provider
-  credentials via Functions secrets.
+- **Surfaces**: all staff and planner operations remain inside Catch Host.
+  A restricted staff shell shares its authentication, design system and
+  adaptive layouts; it is not the internal React admin console.
+- **State**: callable-owned commands and role-specific read projections.
+  Low-latency callable refresh is the initial read transport; an authorized
+  realtime projection is a later optimization, not permission to stream all PII.
+- **Data**: private program-scoped collections for wedding/offsite operations,
+  linked deliberately to existing organizer/CRM/Form authorities. Public event
+  documents must not become private guest-logistics stores.
+- **Flight polling**: scheduled Functions plus a provider adapter; provider
+  credentials remain server-side. Existing Maps/Places code does not implement
+  road-route ETA queries. Both integrations need new adapters and launch checks.
+- The detailed architecture and incremental delivery contract follow below.
 
 ## Phasing
 
@@ -348,18 +369,16 @@ human decision that produces a durable record.
 
 ## Open questions
 
-1. **Surface**: standalone PWA vs role in the Catch host app vs separate
-   Flutter entrypoint. Temp greeter install friction argues for PWA;
-   offline requirements argue for a real app. Needs a decision before
-   build.
-2. **Staff auth**: phone auth per staff member vs event PIN + role links.
-   PIN links are lower-friction for temp staff but weaker on audit
-   attribution.
+1. **Surface — resolved**: Catch Host, with role-specific staff workspaces;
+   a separate staff app or internal-admin login is not the direction.
+2. **Staff auth — proposed**: named Firebase phone-auth accounts, scoped
+   expiring assignments and deep-link continuation. A shared event PIN is not
+   authorization. Invite-before-first-login needs an explicit new binding flow.
 3. **Flight provider**: coverage/cost/push-capability spike required
    before committing; India domestic coverage is the deciding factor.
-4. **Product boundary**: is this Catch-branded (organizer tools) or a
-   distinct product surface sharing infrastructure? Affects console
-   placement and pricing.
+4. **Product boundary — resolved**: an additional segment within Catch Host,
+   not a replacement for the social-event Host experience. Pricing and segment
+   onboarding copy remain product decisions.
 5. **Business model**: per-event flat fee, per-guest, or bundled into an
    organizer subscription — out of scope here but shapes the console.
 6. **Guest comms**: do guests get pickup instructions/driver details by
@@ -384,3 +403,819 @@ human decision that produces a durable record.
   dispatch void with reason, kept in the ledger.
 - International guests with no Indian number — no dependency on guest
   phone in v1.
+
+## Catch Host Extension Architecture
+
+### 1. Status, scope and governing boundaries
+
+This section is a proposed implementation architecture derived from source at
+base `eb4829d198a2721ceea74e778c68ab5b07f67919`. It is not a claim that the new
+collections, roles, APIs or screens already exist. The initial implementation
+slice is identified separately in section 15. Existing runtime owners remain
+[app architecture](../app_architecture.md), [data contracts](../data_contracts.md),
+[Host product](../host_product.md), [Forms](../host_forms.md),
+[backend operation catalog](../backend_operation_catalog.md), and
+[design language](../design_language.md). Update those owners with each shipped
+boundary; this document owns the cross-domain wedding/transport proposal, not a
+second general architecture standard.
+
+**Goal:** make a private multi-day wedding or corporate program operable in
+Catch Host, with least-privilege staff stations and reusable participant,
+intake, communication and transport capabilities.
+
+**Scope:** program identity, guests/households, functions, RSVP and travel intake,
+hotels, staff grants, flight enrichment, transport planning, dispatch,
+reception and reconciliation; scoped handoffs to existing Audience and Inbox.
+
+**Exclusions:** a new mobile app, internal-admin privileges for planners,
+Consumer onboarding, dating/profile requirements, a new CRM/form/messaging
+engine, automatic public publication, a generic enterprise RBAC editor,
+automatic settlement, hotel PMS integration, and a global routing optimizer.
+
+**Acceptance:** source boundaries, privacy and concurrency guarantees are tested;
+a pilot can import a family roster, give a greeter only one airport station,
+give a receptionist only one hotel, record a trip once, receive it at the hotel
+and reconcile it without changing existing social-event behavior.
+
+### 2. What is actually reusable today
+
+Paths in this table are existing inspected sources, not proposed filenames.
+
+| Existing source | What it supplies | Boundary/gap for weddings |
+|---|---|---|
+| `lib/host_app.dart`, `lib/routing/go_router.dart` (`appRedirect`) | Separate Host app/router; authenticated Host users bypass Consumer profile completion | Host authentication currently does not select a duty-specific workspace; add a staff-access bootstrap rather than another Consumer role |
+| `lib/core/presentation/host_app_shell.dart` | Five manager destinations, organizer selection, adaptive shell | Fixed branch indices and unconditional manager-shell providers; hiding labels alone would still mount unrelated providers |
+| `contracts/firestore/organizer_team_memberships.schema.json`, `functions/src/shared/organizerHosts.ts` | Organizer owner/manager authority | Broad business authority, unsuitable for airport or hotel staff |
+| `contracts/firestore/event_staff_grants.schema.json`, `functions/src/shared/eventOperatorAuthority.ts`, `functions/src/events/eventStaff.ts` | UID-bound, revocable, revisioned, expiring event grants; transaction-aware checks | Existing grant API gives the operator bundle, not airport/hotel-scoped authority; requires an existing Auth account; max 50 active staff and 14-day grants |
+| `lib/hosts/presentation/host_event_operator_screen.dart`, `lib/hosts/data/host_event_staff_repository.dart` | Restricted `/host/operator/:eventId` route and typed callable repository | Useful shell/access pattern, not a safe airport/hotel read model |
+| `firestore.rules` (`events`, `eventAttendees`, `hasActiveEventOperatorGrant`) | Events are public; attendees are private except permitted managers/roster staff | `viewRoster` grants whole attendee-document reads; no field redaction or hotel restriction. The rules helper checks top-level expiry, whereas the callable helper also checks `operatorExpiresAt`; require parity work before extending that path |
+| `functions/src/events/eventAttendees.ts`, `rosterAdapters.ts`, `lib/hosts/data/host_roster_file_parser.dart` | CSV/XLSX parsing, normalization, reviewed imports, source keys, individual operational attendees | No travel/stay model; phone-first dedupe can collapse a household unless stable individual references are preserved |
+| `functions/src/organizers/organizerAudienceProjection.ts`, `contracts/firestore/organizer_contact_event_edges.schema.json` | Event-attendee-to-CRM provenance and rebuildable person/event edges | Program membership must not be faked as event attendance or silently become cross-client marketing permission |
+| `lib/hosts/audience/README.md`, `lib/hosts/data/crm/host_contacts_repository.dart`, `host_saved_audience_repository.dart` | People, saved audiences, identity/merge review and contextual history | Wedding membership is a typed program scope, not just a free-text tag |
+| `functions/src/organizers/organizerForms.ts`, `organizerFormConversions.ts`, `contracts/shared/organizer_form_common.schema.json` | Versioned Forms, responses and reviewed conversion | Current targets are organizer/event/campaign; no program, household respondent authority or repeatable household roster. Current event conversion creates one attendee and depends on CRM conversion |
+| `lib/hosts/inbox/README.md`, `functions/src/organizers/organizerCampaigns.ts` | Scoped Inbox/Sends, saved-audience consumption, delivery status and sender checks | Current saved-audience campaign path expects `organizerCrm`; wedding-scoped recipients and authority must be carried through preview, approval and dispatch |
+| `lib/hosts/data/host_attendance_outbox.dart` | Account-keyed local queue, absolute mutation, revision and conflict-review pattern | SharedPreferences implementation trims old/overflow entries and clears malformed data. Do not reuse that storage policy for financially significant dispatch records |
+| `functions/src/eventSuccess/operations/departureRosterSource.ts` | Explicit departed-member selection, source hashes, transaction fencing | Requires checked-in event attendees and group participation. It is not airport transport; do not extend it with plate, hotel or vendor fields |
+| `functions/src/places/googlePlaces.ts`, `lib/locations`, `docs/location_stack_plan.md` | Server-side Places adapter, coordinates, Maps rendering and attribution | No flight API or Google Routes ETA adapter found in the inspected runtime sources |
+| `packages/catch_ui`, `packages/catch_tokens`, `lib/core/riverpod_ui` | Provider-free primitives, adaptive composition, field/section patterns and async boundaries | Build logistics components from these; don't fork the visual system |
+
+An authored capability label is not sufficient proof of behavior. In particular,
+existing docs describe broader Forms staff capabilities than the manager-only
+conversion flow inspected here. Reuse requires endpoint-level authorization
+review, not simply a new tab or a schema field.
+
+### 3. Domain model: organization, program and function are different
+
+Recommended hierarchy:
+
+```text
+Organizer: the planner company / corporate organizer
+  Program: one private wedding / offsite / conference engagement
+    Guests: one record per invited person, optional CRM identity link
+    Households: invitation/response relationships
+    Functions: mehendi, sangeet, ceremony, reception / corporate sessions
+    Travel legs and travel parties
+    Hotels, room blocks, stays and allocations
+    Staff assignments
+    Transport: vendors, vehicles, batches, trips and reconciliation
+```
+
+Use `organizerType: eventProducer` where appropriate; do not add a global
+`weddingPlanner` Auth role or misuse social activity kinds to decide security.
+Introduce a program-level `kind: wedding | corporate | otherPrivate` and a
+versioned capability profile. Segment presets choose copy, templates and default
+modules. Server-validated enabled capabilities decide availability; grants decide
+authority. A planner can run both weddings and social events.
+
+#### Why a new private program instead of one giant Event
+
+The existing Event carries booking/discovery/attendance assumptions and is
+publicly readable. A wedding spans several dates, venues, guest subsets and
+staff shifts; airport pickup can happen before any function starts. Its master
+invitation status, room check-in and reception attendance are not one status.
+
+Proposed `organizerPrograms` is the private engagement root, not a new public
+listing. Proposed `programFunctions` contains the private schedule, venue and
+function-level invitations. Initially it does **not** create public `events`.
+If a later function needs existing Event Success or commerce, add a reviewed
+private-event/public-projection boundary and an explicit `eventId` bridge.
+Do not create a dummy public wedding event merely to satisfy current CRM or Form
+APIs. Do not relax existing Event required-location or booking invariants.
+
+This is an additive rollout: existing public social Events and their attendees
+continue unchanged. The new program guest is invitation membership at a different
+scope; a linked EventAttendee is a function's admission/attendance fact. Neither
+replaces `organizerContacts` as a CRM identity or `eventParticipations` as a real
+Consumer booking.
+
+#### Identity and membership
+
+- `programGuestId` is an opaque stable person-within-program id. It is not a UID,
+  phone, row number on a subsequent upload, or a concatenated guest name.
+- A guest may have no personal phone/email/account. A household contact is a
+  delivery/RSVP delegate, not identity evidence that all members are one person.
+- `contactId` is optional and organizer-scoped. Explicit reviewed identity linking
+  reuses existing CRM merge/provenance policy; contact merges do not merge guests,
+  reservations, passenger counts or stay assignments automatically.
+- `householdId` means shared invitation/response authority. `travelPartyId` means
+  people who should ride together on a particular leg. Different flights/hotels
+  can split a household into several travel parties without corrupting identity.
+- Keep one record per passenger, including children; derive party headcount.
+  Pending unnamed plus-ones have stable slots and do not produce fake accounts.
+- Travel, stay, RSVP, communication consent and function attendance are separate
+  aggregates. A flight landing must never check a guest into the wedding or hotel.
+
+### 4. Authorization: named duties, not broad employee access
+
+Keep Firebase Auth for identity. Use **private program-scoped assignments** for
+staff authority, borrowing the event-grant revision/expiry/revocation model but
+not reinterpreting `eventId` as `programId`.
+
+Proposed `programStaffGrants/{programId_uid}` has organizer/program/UID binding,
+status, revision, grantor/revocation fields and independently expiring duties.
+Each duty is a discriminated union with a bounded resource scope:
+
+```text
+programCoordinator(programId)
+airportGreeter(programId, pickupPointIds[])
+transportDispatcher(programId, pickupPointIds[])
+hotelReception(programId, hotelIds[])
+transportReconciler(programId)
+```
+
+The initial product may assign both greeter and dispatcher duties to the same
+person. Separating them allows a helper to find guests without authorizing a
+financially significant dispatch. Avoid user-authored permission expressions.
+The program coordinator is program-wide operations authority, not organizer
+ownership, sender administration, payout access or unrestricted CRM export.
+
+| Capability | Organizer manager | Program coordinator | Airport greeter | Dispatcher | Hotel reception | Reconciler |
+|---|---|---|---|---|---|---|
+| Program setup/guest list | Yes | This program | Assigned pickup projection | Assigned pickup projection | Assigned hotel projection | No guest directory |
+| Greet/ready/claim | Yes | Yes | Assigned pickup only | Assigned pickup only | No | No |
+| Batch/assign/depart | Yes | Yes | No unless also dispatcher | Assigned pickup only | No | No |
+| Confirm hotel receipt | Yes | Yes | No | No | Assigned hotel only | No |
+| Rooms/allocations | Yes | Yes | No room numbers | No room numbers | Assigned hotel only | No |
+| Vendor/rate administration | Yes | Explicit program authority | No | Read operational vehicle identity, not rates | No | Review costs; cannot dispatch |
+| Reconciliation/export | Yes | Explicit finance grant | No | No | No | Financial projection only |
+| Forms/Inbox | Organizer scope | Only explicitly program-bound operations | No | No | No | No |
+| Cross-program CRM/sender/payouts | Existing authority | No | No | No | No | No |
+| Staff grant/revoke | Yes | Not in first release | No | No | No | No |
+
+A read/write decision must combine actor UID, owning organizer, program status,
+current grant/duty revision and expiry, feature capability, requested action and
+resource membership. User-provided hotel ids or pickup ids never enlarge scope.
+A write affecting a guest and a trip checks **both** resources' program and
+pickup/destination relationships in the same transaction.
+
+Program grants are separate from organizer manager arrays and global custom
+claims. Managers are resolved from current canonical organizer authority, not a
+client boolean. Grant/revoke flows re-read manager authority transactionally.
+Global revocation invalidates all duties; extending a hotel duty cannot extend
+airport access. Duties are initially capped and short-lived using reviewed
+limits comparable to existing staff grants. Longer-term planner access must not
+be silently inferred from temporary staff renewal.
+
+#### Staff onboarding and discovery
+
+1. Existing-account pilot: staff signs in to Catch Host with phone OTP; planner
+   selects that account and grants a station/shift. No Consumer or public host
+   profile is required.
+2. `listMyHostAssignments` returns the caller's current safe assignment cards,
+   bounded and paginated, not the organization's staff directory.
+3. Deep links preserve the destination through OTP, then resolve access on the
+   server. Links identify a workspace; possession alone grants nothing.
+4. Next slice: expiring one-use invitation bound to a verified phone, stored as
+   a protected lookup/hash and consumed transactionally after authentication.
+   Token replay, wrong phone, expiry and revocation fail closed. No shared PIN.
+5. Auth change, duty expiry, revocation or scope change disposes scoped providers,
+   clears visible private data and routes to assignment selection/access expired.
+
+#### Reads, PII and revocation
+
+Firestore cannot redact fields within a readable document. Initially deny direct
+client reads/writes for the new operational collections and return bounded,
+purpose-specific callable DTOs. Airport projection includes name, party, relevant
+flight, pickup zone, destination label and actionable assistance requirement; it
+excludes room number, unrelated form answers, finance and CRM history. Hotel
+projection contains only that hotel's expected guests, inbound trips and room
+work; it excludes other hotels and vendor pricing. Finance sees trip ids/counts,
+classes, vendors and charges, not phone numbers or accommodation details beyond
+route billing identifiers.
+
+Do not give new staff `viewRoster` merely so an existing repository works.
+Do not pass raw stored objects through callable responses. Fetch-by-id, search,
+counts, exports, snapshots and refresh all use the same resource filter.
+Treat removed/private records as unavailable without revealing foreign existence.
+Online revocation applies to each new read/write. Data already read cannot be
+remotely unseen; local snapshots need a bounded lease and explicit shared-device
+policy rather than an impossible instant offline-revocation guarantee.
+
+### 5. Catch Host information architecture and routes
+
+Keep the existing five manager destinations stable. Add program inventory under
+**Events**, wedding-scoped people/intake under **Audience**, and wedding-scoped
+communications under **Inbox**. Do not create sixth/seventh global Forms or
+Transport tabs. A program workspace inside Events exposes local sections:
+Overview, Guests, Schedule, Travel, Accommodation, Transport and Team. Guest and
+communication shortcuts hand off typed program context to the owning destination.
+
+The manager's wedding journey is:
+
+```text
+Events -> New private program -> Wedding preset
+  -> import guests/households
+  -> invite family contacts to RSVP through Forms
+  -> review responses and travel requirements
+  -> allocate hotels/room blocks
+  -> assign staff and vendors
+  -> run arrivals/dispatch/reception
+  -> reconcile transport and archive operational data
+```
+
+Staff do not enter that manager shell:
+
+| Workspace | Primary navigation | Explicitly absent |
+|---|---|---|
+| Airport | Arrivals, Dispatch (if granted), shift/access menu | Audience, Inbox, Organizer, payouts, imports |
+| Hotel | Inbound, Rooms (if granted), shift/access menu | Other hotels, airport dispatch, CRM, marketing |
+| Reconciliation | Trips, Exceptions, scoped export | Guest contact directory and operational mutation |
+
+Prefer one task screen without bottom tabs when only one destination is granted.
+For multi-duty staff, an assignment switcher changes an explicit context; it does
+not union unrelated permissions into one omniscient roster. Managers can enter a
+staff-view mode for rehearsal while retaining their separately authorized account.
+
+Proposed route additions (names are not yet registered):
+
+```text
+/host/events/programs
+/host/programs/:programId
+/host/programs/:programId/guests
+/host/programs/:programId/transport
+/host/programs/:programId/accommodation
+/host/programs/:programId/team
+/host/work
+/host/work/:programId/airport/:pickupPointId
+/host/work/:programId/hotel/:hotelId
+/host/work/:programId/reconciliation
+```
+
+`HostWorkShell` is a sibling of `HostAppShell`, not a dynamic subset of its
+indexed branches. Use destination identifiers and a per-shell index map.
+Authentication redirect remains identity-only; a new workspace-access boundary
+handles manager/staff/default selection, pending resolution and deep-link denial.
+Do not build manager Inbox unread-count or organizer inventory providers for a
+staff-only shell. Update route contracts, feature responsibilities, screen
+contracts and deep-link tests together; preserve `/host/operator/:eventId`.
+
+### 6. Proposed persistence and contract inventory
+
+All names below are proposed. Use the current top-level collection style with
+explicit `organizerId` and `programId`, opaque ids, bounded documents, revisions,
+server timestamps and server-owned writes. Do not put the whole wedding roster
+inside one Firestore document or add arbitrary logistics maps to `events`.
+
+| Collection | Canonical fact and important fields | Writer / read audience |
+|---|---|---|
+| `organizerPrograms` | organizer, kind, private title, timezone, dates, lifecycle, enabled capabilities, revision | Program commands / managers and safe assigned-staff summary |
+| `programFunctions` | program, private name, start/end, venue, dress-code/instructions, optional reviewed future Event bridge | Program commands / authorized program participants through projection |
+| `programGuests` | name, household, optional contactId, invitation/RSVP state, provenance and revision | Guest/import/RSVP commands / scoped projections |
+| `programHouseholds` | primary contact, bounded delegate authority, invitation delivery preference | Guest commands / coordinator; respondent only its own authorized household |
+| `programFunctionGuests` | unique function/guest membership, invitation and attendance states | Function RSVP/attendance commands, never flight updates |
+| `programGuestImports` | idempotency key, source digest, preview revision, counts and bounded row issues | Import workflow; raw uploads separately scoped with expiry |
+| `programStaffGrants` | program/UID, duties, independent expiry, status/revision | Manager-only grant/revoke / access service |
+| `programPickupPoints` | airport code, terminal/meeting zone, exact coordinates, pickup instructions | Setup commands / airport station projection |
+| `programHotels` | exact address/coordinates, reception details, active status | Setup commands / relevant operational projections |
+| `programRoomBlocks` | hotel, stay dates, block label and capacity | Accommodation commands / coordinator and assigned hotel |
+| `programStays` | guest, hotel, dates, room-block/room allocation, room-ready and hotel-arrived timestamps | Accommodation commands; field-redacted by duty |
+| `programTravelLegs` | guest, inbound/outbound/manual kind, original itinerary, resolved flight instance, pickup point, destination, readiness, revision | Travel commands; provider facts linked, not copied over manual facts |
+| `programTravelParties` | explicit per-leg ride-together relationship and reviewed split history | Travel commands; bounded member count |
+| `flightInstances` | operating service, origin/destination/date, provider identity, schedule/estimate/actual, terminal, observation time | Provider worker; no guest names or contact data |
+| `transportVendors` | organizer-owned vendor identity/contact, active status | Managers; program use requires explicit binding |
+| `programTransportContracts` | program/vendor binding, versioned tariff/class/route/day terms, currency and validity | Authorized commercial setup; dispatch gets operational subset only |
+| `transportVehicles` | organizer/vendor, canonical registration, class and safe passenger/luggage capacity | Vehicle setup; vendor relationship cannot be inferred only from fuzzy plate match |
+| `transportBatches` | program, pickup, destination, tentative/locked plan, party/leg references, source hash | Reviewed planner/dispatcher commands; suggestions alone need not persist |
+| `transportTrips` | unique trip, actual plate/vendor/class snapshot, manifest, departure/arrival state, rate snapshot, revisions | Dispatch/receipt commands; distinct airport/hotel/finance DTOs |
+| `transportActiveAssignments` | unique program/travel-leg to active trip binding | Same transaction as dispatch; protects duplicate boarding |
+| `transportVehicleAssignments` | organizer/vehicle active-trip binding | Same transaction as dispatch/arrival; protects concurrent vehicle use |
+| `transportOperationReceipts` | request id/hash, actor/scope, original result/revision, expiry | Command transaction / safe replay result only |
+| `transportTripAdjustments` | reasoned vendor/plate/manifest/cost correction or void referencing prior revision | Authorized correction command; immutable financial history |
+| `transportReconciliationRuns` | source cutoff/revisions, totals, discrepancies, export references | Finance workflow; derived from trips and agreed tariffs |
+
+The first deploy does not need every table. Foundation creates program, guest,
+resource and grant contracts; transport adds its own tables with commands; finance
+adds rate/adjustment/export records when that slice is built. A program's list of
+supported hotel/pickup resources is bounded, but guest/trip inventories paginate.
+
+**CRM integration:** add program membership as a source-aware relation/view,
+not a duplicate organizer address book. A new `organizerContactProgramEdges`
+projection can index linked guests for Audience and merge-aware program filtering.
+The program guest remains membership authority. Counts explicitly distinguish
+people, invited guest slots, reachable contacts and households. No program field
+is added to the global public profile. Do not copy all logistics into contact
+notes or form-answer traits.
+
+**Indexes:** include program + pickup + active state + ready/ETA order for travel;
+program + hotel + ETA/status for inbound trips; program + hotel + stay date for
+rooms; program + vendor + service date for finance; UID + status + expiry for
+assignment discovery. Stable cursors bind scope, filters and source revision where
+necessary. DTOs expose coverage/truncation rather than claiming an exact total
+from a capped query. Server-only flight refresh indexes use `nextRefreshAt`.
+
+**Contract plumbing:** authored draft-07 schemas in `contracts/shared`,
+`firestore`, `callables`, `callable_responses`, with valid/invalid fixtures,
+`x-firestore-*` and ownership metadata. Extend the existing generator/ownership
+inventory registration, then generate TS/Ajv/Admin timestamp types and Dart request
+DTOs. Do not hand-edit generated outputs or create a second schema registry.
+Backend collection ownership, rules denies, indexes, retention and deletion hooks
+ship with each collection, not after the UI.
+
+### 7. Forms and RSVP: reuse the engine, add a typed target
+
+Keep Forms inside Audience. A wedding preset provides RSVP, travel-information,
+dietary/accessibility and accommodation-preference templates. Wedding-specific
+questions remain program custom fields, not global dating/profile fields.
+
+Incremental extensions:
+
+1. Extend form target union with `program` and validate ownership in management,
+   publication, response access, conversion and automation. Forms attached to a
+   program cannot be retargeted across clients with existing responses.
+2. Add a version-bound semantic mapping from question ids to proposed guest,
+   RSVP or travel changes. Never parse mutable question labels to find a flight.
+3. Retain the current public form page for general prospect intake. Private RSVP
+   uses a purpose-scoped recipient invitation, optional verified contact step,
+   and a private bootstrap that exposes only the invited household. Existing
+   public-form resolution is not sufficient protection for a prefilled wedding.
+4. Household response authority references explicitly authorized guest ids and
+   functions. A respondent cannot invent another household id, enumerate guests,
+   or edit every guest sharing a phone. Guests need no Consumer profile.
+5. MVP can collect one guest's travel details per submission with an authorized
+   household selection. A proper repeatable household editor is a distinct
+   builder/respondent capability, not a claimed existing feature.
+6. Submitted response remains versioned evidence. A reviewed, idempotent
+   conversion updates operational RSVP/travel records with source provenance.
+   Subsequent corrections create a new submission/change, not edits to immutable
+   response evidence. Changes after dispatch create an exception for review.
+7. Flight strings resolve server-side. Ambiguous date/airport/codeshare results
+   remain unresolved and manually reviewable; no speculative automatic match.
+
+A form saying 'attending' updates RSVP, not physical attendance. Travel updates
+never allocate a room or reserve a vehicle unless a separately authorized command
+confirms that operation. Reuse the current conversion receipt and preview pattern,
+but do not reuse the one-response-one-CRM-contact assumption for a family.
+
+### 8. Messaging and invitations: reuse Inbox, preserve consent
+
+Audience decides program membership; Inbox owns delivery. Program-scoped shortcuts
+open Inbox with immutable program/function/recipient context. Presets include
+save-the-date, function invitation, dress code, RSVP reminder and arrival
+instructions. They are template choices, not new transports.
+
+- Extend campaign context with an explicit program scope and recipient selection
+  contract. A program coordinator cannot fall back to all organizer CRM contacts
+  or choose an unrelated saved audience.
+- Preview freezes recipient identities, scope/revisions and approved template
+  variables. Approval checks those facts; worker dispatch rechecks authority,
+  current recipient permission/suppression and program cancellation.
+- Resolve household delivery once per intended endpoint; do not send four copies
+  because four children share a guardian's number. Keep per-guest RSVP linkage
+  even when one invitation was delivered to a household contact.
+- Reuse organizer sender connections, message templates, manual-send tasks,
+  WhatsApp delivery receipts and STOP behavior. Importing a wedding spreadsheet
+  or completing RSVP is not cross-event marketing permission.
+- Service-purpose pickup updates and promotional messages require separate
+  reviewed purpose/consent rules. Existing event-assistance channel workers are
+  reference implementations, not automatically authorized for a new program.
+- Personal WhatsApp handoff still means the staff member presses Send; Catch must
+  not claim delivery/read evidence. Airport/hotel staff do not inherit Inbox just
+  because they may need a guest contact number.
+
+Private invitation content and room information never go into public Event
+announcements, organizer follower posts, push payloads or shared URLs. Push carries
+an opaque change reference; the app fetches an authorized projection.
+
+### 9. Transport state, grouping and transaction invariants
+
+Use independent state machines:
+
+```text
+Flight observation: scheduled / airborne / landed / cancelled / diverted
+Travel leg: expected -> greeted -> ready -> assigned -> departed -> received
+Exceptions: missing/contacting, flightChanged, selfTransport, cancelledLeg
+Batch: suggested (ephemeral) -> accepted -> locked -> dispatched / released
+Trip: departed -> arrived; exceptions: interrupted, corrected, voided
+Stay: unallocated -> allocated -> roomReady -> hotelArrived -> checkedIn
+RSVP: invited -> attending / declined / awaitingReply
+```
+
+Human-observed ready/departed/received states cannot be rolled back by flight
+polling. A late guest can recover from a no-show disposition via a reasoned
+correction. Cancelled flight does not cancel the wedding invitation. Vehicle
+arrival and individual guest hotel receipt are separate if only some passengers
+arrive or the manifest was wrong.
+
+#### Suggestion policy
+
+Use deterministic policy, not an LLM or hidden optimizer. Inputs are validated
+travel parties with stable ids, program, pickup point, destination, readiness,
+curb estimate, seat demand, luggage demand, required vehicle capabilities and
+explicit dedicated-vehicle flag. Suggested vehicle capacity excludes the driver;
+vehicle class labels alone do not establish usable seats or luggage space.
+
+- Keep ready guests separate from merely expected guests in live suggestions.
+  Forecast expected arrivals separately so a ready family is not silently held
+  for a flight that may be late.
+- Sort stably by time then id. Windows are anchored to the earliest member; do
+  not chain overlapping bands into an arbitrarily long wait.
+- For ready parties, cap a proposed departure by the earliest ready-at plus the
+  configured maximum wait. Flag overdue groups and recommend dispatch/review;
+  occupancy is secondary to wait and accessibility constraints.
+- Preserve travel parties; if a party cannot fit any allowed class, surface an
+  explicit unassigned reason. Splitting requires a reviewed staff operation.
+- Track passenger seats and luggage separately, and require explicit vehicle
+  capabilities for wheelchair access/child-seat arrangements. Unknown capacity
+  requires review, not an optimistic assumption.
+- The initial greedy heuristic expands a group only when some available class
+  can fit it, then recommends the smallest feasible class. It is deterministic,
+  not a proof of globally cheapest or minimum-vehicle allocation. Show rationale,
+  unused seats and expected hold time; future cost-aware ranking is separate.
+- Scope the planning request to currently available classes/fleet commitments.
+  A class suggestion does not reserve a vehicle or guarantee vendor supply.
+- Auto-refresh can revise unaccepted suggestions, not locked operator plans.
+  Re-evaluate source revisions when accepting and again at dispatch.
+
+#### Dispatch command
+
+Proposed `dispatchTransportTrip` request includes program, batch/travel-leg ids,
+expected revisions, actual vehicle/registration, vendor binding, class,
+observation time and operation id. The server:
+
+1. Authenticates, checks App Check/rate limit/schema, and authorizes the station.
+2. In one bounded transaction re-reads program, authority, guests/legs, accepted
+   batch, active passenger assignments, vehicle assignment and applicable rate.
+3. Validates same program/pickup/destination, actual readiness, capacity and no
+   existing active assignment. Manual overrides cannot bypass authorization,
+   double-dispatch checks or legal/safety capacity limits.
+4. Creates the trip, manifest snapshot, active assignments and immutable operation
+   receipt atomically. Retry with the same request hash returns the original
+   result; reuse of the operation id with different content is rejected.
+5. Commits before publishing notifications/provider work. Retryable background
+   projections cannot create a second trip. Provider network calls never run
+   inside a Firestore transaction.
+
+Unknown plates can be recorded with normalized display and an explicit provisional
+vendor mapping; unresolved billing is flagged, not silently guessed. Fuzzy plate
+matching is a suggestion only. Corrections preserve what staff originally entered
+and who changed it. Exact normalized registration prevents obvious concurrent
+assignment; cross-program vehicle occupancy is organizer-scoped.
+
+Hotel receipt rechecks destination/hotel authority and marks actual arrival; it
+releases the vehicle for later work under the agreed lifecycle. Passenger
+assignments release only by a confirmed terminal/corrective command. A taxi
+returning to the airport after a failed trip is an interruption/correction, not
+a delete-and-recreate shortcut.
+
+#### Reconciliation
+
+Snapshot actual vendor, vehicle class, route and applicable tariff version at
+dispatch. Later master-data edits cannot rewrite a historical bill. Keep integer
+minor units and ISO currency. Per-trip and vehicle-day hire are different pricing
+models: sum trip fees for the former; allocate/group vehicle-day usage once for
+the latter, with explicit extras for tolls, parking, overtime or deadheading only
+when contracted. Empty repositioning is an explicit non-passenger trip kind,
+not a made-up guest dispatch.
+
+Report recorded trips, disputed/provisional/voided trips, rate gaps, invoice
+claimed units and variance separately. A missing tariff yields 'unpriced', never
+zero cost. Exports bind program, authorization and a source cutoff; later
+adjustments create a new reconciliation version. Room arrival does not prove
+vendor invoice approval or payment.
+
+### 10. Flight, Maps and offline integration boundaries
+
+#### Flight adapter
+
+Add a provider-neutral server port returning normalized observations and
+provenance. Resolve flight number with operating carrier, service date,
+origin/destination and airport timezone; keep codeshare aliases and the user's
+original itinerary. One flight instance can serve many guests without repeated
+API polling. Keep guest identity out of provider requests.
+
+Scheduled/estimated/actual times retain their meanings and observed-at timestamp.
+Out-of-order provider responses cannot replace newer facts; manual overrides have
+actor/reason/expiry and do not destroy raw observations. Cancellations/diversions
+produce exceptions, not misleading pickup ETAs. Poll on an adaptive schedule,
+with bounded concurrency, backoff, per-environment credentials, cost ceilings,
+cache/licensing checks and a circuit breaker. Coverage for Indian domestic and
+international arrivals is a provider evaluation gate, not an assumed capability.
+
+#### Road ETA adapter
+
+Reuse `LocationCoordinate`, Places lookup and map/navigation widgets. Add a new
+server-side Google Routes port using driving/traffic duration; 'transit' in this
+PRD means vehicle travel, not public-transit mode. Scope/cap/cache calls by route
+and time band. Provider failure never blocks recording a departure.
+
+Without driver GPS, the honest ETA is **departure time + route duration estimated
+at departure**, with source and computed-at time. It is not live vehicle location.
+Do not periodically pretend the taxi is still at the airport and add a new full
+journey to now. Actual arrival is staff-confirmed. An optional future driver GPS
+feature needs its own consent, trip-scoped authority, background-location and
+retention work; a greeter's phone position is not the taxi's position.
+
+#### Live reads and offline capture
+
+Initial connected stations use scoped callable pages refreshed on focus, after
+commands and on a short configurable visible-screen interval. Return server time,
+source revisions, freshness and next cursor. Avoid one listener/poll per guest.
+Pilot target: accepted changes visible to connected other stations within ten
+seconds under the tested load, with measured P95 rather than a claimed SLA.
+
+A later realtime optimization can publish sanitized resource-scoped projections
+or non-PII invalidation signals, with rules that bind current duties. Never stream
+raw `programGuests`/CRM and filter locally. Hotel reassignment must immediately
+remove a guest from the old projection and fence stale updates by revision.
+
+Offline mode separates 'observed here' from 'confirmed by server'. The outbox is
+an append-only local command journal with stable ids, payload hashes, dependencies,
+auth/program scope and expected revisions. It requires transactional durable
+storage, capacity alarms and explicit conflict quarantine; no oldest-entry
+trimming and no silent clearing on parse failure. Select a storage library only
+after reviewing existing dependencies and native/web durability constraints.
+A read-only encrypted/minimized snapshot cache is separate from commands and
+expires with the duty/session lease. No raw PII in analytics/error logs.
+
+Online coordination can reserve assignments; two disconnected devices cannot
+obtain a global exclusive lock. Pilot operations therefore designate one offline
+dispatch recorder per station or require connectivity for confirmed dispatch.
+An emergency offline observation remains recoverable for reconciliation but is
+not presented as authoritative to another device until accepted. Revoked writes
+fail on reconnect and require a currently authorized coordinator to review the
+observation; expired authority is never replayed as current authorization.
+
+### 11. Folder organization and dependency direction
+
+The tree is a target map, not a request to create empty scaffolding. Add files
+only with working behavior/tests. Current legacy Host folders remain until a
+bounded migration has a consumer; new destination-owned behavior goes into the
+canonical five roots from `host_feature_responsibilities.json`.
+
+```text
+lib/
+  hosts/
+    access/
+      domain/host_work_assignment.dart
+      domain/host_workspace_context.dart
+      data/host_work_access_repository.dart
+      presentation/host_work_shell.dart
+      presentation/host_assignment_picker_screen.dart
+      presentation/host_workspace_access_controller.dart
+    events/
+      presentation/host_events_screen.dart                 (extend inventory)
+      presentation/programs/host_program_screen.dart
+      presentation/programs/host_program_setup_controller.dart
+    audience/
+      presentation/programs/host_program_guests_screen.dart
+      presentation/programs/host_program_guest_controller.dart
+      presentation/programs/host_program_rsvp_review.dart
+      presentation/forms/                                 (new target adapters)
+    inbox/
+      presentation/programs/host_program_communication_scope.dart
+      presentation/programs/host_program_invitation_templates.dart
+    organizer/
+      presentation/transport/host_vendor_directory.dart
+  programs/
+    domain/program.dart
+    domain/program_guest.dart
+    domain/program_household.dart
+    domain/program_function.dart
+    domain/program_rsvp.dart
+    data/program_repository.dart
+    data/program_guest_repository.dart
+    data/program_intake_repository.dart
+  transport/
+    domain/travel_leg.dart
+    domain/travel_party.dart
+    domain/transport_trip.dart
+    domain/transport_batch.dart
+    domain/flight_observation.dart
+    data/transport_roster_repository.dart
+    data/transport_command_repository.dart
+    data/transport_command_journal.dart
+    presentation/airport_arrivals_screen.dart
+    presentation/airport_arrivals_view_model.dart
+    presentation/airport_arrivals_state.dart
+    presentation/transport_dispatch_controller.dart
+    presentation/transport_reconciliation_screen.dart
+    presentation/widgets/arrival_guest_row.dart
+    presentation/widgets/transport_batch_section.dart
+    presentation/widgets/transport_trip_detail.dart
+  accommodation/
+    domain/program_stay.dart
+    domain/program_room_block.dart
+    data/accommodation_repository.dart
+    presentation/hotel_reception_screen.dart
+    presentation/hotel_reception_controller.dart
+    presentation/hotel_reception_state.dart
+  locations/
+    domain/                                                 (reuse coordinates)
+  routing/
+    go_router.dart                                          (compose shells)
+    route_contract.dart                                     (typed route ids)
+packages/catch_ui/                                           (generic UI only)
+```
+
+`hosts/*` owns product navigation and cross-feature orchestration; `programs`,
+`transport` and `accommodation` own shared domain/repository authority. Avoid two
+competing Guest repositories inside Audience and Transport. Transport reads a
+minimal authorized projection, not `HostAudienceContactDetail`. Accommodation
+consumes inbound-trip DTOs through a port, not airport presentation controllers.
+Domain code has no Flutter/Riverpod/Firebase imports. Repositories adapt generated
+contracts and error context; auto-dispose controllers own commands; `_state.dart`
+files stay provider-free display adapters. Scoped providers key by account,
+program, duty and resource, not just the currently selected organizer.
+
+```text
+functions/src/
+  programs/
+    programHandlers.ts, programStore.ts, programPolicy.ts
+    programGuestHandlers.ts, programGuestImport.ts, programGuestIdentity.ts
+    programRsvpHandlers.ts, programFormConversion.ts
+    programStaffHandlers.ts, programStaffAuthority.ts
+    programReadModels.ts
+  transport/
+    arrivalTiming.ts, grouping.ts                            (pure first slice)
+    transportHandlers.ts, transportAuthority.ts
+    transportReader.ts, transportStore.ts, transportPolicy.ts
+    transportProjections.ts, transportReconciliation.ts
+    flightProvider.ts, flightRefresh.ts
+    routeEtaProvider.ts
+    *.test.ts
+  accommodation/
+    accommodationHandlers.ts, accommodationStore.ts
+    accommodationPolicy.ts, accommodationReadModels.ts
+  organizers/
+    organizerForms.ts                                       (extend target)
+    organizerFormConversions.ts                             (typed handoff)
+    organizerSavedAudienceSources.ts                        (program source)
+    organizerCampaigns.ts                                   (scope/delivery)
+  shared/
+    generated/                                              (generator-owned)
+  index.ts                                                  (explicit exports)
+contracts/
+  shared/program_common.schema.json
+  shared/program_staff.schema.json
+  shared/transport_common.schema.json
+  firestore/organizer_programs.schema.json
+  firestore/program_guests.schema.json
+  firestore/program_staff_grants.schema.json
+  firestore/transport_trips.schema.json
+  callables/<bounded_operation>_payload.schema.json
+  callable_responses/<bounded_projection>_response.schema.json
+  fixtures/{valid,invalid}/
+test/
+  hosts/access/
+  programs/
+  transport/
+  accommodation/
+widgetbook/                                                 (governed fixtures)
+```
+
+Follow existing handler/dependency-injection/policy/store separation. Extract
+common auth/receipt machinery only when multiple real consumers share it; do not
+turn all existing handlers into a new framework. `functions/src/operations` and
+`operations/` are durable business-workflow infrastructure, not the home for every
+product action containing the word 'operations'. Reuse their proven idempotency,
+lease and retry patterns when imports, provider refresh or exports need workers;
+do not invent a second durable engine or a tracked evidence registry.
+
+### 12. UI reuse and bounded extensions
+
+| Need | Reuse first | New feature-level piece / extension rule |
+|---|---|---|
+| Phone/tablet station | `CatchAdaptiveTabScaffold`, `CatchWindowSize`, `CatchScaffold`, root/route scaffolds | New `HostWorkShell`; do not add hidden manager branch indices |
+| Header/search | `CatchTopBar`, `CatchSearchField`, canonical search capability | Program/airport/hotel context in semantic title/subtitle; no custom typography knobs |
+| Time-band roster | `CatchSection`, `CatchFieldLanes`, canonical field/content rows | `ArrivalGuestRow` composes flight, readiness, party and destination; not a CRM row with hidden private fields |
+| Filter and status controls | `CatchSection.controls`, `CatchChip`, `CatchBadge` | Typed flight/transport view state, text/icon plus color; no color-only delay signal |
+| Confirm dispatch | `CatchSheet`, `CatchField`, `CatchSelectionSheet`, `CatchButton` | `TransportDispatchController` owns pending snapshot, validation and idempotency; plate/vendor review stays explicit |
+| Batch manifest | Contained section only for a real selectable/dispatchable group | `TransportBatchSection`, capacity facts, wait warning and explicit split/move actions |
+| Hotel inbound board | Existing adaptive master-detail recipes and field sections | Inbound list + selected trip/stay pane, same data controller on phone/tablet |
+| Connectivity/stale data | `CatchBanner.statuses`, async boundary and localized error adapters | One durable pending/stale/conflict banner; distinguish cached data from provider freshness |
+| Planner totals | `CatchMetricSection.grid` / `.dataQuality` | Exact vs stale/partial coverage and unpriced trips are explicit |
+| Location | Existing `CatchMapPreview` and app location adapter | Optional context, never required to use the roster or substituted with fake map geometry |
+| Guest import/forms | Existing parser, preview/field controls and Forms builder | Program-specific semantic column mapping and household identity review |
+
+No reusable primitive currently needs wedding-specific properties. First compose
+feature widgets. Only promote a new generic status/freshness or selectable-record
+pattern into `catch_ui` after two concrete consumers prove the same anatomy.
+Keep provider calls, airline statuses and hotel permissions out of that package.
+Do not add a universal table framework or a `weddingMode` boolean throughout
+existing screens.
+
+Phone is a searchable list and pushed/sheet detail with large explicit actions;
+tablet is list/detail with an optional batch pane at a sufficient local width.
+Use current window breakpoints, not device-type checks. Preserve scroll/focus and
+selection when live updates arrive; don't move a row out from under a tap. Record
+operation snapshots before awaiting, and do not clear a newly edited draft when
+an older save finishes.
+
+Acceptance fixtures include empty/loading/stale/error, unassigned hotel,
+cancelled/diverted flight, overdue pickup, no suitable vehicle, duplicate dispatch,
+revoked role, expired cache, and interrupted trip. Test large text, screen readers,
+keyboard navigation, sunlight contrast, mixed-case/long Indian names and exact
+plate readability. Add Widgetbook, feature/screen/component contracts and capture
+coverage in the same UI slice; do not change golden baselines without review.
+
+### 13. Safety, privacy and operational limits
+
+- Private program metadata is not public Event metadata. Rooms, itinerary,
+  assistance requirements and contact numbers never leak through search indexes,
+  public profiles, logs, analytics dimensions or a recipient's unrelated form.
+- Wedding client lists remain separate by program even within one planner firm.
+  Coordinator authority does not cross clients. Organizer-level CRM retention
+  after a wedding is an explicit permitted-purpose policy, not the default fate
+  of every imported family member.
+- Record practical assistance requirements, not unnecessary diagnoses. Do not
+  collect passports, government ids or ticket PNRs to track a public flight.
+- Define per-class retention before production: operational guest/stay data,
+  provider observations, grant/invite data, exports, local snapshots, immutable
+  billing records and minimally retained dispute evidence. TTL is cleanup, not
+  an authorization check. Export URLs expire and export creation is audited.
+- Account deletion and program archival traverse new references and projections;
+  finance retention must minimize identity and honor the approved policy.
+- API secrets remain in existing secret management; no real credentials or
+  provider payloads in fixtures. Separate dev/staging/prod adapters and quotas.
+- Pilot sizing: 500 named guests, several hotels, two airport stations and
+  approximately 20 concurrent staff. Validate query/write limits and latency at
+  that load before increasing advertised scale. No unbounded listener over all
+  organizer contacts or guest-level flight polling.
+- Kill switches can stop provider refresh, new dispatches or a program's staff
+  mutations independently. Preserve reading/reconciliation of existing records;
+  disabling a feature does not delete operational history.
+
+### 14. Verification and incremental rollout
+
+Use additive, feature-gated slices. Every deployed slice includes schema fixtures,
+generated outputs, server tests, security tests, UI contracts where applicable,
+focused checks and an explicit data migration/rollback story. No production
+migration, provider purchase, notification sending or deployment is authorized by
+this architecture work.
+
+| Slice | Deliverable | Acceptance / dependencies |
+|---|---|---|
+| A0: pure transport policy | Timing precedence and deterministic capacity/time-window suggestions | Tests cover early actual arrivals, cancellations/diversions, separate pickups/hotels/programs, readiness lanes, household integrity, luggage/accessibility and overdue waits; no callable/export/UI activation |
+| A1: private program foundation | Program/function/guest/household schemas, import preview/commit, manager read/write APIs, scope-safe inventory | Anonymous/cross-organizer access denied; names-only guests work; shared family phone does not merge people; idempotent re-import; no public Event created |
+| A2: staff authority and shell | Program duties, grant/revoke, assignment discovery, access projection, HostWorkShell | Wrong hotel/airport/event/program denied through API as well as UI; deep-link OTP continuation; expiry/revocation/conflicting duties; no manager providers mounted; existing event-operator routes unchanged |
+| A3: manual transport vertical | Pickup/hotel/travel setup, ready/claim, reviewed groups, actual trip capture, hotel inbound/receipt | Two-staff race creates one active assignment; exact retry returns original result; unknown plate vendor review; departure without provider ETA works; room arrival is not event check-in |
+| A4: flight and Routes adapters | Provider resolution/refresh, freshness and route estimates | India route/carrier fixture evaluation, timezone/codeshare tests, stale/out-of-order/outage handling, cost caps; no false GPS/live-progress claim |
+| A5: offline hardening | Durable journal, scoped snapshot cache, conflict recovery and shift procedure | Restart during write, disk/full/parse fault, lost ack, revoked grant on reconnect, two offline devices, cross-account isolation; never silently drop accepted local observations |
+| A6: wedding intake and outreach | Program target in Forms, household RSVP, program-bound Audience/Inbox | Foreign guest token denied; revised response provenance; one household contact can respond only for assigned people; audience preview and send cannot cross program; consent/suppression respected |
+| A7: accommodation and commercial closeout | Room blocks/allocations, vendor tariff snapshots, corrections and recon export | No double room allocation for overlapping stays; per-trip vs vehicle-day math; unpriced/voided trips; immutable rate history; export redaction |
+| A8: expansion | Return-airport leg, deeper function/Event bridge, optional driver channel | Separate privacy and release review; return flight deadline planning is not simply arrival grouping reversed |
+
+The first integrated pilot uses A1–A3 with manual estimates; production flight
+claims require A4 and unreliable-connectivity claims require A5. A wedding CRM/
+RSVP/communications launch requires A6, and the full room/reconciliation promise
+requires A7. This makes the work incremental without calling an isolated policy
+helper a usable feature.
+
+For each diff derive current gates with
+`node tool/harness/verify_local.mjs --base origin/main --list`. Registered docs
+check: `node tool/run.mjs check docs:metadata`. Contract slices use the schema
+generator/check, validator and `./tool/check_data_contract.sh`. Run authorization
+and read-redaction integration tests with Firestore emulators, plus focused
+Functions unit tests and typecheck. UI slices run focused Flutter tests,
+fatal-info workspace analysis and selected architecture/design checks; do not
+run Flutter processes concurrently. Existing social Host and Consumer routes,
+Audience merges, Form conversions and Inbox dispatch are regression surfaces.
+
+Important negative tests include: a hotel user asking for another hotel's trip
+by guessed id; a dispatcher moving a guest into a foreign program; a former
+coordinator replaying an offline operation; a scoped campaign widening its
+saved audience; a shared phone collapsing two children; a stale provider response
+undoing physical departure; and a changed rate card rewriting a historical bill.
+
+### 15. Initial implementation boundary and remaining decisions
+
+The initial source slice is confined to pure server-side transport policy under
+`functions/src/transport`, with adjacent Node tests. It introduces no Firestore
+collection, deployable function, third-party call, new library, security-rule
+change, Flutter route or production feature flag. Inputs are internal policy
+values, not hand-written substitutes for future persisted/wire schemas. Generated
+contracts will be added when their owning commands and repositories are built.
+
+The complete initial policy boundary is: landing-time precedence, cancellation/
+diversion handling, reviewed manual/ready-time precedence, deterministic
+program/pickup/destination/readiness partitioning, anchored time bands, ready-wait
+ceilings, party integrity, seat/luggage/capability fitting and explicit no-fit
+results. The planner produces suggestions, not reservations or dispatches.
+
+Remaining structural slices A1–A8 are not implemented by that foundation. Their
+scope and acceptance above remain the delivery backlog. Provider choice/credentials,
+retention periods, whether coordinators may send program-bound invitations in the
+first pilot, and the native/web offline-storage choice need resolution before
+the relevant integrations are enabled. They do not block provider-independent
+policy work. The private program is the recommended architecture; do not silently
+convert existing public Events or organizer contacts during implementation.
