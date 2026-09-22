@@ -1337,6 +1337,11 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
     schema: schemaTransportActiveAssignmentDocumentSchema,
   ),
   SchemaContractDefinition(
+    name: 'TransportVehicleAssignmentDocument',
+    source: 'firestore/transport_vehicle_assignments.schema.json',
+    schema: schemaTransportVehicleAssignmentDocumentSchema,
+  ),
+  SchemaContractDefinition(
     name: 'TransportOperationReceiptDocument',
     source: 'firestore/transport_operation_receipts.schema.json',
     schema: schemaTransportOperationReceiptDocumentSchema,
@@ -4008,6 +4013,7 @@ const schemaContractsByName = <String, Map<String, Object?>>{
   'TransportVendorDocument': schemaTransportVendorDocumentSchema,
   'TransportTripDocument': schemaTransportTripDocumentSchema,
   'TransportActiveAssignmentDocument': schemaTransportActiveAssignmentDocumentSchema,
+  'TransportVehicleAssignmentDocument': schemaTransportVehicleAssignmentDocumentSchema,
   'TransportOperationReceiptDocument': schemaTransportOperationReceiptDocumentSchema,
   'ProgramIdCallablePayload': schemaProgramIdCallablePayloadSchema,
   'ListOrganizerProgramsCallablePayload': schemaListOrganizerProgramsCallablePayloadSchema,
@@ -4756,6 +4762,7 @@ const schemaContractsBySource = <String, Map<String, Object?>>{
   'firestore/transport_vendors.schema.json': schemaTransportVendorDocumentSchema,
   'firestore/transport_trips.schema.json': schemaTransportTripDocumentSchema,
   'firestore/transport_active_assignments.schema.json': schemaTransportActiveAssignmentDocumentSchema,
+  'firestore/transport_vehicle_assignments.schema.json': schemaTransportVehicleAssignmentDocumentSchema,
   'firestore/transport_operation_receipts.schema.json': schemaTransportOperationReceiptDocumentSchema,
   'callables/program_id_payload.schema.json': schemaProgramIdCallablePayloadSchema,
   'callables/list_organizer_programs_payload.schema.json': schemaListOrganizerProgramsCallablePayloadSchema,

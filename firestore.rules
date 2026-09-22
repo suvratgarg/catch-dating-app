@@ -1622,6 +1622,10 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    match /transportVehicleAssignments/{assignmentId} {
+      allow read, write: if false;
+    }
+
     match /transportOperationReceipts/{receiptId} {
       allow read, write: if false;
     }

@@ -276,6 +276,7 @@ Do not edit it by hand.
 | TransportVendorDocument | `firestore/transport_vendors.schema.json` | `functions/src/shared/generated/transportVendorDocument.ts` |
 | TransportTripDocument | `firestore/transport_trips.schema.json` | `functions/src/shared/generated/transportTripDocument.ts` |
 | TransportActiveAssignmentDocument | `firestore/transport_active_assignments.schema.json` | `functions/src/shared/generated/transportActiveAssignmentDocument.ts` |
+| TransportVehicleAssignmentDocument | `firestore/transport_vehicle_assignments.schema.json` | `functions/src/shared/generated/transportVehicleAssignmentDocument.ts` |
 | TransportOperationReceiptDocument | `firestore/transport_operation_receipts.schema.json` | `functions/src/shared/generated/transportOperationReceiptDocument.ts` |
 | ProgramIdCallablePayload | `callables/program_id_payload.schema.json` | `functions/src/shared/generated/programIdCallablePayload.ts` |
 | ListOrganizerProgramsCallablePayload | `callables/list_organizer_programs_payload.schema.json` | `functions/src/shared/generated/listOrganizerProgramsCallablePayload.ts` |
@@ -1026,6 +1027,7 @@ Do not edit it by hand.
 | `schemaTransportVendorDocumentSchema` | TransportVendorDocument | `firestore/transport_vendors.schema.json` | `lib/core/schema_contracts/generated/schemas/transport_vendor_document.g.dart` |
 | `schemaTransportTripDocumentSchema` | TransportTripDocument | `firestore/transport_trips.schema.json` | `lib/core/schema_contracts/generated/schemas/transport_trip_document.g.dart` |
 | `schemaTransportActiveAssignmentDocumentSchema` | TransportActiveAssignmentDocument | `firestore/transport_active_assignments.schema.json` | `lib/core/schema_contracts/generated/schemas/transport_active_assignment_document.g.dart` |
+| `schemaTransportVehicleAssignmentDocumentSchema` | TransportVehicleAssignmentDocument | `firestore/transport_vehicle_assignments.schema.json` | `lib/core/schema_contracts/generated/schemas/transport_vehicle_assignment_document.g.dart` |
 | `schemaTransportOperationReceiptDocumentSchema` | TransportOperationReceiptDocument | `firestore/transport_operation_receipts.schema.json` | `lib/core/schema_contracts/generated/schemas/transport_operation_receipt_document.g.dart` |
 | `schemaProgramIdCallablePayloadSchema` | ProgramIdCallablePayload | `callables/program_id_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/program_id_callable_payload.g.dart` |
 | `schemaListOrganizerProgramsCallablePayloadSchema` | ListOrganizerProgramsCallablePayload | `callables/list_organizer_programs_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/list_organizer_programs_callable_payload.g.dart` |

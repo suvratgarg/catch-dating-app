@@ -269,6 +269,7 @@ export {programTravelPartyDocumentSchema} from "./schemas/programTravelPartyDocu
 export {transportVendorDocumentSchema} from "./schemas/transportVendorDocument";
 export {transportTripDocumentSchema} from "./schemas/transportTripDocument";
 export {transportActiveAssignmentDocumentSchema} from "./schemas/transportActiveAssignmentDocument";
+export {transportVehicleAssignmentDocumentSchema} from "./schemas/transportVehicleAssignmentDocument";
 export {transportOperationReceiptDocumentSchema} from "./schemas/transportOperationReceiptDocument";
 export {programIdCallablePayloadSchema} from "./schemas/programIdInput";
 export {listOrganizerProgramsCallablePayloadSchema} from "./schemas/listOrganizerProgramsInput";

@@ -269,6 +269,7 @@ export {validateProgramTravelPartyDocument} from "./validators/programTravelPart
 export {validateTransportVendorDocument} from "./validators/transportVendorDocument";
 export {validateTransportTripDocument} from "./validators/transportTripDocument";
 export {validateTransportActiveAssignmentDocument} from "./validators/transportActiveAssignmentDocument";
+export {validateTransportVehicleAssignmentDocument} from "./validators/transportVehicleAssignmentDocument";
 export {validateTransportOperationReceiptDocument} from "./validators/transportOperationReceiptDocument";
 export {validateProgramIdCallablePayload} from "./validators/programIdInput";
 export {validateListOrganizerProgramsCallablePayload} from "./validators/listOrganizerProgramsInput";

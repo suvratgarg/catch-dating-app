@@ -19,6 +19,7 @@ import type {
   ProgramTravelLegDocument,
   ProgramTravelPartyDocument,
   TransportActiveAssignmentDocument,
+  TransportVehicleAssignmentDocument,
   TransportOperationReceiptDocument,
   TransportTripDocument,
   TransportVendorDocument,
@@ -51,6 +52,12 @@ export function transportAssignmentId(programId: string,
 
 export function normalizePlate(plate: string): string {
   return plate.toUpperCase().replace(/[^A-Z0-9]/g, "");
+}
+
+/** Composite hash avoids delimiter ambiguity in organizer/plate identities. */
+export function transportVehicleAssignmentId(organizerId: string,
+  plateNormalized: string): string {
+  return hashRequest({organizerId, plateNormalized});
 }
 
 export async function dispatchProgramTripHandler(
@@ -168,6 +175,16 @@ export async function dispatchProgramTripHandler(
     if (data.kind !== undefined && data.kind !== "guestTransfer") {
       throw new HttpsError("failed-precondition",
         "Passenger dispatch cannot record an empty vehicle repositioning.");
+    }
+    const vehicleAssignmentRef = db.collection("transportVehicleAssignments")
+      .doc(transportVehicleAssignmentId(
+        access.program.organizerId, plateNormalized));
+    const vehicleAssignmentSnap = await tx.get(vehicleAssignmentRef);
+    const vehicleAssignment = vehicleAssignmentSnap.data() as
+      TransportVehicleAssignmentDocument | undefined;
+    if (vehicleAssignment?.status === "active") {
+      throw new HttpsError("already-exists",
+        "This vehicle is already assigned to an active trip.");
     }
     const legSnaps = await Promise.all(data.legIds.map((legId) =>
       tx.get(db.collection("programTravelLegs").doc(legId))));
@@ -307,6 +324,17 @@ export async function dispatchProgramTripHandler(
       updatedAt: now,
       revision: 1,
     };
+    const vehicleReservation: TransportVehicleAssignmentDocument = {
+      organizerId: access.program.organizerId,
+      plateNormalized,
+      programId: data.programId,
+      tripId: tripRef.id,
+      status: "active",
+      assignedAt: now,
+      releasedAt: null,
+      revision: nextRevision(vehicleAssignment?.revision, now),
+    };
+    tx.set(vehicleAssignmentRef, vehicleReservation);
     tx.set(tripRef, trip);
     for (const leg of legs) {
       const assignment: TransportActiveAssignmentDocument = {
@@ -431,6 +459,20 @@ async function tripActionHandler(
         `Trip is already ${trip.status}.`);
     }
     const now = deps.now();
+    const vehicleAssignmentRef = db.collection("transportVehicleAssignments")
+      .doc(transportVehicleAssignmentId(
+        trip.organizerId, trip.plateNormalized));
+    const vehicleAssignmentSnap = await tx.get(vehicleAssignmentRef);
+    const vehicleAssignment = vehicleAssignmentSnap.data() as
+      TransportVehicleAssignmentDocument | undefined;
+    if (!vehicleAssignment || vehicleAssignment.status !== "active" ||
+        vehicleAssignment.tripId !== data.tripId ||
+        vehicleAssignment.organizerId !== trip.organizerId ||
+        vehicleAssignment.plateNormalized !== trip.plateNormalized ||
+        vehicleAssignment.programId !== data.programId) {
+      throw new HttpsError("failed-precondition",
+        "Vehicle assignment changed. Reconcile the trip before continuing.");
+    }
     const assignmentSnaps = await Promise.all(trip.legIds.map((legId) =>
       tx.get(db.collection("transportActiveAssignments")
         .doc(transportAssignmentId(data.programId, legId)))));
@@ -464,6 +506,10 @@ async function tripActionHandler(
       tripUpdate.voidedByUid = actorUid;
       tripUpdate.voidReason = data.reason;
     }
+    tx.update(vehicleAssignmentRef, {
+      status: "released", releasedAt: now,
+      revision: nextRevision(vehicleAssignment.revision, now),
+    });
     tx.update(tripRef, tripUpdate);
     const legReadiness = action === "markArrived" ? "arrived" : "ready";
     for (let index = 0; index < trip.legIds.length; index += 1) {

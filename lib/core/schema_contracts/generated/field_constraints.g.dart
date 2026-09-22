@@ -98060,6 +98060,80 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const transportVehicleAssignmentDocumentAssignedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'transportVehicleAssignmentDocument.assignedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const transportVehicleAssignmentDocumentAssignedAtSeconds = CatchContractFieldConstraints(
+    path: 'transportVehicleAssignmentDocument.assignedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const transportVehicleAssignmentDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'transportVehicleAssignmentDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const transportVehicleAssignmentDocumentPlateNormalized = CatchContractFieldConstraints(
+    path: 'transportVehicleAssignmentDocument.plateNormalized',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Z0-9]{4,16}\$',
+  );
+
+  static const transportVehicleAssignmentDocumentProgramId = CatchContractFieldConstraints(
+    path: 'transportVehicleAssignmentDocument.programId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const transportVehicleAssignmentDocumentReleasedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'transportVehicleAssignmentDocument.releasedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const transportVehicleAssignmentDocumentReleasedAtSeconds = CatchContractFieldConstraints(
+    path: 'transportVehicleAssignmentDocument.releasedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const transportVehicleAssignmentDocumentRevision = CatchContractFieldConstraints(
+    path: 'transportVehicleAssignmentDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const transportVehicleAssignmentDocumentStatus = CatchContractFieldConstraints(
+    path: 'transportVehicleAssignmentDocument.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['active', 'released'],
+  );
+
+  static const transportVehicleAssignmentDocumentTripId = CatchContractFieldConstraints(
+    path: 'transportVehicleAssignmentDocument.tripId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const transportVendorDocumentActive = CatchContractFieldConstraints(
     path: 'transportVendorDocument.active',
     required: true,
@@ -119888,6 +119962,16 @@ abstract final class CatchContractConstraints {
     'transportTripDocument.vendorNameSnapshot': transportTripDocumentVendorNameSnapshot,
     'transportTripDocument.voidedByUid': transportTripDocumentVoidedByUid,
     'transportTripDocument.voidReason': transportTripDocumentVoidReason,
+    'transportVehicleAssignmentDocument.assignedAt._nanoseconds': transportVehicleAssignmentDocumentAssignedAtNanoseconds,
+    'transportVehicleAssignmentDocument.assignedAt._seconds': transportVehicleAssignmentDocumentAssignedAtSeconds,
+    'transportVehicleAssignmentDocument.organizerId': transportVehicleAssignmentDocumentOrganizerId,
+    'transportVehicleAssignmentDocument.plateNormalized': transportVehicleAssignmentDocumentPlateNormalized,
+    'transportVehicleAssignmentDocument.programId': transportVehicleAssignmentDocumentProgramId,
+    'transportVehicleAssignmentDocument.releasedAt._nanoseconds': transportVehicleAssignmentDocumentReleasedAtNanoseconds,
+    'transportVehicleAssignmentDocument.releasedAt._seconds': transportVehicleAssignmentDocumentReleasedAtSeconds,
+    'transportVehicleAssignmentDocument.revision': transportVehicleAssignmentDocumentRevision,
+    'transportVehicleAssignmentDocument.status': transportVehicleAssignmentDocumentStatus,
+    'transportVehicleAssignmentDocument.tripId': transportVehicleAssignmentDocumentTripId,
     'transportVendorDocument.active': transportVendorDocumentActive,
     'transportVendorDocument.contactName': transportVendorDocumentContactName,
     'transportVendorDocument.createdAt._nanoseconds': transportVendorDocumentCreatedAtNanoseconds,

@@ -1443,6 +1443,12 @@ const schemaSpecs = [
       "transportActiveAssignmentDocument.ts",
   },
   {
+    name: "TransportVehicleAssignmentDocument",
+    source: "firestore/transport_vehicle_assignments.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/transportVehicleAssignmentDocument.ts",
+  },
+  {
     name: "TransportOperationReceiptDocument",
     source: "firestore/transport_operation_receipts.schema.json",
     typeOutput:

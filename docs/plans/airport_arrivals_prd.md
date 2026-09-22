@@ -871,6 +871,13 @@ matching is a suggestion only. Corrections preserve what staff originally entere
 and who changed it. Exact normalized registration prevents obvious concurrent
 assignment; cross-program vehicle occupancy is organizer-scoped.
 
+The implemented `transportVehicleAssignments` reservation key hashes organizer
+id and normalized plate. Active reservations have no age-based expiry. Arrival
+and void require matching trip, program, organizer and plate before release;
+an old command replay cannot release a newer reservation. Enabling this version
+on an environment with older active trips requires reconciling those trips and
+creating their reservations first; missing or conflicting bindings fail closed.
+
 Hotel receipt rechecks destination/hotel authority and marks actual arrival; it
 releases the vehicle for later work under the agreed lifecycle. Passenger
 assignments release only by a confirmed terminal/corrective command. A taxi

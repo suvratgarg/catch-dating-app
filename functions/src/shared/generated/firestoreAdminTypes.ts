@@ -8698,6 +8698,20 @@ export interface TransportActiveAssignmentDocument {
 }
 
 /**
+ * Server-owned organizer-wide occupancy of a normalized vehicle plate. Dispatch reserves the vehicle atomically with its passenger assignments. Arrival or void releases only the matching trip; active reservations never expire by age.
+ */
+export interface TransportVehicleAssignmentDocument {
+  programId: string;
+  tripId: string;
+  status: "active" | "released";
+  assignedAt: FirebaseFirestore.Timestamp;
+  releasedAt: FirebaseFirestore.Timestamp | null;
+  revision: number;
+  organizerId: string;
+  plateNormalized: string;
+}
+
+/**
  * Server-owned idempotency receipt for offline-replayed transport mutations. An exact retry returns the original result; a conflicting reuse of the client operation id fails closed.
  */
 export interface TransportOperationReceiptDocument {

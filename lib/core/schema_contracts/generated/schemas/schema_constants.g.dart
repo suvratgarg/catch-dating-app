@@ -706,6 +706,7 @@ export 'transfer_organizer_ownership_callable_payload.g.dart';
 export 'transport_active_assignment_document.g.dart';
 export 'transport_operation_receipt_document.g.dart';
 export 'transport_trip_document.g.dart';
+export 'transport_vehicle_assignment_document.g.dart';
 export 'transport_vendor_document.g.dart';
 export 'transport_vendor_list_callable_response.g.dart';
 export 'unblock_user_callable_payload.g.dart';

@@ -4538,6 +4538,7 @@ describe("firestore.rules", () => {
       "transportVendors",
       "transportTrips",
       "transportActiveAssignments",
+      "transportVehicleAssignments",
       "transportOperationReceipts",
     ];
 

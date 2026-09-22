@@ -267,6 +267,7 @@ import {
   transportVendorDocumentSchema,
   transportTripDocumentSchema,
   transportActiveAssignmentDocumentSchema,
+  transportVehicleAssignmentDocumentSchema,
   transportOperationReceiptDocumentSchema,
   programIdCallablePayloadSchema,
   listOrganizerProgramsCallablePayloadSchema,
@@ -1036,6 +1037,7 @@ export const validateProgramTravelPartyDocument = ajv.compile(programTravelParty
 export const validateTransportVendorDocument = ajv.compile(transportVendorDocumentSchema);
 export const validateTransportTripDocument = ajv.compile(transportTripDocumentSchema);
 export const validateTransportActiveAssignmentDocument = ajv.compile(transportActiveAssignmentDocumentSchema);
+export const validateTransportVehicleAssignmentDocument = ajv.compile(transportVehicleAssignmentDocumentSchema);
 export const validateTransportOperationReceiptDocument = ajv.compile(transportOperationReceiptDocumentSchema);
 export const validateProgramIdCallablePayload = ajv.compile(programIdCallablePayloadSchema);
 export const validateListOrganizerProgramsCallablePayload = ajv.compile(listOrganizerProgramsCallablePayloadSchema);

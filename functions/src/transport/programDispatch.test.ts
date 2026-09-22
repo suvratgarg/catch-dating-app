@@ -222,3 +222,94 @@ for (const offset of [6 * 60_000, -8 * 24 * 60 * 60_000]) {
     }, "dispatcher-1"), deps(db)), isCode("failed-precondition"));
   });
 }
+
+function addSecondProgram(db: FakeFirestore) {
+  db.setDoc("organizerPrograms/program-2", {
+    ...db.getDoc("organizerPrograms/program-1"),
+  });
+  db.setDoc("programPickupPoints/pickup-2", {
+    ...db.getDoc("programPickupPoints/pp-t3"), programId: "program-2",
+  });
+  db.setDoc("programHotels/destination-2", {
+    ...db.getDoc("programHotels/hotel-1"), programId: "program-2",
+  });
+  db.setDoc("programTravelLegs/leg-3", {
+    ...db.getDoc("programTravelLegs/leg-1"), programId: "program-2",
+    guestId: "guest-3", pickupPointId: "pickup-2",
+    destinationHotelId: "destination-2",
+  });
+  return {...dispatchData(), programId: "program-2", pickupPointId: "pickup-2",
+    destinationHotelId: "destination-2", vendorId: null, legIds: ["leg-3"],
+    plateDisplay: "dl1t4471",
+    expectedLegRevisions: [{legId: "leg-3", revision: 1}]};
+}
+
+test("one vehicle cannot depart on concurrent trips across organizer programs",
+  async () => {
+    const db = new FakeFirestore(readySeed());
+    const second = addSecondProgram(db);
+    const results = await Promise.allSettled([
+      dispatch(db),
+      dispatchProgramTripHandler(request(second, "manager-1"), deps(db)),
+    ]);
+    assert.equal(results.filter((r) => r.status === "fulfilled").length, 1);
+    const rejected = results.find((r) => r.status === "rejected");
+    assert.ok(rejected?.status === "rejected");
+    assert.ok(isCode("already-exists")(rejected.reason));
+    assert.equal([...db.docs.keys()].filter((key) =>
+      key.startsWith("transportTrips/")).length, 1);
+  });
+
+for (const action of [markProgramTripArrivedHandler, voidProgramTripHandler]) {
+  test(`${action.name} releases its vehicle for another program`, async () => {
+    const db = new FakeFirestore(readySeed());
+    const second = addSecondProgram(db);
+    const first = await dispatch(db);
+    const data = {programId: "program-1", tripId: first.tripId,
+      expectedRevision: first.revision, clientOperationId: "complete-first",
+      reason: "Wrong vehicle"};
+    await action(request(data, "dispatcher-1"), deps(db));
+    const next = await dispatchProgramTripHandler(
+      request(second, "manager-1"), deps(db));
+    assert.notEqual(first.tripId, next.tripId);
+    // A delayed replay must not release the vehicle from the newer trip.
+    await action(request(data, "dispatcher-1"), deps(db));
+    const reservations = [...db.docs].filter(([path]) =>
+      path.startsWith("transportVehicleAssignments/"));
+    assert.equal(reservations.length, 1);
+    assert.equal(reservations[0][1].status, "active");
+    assert.equal(reservations[0][1].tripId, next.tripId);
+  });
+}
+
+test("stale trip completion cannot release a vehicle owned by another trip",
+  async () => {
+    const db = new FakeFirestore(readySeed());
+    const trip = await dispatch(db);
+    const key = [...db.docs.keys()].find((path) =>
+      path.startsWith("transportVehicleAssignments/"))!;
+    db.updateDoc(key, {tripId: "other-trip"});
+    await assert.rejects(voidProgramTripHandler(request({
+      programId: "program-1", tripId: trip.tripId,
+      expectedRevision: trip.revision, clientOperationId: "void-stale",
+      reason: "Wrong vehicle",
+    }, "dispatcher-1"), deps(db)), isCode("failed-precondition"));
+    assert.equal(db.getDoc(key)?.status, "active");
+    assert.equal(db.getDoc("programTravelLegs/leg-1")?.readiness, "dispatched");
+  });
+
+test("vehicle occupancy is isolated between organizers", async () => {
+  const db = new FakeFirestore(readySeed());
+  const second = addSecondProgram(db);
+  db.setDoc("organizers/org-2", {...db.getDoc("organizers/org-1")});
+  for (const path of ["organizerPrograms/program-2",
+    "programPickupPoints/pickup-2", "programHotels/destination-2",
+    "programTravelLegs/leg-3"]) {
+    db.updateDoc(path, {organizerId: "org-2"});
+  }
+  await dispatch(db);
+  await dispatchProgramTripHandler(request(second, "manager-1"), deps(db));
+  const reservations = [...db.docs.keys()].filter((path) =>
+    path.startsWith("transportVehicleAssignments/"));
+  assert.equal(reservations.length, 2);
+});
