@@ -27247,5 +27247,5 @@
   "hostAudienceRecentlyUpdated": "Recently updated",
   "@hostAudienceRecentlyUpdated": {"description": "Fixed server ordering of the Forms directory.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"},
   "hostAudienceSelectedPerson": "Selected person",
-  "@hostAudienceSelectedPerson": {"description": "Active person filter on the unified responses list."}
+  "@hostAudienceSelectedPerson": {"description": "Active person filter on the unified responses list.", "x-audience": "host", "x-owner": "product", "x-surface": "hosts.presentation.forms"}
 }
