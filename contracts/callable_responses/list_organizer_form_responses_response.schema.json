@@ -25,6 +25,52 @@
         }
       }
     },
-    "nextCursor": {"type": ["string", "null"], "maxLength": 1000}
+    "nextCursor": {"type": ["string", "null"], "maxLength": 1000},
+    "entries": {
+      "type": "array",
+      "maxItems": 100,
+      "description": "Present only when includeApplications is true. A converted native response has both source summaries and occurs once.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "entryId",
+          "submittedAtMillis",
+          "response",
+          "application"
+        ],
+        "properties": {
+          "entryId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "submittedAtMillis": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "response": {
+            "anyOf": [
+              {
+                "$ref": "../shared/organizer_form_operations_common.schema.json#/definitions/responseRow"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "application": {
+            "anyOf": [
+              {
+                "$ref": "list_organizer_applications_response.schema.json#/definitions/application"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        }
+      }
+    }
   }
 }

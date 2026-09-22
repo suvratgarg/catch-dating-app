@@ -8,18 +8,16 @@ class HostSavedAudiencesWorkspace extends ConsumerWidget
     super.key,
     required this.organizerId,
     required this.query,
-    required this.onCreate,
     required this.onOpen,
   });
 
   final String organizerId;
   final String? query;
-  final VoidCallback onCreate;
   final ValueChanged<HostSavedAudience> onOpen;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) =>
-      CatchRootScreenPageScrollView.fullBleed(
+      CatchRootScreenPageScrollView.sections(
         scrollKey: const PageStorageKey<String>('host-customers-audiences'),
         onRefresh: () async {
           ref.invalidate(hostSavedAudiencesProvider(organizerId));
@@ -30,7 +28,6 @@ class HostSavedAudiencesWorkspace extends ConsumerWidget
           HostSavedAudiencesDirectory(
             organizerId: organizerId,
             query: query,
-            onCreate: onCreate,
             onOpen: onOpen,
           ),
         ],
@@ -42,13 +39,11 @@ class HostSavedAudiencesDirectory extends ConsumerStatefulWidget {
     super.key,
     required this.organizerId,
     required this.query,
-    required this.onCreate,
     required this.onOpen,
   });
 
   final String organizerId;
   final String? query;
-  final VoidCallback onCreate;
   final ValueChanged<HostSavedAudience> onOpen;
 
   @override
@@ -59,49 +54,39 @@ class HostSavedAudiencesDirectory extends ConsumerStatefulWidget {
 class _HostSavedAudiencesDirectoryState
     extends ConsumerState<HostSavedAudiencesDirectory> {
   _HostSavedAudienceMembership _membership = _HostSavedAudienceMembership.all;
-  bool _byName = false;
+  bool _byName = true;
   String get organizerId => widget.organizerId;
   String? get query => widget.query;
-  VoidCallback get onCreate => widget.onCreate;
   ValueChanged<HostSavedAudience> get onOpen => widget.onOpen;
 
   @override
   Widget build(BuildContext context) {
     final audiences = ref.watch(hostAllSavedAudiencesProvider(organizerId));
-    final createAction = CatchButton.text(
-      key: const ValueKey('host-saved-audience-create'),
-      label: context.l10n.hostSavedAudienceNew,
-      onPressed: onCreate,
-    );
     return SliverMainAxisGroup(
       slivers: [
-        CatchPageBody.sliver(
-          child: SliverToBoxAdapter(
-            child: Wrap(
-              spacing: CatchSpacing.s4,
-              runSpacing: CatchSpacing.s2,
-              children: [
-                CatchButton.command(
-                  label: _byName
-                      ? context.l10n.hostCustomersSortName
-                      : context.l10n.hostAudienceRecentlyChecked,
-                  leading: Icon(CatchIcons.sort),
-                  onPressed: () => setState(() => _byName = !_byName),
-                ),
-                CatchButton.command(
-                  label: switch (_membership) {
-                    _HostSavedAudienceMembership.automatic =>
-                      context.l10n.hostAudienceAutomaticGroup,
-                    _HostSavedAudienceMembership.manual =>
-                      context.l10n.hostAudienceManualGroup,
-                    _HostSavedAudienceMembership.all =>
-                      context.l10n.hostAudienceAllGroups,
-                  },
-                  leading: Icon(CatchIcons.tune),
-                  onPressed: _chooseMembership,
-                ),
-              ],
+        SliverToBoxAdapter(
+          child: CatchSection.controls(
+            sortLabel: context.l10n.hostCustomersSortControl(
+              label: _byName
+                  ? context.l10n.hostCustomersSortName
+                  : context.l10n.hostAudienceRecentlyChecked,
             ),
+            onSort: _chooseSort,
+            filtersLabel: context.l10n.hostCustomersFilters,
+            onFilters: _chooseMembership,
+            activeFilters: _membership == _HostSavedAudienceMembership.all
+                ? null
+                : _membership == _HostSavedAudienceMembership.manual
+                ? context.l10n.hostAudienceManualGroup
+                : context.l10n.hostAudienceAutomaticGroup,
+            clearLabel: _membership == _HostSavedAudienceMembership.all
+                ? null
+                : context.l10n.hostCustomersClearFilter,
+            onClear: _membership == _HostSavedAudienceMembership.all
+                ? null
+                : () => setState(
+                    () => _membership = _HostSavedAudienceMembership.all,
+                  ),
           ),
         ),
         CatchAsyncBoundary<HostSavedAudiencePage>.sliver(
@@ -110,8 +95,6 @@ class _HostSavedAudiencesDirectoryState
               ref.invalidate(hostAllSavedAudiencesProvider(organizerId)),
           initialLoadTimeout: null,
           loadingBuilder: (_) => CatchSection.sliverLoadingRows(
-            title: context.l10n.hostSavedAudiencesManage,
-            trailing: createAction,
             itemCount: 4,
             layoutBuilder: (_, _) => CatchRecordLayout.placeholder(
               icon: CatchIcons.groupsOutlined,
@@ -150,9 +133,6 @@ class _HostSavedAudiencesDirectoryState
               slivers: [
                 CatchSection.sliverRows(
                   key: const ValueKey('host-saved-audiences-directory'),
-                  title: context.l10n.hostSavedAudiencesManage,
-                  count: visible.length,
-                  trailing: createAction,
                   itemCount: visible.length,
                   indexForKeyBuilder: (key) {
                     final index = visible.indexWhere(
@@ -203,30 +183,27 @@ class _HostSavedAudiencesDirectoryState
             );
           },
         ),
-        CatchPageBody.sliver(
-          child: SliverToBoxAdapter(
-            child: Text(
-              context.l10n.hostAudienceGroupMembershipHelp,
-              style: CatchTextStyles.supporting(context),
-            ),
-          ),
+      ],
+    );
+  }
+
+  Future<void> _chooseSort() async {
+    final selected = await showCatchSelectionSheet<bool>(
+      context: context,
+      title: context.l10n.hostCustomersSort,
+      value: _byName,
+      items: [
+        CatchSelectionMenuItem(
+          value: true,
+          label: context.l10n.hostCustomersSortName,
         ),
-        SliverToBoxAdapter(
-          child: CatchSection.rows(
-            children: [
-              CatchField.nav(
-                copy: catchFieldCopy(context.l10n),
-                title: context.l10n.hostFormAutomationsTitle,
-                onTap: () => context.pushNamed(
-                  Routes.hostAudienceAutomationsScreen.name,
-                  queryParameters: {'organizerId': organizerId},
-                ),
-              ),
-            ],
-          ),
+        CatchSelectionMenuItem(
+          value: false,
+          label: context.l10n.hostAudienceRecentlyChecked,
         ),
       ],
     );
+    if (selected != null && mounted) setState(() => _byName = selected);
   }
 
   Future<void> _chooseMembership() async {

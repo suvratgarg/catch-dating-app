@@ -15,6 +15,7 @@ part 'host_form_operations_controller.g.dart';
 class HostFormResponsesState {
   const HostFormResponsesState({
     required this.responses,
+    this.entries,
     required this.nextCursor,
     this.answerFilterOptions = const [],
     this.loadingMore = false,
@@ -22,6 +23,10 @@ class HostFormResponsesState {
   });
 
   final List<HostFormResponseSummary> responses;
+  final List<HostFormInboxEntry>? entries;
+  List<HostFormInboxEntry> get inboxEntries =>
+      entries ??
+      responses.map(HostFormInboxEntry.fromResponse).toList(growable: false);
   final String? nextCursor;
   final List<HostFormResponseFilterOption> answerFilterOptions;
   final bool loadingMore;
@@ -38,6 +43,7 @@ class HostFormResponsesState {
     bool clearLoadMoreError = false,
   }) => HostFormResponsesState(
     responses: responses ?? this.responses,
+    entries: entries,
     answerFilterOptions: answerFilterOptions,
     nextCursor: clearNextCursor ? null : nextCursor ?? this.nextCursor,
     loadingMore: loadingMore ?? this.loadingMore,
@@ -59,6 +65,7 @@ class HostFormResponsesController extends _$HostFormResponsesController {
         .listResponses(request);
     return HostFormResponsesState(
       responses: page.items,
+      entries: page.entries,
       answerFilterOptions: page.answerFilterOptions,
       nextCursor: page.nextCursor,
     );
@@ -78,9 +85,16 @@ class HostFormResponsesController extends _$HostFormResponsesController {
         for (final response in current.responses) response.responseId: response,
         for (final response in page.items) response.responseId: response,
       };
+      final entries = <String, HostFormInboxEntry>{
+        for (final entry in current.inboxEntries) entry.entryId: entry,
+        for (final entry
+            in page.entries ?? page.items.map(HostFormInboxEntry.fromResponse))
+          entry.entryId: entry,
+      };
       state = AsyncData(
         HostFormResponsesState(
           responses: List.unmodifiable(byId.values),
+          entries: List.unmodifiable(entries.values),
           answerFilterOptions: page.answerFilterOptions,
           nextCursor: page.nextCursor,
         ),

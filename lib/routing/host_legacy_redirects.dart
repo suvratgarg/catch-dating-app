@@ -14,19 +14,32 @@ String? hostOrganizerAudienceRedirect(Uri uri) {
 }
 
 String hostApplicationsLegacyRedirect(Uri uri, {String? applicationId}) {
-  final path = applicationId == null
-      ? Routes.hostApplicationsScreen.path
-      : Routes.hostApplicationDetailScreen.path.replaceFirst(
-          ':applicationId',
-          applicationId,
-        );
-  return uri.replace(path: path).toString();
+  if (applicationId != null) {
+    return uri
+        .replace(
+          path: Routes.hostApplicationDetailScreen.path.replaceFirst(
+            ':applicationId',
+            applicationId,
+          ),
+        )
+        .toString();
+  }
+  return uri
+      .replace(
+        path: Routes.hostAudienceScreen.path,
+        queryParameters: {
+          ...uri.queryParameters,
+          'view': HostAudienceView.responses.name,
+        },
+      )
+      .toString();
 }
 
 String hostCustomersLegacyRedirect(Uri uri) {
   final suffix = uri.path.substring(
     Routes.hostCustomersLegacyScreen.path.length,
   );
+  if (suffix == '/applications') return hostApplicationsLegacyRedirect(uri);
   final path = switch (suffix) {
     '' => Routes.hostAudienceScreen.path,
     '/new' => Routes.hostAddCustomerScreen.path,
@@ -53,6 +66,7 @@ String hostFormsLegacyRedirect(Uri uri) {
         )
         .toString();
   }
+  if (suffix == '/applications') return hostApplicationsLegacyRedirect(uri);
   final path = switch (suffix) {
     '/new' => Routes.hostFormTemplatesScreen.path,
     final value when value.startsWith('/responses/') =>

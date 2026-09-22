@@ -1,7 +1,7 @@
 ---
 doc_id: design_language
-version: 1.30.0
-updated: 2026-09-21
+version: 1.31.0
+updated: 2026-09-22
 owner: ui_elevation_initiative
 status: active # identity locked; Phase 0–1 complete (bundled optical-sized fonts, B&W tokens, ActivityPalette routing, matte grade, anti-drift gates); Phase 2 flagship Profile built
 ---
@@ -631,8 +631,20 @@ not rebuild the family as local `Row`, `Stack`, padding, or divider recipes.
   global navigation rail is not an ordinary row. Those keep their own semantic
   primitive, with non-row section content supplied through `.content`.
 - `CatchSection.controls` owns the content gutter and both full content-width
-  rules around collection sort/filter controls. People and Responses pass only
-  their controls; neither can omit the upper boundary or add a mismatched
+  rules around collection sort/filter controls. Its semantic inputs own sorting
+  at the leading edge and Filters at the trailing edge; callers cannot supply
+  arbitrary widget slots or swap their roles. A fixed ordering has no dropdown
+  affordance. Active filters have one shared summary and Clear action. At narrow
+  widths or large text the controls wrap in reading order within the same rules.
+  All four Audience tabs use this recipe. They share `HostAudienceHeader` and
+  `HostAudienceTabRail` for title, primary creation action, overflow, search, and
+  peer navigation.
+  Their section-based page owner supplies top spacing once; quick-filter rails
+  use section content gutters without adding another page-padding wrapper.
+  Organizer-wide Automations belongs in the common overflow, not the Groups
+  result list. Omit repeated list titles when the selected tab supplies context.
+  Form purpose and submission status are filters, not sort orders. Neither a
+  feature nor a state branch may omit the upper boundary or add a mismatched
   lower rule. The rules are distinct from row sibling dividers, which start at
   the text lane.
 - `CatchSection.loadingRows` and `.sliverLoadingRows` render passive

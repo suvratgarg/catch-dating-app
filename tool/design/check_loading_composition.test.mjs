@@ -27,7 +27,6 @@ test('rejects hand-built loading rows on protected Host and Consumer screens', (
     'lib/hosts/presentation/customers/host_customer_applications_panel.dart',
     'lib/hosts/presentation/inbox/host_new_message_screen.dart',
     'lib/hosts/presentation/host_operations/host_team_hosted_clubs_section.dart',
-    'lib/hosts/presentation/applications/host_applications_screen.dart',
     'lib/events/presentation/events_screen.dart',
     'lib/swipes/presentation/discover_screen.dart',
   ]) {

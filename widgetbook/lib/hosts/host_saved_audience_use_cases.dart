@@ -60,7 +60,6 @@ Widget hostGroupsDirectory(BuildContext context) => ProviderScope(
         HostSavedAudiencesDirectory(
           organizerId: _audience.organizerId,
           query: null,
-          onCreate: () {},
           onOpen: (_) {},
         ),
       ],

@@ -251,6 +251,9 @@ class HostFormsRepository {
     payload: ListOrganizerFormResponsesCallableRequest(
       organizerId: request.organizerId,
       formId: request.formId,
+      contactId: request.contactId,
+      includeApplications: request.includeApplications ? true : null,
+      reviewStatus: request.reviewStatus?.name,
       versionId: request.versionId,
       statuses: request.statuses.map((value) => value.name).toList(),
       sortDirection: request.oldestFirst ? 'asc' : null,
@@ -274,7 +277,10 @@ class HostFormsRepository {
       limit: request.limit.clamp(1, ReadLimitPolicy.historyPage).toInt(),
     ).toJson(),
     action: 'load organizer form responses',
-    parse: HostFormResponsePage.fromCallableData,
+    parse: (data) => HostFormResponsePage.fromCallableData(
+      data,
+      requireUnifiedEntries: request.includeApplications,
+    ),
   );
 
   Future<HostFormResponseDetail> getResponseDetail({

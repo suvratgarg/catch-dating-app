@@ -1,7 +1,7 @@
 {
   "$schema": "./host_feature_responsibilities.schema.json",
   "version": 1,
-  "updated": "2026-09-02",
+  "updated": "2026-09-22",
   "owner": "hosts",
   "sourceOfTruth": "Defines the ordered responsibility, route ownership, current implementation seams, and explicit exclusions for the five authenticated Host destinations. Runtime behavior remains owned by production code and its specialist data contracts.",
   "features": [
@@ -13,7 +13,6 @@
       "handoffRouteIds": [
         "hostEventsScreen",
         "hostAppEventManageScreen",
-        "hostApplicationsScreen",
         "hostApplicationDetailScreen",
         "hostAudienceScreen",
         "hostInboxScreen",
@@ -28,7 +27,7 @@
         "Fetch the bounded active-event context independently of the Events inventory controller.",
         "Consume the manager-authorized attention callable, parse exhaustive coverage, and merge device-local attendance retry or conflict work.",
         "Order work by urgency, consequence, deadline, and stable identity without inferring mandatory tasks from missing optional data.",
-        "Own the dedicated Dress Rehearsal entry point and typed handoffs to Events, Event Manage, Audience, Inbox, Applications, and Payouts.",
+        "Own the dedicated Dress Rehearsal entry point and typed handoffs to Events, Event Manage, Audience Responses, Inbox, and Payouts.",
         "Keep incomplete attention sources visible so the screen cannot claim a false all-clear."
       ],
       "doesNotOwn": [
@@ -166,14 +165,13 @@
         "hostFormAnalyticsScreen",
         "hostFormAutomationsScreen",
         "hostAudienceAutomationsScreen",
-        "hostApplicationsScreen",
         "hostApplicationDetailScreen",
         "hostCustomerDetailScreen"
       ],
       "handoffRouteIds": ["hostInboxScreen", "hostAppEventDetailScreen"],
       "targetRoot": "lib/hosts/audience",
       "migrationStatus": "targetDefinedLegacyImplementation",
-      "purpose": "Own the participant relationship system as one destination: People, saved Audiences, Forms, Responses, and organizer Applications, with shared organizer scope and deliberate handoff to Inbox for delivery.",
+      "purpose": "Own the participant relationship system as one destination: People, saved Audiences, Forms, and unified Responses review, with shared organizer scope and deliberate handoff to Inbox for delivery.",
       "guide": {
         "updated": "2026-09-05",
         "sections": [

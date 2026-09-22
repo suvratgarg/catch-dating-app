@@ -196,7 +196,7 @@ void main() {
         hostApplicationsLegacyRedirect(
           Uri.parse('/host/customers/applications?organizerId=organizer-1'),
         ),
-        '/host/audience/applications?organizerId=organizer-1',
+        '/host/audience?organizerId=organizer-1&view=responses',
       );
       expect(
         hostApplicationsLegacyRedirect(
@@ -207,6 +207,52 @@ void main() {
         ),
         '/host/audience/applications/application-1?organizerId=organizer-1',
       );
+    });
+
+    test('retired application directories preserve filters in Responses', () {
+      for (final path in [
+        '/host/audience/applications',
+        '/host/customers/applications',
+        '/host/forms/applications',
+      ]) {
+        final uri = Uri.parse(
+          '$path?organizerId=organizer-1&formId=form-1&contactId=contact-1&view=forms',
+        );
+        final redirected = Uri.parse(
+          path.startsWith('/host/customers')
+              ? hostCustomersLegacyRedirect(uri)
+              : path.startsWith('/host/forms')
+              ? hostFormsLegacyRedirect(uri)
+              : hostApplicationsLegacyRedirect(uri),
+        );
+        expect(redirected.path, Routes.hostAudienceScreen.path);
+        expect(redirected.queryParameters, {
+          'organizerId': 'organizer-1',
+          'formId': 'form-1',
+          'contactId': 'contact-1',
+          'view': 'responses',
+        });
+      }
+    });
+
+    test('legacy application detail links still open the exact application', () {
+      for (final redirect in [
+        hostCustomersLegacyRedirect,
+        hostFormsLegacyRedirect,
+      ]) {
+        final base = redirect == hostCustomersLegacyRedirect
+            ? 'customers'
+            : 'forms';
+        final redirected = Uri.parse(
+          redirect(
+            Uri.parse(
+              '/host/$base/applications/application-1?organizerId=organizer-1',
+            ),
+          ),
+        );
+        expect(redirected.path, '/host/audience/applications/application-1');
+        expect(redirected.queryParameters['organizerId'], 'organizer-1');
+      }
     });
 
     test('legacy Customers and Forms links preserve deep-link state', () {
