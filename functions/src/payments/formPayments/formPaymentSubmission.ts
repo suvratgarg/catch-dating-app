@@ -149,10 +149,14 @@ export async function finalizeCapturedFormPayment(params: {
       return payment.status;
     }
     if (!payment.capturedAt || !payment.providerPaymentId ||
-        !payment.providerOrderId || payment.refundedAmountPaise !== 0 ||
-        payment.reservationReleased) {
+        !payment.providerOrderId || payment.refundedAmountPaise !== 0) {
       throw new HttpsError("failed-precondition",
         "Payment is not finalizable.");
+    }
+    if (payment.reservationReleased) {
+      tx.update(ref, {status: "refundPending", updatedAt: now,
+        lastErrorCode: "reservationReleased"});
+      return "refundPending";
     }
     const [draftSnap, versionSnap, formSnap] = await Promise.all([
       tx.get(db.collection("organizerFormResponseDrafts").doc(payment.draftId)),

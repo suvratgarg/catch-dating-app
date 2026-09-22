@@ -94,6 +94,9 @@ import type {SubmitEventSuccessConversationGraphCallableResponse} from "../../fu
 import type {SubmitEventSuccessWingmanRequestCallablePayload} from "../../functions/src/shared/generated/submitEventSuccessWingmanRequestCallablePayload";
 import type {SubmitOrganizerFormResponseCallablePayload} from "../../functions/src/shared/generated/submitOrganizerFormResponseCallablePayload";
 import type {SubmitOrganizerFormResponseCallableResponse} from "../../functions/src/shared/generated/submitOrganizerFormResponseCallableResponse";
+import type {PrepareOrganizerFormPaymentCallablePayload} from "../../functions/src/shared/generated/prepareOrganizerFormPaymentCallablePayload";
+import type {GetOrganizerFormPaymentCallablePayload} from "../../functions/src/shared/generated/getOrganizerFormPaymentCallablePayload";
+import type {GetOrganizerFormPaymentCallableResponse} from "../../functions/src/shared/generated/getOrganizerFormPaymentCallableResponse";
 import type {WithdrawOrganizerFormResponseCallablePayload} from "../../functions/src/shared/generated/withdrawOrganizerFormResponseCallablePayload";
 import type {WithdrawOrganizerFormResponseCallableResponse} from "../../functions/src/shared/generated/withdrawOrganizerFormResponseCallableResponse";
 import {
@@ -283,6 +286,23 @@ export async function submitOrganizerFormResponse(
     publicFormsFirebaseConfigured,
     "Public forms"
   );
+}
+
+export type PublicOrganizerFormPayment = GetOrganizerFormPaymentCallableResponse;
+export type PublicOrganizerFormPaymentRequest = PrepareOrganizerFormPaymentCallablePayload;
+
+export async function prepareOrganizerFormPayment(
+  payload: PrepareOrganizerFormPaymentCallablePayload
+): Promise<PublicOrganizerFormPayment> {
+  return invokeWebsiteCallable("prepareOrganizerFormPayment", payload,
+    publicFormsFirebaseConfigured, "Public form payment");
+}
+
+export async function getOrganizerFormPayment(
+  payload: GetOrganizerFormPaymentCallablePayload
+): Promise<PublicOrganizerFormPayment> {
+  return invokeWebsiteCallable("getOrganizerFormPayment", payload,
+    publicFormsFirebaseConfigured, "Public form payment");
 }
 
 export async function withdrawOrganizerFormResponse(

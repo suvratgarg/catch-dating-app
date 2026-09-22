@@ -24,7 +24,8 @@ import {
   TextAreaField,
   TextField,
 } from "../../shared/ui/primitives";
-import {publicFormsCopy} from "../../content/forms";
+import {publicFormsCopy, publicFormPaymentStatuses, formFeeLabel,
+  formFeePayLabel} from "../../content/forms";
 import {
   answerSummary,
   type PublicFormAnswer,
@@ -92,6 +93,9 @@ function PublicFormStage({
   if (controller.stage === "review" && definition) {
     return <ReviewStage controller={controller} />;
   }
+  if (controller.stage === "payment") {
+    return <PaymentStage controller={controller} />;
+  }
   if (controller.stage === "complete" && controller.receipt) {
     const completion = controller.receipt.completion;
     return (
@@ -100,6 +104,9 @@ function PublicFormStage({
         title={completion.title}
         body={completion.message}
       >
+        {controller.payments?.payment ? (
+          <FormStatus status={{message: publicFormsCopy.paymentWithdrawNote, tone: ""}} />
+        ) : null}
         <PublicFormActions>
           {completion.actionUrl && completion.actionLabel ? (
             <ButtonLink href={completion.actionUrl}>{completion.actionLabel}</ButtonLink>
@@ -518,6 +525,14 @@ function ReviewStage({
           />
         ))}
       </PublicFormReview>
+      {definition.payment ? (
+        <PublicFormSection title={formFeeLabel(definition.payment.amountPaise)}
+          description={definition.payment.description}>
+          <PublicFormReviewAnswer label={publicFormsCopy.paymentRefundPolicy}
+            answer={definition.payment.refundPolicy} />
+          <FormStatus status={{message: publicFormsCopy.paymentBody, tone: ""}} />
+        </PublicFormSection>
+      ) : null}
       <PublicFormConsent>
         <h2>{publicFormsCopy.consentHeading}</h2>
         <p>{definition.consent.retentionCopy}</p>
@@ -545,9 +560,53 @@ function ReviewStage({
           onClick={() => void controller.submit()}
           type="button"
         >
-          {publicFormsCopy.submit}
+          {definition.payment ? publicFormsCopy.paymentContinue : publicFormsCopy.submit}
         </Button>
       </PublicFormActions>
+      <FormStatus status={controller.status} />
+    </PublicFormPanel>
+  );
+}
+
+function PaymentStage({controller}: {
+  controller: ReturnType<typeof usePublicFormController>;
+}) {
+  const {payment, pending, pay, refresh, status} = controller.payments;
+  const fee = controller.form?.definition.payment;
+  return (
+    <PublicFormPanel kicker={publicFormsCopy.paymentKicker}
+      title={payment ? formFeeLabel(payment.amountPaise) : publicFormsCopy.paymentTitle}
+      body={publicFormsCopy.paymentBody}>
+      <FormStatus status={{message: payment?.status === "failed" && !payment.checkout ?
+        publicFormsCopy.paymentUnavailable : payment ?
+        publicFormPaymentStatuses[payment.status] : publicFormsCopy.paymentPreparing,
+      tone: ""}} />
+      {payment?.mode === "test" ? (
+        <FormStatus status={{message: publicFormsCopy.paymentTestMode, tone: ""}} />
+      ) : null}
+      <PublicFormReview>
+        <PublicFormReviewAnswer label={publicFormsCopy.paymentRefundPolicy}
+          answer={payment?.refundPolicy ?? fee?.refundPolicy ?? ""} />
+      </PublicFormReview>
+      <PublicFormActions>
+        {payment?.checkout ? (
+          <Button loading={pending || controller.pending}
+            loadingLabel={publicFormsCopy.paymentChecking} type="button"
+            onClick={() => void pay(controller.form?.organizer.name ?? publicFormsCopy.brand)}>
+            {formFeePayLabel(payment.amountPaise)}
+          </Button>
+        ) : null}
+        <Button loading={pending || controller.pending}
+          loadingLabel={publicFormsCopy.paymentChecking} type="button" variant="ghost"
+          onClick={() => void refresh()}>{publicFormsCopy.paymentCheck}</Button>
+        {payment && ["expired", "refunded"].includes(payment.status) ? (
+          <Button disabled={pending || controller.pending} type="button" variant="ghost"
+            onClick={() => void controller.restartAfterPayment()}>
+            {publicFormsCopy.paymentRestart}
+          </Button>
+        ) : null}
+      </PublicFormActions>
+      <FormStatus status={status} />
       <FormStatus status={controller.status} />
     </PublicFormPanel>
   );

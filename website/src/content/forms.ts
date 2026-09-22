@@ -30,6 +30,18 @@ export const publicFormsCopy = {
   consentHeading: "Consent and retention",
   submit: "Submit response",
   submitting: "Submitting",
+  paymentKicker: "Form payment",
+  paymentTitle: "Complete your submission",
+  paymentBody: "Your answers are saved. Your response is sent after payment is confirmed. Payment does not guarantee acceptance or event admission.",
+  paymentContinue: "Continue to payment",
+  paymentPreparing: "Preparing secure payment",
+  paymentCheck: "Check payment status",
+  paymentRestart: "Start a new response",
+  paymentUnavailable: "Checkout could not be opened. Check its status or contact the organizer before trying again.",
+  paymentChecking: "Checking payment",
+  paymentRefundPolicy: "Refund policy",
+  paymentTestMode: "Test checkout — no real payment is collected.",
+  paymentWithdrawNote: "Withdrawing your response does not automatically refund the fee. The organizer’s refund policy still applies.",
   saveStatus: "Saving draft",
   savedStatus: "Draft saved",
   selectFiles: "Choose files",
@@ -65,3 +77,26 @@ export const publicFormsCopy = {
   stepLabel: "Form progress",
   genericError: "Something went wrong. Please try again.",
 } as const;
+
+export const publicFormPaymentStatuses = {
+  creatingOrder: "Preparing your checkout. Please wait before trying again.",
+  orderUnknown: "We’re checking whether checkout was created. Please don’t start a second response.",
+  checkoutReady: "Ready for secure payment through Razorpay.",
+  verifying: "Checking payment. You can return to this page for the result.",
+  captured: "Payment received. Finishing your submission.",
+  submitted: "Response received.",
+  failed: "That payment did not complete. You can retry while this checkout is open.",
+  expired: "This checkout has expired. Any late payment will be refunded; no response has been submitted.",
+  refundPending: "A refund is being processed because the response could not be submitted. You can return here to check it.",
+  refunded: "Payment refunded. No response was submitted.",
+  reviewRequired: "This payment needs the organizer’s attention. Please contact them before paying again.",
+} as const;
+
+export function formFeeLabel(amountPaise: number) {
+  return new Intl.NumberFormat("en-IN", {style: "currency", currency: "INR",
+    maximumFractionDigits: amountPaise % 100 === 0 ? 0 : 2}).format(amountPaise / 100);
+}
+
+export function formFeePayLabel(amountPaise: number) {
+  return `Pay ${formFeeLabel(amountPaise)} and submit`;
+}

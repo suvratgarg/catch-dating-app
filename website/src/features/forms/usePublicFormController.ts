@@ -21,6 +21,7 @@ import {
 } from "../../firebase";
 import {publicFormsCopy} from "../../content/forms";
 import type {FormStatus} from "../../shared/forms/types";
+import {usePublicFormPayment} from "./usePublicFormPayment";
 import {
   validatePublicFormAnswers,
   visiblePublicFormSections,
@@ -31,7 +32,7 @@ import {
 
 export type PublicFormStage =
   "loading" | "unavailable" | "identity" | "phoneCode" |
-  "emailSent" | "form" | "review" | "complete" | "withdrawn";
+  "emailSent" | "form" | "review" | "payment" | "complete" | "withdrawn";
 
 export interface PublicFormUploadState {
   status: "uploading" | "ready" | "error";
@@ -68,6 +69,18 @@ export function usePublicFormController(publicFormId: string) {
   const saveChainRef = useRef<Promise<void>>(Promise.resolve());
   const startPromiseRef = useRef<Promise<void> | null>(null);
   const submitRequestIdRef = useRef(requestId());
+  const showPayment = useCallback(() => setStage("payment"), []);
+  const acceptReceipt = useCallback((submitted: PublicOrganizerFormReceipt) => {
+    if (formRef.current && submitted.formId !== formRef.current.formId) return;
+    setReceipt(submitted);
+    persistReceipt(publicFormId, submitted);
+    setStage(submitted.status === "withdrawn" ? "withdrawn" : "complete");
+    setStatus({message: "", tone: ""});
+  }, [publicFormId]);
+  const payments = usePublicFormPayment(publicFormId, showPayment, acceptReceipt);
+  const resumePayment = payments.resume;
+  const pendingPayment = payments.hasPending;
+  const resetPaymentSession = payments.resetSession;
   const sourceToken = useMemo(() => {
     const value = new URLSearchParams(window.location.search).get("source");
     return value && /^[A-Za-z0-9_-]{20,160}$/u.test(value) ? value : null;
@@ -96,6 +109,7 @@ export function usePublicFormController(publicFormId: string) {
     if (startPromiseRef.current) return startPromiseRef.current;
     const operation = (async () => {
       try {
+        if (await resumePayment(userRef.current?.uid ?? null)) return;
         const started = await beginOrganizerFormResponse({
           publicFormId,
           sourceToken,
@@ -121,15 +135,27 @@ export function usePublicFormController(publicFormId: string) {
     } finally {
       if (startPromiseRef.current === operation) startPromiseRef.current = null;
     }
-  }, [publicFormId, sourceToken]);
+  }, [publicFormId, resumePayment, sourceToken]);
 
   useEffect(() => {
     let cancelled = false;
     const unsubscribe = watchPublicFormAuthState((user) => {
       if (cancelled) return;
+      if (userRef.current?.uid !== user?.uid) {
+        resetPaymentSession();
+        draftRef.current = null;
+        setDraft(null);
+        setReceipt(null);
+        setAnswers({});
+        answersRef.current = {};
+      }
       userRef.current = user;
       const loaded = formRef.current;
-      if (user && loaded && loaded.availabilityStatus === "active" &&
+      if (!user && loaded?.definition.identityPolicy !== "anonymous" && loaded) {
+        setStage("identity");
+      }
+      if (user && loaded && (loaded.availabilityStatus === "active" ||
+          pendingPayment()?.uid === user.uid) &&
           loaded.definition.identityPolicy !== "anonymous") {
         void startDraft(loaded);
       }
@@ -140,13 +166,13 @@ export function usePublicFormController(publicFormId: string) {
         formRef.current = loaded;
         setForm(loaded);
         const savedReceipt = storedReceipt(publicFormId);
-        if (savedReceipt?.formId === loaded.formId &&
+        if (!loaded.definition.payment && savedReceipt?.formId === loaded.formId &&
             savedReceipt.status === "submitted") {
           setReceipt(savedReceipt);
           setStage("complete");
           return;
         }
-        if (loaded.availabilityStatus !== "active") {
+        if (loaded.availabilityStatus !== "active" && !pendingPayment()) {
           setStage("unavailable");
           return;
         }
@@ -166,7 +192,7 @@ export function usePublicFormController(publicFormId: string) {
       verificationRef.current?.clear();
       unsubscribe();
     };
-  }, [publicFormId, sourceToken, startDraft]);
+  }, [pendingPayment, publicFormId, resetPaymentSession, sourceToken, startDraft]);
 
   const flushSave = useCallback(() => {
     const operation = async () => {
@@ -383,16 +409,19 @@ export function usePublicFormController(publicFormId: string) {
       await flushSave();
       const current = draftRef.current;
       if (!current) throw new Error(publicFormsCopy.genericError);
-      const submitted = await submitOrganizerFormResponse({
+      const payload = {
         draftId: current.draftId,
         draftToken: current.draftToken,
         expectedRevision: current.revision,
         requestId: submitRequestIdRef.current,
-      });
-      setReceipt(submitted);
-      persistReceipt(publicFormId, submitted);
-      setStage("complete");
-      setStatus({message: "", tone: ""});
+      };
+      if (current.form.definition.payment) {
+        const uid = userRef.current?.uid;
+        if (!uid) throw new Error(publicFormsCopy.identityTitle);
+        await payments.prepare(payload, uid);
+      } else {
+        acceptReceipt(await submitOrganizerFormResponse(payload));
+      }
     }).catch(() => undefined);
   }
 
@@ -406,6 +435,21 @@ export function usePublicFormController(publicFormId: string) {
       });
       clearReceipt(publicFormId);
       setStage("withdrawn");
+    }).catch(() => undefined);
+  }
+
+  async function restartAfterPayment() {
+    await actionMutation.mutateAsync(async () => {
+      if (!await payments.restart()) return;
+      window.sessionStorage.removeItem(`catch:form:${publicFormId}:start`);
+      clearReceipt(publicFormId);
+      submitRequestIdRef.current = requestId();
+      const current = await getPublicOrganizerForm({publicFormId, sourceToken});
+      formRef.current = current;
+      setForm(current);
+      setSectionIndex(0);
+      if (current.availabilityStatus !== "active") setStage("unavailable");
+      else await startDraft(current);
     }).catch(() => undefined);
   }
 
@@ -423,9 +467,11 @@ export function usePublicFormController(publicFormId: string) {
     handlePhoneSubmit,
     nextSection,
     pending,
+    payments,
     phoneNumber,
     previousSection,
     receipt,
+    restartAfterPayment,
     recaptchaContainerId,
     saveState,
     sectionIndex,

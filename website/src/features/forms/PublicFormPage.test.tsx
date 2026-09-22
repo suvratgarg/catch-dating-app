@@ -75,3 +75,39 @@ describe("public form choices", () => {
     expect(screen.queryByText(/Catch profile field\./u)).toBeNull();
   });
 });
+
+describe("public form payment", () => {
+  function renderPayment(status: string, checkout = true) {
+    const pay = vi.fn();
+    const refresh = vi.fn();
+    usePublicFormController.mockReturnValue({stage: "payment",
+      form: {organizer: {name: "RSVP"}, definition: {sections: [],
+        appearance: {preset: "minimal"}, payment: {amountPaise: 20000,
+          refundPolicy: "Refunded if cancelled"}}},
+      status: {message: "", tone: ""}, pending: false,
+      payments: {pay, refresh, pending: false, status: {message: "", tone: ""},
+        payment: {status, checkout: checkout ? {} : null, mode: "test",
+          amountPaise: 20000, refundPolicy: "Refunded if cancelled"}},
+    });
+    render(<MemoryRouter><PublicFormPage /></MemoryRouter>);
+    return {pay, refresh};
+  }
+
+  it("shows the fee, refund policy and admission boundary before checkout", () => {
+    const {pay} = renderPayment("checkoutReady");
+    expect(screen.getByText("Refunded if cancelled")).not.toBeNull();
+    expect(screen.getByText(/Payment does not guarantee acceptance/u)).not.toBeNull();
+    expect(screen.getByText(/Test checkout/u)).not.toBeNull();
+    fireEvent.click(screen.getByRole("button", {name: "Pay ₹200 and submit"}));
+    expect(pay).toHaveBeenCalledWith("RSVP");
+  });
+
+  it("withholds payment and completion controls while verification is uncertain", () => {
+    const {refresh} = renderPayment("orderUnknown", false);
+    expect(screen.queryByRole("button", {name: /Pay ₹/u})).toBeNull();
+    expect(screen.queryByText("Response received")).toBeNull();
+    expect(screen.queryByRole("button", {name: "Start a new response"})).toBeNull();
+    fireEvent.click(screen.getByRole("button", {name: "Check payment status"}));
+    expect(refresh).toHaveBeenCalledOnce();
+  });
+});

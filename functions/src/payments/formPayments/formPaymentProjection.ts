@@ -40,7 +40,8 @@ export async function projectFormPayment(input: {
       versionId: payment.versionId, status: response.status,
       submittedAtMillis: response.submittedAt.toMillis(), withdrawalToken: null,
       completion: version.definition.completion};
-  } else if (payment.status === "checkoutReady" && payment.providerOrderId &&
+  } else if (["checkoutReady", "failed"].includes(payment.status) &&
+      payment.providerOrderId &&
       !payment.reservationReleased &&
       payment.checkoutExpiresAt.toMillis() > (input.now ?? Date.now())) {
     const connection = requireDoc<Connection>(await db
