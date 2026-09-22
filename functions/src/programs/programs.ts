@@ -99,9 +99,6 @@ export async function createOrganizerProgramHandler(
   );
   const db = deps.firestore();
   await deps.checkRateLimit(db, actorUid, "createOrganizerProgram");
-  await requireOrganizerManager({
-    db, organizerId: data.organizerId, actorUid,
-  });
   if (data.endsAtMillis <= data.startsAtMillis) {
     throw new HttpsError(
       "invalid-argument", "Program end must be after its start."
@@ -109,24 +106,29 @@ export async function createOrganizerProgramHandler(
   }
   const settings = data.transportSettings ?? defaultTransportSettings;
   validateVehicleClasses(settings.vehicleClasses);
-  const now = deps.now();
   const ref = db.collection("organizerPrograms").doc();
-  const document: OrganizerProgramDocument = {
-    organizerId: data.organizerId,
-    kind: data.kind,
-    title: data.title,
-    timezone: data.timezone,
-    startsAt: admin.firestore.Timestamp.fromMillis(data.startsAtMillis),
-    endsAt: admin.firestore.Timestamp.fromMillis(data.endsAtMillis),
-    status: "draft",
-    capabilities: data.capabilities,
-    transportSettings: settings,
-    createdBy: actorUid,
-    createdAt: now,
-    updatedAt: now,
-    revision: 1,
-  };
-  await ref.set(document);
+  await db.runTransaction(async (tx) => {
+    await requireOrganizerManager({
+      db, organizerId: data.organizerId, actorUid, transaction: tx,
+    });
+    const now = deps.now();
+    const document: OrganizerProgramDocument = {
+      organizerId: data.organizerId,
+      kind: data.kind,
+      title: data.title,
+      timezone: data.timezone,
+      startsAt: admin.firestore.Timestamp.fromMillis(data.startsAtMillis),
+      endsAt: admin.firestore.Timestamp.fromMillis(data.endsAtMillis),
+      status: "draft",
+      capabilities: data.capabilities,
+      transportSettings: settings,
+      createdBy: actorUid,
+      createdAt: now,
+      updatedAt: now,
+      revision: 1,
+    };
+    tx.set(ref, document);
+  });
   return {entityId: ref.id, revision: 1, alreadyApplied: false};
 }
 

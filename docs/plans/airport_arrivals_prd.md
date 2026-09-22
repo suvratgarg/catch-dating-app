@@ -1306,6 +1306,13 @@ be reused; an empty membership never grants a guest response or delivery right.
 Import never implies invitation, consent, or RSVP. Guest pagination uses the
 document snapshot cursor so equal display names do not hide subsequent guests.
 
+Program creation and resource setup validate current manager/coordinator
+authority inside their write transaction, including ownership of retained
+vendor program bindings. Program vendor pickers bind the requested organizer
+to the authorized program and query only active vendors assigned to that
+program before enforcing the 100-result cap. Organizer-wide inventory remains
+manager-only; a cap overflow is explicit rather than silently truncated.
+
 
 ### Offline observation fences
 

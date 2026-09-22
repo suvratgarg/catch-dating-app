@@ -210,6 +210,9 @@ export class FakeFirestore {
 function matchWhere(data: FakeData, where: Where): boolean {
   const value = data[where.field];
   if (where.op === "==") return value === where.value;
+  if (where.op === "array-contains") {
+    return Array.isArray(value) && value.includes(where.value);
+  }
   if (where.op === "in") {
     return Array.isArray(where.value) && where.value.includes(value);
   }

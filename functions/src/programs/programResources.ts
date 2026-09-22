@@ -1,3 +1,12 @@
+/* firestore-index: transportVendors (
+  organizerId:ASCENDING,
+  active:ASCENDING
+) */
+/* firestore-index: transportVendors (
+  organizerId:ASCENDING,
+  active:ASCENDING,
+  programIds:CONTAINS
+) */
 import * as admin from "firebase-admin";
 import {CallableRequest, HttpsError, onCall} from
   "firebase-functions/v2/https";
@@ -72,7 +81,6 @@ export async function upsertProgramFunctionHandler(
     request, validateUpsertProgramFunctionCallablePayload, normalizePayload);
   const db = deps.firestore();
   await deps.checkRateLimit(db, actorUid, "upsertProgramFunction");
-  const access = await coordinatorAccess(db, data.programId, actorUid, deps);
   if (data.endsAtMillis <= data.startsAtMillis) {
     throw new HttpsError(
       "invalid-argument", "Function end must be after its start.");
@@ -81,11 +89,11 @@ export async function upsertProgramFunctionHandler(
     db.collection("programFunctions").doc(data.functionId) :
     db.collection("programFunctions").doc();
   const revision = await runUpsert(db, ref, data.expectedRevision,
-    data.programId, deps, (existing, now) => {
+    data.programId, actorUid, deps, (existing, now, organizerId) => {
       const doc = existing as ProgramFunctionDocument | undefined;
       const document: ProgramFunctionDocument = {
         programId: data.programId,
-        organizerId: access.program.organizerId,
+        organizerId,
         name: data.name,
         startsAt:
           admin.firestore.Timestamp.fromMillis(data.startsAtMillis),
@@ -114,16 +122,15 @@ export async function upsertProgramPickupPointHandler(
       normalizePayload);
   const db = deps.firestore();
   await deps.checkRateLimit(db, actorUid, "upsertProgramPickupPoint");
-  const access = await coordinatorAccess(db, data.programId, actorUid, deps);
   const ref = data.pickupPointId ?
     db.collection("programPickupPoints").doc(data.pickupPointId) :
     db.collection("programPickupPoints").doc();
   const revision = await runUpsert(db, ref, data.expectedRevision,
-    data.programId, deps, (existing, now) => {
+    data.programId, actorUid, deps, (existing, now, organizerId) => {
       const doc = existing as ProgramPickupPointDocument | undefined;
       const document: ProgramPickupPointDocument = {
         programId: data.programId,
-        organizerId: access.program.organizerId,
+        organizerId,
         kind: data.kind,
         label: data.label,
         iataCode: data.iataCode === undefined ?
@@ -157,16 +164,15 @@ export async function upsertProgramHotelHandler(
     request, validateUpsertProgramHotelCallablePayload, normalizePayload);
   const db = deps.firestore();
   await deps.checkRateLimit(db, actorUid, "upsertProgramHotel");
-  const access = await coordinatorAccess(db, data.programId, actorUid, deps);
   const ref = data.hotelId ?
     db.collection("programHotels").doc(data.hotelId) :
     db.collection("programHotels").doc();
   const revision = await runUpsert(db, ref, data.expectedRevision,
-    data.programId, deps, (existing, now) => {
+    data.programId, actorUid, deps, (existing, now, organizerId) => {
       const doc = existing as ProgramHotelDocument | undefined;
       const document: ProgramHotelDocument = {
         programId: data.programId,
-        organizerId: access.program.organizerId,
+        organizerId,
         name: data.name,
         address: data.address,
         latitude: data.latitude === undefined ?
@@ -196,31 +202,42 @@ export async function upsertTransportVendorHandler(
     request, validateUpsertTransportVendorCallablePayload, normalizePayload);
   const db = deps.firestore();
   await deps.checkRateLimit(db, actorUid, "upsertTransportVendor");
-  await requireOrganizerManager({
-    db, organizerId: data.organizerId, actorUid,
-  });
-  for (const programId of data.programIds ?? []) {
-    const snap = await db.collection("organizerPrograms").doc(programId).get();
-    const program = snap.data() as OrganizerProgramDocument | undefined;
-    if (!program || program.organizerId !== data.organizerId) {
-      throw new HttpsError(
-        "invalid-argument",
-        `Program ${programId} does not belong to this organizer.`);
-    }
-  }
   const ref = data.vendorId ?
     db.collection("transportVendors").doc(data.vendorId) :
     db.collection("transportVendors").doc();
   let committedRevision = 0;
   await db.runTransaction(async (tx) => {
+    await requireOrganizerManager({
+      db, organizerId: data.organizerId, actorUid, transaction: tx,
+    });
     const snap = await tx.get(ref);
     const existing = snap.data() as TransportVendorDocument | undefined;
     if (snap.exists && existing!.organizerId !== data.organizerId) {
       throw new HttpsError(
         "not-found", "Vendor not found for this organizer.");
     }
-    assertRevision(existing?.revision ?? 0, snap.exists ?
-      data.expectedRevision : undefined);
+    if (!snap.exists && data.expectedRevision !== undefined) {
+      throw new HttpsError("failed-precondition", "Vendor does not exist yet.");
+    }
+    assertRevision(existing?.revision ?? 0, data.expectedRevision);
+    const programIds = data.programIds ??
+      (existing ? existing.programIds : []);
+    if (!Array.isArray(programIds) || programIds.length > 100 ||
+        programIds.some((id) => typeof id !== "string" || !id) ||
+        new Set(programIds).size !== programIds.length) {
+      throw new HttpsError("failed-precondition",
+        "Vendor program bindings need reconciliation.");
+    }
+    const programs = await Promise.all(programIds.map((programId) =>
+      tx.get(db.collection("organizerPrograms").doc(programId))));
+    for (const programSnap of programs) {
+      const program = programSnap.data() as OrganizerProgramDocument |
+        undefined;
+      if (!program || program.organizerId !== data.organizerId) {
+        throw new HttpsError("invalid-argument",
+          "Every vendor program must belong to this organizer.");
+      }
+    }
     const now = deps.now();
     const document: TransportVendorDocument = {
       organizerId: data.organizerId,
@@ -229,7 +246,7 @@ export async function upsertTransportVendorHandler(
         existing?.contactName ?? null : data.contactName,
       phoneE164: data.phoneE164 === undefined ?
         existing?.phoneE164 ?? null : data.phoneE164,
-      programIds: data.programIds ?? existing?.programIds ?? [],
+      programIds,
       active: data.active ?? existing?.active ?? true,
       notes: data.notes === undefined ? existing?.notes ?? null : data.notes,
       createdAt: existing?.createdAt ?? now,
@@ -258,15 +275,26 @@ export async function listTransportVendorsHandler(
       db, programId: data.programId, actorUid, now: deps.now(),
     });
     requireProgramDuty(access, "transportDispatcher");
+    if (access.program.organizerId !== data.organizerId) {
+      throw new HttpsError("permission-denied",
+        "This program belongs to a different organizer.");
+    }
   } else {
     await requireOrganizerManager({
       db, organizerId: data.organizerId, actorUid,
     });
   }
-  const snap = await db.collection("transportVendors")
+  let query: FirebaseFirestore.Query = db.collection("transportVendors")
     .where("organizerId", "==", data.organizerId)
-    .limit(100)
-    .get();
+    .where("active", "==", true);
+  if (data.programId) {
+    query = query.where("programIds", "array-contains", data.programId);
+  }
+  const snap = await query.limit(101).get();
+  if (snap.size > 100) {
+    throw new HttpsError("resource-exhausted",
+      "This vendor inventory exceeds its 100-record limit.");
+  }
   return {
     vendors: snap.docs.map((doc) => {
       const vendor = doc.data() as TransportVendorDocument;
@@ -277,21 +305,8 @@ export async function listTransportVendorsHandler(
         boundToProgram: data.programId ?
           vendor.programIds.includes(data.programId) : false,
       };
-    }).filter((vendor) => vendor.active),
+    }),
   };
-}
-
-async function coordinatorAccess(
-  db: FirebaseFirestore.Firestore,
-  programId: string,
-  actorUid: string,
-  deps: ResourceDeps
-) {
-  const access = await requireProgramAccess({
-    db, programId, actorUid, now: deps.now(),
-  });
-  requireProgramDuty(access, "programCoordinator");
-  return access;
 }
 
 async function runUpsert(
@@ -299,31 +314,32 @@ async function runUpsert(
   ref: FirebaseFirestore.DocumentReference,
   expectedRevision: number | undefined,
   programId: string,
+  actorUid: string,
   deps: ResourceDeps,
   build: (existing: unknown,
-    now: FirebaseFirestore.Timestamp) => {revision: number} &
-    {programId: string}
+    now: FirebaseFirestore.Timestamp, organizerId: string) =>
+    {revision: number; programId: string; organizerId: string}
 ): Promise<number> {
-  let committed = 0;
-  await db.runTransaction(async (tx) => {
+  return db.runTransaction(async (tx) => {
+    const access = await requireProgramAccess({
+      db, programId, actorUid, now: deps.now(), transaction: tx,
+    });
+    requireProgramDuty(access, "programCoordinator");
+    const organizerId = access.program.organizerId;
     const snap = await tx.get(ref);
     const existing = snap.data();
-    if (snap.exists) {
-      const program = (existing as {programId?: string}).programId;
-      if (program !== programId) {
-        throw new HttpsError(
-          "not-found", "Record not found in this program.");
-      }
+    if (existing && (existing.programId !== programId ||
+        existing.organizerId !== organizerId)) {
+      throw new HttpsError("not-found", "Record not found in this program.");
     }
-    assertRevision(
-      (existing as {revision?: number} | undefined)?.revision ?? 0,
-      snap.exists ? expectedRevision : undefined);
-    const now = deps.now();
-    const document = build(existing, now);
-    committed = document.revision;
+    if (!snap.exists && expectedRevision !== undefined) {
+      throw new HttpsError("failed-precondition", "Record does not exist yet.");
+    }
+    assertRevision(existing?.revision ?? 0, expectedRevision);
+    const document = build(existing, deps.now(), organizerId);
     tx.set(ref, document);
+    return document.revision;
   });
-  return committed;
 }
 
 function normalizePayload(value: unknown): unknown {

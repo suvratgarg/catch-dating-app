@@ -1,6 +1,23 @@
 {
   "indexes": [
     {
+      "collectionGroup": "transportVendors",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "organizerId", "order": "ASCENDING"},
+        {"fieldPath": "active", "order": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "transportVendors",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "organizerId", "order": "ASCENDING"},
+        {"fieldPath": "active", "order": "ASCENDING"},
+        {"fieldPath": "programIds", "arrayConfig": "CONTAINS"}
+      ]
+    },
+    {
       "collectionGroup": "organizerPrograms",
       "queryScope": "COLLECTION",
       "fields": [
