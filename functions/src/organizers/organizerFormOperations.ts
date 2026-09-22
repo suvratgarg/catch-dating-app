@@ -49,6 +49,7 @@ import {
 } from
   "../shared/generated/validators/listOrganizerFormResponsesInput";
 
+import {listUnifiedResponses} from "./organizerUnifiedResponses";
 import {genericFormApplicationId} from "./organizerApplicationAccess";
 import {organizerContactOriginId} from "../shared/organizerContactOrigins";
 import {matchesAnswerFilters, responseFilterOptions, validateResponseFilters}
@@ -135,6 +136,27 @@ export async function listOrganizerFormResponsesHandler(
       questionId: filter.questionId, values: [...filter.values].sort(),
     })),
   });
+  if (data.includeApplications) {
+    return listUnifiedResponses({db, data, filterHash, answerFilterOptions,
+      project: (docs) => responseRows(db, docs),
+      matches: async (response) => {
+        if (!matchesResponse(response, data)) return false;
+        if (!answerFilters.length) return true;
+        let version = versions.get(response.versionId);
+        if (!version) {
+          version = requireOwnedVersion(await db
+            .collection("organizerFormVersions").doc(response.versionId)
+            .get(), data.organizerId, response.formId);
+          versions.set(response.versionId, version);
+        }
+        return matchesAnswerFilters(response, version.definition, answerFilters);
+      },
+    });
+  }
+  if (data.reviewStatus || data.contactId) {
+    throw new HttpsError("invalid-argument",
+      "Application review filters require the unified response inbox.");
+  }
   const cursor = decodeResponseCursor(data.cursor, {
     organizerId: data.organizerId,
     filterHash,
@@ -676,6 +698,8 @@ function normalizeResponseListPayload(value: unknown): unknown {
       "formId",
       "versionId",
       "sourceLinkId",
+      "contactId",
+      "reviewStatus",
       "query",
       "cursor",
     ],

@@ -164,5 +164,39 @@ const schemaListOrganizerFormResponsesCallablePayloadSchema = <String, Object?>{
       'minimum': 1,
       'maximum': 100,
     },
+    'includeApplications': <String, Object?>{
+      'type': 'boolean',
+      'description': 'Opt into the unified response and application review inbox.',
+    },
+    'reviewStatus': <String, Object?>{
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'submitted',
+            'inReview',
+            'approved',
+            'waitlisted',
+            'declined',
+            'withdrawn',
+          ],
+        },
+        <String, Object?>{
+          'type': 'null',
+        },
+      ],
+    },
+    'contactId': <String, Object?>{
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+        },
+        <String, Object?>{
+          'type': 'null',
+        },
+      ],
+    },
   },
 };
