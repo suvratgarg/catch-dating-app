@@ -9,26 +9,17 @@
   readiness:ASCENDING,
   pickupPointId:ASCENDING
 ) */
-import * as admin from "firebase-admin";
-import {hashRequest} from "../shared/programOperationHash";
 import {CallableRequest, HttpsError, onCall} from
   "firebase-functions/v2/https";
 import {requireAuth} from "../shared/auth";
 import {appCheckCallableOptionsWithLimits} from "../shared/callableOptions";
-import {checkRateLimit} from "../shared/rateLimit";
 import {validateCallableWithAjv} from "../shared/validation";
 import {staffTimestampMillis} from "../shared/eventOperatorAuthority";
 import {
-  assertRevision,
-  dutyAssignments,
-  dutyCoversPickupPoint,
-  nextRevision,
   programStaffGrantId,
-  requireProgramAccess,
 } from "../shared/programAuthority";
 import type {
   ProgramAccess,
-  ProgramDutyAssignment,
 } from "../shared/programAuthority";
 import {resolveArrivalTiming} from "./arrivalTiming";
 import {
@@ -40,82 +31,23 @@ import type {
   ProgramGuestDocument,
   ProgramTravelLegDocument,
   ProgramTravelPartyDocument,
-  TransportOperationReceiptDocument,
 } from "../shared/generated/firestoreAdminTypes";
 import type {ProgramStationScopeCallablePayload} from
   "../shared/generated/programStationScopeCallablePayload";
-import type {SetProgramTravelReadinessCallablePayload} from
-  "../shared/generated/setProgramTravelReadinessCallablePayload";
 import type {ProgramArrivalsRosterCallableResponse} from
   "../shared/generated/programArrivalsRosterCallableResponse";
 import type {ProgramTransportPlanCallableResponse} from
   "../shared/generated/programTransportPlanCallableResponse";
-import type {ProgramMutationCallableResponse} from
-  "../shared/generated/programMutationCallableResponse";
 import {
   validateProgramStationScopeCallablePayload,
 } from "../shared/generated/validators/programStationScopeInput";
-import {
-  validateSetProgramTravelReadinessCallablePayload,
-} from "../shared/generated/validators/setProgramTravelReadinessInput";
 
-interface ArrivalsDeps {
-  firestore: () => FirebaseFirestore.Firestore;
-  checkRateLimit: typeof checkRateLimit;
-  now: () => FirebaseFirestore.Timestamp;
-}
-
-const defaultDeps: ArrivalsDeps = {
-  firestore: () => admin.firestore(),
-  checkRateLimit,
-  now: () => admin.firestore.Timestamp.now(),
-};
+import {requireStationAccess} from "../shared/programStationAuthority";
+import {defaultProgramDataDeps} from "../shared/programDataDeps";
+import type {ProgramDataDeps} from "../shared/programDataDeps";
 
 const arrivalsCallableLimits = {timeoutSeconds: 60, maxInstances: 40};
 const rosterCap = 500;
-const receiptRetentionMillis = 7 * 24 * 60 * 60 * 1000;
-
-type StationAccess = {
-  access: ProgramAccess;
-  assignments: ProgramDutyAssignment[];
-  stationScope: Set<string> | null;
-};
-
-/** Greeters and dispatchers share the operational arrivals surface. */
-async function requireStationAccess(
-  db: FirebaseFirestore.Firestore,
-  programId: string,
-  actorUid: string,
-  now: FirebaseFirestore.Timestamp
-): Promise<StationAccess> {
-  const access = await requireProgramAccess({
-    db, programId, actorUid, now,
-  });
-  const assignments = access.role === "manager" ? [] : [
-    ...dutyAssignments(access, "airportGreeter"),
-    ...dutyAssignments(access, "transportDispatcher"),
-  ];
-  if (access.role !== "manager" && assignments.length === 0) {
-    throw new HttpsError(
-      "permission-denied",
-      "This account has no airport duty for this program."
-    );
-  }
-  const stationScope = access.role === "manager" ? null :
-    unionStationScope(assignments);
-  return {access, assignments, stationScope};
-}
-
-function unionStationScope(
-  assignments: ProgramDutyAssignment[]
-): Set<string> | null {
-  const scoped = new Set<string>();
-  for (const assignment of assignments) {
-    if (assignment.pickupPointIds.length === 0) return null;
-    for (const id of assignment.pickupPointIds) scoped.add(id);
-  }
-  return scoped;
-}
 
 interface LegContext {
   legs: Array<{id: string; doc: ProgramTravelLegDocument}>;
@@ -205,7 +137,7 @@ export function legTiming(leg: ProgramTravelLegDocument,
 
 export async function getProgramArrivalsRosterHandler(
   request: CallableRequest<unknown>,
-  deps: ArrivalsDeps = defaultDeps
+  deps: ProgramDataDeps = defaultProgramDataDeps
 ): Promise<ProgramArrivalsRosterCallableResponse> {
   const actorUid = requireAuth(request);
   const data = validateCallableWithAjv<ProgramStationScopeCallablePayload>(
@@ -278,7 +210,7 @@ export async function getProgramArrivalsRosterHandler(
 
 export async function getProgramTransportPlanHandler(
   request: CallableRequest<unknown>,
-  deps: ArrivalsDeps = defaultDeps
+  deps: ProgramDataDeps = defaultProgramDataDeps
 ): Promise<ProgramTransportPlanCallableResponse> {
   const actorUid = requireAuth(request);
   const data = validateCallableWithAjv<ProgramStationScopeCallablePayload>(
@@ -456,128 +388,6 @@ export async function getProgramTransportPlanHandler(
   };
 }
 
-export async function setProgramTravelReadinessHandler(
-  request: CallableRequest<unknown>,
-  deps: ArrivalsDeps = defaultDeps
-): Promise<ProgramMutationCallableResponse> {
-  const actorUid = requireAuth(request);
-  const data =
-    validateCallableWithAjv<SetProgramTravelReadinessCallablePayload>(
-      request, validateSetProgramTravelReadinessCallablePayload,
-      normalizePayload);
-  const db = deps.firestore();
-  await deps.checkRateLimit(db, actorUid, "setProgramTravelReadiness");
-  const {access, assignments} = await requireStationAccess(
-    db, data.programId, actorUid, deps.now());
-  const requestHash = hashRequest({
-    programId: data.programId,
-    legId: data.legId,
-    action: data.action,
-    expectedRevision: data.expectedRevision ?? null,
-    manualCurbAtMillis: data.manualCurbAtMillis ?? null,
-  });
-  const receiptRef = db.collection("transportOperationReceipts").doc(
-    `${data.programId}__${data.action}__${data.clientOperationId}`);
-  const legRef = db.collection("programTravelLegs").doc(data.legId);
-  let result: {revision: number; alreadyApplied: boolean} | null = null;
-  await db.runTransaction(async (tx) => {
-    const [receiptSnap, legSnap] = await Promise.all([
-      tx.get(receiptRef), tx.get(legRef)]);
-    const receipt = receiptSnap.data() as
-      TransportOperationReceiptDocument | undefined;
-    if (receipt) {
-      if (receipt.requestHash !== requestHash ||
-          receipt.actorUid !== actorUid) {
-        throw new HttpsError(
-          "aborted",
-          "This operation id was already used for a different request.");
-      }
-      result = {revision: receipt.resultRevision, alreadyApplied: true};
-      return;
-    }
-    const leg = legSnap.data() as ProgramTravelLegDocument | undefined;
-    if (!leg || leg.programId !== data.programId) {
-      throw new HttpsError("not-found", "Leg not found in this program.");
-    }
-    // Re-check duty scope inside the transaction against the stored leg.
-    if (access.role !== "manager" &&
-        !dutyCoversPickupPoint(assignments, leg.pickupPointId ?? "")) {
-      throw new HttpsError(
-        "permission-denied",
-        "This station is outside your assigned scope.");
-    }
-    assertRevision(leg.revision, data.expectedRevision);
-    if (["dispatched", "arrived"].includes(leg.readiness)) {
-      throw new HttpsError(
-        "failed-precondition",
-        "This guest is already dispatched.");
-    }
-    const now = deps.now();
-    const update: Record<string, unknown> = {
-      updatedAt: now,
-      revision: nextRevision(leg.revision, now),
-    };
-    switch (data.action) {
-    case "claim":
-      if (leg.claimedByUid && leg.claimedByUid !== actorUid) {
-        throw new HttpsError(
-          "already-exists", "Another greeter has claimed this guest.");
-      }
-      update.claimedByUid = actorUid;
-      update.claimedAt = now;
-      break;
-    case "unclaim":
-      if (leg.claimedByUid && leg.claimedByUid !== actorUid &&
-            access.role !== "manager" &&
-            dutyAssignments(access, "transportDispatcher").length === 0) {
-        throw new HttpsError(
-          "permission-denied", "Only the claimant can release a claim.");
-      }
-      update.claimedByUid = null;
-      update.claimedAt = null;
-      break;
-    case "markReady":
-      update.readiness = "ready";
-      update.readyAt = now;
-      if (data.manualCurbAtMillis !== undefined &&
-            data.manualCurbAtMillis !== null) {
-        update.manualCurbAt = admin.firestore.Timestamp.fromMillis(
-          data.manualCurbAtMillis);
-        update.manualCurbNote = data.manualCurbNote ?? null;
-      }
-      break;
-    case "markDisrupted":
-      update.readiness = "disrupted";
-      if (data.manualCurbAtMillis !== undefined &&
-            data.manualCurbAtMillis !== null) {
-        update.manualCurbAt = admin.firestore.Timestamp.fromMillis(
-          data.manualCurbAtMillis);
-        update.manualCurbNote = data.manualCurbNote ?? null;
-      }
-      break;
-    }
-    tx.update(legRef, update);
-    const receiptDoc: TransportOperationReceiptDocument = {
-      programId: data.programId,
-      operationKind: data.action,
-      clientOperationId: data.clientOperationId,
-      actorUid,
-      requestHash,
-      tripId: null,
-      legId: data.legId,
-      resultRevision: update.revision as number,
-      resultJson: null,
-      createdAt: now,
-      expiresAt: admin.firestore.Timestamp.fromMillis(
-        now.toMillis() + receiptRetentionMillis),
-    };
-    tx.set(receiptRef, receiptDoc);
-    result = {revision: update.revision as number, alreadyApplied: false};
-  });
-  return {entityId: data.legId, revision: result!.revision,
-    alreadyApplied: result!.alreadyApplied};
-}
-
 
 function normalizePayload(value: unknown): unknown {
   if (!value || typeof value !== "object" || Array.isArray(value)) {
@@ -602,7 +412,5 @@ export const getProgramTransportPlan = onCall(
   appCheckCallableOptionsWithLimits(arrivalsCallableLimits),
   (request) => getProgramTransportPlanHandler(request)
 );
-export const setProgramTravelReadiness = onCall(
-  appCheckCallableOptionsWithLimits(arrivalsCallableLimits),
-  (request) => setProgramTravelReadinessHandler(request)
-);
+export {setProgramTravelReadiness, setProgramTravelReadinessHandler}
+  from "./programReadiness";
