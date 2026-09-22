@@ -1,16 +1,5 @@
 import {hashRequest} from "../shared/programOperationHash";
 import {validateTravelPartyMembership} from "./travelPartyPolicy";
-/* firestore-index: programTravelLegs (
-  programId:ASCENDING,
-  kind:ASCENDING,
-  readiness:ASCENDING
-) */
-/* firestore-index: programTravelLegs (
-  programId:ASCENDING,
-  kind:ASCENDING,
-  readiness:ASCENDING,
-  pickupPointId:ASCENDING
-) */
 import {CallableRequest, HttpsError, onCall} from
   "firebase-functions/v2/https";
 import {requireAuth} from "../shared/auth";
@@ -20,20 +9,13 @@ import {staffTimestampMillis} from "../shared/eventOperatorAuthority";
 import {
   programStaffGrantId,
 } from "../shared/programAuthority";
-import type {
-  ProgramAccess,
-} from "../shared/programAuthority";
-import {resolveArrivalTiming} from "./arrivalTiming";
+import {legTiming} from "./travelLegTiming";
+import {loadArrivalLegContext} from "./programArrivalReads";
 import {
   TransportParty,
   VehicleClass,
   suggestTransportGroups,
 } from "./grouping";
-import type {
-  ProgramGuestDocument,
-  ProgramTravelLegDocument,
-  ProgramTravelPartyDocument,
-} from "../shared/generated/firestoreAdminTypes";
 import type {ProgramStationScopeCallablePayload} from
   "../shared/generated/programStationScopeCallablePayload";
 import type {ProgramArrivalsRosterCallableResponse} from
@@ -49,94 +31,6 @@ import {defaultProgramDataDeps} from "../shared/programDataDeps";
 import type {ProgramDataDeps} from "../shared/programDataDeps";
 
 const arrivalsCallableLimits = {timeoutSeconds: 60, maxInstances: 40};
-const rosterCap = 500;
-
-interface LegContext {
-  legs: Array<{id: string; doc: ProgramTravelLegDocument}>;
-  guests: Map<string, ProgramGuestDocument>;
-  parties: Map<string, ProgramTravelPartyDocument>;
-}
-
-async function loadLegContext(
-  db: FirebaseFirestore.Firestore,
-  programId: string,
-  stationScope: Set<string> | null,
-  requestedStation: string | null
-): Promise<LegContext> {
-  if (requestedStation !== null && stationScope !== null &&
-      !stationScope.has(requestedStation)) {
-    throw new HttpsError(
-      "permission-denied",
-      "This station is outside your assigned scope."
-    );
-  }
-  let query: FirebaseFirestore.Query = db.collection("programTravelLegs")
-    .where("programId", "==", programId)
-    .where("kind", "==", "inbound")
-    .where("readiness", "in", ["expected", "ready", "disrupted"]);
-  if (requestedStation !== null) {
-    query = query.where("pickupPointId", "==", requestedStation);
-  }
-  const legsSnap = await query.limit(rosterCap + 1).get();
-  const legs = legsSnap.docs
-    .map((doc) => ({id: doc.id,
-      doc: doc.data() as ProgramTravelLegDocument}))
-    .filter((leg) =>
-      leg.doc.pickupPointId !== null &&
-      (stationScope === null ||
-        stationScope.has(leg.doc.pickupPointId!)));
-  const guestIds = [...new Set(legs.map((leg) => leg.doc.guestId))];
-  const partyIds = [...new Set(legs.map((leg) => leg.doc.partyId)
-    .filter((id): id is string => id !== null))];
-  const [guestSnaps, partySnaps] = await Promise.all([
-    Promise.all(guestIds.map((id) =>
-      db.collection("programGuests").doc(id).get())),
-    Promise.all(partyIds.map((id) =>
-      db.collection("programTravelParties").doc(id).get())),
-  ]);
-  const guests = new Map<string, ProgramGuestDocument>();
-  for (const snap of guestSnaps) {
-    const doc = snap.data() as ProgramGuestDocument | undefined;
-    if (doc && doc.programId === programId) guests.set(snap.id, doc);
-  }
-  const parties = new Map<string, ProgramTravelPartyDocument>();
-  for (const snap of partySnaps) {
-    const doc = snap.data() as ProgramTravelPartyDocument | undefined;
-    if (doc && doc.programId === programId) parties.set(snap.id, doc);
-  }
-  return {legs, guests, parties};
-}
-
-export function legTiming(leg: ProgramTravelLegDocument,
-  settings: ProgramAccess["program"]["transportSettings"]) {
-  const statusMap: Record<string,
-    "scheduled" | "airborne" | "landed" | "cancelled" | "diverted"> = {
-      scheduled: "scheduled",
-      enroute: "airborne",
-      landed: "landed",
-      delayed: "scheduled",
-      unknown: "scheduled",
-      cancelled: "cancelled",
-      diverted: "diverted",
-    };
-  return resolveArrivalTiming({
-    flight: leg.flightNumber ? {
-      status: statusMap[leg.flightStatus] ?? "scheduled",
-      scheduledLandingAtMillis: leg.scheduledArrivalAt ?
-        staffTimestampMillis(leg.scheduledArrivalAt) : null,
-      estimatedLandingAtMillis: leg.estimatedArrivalAt ?
-        staffTimestampMillis(leg.estimatedArrivalAt) : null,
-      actualLandingAtMillis: leg.actualArrivalAt ?
-        staffTimestampMillis(leg.actualArrivalAt) : null,
-    } : null,
-    exitLagMillis: leg.international ?
-      settings.internationalExitLagMillis : settings.domesticExitLagMillis,
-    manualCurbAtMillis: leg.manualCurbAt ?
-      staffTimestampMillis(leg.manualCurbAt) : null,
-    readyAtMillis: leg.readyAt ? staffTimestampMillis(leg.readyAt) : null,
-  });
-}
-
 export async function getProgramArrivalsRosterHandler(
   request: CallableRequest<unknown>,
   deps: ProgramDataDeps = defaultProgramDataDeps
@@ -147,11 +41,11 @@ export async function getProgramArrivalsRosterHandler(
   const db = deps.firestore();
   await deps.checkRateLimit(db, actorUid, "getProgramArrivalsRoster");
   const now = deps.now();
-  const {access, stationScope} = await requireStationAccess(
+  const stationAccess = await requireStationAccess(
     db, data.programId, actorUid, now);
-  const {legs, guests, parties} = await loadLegContext(
-    db, data.programId, stationScope, data.pickupPointId ?? null);
-  const settings = access.program.transportSettings;
+  const {legs, guests, parties} = await loadArrivalLegContext(
+    db, data.programId, stationAccess, data.pickupPointId ?? null);
+  const settings = stationAccess.access.program.transportSettings;
   // Resolve claimant display names through staff grants; never leak uids.
   const claimantUids = [...new Set(legs.map((leg) => leg.doc.claimedByUid)
     .filter((uid): uid is string => uid !== null))];
@@ -223,11 +117,11 @@ export async function getProgramTransportPlanHandler(
   const db = deps.firestore();
   await deps.checkRateLimit(db, actorUid, "getProgramTransportPlan");
   const now = deps.now();
-  const {access, stationScope} = await requireStationAccess(
+  const stationAccess = await requireStationAccess(
     db, data.programId, actorUid, now);
-  const {legs, parties} = await loadLegContext(
-    db, data.programId, stationScope, data.pickupPointId ?? null);
-  const settings = access.program.transportSettings;
+  const {legs, parties} = await loadArrivalLegContext(
+    db, data.programId, stationAccess, data.pickupPointId ?? null);
+  const settings = stationAccess.access.program.transportSettings;
 
   // Fold legs into ride-together units for the policy. A party's availability
   // is its slowest member; a member without usable timing unschedules the

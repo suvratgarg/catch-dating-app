@@ -1296,6 +1296,15 @@ guest to another household updates both household membership lists in the same
 transaction; import never implies invitation, consent, or RSVP.
 
 
+### Operational read scope
+
+Arrivals and trip queries apply each duty's pickup and hotel restrictions before
+reading passengers or applying limits. Restrictions from different duties are
+unioned only after each duty's complete scope has been evaluated. Query splitting
+accounts for Firestore disjunction limits, including the arrivals readiness
+predicate. A roster exceeding 500 visible journeys fails explicitly and requires
+a narrower station view; it never represents a partial roster as complete.
+
 ### Provider observation boundaries
 
 Flight normalization and refresh cadence are shared by import, planner edits,

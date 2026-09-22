@@ -1,3 +1,4 @@
+import {programResourceScopes} from "../shared/programResourceScopes";
 /* firestore-index: transportTrips (
   programId:ASCENDING,
   pickupPointId:ASCENDING,
@@ -39,7 +40,7 @@ import {dutyAssignments, dutyCoversHotel,
 import type {ProgramDutyAssignment} from "../shared/programAuthority";
 import {defaultProgramDataDeps} from "../shared/programDataDeps";
 import type {ProgramDataDeps} from "../shared/programDataDeps";
-import {legTiming} from "./programArrivals";
+import {legTiming} from "./travelLegTiming";
 import type {ProgramGuestDocument, ProgramHotelDocument,
   ProgramTravelLegDocument, ProgramTravelPartyDocument, TransportTripDocument}
   from "../shared/generated/firestoreAdminTypes";
@@ -210,21 +211,9 @@ export async function listProgramTripsHandler(
   }
   // Apply resource predicates before each page cap. Filtering a global first
   // page could hide every trip at a less busy assigned station.
-  const scopes = access.role === "manager" ? [{pickup: [], hotels: []}] :
-    duties.flatMap((duty) => {
-      const pickups = duty.pickupPointIds;
-      const hotels = duty.hotelIds;
-      const chunks = (ids: string[]): string[][] => ids.length === 0 ? [[]] :
-        Array.from({length: Math.ceil(ids.length / 30)}, (_, index) =>
-          ids.slice(index * 30, (index + 1) * 30));
-      const pickupChunks = hotels.length > 0 ?
-        (pickups.length ? pickups.map((id) => [id]) : [[]]) : chunks(pickups);
-      return pickupChunks.flatMap((pickup) =>
-        chunks(hotels).map((hotelScope) => ({pickup, hotels: hotelScope})));
-    });
-  const uniqueScopes = new Map(scopes.map((scope) =>
-    [JSON.stringify(scope), scope]));
-  const pages = await Promise.all([...uniqueScopes.values()].map((scope) => {
+  const scopes = programResourceScopes(
+    access.role === "manager" ? null : duties);
+  const pages = await Promise.all(scopes.map((scope) => {
     let query = db.collection("transportTrips")
       .where("programId", "==", data.programId);
     if (scope.pickup.length) {

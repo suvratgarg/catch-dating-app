@@ -2083,6 +2083,54 @@
         {"fieldPath": "destinationHotelId", "order": "ASCENDING"},
         {"fieldPath": "departedAt", "order": "DESCENDING"}
       ]
+    },
+    {
+      "collectionGroup": "programTravelLegs",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "programId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "kind",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "readiness",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "destinationHotelId",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "programTravelLegs",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "programId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "kind",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "readiness",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "pickupPointId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "destinationHotelId",
+          "order": "ASCENDING"
+        }
+      ]
     }
   ],
   "fieldOverrides": [

@@ -2,7 +2,7 @@ import {HttpsError} from "firebase-functions/v2/https";
 import {dutyAssignments, requireProgramAccess} from "./programAuthority";
 import type {ProgramAccess, ProgramDutyAssignment} from "./programAuthority";
 
-type StationAccess = {
+export type StationAccess = {
   access: ProgramAccess;
   assignments: ProgramDutyAssignment[];
   stationScope: Set<string> | null;
