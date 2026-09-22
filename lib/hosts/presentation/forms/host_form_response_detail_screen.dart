@@ -24,8 +24,8 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-part 'host_response_detail_answers.dart';
-part 'host_response_detail_content.dart';
+part 'host_response_answer_section.dart';
+part 'host_response_detail_section.dart';
 
 /// One detail surface for submitted forms and imported application records.
 class HostFormResponseDetailScreen extends ConsumerStatefulWidget {
@@ -134,7 +134,7 @@ class _HostFormResponseDetailScreenState
       ),
       footer: loaded == null
           ? null
-          : _ResponsePrimaryAction(
+          : HostResponsePrimaryAction(
               value: loaded,
               busy: _busy,
               saving: _saving,
@@ -156,7 +156,7 @@ class _HostFormResponseDetailScreenState
               _note.text = application.reviewNote ?? '';
             }
             return CatchPageBody.screen(
-              child: _ResponseDetailContent(
+              child: HostResponseDetailSection(
                 value: value,
                 organizerId: widget.organizerId,
                 note: _note,

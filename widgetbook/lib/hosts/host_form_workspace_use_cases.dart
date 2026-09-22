@@ -7,7 +7,6 @@ import 'package:catch_dating_app/hosts/domain/forms/host_form_summary.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_metrics.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_overview_section_list.dart';
-import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_detail_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_workspace_header.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_workspace_state.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
@@ -25,7 +24,9 @@ final hostFormPreviewState = HostFormEditorState(
     validationIssues: const [],
   ),
 );
-final _response = HostFormResponseDetail.fromCallableData(_previewDetailMap());
+final hostFormResponsePreviewDetail = HostFormResponseDetail.fromCallableData(
+  _previewDetailMap(),
+);
 
 @widgetbook.UseCase(
   name: 'Published workspace navigation',
@@ -92,84 +93,14 @@ Widget hostFormMetricsPreview(BuildContext context) => const SizedBox(
   ),
 );
 
-@widgetbook.UseCase(
-  name: 'Application conversion',
-  type: HostFormResponsePrimaryAction,
-  path: '[P1 product surfaces]/Host operations/Forms',
-)
-Widget hostFormResponsePrimaryActionPreview(BuildContext context) =>
-    ProviderScope(
-      overrides: [
-        hostFormResponseCanApplyProvider(
-          organizerId: 'org_1',
-          responseId: 'response_1',
-        ).overrideWith((_) async => true),
-      ],
-      child: SizedBox(
-        width: WidgetbookPreviewLayout.wideContractWidth,
-        child: HostFormResponsePrimaryAction(
-          detail: _response,
-          organizerId: 'org_1',
-          converting: null,
-          onConvert: (_) {},
-        ),
-      ),
-    );
-
-@widgetbook.UseCase(
-  name: 'People conversion',
-  type: HostFormResponsePrimaryAction,
-  path: '[P1 product surfaces]/Host operations/Forms',
-)
-Widget hostFormResponsePeopleActionPreview(BuildContext context) =>
-    ProviderScope(
-      overrides: [
-        hostFormResponseCanApplyProvider(
-          organizerId: 'org_1',
-          responseId: 'response_1',
-        ).overrideWith((_) async => false),
-      ],
-      child: SizedBox(
-        width: WidgetbookPreviewLayout.wideContractWidth,
-        child: HostFormResponsePrimaryAction(
-          detail: _response,
-          organizerId: 'org_1',
-          converting: null,
-          onConvert: (_) {},
-        ),
-      ),
-    );
-
-@widgetbook.UseCase(
-  name: 'Related People and event actions',
-  type: HostFormResponseRelatedActions,
-  path: '[P1 product surfaces]/Host operations/Forms',
-)
-Widget hostFormResponseRelatedActionsPreview(BuildContext context) =>
-    ProviderScope(
-      overrides: [
-        hostFormResponseCanApplyProvider(
-          organizerId: 'org_1',
-          responseId: 'response_1',
-        ).overrideWith((_) async => true),
-      ],
-      child: SizedBox(
-        width: WidgetbookPreviewLayout.wideContractWidth,
-        child: HostFormResponseRelatedActions(
-          detail: _response,
-          organizerId: 'org_1',
-          converting: null,
-          onConvert: (_) {},
-        ),
-      ),
-    );
-
 class _PreviewResponses extends HostFormResponsesController {
   @override
   Future<HostFormResponsesState> build(
     HostFormResponseListRequest request,
-  ) async =>
-      HostFormResponsesState(responses: [_response.response], nextCursor: null);
+  ) async => HostFormResponsesState(
+    responses: [hostFormResponsePreviewDetail.response],
+    nextCursor: null,
+  );
 }
 
 HostFormSummary _previewPublishedSummary(String organizerId, String formId) =>

@@ -13,6 +13,31 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../test_pump_helpers.dart';
 
 void main() {
+  testWidgets('imported review keeps its existing People link', (tester) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          hostApplicationDetailProvider(
+            'org-1',
+            'app-1',
+          ).overrideWith((_) async => _detail(false, linked: true)),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: const HostApplicationDetailScreen(
+            organizerId: 'org-1',
+            applicationId: 'app-1',
+          ),
+        ),
+      ),
+    );
+    await pumpFeatureUi(tester);
+    expect(find.text('Open person'), findsOneWidget);
+    expect(find.text('Accept and add to People'), findsOneWidget);
+    expect(find.text('Propose attendee'), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('review note saves without changing status', (tester) async {
     final controller = _ReviewController();
     await tester.pumpWidget(
@@ -183,6 +208,7 @@ HostApplicationDetail _detail(
   bool accepted, {
   bool revoked = false,
   bool contacts = false,
+  bool linked = false,
 }) => HostApplicationDetail(
   organizerId: 'org-1',
   applicationId: 'app-1',
@@ -206,7 +232,7 @@ HostApplicationDetail _detail(
   submittedAt: DateTime(2026, 9),
   reviewedAt: null,
   revision: accepted ? 2 : 1,
-  contactId: accepted ? 'person-1' : null,
+  contactId: accepted || linked ? 'person-1' : null,
   dataAccessState: revoked
       ? 'revokedParticipantGrant'
       : 'submittedFormResponse',

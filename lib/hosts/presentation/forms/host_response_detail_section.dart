@@ -1,7 +1,8 @@
 part of 'host_form_response_detail_screen.dart';
 
-class _ResponseDetailContent extends ConsumerWidget {
-  const _ResponseDetailContent({
+class HostResponseDetailSection extends ConsumerWidget {
+  const HostResponseDetailSection({
+    super.key,
     required this.value,
     required this.organizerId,
     required this.note,
@@ -85,7 +86,7 @@ class _ResponseDetailContent extends ConsumerWidget {
           ),
         if (!value.revoked) ...[
           gapH24,
-          _ResponseContactActions(value: value, onContact: onContact),
+          HostResponseContactSection(value: value, onContact: onContact),
         ],
         if (value.canReview) ...[
           gapH24,
@@ -137,7 +138,7 @@ class _ResponseDetailContent extends ConsumerWidget {
                     style: CatchTextStyles.supporting(context),
                   ),
                 for (final answer in response.answers) ...[
-                  _ResponseAnswerBlock(
+                  HostResponseAnswerRow(
                     label: answer.label,
                     answer: _answerText(context, answer.answer),
                     origin: origins.length == 1
@@ -157,7 +158,7 @@ class _ResponseDetailContent extends ConsumerWidget {
                 ],
               ] else if (application != null)
                 for (final answer in application.answers)
-                  _ResponseAnswerBlock(
+                  HostResponseAnswerRow(
                     label: answer.questionLabel,
                     answer: hostApplicationAnswerText(context, answer.value),
                   ),
@@ -234,7 +235,7 @@ class _ResponseDetailContent extends ConsumerWidget {
                       response.response.submittedAt,
                     ),
                   ),
-                  _ResponseTechnicalDetails(detail: response),
+                  HostResponseMetadataSection(detail: response),
                 ],
                 if (application?.reviewedAt case final DateTime date)
                   CatchField.read(
@@ -249,7 +250,11 @@ class _ResponseDetailContent extends ConsumerWidget {
             ),
           ),
         ),
-        if (value.canConvert) ...[
+        if (value.canConvert ||
+            (value.canReview &&
+                value.contactId != null &&
+                application!.reviewStatus !=
+                    HostApplicationReviewStatus.approved)) ...[
           gapH24,
           CatchSection.fieldRows(
             children: [
@@ -278,20 +283,21 @@ class _ResponseDetailContent extends ConsumerWidget {
                           HostFormConversionKind.crmContact,
                         ),
                 ),
-              CatchField.nav(
-                copy: catchFieldCopy(context.l10n),
-                title: context.l10n.hostFormConvertAttendee,
-                onTap: busy
-                    ? null
-                    : () => onConvert(
-                        response!,
-                        HostFormConversionKind.eventAttendeeProposal,
-                      ),
-              ),
+              if (value.canConvert)
+                CatchField.nav(
+                  copy: catchFieldCopy(context.l10n),
+                  title: context.l10n.hostFormConvertAttendee,
+                  onTap: busy
+                      ? null
+                      : () => onConvert(
+                          response!,
+                          HostFormConversionKind.eventAttendeeProposal,
+                        ),
+                ),
             ],
           ),
           if (application == null)
-            _ResponseStartReview(
+            HostResponseStartReviewAction(
               organizerId: organizerId,
               response: response!,
               busy: busy,
@@ -315,8 +321,9 @@ class _ResponseDetailContent extends ConsumerWidget {
   }
 }
 
-class _ResponseStartReview extends ConsumerWidget {
-  const _ResponseStartReview({
+class HostResponseStartReviewAction extends ConsumerWidget {
+  const HostResponseStartReviewAction({
+    super.key,
     required this.organizerId,
     required this.response,
     required this.busy,
@@ -352,8 +359,12 @@ class _ResponseStartReview extends ConsumerWidget {
   }
 }
 
-class _ResponseContactActions extends StatelessWidget {
-  const _ResponseContactActions({required this.value, required this.onContact});
+class HostResponseContactSection extends StatelessWidget {
+  const HostResponseContactSection({
+    super.key,
+    required this.value,
+    required this.onContact,
+  });
   final HostResponseReviewDetail value;
   final Future<void> Function(Uri) onContact;
   @override
@@ -430,8 +441,9 @@ class _ResponseContactActions extends StatelessWidget {
   }
 }
 
-class _ResponsePrimaryAction extends StatelessWidget {
-  const _ResponsePrimaryAction({
+class HostResponsePrimaryAction extends StatelessWidget {
+  const HostResponsePrimaryAction({
+    super.key,
     required this.value,
     required this.busy,
     required this.saving,

@@ -1,7 +1,8 @@
 part of 'host_form_response_detail_screen.dart';
 
-class _ResponseAnswerBlock extends StatelessWidget {
-  const _ResponseAnswerBlock({
+class HostResponseAnswerRow extends StatelessWidget {
+  const HostResponseAnswerRow({
+    super.key,
     required this.label,
     required this.answer,
     this.origin,
@@ -31,8 +32,8 @@ class _ResponseAnswerBlock extends StatelessWidget {
   }
 }
 
-class _ResponseTechnicalDetails extends StatelessWidget {
-  const _ResponseTechnicalDetails({required this.detail});
+class HostResponseMetadataSection extends StatelessWidget {
+  const HostResponseMetadataSection({super.key, required this.detail});
 
   final HostFormResponseDetail detail;
 
