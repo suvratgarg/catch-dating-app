@@ -90335,6 +90335,33 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
+  static const programTravelLegDocumentFlightAlertFlightNumber = CatchContractFieldConstraints(
+    path: 'programTravelLegDocument.flightAlertFlightNumber',
+    maxLength: 10,
+    valueTypes: <String>['string'],
+  );
+
+  static const programTravelLegDocumentFlightAlertLeaseExpiresAtNanoseconds = CatchContractFieldConstraints(
+    path: 'programTravelLegDocument.flightAlertLease.expiresAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const programTravelLegDocumentFlightAlertLeaseExpiresAtSeconds = CatchContractFieldConstraints(
+    path: 'programTravelLegDocument.flightAlertLease.expiresAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const programTravelLegDocumentFlightAlertLeaseToken = CatchContractFieldConstraints(
+    path: 'programTravelLegDocument.flightAlertLease.token',
+    maxLength: 80,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const programTravelLegDocumentFlightAlertSubscriptionId = CatchContractFieldConstraints(
     path: 'programTravelLegDocument.flightAlertSubscriptionId',
     maxLength: 128,
@@ -118824,6 +118851,10 @@ abstract final class CatchContractConstraints {
     'programTravelLegDocument.destinationLabel': programTravelLegDocumentDestinationLabel,
     'programTravelLegDocument.estimatedArrivalAt._nanoseconds': programTravelLegDocumentEstimatedArrivalAtNanoseconds,
     'programTravelLegDocument.estimatedArrivalAt._seconds': programTravelLegDocumentEstimatedArrivalAtSeconds,
+    'programTravelLegDocument.flightAlertFlightNumber': programTravelLegDocumentFlightAlertFlightNumber,
+    'programTravelLegDocument.flightAlertLease.expiresAt._nanoseconds': programTravelLegDocumentFlightAlertLeaseExpiresAtNanoseconds,
+    'programTravelLegDocument.flightAlertLease.expiresAt._seconds': programTravelLegDocumentFlightAlertLeaseExpiresAtSeconds,
+    'programTravelLegDocument.flightAlertLease.token': programTravelLegDocumentFlightAlertLeaseToken,
     'programTravelLegDocument.flightAlertSubscriptionId': programTravelLegDocumentFlightAlertSubscriptionId,
     'programTravelLegDocument.flightInstanceId': programTravelLegDocumentFlightInstanceId,
     'programTravelLegDocument.flightNextRefreshAt._nanoseconds': programTravelLegDocumentFlightNextRefreshAtNanoseconds,

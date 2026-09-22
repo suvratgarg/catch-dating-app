@@ -118307,7 +118307,7 @@ export const programTravelLegDocumentSchema = {
           "type": "null"
         }
       ],
-      "description": "Scheduler cursor: refresh once this passes. Null for non-flight or terminal-state legs."
+      "description": "Scheduler cursor for flight polling and subscription reconciliation. Null only when no polling or provider cleanup remains."
     },
     "flightAlertSubscriptionId": {
       "type": [
@@ -118315,7 +118315,7 @@ export const programTravelLegDocumentSchema = {
         "null"
       ],
       "maxLength": 128,
-      "description": "AeroDataBox webhook subscription bound to this leg while it is in the hot refresh window; null once settled or unsubscribed."
+      "description": "Attached provider subscription, retained until deletion is confirmed. A pending create is represented by flightAlertFlightNumber even before its id is known."
     },
     "flightProviderUpdatedAt": {
       "anyOf": [
@@ -118344,6 +118344,56 @@ export const programTravelLegDocumentSchema = {
         }
       ],
       "description": "Latest applied provider observation timestamp; older or replayed observations cannot overwrite current facts."
+    },
+    "flightAlertFlightNumber": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 10,
+      "description": "Provider subject for the attached or pending subscription. Retained across failures and rebooking until reconciled."
+    },
+    "flightAlertLease": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "token",
+            "expiresAt"
+          ],
+          "properties": {
+            "token": {
+              "type": "string",
+              "maxLength": 80
+            },
+            "expiresAt": {
+              "type": "object",
+              "description": "Serialized Firestore Timestamp fixture shape.",
+              "x-firestore-type": "timestamp",
+              "additionalProperties": false,
+              "required": [
+                "_seconds",
+                "_nanoseconds"
+              ],
+              "properties": {
+                "_seconds": {
+                  "type": "integer"
+                },
+                "_nanoseconds": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 999999999
+                }
+              }
+            }
+          }
+        }
+      ],
+      "description": "Short server lease for subscription reconciliation. Provider requests run outside transactions; expired leases can be recovered."
     }
   }
 };

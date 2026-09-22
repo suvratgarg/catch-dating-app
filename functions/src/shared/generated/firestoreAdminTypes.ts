@@ -8557,17 +8557,28 @@ export interface ProgramTravelLegDocument {
    */
   flightRefreshedAt: FirebaseFirestore.Timestamp | null;
   /**
-   * Scheduler cursor: refresh once this passes. Null for non-flight or terminal-state legs.
+   * Scheduler cursor for flight polling and subscription reconciliation. Null only when no polling or provider cleanup remains.
    */
   flightNextRefreshAt: FirebaseFirestore.Timestamp | null;
   /**
-   * AeroDataBox webhook subscription bound to this leg while it is in the hot refresh window; null once settled or unsubscribed.
+   * Attached provider subscription, retained until deletion is confirmed. A pending create is represented by flightAlertFlightNumber even before its id is known.
    */
   flightAlertSubscriptionId?: string | null;
   /**
    * Latest applied provider observation timestamp; older or replayed observations cannot overwrite current facts.
    */
   flightProviderUpdatedAt?: FirebaseFirestore.Timestamp | null;
+  /**
+   * Provider subject for the attached or pending subscription. Retained across failures and rebooking until reconciled.
+   */
+  flightAlertFlightNumber?: string | null;
+  /**
+   * Short server lease for subscription reconciliation. Provider requests run outside transactions; expired leases can be recovered.
+   */
+  flightAlertLease?: null | {
+    token: string;
+    expiresAt: FirebaseFirestore.Timestamp;
+  };
 }
 
 /**

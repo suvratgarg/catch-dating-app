@@ -1290,7 +1290,18 @@ status makes them actual arrival times. Each applied provider observation stores
 its update timestamp; replayed and older observations are ignored. Write-back
 runs against the current leg in a transaction, preserves operational edits, and
 advances the revision. Rebooking clears old provider facts while retaining the
-subscription reference needed for cleanup. Both manual refresh and the scheduled
-sweep bind the API key and webhook secret.
+subscription reference needed for cleanup. Manual refresh only polls status and binds the API key. The scheduled sweep
+owns subscription reconciliation and binds both the API key and webhook secret.
 
 Provider semantics: [AeroDataBox OpenAPI](https://doc.aerodatabox.com/docs/openapi-direct-v1.json).
+
+
+Subscription reconciliation stores a pending flight number and a short lease on
+the leg before contacting the provider. The free subscription listing recovers a
+create whose response was lost; deletion failures retain the id and retry cursor.
+Landing pushes keep that cursor until cleanup succeeds. Rebooking preserves the
+old subscription subject so the worker can release it before adopting the new
+flight. Secret rotation replaces old callback URLs. Provider requests have bounded
+timeouts, and each sweep stops starting new work before its runtime budget ends.
+The webhook handler only authenticates, normalizes and stores observations; it
+does not perform subscription I/O during the provider's delivery timeout.

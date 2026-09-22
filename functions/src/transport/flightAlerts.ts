@@ -2,173 +2,17 @@ import * as admin from "firebase-admin";
 import {snapshotMatchesLeg} from "./flightIdentity";
 import * as logger from "firebase-functions/logger";
 import {onRequest} from "firebase-functions/v2/https";
-import {defineSecret, defineString} from "firebase-functions/params";
+import {flightWebhookSecret} from "./flightProviderConfig";
 
 import type {ProgramTravelLegDocument} from
   "../shared/generated/firestoreAdminTypes";
 import {
-  aeroDataBoxApiKey,
-  FetchImpl,
   FlightStatusSnapshot,
   normalizeAeroFlight,
-  normalizeFlightNumber,
 } from "./aeroDataBox";
 import {
-  FlightRefreshTier,
   writeFlightSnapshot,
 } from "./flightRefresh";
-
-export const flightWebhookSecret = defineSecret("FLIGHT_WEBHOOK_SECRET");
-export const flightWebhookBaseUrl =
-  defineString("FLIGHT_WEBHOOK_BASE_URL");
-
-const subscriptionsEndpoint =
-  "https://api.aerodatabox.com/subscriptions/webhook";
-
-/** Public URL the provider pushes to; secret and leg id ride in the query. */
-export function flightAlertCallbackUrl(
-  baseUrl: string,
-  secret: string,
-  legId: string,
-): string {
-  return `${baseUrl}?key=${encodeURIComponent(secret)}` +
-    `&leg=${encodeURIComponent(legId)}`;
-}
-
-export function defaultAlertBaseUrl(): string {
-  const configured = flightWebhookBaseUrl.value().trim();
-  if (configured) return configured.replace(/\/$/, "");
-  const project = process.env.GCLOUD_PROJECT;
-  if (!project) {
-    throw new Error(
-      "FLIGHT_WEBHOOK_BASE_URL is unset and GCLOUD_PROJECT is unavailable.");
-  }
-  return `https://asia-south1-${project}.cloudfunctions.net/` +
-    "flightAlertWebhook";
-}
-
-/**
- * Registers a FlightByNumber alert subscription with AeroDataBox.
- * Returns the provider subscription id, or null when the provider
- * declined (duplicate, unsupported subject). Throws on transport errors
- * so the caller can retry on the next sweep.
- */
-export async function createFlightSubscription({
-  flightNumber,
-  callbackUrl,
-  apiKey,
-  fetchImpl = fetch,
-}: {
-  flightNumber: string;
-  callbackUrl: string;
-  apiKey: string;
-  fetchImpl?: FetchImpl;
-}): Promise<string | null> {
-  const response = await fetchImpl(
-    `${subscriptionsEndpoint}/FlightByNumber/` +
-      `${encodeURIComponent(normalizeFlightNumber(flightNumber))}` +
-      "?useCredits=true",
-    {
-      method: "POST",
-      headers: {"X-Api-Key": apiKey, "Content-Type": "application/json"},
-      body: JSON.stringify({url: callbackUrl, maxDeliveryRetries: 2}),
-    },
-  );
-  if (response.status === 204 || response.status === 404) return null;
-  if (response.status === 409) return null;
-  if (response.status < 200 || response.status >= 300) {
-    throw new Error(
-      `AeroDataBox subscription failed with HTTP ${response.status}`);
-  }
-  const body = await response.json() as {
-    id?: unknown;
-    subscriptionId?: unknown;
-    subscription?: {id?: unknown};
-  } | null;
-  const id = body?.subscription?.id ?? body?.subscriptionId ?? body?.id;
-  return typeof id === "string" && id ? id : null;
-}
-
-export async function deleteFlightSubscription({
-  subscriptionId,
-  apiKey,
-  fetchImpl = fetch,
-}: {
-  subscriptionId: string;
-  apiKey: string;
-  fetchImpl?: FetchImpl;
-}): Promise<void> {
-  const response = await fetchImpl(
-    `${subscriptionsEndpoint}/${encodeURIComponent(subscriptionId)}`,
-    {method: "DELETE", headers: {"X-Api-Key": apiKey}},
-  );
-  // Already gone is success for lifecycle cleanup.
-  if (response.status === 404 || response.status === 204) return;
-  if (response.status < 200 || response.status >= 300) {
-    throw new Error(
-      `AeroDataBox unsubscribe failed with HTTP ${response.status}`);
-  }
-}
-
-/** Injectable webhook plumbing so tests never touch the provider. */
-export interface FlightAlertDeps {
-  apiKey: () => string;
-  secret: () => string;
-  baseUrl: () => string;
-  createSubscription: typeof createFlightSubscription;
-  deleteSubscription: typeof deleteFlightSubscription;
-  fetchImpl?: FetchImpl;
-}
-
-/**
- * Keeps one provider subscription aligned with a leg's refresh tier:
- * hot legs get pushes, settled legs release theirs. Runs inside the
- * polling sweep so it needs no extra indexes; provider failures are
- * logged and left for the next pass.
- */
-export async function syncLegAlertSubscription(
-  legRef: FirebaseFirestore.DocumentReference,
-  leg: ProgramTravelLegDocument,
-  tier: FlightRefreshTier,
-  legId: string,
-  alerts: FlightAlertDeps,
-): Promise<void> {
-  const existing = leg.flightAlertSubscriptionId ?? null;
-  if (tier === "hot" && !existing && leg.flightNumber) {
-    try {
-      const id = await alerts.createSubscription({
-        flightNumber: leg.flightNumber,
-        callbackUrl: flightAlertCallbackUrl(
-          alerts.baseUrl(), alerts.secret(), legId),
-        apiKey: alerts.apiKey(),
-        fetchImpl: alerts.fetchImpl,
-      });
-      if (id) await legRef.update({flightAlertSubscriptionId: id});
-    } catch (error) {
-      logger.warn("Flight alert subscribe failed", {
-        legId,
-        error: error instanceof Error ? error.message : String(error),
-      });
-    }
-    return;
-  }
-  if (tier === "settled" && existing) {
-    try {
-      await alerts.deleteSubscription({
-        subscriptionId: existing,
-        apiKey: alerts.apiKey(),
-        fetchImpl: alerts.fetchImpl,
-      });
-    } catch (error) {
-      logger.warn("Flight alert unsubscribe failed", {
-        legId, subscriptionId: existing,
-        error: error instanceof Error ? error.message : String(error),
-      });
-    }
-    // Clear regardless: stale pushes re-apply through the same guards.
-    await legRef.update({flightAlertSubscriptionId: null});
-  }
-}
 
 interface PushedFlight {
   snapshot: FlightStatusSnapshot;
@@ -278,7 +122,7 @@ export class FlightAlertAuthError extends Error {
 }
 
 export const flightAlertWebhook = onRequest(
-  {secrets: [flightWebhookSecret, aeroDataBoxApiKey]},
+  {secrets: [flightWebhookSecret]},
   async (request, response) => {
     if (request.method !== "POST") {
       response.status(405).send("POST only.");
@@ -299,7 +143,7 @@ export const flightAlertWebhook = onRequest(
         return;
       }
       logger.error("Flight alert webhook failed", error);
-      response.status(400).send("Bad flight alert payload.");
+      response.status(500).send("Flight update could not be stored.");
     }
   },
 );

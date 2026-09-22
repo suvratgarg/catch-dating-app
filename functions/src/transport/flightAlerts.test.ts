@@ -1,18 +1,14 @@
+import {createFlightSubscription, deleteFlightSubscription,
+  flightAlertCallbackUrl} from "./flightSubscriptions";
 import assert from "node:assert/strict";
 import test from "node:test";
 import * as admin from "firebase-admin";
 
-import {FlightStatusSnapshot} from "./aeroDataBox";
 import {
-  createFlightSubscription,
-  deleteFlightSubscription,
   FlightAlertAuthError,
-  flightAlertCallbackUrl,
   flightAlertWebhookHandler,
   pushedFlights,
-  syncLegAlertSubscription,
 } from "./flightAlerts";
-import {refreshTravelLeg} from "./flightRefresh";
 import {ProgramTravelLegDocument} from
   "../shared/generated/firestoreAdminTypes";
 
@@ -62,7 +58,7 @@ function leg(overrides: Partial<ProgramTravelLegDocument> = {}):
   } as ProgramTravelLegDocument;
 }
 
-import {FakeFirestore as MiniFirestore, type FakeData, FakeDocRef} from
+import {FakeFirestore as MiniFirestore, type FakeData} from
   "../shared/testing/programFirestore";
 
 function pushBody(overrides: Record<string, unknown> = {}) {
@@ -253,145 +249,20 @@ test("missing or malformed pushes answer without writing", async () => {
     "missing-leg");
 });
 
-test("hot legs subscribe once and settled legs release the subscription",
+
+test("landing pushes keep a scheduler cursor until subscriptions are released",
   async () => {
-    const calls: string[] = [];
-    const alerts = {
-      apiKey: () => "k",
-      secret: () => "s3cret",
-      baseUrl: () => "https://example.test/hook",
-      createSubscription: async (args: {
-        flightNumber: string; callbackUrl: string;
-      }) => {
-        calls.push(`create:${args.flightNumber}`);
-        assert.ok(args.callbackUrl.includes("key=s3cret"));
-        assert.ok(args.callbackUrl.includes("leg=leg-1"));
-        return "sub_7";
-      },
-      deleteSubscription: async (args: {subscriptionId: string}) => {
-        calls.push(`delete:${args.subscriptionId}`);
-      },
-    };
-
     const firestore = new MiniFirestore({
-      "programTravelLegs/leg-1": leg() as unknown as FakeData,
-      "programTravelLegs/leg-2":
-        leg({flightAlertSubscriptionId: "sub_7"}) as unknown as FakeData,
+      "programTravelLegs/leg-1": leg({flightAlertSubscriptionId: "sub-live",
+        flightAlertFlightNumber: "AI847"}) as unknown as FakeData,
     });
-    const legRef = new FakeDocRef(firestore, "programTravelLegs/leg-1");
-    await syncLegAlertSubscription(
-      legRef as never, leg(), "hot", "leg-1", alerts);
-    assert.deepEqual(calls, ["create:AI847"]);
-    assert.equal(
-      (firestore.docs.get("programTravelLegs/leg-1") as FakeData)
-        .flightAlertSubscriptionId,
-      "sub_7");
-
-    // Already-subscribed hot legs do not subscribe twice.
-    await syncLegAlertSubscription(
-      legRef as never,
-      leg({flightAlertSubscriptionId: "sub_7"}), "hot", "leg-1", alerts);
-    assert.deepEqual(calls, ["create:AI847"]);
-
-    const leg2Ref = new FakeDocRef(firestore, "programTravelLegs/leg-2");
-    await syncLegAlertSubscription(
-      leg2Ref as never,
-      leg({flightAlertSubscriptionId: "sub_7"}), "settled", "leg-2", alerts);
-    assert.deepEqual(calls, ["create:AI847", "delete:sub_7"]);
-    assert.equal(
-      (firestore.docs.get("programTravelLegs/leg-2") as FakeData)
-        .flightAlertSubscriptionId,
-      null);
-  });
-
-test("a subscription create failure leaves the leg unsubscribed", async () => {
-  const firestore = new MiniFirestore({
-    "programTravelLegs/leg-1": leg() as unknown as FakeData,
-  });
-  const legRef = new FakeDocRef(firestore, "programTravelLegs/leg-1");
-  await syncLegAlertSubscription(
-    legRef as never, leg(), "hot", "leg-1", {
-      apiKey: () => "k",
-      secret: () => "s",
-      baseUrl: () => "https://example.test",
-      createSubscription: async () => {
-        throw new Error("provider down");
-      },
-      deleteSubscription: async () => {},
-    });
-  const stored = firestore.docs.get("programTravelLegs/leg-1") as FakeData;
-  assert.equal(stored.flightAlertSubscriptionId, null);
-});
-
-test("settling a leg inside the sweep releases its subscription", async () => {
-  const calls: string[] = [];
-  const firestore = new MiniFirestore({
-    "programTravelLegs/leg-1": leg({
-      actualArrivalAt: ts(NOW - 1000),
-      flightStatus: "landed",
-      flightAlertSubscriptionId: "sub_3",
-    }) as unknown as FakeData,
-  });
-  const outcome = await refreshTravelLeg(firestore as never, "leg-1", {
-    now: () => new Date(NOW),
-    apiKey: () => "k",
-    fetchStatus: async () => {
-      throw new Error("settled legs must not be polled");
-    },
-    syncAlert: async (legRef, legDoc, tier, legId) => {
-      assert.equal(tier, "settled");
-      await syncLegAlertSubscription(legRef, legDoc, tier, legId, {
-        apiKey: () => "k",
-        secret: () => "s",
-        baseUrl: () => "https://example.test",
-        createSubscription: async () => null,
-        deleteSubscription: async ({subscriptionId}) => {
-          calls.push(`delete:${subscriptionId}`);
-        },
-      });
-    },
-  });
-  assert.equal(outcome, "settled");
-  assert.deepEqual(calls, ["delete:sub_3"]);
-  const stored = firestore.docs.get("programTravelLegs/leg-1") as FakeData;
-  assert.equal(stored.flightAlertSubscriptionId, null);
-});
-
-test("entering the hot window inside the sweep subscribes the leg",
-  async () => {
-    const calls: string[] = [];
-    const firestore = new MiniFirestore({
-      "programTravelLegs/leg-1": leg() as unknown as FakeData,
-      "organizerPrograms/program-1": {timezone: "Asia/Kolkata"},
-    });
-    const snapshot: FlightStatusSnapshot = {
-      flightNumber: "AI847", originIata: "BOM", destinationIata: "DEL",
-      status: "enroute",
-      scheduledArrivalMillis: NOW + 2 * 3600_000,
-      estimatedArrivalMillis: NOW + 2 * 3600_000,
-      actualArrivalMillis: null,
-      arrivalTerminal: "3",
-      baggageBelt: null,
-      providerUpdatedAtMillis: NOW - 10_000,
-    };
-    const outcome = await refreshTravelLeg(firestore as never, "leg-1", {
-      now: () => new Date(NOW),
-      apiKey: () => "k",
-      fetchStatus: async () => snapshot,
-      syncAlert: async (legRef, legDoc, tier, legId) => {
-        assert.equal(tier, "hot");
-        await syncLegAlertSubscription(legRef, legDoc, tier, legId, {
-          apiKey: () => "k",
-          secret: () => "s",
-          baseUrl: () => "https://example.test",
-          createSubscription: async () => {
-            calls.push("create");
-            return "sub_5";
-          },
-          deleteSubscription: async () => {},
-        });
-      },
-    });
-    assert.equal(outcome, "updated");
-    assert.deepEqual(calls, ["create"]);
+    const body = pushBody({runwayTime:
+      {utc: new Date(NOW - 1000).toISOString()}});
+    body.flights[0].status = "Arrived";
+    assert.equal(await flightAlertWebhookHandler(
+      {key: "s3cret", leg: "leg-1"}, body, webhookDeps(firestore)), "applied");
+    const stored = firestore.getDoc("programTravelLegs/leg-1")!;
+    assert.equal(stored.flightStatus, "landed");
+    assert.equal(stored.flightAlertSubscriptionId, "sub-live");
+    assert.ok(stored.flightNextRefreshAt);
   });

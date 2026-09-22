@@ -24,11 +24,12 @@ import {
 } from "./aeroDataBox";
 import {
   createFlightSubscription,
-  defaultAlertBaseUrl,
   deleteFlightSubscription,
-  flightWebhookSecret,
   syncLegAlertSubscription,
-} from "./flightAlerts";
+  listFlightSubscriptions,
+} from "./flightSubscriptions";
+import {defaultAlertBaseUrl, flightWebhookSecret} from
+  "./flightProviderConfig";
 import {
   refreshDueFlightLegs,
   refreshTravelLegForRequest,
@@ -46,14 +47,15 @@ const defaultRefreshDeps: RefreshDeps = {
   now: () => new Date(),
   apiKey: () => aeroDataBoxApiKey.value(),
   fetchStatus: fetchFlightStatus,
-  syncAlert: (legRef, leg, tier, legId) => syncLegAlertSubscription(
-    legRef, leg, tier, legId, {
-      apiKey: () => aeroDataBoxApiKey.value(),
-      secret: () => flightWebhookSecret.value(),
-      baseUrl: defaultAlertBaseUrl,
-      createSubscription: createFlightSubscription,
-      deleteSubscription: deleteFlightSubscription,
-    }),
+  syncAlert: (legRef) => syncLegAlertSubscription(legRef, {
+    now: () => new Date(),
+    listSubscriptions: listFlightSubscriptions,
+    apiKey: () => aeroDataBoxApiKey.value(),
+    secret: () => flightWebhookSecret.value(),
+    baseUrl: defaultAlertBaseUrl,
+    createSubscription: createFlightSubscription,
+    deleteSubscription: deleteFlightSubscription,
+  }),
 };
 
 export async function refreshProgramTravelLegHandler(
@@ -73,7 +75,7 @@ export async function refreshProgramTravelLegHandler(
     now: admin.firestore.Timestamp.fromDate(deps.now()),
   });
   const outcome = await refreshTravelLegForRequest(
-    db, data.programId, data.legId, deps);
+    db, data.programId, data.legId, {...deps, syncAlert: undefined});
   const legSnap =
     await db.collection("programTravelLegs").doc(data.legId).get();
   const leg = legSnap.data() as ProgramTravelLegDocument | undefined;
@@ -88,7 +90,7 @@ export async function refreshProgramTravelLegHandler(
 }
 
 export const refreshProgramTravelLeg = onCall(
-  appCheckCallableOptionsWithSecrets([aeroDataBoxApiKey, flightWebhookSecret],
+  appCheckCallableOptionsWithSecrets([aeroDataBoxApiKey],
     {timeoutSeconds: 30}),
   async (request) => refreshProgramTravelLegHandler(request),
 );
@@ -96,6 +98,8 @@ export const refreshProgramTravelLeg = onCall(
 export const refreshProgramFlightStatuses = onSchedule(
   {
     schedule: "every 15 minutes",
+    timeoutSeconds: 540,
+    maxInstances: 1,
     timeZone: "Asia/Kolkata",
     secrets: [aeroDataBoxApiKey, flightWebhookSecret],
   },

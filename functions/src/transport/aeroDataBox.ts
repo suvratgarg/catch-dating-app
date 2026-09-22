@@ -15,6 +15,7 @@ export type FetchImpl = (
     headers: Record<string, string>;
     method?: string;
     body?: string;
+    signal?: AbortSignal;
   },
 ) => Promise<{status: number; json: () => Promise<unknown>}>;
 
@@ -87,7 +88,7 @@ export async function fetchFlightStatus({
       `/${encodeURIComponent(dateLocal)}` +
       "?dateLocalRole=Arrival&withAircraftImage=false" +
       "&withLocation=false&withFlightPlan=false",
-    {headers: {"X-Api-Key": apiKey}},
+    {headers: {"X-Api-Key": apiKey}, signal: AbortSignal.timeout(15_000)},
   );
   if (response.status === 204 || response.status === 404) return null;
   if (response.status < 200 || response.status >= 300) {

@@ -10,11 +10,9 @@ import {
 } from "./aeroDataBox";
 
 import {
-  flightRefreshTier, FlightRefreshTier, TIER_DELAY_MILLIS,
+  flightRefreshTier, TIER_DELAY_MILLIS,
   timestampMillis, toTimestamp,
 } from "./flightRefreshPolicy";
-export {flightRefreshTier, nextFlightRefreshAt} from "./flightRefreshPolicy";
-export type {FlightRefreshTier} from "./flightRefreshPolicy";
 import {flightIdentity, flightInstanceKey, snapshotMatchesLeg} from
   "./flightIdentity";
 import {nextRevision} from "../shared/programAuthority";
@@ -75,9 +73,6 @@ export interface FlightRefreshDeps {
   /** Webhook subscription plumbing; omitted in tests and dry contexts. */
   syncAlert?: (
     legRef: FirebaseFirestore.DocumentReference,
-    leg: ProgramTravelLegDocument,
-    tier: FlightRefreshTier,
-    legId: string,
   ) => Promise<void>;
 }
 
@@ -95,9 +90,9 @@ export async function refreshTravelLeg(
   if (!leg) return "settled";
   const nowMillis = deps.now().getTime();
   const tier = flightRefreshTier(leg, nowMillis);
+  await deps.syncAlert?.(legRef);
   if (tier === "settled") {
     await rescheduleFlight(legRef, leg, nowMillis, null);
-    await deps.syncAlert?.(legRef, leg, "settled", legId);
     return "settled";
   }
 
@@ -143,17 +138,21 @@ export async function refreshTravelLeg(
     await rescheduleFlight(legRef, leg, nowMillis, TIER_DELAY_MILLIS[tier]);
     return "no-match";
   }
-  await deps.syncAlert?.(legRef, written,
-    flightRefreshTier(written, nowMillis), legId);
+  const nextTier = flightRefreshTier(written, nowMillis);
+  if (nextTier !== tier) {
+    await deps.syncAlert?.(legRef);
+  }
   return "updated";
 }
 
 /** Keep cleanup runnable after landing until the provider is unsubscribed. */
 function nextCursor(leg: ProgramTravelLegDocument,
   nowMillis: number, delay: number | null) {
-  return toTimestamp(delay == null ?
-    leg.flightAlertSubscriptionId ? nowMillis + RETRY_BACKOFF_MILLIS : null :
-    nowMillis + delay);
+  const lifecycle = leg.flightAlertSubscriptionId ||
+    leg.flightAlertFlightNumber || leg.flightAlertLease;
+  const next = delay == null ? lifecycle ? RETRY_BACKOFF_MILLIS : null : delay;
+  return toTimestamp(next == null ? null : nowMillis +
+    (lifecycle ? Math.min(next, RETRY_BACKOFF_MILLIS) : next));
 }
 
 async function rescheduleFlight(
@@ -220,7 +219,9 @@ export async function refreshDueFlightLegs(
   let updated = 0;
   let skipped = 0;
   let failed = 0;
+  const started = Date.now();
   for (const doc of due.docs) {
+    if (Date.now() - started > 240_000) break;
     const outcome = await refreshTravelLeg(db, doc.id, deps);
     if (outcome === "updated") updated++;
     else if (outcome === "failed") failed++;

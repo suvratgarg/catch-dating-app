@@ -13,6 +13,8 @@ export function reconcileTravelLegFlightState(
   const document = {...next,
     flightAlertSubscriptionId: current?.flightAlertSubscriptionId ?? null,
     flightProviderUpdatedAt: current?.flightProviderUpdatedAt ?? null,
+    flightAlertFlightNumber: current?.flightAlertFlightNumber ?? null,
+    flightAlertLease: current?.flightAlertLease ?? null,
   };
   if (!changed) return document;
   return {...document, estimatedArrivalAt: null, actualArrivalAt: null,
@@ -20,7 +22,9 @@ export function reconcileTravelLegFlightState(
     flightInstanceId: null, arrivalTerminal: null,
     flightRefreshedAt: null, flightProviderUpdatedAt: null,
     // Removed flights still need a sweep to release their subscription.
-    flightNextRefreshAt: current?.flightAlertSubscriptionId ? next.updatedAt :
+    flightNextRefreshAt: (current?.flightAlertSubscriptionId ||
+      current?.flightAlertFlightNumber ||
+      current?.flightAlertLease) ? next.updatedAt :
       nextFlightRefreshAt(next.flightNumber, next.scheduledArrivalAt, now),
   };
 }

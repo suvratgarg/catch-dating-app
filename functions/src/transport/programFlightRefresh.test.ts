@@ -1,3 +1,4 @@
+import {flightRefreshTier, nextFlightRefreshAt} from "./flightRefreshPolicy";
 import {reconcileTravelLegFlightState} from "./travelLegFlightState";
 import assert from "node:assert/strict";
 import test from "node:test";
@@ -10,8 +11,6 @@ import {
 } from "./aeroDataBox";
 import {
   applyFlightSnapshot,
-  flightRefreshTier,
-  nextFlightRefreshAt,
   refreshDueFlightLegs,
   refreshTravelLeg,
 } from "./flightRefresh";

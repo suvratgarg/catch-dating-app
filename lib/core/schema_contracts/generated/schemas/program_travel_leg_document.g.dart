@@ -511,7 +511,7 @@ const schemaProgramTravelLegDocumentSchema = <String, Object?>{
           'type': 'null',
         },
       ],
-      'description': 'Scheduler cursor: refresh once this passes. Null for non-flight or terminal-state legs.',
+      'description': 'Scheduler cursor for flight polling and subscription reconciliation. Null only when no polling or provider cleanup remains.',
     },
     'flightAlertSubscriptionId': <String, Object?>{
       'type': <Object?>[
@@ -519,7 +519,7 @@ const schemaProgramTravelLegDocumentSchema = <String, Object?>{
         'null',
       ],
       'maxLength': 128,
-      'description': 'AeroDataBox webhook subscription bound to this leg while it is in the hot refresh window; null once settled or unsubscribed.',
+      'description': 'Attached provider subscription, retained until deletion is confirmed. A pending create is represented by flightAlertFlightNumber even before its id is known.',
     },
     'flightProviderUpdatedAt': <String, Object?>{
       'anyOf': <Object?>[
@@ -548,6 +548,56 @@ const schemaProgramTravelLegDocumentSchema = <String, Object?>{
         },
       ],
       'description': 'Latest applied provider observation timestamp; older or replayed observations cannot overwrite current facts.',
+    },
+    'flightAlertFlightNumber': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'maxLength': 10,
+      'description': 'Provider subject for the attached or pending subscription. Retained across failures and rebooking until reconciled.',
+    },
+    'flightAlertLease': <String, Object?>{
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'type': 'null',
+        },
+        <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'token',
+            'expiresAt',
+          ],
+          'properties': <String, Object?>{
+            'token': <String, Object?>{
+              'type': 'string',
+              'maxLength': 80,
+            },
+            'expiresAt': <String, Object?>{
+              'type': 'object',
+              'description': 'Serialized Firestore Timestamp fixture shape.',
+              'x-firestore-type': 'timestamp',
+              'additionalProperties': false,
+              'required': <Object?>[
+                '_seconds',
+                '_nanoseconds',
+              ],
+              'properties': <String, Object?>{
+                '_seconds': <String, Object?>{
+                  'type': 'integer',
+                },
+                '_nanoseconds': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 0,
+                  'maximum': 999999999,
+                },
+              },
+            },
+          },
+        },
+      ],
+      'description': 'Short server lease for subscription reconciliation. Provider requests run outside transactions; expired leases can be recovered.',
     },
   },
 };
