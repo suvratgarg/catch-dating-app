@@ -12,7 +12,49 @@ extension _HostResponseImport on _HostFormsScreenState {
       final draft = buildHostApplicationImportDraft(table);
       final confirmed = await showCatchBottomSheet<bool>(
         context: context,
-        builder: (context) => _ApplicationImportSheet(draft: draft),
+        builder: (context) => CatchSheet(
+          title: context.l10n.hostApplicationsImportTitle,
+          subtitle: context.l10n.hostApplicationsImportSubtitle,
+          footer: CatchButton(
+            label: context.l10n.hostApplicationsImportAction(
+              count: draft.rows.length,
+            ),
+            fullWidth: true,
+            onPressed: () => Navigator.of(context).pop(true),
+          ),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                CatchSection.fieldRows(
+                  children: [
+                    for (final question in draft.questions)
+                      CatchField.read(
+                        copy: catchFieldCopy(context.l10n),
+                        title: question.label,
+                        body: question.canonicalFieldId == null
+                            ? context.l10n.hostApplicationsImportOrganizerField
+                            : context.l10n.hostApplicationsImportReusableField,
+                      ),
+                  ],
+                ),
+                if (draft.truncatedRowCount > 0) ...[
+                  gapH12,
+                  CatchNotice(
+                    dismissLabel: context.l10n.coreCatchNoticeTooltipDismiss,
+                    notice: CatchNoticeData(
+                      id: 'application-import-limit',
+                      title: context.l10n.hostApplicationsImportLimit(
+                        count: draft.truncatedRowCount,
+                      ),
+                      tone: CatchNoticeTone.warning,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ),
       );
       if (confirmed != true || !mounted) return;
       final imported = await ref
@@ -56,56 +98,6 @@ extension _HostResponseImport on _HostFormsScreenState {
       if (mounted) _setImporting(false);
     }
   }
-}
-
-class _ApplicationImportSheet extends StatelessWidget {
-  const _ApplicationImportSheet({required this.draft});
-  final HostApplicationImportDraft draft;
-
-  @override
-  Widget build(BuildContext context) => CatchSheet(
-    title: context.l10n.hostApplicationsImportTitle,
-    subtitle: context.l10n.hostApplicationsImportSubtitle,
-    footer: CatchButton(
-      label: context.l10n.hostApplicationsImportAction(
-        count: draft.rows.length,
-      ),
-      fullWidth: true,
-      onPressed: () => Navigator.of(context).pop(true),
-    ),
-    child: SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          CatchSection.fieldRows(
-            children: [
-              for (final question in draft.questions)
-                CatchField.read(
-                  copy: catchFieldCopy(context.l10n),
-                  title: question.label,
-                  body: question.canonicalFieldId == null
-                      ? context.l10n.hostApplicationsImportOrganizerField
-                      : context.l10n.hostApplicationsImportReusableField,
-                ),
-            ],
-          ),
-          if (draft.truncatedRowCount > 0) ...[
-            gapH12,
-            CatchNotice(
-              dismissLabel: context.l10n.coreCatchNoticeTooltipDismiss,
-              notice: CatchNoticeData(
-                id: 'application-import-limit',
-                title: context.l10n.hostApplicationsImportLimit(
-                  count: draft.truncatedRowCount,
-                ),
-                tone: CatchNoticeTone.warning,
-              ),
-            ),
-          ],
-        ],
-      ),
-    ),
-  );
 }
 
 String _applicationImportIssue(
