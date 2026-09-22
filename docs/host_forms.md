@@ -272,10 +272,11 @@ copy is optional and bounded; safe system copy is the fallback.
 
 ### Payment and profile extension acceptance
 
-The payment/profile/chat extension is in implementation. The provider adapter
-and credential vault under `functions/src/payments/formPayments/` are its first
-source increment; their presence does not enable paid forms. The full release
-requires the following end-to-end behavior and checks:
+The payment/profile/chat extension is in implementation. Merchant connections,
+payment recovery, submission finalization and webhook receipt processing live
+under `functions/src/payments/formPayments/`. Their presence alone does not
+enable paid forms. The full release requires the following end-to-end behavior
+and checks:
 
 - A Host connects their existing Razorpay merchant through Catch's Technology
   Partner OAuth application. Test and live credentials are isolated. Server
@@ -329,6 +330,23 @@ and the partner client secret for Checkout signature verification; the merchant
 access token authorizes server APIs. See Razorpay's
 [OAuth integration](https://razorpay.com/docs/partners/technology-partners/onboard-businesses/integrate-oauth/integration-steps/)
 and [merchant webhook API](https://razorpay.com/docs/api/partners/webhooks/create/).
+Refund recovery uses the same saved amount and `X-Refund-Idempotency` key on
+every retry, following the
+[idempotent refund API](https://razorpay.com/docs/api/refunds/normal-refunds-idempotent).
+
+The deployment remains unconfigured unless its GitHub environment variable
+`FORM_RAZORPAY_PARTNER_CONFIG_VERSION` names a numeric Secret Manager version
+in that same Firebase project. The deploy materializer writes only this
+reference, never the credentials, and rejects cross-project references or
+`latest` aliases. The referenced secret contains exactly `schema`
+(`catch.form-razorpay-partner/v1`), `clientId`, `clientSecret`, `mode` (`test` or
+`live`), and `credentialSecretId` (the pre-created merchant credential vault).
+Grant the Functions runtime access to the partner secret and add/access/disable
+version permissions on that vault. The runtime derives the callback and webhook
+URLs from `https://asia-south1-<project>.cloudfunctions.net`, using
+`organizerFormPaymentOauthCallback` and `organizerFormPaymentWebhook` respectively.
+Register that exact callback in the partner application. The config loader
+limits credential caching to one minute and sanitizes load failures.
 
 ### Public route
 

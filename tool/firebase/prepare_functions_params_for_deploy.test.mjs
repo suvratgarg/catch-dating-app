@@ -30,6 +30,7 @@ test("disabled legacy Meta params remain visibly unconfigured", () => {
   assert.equal(fs.readFileSync(result.outputPath, "utf8"), [
     'ALGOLIA_APPLICATION_ID="CATCHDEV01"',
     'RAZORPAY_PUBLIC_KEY_ID="rzp_test_example123"',
+    'FORM_RAZORPAY_PARTNER_CONFIG_VERSION=" "',
     "META_WHATSAPP_APP_ID=\" \"",
     "META_WHATSAPP_EMBEDDED_SIGNUP_CONFIG_ID=\" \"",
     "META_WHATSAPP_GRAPH_VERSION=\"v23.0\"",
@@ -59,6 +60,7 @@ test("empty GitHub repository variables default Meta to disabled", () => {
   assert.equal(fs.readFileSync(result.outputPath, "utf8"), [
     'ALGOLIA_APPLICATION_ID="CATCHDEV01"',
     'RAZORPAY_PUBLIC_KEY_ID="rzp_test_example123"',
+    'FORM_RAZORPAY_PARTNER_CONFIG_VERSION=" "',
     "META_WHATSAPP_APP_ID=\" \"",
     "META_WHATSAPP_EMBEDDED_SIGNUP_CONFIG_ID=\" \"",
     "META_WHATSAPP_GRAPH_VERSION=\"v23.0\"",
@@ -178,4 +180,24 @@ test("event assistance flags reject non-boolean values before writing", () => {
   }), /EVENT_ASSISTANCE_SMS_REPORTS_ENABLED must be true or false/);
   assert.equal(fs.existsSync(path.join(functionsDir, ".env.catchdates-dev")),
     false);
+});
+
+test("form partner config is opt-in and pins only a project-local version", () => {
+  const version = "projects/catchdates-dev/secrets/FORM_PARTNER/versions/12";
+  const result = prepareFunctionsParamsForDeploy({
+    functionsDir: fixture(), projectId: "catchdates-dev",
+    environment: {...publicIds, FORM_RAZORPAY_PARTNER_CONFIG_VERSION: version},
+  });
+  assert.ok(fs.readFileSync(result.outputPath, "utf8").includes(
+    `FORM_RAZORPAY_PARTNER_CONFIG_VERSION="${version}"`));
+  for (const value of [version.replace("catchdates-dev", "catchdates-prod"),
+    version.replace("/12", "/latest"), "private-secret-value", `${version}\nx=y`]) {
+    const functionsDir = fixture();
+    assert.throws(() => prepareFunctionsParamsForDeploy({
+      functionsDir, projectId: "catchdates-dev",
+      environment: {...publicIds, FORM_RAZORPAY_PARTNER_CONFIG_VERSION: value},
+    }), /must pin a secret in this project/);
+    assert.equal(fs.existsSync(path.join(functionsDir, ".env.catchdates-dev")),
+      false);
+  }
 });
