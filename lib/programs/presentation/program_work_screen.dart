@@ -3,7 +3,9 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_dating_app/programs/data/program_snapshot_reader.dart';
 import 'package:catch_dating_app/programs/data/program_work_repository.dart';
+import 'package:catch_dating_app/programs/domain/program_access_policy.dart';
 import 'package:catch_dating_app/programs/domain/program_models.dart';
 import 'package:catch_dating_app/routing/route_contract.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -32,7 +34,7 @@ class ProgramWorkScreen extends ConsumerWidget {
     final accessAsync = ref.watch(
       programWorkEntryProvider(programId, inviteId),
     );
-    return CatchAsyncBoundary<ProgramWorkAccess>(
+    return CatchAsyncBoundary<ProgramReadView<ProgramWorkAccess>>(
       value: accessAsync,
       onRetry: () =>
           ref.invalidate(programWorkEntryProvider(programId, inviteId)),
@@ -68,30 +70,33 @@ class ProgramWorkScreen extends ConsumerWidget {
           ),
         ),
       ),
-      builder: (context, access) => ProgramWorkPageBody(access: access),
+      builder: (context, result) => ProgramWorkPageBody(
+        access: result.value,
+        snapshotAt: result.snapshotAt,
+      ),
     );
   }
 }
 
 class ProgramWorkPageBody extends StatelessWidget {
-  const ProgramWorkPageBody({super.key, required this.access});
+  const ProgramWorkPageBody({super.key, required this.access, this.snapshotAt});
 
   final ProgramWorkAccess access;
+  final DateTime? snapshotAt;
 
   @override
   Widget build(BuildContext context) {
-    final greeterScope = access.stationScope(ProgramStaffDuty.airportGreeter);
     final dispatcherScope = access.stationScope(
       ProgramStaffDuty.transportDispatcher,
     );
     final hotelScope = access.hotelScope(ProgramStaffDuty.hotelDesk);
     final arrivalsStations = access.pickupPoints
         .where(
-          (station) =>
-              (greeterScope?.contains(station.pickupPointId) ??
-                  greeterScope == null) &&
-              (access.hasDuty(ProgramStaffDuty.airportGreeter) ||
-                  access.hasDuty(ProgramStaffDuty.transportDispatcher)),
+          (station) => canReadProgramStation(
+            access,
+            station.pickupPointId,
+            dispatch: false,
+          ),
         )
         .toList(growable: false);
     final dispatchStations = access.pickupPoints
@@ -127,6 +132,17 @@ class ProgramWorkPageBody extends StatelessWidget {
       ),
       body: CatchRouteBody.standardSections(
         sections: [
+          if (snapshotAt != null)
+            CatchSectionListItem(
+              child: CatchBanner(
+                title: context.l10n.programsSnapshotTitle,
+                message: context.l10n.programsSnapshotBanner(
+                  time: AppTimeFormatters.time(snapshotAt!),
+                ),
+                icon: CatchIcons.wifiOffRounded,
+                tone: CatchBannerTone.warning,
+              ),
+            ),
           CatchSectionListItem(
             child: CatchSection.contained(
               title: context.l10n.programsWorkShellAccessTitle,

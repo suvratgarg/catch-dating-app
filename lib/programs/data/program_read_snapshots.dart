@@ -1,6 +1,9 @@
+import 'dart:async';
 import 'dart:convert';
 
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/app_error_context.dart';
+import 'package:catch_dating_app/core/persistence/async_keyed_lock.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -21,13 +24,57 @@ class ProgramReadSnapshot {
 /// greeter who loses connectivity mid-shift still sees the last roster —
 /// always rendered with its capture timestamp, never presented as live.
 abstract interface class ProgramReadSnapshotStore {
-  Future<void> save(String accountId, String scope, Object? data);
+  Future<void> save(
+    String accountId,
+    String scope,
+    Object? data, {
+    int? expectedGeneration,
+  });
+  int generation(String accountId, String programId);
+  Future<void> clearProgram(String accountId, String programId);
+  Future<void> clearAccount(String accountId);
   Future<ProgramReadSnapshot?> load(String accountId, String scope);
 }
 
 class SharedPreferencesProgramReadSnapshotStore
     implements ProgramReadSnapshotStore {
   SharedPreferences? _preferences;
+  final _lock = AsyncKeyedLock();
+  final _generations = <String, int>{};
+  final _blockedPrograms = <String>{};
+  static const maxAge = Duration(hours: 24);
+
+  @override
+  int generation(String accountId, String programId) =>
+      _generations.putIfAbsent('$accountId:$programId', () => 0);
+
+  @override
+  Future<void> clearAccount(String accountId) {
+    for (final key in _generations.keys.toList()) {
+      if (key.startsWith('$accountId:')) {
+        _generations[key] = _generations[key]! + 1;
+        _blockedPrograms.add(key);
+      }
+    }
+    return _lock.run(accountId, () async {
+      await (await _prefs).remove('$_keyPrefix$accountId');
+    });
+  }
+
+  @override
+  Future<void> clearProgram(String accountId, String programId) {
+    final key = '$accountId:$programId';
+    _generations[key] = generation(accountId, programId) + 1;
+    _blockedPrograms.add(key);
+    return _lock.run(accountId, () async {
+      final prefs = await _prefs;
+      final entries = _decode(prefs.getString('$_keyPrefix$accountId'));
+      entries.removeWhere((scope, _) => _programId(scope) == programId);
+      await prefs.setString('$_keyPrefix$accountId', jsonEncode(entries));
+    });
+  }
+
+  String _programId(String scope) => scope.split(':').elementAtOrNull(1) ?? '';
 
   static const _keyPrefix = 'program_read_snapshots_v1_';
   static const _maxScopes = 30;
@@ -48,11 +95,31 @@ class SharedPreferencesProgramReadSnapshotStore
   }
 
   @override
-  Future<void> save(String accountId, String scope, Object? data) async {
+  Future<void> save(
+    String accountId,
+    String scope,
+    Object? data, {
+    int? expectedGeneration,
+  }) => _lock.run(accountId, () async {
     if (data == null) return;
     final prefs = await _prefs;
     final key = '$_keyPrefix$accountId';
+    final programId = _programId(scope);
+    if (expectedGeneration != null &&
+        expectedGeneration != generation(accountId, programId)) {
+      return;
+    }
+    if (_blockedPrograms.contains('$accountId:$programId') &&
+        scope != programSnapshotScope('work', programId)) {
+      return;
+    }
     final entries = _decode(prefs.getString(key));
+    final cutoff = DateTime.now().subtract(maxAge).millisecondsSinceEpoch;
+    entries.removeWhere(
+      (_, entry) =>
+          entry['savedAtMillis'] is! int ||
+          (entry['savedAtMillis']! as int) < cutoff,
+    );
     entries[scope] = {
       'data': data,
       'savedAtMillis': DateTime.now().millisecondsSinceEpoch,
@@ -68,20 +135,27 @@ class SharedPreferencesProgramReadSnapshotStore
         entries.remove(ordered.removeAt(0).key);
       }
     }
-    await prefs.setString(key, jsonEncode(entries));
-  }
+    if (await prefs.setString(key, jsonEncode(entries))) {
+      if (scope == programSnapshotScope('work', programId)) {
+        _blockedPrograms.remove('$accountId:$programId');
+      }
+    }
+  });
 
   @override
   Future<ProgramReadSnapshot?> load(String accountId, String scope) async {
     final prefs = await _prefs;
+    if (_blockedPrograms.contains('$accountId:${_programId(scope)}')) {
+      return null;
+    }
     final entry = _decode(prefs.getString('$_keyPrefix$accountId'))[scope];
     if (entry == null) return null;
     final savedAtMillis = entry['savedAtMillis'];
     if (!entry.containsKey('data') || savedAtMillis is! int) return null;
-    return ProgramReadSnapshot(
-      data: entry['data'],
-      savedAt: DateTime.fromMillisecondsSinceEpoch(savedAtMillis),
-    );
+    final savedAt = DateTime.fromMillisecondsSinceEpoch(savedAtMillis);
+    final age = DateTime.now().difference(savedAt);
+    if (age.isNegative || age > maxAge) return null;
+    return ProgramReadSnapshot(data: entry['data'], savedAt: savedAt);
   }
 
   Map<String, Map<String, Object?>> _decode(String? raw) {
@@ -111,5 +185,14 @@ String programSnapshotScope(
 // keepalive: shares the SharedPreferences instance with the outbox store's
 // lifecycle so cold-start reads don't race instance creation.
 @Riverpod(keepAlive: true)
-ProgramReadSnapshotStore programReadSnapshotStore(Ref ref) =>
-    SharedPreferencesProgramReadSnapshotStore();
+ProgramReadSnapshotStore programReadSnapshotStore(Ref ref) {
+  final store = SharedPreferencesProgramReadSnapshotStore();
+  ref.listen(uidProvider, (previous, next) {
+    if (next.isLoading) return;
+    final previousId = previous?.asData?.value;
+    if (previousId != null && previousId != next.asData?.value) {
+      unawaited(store.clearAccount(previousId).onError<Object>((_, _) {}));
+    }
+  });
+  return store;
+}

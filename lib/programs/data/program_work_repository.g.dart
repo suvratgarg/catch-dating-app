@@ -55,7 +55,7 @@ final class ProgramWorkRepositoryProvider
 }
 
 String _$programWorkRepositoryHash() =>
-    r'b9cd95eb60098449d55718c6cabae3e979725965';
+    r'1afd99f8840d6c75a4c222e78cf1b1ab9211f42b';
 
 @ProviderFor(programWorkAccess)
 final programWorkAccessProvider = ProgramWorkAccessFamily._();
@@ -114,7 +114,7 @@ final class ProgramWorkAccessProvider
   }
 }
 
-String _$programWorkAccessHash() => r'5823dddfc078e3c4c64ffb99d3ac23b1de89d21a';
+String _$programWorkAccessHash() => r'0527b0903d677b1c2777783c6f4e74bdd5bb2dda';
 
 final class ProgramWorkAccessFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<ProgramWorkAccess>, String> {
@@ -134,27 +134,27 @@ final class ProgramWorkAccessFamily extends $Family
   String toString() => r'programWorkAccessProvider';
 }
 
-/// Work-shell entry: claims a staff invite when the deep link carries one,
-/// then resolves access for the invite's program.
+/// An invitation must be claimed online; an existing program may reopen from
+/// a bounded snapshot of its previously verified access.
 
 @ProviderFor(programWorkEntry)
 final programWorkEntryProvider = ProgramWorkEntryFamily._();
 
-/// Work-shell entry: claims a staff invite when the deep link carries one,
-/// then resolves access for the invite's program.
+/// An invitation must be claimed online; an existing program may reopen from
+/// a bounded snapshot of its previously verified access.
 
 final class ProgramWorkEntryProvider
     extends
         $FunctionalProvider<
-          AsyncValue<ProgramWorkAccess>,
-          ProgramWorkAccess,
-          FutureOr<ProgramWorkAccess>
+          AsyncValue<ProgramReadView<ProgramWorkAccess>>,
+          ProgramReadView<ProgramWorkAccess>,
+          FutureOr<ProgramReadView<ProgramWorkAccess>>
         >
     with
-        $FutureModifier<ProgramWorkAccess>,
-        $FutureProvider<ProgramWorkAccess> {
-  /// Work-shell entry: claims a staff invite when the deep link carries one,
-  /// then resolves access for the invite's program.
+        $FutureModifier<ProgramReadView<ProgramWorkAccess>>,
+        $FutureProvider<ProgramReadView<ProgramWorkAccess>> {
+  /// An invitation must be claimed online; an existing program may reopen from
+  /// a bounded snapshot of its previously verified access.
   ProgramWorkEntryProvider._({
     required ProgramWorkEntryFamily super.from,
     required (String, String?) super.argument,
@@ -178,12 +178,12 @@ final class ProgramWorkEntryProvider
 
   @$internal
   @override
-  $FutureProviderElement<ProgramWorkAccess> $createElement(
+  $FutureProviderElement<ProgramReadView<ProgramWorkAccess>> $createElement(
     $ProviderPointer pointer,
   ) => $FutureProviderElement(pointer);
 
   @override
-  FutureOr<ProgramWorkAccess> create(Ref ref) {
+  FutureOr<ProgramReadView<ProgramWorkAccess>> create(Ref ref) {
     final argument = this.argument as (String, String?);
     return programWorkEntry(ref, argument.$1, argument.$2);
   }
@@ -199,15 +199,15 @@ final class ProgramWorkEntryProvider
   }
 }
 
-String _$programWorkEntryHash() => r'0511854dec410c2dd18eef4cacee37e17237ecff';
+String _$programWorkEntryHash() => r'4318ba94dafe060a5449f85abc7f3a54a393ac04';
 
-/// Work-shell entry: claims a staff invite when the deep link carries one,
-/// then resolves access for the invite's program.
+/// An invitation must be claimed online; an existing program may reopen from
+/// a bounded snapshot of its previously verified access.
 
 final class ProgramWorkEntryFamily extends $Family
     with
         $FunctionalFamilyOverride<
-          FutureOr<ProgramWorkAccess>,
+          FutureOr<ProgramReadView<ProgramWorkAccess>>,
           (String, String?)
         > {
   ProgramWorkEntryFamily._()
@@ -219,8 +219,8 @@ final class ProgramWorkEntryFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// Work-shell entry: claims a staff invite when the deep link carries one,
-  /// then resolves access for the invite's program.
+  /// An invitation must be claimed online; an existing program may reopen from
+  /// a bounded snapshot of its previously verified access.
 
   ProgramWorkEntryProvider call(String programId, String? inviteId) =>
       ProgramWorkEntryProvider._(argument: (programId, inviteId), from: this);
@@ -287,7 +287,7 @@ final class ProgramArrivalsRosterProvider
 }
 
 String _$programArrivalsRosterHash() =>
-    r'ceecb0900c432aec367433a81754bf6c0df1ab7f';
+    r'9143c3b11fe80a644e2361169750efb93ef3d832';
 
 final class ProgramArrivalsRosterFamily extends $Family
     with
@@ -314,32 +314,19 @@ final class ProgramArrivalsRosterFamily extends $Family
   String toString() => r'programArrivalsRosterProvider';
 }
 
-/// Roster with offline fallback: a live failure resolves to the last saved
-/// snapshot for this station, marked with its capture time so the UI can
-/// label it as saved data rather than live.
-
 @ProviderFor(programArrivalsRosterView)
 final programArrivalsRosterViewProvider = ProgramArrivalsRosterViewFamily._();
-
-/// Roster with offline fallback: a live failure resolves to the last saved
-/// snapshot for this station, marked with its capture time so the UI can
-/// label it as saved data rather than live.
 
 final class ProgramArrivalsRosterViewProvider
     extends
         $FunctionalProvider<
-          AsyncValue<({ProgramArrivalsRoster roster, DateTime? snapshotAt})>,
-          ({ProgramArrivalsRoster roster, DateTime? snapshotAt}),
-          FutureOr<({ProgramArrivalsRoster roster, DateTime? snapshotAt})>
+          AsyncValue<ProgramReadView<ProgramArrivalsRoster>>,
+          ProgramReadView<ProgramArrivalsRoster>,
+          FutureOr<ProgramReadView<ProgramArrivalsRoster>>
         >
     with
-        $FutureModifier<({ProgramArrivalsRoster roster, DateTime? snapshotAt})>,
-        $FutureProvider<
-          ({ProgramArrivalsRoster roster, DateTime? snapshotAt})
-        > {
-  /// Roster with offline fallback: a live failure resolves to the last saved
-  /// snapshot for this station, marked with its capture time so the UI can
-  /// label it as saved data rather than live.
+        $FutureModifier<ProgramReadView<ProgramArrivalsRoster>>,
+        $FutureProvider<ProgramReadView<ProgramArrivalsRoster>> {
   ProgramArrivalsRosterViewProvider._({
     required ProgramArrivalsRosterViewFamily super.from,
     required (String, String?) super.argument,
@@ -363,13 +350,12 @@ final class ProgramArrivalsRosterViewProvider
 
   @$internal
   @override
-  $FutureProviderElement<({ProgramArrivalsRoster roster, DateTime? snapshotAt})>
-  $createElement($ProviderPointer pointer) => $FutureProviderElement(pointer);
+  $FutureProviderElement<ProgramReadView<ProgramArrivalsRoster>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
 
   @override
-  FutureOr<({ProgramArrivalsRoster roster, DateTime? snapshotAt})> create(
-    Ref ref,
-  ) {
+  FutureOr<ProgramReadView<ProgramArrivalsRoster>> create(Ref ref) {
     final argument = this.argument as (String, String?);
     return programArrivalsRosterView(ref, argument.$1, argument.$2);
   }
@@ -387,16 +373,12 @@ final class ProgramArrivalsRosterViewProvider
 }
 
 String _$programArrivalsRosterViewHash() =>
-    r'6110d2b4deff67a41673b101dfe2af63b6abf0c4';
-
-/// Roster with offline fallback: a live failure resolves to the last saved
-/// snapshot for this station, marked with its capture time so the UI can
-/// label it as saved data rather than live.
+    r'0dc7e27280d6773ceba2c0319767b087a4346499';
 
 final class ProgramArrivalsRosterViewFamily extends $Family
     with
         $FunctionalFamilyOverride<
-          FutureOr<({ProgramArrivalsRoster roster, DateTime? snapshotAt})>,
+          FutureOr<ProgramReadView<ProgramArrivalsRoster>>,
           (String, String?)
         > {
   ProgramArrivalsRosterViewFamily._()
@@ -407,10 +389,6 @@ final class ProgramArrivalsRosterViewFamily extends $Family
         $allTransitiveDependencies: null,
         isAutoDispose: true,
       );
-
-  /// Roster with offline fallback: a live failure resolves to the last saved
-  /// snapshot for this station, marked with its capture time so the UI can
-  /// label it as saved data rather than live.
 
   ProgramArrivalsRosterViewProvider call(
     String programId,
@@ -482,7 +460,7 @@ final class ProgramTransportPlanProvider
 }
 
 String _$programTransportPlanHash() =>
-    r'35a5c164277ec62806f47e80fe2d292fef6fc294';
+    r'ec3b9e87f6f33c6f78d1c4de42057de36395ab90';
 
 final class ProgramTransportPlanFamily extends $Family
     with
@@ -509,24 +487,19 @@ final class ProgramTransportPlanFamily extends $Family
   String toString() => r'programTransportPlanProvider';
 }
 
-/// Transport plan with the same snapshot fallback as the roster.
-
 @ProviderFor(programTransportPlanView)
 final programTransportPlanViewProvider = ProgramTransportPlanViewFamily._();
-
-/// Transport plan with the same snapshot fallback as the roster.
 
 final class ProgramTransportPlanViewProvider
     extends
         $FunctionalProvider<
-          AsyncValue<({ProgramTransportPlan plan, DateTime? snapshotAt})>,
-          ({ProgramTransportPlan plan, DateTime? snapshotAt}),
-          FutureOr<({ProgramTransportPlan plan, DateTime? snapshotAt})>
+          AsyncValue<ProgramReadView<ProgramTransportPlan>>,
+          ProgramReadView<ProgramTransportPlan>,
+          FutureOr<ProgramReadView<ProgramTransportPlan>>
         >
     with
-        $FutureModifier<({ProgramTransportPlan plan, DateTime? snapshotAt})>,
-        $FutureProvider<({ProgramTransportPlan plan, DateTime? snapshotAt})> {
-  /// Transport plan with the same snapshot fallback as the roster.
+        $FutureModifier<ProgramReadView<ProgramTransportPlan>>,
+        $FutureProvider<ProgramReadView<ProgramTransportPlan>> {
   ProgramTransportPlanViewProvider._({
     required ProgramTransportPlanViewFamily super.from,
     required (String, String?) super.argument,
@@ -550,13 +523,12 @@ final class ProgramTransportPlanViewProvider
 
   @$internal
   @override
-  $FutureProviderElement<({ProgramTransportPlan plan, DateTime? snapshotAt})>
-  $createElement($ProviderPointer pointer) => $FutureProviderElement(pointer);
+  $FutureProviderElement<ProgramReadView<ProgramTransportPlan>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
 
   @override
-  FutureOr<({ProgramTransportPlan plan, DateTime? snapshotAt})> create(
-    Ref ref,
-  ) {
+  FutureOr<ProgramReadView<ProgramTransportPlan>> create(Ref ref) {
     final argument = this.argument as (String, String?);
     return programTransportPlanView(ref, argument.$1, argument.$2);
   }
@@ -574,14 +546,12 @@ final class ProgramTransportPlanViewProvider
 }
 
 String _$programTransportPlanViewHash() =>
-    r'1a55ec83841c1a2d1098e751d13f55d0facac535';
-
-/// Transport plan with the same snapshot fallback as the roster.
+    r'2fc531a37938daefa6f0710c337e5cdcf4be3652';
 
 final class ProgramTransportPlanViewFamily extends $Family
     with
         $FunctionalFamilyOverride<
-          FutureOr<({ProgramTransportPlan plan, DateTime? snapshotAt})>,
+          FutureOr<ProgramReadView<ProgramTransportPlan>>,
           (String, String?)
         > {
   ProgramTransportPlanViewFamily._()
@@ -592,8 +562,6 @@ final class ProgramTransportPlanViewFamily extends $Family
         $allTransitiveDependencies: null,
         isAutoDispose: true,
       );
-
-  /// Transport plan with the same snapshot fallback as the roster.
 
   ProgramTransportPlanViewProvider call(
     String programId,
@@ -665,7 +633,7 @@ final class ProgramHotelInboundProvider
 }
 
 String _$programHotelInboundHash() =>
-    r'a3b0bf8daec92e22e957b74bbe54a482059b1ee3';
+    r'51f64f1c76f759f726c3f72c3104e0a6e1a87ab7';
 
 final class ProgramHotelInboundFamily extends $Family
     with
@@ -744,7 +712,7 @@ final class ProgramTripListProvider
   }
 }
 
-String _$programTripListHash() => r'266a04a84992ff39391ae42df1c76e2f93f9a11f';
+String _$programTripListHash() => r'aae90c4f59ff3c720a6ddbd3f85a309b08831c33';
 
 final class ProgramTripListFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<ProgramTripList>, String> {
@@ -823,7 +791,7 @@ final class ProgramTransportVendorsProvider
 }
 
 String _$programTransportVendorsHash() =>
-    r'9b453bbc205954e1a670e0b10ca7b4b8736fad98';
+    r'0e1f041b2a7471b810fcef4a046a67df27d6cee3';
 
 final class ProgramTransportVendorsFamily extends $Family
     with

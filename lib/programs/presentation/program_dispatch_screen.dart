@@ -5,6 +5,7 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.da
 import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/programs/data/program_operations_outbox.dart';
+import 'package:catch_dating_app/programs/data/program_snapshot_reader.dart';
 import 'package:catch_dating_app/programs/data/program_work_repository.dart';
 import 'package:catch_dating_app/programs/domain/program_models.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -107,9 +108,7 @@ class _ProgramDispatchScreenState extends ConsumerState<ProgramDispatchScreen> {
     final planAsync = ref.watch(
       programTransportPlanViewProvider(widget.programId, widget.pickupPointId),
     );
-    return CatchAsyncBoundary<
-      ({ProgramTransportPlan plan, DateTime? snapshotAt})
-    >(
+    return CatchAsyncBoundary<ProgramReadView<ProgramTransportPlan>>(
       value: planAsync,
       onRetry: () => ref.invalidate(
         programTransportPlanProvider(widget.programId, widget.pickupPointId),
@@ -174,10 +173,10 @@ class _ProgramDispatchScreenState extends ConsumerState<ProgramDispatchScreen> {
               ),
             ..._planSections(
               context,
-              plan: result.plan,
+              plan: result.value,
               outbox: _outbox,
               mutationError: _mutationError,
-              onDispatch: (group) => _openDispatchSheet(group, result.plan),
+              onDispatch: (group) => _openDispatchSheet(group, result.value),
             ),
           ],
         ),

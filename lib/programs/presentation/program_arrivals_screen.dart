@@ -5,6 +5,7 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.da
 import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/programs/data/program_operations_outbox.dart';
+import 'package:catch_dating_app/programs/data/program_snapshot_reader.dart';
 import 'package:catch_dating_app/programs/data/program_work_repository.dart';
 import 'package:catch_dating_app/programs/domain/program_models.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -143,9 +144,7 @@ class _ProgramArrivalsScreenState extends ConsumerState<ProgramArrivalsScreen> {
     final rosterAsync = ref.watch(
       programArrivalsRosterViewProvider(widget.programId, widget.pickupPointId),
     );
-    return CatchAsyncBoundary<
-      ({ProgramArrivalsRoster roster, DateTime? snapshotAt})
-    >(
+    return CatchAsyncBoundary<ProgramReadView<ProgramArrivalsRoster>>(
       value: rosterAsync,
       onRetry: () => ref.invalidate(
         programArrivalsRosterProvider(widget.programId, widget.pickupPointId),
@@ -210,7 +209,7 @@ class _ProgramArrivalsScreenState extends ConsumerState<ProgramArrivalsScreen> {
               ),
             ..._rosterSections(
               context,
-              roster: result.roster,
+              roster: result.value,
               outbox: _outbox,
               mutationError: _mutationError,
               outboxBusy: _outboxBusy,

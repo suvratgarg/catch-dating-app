@@ -55,4 +55,4 @@ final class ProgramReadSnapshotStoreProvider
 }
 
 String _$programReadSnapshotStoreHash() =>
-    r'646a38875f8edee1da53313fb96f0d38d507825f';
+    r'be56da9fcab5847c70368ef10b187215d30dfbe1';

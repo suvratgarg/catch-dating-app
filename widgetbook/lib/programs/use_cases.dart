@@ -270,13 +270,11 @@ List<Override> _programOverrides() {
       ProgramOperationsOutbox(_PreviewOutboxStore(), _PreviewMutator()),
     ),
     isObviouslyOfflineProvider.overrideWithValue(false),
-    programWorkAccessProvider(
-      _programId,
-    ).overrideWithValue(AsyncData(_access)),
+    programWorkAccessProvider(_programId).overrideWithValue(AsyncData(_access)),
     programWorkEntryProvider(
       _programId,
       null,
-    ).overrideWithValue(AsyncData(_access)),
+    ).overrideWithValue(AsyncData((value: _access, snapshotAt: null))),
     programArrivalsRosterProvider(
       _programId,
       _pickupPointId,
@@ -289,9 +287,7 @@ List<Override> _programOverrides() {
       _programId,
       _hotelId,
     ).overrideWithValue(AsyncData(_inbound)),
-    programTripListProvider(
-      _programId,
-    ).overrideWithValue(AsyncData(_trips)),
+    programTripListProvider(_programId).overrideWithValue(AsyncData(_trips)),
     programTransportVendorsProvider(
       _programId,
       _pickupPointId,
