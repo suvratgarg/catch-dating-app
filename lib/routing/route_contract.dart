@@ -105,6 +105,20 @@ enum Routes {
   hostCustomersLegacyScreen('/host/customers', AppRouteAudience.host),
   hostFormsLegacyScreen('/host/forms', AppRouteAudience.host),
   hostOperatorEventScreen('/host/operator/:eventId', AppRouteAudience.host),
+  hostWorkProgramScreen('/host/work/:programId', AppRouteAudience.host),
+  hostWorkArrivalsScreen(
+    '/host/work/:programId/arrivals/:pickupPointId',
+    AppRouteAudience.host,
+  ),
+  hostWorkDispatchScreen(
+    '/host/work/:programId/dispatch/:pickupPointId',
+    AppRouteAudience.host,
+  ),
+  hostWorkHotelScreen(
+    '/host/work/:programId/hotel/:hotelId',
+    AppRouteAudience.host,
+  ),
+  hostWorkTripsScreen('/host/work/:programId/trips', AppRouteAudience.host),
   hostOrganizerScreen('/host/organizer', AppRouteAudience.host),
   hostOrganizerMessagingScreen(
     '/host/organizer/:clubId/messaging',

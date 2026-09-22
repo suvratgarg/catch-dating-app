@@ -1,0 +1,266 @@
+import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
+import 'package:catch_dating_app/core/time_formatters.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_dating_app/programs/data/program_work_repository.dart';
+import 'package:catch_dating_app/programs/domain/program_models.dart';
+import 'package:catch_dating_app/routing/route_contract.dart';
+import 'package:catch_ui/catch_ui.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+
+/// Scoped entry point for private program staff.
+///
+/// Resolves the actor's program grants once, then offers only the workspaces
+/// their duties allow: station arrivals rosters, the dispatch desk, hotel
+/// desks and the trip ledger. The callable response is the access contract —
+/// the shell renders exactly the scopes the server returned, and every
+/// destination is re-checked server-side.
+class ProgramWorkScreen extends ConsumerWidget {
+  const ProgramWorkScreen({super.key, required this.programId});
+
+  final String programId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final accessAsync = ref.watch(programWorkAccessProvider(programId));
+    return CatchAsyncBoundary<ProgramWorkAccess>(
+      value: accessAsync,
+      onRetry: () => ref.invalidate(programWorkAccessProvider(programId)),
+      loadingBuilder: (_) => CatchRouteScaffold(
+        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+          title: context.l10n.programsWorkShellTitle,
+          emphasis: scrolledUnder
+              ? CatchTopBarEmphasis.divided
+              : CatchTopBarEmphasis.plain,
+          navigation: const CatchTopBarNavigation(
+            mode: CatchTopBarNavigationMode.back,
+          ),
+        ),
+        body: const CatchRouteBody.standardViewport(
+          child: CatchStateViewport.loading(accountForBottomOverlay: false),
+        ),
+      ),
+      errorBuilder: (_, error, _, onBoundaryRetry) => CatchRouteScaffold(
+        topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+          title: context.l10n.programsWorkShellTitle,
+          emphasis: scrolledUnder
+              ? CatchTopBarEmphasis.divided
+              : CatchTopBarEmphasis.plain,
+          navigation: const CatchTopBarNavigation(
+            mode: CatchTopBarNavigationMode.back,
+          ),
+        ),
+        body: CatchRouteBody.standardViewport(
+          child: CatchLocalizedErrorState(
+            error,
+            context: AppErrorContext.event,
+            onRetry: onBoundaryRetry,
+          ),
+        ),
+      ),
+      builder: (context, access) => ProgramWorkPageBody(access: access),
+    );
+  }
+}
+
+class ProgramWorkPageBody extends StatelessWidget {
+  const ProgramWorkPageBody({super.key, required this.access});
+
+  final ProgramWorkAccess access;
+
+  @override
+  Widget build(BuildContext context) {
+    final greeterScope = access.stationScope(ProgramStaffDuty.airportGreeter);
+    final dispatcherScope = access.stationScope(
+      ProgramStaffDuty.transportDispatcher,
+    );
+    final hotelScope = access.hotelScope(ProgramStaffDuty.hotelDesk);
+    final arrivalsStations = access.pickupPoints
+        .where(
+          (station) =>
+              (greeterScope?.contains(station.pickupPointId) ??
+                  greeterScope == null) &&
+              (access.hasDuty(ProgramStaffDuty.airportGreeter) ||
+                  access.hasDuty(ProgramStaffDuty.transportDispatcher)),
+        )
+        .toList(growable: false);
+    final dispatchStations = access.pickupPoints
+        .where(
+          (station) =>
+              access.hasDuty(ProgramStaffDuty.transportDispatcher) &&
+              (dispatcherScope?.contains(station.pickupPointId) ??
+                  dispatcherScope == null),
+        )
+        .toList(growable: false);
+    final hotels = access.hotels
+        .where(
+          (hotel) =>
+              access.hasDuty(ProgramStaffDuty.hotelDesk) &&
+              (hotelScope?.contains(hotel.hotelId) ?? hotelScope == null),
+        )
+        .toList(growable: false);
+    final canSeeLedger =
+        access.isManager ||
+        access.hasDuty(ProgramStaffDuty.transportDispatcher) ||
+        access.hasDuty(ProgramStaffDuty.reconciliationViewer);
+
+    return CatchRouteScaffold(
+      topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
+        title: access.title,
+        subtitle: context.l10n.programsWorkShellTitle,
+        emphasis: scrolledUnder
+            ? CatchTopBarEmphasis.divided
+            : CatchTopBarEmphasis.plain,
+        navigation: const CatchTopBarNavigation(
+          mode: CatchTopBarNavigationMode.back,
+        ),
+      ),
+      body: CatchRouteBody.standardSections(
+        sections: [
+          CatchSectionListItem(
+            child: CatchSection.contained(
+              title: context.l10n.programsWorkShellAccessTitle,
+              subtitle: context.l10n.programsWorkShellAccessSubtitle,
+              child: Wrap(
+                spacing: CatchSpacing.s2,
+                runSpacing: CatchSpacing.s2,
+                children: [
+                  CatchBadge.functional(
+                    label: access.isManager
+                        ? context.l10n.programsWorkShellRoleManager
+                        : context.l10n.programsWorkShellRoleStaff,
+                    tone: CatchBadgeTone.success,
+                  ),
+                  CatchBadge(label: access.kind.name),
+                  if (access.grantExpiresAt case final expiresAt?)
+                    CatchBadge(
+                      label: context.l10n.programsWorkShellExpires(
+                        date: AppTimeFormatters.dateTime(expiresAt),
+                      ),
+                      tone: CatchBadgeTone.warning,
+                    ),
+                ],
+              ),
+            ),
+          ),
+          if (arrivalsStations.isNotEmpty)
+            CatchSectionListItem(
+              child: CatchSection.contained(
+                title: context.l10n.programsWorkArrivalsTitle,
+                subtitle: context.l10n.programsWorkArrivalsSubtitle,
+                child: Column(
+                  children: [
+                    for (final station in arrivalsStations)
+                      CatchFieldRow.standard(
+                        leading: Icon(CatchIcons.flightLanding),
+                        body: Text(
+                          station.label,
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        trailing: Icon(CatchIcons.chevronRightRounded),
+                        onTap: () => context.pushNamed(
+                          Routes.hostWorkArrivalsScreen.name,
+                          pathParameters: {
+                            'programId': access.programId,
+                            'pickupPointId': station.pickupPointId,
+                          },
+                          queryParameters: {'station': station.label},
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+          if (dispatchStations.isNotEmpty)
+            CatchSectionListItem(
+              child: CatchSection.contained(
+                title: context.l10n.programsWorkDispatchTitle,
+                subtitle: context.l10n.programsWorkDispatchSubtitle,
+                child: Column(
+                  children: [
+                    for (final station in dispatchStations)
+                      CatchFieldRow.standard(
+                        leading: Icon(CatchIcons.taxi),
+                        body: Text(
+                          station.label,
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        trailing: Icon(CatchIcons.chevronRightRounded),
+                        onTap: () => context.pushNamed(
+                          Routes.hostWorkDispatchScreen.name,
+                          pathParameters: {
+                            'programId': access.programId,
+                            'pickupPointId': station.pickupPointId,
+                          },
+                          queryParameters: {'station': station.label},
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+          if (hotels.isNotEmpty)
+            CatchSectionListItem(
+              child: CatchSection.contained(
+                title: context.l10n.programsWorkHotelTitle,
+                subtitle: context.l10n.programsWorkHotelSubtitle,
+                child: Column(
+                  children: [
+                    for (final hotel in hotels)
+                      CatchFieldRow.standard(
+                        leading: Icon(CatchIcons.hotel),
+                        body: Text(
+                          hotel.name,
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        trailing: Icon(CatchIcons.chevronRightRounded),
+                        onTap: () => context.pushNamed(
+                          Routes.hostWorkHotelScreen.name,
+                          pathParameters: {
+                            'programId': access.programId,
+                            'hotelId': hotel.hotelId,
+                          },
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+          if (canSeeLedger)
+            CatchSectionListItem(
+              child: CatchSection.contained(
+                title: context.l10n.programsWorkLedgerTitle,
+                subtitle: context.l10n.programsWorkLedgerSubtitle,
+                child: CatchFieldRow.standard(
+                  leading: Icon(CatchIcons.receiptLongOutlined),
+                  body: Text(
+                    context.l10n.programsWorkLedgerOpen,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  trailing: Icon(CatchIcons.chevronRightRounded),
+                  onTap: () => context.pushNamed(
+                    Routes.hostWorkTripsScreen.name,
+                    pathParameters: {'programId': access.programId},
+                  ),
+                ),
+              ),
+            ),
+          if (arrivalsStations.isEmpty &&
+              dispatchStations.isEmpty &&
+              hotels.isEmpty &&
+              !canSeeLedger)
+            CatchSectionListItem(
+              child: CatchEmptyState(
+                icon: CatchIcons.lockOutline,
+                title: context.l10n.programsWorkShellEmptyTitle,
+                message: context.l10n.programsWorkShellEmptyMessage,
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}

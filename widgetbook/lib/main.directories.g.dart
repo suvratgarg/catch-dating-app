@@ -515,6 +515,8 @@ import 'package:widgetbook_workspace/profiles/catalog/tabs.dart'
     as _widgetbook_workspace_profiles_catalog_tabs;
 import 'package:widgetbook_workspace/profiles/catalog/text_editors.dart'
     as _widgetbook_workspace_profiles_catalog_text_editors;
+import 'package:widgetbook_workspace/programs/use_cases.dart'
+    as _widgetbook_workspace_programs_use_cases;
 import 'package:widgetbook_workspace/shell/app_shell_use_cases.dart'
     as _widgetbook_workspace_shell_app_shell_use_cases;
 import 'package:widgetbook_workspace/user_analytics/user_analytics_use_cases.dart'
@@ -12218,6 +12220,181 @@ final directories = <_widgetbook.WidgetbookNode>[
                         .publicProfileScreenBodyStates,
                   ),
                 ],
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
+        name: 'Program arrivals',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramArrivalActionMenu',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Menu states',
+                builder: _widgetbook_workspace_programs_use_cases
+                    .programArrivalActionMenuStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramArrivalReadinessBadge',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Badge states',
+                builder: _widgetbook_workspace_programs_use_cases
+                    .programArrivalReadinessBadgeStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramArrivalRow',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Row states',
+                builder: _widgetbook_workspace_programs_use_cases
+                    .programArrivalRowStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramArrivalsOutboxBanner',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Banner states',
+                builder: _widgetbook_workspace_programs_use_cases
+                    .programArrivalsOutboxBannerStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramArrivalsScreen',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Screen states',
+                builder: _widgetbook_workspace_programs_use_cases
+                    .programArrivalsScreenStates,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
+        name: 'Program dispatch',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramDispatchGroupTile',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Tile states',
+                builder: _widgetbook_workspace_programs_use_cases
+                    .programDispatchGroupTileStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramDispatchScreen',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Screen states',
+                builder: _widgetbook_workspace_programs_use_cases
+                    .programDispatchScreenStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramDispatchSheet',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Sheet states',
+                builder: _widgetbook_workspace_programs_use_cases
+                    .programDispatchSheetStates,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
+        name: 'Program hotel desk',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramHotelDeskScreen',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Screen states',
+                builder: _widgetbook_workspace_programs_use_cases
+                    .programHotelDeskScreenStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramHotelInboundTripTile',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Tile states',
+                builder: _widgetbook_workspace_programs_use_cases
+                    .programHotelInboundTripTileStates,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
+        name: 'Program trips',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramTripLedgerRow',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Row states',
+                builder: _widgetbook_workspace_programs_use_cases
+                    .programTripLedgerRowStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramTripVoidSheet',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Sheet states',
+                builder: _widgetbook_workspace_programs_use_cases
+                    .programTripVoidSheetStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramTripsScreen',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Screen states',
+                builder: _widgetbook_workspace_programs_use_cases
+                    .programTripsScreenStates,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
+        name: 'Program work',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramWorkPageBody',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Body states',
+                builder: _widgetbook_workspace_programs_use_cases
+                    .programWorkPageBodyStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'ProgramWorkScreen',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Screen states',
+                builder: _widgetbook_workspace_programs_use_cases
+                    .programWorkScreenStates,
               ),
             ],
           ),

@@ -425,6 +425,13 @@ abstract final class CatchIcons {
   static IconData get workOutline => Icons.work_outline;
   static IconData get workOutlineRounded => Icons.work_outline_rounded;
 
+  // ── Program transport / arrivals workspace ───────────────────────────────
+  static IconData get flightLanding => PhosphorIconsRegular.airplaneLanding;
+  static IconData get taxi => PhosphorIconsRegular.taxi;
+  static IconData get hotel => PhosphorIconsRegular.buildingApartment;
+  static IconData get luggage => PhosphorIconsRegular.suitcaseRolling;
+  static IconData get flagBanner => PhosphorIconsRegular.flagBanner;
+
   // ── Activity glyphs — used by event thumbnails ───────────────────────────
   static IconData get socialRun => PhosphorIconsDuotone.personSimpleRun;
   static IconData get running => PhosphorIconsRegular.sneakerMove;

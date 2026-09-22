@@ -4,13 +4,13 @@
   "source": {
     "path": "lib/routing/route_contract.dart",
     "runtimePath": "lib/routing/go_router.dart",
-    "normalizedFileSha256": "6165428b7dd812858a183e168cc310cfb154dfb10435518f8a0fb931288751c3",
-    "routeContractSha256": "aeea086ad5bd5896aea6e1fd33b49e170d6dd9f9ad1b84f5043cb954f1e389a0",
-    "goRouteCount": 87,
+    "normalizedFileSha256": "e7920f71d592db591de69a829893cfff9c9bcfc10f7597d2f9ed5a411a75c5b8",
+    "routeContractSha256": "749cad734351f7780af55879dd1eddf3a591026c6dc7f9f7ebdddf2b7aabe80a",
+    "goRouteCount": 92,
     "shellBranchCount": 9,
-    "enumRouteCount": 72,
-    "referencedRouteCount": 72,
-    "runtimeRouteCount": 72,
+    "enumRouteCount": 77,
+    "referencedRouteCount": 77,
+    "runtimeRouteCount": 77,
     "routeHelperCount": 5,
     "routeHelpers": [
       "_hostUtilityRoutes",
@@ -868,6 +868,94 @@
       "referencedByGoRouter": true
     },
     {
+      "id": "hostWorkProgramScreen",
+      "path": "/host/work/:programId",
+      "pathParameters": [
+        "programId"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "runtimePath": "/host/work/:programId",
+      "runtimeParentId": null,
+      "runtimePathExpression": "Routes.hostWorkProgramScreen.path",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>ProgramWorkScreen(programId:state.pathParameters['programId']!)",
+      "presentationTarget": "ProgramWorkScreen",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "hostWorkArrivalsScreen",
+      "path": "/host/work/:programId/arrivals/:pickupPointId",
+      "pathParameters": [
+        "programId",
+        "pickupPointId"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "runtimePath": "/host/work/:programId/arrivals/:pickupPointId",
+      "runtimeParentId": null,
+      "runtimePathExpression": "Routes.hostWorkArrivalsScreen.path",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>ProgramArrivalsScreen(programId:state.pathParameters['programId']!,pickupPointId:state.pathParameters['pickupPointId'],stationLabel:state.uri.queryParameters['station']??'Arrivals')",
+      "presentationTarget": "ProgramArrivalsScreen",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "hostWorkDispatchScreen",
+      "path": "/host/work/:programId/dispatch/:pickupPointId",
+      "pathParameters": [
+        "programId",
+        "pickupPointId"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "runtimePath": "/host/work/:programId/dispatch/:pickupPointId",
+      "runtimeParentId": null,
+      "runtimePathExpression": "Routes.hostWorkDispatchScreen.path",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>ProgramDispatchScreen(programId:state.pathParameters['programId']!,pickupPointId:state.pathParameters['pickupPointId']!,stationLabel:state.uri.queryParameters['station']??'Dispatch')",
+      "presentationTarget": "ProgramDispatchScreen",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "hostWorkHotelScreen",
+      "path": "/host/work/:programId/hotel/:hotelId",
+      "pathParameters": [
+        "programId",
+        "hotelId"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "runtimePath": "/host/work/:programId/hotel/:hotelId",
+      "runtimeParentId": null,
+      "runtimePathExpression": "Routes.hostWorkHotelScreen.path",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>ProgramHotelDeskScreen(programId:state.pathParameters['programId']!,hotelId:state.pathParameters['hotelId']!)",
+      "presentationTarget": "ProgramHotelDeskScreen",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
+    },
+    {
+      "id": "hostWorkTripsScreen",
+      "path": "/host/work/:programId/trips",
+      "pathParameters": [
+        "programId"
+      ],
+      "requiresFixture": true,
+      "gated": false,
+      "runtimePath": "/host/work/:programId/trips",
+      "runtimeParentId": null,
+      "runtimePathExpression": "Routes.hostWorkTripsScreen.path",
+      "renderKind": "builder",
+      "presentationExpression": "(context,state)=>ProgramTripsScreen(programId:state.pathParameters['programId']!)",
+      "presentationTarget": "ProgramTripsScreen",
+      "runtimePathMatchesEnum": true,
+      "referencedByGoRouter": true
+    },
+    {
       "id": "hostOrganizerScreen",
       "path": "/host/organizer",
       "pathParameters": [],
@@ -1348,6 +1436,11 @@
     "hostSavedAudienceDetailScreen",
     "hostTodayFocusScreen",
     "hostTodayScreen",
+    "hostWorkArrivalsScreen",
+    "hostWorkDispatchScreen",
+    "hostWorkHotelScreen",
+    "hostWorkProgramScreen",
+    "hostWorkTripsScreen",
     "launchAccessScreen",
     "loadingScreen",
     "matchesListScreen",

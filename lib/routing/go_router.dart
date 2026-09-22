@@ -55,6 +55,11 @@ import 'package:catch_dating_app/onboarding/presentation/start_welcome_route_scr
 import 'package:catch_dating_app/payments/domain/payment_confirmation_data.dart';
 import 'package:catch_dating_app/payments/presentation/payment_confirmation_screen.dart';
 import 'package:catch_dating_app/payments/presentation/payment_history_screen.dart';
+import 'package:catch_dating_app/programs/presentation/program_arrivals_screen.dart';
+import 'package:catch_dating_app/programs/presentation/program_dispatch_screen.dart';
+import 'package:catch_dating_app/programs/presentation/program_hotel_desk_screen.dart';
+import 'package:catch_dating_app/programs/presentation/program_trips_screen.dart';
+import 'package:catch_dating_app/programs/presentation/program_work_screen.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/public_profile/presentation/public_profile_screen.dart';
 import 'package:catch_dating_app/reviews/presentation/reviews_history_screen.dart';
@@ -495,6 +500,44 @@ List<RouteBase> _hostUtilityRoutes(GlobalKey<NavigatorState> rootNavigatorKey) {
       name: Routes.hostOperatorEventScreen.name,
       builder: (context, state) =>
           HostEventOperatorScreen(eventId: state.pathParameters['eventId']!),
+    ),
+    GoRoute(
+      path: Routes.hostWorkProgramScreen.path,
+      name: Routes.hostWorkProgramScreen.name,
+      builder: (context, state) =>
+          ProgramWorkScreen(programId: state.pathParameters['programId']!),
+    ),
+    GoRoute(
+      path: Routes.hostWorkArrivalsScreen.path,
+      name: Routes.hostWorkArrivalsScreen.name,
+      builder: (context, state) => ProgramArrivalsScreen(
+        programId: state.pathParameters['programId']!,
+        pickupPointId: state.pathParameters['pickupPointId'],
+        stationLabel: state.uri.queryParameters['station'] ?? 'Arrivals',
+      ),
+    ),
+    GoRoute(
+      path: Routes.hostWorkDispatchScreen.path,
+      name: Routes.hostWorkDispatchScreen.name,
+      builder: (context, state) => ProgramDispatchScreen(
+        programId: state.pathParameters['programId']!,
+        pickupPointId: state.pathParameters['pickupPointId']!,
+        stationLabel: state.uri.queryParameters['station'] ?? 'Dispatch',
+      ),
+    ),
+    GoRoute(
+      path: Routes.hostWorkHotelScreen.path,
+      name: Routes.hostWorkHotelScreen.name,
+      builder: (context, state) => ProgramHotelDeskScreen(
+        programId: state.pathParameters['programId']!,
+        hotelId: state.pathParameters['hotelId']!,
+      ),
+    ),
+    GoRoute(
+      path: Routes.hostWorkTripsScreen.path,
+      name: Routes.hostWorkTripsScreen.name,
+      builder: (context, state) =>
+          ProgramTripsScreen(programId: state.pathParameters['programId']!),
     ),
     GoRoute(
       path: Routes.hostOrganizerMessagingScreen.path,
