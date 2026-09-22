@@ -8375,6 +8375,53 @@ export interface ProgramStaffGrantDocument {
 }
 
 /**
+ * Server-owned single-use staff invite bound to a phone number. Redeeming the invite requires a signed-in account whose verified phone matches; redemption materializes a programStaffGrants document.
+ */
+export interface ProgramStaffInviteDocument {
+  organizerId: string;
+  programId: string;
+  /**
+   * Normalized E.164 phone the invite is bound to. Only a verified auth token carrying this number may claim the invite.
+   */
+  phoneE164: string;
+  displayName: string;
+  /**
+   * @minItems 1
+   * @maxItems 8
+   */
+  duties: {
+    duty:
+      | "programCoordinator"
+      | "airportGreeter"
+      | "hotelDesk"
+      | "transportDispatcher"
+      | "reconciliationViewer";
+    /**
+     * Station scope for airportGreeter/transportDispatcher duties. Empty means all pickup points in the program.
+     *
+     * @maxItems 32
+     */
+    pickupPointIds: string[];
+    /**
+     * Hotel scope for hotelDesk duties. Empty means all hotels in the program.
+     *
+     * @maxItems 64
+     */
+    hotelIds: string[];
+  }[];
+  status: "pending" | "claimed" | "revoked";
+  createdBy: string;
+  createdAt: FirebaseFirestore.Timestamp;
+  expiresAt: FirebaseFirestore.Timestamp;
+  claimedByUid: string | null;
+  claimedAt: FirebaseFirestore.Timestamp | null;
+  revokedBy: string | null;
+  revokedAt: FirebaseFirestore.Timestamp | null;
+  updatedAt: FirebaseFirestore.Timestamp;
+  revision: number;
+}
+
+/**
  * Server-owned program pickup station such as an airport terminal arrivals zone. Scopes greeter and dispatcher duties and transport grouping.
  */
 export interface ProgramPickupPointDocument {
@@ -8641,7 +8688,8 @@ export interface TransportOperationReceiptDocument {
     | "markDisrupted"
     | "dispatch"
     | "markArrived"
-    | "voidTrip";
+    | "voidTrip"
+    | "manifestImport";
   clientOperationId: string;
   actorUid: string;
   /**
@@ -8656,6 +8704,10 @@ export interface TransportOperationReceiptDocument {
   resultRevision: number;
   createdAt: FirebaseFirestore.Timestamp;
   expiresAt: FirebaseFirestore.Timestamp;
+  /**
+   * Serialized operation response for exact replay of compound results (e.g. manifest import summaries). Null for scalar-result operations.
+   */
+  resultJson: string | null;
 }
 
 /**

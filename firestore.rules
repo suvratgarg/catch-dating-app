@@ -1590,6 +1590,10 @@ service cloud.firestore {
       allow list, write: if false;
     }
 
+    match /programStaffInvites/{inviteId} {
+      allow read, write: if false;
+    }
+
     match /programPickupPoints/{pickupPointId} {
       allow read, write: if false;
     }

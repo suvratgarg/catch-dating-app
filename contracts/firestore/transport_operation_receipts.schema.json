@@ -19,7 +19,8 @@
     "legId",
     "resultRevision",
     "createdAt",
-    "expiresAt"
+    "expiresAt",
+    "resultJson"
   ],
   "properties": {
     "programId": {
@@ -70,6 +71,14 @@
     "expiresAt": {
       "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
       "description": "Receipt retention horizon for cleanup sweeps."
+    },
+    "resultJson": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 20000,
+      "description": "Serialized operation response for exact replay of compound results (e.g. manifest import summaries). Null for scalar-result operations."
     }
   }
 }

@@ -1,0 +1,23 @@
+{
+  "organizerId": "org-1",
+  "programId": "program-1",
+  "phoneE164": "+919820012345",
+  "displayName": "Priya",
+  "duties": [
+    {
+      "duty": "airportGreeter",
+      "pickupPointIds": ["pickup-1"],
+      "hotelIds": []
+    }
+  ],
+  "status": "pending",
+  "createdBy": "host-1",
+  "createdAt": {"_seconds": 1786625400, "_nanoseconds": 0},
+  "expiresAt": {"_seconds": 1786711800, "_nanoseconds": 0},
+  "claimedByUid": null,
+  "claimedAt": null,
+  "revokedBy": null,
+  "revokedAt": null,
+  "updatedAt": {"_seconds": 1786625400, "_nanoseconds": 0},
+  "revision": 1
+}

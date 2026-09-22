@@ -14,7 +14,8 @@ export interface TransportOperationReceiptDocument {
     | "markDisrupted"
     | "dispatch"
     | "markArrived"
-    | "voidTrip";
+    | "voidTrip"
+    | "manifestImport";
   clientOperationId: string;
   actorUid: string;
   /**
@@ -41,4 +42,8 @@ export interface TransportOperationReceiptDocument {
     _seconds: number;
     _nanoseconds: number;
   };
+  /**
+   * Serialized operation response for exact replay of compound results (e.g. manifest import summaries). Null for scalar-result operations.
+   */
+  resultJson: string | null;
 }

@@ -600,6 +600,11 @@ export {
   revokeProgramStaff,
 } from "./programs/programStaff";
 export {
+  inviteProgramStaff,
+  claimProgramStaffInvite,
+  revokeProgramStaffInvite,
+} from "./programs/programStaffInvites";
+export {
   upsertProgramGuest,
   listProgramGuests,
   upsertProgramHousehold,
@@ -616,6 +621,7 @@ export {
   upsertProgramTravelLeg,
   upsertProgramTravelParty,
 } from "./transport/programTravel";
+export {importProgramManifest} from "./programs/programManifestImport";
 export {
   getProgramArrivalsRoster,
   getProgramTransportPlan,

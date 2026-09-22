@@ -555,6 +555,7 @@ export async function setProgramTravelReadinessHandler(
       tripId: null,
       legId: data.legId,
       resultRevision: update.revision as number,
+      resultJson: null,
       createdAt: now,
       expiresAt: admin.firestore.Timestamp.fromMillis(
         now.toMillis() + receiptRetentionMillis),

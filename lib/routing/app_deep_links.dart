@@ -37,11 +37,16 @@ class AppDeepLinks {
   );
 
   /// The scoped workspace a program staff member lands on from a grant
-  /// notification or coordinator share link.
-  static Uri hostWorkProgram(String programId) => _httpsRoute(
-    Routes.hostWorkProgramScreen.path,
-    pathParameters: {'programId': programId},
-  );
+  /// notification or coordinator share link. An inviteId turns the link into
+  /// a single-use claim bound to the recipient's verified phone.
+  static Uri hostWorkProgram(String programId, {String? inviteId}) =>
+      _httpsRoute(
+        Routes.hostWorkProgramScreen.path,
+        pathParameters: {'programId': programId},
+        queryParameters: inviteId == null
+            ? null
+            : <String, String>{'invite': inviteId},
+      );
 
   static String inAppEventPath({
     required String clubId,

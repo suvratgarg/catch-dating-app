@@ -256,7 +256,8 @@
         "markDisrupted",
         "dispatch",
         "markArrived",
-        "voidTrip"
+        "voidTrip",
+        "manifestImport"
       ]
     },
     "pickupPointKind": {

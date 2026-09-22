@@ -284,6 +284,7 @@ export async function dispatchProgramTripHandler(
       tripId: tripRef.id,
       legId: null,
       resultRevision: 1,
+      resultJson: null,
       createdAt: now,
       expiresAt: admin.firestore.Timestamp.fromMillis(
         now.toMillis() + receiptRetentionMillis),
@@ -426,6 +427,7 @@ async function tripActionHandler(
       tripId: data.tripId,
       legId: null,
       resultRevision: tripUpdate.revision as number,
+      resultJson: null,
       createdAt: now,
       expiresAt: admin.firestore.Timestamp.fromMillis(
         now.toMillis() + receiptRetentionMillis),

@@ -4530,6 +4530,7 @@ describe("firestore.rules", () => {
       "programFunctions",
       "programGuests",
       "programHouseholds",
+      "programStaffInvites",
       "programPickupPoints",
       "programHotels",
       "programTravelLegs",

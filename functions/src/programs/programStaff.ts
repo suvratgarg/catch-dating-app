@@ -58,8 +58,8 @@ const defaultDeps: ProgramStaffDeps = {
     admin.auth().getUserByPhoneNumber(phoneNumber),
 };
 
-const maxProgramStaff = 100;
-const maxGrantDurationMillis = 14 * 24 * 60 * 60 * 1000;
+export const maxProgramStaff = 100;
+export const maxGrantDurationMillis = 14 * 24 * 60 * 60 * 1000;
 
 const staffCallableLimits = {timeoutSeconds: 60, maxInstances: 20};
 
@@ -288,7 +288,7 @@ async function programStaffList(
   };
 }
 
-async function requireProgramManager(
+export async function requireProgramManager(
   db: FirebaseFirestore.Firestore,
   programId: string,
   actorUid: string,
@@ -305,7 +305,7 @@ async function requireProgramManager(
 }
 
 /** Referenced stations must exist inside the program. */
-async function validateDutyStations(
+export async function validateDutyStations(
   db: FirebaseFirestore.Firestore,
   programId: string,
   duties: GrantProgramStaffCallablePayload["duties"]
@@ -335,7 +335,7 @@ async function validateDutyStations(
   }
 }
 
-function dedupeDuties(
+export function dedupeDuties(
   duties: GrantProgramStaffCallablePayload["duties"]
 ): ProgramStaffGrantDocument["duties"] {
   const byDuty = new Map<string,

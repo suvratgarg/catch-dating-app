@@ -98,6 +98,7 @@ export const fixtureSchemaCases = Object.freeze([
   ["valid/profile_prompt_answer.json", "profilePromptAnswerSchema"],
   ["valid/program_guest_doc.json", "programGuestDocumentSchema"],
   ["valid/program_staff_grant_doc.json", "programStaffGrantDocumentSchema"],
+  ["valid/program_staff_invite_doc.json", "programStaffInviteDocumentSchema"],
   ["valid/program_travel_leg_doc.json", "programTravelLegDocumentSchema"],
   ["valid/public_profile_doc.json", "publicProfileDocumentSchema"],
   ["valid/rate_limit_doc.json", "rateLimitDocumentSchema"],

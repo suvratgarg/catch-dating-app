@@ -1401,6 +1401,11 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/programStaffGrantDocument.ts",
   },
   {
+    name: "ProgramStaffInviteDocument",
+    source: "firestore/program_staff_invites.schema.json",
+    typeOutput: "functions/src/shared/generated/programStaffInviteDocument.ts",
+  },
+  {
     name: "ProgramPickupPointDocument",
     source: "firestore/program_pickup_points.schema.json",
     typeOutput: "functions/src/shared/generated/programPickupPointDocument.ts",
@@ -1483,6 +1488,26 @@ const schemaSpecs = [
       "functions/src/shared/generated/revokeProgramStaffCallablePayload.ts",
   },
   {
+    name: "InviteProgramStaffCallablePayload",
+    source: "callables/invite_program_staff_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/inviteProgramStaffCallablePayload.ts",
+  },
+  {
+    name: "ClaimProgramStaffInviteCallablePayload",
+    source: "callables/claim_program_staff_invite_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "claimProgramStaffInviteCallablePayload.ts",
+  },
+  {
+    name: "RevokeProgramStaffInviteCallablePayload",
+    source: "callables/revoke_program_staff_invite_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "revokeProgramStaffInviteCallablePayload.ts",
+  },
+  {
     name: "UpsertProgramGuestCallablePayload",
     source: "callables/upsert_program_guest_payload.schema.json",
     typeOutput:
@@ -1563,6 +1588,13 @@ const schemaSpecs = [
       "functions/src/shared/generated/programTripActionCallablePayload.ts",
   },
   {
+    name: "ImportProgramManifestCallablePayload",
+    source: "callables/import_program_manifest_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "importProgramManifestCallablePayload.ts",
+  },
+  {
     name: "RefreshProgramTravelLegCallablePayload",
     source: "callables/refresh_program_travel_leg_payload.schema.json",
     typeOutput:
@@ -1617,6 +1649,13 @@ const schemaSpecs = [
       "organizerProgramCallableResponse.ts",
   },
   {
+    name: "ProgramInviteClaimCallableResponse",
+    source: "callable_responses/program_invite_claim_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "programInviteClaimCallableResponse.ts",
+  },
+  {
     name: "ProgramStaffListCallableResponse",
     source: "callable_responses/program_staff_list_response.schema.json",
     typeOutput:
@@ -1651,6 +1690,13 @@ const schemaSpecs = [
     typeOutput:
       "functions/src/shared/generated/" +
       "programHotelInboundCallableResponse.ts",
+  },
+  {
+    name: "ProgramManifestImportCallableResponse",
+    source: "callable_responses/program_manifest_import_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "programManifestImportCallableResponse.ts",
   },
   {
     name: "DispatchProgramTripCallableResponse",

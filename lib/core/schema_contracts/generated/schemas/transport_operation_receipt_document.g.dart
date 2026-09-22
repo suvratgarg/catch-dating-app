@@ -26,6 +26,7 @@ const schemaTransportOperationReceiptDocumentSchema = <String, Object?>{
     'resultRevision',
     'createdAt',
     'expiresAt',
+    'resultJson',
   ],
   'properties': <String, Object?>{
     'programId': <String, Object?>{
@@ -43,6 +44,7 @@ const schemaTransportOperationReceiptDocumentSchema = <String, Object?>{
         'dispatch',
         'markArrived',
         'voidTrip',
+        'manifestImport',
       ],
     },
     'clientOperationId': <String, Object?>{
@@ -122,6 +124,14 @@ const schemaTransportOperationReceiptDocumentSchema = <String, Object?>{
           'maximum': 999999999,
         },
       },
+    },
+    'resultJson': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'maxLength': 20000,
+      'description': 'Serialized operation response for exact replay of compound results (e.g. manifest import summaries). Null for scalar-result operations.',
     },
   },
 };

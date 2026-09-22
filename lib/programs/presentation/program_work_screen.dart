@@ -19,16 +19,23 @@ import 'package:go_router/go_router.dart';
 /// the shell renders exactly the scopes the server returned, and every
 /// destination is re-checked server-side.
 class ProgramWorkScreen extends ConsumerWidget {
-  const ProgramWorkScreen({super.key, required this.programId});
+  const ProgramWorkScreen({super.key, required this.programId, this.inviteId});
 
   final String programId;
 
+  /// Staff invite token carried by a join deep link; claimed before access
+  /// resolves so the shell lands directly on the granted program.
+  final String? inviteId;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final accessAsync = ref.watch(programWorkAccessProvider(programId));
+    final accessAsync = ref.watch(
+      programWorkEntryProvider(programId, inviteId),
+    );
     return CatchAsyncBoundary<ProgramWorkAccess>(
       value: accessAsync,
-      onRetry: () => ref.invalidate(programWorkAccessProvider(programId)),
+      onRetry: () =>
+          ref.invalidate(programWorkEntryProvider(programId, inviteId)),
       loadingBuilder: (_) => CatchRouteScaffold(
         topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(
           title: context.l10n.programsWorkShellTitle,

@@ -504,8 +504,10 @@ List<RouteBase> _hostUtilityRoutes(GlobalKey<NavigatorState> rootNavigatorKey) {
     GoRoute(
       path: Routes.hostWorkProgramScreen.path,
       name: Routes.hostWorkProgramScreen.name,
-      builder: (context, state) =>
-          ProgramWorkScreen(programId: state.pathParameters['programId']!),
+      builder: (context, state) => ProgramWorkScreen(
+        programId: state.pathParameters['programId']!,
+        inviteId: state.uri.queryParameters['invite'],
+      ),
     ),
     GoRoute(
       path: Routes.hostWorkArrivalsScreen.path,

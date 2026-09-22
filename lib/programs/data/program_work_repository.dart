@@ -25,6 +25,18 @@ class ProgramWorkRepository {
     parse: ProgramWorkAccess.fromCallableData,
   );
 
+  /// Redeems a staff invite for the signed-in account. The callable requires
+  /// the account's verified phone to match the invite's bound number.
+  Future<String> claimStaffInvite(String inviteId) => _call(
+    name: 'claimProgramStaffInvite',
+    payload: ClaimProgramStaffInviteCallableRequest(
+      inviteId: inviteId,
+    ).toJson(),
+    action: 'claim the staff invite',
+    parse: (value) =>
+        requiredString(requiredMap(value, 'invite claim'), 'programId'),
+  );
+
   Future<ProgramArrivalsRoster> getArrivalsRoster({
     required String programId,
     String? pickupPointId,
@@ -303,6 +315,21 @@ ProgramWorkRepository programWorkRepository(Ref ref) =>
 @riverpod
 Future<ProgramWorkAccess> programWorkAccess(Ref ref, String programId) =>
     ref.read(programWorkRepositoryProvider).getWorkAccess(programId);
+
+/// Work-shell entry: claims a staff invite when the deep link carries one,
+/// then resolves access for the invite's program.
+@riverpod
+Future<ProgramWorkAccess> programWorkEntry(
+  Ref ref,
+  String programId,
+  String? inviteId,
+) async {
+  final repository = ref.read(programWorkRepositoryProvider);
+  final resolvedProgramId = inviteId == null || inviteId.isEmpty
+      ? programId
+      : await repository.claimStaffInvite(inviteId);
+  return repository.getWorkAccess(resolvedProgramId);
+}
 
 @riverpod
 Future<ProgramArrivalsRoster> programArrivalsRoster(

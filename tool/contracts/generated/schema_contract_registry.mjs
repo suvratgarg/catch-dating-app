@@ -117271,6 +117271,255 @@ export const programStaffGrantDocumentSchema = {
   }
 };
 
+export const programStaffInviteDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/program_staff_invites.schema.json",
+  "title": "ProgramStaffInviteDocument",
+  "description": "Server-owned single-use staff invite bound to a phone number. Redeeming the invite requires a signed-in account whose verified phone matches; redemption materializes a programStaffGrants document.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "programStaffInvites",
+  "x-firestore-path": "programStaffInvites/{inviteId}",
+  "x-document-id-field": "inviteId",
+  "x-owner": "program staff invite callables",
+  "required": [
+    "organizerId",
+    "programId",
+    "phoneE164",
+    "displayName",
+    "duties",
+    "status",
+    "createdBy",
+    "createdAt",
+    "expiresAt",
+    "claimedByUid",
+    "claimedAt",
+    "revokedBy",
+    "revokedAt",
+    "updatedAt",
+    "revision"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "phoneE164": {
+      "type": "string",
+      "minLength": 4,
+      "maxLength": 32,
+      "description": "Normalized E.164 phone the invite is bound to. Only a verified auth token carrying this number may claim the invite."
+    },
+    "displayName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "duties": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 8,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "duty",
+          "pickupPointIds",
+          "hotelIds"
+        ],
+        "properties": {
+          "duty": {
+            "type": "string",
+            "enum": [
+              "programCoordinator",
+              "airportGreeter",
+              "hotelDesk",
+              "transportDispatcher",
+              "reconciliationViewer"
+            ]
+          },
+          "pickupPointIds": {
+            "type": "array",
+            "maxItems": 32,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "description": "Station scope for airportGreeter/transportDispatcher duties. Empty means all pickup points in the program."
+          },
+          "hotelIds": {
+            "type": "array",
+            "maxItems": 64,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "description": "Hotel scope for hotelDesk duties. Empty means all hotels in the program."
+          }
+        }
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "claimed",
+        "revoked"
+      ]
+    },
+    "createdBy": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "expiresAt": {
+      "type": "object",
+      "description": "Invite redemption deadline. The resulting grant uses its own expiry.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "claimedByUid": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "claimedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "revokedBy": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "revokedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    }
+  }
+};
+
 export const programPickupPointDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/program_pickup_points.schema.json",
@@ -118715,7 +118964,8 @@ export const transportOperationReceiptDocumentSchema = {
     "legId",
     "resultRevision",
     "createdAt",
-    "expiresAt"
+    "expiresAt",
+    "resultJson"
   ],
   "properties": {
     "programId": {
@@ -118732,7 +118982,8 @@ export const transportOperationReceiptDocumentSchema = {
         "markDisrupted",
         "dispatch",
         "markArrived",
-        "voidTrip"
+        "voidTrip",
+        "manifestImport"
       ]
     },
     "clientOperationId": {
@@ -118812,6 +119063,14 @@ export const transportOperationReceiptDocumentSchema = {
           "maximum": 999999999
         }
       }
+    },
+    "resultJson": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 20000,
+      "description": "Serialized operation response for exact replay of compound results (e.g. manifest import summaries). Null for scalar-result operations."
     }
   }
 };
@@ -119299,6 +119558,146 @@ export const revokeProgramStaffCallablePayloadSchema = {
       "type": "integer",
       "minimum": 1,
       "maximum": 9007199254740991
+    }
+  }
+};
+
+export const inviteProgramStaffCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/invite_program_staff_payload.schema.json",
+  "title": "InviteProgramStaffCallablePayload",
+  "description": "Create a single-use, phone-bound staff invite for a program. The invite redeems into a station-scoped grant when a signed-in account with the matching verified phone claims it. Manager-only.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-callable-aliases": [
+    "inviteProgramStaff"
+  ],
+  "required": [
+    "programId",
+    "phoneNumber",
+    "displayName",
+    "duties",
+    "expiresAtMillis"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "phoneNumber": {
+      "type": "string",
+      "minLength": 4,
+      "maxLength": 32
+    },
+    "displayName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "duties": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 8,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "duty",
+          "pickupPointIds",
+          "hotelIds"
+        ],
+        "properties": {
+          "duty": {
+            "type": "string",
+            "enum": [
+              "programCoordinator",
+              "airportGreeter",
+              "hotelDesk",
+              "transportDispatcher",
+              "reconciliationViewer"
+            ]
+          },
+          "pickupPointIds": {
+            "type": "array",
+            "maxItems": 32,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "description": "Station scope for airportGreeter/transportDispatcher duties. Empty means all pickup points in the program."
+          },
+          "hotelIds": {
+            "type": "array",
+            "maxItems": 64,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "description": "Hotel scope for hotelDesk duties. Empty means all hotels in the program."
+          }
+        }
+      }
+    },
+    "expiresAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "description": "Invite redemption deadline and the access-window end for the grant it materializes. Claims after this time fail."
+    }
+  }
+};
+
+export const claimProgramStaffInviteCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/claim_program_staff_invite_payload.schema.json",
+  "title": "ClaimProgramStaffInviteCallablePayload",
+  "description": "Redeem a staff invite. The caller must be signed in with a verified phone number matching the invite's bound phone; on success a programStaffGrants document is written and the invite is consumed.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-callable-aliases": [
+    "claimProgramStaffInvite"
+  ],
+  "required": [
+    "inviteId"
+  ],
+  "properties": {
+    "inviteId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 180
+    }
+  }
+};
+
+export const revokeProgramStaffInviteCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/revoke_program_staff_invite_payload.schema.json",
+  "title": "RevokeProgramStaffInviteCallablePayload",
+  "description": "Revoke a pending program staff invite so the link can no longer be claimed. Manager-only; claimed invites are unaffected (revoke the grant instead).",
+  "type": "object",
+  "additionalProperties": false,
+  "x-callable-aliases": [
+    "revokeProgramStaffInvite"
+  ],
+  "required": [
+    "programId",
+    "inviteId"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "inviteId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 180
     }
   }
 };
@@ -120237,6 +120636,183 @@ export const programTripActionCallablePayloadSchema = {
   }
 };
 
+export const importProgramManifestCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/import_program_manifest_payload.schema.json",
+  "title": "ImportProgramManifestCallablePayload",
+  "description": "Bulk manifest import for a program. Preview mode plans without writing; commit mode applies idempotently via clientOperationId. Rows describe one guest and, optionally, that guest's inbound travel leg.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-callable-aliases": [
+    "importProgramManifest"
+  ],
+  "required": [
+    "programId",
+    "mode",
+    "clientOperationId",
+    "rows"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "preview",
+        "commit"
+      ]
+    },
+    "clientOperationId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 120
+    },
+    "rows": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 500,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "displayName"
+        ],
+        "properties": {
+          "externalReference": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 180,
+            "description": "Stable upstream id (CRM row id). Primary dedup key; without it, dedup falls back to displayName + flightNumber + arrival day."
+          },
+          "displayName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 140
+          },
+          "phoneE164": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 20
+          },
+          "email": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 320
+          },
+          "householdLabel": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 140,
+            "description": "Matched against program households by case-insensitive label; unmatched labels create a household."
+          },
+          "partyLabel": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 140,
+            "description": "Ride-together travel party label; matched or created per program."
+          },
+          "flightNumber": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 10
+          },
+          "originIata": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[A-Z]{3}$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "destinationIata": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[A-Z]{3}$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "scheduledArrivalAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "international": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "pickupPointLabel": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 140,
+            "description": "Must match an existing program pickup point label; unmatched values are row errors."
+          },
+          "destinationHotelName": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 140,
+            "description": "Must match an existing program hotel name; unmatched values are row errors."
+          },
+          "destinationLabel": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 140,
+            "description": "Free-text destination fallback when no program hotel applies."
+          },
+          "passengers": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 1,
+            "maximum": 20
+          },
+          "luggageUnits": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 40
+          }
+        }
+      }
+    }
+  }
+};
+
 export const refreshProgramTravelLegCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/refresh_program_travel_leg_payload.schema.json",
@@ -121120,6 +121696,33 @@ export const organizerProgramCallableResponseSchema = {
           "minimum": 0
         }
       }
+    }
+  }
+};
+
+export const programInviteClaimCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/program_invite_claim_response.schema.json",
+  "title": "ProgramInviteClaimCallableResponse",
+  "description": "Result of redeeming a program staff invite. Carries the program the invite grants access to so the client can navigate into the work shell.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-callable-aliases": [
+    "claimProgramStaffInvite"
+  ],
+  "required": [
+    "programId",
+    "alreadyApplied"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "alreadyApplied": {
+      "type": "boolean",
+      "description": "True when this account already consumed the invite."
     }
   }
 };
@@ -122021,6 +122624,91 @@ export const programHotelInboundCallableResponseSchema = {
           }
         }
       }
+    }
+  }
+};
+
+export const programManifestImportCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/program_manifest_import_response.schema.json",
+  "title": "ProgramManifestImportCallableResponse",
+  "description": "Manifest import plan or commit summary. Row errors never silently drop data: every rejected row reports its index and reason.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-callable-aliases": [
+    "importProgramManifest"
+  ],
+  "required": [
+    "mode",
+    "totalRows",
+    "guestsCreated",
+    "guestsUpdated",
+    "legsCreated",
+    "legsUpdated",
+    "householdsCreated",
+    "partiesCreated",
+    "rowErrors",
+    "alreadyApplied"
+  ],
+  "properties": {
+    "mode": {
+      "type": "string",
+      "enum": [
+        "preview",
+        "commit"
+      ]
+    },
+    "totalRows": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "guestsCreated": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "guestsUpdated": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "legsCreated": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "legsUpdated": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "householdsCreated": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "partiesCreated": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "rowErrors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "index",
+          "message"
+        ],
+        "properties": {
+          "index": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "message": {
+            "type": "string",
+            "maxLength": 280
+          }
+        }
+      }
+    },
+    "alreadyApplied": {
+      "type": "boolean"
     }
   }
 };

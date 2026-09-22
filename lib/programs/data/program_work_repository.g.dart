@@ -134,6 +134,101 @@ final class ProgramWorkAccessFamily extends $Family
   String toString() => r'programWorkAccessProvider';
 }
 
+/// Work-shell entry: claims a staff invite when the deep link carries one,
+/// then resolves access for the invite's program.
+
+@ProviderFor(programWorkEntry)
+final programWorkEntryProvider = ProgramWorkEntryFamily._();
+
+/// Work-shell entry: claims a staff invite when the deep link carries one,
+/// then resolves access for the invite's program.
+
+final class ProgramWorkEntryProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<ProgramWorkAccess>,
+          ProgramWorkAccess,
+          FutureOr<ProgramWorkAccess>
+        >
+    with
+        $FutureModifier<ProgramWorkAccess>,
+        $FutureProvider<ProgramWorkAccess> {
+  /// Work-shell entry: claims a staff invite when the deep link carries one,
+  /// then resolves access for the invite's program.
+  ProgramWorkEntryProvider._({
+    required ProgramWorkEntryFamily super.from,
+    required (String, String?) super.argument,
+  }) : super(
+         retry: null,
+         name: r'programWorkEntryProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$programWorkEntryHash();
+
+  @override
+  String toString() {
+    return r'programWorkEntryProvider'
+        ''
+        '$argument';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<ProgramWorkAccess> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<ProgramWorkAccess> create(Ref ref) {
+    final argument = this.argument as (String, String?);
+    return programWorkEntry(ref, argument.$1, argument.$2);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is ProgramWorkEntryProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$programWorkEntryHash() => r'60136c4e308f9a2ba55cde4c70270fc1f88f52f6';
+
+/// Work-shell entry: claims a staff invite when the deep link carries one,
+/// then resolves access for the invite's program.
+
+final class ProgramWorkEntryFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          FutureOr<ProgramWorkAccess>,
+          (String, String?)
+        > {
+  ProgramWorkEntryFamily._()
+    : super(
+        retry: null,
+        name: r'programWorkEntryProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// Work-shell entry: claims a staff invite when the deep link carries one,
+  /// then resolves access for the invite's program.
+
+  ProgramWorkEntryProvider call(String programId, String? inviteId) =>
+      ProgramWorkEntryProvider._(argument: (programId, inviteId), from: this);
+
+  @override
+  String toString() => r'programWorkEntryProvider';
+}
+
 @ProviderFor(programArrivalsRoster)
 final programArrivalsRosterProvider = ProgramArrivalsRosterFamily._();
 

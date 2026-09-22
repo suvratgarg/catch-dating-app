@@ -5334,6 +5334,14 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['pendingApproval', 'needsInput', 'ready'],
   );
 
+  static const claimProgramStaffInviteCallablePayloadInviteId = CatchContractFieldConstraints(
+    path: 'claimProgramStaffInviteCallablePayload.inviteId',
+    maxLength: 180,
+    minLength: 8,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const clubClaimRequestDocumentBusinessEmail = CatchContractFieldConstraints(
     path: 'clubClaimRequestDocument.businessEmail',
     maxLength: 320,
@@ -64828,6 +64836,138 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['completed', 'partial', 'failed'],
   );
 
+  static const importProgramManifestCallablePayloadClientOperationId = CatchContractFieldConstraints(
+    path: 'importProgramManifestCallablePayload.clientOperationId',
+    maxLength: 120,
+    minLength: 8,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const importProgramManifestCallablePayloadMode = CatchContractFieldConstraints(
+    path: 'importProgramManifestCallablePayload.mode',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['preview', 'commit'],
+  );
+
+  static const importProgramManifestCallablePayloadProgramId = CatchContractFieldConstraints(
+    path: 'importProgramManifestCallablePayload.programId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const importProgramManifestCallablePayloadRows = CatchContractFieldConstraints(
+    path: 'importProgramManifestCallablePayload.rows',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 500,
+  );
+
+  static const importProgramManifestCallablePayloadRowsItemsDestinationHotelName = CatchContractFieldConstraints(
+    path: 'importProgramManifestCallablePayload.rows.items.destinationHotelName',
+    maxLength: 140,
+    valueTypes: <String>['string'],
+  );
+
+  static const importProgramManifestCallablePayloadRowsItemsDestinationIata = CatchContractFieldConstraints(
+    path: 'importProgramManifestCallablePayload.rows.items.destinationIata',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Z]{3}\$',
+  );
+
+  static const importProgramManifestCallablePayloadRowsItemsDestinationLabel = CatchContractFieldConstraints(
+    path: 'importProgramManifestCallablePayload.rows.items.destinationLabel',
+    maxLength: 140,
+    valueTypes: <String>['string'],
+  );
+
+  static const importProgramManifestCallablePayloadRowsItemsDisplayName = CatchContractFieldConstraints(
+    path: 'importProgramManifestCallablePayload.rows.items.displayName',
+    maxLength: 140,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const importProgramManifestCallablePayloadRowsItemsEmail = CatchContractFieldConstraints(
+    path: 'importProgramManifestCallablePayload.rows.items.email',
+    maxLength: 320,
+    valueTypes: <String>['string'],
+  );
+
+  static const importProgramManifestCallablePayloadRowsItemsExternalReference = CatchContractFieldConstraints(
+    path: 'importProgramManifestCallablePayload.rows.items.externalReference',
+    maxLength: 180,
+    valueTypes: <String>['string'],
+  );
+
+  static const importProgramManifestCallablePayloadRowsItemsFlightNumber = CatchContractFieldConstraints(
+    path: 'importProgramManifestCallablePayload.rows.items.flightNumber',
+    maxLength: 10,
+    valueTypes: <String>['string'],
+  );
+
+  static const importProgramManifestCallablePayloadRowsItemsHouseholdLabel = CatchContractFieldConstraints(
+    path: 'importProgramManifestCallablePayload.rows.items.householdLabel',
+    maxLength: 140,
+    valueTypes: <String>['string'],
+  );
+
+  static const importProgramManifestCallablePayloadRowsItemsInternational = CatchContractFieldConstraints(
+    path: 'importProgramManifestCallablePayload.rows.items.international',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const importProgramManifestCallablePayloadRowsItemsLuggageUnits = CatchContractFieldConstraints(
+    path: 'importProgramManifestCallablePayload.rows.items.luggageUnits',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 40,
+  );
+
+  static const importProgramManifestCallablePayloadRowsItemsOriginIata = CatchContractFieldConstraints(
+    path: 'importProgramManifestCallablePayload.rows.items.originIata',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Z]{3}\$',
+  );
+
+  static const importProgramManifestCallablePayloadRowsItemsPartyLabel = CatchContractFieldConstraints(
+    path: 'importProgramManifestCallablePayload.rows.items.partyLabel',
+    maxLength: 140,
+    valueTypes: <String>['string'],
+  );
+
+  static const importProgramManifestCallablePayloadRowsItemsPassengers = CatchContractFieldConstraints(
+    path: 'importProgramManifestCallablePayload.rows.items.passengers',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 20,
+  );
+
+  static const importProgramManifestCallablePayloadRowsItemsPhoneE164 = CatchContractFieldConstraints(
+    path: 'importProgramManifestCallablePayload.rows.items.phoneE164',
+    maxLength: 20,
+    valueTypes: <String>['string'],
+  );
+
+  static const importProgramManifestCallablePayloadRowsItemsPickupPointLabel = CatchContractFieldConstraints(
+    path: 'importProgramManifestCallablePayload.rows.items.pickupPointLabel',
+    maxLength: 140,
+    valueTypes: <String>['string'],
+  );
+
+  static const importProgramManifestCallablePayloadRowsItemsScheduledArrivalAtMillis = CatchContractFieldConstraints(
+    path: 'importProgramManifestCallablePayload.rows.items.scheduledArrivalAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
   static const injectEventRehearsalBehaviorCallablePayloadActorId = CatchContractFieldConstraints(
     path: 'injectEventRehearsalBehaviorCallablePayload.actorId',
     maxLength: 180,
@@ -64865,6 +65005,88 @@ abstract final class CatchContractConstraints {
 
   static const injectEventRehearsalBehaviorCallablePayloadSessionId = CatchContractFieldConstraints(
     path: 'injectEventRehearsalBehaviorCallablePayload.sessionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const inviteProgramStaffCallablePayloadDisplayName = CatchContractFieldConstraints(
+    path: 'inviteProgramStaffCallablePayload.displayName',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const inviteProgramStaffCallablePayloadDuties = CatchContractFieldConstraints(
+    path: 'inviteProgramStaffCallablePayload.duties',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 8,
+  );
+
+  static const inviteProgramStaffCallablePayloadDutiesItemsDuty = CatchContractFieldConstraints(
+    path: 'inviteProgramStaffCallablePayload.duties.items.duty',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['programCoordinator', 'airportGreeter', 'hotelDesk', 'transportDispatcher', 'reconciliationViewer'],
+  );
+
+  static const inviteProgramStaffCallablePayloadDutiesItemsHotelIds = CatchContractFieldConstraints(
+    path: 'inviteProgramStaffCallablePayload.duties.items.hotelIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 64,
+    uniqueItems: true,
+  );
+
+  static const inviteProgramStaffCallablePayloadDutiesItemsHotelIdsItems = CatchContractFieldConstraints(
+    path: 'inviteProgramStaffCallablePayload.duties.items.hotelIds.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const inviteProgramStaffCallablePayloadDutiesItemsPickupPointIds = CatchContractFieldConstraints(
+    path: 'inviteProgramStaffCallablePayload.duties.items.pickupPointIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 32,
+    uniqueItems: true,
+  );
+
+  static const inviteProgramStaffCallablePayloadDutiesItemsPickupPointIdsItems = CatchContractFieldConstraints(
+    path: 'inviteProgramStaffCallablePayload.duties.items.pickupPointIds.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const inviteProgramStaffCallablePayloadExpiresAtMillis = CatchContractFieldConstraints(
+    path: 'inviteProgramStaffCallablePayload.expiresAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const inviteProgramStaffCallablePayloadPhoneNumber = CatchContractFieldConstraints(
+    path: 'inviteProgramStaffCallablePayload.phoneNumber',
+    maxLength: 32,
+    minLength: 4,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const inviteProgramStaffCallablePayloadProgramId = CatchContractFieldConstraints(
+    path: 'inviteProgramStaffCallablePayload.programId',
     maxLength: 180,
     minLength: 1,
     required: true,
@@ -89131,6 +89353,103 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const programInviteClaimCallableResponseAlreadyApplied = CatchContractFieldConstraints(
+    path: 'programInviteClaimCallableResponse.alreadyApplied',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const programInviteClaimCallableResponseProgramId = CatchContractFieldConstraints(
+    path: 'programInviteClaimCallableResponse.programId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programManifestImportCallableResponseAlreadyApplied = CatchContractFieldConstraints(
+    path: 'programManifestImportCallableResponse.alreadyApplied',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const programManifestImportCallableResponseGuestsCreated = CatchContractFieldConstraints(
+    path: 'programManifestImportCallableResponse.guestsCreated',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const programManifestImportCallableResponseGuestsUpdated = CatchContractFieldConstraints(
+    path: 'programManifestImportCallableResponse.guestsUpdated',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const programManifestImportCallableResponseHouseholdsCreated = CatchContractFieldConstraints(
+    path: 'programManifestImportCallableResponse.householdsCreated',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const programManifestImportCallableResponseLegsCreated = CatchContractFieldConstraints(
+    path: 'programManifestImportCallableResponse.legsCreated',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const programManifestImportCallableResponseLegsUpdated = CatchContractFieldConstraints(
+    path: 'programManifestImportCallableResponse.legsUpdated',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const programManifestImportCallableResponseMode = CatchContractFieldConstraints(
+    path: 'programManifestImportCallableResponse.mode',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['preview', 'commit'],
+  );
+
+  static const programManifestImportCallableResponsePartiesCreated = CatchContractFieldConstraints(
+    path: 'programManifestImportCallableResponse.partiesCreated',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const programManifestImportCallableResponseRowErrors = CatchContractFieldConstraints(
+    path: 'programManifestImportCallableResponse.rowErrors',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+  );
+
+  static const programManifestImportCallableResponseRowErrorsItemsIndex = CatchContractFieldConstraints(
+    path: 'programManifestImportCallableResponse.rowErrors.items.index',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const programManifestImportCallableResponseRowErrorsItemsMessage = CatchContractFieldConstraints(
+    path: 'programManifestImportCallableResponse.rowErrors.items.message',
+    maxLength: 280,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programManifestImportCallableResponseTotalRows = CatchContractFieldConstraints(
+    path: 'programManifestImportCallableResponse.totalRows',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
   static const programMutationCallableResponseAlreadyApplied = CatchContractFieldConstraints(
     path: 'programMutationCallableResponse.alreadyApplied',
     required: true,
@@ -89435,6 +89754,195 @@ abstract final class CatchContractConstraints {
 
   static const programStaffGrantDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
     path: 'programStaffGrantDocument.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const programStaffInviteDocumentClaimedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'programStaffInviteDocument.claimedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const programStaffInviteDocumentClaimedAtSeconds = CatchContractFieldConstraints(
+    path: 'programStaffInviteDocument.claimedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const programStaffInviteDocumentClaimedByUid = CatchContractFieldConstraints(
+    path: 'programStaffInviteDocument.claimedByUid',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const programStaffInviteDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'programStaffInviteDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const programStaffInviteDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'programStaffInviteDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const programStaffInviteDocumentCreatedBy = CatchContractFieldConstraints(
+    path: 'programStaffInviteDocument.createdBy',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programStaffInviteDocumentDisplayName = CatchContractFieldConstraints(
+    path: 'programStaffInviteDocument.displayName',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programStaffInviteDocumentDuties = CatchContractFieldConstraints(
+    path: 'programStaffInviteDocument.duties',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 8,
+  );
+
+  static const programStaffInviteDocumentDutiesItemsDuty = CatchContractFieldConstraints(
+    path: 'programStaffInviteDocument.duties.items.duty',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['programCoordinator', 'airportGreeter', 'hotelDesk', 'transportDispatcher', 'reconciliationViewer'],
+  );
+
+  static const programStaffInviteDocumentDutiesItemsHotelIds = CatchContractFieldConstraints(
+    path: 'programStaffInviteDocument.duties.items.hotelIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 64,
+    uniqueItems: true,
+  );
+
+  static const programStaffInviteDocumentDutiesItemsHotelIdsItems = CatchContractFieldConstraints(
+    path: 'programStaffInviteDocument.duties.items.hotelIds.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programStaffInviteDocumentDutiesItemsPickupPointIds = CatchContractFieldConstraints(
+    path: 'programStaffInviteDocument.duties.items.pickupPointIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 32,
+    uniqueItems: true,
+  );
+
+  static const programStaffInviteDocumentDutiesItemsPickupPointIdsItems = CatchContractFieldConstraints(
+    path: 'programStaffInviteDocument.duties.items.pickupPointIds.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programStaffInviteDocumentExpiresAtNanoseconds = CatchContractFieldConstraints(
+    path: 'programStaffInviteDocument.expiresAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const programStaffInviteDocumentExpiresAtSeconds = CatchContractFieldConstraints(
+    path: 'programStaffInviteDocument.expiresAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const programStaffInviteDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'programStaffInviteDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programStaffInviteDocumentPhoneE164 = CatchContractFieldConstraints(
+    path: 'programStaffInviteDocument.phoneE164',
+    maxLength: 32,
+    minLength: 4,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programStaffInviteDocumentProgramId = CatchContractFieldConstraints(
+    path: 'programStaffInviteDocument.programId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programStaffInviteDocumentRevision = CatchContractFieldConstraints(
+    path: 'programStaffInviteDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const programStaffInviteDocumentRevokedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'programStaffInviteDocument.revokedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const programStaffInviteDocumentRevokedAtSeconds = CatchContractFieldConstraints(
+    path: 'programStaffInviteDocument.revokedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const programStaffInviteDocumentRevokedBy = CatchContractFieldConstraints(
+    path: 'programStaffInviteDocument.revokedBy',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const programStaffInviteDocumentStatus = CatchContractFieldConstraints(
+    path: 'programStaffInviteDocument.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['pending', 'claimed', 'revoked'],
+  );
+
+  static const programStaffInviteDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'programStaffInviteDocument.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const programStaffInviteDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'programStaffInviteDocument.updatedAt._seconds',
     required: true,
     valueTypes: <String>['integer'],
   );
@@ -93988,6 +94496,22 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const revokeProgramStaffInviteCallablePayloadInviteId = CatchContractFieldConstraints(
+    path: 'revokeProgramStaffInviteCallablePayload.inviteId',
+    maxLength: 180,
+    minLength: 8,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const revokeProgramStaffInviteCallablePayloadProgramId = CatchContractFieldConstraints(
+    path: 'revokeProgramStaffInviteCallablePayload.programId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const rotateEventRehearsalGuestLinkCallablePayloadSessionId = CatchContractFieldConstraints(
     path: 'rotateEventRehearsalGuestLinkCallablePayload.sessionId',
     maxLength: 180,
@@ -97164,7 +97688,7 @@ abstract final class CatchContractConstraints {
     path: 'transportOperationReceiptDocument.operationKind',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['markReady', 'claim', 'unclaim', 'markDisrupted', 'dispatch', 'markArrived', 'voidTrip'],
+    enumValues: <String>['markReady', 'claim', 'unclaim', 'markDisrupted', 'dispatch', 'markArrived', 'voidTrip', 'manifestImport'],
   );
 
   static const transportOperationReceiptDocumentProgramId = CatchContractFieldConstraints(
@@ -97180,6 +97704,12 @@ abstract final class CatchContractConstraints {
     maxLength: 128,
     minLength: 32,
     required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const transportOperationReceiptDocumentResultJson = CatchContractFieldConstraints(
+    path: 'transportOperationReceiptDocument.resultJson',
+    maxLength: 20000,
     valueTypes: <String>['string'],
   );
 
@@ -106732,6 +107262,7 @@ abstract final class CatchContractConstraints {
     'claimEventRuntimeAccessCallableResponse.requiredFieldIds': claimEventRuntimeAccessCallableResponseRequiredFieldIds,
     'claimEventRuntimeAccessCallableResponse.requiredFieldIds.items': claimEventRuntimeAccessCallableResponseRequiredFieldIdsItems,
     'claimEventRuntimeAccessCallableResponse.status': claimEventRuntimeAccessCallableResponseStatus,
+    'claimProgramStaffInviteCallablePayload.inviteId': claimProgramStaffInviteCallablePayloadInviteId,
     'clubClaimRequestDocument.businessEmail': clubClaimRequestDocumentBusinessEmail,
     'clubClaimRequestDocument.businessPhone': clubClaimRequestDocumentBusinessPhone,
     'clubClaimRequestDocument.clubId': clubClaimRequestDocumentClubId,
@@ -114724,12 +115255,42 @@ abstract final class CatchContractConstraints {
     'importOrganizerApplicationsCallableResponse.rowCount': importOrganizerApplicationsCallableResponseRowCount,
     'importOrganizerApplicationsCallableResponse.skippedCount': importOrganizerApplicationsCallableResponseSkippedCount,
     'importOrganizerApplicationsCallableResponse.status': importOrganizerApplicationsCallableResponseStatus,
+    'importProgramManifestCallablePayload.clientOperationId': importProgramManifestCallablePayloadClientOperationId,
+    'importProgramManifestCallablePayload.mode': importProgramManifestCallablePayloadMode,
+    'importProgramManifestCallablePayload.programId': importProgramManifestCallablePayloadProgramId,
+    'importProgramManifestCallablePayload.rows': importProgramManifestCallablePayloadRows,
+    'importProgramManifestCallablePayload.rows.items.destinationHotelName': importProgramManifestCallablePayloadRowsItemsDestinationHotelName,
+    'importProgramManifestCallablePayload.rows.items.destinationIata': importProgramManifestCallablePayloadRowsItemsDestinationIata,
+    'importProgramManifestCallablePayload.rows.items.destinationLabel': importProgramManifestCallablePayloadRowsItemsDestinationLabel,
+    'importProgramManifestCallablePayload.rows.items.displayName': importProgramManifestCallablePayloadRowsItemsDisplayName,
+    'importProgramManifestCallablePayload.rows.items.email': importProgramManifestCallablePayloadRowsItemsEmail,
+    'importProgramManifestCallablePayload.rows.items.externalReference': importProgramManifestCallablePayloadRowsItemsExternalReference,
+    'importProgramManifestCallablePayload.rows.items.flightNumber': importProgramManifestCallablePayloadRowsItemsFlightNumber,
+    'importProgramManifestCallablePayload.rows.items.householdLabel': importProgramManifestCallablePayloadRowsItemsHouseholdLabel,
+    'importProgramManifestCallablePayload.rows.items.international': importProgramManifestCallablePayloadRowsItemsInternational,
+    'importProgramManifestCallablePayload.rows.items.luggageUnits': importProgramManifestCallablePayloadRowsItemsLuggageUnits,
+    'importProgramManifestCallablePayload.rows.items.originIata': importProgramManifestCallablePayloadRowsItemsOriginIata,
+    'importProgramManifestCallablePayload.rows.items.partyLabel': importProgramManifestCallablePayloadRowsItemsPartyLabel,
+    'importProgramManifestCallablePayload.rows.items.passengers': importProgramManifestCallablePayloadRowsItemsPassengers,
+    'importProgramManifestCallablePayload.rows.items.phoneE164': importProgramManifestCallablePayloadRowsItemsPhoneE164,
+    'importProgramManifestCallablePayload.rows.items.pickupPointLabel': importProgramManifestCallablePayloadRowsItemsPickupPointLabel,
+    'importProgramManifestCallablePayload.rows.items.scheduledArrivalAtMillis': importProgramManifestCallablePayloadRowsItemsScheduledArrivalAtMillis,
     'injectEventRehearsalBehaviorCallablePayload.actorId': injectEventRehearsalBehaviorCallablePayloadActorId,
     'injectEventRehearsalBehaviorCallablePayload.behavior': injectEventRehearsalBehaviorCallablePayloadBehavior,
     'injectEventRehearsalBehaviorCallablePayload.clientActionId': injectEventRehearsalBehaviorCallablePayloadClientActionId,
     'injectEventRehearsalBehaviorCallablePayload.expectedRevision': injectEventRehearsalBehaviorCallablePayloadExpectedRevision,
     'injectEventRehearsalBehaviorCallablePayload.faultId': injectEventRehearsalBehaviorCallablePayloadFaultId,
     'injectEventRehearsalBehaviorCallablePayload.sessionId': injectEventRehearsalBehaviorCallablePayloadSessionId,
+    'inviteProgramStaffCallablePayload.displayName': inviteProgramStaffCallablePayloadDisplayName,
+    'inviteProgramStaffCallablePayload.duties': inviteProgramStaffCallablePayloadDuties,
+    'inviteProgramStaffCallablePayload.duties.items.duty': inviteProgramStaffCallablePayloadDutiesItemsDuty,
+    'inviteProgramStaffCallablePayload.duties.items.hotelIds': inviteProgramStaffCallablePayloadDutiesItemsHotelIds,
+    'inviteProgramStaffCallablePayload.duties.items.hotelIds.items': inviteProgramStaffCallablePayloadDutiesItemsHotelIdsItems,
+    'inviteProgramStaffCallablePayload.duties.items.pickupPointIds': inviteProgramStaffCallablePayloadDutiesItemsPickupPointIds,
+    'inviteProgramStaffCallablePayload.duties.items.pickupPointIds.items': inviteProgramStaffCallablePayloadDutiesItemsPickupPointIdsItems,
+    'inviteProgramStaffCallablePayload.expiresAtMillis': inviteProgramStaffCallablePayloadExpiresAtMillis,
+    'inviteProgramStaffCallablePayload.phoneNumber': inviteProgramStaffCallablePayloadPhoneNumber,
+    'inviteProgramStaffCallablePayload.programId': inviteProgramStaffCallablePayloadProgramId,
     'joinWaitlistHTTPRequest.analytics.consent.analytics': joinWaitlistHTTPRequestAnalyticsConsentAnalytics,
     'joinWaitlistHTTPRequest.analytics.consent.choice': joinWaitlistHTTPRequestAnalyticsConsentChoice,
     'joinWaitlistHTTPRequest.analytics.consent.marketing': joinWaitlistHTTPRequestAnalyticsConsentMarketing,
@@ -118086,6 +118647,20 @@ abstract final class CatchContractConstraints {
     'programHouseholdDocument.updatedAt._nanoseconds': programHouseholdDocumentUpdatedAtNanoseconds,
     'programHouseholdDocument.updatedAt._seconds': programHouseholdDocumentUpdatedAtSeconds,
     'programIdCallablePayload.programId': programIdCallablePayloadProgramId,
+    'programInviteClaimCallableResponse.alreadyApplied': programInviteClaimCallableResponseAlreadyApplied,
+    'programInviteClaimCallableResponse.programId': programInviteClaimCallableResponseProgramId,
+    'programManifestImportCallableResponse.alreadyApplied': programManifestImportCallableResponseAlreadyApplied,
+    'programManifestImportCallableResponse.guestsCreated': programManifestImportCallableResponseGuestsCreated,
+    'programManifestImportCallableResponse.guestsUpdated': programManifestImportCallableResponseGuestsUpdated,
+    'programManifestImportCallableResponse.householdsCreated': programManifestImportCallableResponseHouseholdsCreated,
+    'programManifestImportCallableResponse.legsCreated': programManifestImportCallableResponseLegsCreated,
+    'programManifestImportCallableResponse.legsUpdated': programManifestImportCallableResponseLegsUpdated,
+    'programManifestImportCallableResponse.mode': programManifestImportCallableResponseMode,
+    'programManifestImportCallableResponse.partiesCreated': programManifestImportCallableResponsePartiesCreated,
+    'programManifestImportCallableResponse.rowErrors': programManifestImportCallableResponseRowErrors,
+    'programManifestImportCallableResponse.rowErrors.items.index': programManifestImportCallableResponseRowErrorsItemsIndex,
+    'programManifestImportCallableResponse.rowErrors.items.message': programManifestImportCallableResponseRowErrorsItemsMessage,
+    'programManifestImportCallableResponse.totalRows': programManifestImportCallableResponseTotalRows,
     'programMutationCallableResponse.alreadyApplied': programMutationCallableResponseAlreadyApplied,
     'programMutationCallableResponse.entityId': programMutationCallableResponseEntityId,
     'programMutationCallableResponse.revision': programMutationCallableResponseRevision,
@@ -118128,6 +118703,31 @@ abstract final class CatchContractConstraints {
     'programStaffGrantDocument.uid': programStaffGrantDocumentUid,
     'programStaffGrantDocument.updatedAt._nanoseconds': programStaffGrantDocumentUpdatedAtNanoseconds,
     'programStaffGrantDocument.updatedAt._seconds': programStaffGrantDocumentUpdatedAtSeconds,
+    'programStaffInviteDocument.claimedAt._nanoseconds': programStaffInviteDocumentClaimedAtNanoseconds,
+    'programStaffInviteDocument.claimedAt._seconds': programStaffInviteDocumentClaimedAtSeconds,
+    'programStaffInviteDocument.claimedByUid': programStaffInviteDocumentClaimedByUid,
+    'programStaffInviteDocument.createdAt._nanoseconds': programStaffInviteDocumentCreatedAtNanoseconds,
+    'programStaffInviteDocument.createdAt._seconds': programStaffInviteDocumentCreatedAtSeconds,
+    'programStaffInviteDocument.createdBy': programStaffInviteDocumentCreatedBy,
+    'programStaffInviteDocument.displayName': programStaffInviteDocumentDisplayName,
+    'programStaffInviteDocument.duties': programStaffInviteDocumentDuties,
+    'programStaffInviteDocument.duties.items.duty': programStaffInviteDocumentDutiesItemsDuty,
+    'programStaffInviteDocument.duties.items.hotelIds': programStaffInviteDocumentDutiesItemsHotelIds,
+    'programStaffInviteDocument.duties.items.hotelIds.items': programStaffInviteDocumentDutiesItemsHotelIdsItems,
+    'programStaffInviteDocument.duties.items.pickupPointIds': programStaffInviteDocumentDutiesItemsPickupPointIds,
+    'programStaffInviteDocument.duties.items.pickupPointIds.items': programStaffInviteDocumentDutiesItemsPickupPointIdsItems,
+    'programStaffInviteDocument.expiresAt._nanoseconds': programStaffInviteDocumentExpiresAtNanoseconds,
+    'programStaffInviteDocument.expiresAt._seconds': programStaffInviteDocumentExpiresAtSeconds,
+    'programStaffInviteDocument.organizerId': programStaffInviteDocumentOrganizerId,
+    'programStaffInviteDocument.phoneE164': programStaffInviteDocumentPhoneE164,
+    'programStaffInviteDocument.programId': programStaffInviteDocumentProgramId,
+    'programStaffInviteDocument.revision': programStaffInviteDocumentRevision,
+    'programStaffInviteDocument.revokedAt._nanoseconds': programStaffInviteDocumentRevokedAtNanoseconds,
+    'programStaffInviteDocument.revokedAt._seconds': programStaffInviteDocumentRevokedAtSeconds,
+    'programStaffInviteDocument.revokedBy': programStaffInviteDocumentRevokedBy,
+    'programStaffInviteDocument.status': programStaffInviteDocumentStatus,
+    'programStaffInviteDocument.updatedAt._nanoseconds': programStaffInviteDocumentUpdatedAtNanoseconds,
+    'programStaffInviteDocument.updatedAt._seconds': programStaffInviteDocumentUpdatedAtSeconds,
     'programStaffListCallableResponse.members': programStaffListCallableResponseMembers,
     'programStaffListCallableResponse.members.items.displayName': programStaffListCallableResponseMembersItemsDisplayName,
     'programStaffListCallableResponse.members.items.duties': programStaffListCallableResponseMembersItemsDuties,
@@ -118739,6 +119339,8 @@ abstract final class CatchContractConstraints {
     'revokeProgramStaffCallablePayload.expectedRevision': revokeProgramStaffCallablePayloadExpectedRevision,
     'revokeProgramStaffCallablePayload.programId': revokeProgramStaffCallablePayloadProgramId,
     'revokeProgramStaffCallablePayload.uid': revokeProgramStaffCallablePayloadUid,
+    'revokeProgramStaffInviteCallablePayload.inviteId': revokeProgramStaffInviteCallablePayloadInviteId,
+    'revokeProgramStaffInviteCallablePayload.programId': revokeProgramStaffInviteCallablePayloadProgramId,
     'rotateEventRehearsalGuestLinkCallablePayload.sessionId': rotateEventRehearsalGuestLinkCallablePayloadSessionId,
     'savedEventDocument.demoOps': savedEventDocumentDemoOps,
     'savedEventDocument.demoOpsCommand': savedEventDocumentDemoOpsCommand,
@@ -119165,6 +119767,7 @@ abstract final class CatchContractConstraints {
     'transportOperationReceiptDocument.operationKind': transportOperationReceiptDocumentOperationKind,
     'transportOperationReceiptDocument.programId': transportOperationReceiptDocumentProgramId,
     'transportOperationReceiptDocument.requestHash': transportOperationReceiptDocumentRequestHash,
+    'transportOperationReceiptDocument.resultJson': transportOperationReceiptDocumentResultJson,
     'transportOperationReceiptDocument.resultRevision': transportOperationReceiptDocumentResultRevision,
     'transportOperationReceiptDocument.tripId': transportOperationReceiptDocumentTripId,
     'transportTripDocument.arrivedAt._nanoseconds': transportTripDocumentArrivedAtNanoseconds,

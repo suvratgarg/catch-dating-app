@@ -115,6 +115,48 @@ class ProgramSetupRepository {
     parse: ProgramStaffList.fromCallableData,
   );
 
+  /// Invites bind a phone number to duties before the staff member has an
+  /// account; claim-by-verified-phone materializes the grant.
+  Future<ProgramMutationResult> inviteStaff({
+    required String programId,
+    required String phoneNumber,
+    required String displayName,
+    required List<ProgramDutyAssignment> duties,
+    required DateTime expiresAt,
+  }) => _call(
+    name: 'inviteProgramStaff',
+    payload: InviteProgramStaffCallableRequest(
+      programId: programId,
+      phoneNumber: phoneNumber,
+      displayName: displayName,
+      duties: duties
+          .map(
+            (duty) => {
+              'duty': duty.duty.name,
+              'pickupPointIds': duty.pickupPointIds.toList()..sort(),
+              'hotelIds': duty.hotelIds.toList()..sort(),
+            },
+          )
+          .toList(growable: false),
+      expiresAtMillis: expiresAt.millisecondsSinceEpoch,
+    ).toJson(),
+    action: 'invite program staff',
+    parse: ProgramMutationResult.fromCallableData,
+  );
+
+  Future<ProgramMutationResult> revokeStaffInvite({
+    required String programId,
+    required String inviteId,
+  }) => _call(
+    name: 'revokeProgramStaffInvite',
+    payload: RevokeProgramStaffInviteCallableRequest(
+      programId: programId,
+      inviteId: inviteId,
+    ).toJson(),
+    action: 'revoke the staff invite',
+    parse: ProgramMutationResult.fromCallableData,
+  );
+
   Future<ProgramStaffList> revokeStaff({
     required String programId,
     required ProgramStaffMember member,

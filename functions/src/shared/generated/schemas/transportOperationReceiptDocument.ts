@@ -23,7 +23,8 @@ export const transportOperationReceiptDocumentSchema: Record<string, unknown> = 
     "legId",
     "resultRevision",
     "createdAt",
-    "expiresAt"
+    "expiresAt",
+    "resultJson"
   ],
   "properties": {
     "programId": {
@@ -40,7 +41,8 @@ export const transportOperationReceiptDocumentSchema: Record<string, unknown> = 
         "markDisrupted",
         "dispatch",
         "markArrived",
-        "voidTrip"
+        "voidTrip",
+        "manifestImport"
       ]
     },
     "clientOperationId": {
@@ -120,6 +122,14 @@ export const transportOperationReceiptDocumentSchema: Record<string, unknown> = 
           "maximum": 999999999
         }
       }
+    },
+    "resultJson": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 20000,
+      "description": "Serialized operation response for exact replay of compound results (e.g. manifest import summaries). Null for scalar-result operations."
     }
   }
 } as const;
