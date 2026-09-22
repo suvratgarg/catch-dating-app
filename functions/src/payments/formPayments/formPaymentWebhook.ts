@@ -10,12 +10,14 @@ import {formWebhookEvents, type RazorpayFormProvider} from
   "./razorpayFormProvider";
 import type {RazorpayCredentialVault} from "./razorpayCredentialVault";
 import type {FormPaymentProcessor} from "./formPaymentProcessor";
+import type {FormPaymentCredentials} from "./formPaymentCredentials";
 
 interface WebhookDeps {
   db: FirebaseFirestore.Firestore;
   vault: Pick<RazorpayCredentialVault, "access">;
   provider: Pick<RazorpayFormProvider, "fetchPayment" | "fetchOrder">;
   processor: Pick<FormPaymentProcessor, "reconcile">;
+  credentials?: Pick<FormPaymentCredentials, "access">;
   now?: () => number;
 }
 
@@ -79,10 +81,12 @@ export async function processFormPaymentWebhook(receiptId: string,
   "OrganizerPaymentConnectionDocument");
   if (connection.accountId !== receipt.accountId ||
       !connection.secretVersionResource) invalid();
-  const credential = await deps.vault.access(connection.secretVersionResource, {
+  const binding = {
     connectionId: receipt.connectionId, organizerId: connection.organizerId,
     accountId: receipt.accountId, mode: connection.mode,
-  });
+  };
+  const credential = deps.credentials ? await deps.credentials.access(binding) :
+    await deps.vault.access(connection.secretVersionResource, binding);
   if (!receipt.providerPaymentId) invalid();
   const providerPayment = await deps.provider.fetchPayment(
     credential.token.accessToken, receipt.providerPaymentId);

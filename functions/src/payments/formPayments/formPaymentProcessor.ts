@@ -6,6 +6,7 @@ import type {OrganizerFormPaymentDocument as Payment,
   "../../shared/generated/firestoreAdminTypes";
 import {requireDoc} from "../../shared/validation";
 import type {RazorpayCredentialVault} from "./razorpayCredentialVault";
+import type {FormPaymentCredentials} from "./formPaymentCredentials";
 import {FormPaymentProviderError, type FormProviderPayment,
   type RazorpayFormProvider} from "./razorpayFormProvider";
 import {requireReadyFormPaymentConnection} from "./formPaymentConnectionPolicy";
@@ -19,6 +20,7 @@ interface ProcessorDeps {
     "fetchOrder" | "fetchOrderPayments" | "fetchPayment" | "capturePayment" |
     "refundPayment" | "fetchRefund" | "verifyCheckout">;
   vault: Pick<RazorpayCredentialVault, "access">;
+  credentials?: Pick<FormPaymentCredentials, "access">;
   now?: () => number;
 }
 
@@ -52,9 +54,15 @@ export class FormPaymentProcessor {
       if (create) {
         const connectionSnap = await tx.get(this.deps.db
           .collection("organizerPaymentConnections").doc(current.connectionId));
-        requireReadyFormPaymentConnection(requireDoc<Connection>(connectionSnap,
-          "OrganizerPaymentConnectionDocument"), current.organizerId,
-        this.now());
+        const connection = requireDoc<Connection>(connectionSnap,
+          "OrganizerPaymentConnectionDocument");
+        requireReadyFormPaymentConnection(connection, current.organizerId,
+          this.now());
+        if (connection.accountId !== credential.accountId ||
+            connection.mode !== credential.mode ||
+            connection.publicToken !== credential.token.publicToken) {
+          throw new HttpsError("unavailable", "Merchant connection changed.");
+        }
       }
       // Before the POST, write uncertainty durably. Every later owner recovers
       // by receipt, even if this process dies before it can save the order id.
@@ -251,10 +259,12 @@ export class FormPaymentProcessor {
         connection.mode !== payment.mode || !connection.secretVersionResource) {
       throw new Error("Merchant does not match the form payment.");
     }
-    const credential = await this.deps.vault.access(
-      connection.secretVersionResource, {organizerId: payment.organizerId,
-        connectionId: payment.connectionId, accountId: payment.accountId,
-        mode: payment.mode});
+    const binding = {organizerId: payment.organizerId,
+      connectionId: payment.connectionId, accountId: payment.accountId,
+      mode: payment.mode};
+    const credential = this.deps.credentials ?
+      await this.deps.credentials.access(binding) :
+      await this.deps.vault.access(connection.secretVersionResource, binding);
     if (credential.token.expiresAt <= this.now()) {
       throw new HttpsError("unavailable",
         "Merchant connection needs refreshing.");
