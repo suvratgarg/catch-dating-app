@@ -1,5 +1,6 @@
 import {hashRequest} from "../shared/programOperationHash";
-import {validateTravelPartyMembership} from "./travelPartyPolicy";
+import {travelDestinationKey, validateTravelPartyMembership}
+  from "./travelPartyPolicy";
 import {CallableRequest, HttpsError, onCall} from
   "firebase-functions/v2/https";
 import {requireAuth} from "../shared/auth";
@@ -43,7 +44,7 @@ export async function getProgramArrivalsRosterHandler(
   const now = deps.now();
   const stationAccess = await requireStationAccess(
     db, data.programId, actorUid, now);
-  const {legs, guests, parties} = await loadArrivalLegContext(
+  const {legs, guests, parties, hotels} = await loadArrivalLegContext(
     db, data.programId, stationAccess, data.pickupPointId ?? null);
   const settings = stationAccess.access.program.transportSettings;
   // Resolve claimant display names through staff grants; never leak uids.
@@ -96,8 +97,9 @@ export async function getProgramArrivalsRosterHandler(
           claimantNames.get(claimed) ?? "Staff" : null,
         claimedByMe: claimed === actorUid,
         destinationHotelId: leg.doc.destinationHotelId,
-        destinationLabel: leg.doc.destinationLabel ??
-          leg.doc.destinationHotelId ?? "Unassigned",
+        destinationLabel: leg.doc.destinationHotelId ?
+          hotels.get(leg.doc.destinationHotelId)?.name ?? "Unknown hotel" :
+          leg.doc.destinationLabel ?? "Unassigned",
         requiredCapabilities: leg.doc.requiredCapabilities,
         dedicatedVehicle: leg.doc.dedicatedVehicle,
         revision: leg.doc.revision,
@@ -119,7 +121,7 @@ export async function getProgramTransportPlanHandler(
   const now = deps.now();
   const stationAccess = await requireStationAccess(
     db, data.programId, actorUid, now);
-  const {legs, parties} = await loadArrivalLegContext(
+  const {legs, parties, hotels} = await loadArrivalLegContext(
     db, data.programId, stationAccess, data.pickupPointId ?? null);
   const settings = stationAccess.access.program.transportSettings;
 
@@ -134,6 +136,7 @@ export async function getProgramTransportPlanHandler(
     destinationId: string | null;
     readiness: "expected" | "ready";
     readyAt: number;
+    earliestReadyAt: number;
     availableAt: number | null;
     unusable: boolean;
     passengers: number;
@@ -174,11 +177,10 @@ export async function getProgramTransportPlanHandler(
         legIds: [],
         partyId: leg.doc.partyId,
         pickupPointId: leg.doc.pickupPointId,
-        destinationId: leg.doc.destinationHotelId ??
-          (leg.doc.destinationLabel ?
-            `label:${leg.doc.destinationLabel.toLowerCase()}` : null),
+        destinationId: travelDestinationKey(leg.doc),
         readiness: "ready",
         readyAt: 0,
+        earliestReadyAt: Number.MAX_SAFE_INTEGER,
         availableAt: 0,
         unusable: false,
         passengers: 0,
@@ -197,23 +199,21 @@ export async function getProgramTransportPlanHandler(
     }
     unit.dedicated = unit.dedicated || leg.doc.dedicatedVehicle;
     const timing = legTiming(leg.doc, settings);
-    if (timing.kind === "unavailable") {
+    if (timing.kind === "unavailable" || leg.doc.readiness === "disrupted") {
       unit.unusable = true;
       unit.availableAt = null;
     } else if (!unit.unusable) {
       unit.availableAt = Math.max(unit.availableAt!, timing.curbAtMillis);
     }
     if (leg.doc.readiness === "ready" && leg.doc.readyAt) {
-      unit.readyAt = Math.max(unit.readyAt,
-        staffTimestampMillis(leg.doc.readyAt));
+      const readyAt = staffTimestampMillis(leg.doc.readyAt);
+      unit.readyAt = Math.max(unit.readyAt, readyAt);
+      unit.earliestReadyAt = Math.min(unit.earliestReadyAt, readyAt);
     } else {
       unit.readiness = "expected";
     }
     if (leg.doc.pickupPointId !== unit.pickupPointId ||
-        (leg.doc.destinationHotelId ??
-          (leg.doc.destinationLabel ?
-            `label:${leg.doc.destinationLabel.toLowerCase()}` : null)) !==
-          unit.destinationId) {
+        travelDestinationKey(leg.doc) !== unit.destinationId) {
       unit.unusable = true;
     }
   }
@@ -240,6 +240,8 @@ export async function getProgramTransportPlanHandler(
       destinationId: unit.destinationId,
       readiness: ready ? "ready" : "expected",
       availableAtMillis: ready ? unit.readyAt : unit.availableAt,
+      earliestReadyAtMillis: ready ? unit.earliestReadyAt : undefined,
+      legCount: unit.legIds.length,
       passengers: unit.passengers,
       luggageUnits: unit.luggageUnits,
       requiredCapabilities: [...unit.capabilities],
@@ -267,15 +269,22 @@ export async function getProgramTransportPlanHandler(
   }
   const classLabels = new Map(settings.vehicleClasses.map(
     (vehicle) => [vehicle.id, vehicle.label]));
-  const destinationLabels = new Map<string, string>();
+  const destinations = new Map<string, {hotelId: string | null;
+    label: string}>();
   for (const leg of legs) {
-    const key = leg.doc.destinationHotelId ??
-      (leg.doc.destinationLabel ?
-        `label:${leg.doc.destinationLabel.toLowerCase()}` : null);
+    const key = travelDestinationKey(leg.doc);
     if (key) {
-      destinationLabels.set(key,
-        leg.doc.destinationLabel ?? leg.doc.destinationHotelId!);
+      destinations.set(key, {
+        hotelId: leg.doc.destinationHotelId,
+        label: leg.doc.destinationHotelId ?
+          hotels.get(leg.doc.destinationHotelId)?.name ?? "Unknown hotel" :
+          leg.doc.destinationLabel!.trim(),
+      });
     }
+  }
+  if (result.groups.length > 200) {
+    throw new HttpsError("resource-exhausted",
+      "This plan exceeds 200 groups. Narrow the station scope.");
   }
   return {
     programId: data.programId,
@@ -289,10 +298,8 @@ export async function getProgramTransportPlanHandler(
         partyIds: group.partyIds
           .map((key) => unitMap.get(key)?.partyId ?? null)
           .filter((id): id is string => id !== null),
-        destinationHotelId: group.destinationId.startsWith("label:") ?
-          null : group.destinationId,
-        destinationLabel: destinationLabels.get(group.destinationId) ??
-          group.destinationId,
+        destinationHotelId: destinations.get(group.destinationId)!.hotelId,
+        destinationLabel: destinations.get(group.destinationId)!.label,
         readiness: group.readiness,
         vehicleClassId: group.vehicleClassId,
         vehicleClassLabel: classLabels.get(group.vehicleClassId) ??

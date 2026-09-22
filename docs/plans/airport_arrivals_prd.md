@@ -1296,6 +1296,17 @@ guest to another household updates both household membership lists in the same
 transaction; import never implies invitation, consent, or RSVP.
 
 
+### Suggested manifest integrity
+
+A party becomes available when its slowest member is ready, while its wait
+allowance starts at the earliest member's curb-ready observation. Combining
+parties keeps the earliest deadline. Disrupted journeys stay unassigned until
+staff resolve their readiness, including when a manual curb estimate exists.
+Hotel identifiers and free-text destinations use distinct internal identities;
+operational views display the current hotel name. Every suggestion respects the
+50-journey dispatch limit even when a vehicle has more seats. Views needing more
+than 200 groups fail explicitly instead of returning an incomplete plan.
+
 ### Operational read scope
 
 Arrivals and trip queries apply each duty's pickup and hotel restrictions before

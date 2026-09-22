@@ -211,3 +211,31 @@ test("generated manifests preserve parties and capacity invariants", () => {
     }
   }
 });
+
+test("a late-ready party member never resets the first member's wait", () => {
+  const result = suggest([party("together", {readiness: "ready",
+    availableAtMillis: 100, earliestReadyAtMillis: 60})]);
+  assert.equal(result.groups[0].dispatchByMillis, 80);
+  assert.equal(result.groups[0].waitOverdue, true);
+});
+
+test("an older observation advances the combined group deadline", () => {
+  const result = suggest([party("first", {readiness: "ready",
+    availableAtMillis: 90}), party("second", {readiness: "ready",
+    availableAtMillis: 100, earliestReadyAtMillis: 50})]);
+  assert.equal(result.groups.length, 1);
+  assert.equal(result.groups[0].dispatchByMillis, 70);
+  assert.equal(result.groups[0].waitOverdue, true);
+});
+
+test("large vehicles still obey the 50-journey dispatch contract", () => {
+  const bus = {id: "bus", passengerCapacity: 200, luggageCapacity: 500,
+    capabilities: []};
+  const result = suggest(Array.from({length: 110}, (_, i) => party(`p-${i}`)),
+    [bus]);
+  assert.deepEqual(result.groups.map((group) => group.partyIds.length),
+    [50, 50, 10]);
+  const grouped = suggest([party("a", {legCount: 30, passengers: 30}),
+    party("b", {legCount: 30, passengers: 30})], [bus]);
+  assert.equal(grouped.groups.length, 2);
+});

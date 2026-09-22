@@ -8,6 +8,9 @@ export interface TransportParty {
   destinationId: string;
   readiness: "expected" | "ready";
   availableAtMillis: number | null;
+  /** Earliest member observation; availability remains the slowest member. */
+  earliestReadyAtMillis?: number;
+  legCount?: number;
   passengers: number;
   luggageUnits: number;
   requiredCapabilities: readonly string[];
@@ -44,6 +47,7 @@ export interface TransportGroupingResult {
 }
 
 interface Group {
+  legCount: number;
   view: TransportGroupSuggestion;
   scope: string;
   dedicated: boolean;
@@ -80,9 +84,14 @@ export function suggestTransportGroups(
     const window = party.readiness === "ready" ?
       Math.min(input.windowMillis, input.maxReadyWaitMillis) :
       input.windowMillis;
+    const legCount = party.legCount ?? 1;
+    const dispatchByMillis = party.readiness === "ready" ?
+      (party.earliestReadyAtMillis ?? time) + input.maxReadyWaitMillis : null;
+    if (dispatchByMillis !== null) requireInteger(dispatchByMillis);
     const group = party.dedicatedVehicle ? undefined :
       groups.find((candidate) =>
         !candidate.dedicated && candidate.scope === partyScope &&
+        candidate.legCount + legCount <= 50 &&
         time - candidate.view.earliestAtMillis <= window &&
         fittingClass(classes, candidate.view.passengers + party.passengers,
           candidate.view.luggageUnits + party.luggageUnits,
@@ -90,6 +99,12 @@ export function suggestTransportGroups(
           undefined);
     if (group) {
       const view = group.view;
+      group.legCount += legCount;
+      if (dispatchByMillis !== null) {
+        view.dispatchByMillis =
+          Math.min(view.dispatchByMillis!, dispatchByMillis);
+        view.waitOverdue = input.nowMillis >= view.dispatchByMillis;
+      }
       view.partyIds.push(party.id);
       view.passengers += party.passengers;
       view.luggageUnits += party.luggageUnits;
@@ -100,10 +115,8 @@ export function suggestTransportGroups(
       view.vehicleClassId = fittingClass(classes, view.passengers,
         view.luggageUnits, [...group.capabilities])!.id;
     } else {
-      const dispatchByMillis = party.readiness === "ready" ?
-        time + input.maxReadyWaitMillis : null;
-      if (dispatchByMillis !== null) requireInteger(dispatchByMillis);
-      groups.push({scope: partyScope, dedicated: party.dedicatedVehicle,
+      groups.push({legCount, scope: partyScope,
+        dedicated: party.dedicatedVehicle,
         capabilities: new Set(party.requiredCapabilities), view: {
           programId: party.programId, pickupPointId: party.pickupPointId,
           destinationId: party.destinationId, readiness: party.readiness,
@@ -169,6 +182,18 @@ function validateInput(input: TransportGroupingInput): void {
   for (const party of input.parties) {
     [party.programId, party.pickupPointId, party.destinationId]
       .forEach(requireId);
+    requireInteger(party.legCount ?? 1, 1);
+    if ((party.legCount ?? 1) > 50) {
+      throw new RangeError("A party cannot exceed 50 journeys.");
+    }
+    if (party.earliestReadyAtMillis !== undefined) {
+      requireInteger(party.earliestReadyAtMillis);
+      if (party.readiness !== "ready" || party.availableAtMillis === null ||
+          party.earliestReadyAtMillis > party.availableAtMillis) {
+        throw new RangeError(
+          "Ready wait cannot start after party availability.");
+      }
+    }
     requireInteger(party.passengers, 1);
     requireInteger(party.luggageUnits);
     uniqueIds(party.requiredCapabilities);
