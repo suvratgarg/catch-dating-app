@@ -45,8 +45,8 @@
     },
     {
       "path": "gallery/manifest.json",
-      "sha256": "ccddc29fb02866be89ff06dff69c7958f39b38726bb3b6997ee2388fd607416c",
-      "bytes": 281999
+      "sha256": "f6aa946c0fce7aaadd7bf0c6c2453d4c7bb6cf324aa580f26421bfd3568268bd",
+      "bytes": 281575
     }
   ]
 }

@@ -3,11 +3,11 @@
   "source": "test/ui_captures/catalog/screen_capture_catalog.dart",
   "coverage": {
     "routes": 72,
-    "captures": 671,
+    "captures": 670,
     "statusCounts": {
       "excluded": 2,
-      "captured": 54,
-      "alias": 10,
+      "captured": 53,
+      "alias": 11,
       "planned": 6
     }
   },
@@ -9267,23 +9267,6 @@
         "dark": "dark/host_automation_editor.png"
       },
       "whatItIs": "Host Automation Editor",
-      "keepChangeNotes": ""
-    },
-    {
-      "id": "host_applications_populated",
-      "routes": [
-        "hostApplicationsScreen"
-      ],
-      "device": "iphone-17-pro",
-      "themes": [
-        "light",
-        "dark"
-      ],
-      "files": {
-        "light": "light/host_applications_populated.png",
-        "dark": "dark/host_applications_populated.png"
-      },
-      "whatItIs": "Host Applications Populated",
       "keepChangeNotes": ""
     },
     {
