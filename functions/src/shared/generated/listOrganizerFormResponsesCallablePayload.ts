@@ -40,4 +40,19 @@ export interface ListOrganizerFormResponsesCallablePayload {
     values: string[];
   }[];
   limit: number;
+  /**
+   * Opt into the unified response and application review inbox.
+   */
+  includeApplications?: boolean;
+  reviewStatus?:
+    | (
+        | "submitted"
+        | "inReview"
+        | "approved"
+        | "waitlisted"
+        | "declined"
+        | "withdrawn"
+      )
+    | null;
+  contactId?: string | null;
 }
