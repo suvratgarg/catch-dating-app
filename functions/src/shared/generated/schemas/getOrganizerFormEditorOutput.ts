@@ -464,6 +464,15 @@ export const getOrganizerFormEditorCallableResponseSchema: Record<string, unknow
                             "organizerCustom"
                           ]
                         },
+                        "answerDestination": {
+                          "description": "Omitted legacy values mean organizerOnly. A canonical mapping never grants profile sharing permission. Catch profile and organizer card answers remain private until participant claim and explicit sharing.",
+                          "type": "string",
+                          "enum": [
+                            "organizerOnly",
+                            "catchProfile",
+                            "organizerCard"
+                          ]
+                        },
                         "prefillPolicy": {
                           "type": "string",
                           "enum": [
@@ -879,6 +888,67 @@ export const getOrganizerFormEditorCallableResponseSchema: Record<string, unknow
                   "type": "string",
                   "minLength": 1,
                   "maxLength": 1000
+                }
+              }
+            },
+            "payment": {
+              "anyOf": [
+                {
+                  "description": "An optional fee for form submission, separate from event purchases and admission. Null or omitted means free.",
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "connectionId",
+                    "amountPaise",
+                    "currency",
+                    "description",
+                    "refundPolicy"
+                  ],
+                  "properties": {
+                    "connectionId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    "amountPaise": {
+                      "type": "integer",
+                      "minimum": 100,
+                      "maximum": 10000000
+                    },
+                    "currency": {
+                      "const": "INR"
+                    },
+                    "description": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160
+                    },
+                    "refundPolicy": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 1000
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "messagingConsent": {
+              "description": "Controls which separate, optional, initially unchecked WhatsApp choices are offered. These settings are never respondent consent.",
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "organizerWhatsapp",
+                "catchWhatsapp"
+              ],
+              "properties": {
+                "organizerWhatsapp": {
+                  "type": "boolean"
+                },
+                "catchWhatsapp": {
+                  "type": "boolean"
                 }
               }
             },

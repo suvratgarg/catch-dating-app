@@ -1,4 +1,5 @@
 import {createHash, randomBytes} from "crypto";
+import {validateFormCapabilities} from "./organizerFormCapabilities";
 import * as admin from "firebase-admin";
 import {CallableRequest, HttpsError, onCall} from
   "firebase-functions/v2/https";
@@ -811,6 +812,7 @@ export function validateOrganizerFormDefinition(
     message: string,
     severity: ValidationIssue["severity"] = "error"
   ) => issues.push({code, path, message, severity});
+  validateFormCapabilities(definition, add);
   if (!definition.title.trim()) {
     add("emptyTitle", "title", "Give this form a title.");
   }

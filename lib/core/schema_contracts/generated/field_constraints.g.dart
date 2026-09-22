@@ -79691,6 +79691,55 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const organizerFormDraftDocumentDefinitionMessagingConsentCatchWhatsapp = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.messagingConsent.catchWhatsapp',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerFormDraftDocumentDefinitionMessagingConsentOrganizerWhatsapp = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.messagingConsent.organizerWhatsapp',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerFormDraftDocumentDefinitionPaymentAmountPaise = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.payment.amountPaise',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 100,
+    maximum: 10000000,
+  );
+
+  static const organizerFormDraftDocumentDefinitionPaymentConnectionId = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.payment.connectionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormDraftDocumentDefinitionPaymentCurrency = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.payment.currency',
+    required: true,
+  );
+
+  static const organizerFormDraftDocumentDefinitionPaymentDescription = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.payment.description',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormDraftDocumentDefinitionPaymentRefundPolicy = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.payment.refundPolicy',
+    maxLength: 1000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const organizerFormDraftDocumentDefinitionPurpose = CatchContractFieldConstraints(
     path: 'organizerFormDraftDocument.definition.purpose',
     required: true,
@@ -79725,6 +79774,12 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['array'],
     itemValueTypes: <String>['object'],
     maxItems: 100,
+  );
+
+  static const organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsAnswerDestination = CatchContractFieldConstraints(
+    path: 'organizerFormDraftDocument.definition.sections.items.questions.items.answerDestination',
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizerOnly', 'catchProfile', 'organizerCard'],
   );
 
   static const organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsCanonicalFieldId = CatchContractFieldConstraints(
@@ -80856,6 +80911,55 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const organizerFormVersionDocumentDefinitionMessagingConsentCatchWhatsapp = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.messagingConsent.catchWhatsapp',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerFormVersionDocumentDefinitionMessagingConsentOrganizerWhatsapp = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.messagingConsent.organizerWhatsapp',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const organizerFormVersionDocumentDefinitionPaymentAmountPaise = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.payment.amountPaise',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 100,
+    maximum: 10000000,
+  );
+
+  static const organizerFormVersionDocumentDefinitionPaymentConnectionId = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.payment.connectionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormVersionDocumentDefinitionPaymentCurrency = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.payment.currency',
+    required: true,
+  );
+
+  static const organizerFormVersionDocumentDefinitionPaymentDescription = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.payment.description',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const organizerFormVersionDocumentDefinitionPaymentRefundPolicy = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.payment.refundPolicy',
+    maxLength: 1000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const organizerFormVersionDocumentDefinitionPurpose = CatchContractFieldConstraints(
     path: 'organizerFormVersionDocument.definition.purpose',
     required: true,
@@ -80890,6 +80994,12 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['array'],
     itemValueTypes: <String>['object'],
     maxItems: 100,
+  );
+
+  static const organizerFormVersionDocumentDefinitionSectionsItemsQuestionsItemsAnswerDestination = CatchContractFieldConstraints(
+    path: 'organizerFormVersionDocument.definition.sections.items.questions.items.answerDestination',
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizerOnly', 'catchProfile', 'organizerCard'],
   );
 
   static const organizerFormVersionDocumentDefinitionSectionsItemsQuestionsItemsCanonicalFieldId = CatchContractFieldConstraints(
@@ -97050,6 +97160,55 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const updateOrganizerFormDraftCallablePayloadDefinitionMessagingConsentCatchWhatsapp = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.messagingConsent.catchWhatsapp',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionMessagingConsentOrganizerWhatsapp = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.messagingConsent.organizerWhatsapp',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionPaymentAmountPaise = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.payment.amountPaise',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 100,
+    maximum: 10000000,
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionPaymentConnectionId = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.payment.connectionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionPaymentCurrency = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.payment.currency',
+    required: true,
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionPaymentDescription = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.payment.description',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionPaymentRefundPolicy = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.payment.refundPolicy',
+    maxLength: 1000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const updateOrganizerFormDraftCallablePayloadDefinitionPurpose = CatchContractFieldConstraints(
     path: 'updateOrganizerFormDraftCallablePayload.definition.purpose',
     required: true,
@@ -97084,6 +97243,12 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['array'],
     itemValueTypes: <String>['object'],
     maxItems: 100,
+  );
+
+  static const updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsAnswerDestination = CatchContractFieldConstraints(
+    path: 'updateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.answerDestination',
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizerOnly', 'catchProfile', 'organizerCard'],
   );
 
   static const updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsCanonicalFieldId = CatchContractFieldConstraints(
@@ -99867,6 +100032,55 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const validateOrganizerFormDraftCallablePayloadDefinitionMessagingConsentCatchWhatsapp = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.messagingConsent.catchWhatsapp',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionMessagingConsentOrganizerWhatsapp = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.messagingConsent.organizerWhatsapp',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionPaymentAmountPaise = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.payment.amountPaise',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 100,
+    maximum: 10000000,
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionPaymentConnectionId = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.payment.connectionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionPaymentCurrency = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.payment.currency',
+    required: true,
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionPaymentDescription = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.payment.description',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionPaymentRefundPolicy = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.payment.refundPolicy',
+    maxLength: 1000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const validateOrganizerFormDraftCallablePayloadDefinitionPurpose = CatchContractFieldConstraints(
     path: 'validateOrganizerFormDraftCallablePayload.definition.purpose',
     required: true,
@@ -99901,6 +100115,12 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['array'],
     itemValueTypes: <String>['object'],
     maxItems: 100,
+  );
+
+  static const validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsAnswerDestination = CatchContractFieldConstraints(
+    path: 'validateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.answerDestination',
+    valueTypes: <String>['string'],
+    enumValues: <String>['organizerOnly', 'catchProfile', 'organizerCard'],
   );
 
   static const validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsCanonicalFieldId = CatchContractFieldConstraints(
@@ -112121,11 +112341,19 @@ abstract final class CatchContractConstraints {
     'organizerFormDraftDocument.definition.logicRules.items.ruleId': organizerFormDraftDocumentDefinitionLogicRulesItemsRuleId,
     'organizerFormDraftDocument.definition.logicRules.items.targetQuestionId': organizerFormDraftDocumentDefinitionLogicRulesItemsTargetQuestionId,
     'organizerFormDraftDocument.definition.logicRules.items.targetSectionId': organizerFormDraftDocumentDefinitionLogicRulesItemsTargetSectionId,
+    'organizerFormDraftDocument.definition.messagingConsent.catchWhatsapp': organizerFormDraftDocumentDefinitionMessagingConsentCatchWhatsapp,
+    'organizerFormDraftDocument.definition.messagingConsent.organizerWhatsapp': organizerFormDraftDocumentDefinitionMessagingConsentOrganizerWhatsapp,
+    'organizerFormDraftDocument.definition.payment.amountPaise': organizerFormDraftDocumentDefinitionPaymentAmountPaise,
+    'organizerFormDraftDocument.definition.payment.connectionId': organizerFormDraftDocumentDefinitionPaymentConnectionId,
+    'organizerFormDraftDocument.definition.payment.currency': organizerFormDraftDocumentDefinitionPaymentCurrency,
+    'organizerFormDraftDocument.definition.payment.description': organizerFormDraftDocumentDefinitionPaymentDescription,
+    'organizerFormDraftDocument.definition.payment.refundPolicy': organizerFormDraftDocumentDefinitionPaymentRefundPolicy,
     'organizerFormDraftDocument.definition.purpose': organizerFormDraftDocumentDefinitionPurpose,
     'organizerFormDraftDocument.definition.sections': organizerFormDraftDocumentDefinitionSections,
     'organizerFormDraftDocument.definition.sections.items.description': organizerFormDraftDocumentDefinitionSectionsItemsDescription,
     'organizerFormDraftDocument.definition.sections.items.pageBreak': organizerFormDraftDocumentDefinitionSectionsItemsPageBreak,
     'organizerFormDraftDocument.definition.sections.items.questions': organizerFormDraftDocumentDefinitionSectionsItemsQuestions,
+    'organizerFormDraftDocument.definition.sections.items.questions.items.answerDestination': organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsAnswerDestination,
     'organizerFormDraftDocument.definition.sections.items.questions.items.canonicalFieldId': organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsCanonicalFieldId,
     'organizerFormDraftDocument.definition.sections.items.questions.items.helpText': organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsHelpText,
     'organizerFormDraftDocument.definition.sections.items.questions.items.hostPresentation': organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsHostPresentation,
@@ -112282,11 +112510,19 @@ abstract final class CatchContractConstraints {
     'organizerFormVersionDocument.definition.logicRules.items.ruleId': organizerFormVersionDocumentDefinitionLogicRulesItemsRuleId,
     'organizerFormVersionDocument.definition.logicRules.items.targetQuestionId': organizerFormVersionDocumentDefinitionLogicRulesItemsTargetQuestionId,
     'organizerFormVersionDocument.definition.logicRules.items.targetSectionId': organizerFormVersionDocumentDefinitionLogicRulesItemsTargetSectionId,
+    'organizerFormVersionDocument.definition.messagingConsent.catchWhatsapp': organizerFormVersionDocumentDefinitionMessagingConsentCatchWhatsapp,
+    'organizerFormVersionDocument.definition.messagingConsent.organizerWhatsapp': organizerFormVersionDocumentDefinitionMessagingConsentOrganizerWhatsapp,
+    'organizerFormVersionDocument.definition.payment.amountPaise': organizerFormVersionDocumentDefinitionPaymentAmountPaise,
+    'organizerFormVersionDocument.definition.payment.connectionId': organizerFormVersionDocumentDefinitionPaymentConnectionId,
+    'organizerFormVersionDocument.definition.payment.currency': organizerFormVersionDocumentDefinitionPaymentCurrency,
+    'organizerFormVersionDocument.definition.payment.description': organizerFormVersionDocumentDefinitionPaymentDescription,
+    'organizerFormVersionDocument.definition.payment.refundPolicy': organizerFormVersionDocumentDefinitionPaymentRefundPolicy,
     'organizerFormVersionDocument.definition.purpose': organizerFormVersionDocumentDefinitionPurpose,
     'organizerFormVersionDocument.definition.sections': organizerFormVersionDocumentDefinitionSections,
     'organizerFormVersionDocument.definition.sections.items.description': organizerFormVersionDocumentDefinitionSectionsItemsDescription,
     'organizerFormVersionDocument.definition.sections.items.pageBreak': organizerFormVersionDocumentDefinitionSectionsItemsPageBreak,
     'organizerFormVersionDocument.definition.sections.items.questions': organizerFormVersionDocumentDefinitionSectionsItemsQuestions,
+    'organizerFormVersionDocument.definition.sections.items.questions.items.answerDestination': organizerFormVersionDocumentDefinitionSectionsItemsQuestionsItemsAnswerDestination,
     'organizerFormVersionDocument.definition.sections.items.questions.items.canonicalFieldId': organizerFormVersionDocumentDefinitionSectionsItemsQuestionsItemsCanonicalFieldId,
     'organizerFormVersionDocument.definition.sections.items.questions.items.helpText': organizerFormVersionDocumentDefinitionSectionsItemsQuestionsItemsHelpText,
     'organizerFormVersionDocument.definition.sections.items.questions.items.hostPresentation': organizerFormVersionDocumentDefinitionSectionsItemsQuestionsItemsHostPresentation,
@@ -114503,11 +114739,19 @@ abstract final class CatchContractConstraints {
     'updateOrganizerFormDraftCallablePayload.definition.logicRules.items.ruleId': updateOrganizerFormDraftCallablePayloadDefinitionLogicRulesItemsRuleId,
     'updateOrganizerFormDraftCallablePayload.definition.logicRules.items.targetQuestionId': updateOrganizerFormDraftCallablePayloadDefinitionLogicRulesItemsTargetQuestionId,
     'updateOrganizerFormDraftCallablePayload.definition.logicRules.items.targetSectionId': updateOrganizerFormDraftCallablePayloadDefinitionLogicRulesItemsTargetSectionId,
+    'updateOrganizerFormDraftCallablePayload.definition.messagingConsent.catchWhatsapp': updateOrganizerFormDraftCallablePayloadDefinitionMessagingConsentCatchWhatsapp,
+    'updateOrganizerFormDraftCallablePayload.definition.messagingConsent.organizerWhatsapp': updateOrganizerFormDraftCallablePayloadDefinitionMessagingConsentOrganizerWhatsapp,
+    'updateOrganizerFormDraftCallablePayload.definition.payment.amountPaise': updateOrganizerFormDraftCallablePayloadDefinitionPaymentAmountPaise,
+    'updateOrganizerFormDraftCallablePayload.definition.payment.connectionId': updateOrganizerFormDraftCallablePayloadDefinitionPaymentConnectionId,
+    'updateOrganizerFormDraftCallablePayload.definition.payment.currency': updateOrganizerFormDraftCallablePayloadDefinitionPaymentCurrency,
+    'updateOrganizerFormDraftCallablePayload.definition.payment.description': updateOrganizerFormDraftCallablePayloadDefinitionPaymentDescription,
+    'updateOrganizerFormDraftCallablePayload.definition.payment.refundPolicy': updateOrganizerFormDraftCallablePayloadDefinitionPaymentRefundPolicy,
     'updateOrganizerFormDraftCallablePayload.definition.purpose': updateOrganizerFormDraftCallablePayloadDefinitionPurpose,
     'updateOrganizerFormDraftCallablePayload.definition.sections': updateOrganizerFormDraftCallablePayloadDefinitionSections,
     'updateOrganizerFormDraftCallablePayload.definition.sections.items.description': updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsDescription,
     'updateOrganizerFormDraftCallablePayload.definition.sections.items.pageBreak': updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsPageBreak,
     'updateOrganizerFormDraftCallablePayload.definition.sections.items.questions': updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestions,
+    'updateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.answerDestination': updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsAnswerDestination,
     'updateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.canonicalFieldId': updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsCanonicalFieldId,
     'updateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.helpText': updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsHelpText,
     'updateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.hostPresentation': updateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsHostPresentation,
@@ -114896,11 +115140,19 @@ abstract final class CatchContractConstraints {
     'validateOrganizerFormDraftCallablePayload.definition.logicRules.items.ruleId': validateOrganizerFormDraftCallablePayloadDefinitionLogicRulesItemsRuleId,
     'validateOrganizerFormDraftCallablePayload.definition.logicRules.items.targetQuestionId': validateOrganizerFormDraftCallablePayloadDefinitionLogicRulesItemsTargetQuestionId,
     'validateOrganizerFormDraftCallablePayload.definition.logicRules.items.targetSectionId': validateOrganizerFormDraftCallablePayloadDefinitionLogicRulesItemsTargetSectionId,
+    'validateOrganizerFormDraftCallablePayload.definition.messagingConsent.catchWhatsapp': validateOrganizerFormDraftCallablePayloadDefinitionMessagingConsentCatchWhatsapp,
+    'validateOrganizerFormDraftCallablePayload.definition.messagingConsent.organizerWhatsapp': validateOrganizerFormDraftCallablePayloadDefinitionMessagingConsentOrganizerWhatsapp,
+    'validateOrganizerFormDraftCallablePayload.definition.payment.amountPaise': validateOrganizerFormDraftCallablePayloadDefinitionPaymentAmountPaise,
+    'validateOrganizerFormDraftCallablePayload.definition.payment.connectionId': validateOrganizerFormDraftCallablePayloadDefinitionPaymentConnectionId,
+    'validateOrganizerFormDraftCallablePayload.definition.payment.currency': validateOrganizerFormDraftCallablePayloadDefinitionPaymentCurrency,
+    'validateOrganizerFormDraftCallablePayload.definition.payment.description': validateOrganizerFormDraftCallablePayloadDefinitionPaymentDescription,
+    'validateOrganizerFormDraftCallablePayload.definition.payment.refundPolicy': validateOrganizerFormDraftCallablePayloadDefinitionPaymentRefundPolicy,
     'validateOrganizerFormDraftCallablePayload.definition.purpose': validateOrganizerFormDraftCallablePayloadDefinitionPurpose,
     'validateOrganizerFormDraftCallablePayload.definition.sections': validateOrganizerFormDraftCallablePayloadDefinitionSections,
     'validateOrganizerFormDraftCallablePayload.definition.sections.items.description': validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsDescription,
     'validateOrganizerFormDraftCallablePayload.definition.sections.items.pageBreak': validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsPageBreak,
     'validateOrganizerFormDraftCallablePayload.definition.sections.items.questions': validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestions,
+    'validateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.answerDestination': validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsAnswerDestination,
     'validateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.canonicalFieldId': validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsCanonicalFieldId,
     'validateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.helpText': validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsHelpText,
     'validateOrganizerFormDraftCallablePayload.definition.sections.items.questions.items.hostPresentation': validateOrganizerFormDraftCallablePayloadDefinitionSectionsItemsQuestionsItemsHostPresentation,

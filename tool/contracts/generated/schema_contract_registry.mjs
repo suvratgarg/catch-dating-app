@@ -101980,6 +101980,15 @@ export const organizerFormDraftDocumentSchema = {
                         "organizerCustom"
                       ]
                     },
+                    "answerDestination": {
+                      "description": "Omitted legacy values mean organizerOnly. A canonical mapping never grants profile sharing permission. Catch profile and organizer card answers remain private until participant claim and explicit sharing.",
+                      "type": "string",
+                      "enum": [
+                        "organizerOnly",
+                        "catchProfile",
+                        "organizerCard"
+                      ]
+                    },
                     "prefillPolicy": {
                       "type": "string",
                       "enum": [
@@ -102395,6 +102404,67 @@ export const organizerFormDraftDocumentSchema = {
               "type": "string",
               "minLength": 1,
               "maxLength": 1000
+            }
+          }
+        },
+        "payment": {
+          "anyOf": [
+            {
+              "description": "An optional fee for form submission, separate from event purchases and admission. Null or omitted means free.",
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "connectionId",
+                "amountPaise",
+                "currency",
+                "description",
+                "refundPolicy"
+              ],
+              "properties": {
+                "connectionId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "amountPaise": {
+                  "type": "integer",
+                  "minimum": 100,
+                  "maximum": 10000000
+                },
+                "currency": {
+                  "const": "INR"
+                },
+                "description": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160
+                },
+                "refundPolicy": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1000
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "messagingConsent": {
+          "description": "Controls which separate, optional, initially unchecked WhatsApp choices are offered. These settings are never respondent consent.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "organizerWhatsapp",
+            "catchWhatsapp"
+          ],
+          "properties": {
+            "organizerWhatsapp": {
+              "type": "boolean"
+            },
+            "catchWhatsapp": {
+              "type": "boolean"
             }
           }
         },
@@ -102785,6 +102855,15 @@ export const organizerFormVersionDocumentSchema = {
                         "organizerCustom"
                       ]
                     },
+                    "answerDestination": {
+                      "description": "Omitted legacy values mean organizerOnly. A canonical mapping never grants profile sharing permission. Catch profile and organizer card answers remain private until participant claim and explicit sharing.",
+                      "type": "string",
+                      "enum": [
+                        "organizerOnly",
+                        "catchProfile",
+                        "organizerCard"
+                      ]
+                    },
                     "prefillPolicy": {
                       "type": "string",
                       "enum": [
@@ -103200,6 +103279,67 @@ export const organizerFormVersionDocumentSchema = {
               "type": "string",
               "minLength": 1,
               "maxLength": 1000
+            }
+          }
+        },
+        "payment": {
+          "anyOf": [
+            {
+              "description": "An optional fee for form submission, separate from event purchases and admission. Null or omitted means free.",
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "connectionId",
+                "amountPaise",
+                "currency",
+                "description",
+                "refundPolicy"
+              ],
+              "properties": {
+                "connectionId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "amountPaise": {
+                  "type": "integer",
+                  "minimum": 100,
+                  "maximum": 10000000
+                },
+                "currency": {
+                  "const": "INR"
+                },
+                "description": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160
+                },
+                "refundPolicy": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1000
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "messagingConsent": {
+          "description": "Controls which separate, optional, initially unchecked WhatsApp choices are offered. These settings are never respondent consent.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "organizerWhatsapp",
+            "catchWhatsapp"
+          ],
+          "properties": {
+            "organizerWhatsapp": {
+              "type": "boolean"
+            },
+            "catchWhatsapp": {
+              "type": "boolean"
             }
           }
         },
@@ -188783,6 +188923,15 @@ export const createOrganizerFormCallableResponseSchema = {
                             "organizerCustom"
                           ]
                         },
+                        "answerDestination": {
+                          "description": "Omitted legacy values mean organizerOnly. A canonical mapping never grants profile sharing permission. Catch profile and organizer card answers remain private until participant claim and explicit sharing.",
+                          "type": "string",
+                          "enum": [
+                            "organizerOnly",
+                            "catchProfile",
+                            "organizerCard"
+                          ]
+                        },
                         "prefillPolicy": {
                           "type": "string",
                           "enum": [
@@ -189201,6 +189350,67 @@ export const createOrganizerFormCallableResponseSchema = {
                 }
               }
             },
+            "payment": {
+              "anyOf": [
+                {
+                  "description": "An optional fee for form submission, separate from event purchases and admission. Null or omitted means free.",
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "connectionId",
+                    "amountPaise",
+                    "currency",
+                    "description",
+                    "refundPolicy"
+                  ],
+                  "properties": {
+                    "connectionId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    "amountPaise": {
+                      "type": "integer",
+                      "minimum": 100,
+                      "maximum": 10000000
+                    },
+                    "currency": {
+                      "const": "INR"
+                    },
+                    "description": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160
+                    },
+                    "refundPolicy": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 1000
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "messagingConsent": {
+              "description": "Controls which separate, optional, initially unchecked WhatsApp choices are offered. These settings are never respondent consent.",
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "organizerWhatsapp",
+                "catchWhatsapp"
+              ],
+              "properties": {
+                "organizerWhatsapp": {
+                  "type": "boolean"
+                },
+                "catchWhatsapp": {
+                  "type": "boolean"
+                }
+              }
+            },
             "completion": {
               "type": "object",
               "additionalProperties": false,
@@ -189568,6 +189778,15 @@ export const updateOrganizerFormDraftCallablePayloadSchema = {
                         "profile",
                         "sensitive",
                         "organizerCustom"
+                      ]
+                    },
+                    "answerDestination": {
+                      "description": "Omitted legacy values mean organizerOnly. A canonical mapping never grants profile sharing permission. Catch profile and organizer card answers remain private until participant claim and explicit sharing.",
+                      "type": "string",
+                      "enum": [
+                        "organizerOnly",
+                        "catchProfile",
+                        "organizerCard"
                       ]
                     },
                     "prefillPolicy": {
@@ -189985,6 +190204,67 @@ export const updateOrganizerFormDraftCallablePayloadSchema = {
               "type": "string",
               "minLength": 1,
               "maxLength": 1000
+            }
+          }
+        },
+        "payment": {
+          "anyOf": [
+            {
+              "description": "An optional fee for form submission, separate from event purchases and admission. Null or omitted means free.",
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "connectionId",
+                "amountPaise",
+                "currency",
+                "description",
+                "refundPolicy"
+              ],
+              "properties": {
+                "connectionId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "amountPaise": {
+                  "type": "integer",
+                  "minimum": 100,
+                  "maximum": 10000000
+                },
+                "currency": {
+                  "const": "INR"
+                },
+                "description": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160
+                },
+                "refundPolicy": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1000
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "messagingConsent": {
+          "description": "Controls which separate, optional, initially unchecked WhatsApp choices are offered. These settings are never respondent consent.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "organizerWhatsapp",
+            "catchWhatsapp"
+          ],
+          "properties": {
+            "organizerWhatsapp": {
+              "type": "boolean"
+            },
+            "catchWhatsapp": {
+              "type": "boolean"
             }
           }
         },
@@ -190504,6 +190784,15 @@ export const updateOrganizerFormDraftCallableResponseSchema = {
                             "organizerCustom"
                           ]
                         },
+                        "answerDestination": {
+                          "description": "Omitted legacy values mean organizerOnly. A canonical mapping never grants profile sharing permission. Catch profile and organizer card answers remain private until participant claim and explicit sharing.",
+                          "type": "string",
+                          "enum": [
+                            "organizerOnly",
+                            "catchProfile",
+                            "organizerCard"
+                          ]
+                        },
                         "prefillPolicy": {
                           "type": "string",
                           "enum": [
@@ -190919,6 +191208,67 @@ export const updateOrganizerFormDraftCallableResponseSchema = {
                   "type": "string",
                   "minLength": 1,
                   "maxLength": 1000
+                }
+              }
+            },
+            "payment": {
+              "anyOf": [
+                {
+                  "description": "An optional fee for form submission, separate from event purchases and admission. Null or omitted means free.",
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "connectionId",
+                    "amountPaise",
+                    "currency",
+                    "description",
+                    "refundPolicy"
+                  ],
+                  "properties": {
+                    "connectionId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    "amountPaise": {
+                      "type": "integer",
+                      "minimum": 100,
+                      "maximum": 10000000
+                    },
+                    "currency": {
+                      "const": "INR"
+                    },
+                    "description": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160
+                    },
+                    "refundPolicy": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 1000
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "messagingConsent": {
+              "description": "Controls which separate, optional, initially unchecked WhatsApp choices are offered. These settings are never respondent consent.",
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "organizerWhatsapp",
+                "catchWhatsapp"
+              ],
+              "properties": {
+                "organizerWhatsapp": {
+                  "type": "boolean"
+                },
+                "catchWhatsapp": {
+                  "type": "boolean"
                 }
               }
             },
@@ -191503,6 +191853,15 @@ export const getOrganizerFormEditorCallableResponseSchema = {
                             "organizerCustom"
                           ]
                         },
+                        "answerDestination": {
+                          "description": "Omitted legacy values mean organizerOnly. A canonical mapping never grants profile sharing permission. Catch profile and organizer card answers remain private until participant claim and explicit sharing.",
+                          "type": "string",
+                          "enum": [
+                            "organizerOnly",
+                            "catchProfile",
+                            "organizerCard"
+                          ]
+                        },
                         "prefillPolicy": {
                           "type": "string",
                           "enum": [
@@ -191918,6 +192277,67 @@ export const getOrganizerFormEditorCallableResponseSchema = {
                   "type": "string",
                   "minLength": 1,
                   "maxLength": 1000
+                }
+              }
+            },
+            "payment": {
+              "anyOf": [
+                {
+                  "description": "An optional fee for form submission, separate from event purchases and admission. Null or omitted means free.",
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "connectionId",
+                    "amountPaise",
+                    "currency",
+                    "description",
+                    "refundPolicy"
+                  ],
+                  "properties": {
+                    "connectionId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    "amountPaise": {
+                      "type": "integer",
+                      "minimum": 100,
+                      "maximum": 10000000
+                    },
+                    "currency": {
+                      "const": "INR"
+                    },
+                    "description": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160
+                    },
+                    "refundPolicy": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 1000
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "messagingConsent": {
+              "description": "Controls which separate, optional, initially unchecked WhatsApp choices are offered. These settings are never respondent consent.",
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "organizerWhatsapp",
+                "catchWhatsapp"
+              ],
+              "properties": {
+                "organizerWhatsapp": {
+                  "type": "boolean"
+                },
+                "catchWhatsapp": {
+                  "type": "boolean"
                 }
               }
             },
@@ -192597,6 +193017,15 @@ export const validateOrganizerFormDraftCallablePayloadSchema = {
                         "organizerCustom"
                       ]
                     },
+                    "answerDestination": {
+                      "description": "Omitted legacy values mean organizerOnly. A canonical mapping never grants profile sharing permission. Catch profile and organizer card answers remain private until participant claim and explicit sharing.",
+                      "type": "string",
+                      "enum": [
+                        "organizerOnly",
+                        "catchProfile",
+                        "organizerCard"
+                      ]
+                    },
                     "prefillPolicy": {
                       "type": "string",
                       "enum": [
@@ -193012,6 +193441,67 @@ export const validateOrganizerFormDraftCallablePayloadSchema = {
               "type": "string",
               "minLength": 1,
               "maxLength": 1000
+            }
+          }
+        },
+        "payment": {
+          "anyOf": [
+            {
+              "description": "An optional fee for form submission, separate from event purchases and admission. Null or omitted means free.",
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "connectionId",
+                "amountPaise",
+                "currency",
+                "description",
+                "refundPolicy"
+              ],
+              "properties": {
+                "connectionId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "amountPaise": {
+                  "type": "integer",
+                  "minimum": 100,
+                  "maximum": 10000000
+                },
+                "currency": {
+                  "const": "INR"
+                },
+                "description": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160
+                },
+                "refundPolicy": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1000
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "messagingConsent": {
+          "description": "Controls which separate, optional, initially unchecked WhatsApp choices are offered. These settings are never respondent consent.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "organizerWhatsapp",
+            "catchWhatsapp"
+          ],
+          "properties": {
+            "organizerWhatsapp": {
+              "type": "boolean"
+            },
+            "catchWhatsapp": {
+              "type": "boolean"
             }
           }
         },
@@ -194122,6 +194612,15 @@ export const duplicateOrganizerFormCallableResponseSchema = {
                             "organizerCustom"
                           ]
                         },
+                        "answerDestination": {
+                          "description": "Omitted legacy values mean organizerOnly. A canonical mapping never grants profile sharing permission. Catch profile and organizer card answers remain private until participant claim and explicit sharing.",
+                          "type": "string",
+                          "enum": [
+                            "organizerOnly",
+                            "catchProfile",
+                            "organizerCard"
+                          ]
+                        },
                         "prefillPolicy": {
                           "type": "string",
                           "enum": [
@@ -194537,6 +195036,67 @@ export const duplicateOrganizerFormCallableResponseSchema = {
                   "type": "string",
                   "minLength": 1,
                   "maxLength": 1000
+                }
+              }
+            },
+            "payment": {
+              "anyOf": [
+                {
+                  "description": "An optional fee for form submission, separate from event purchases and admission. Null or omitted means free.",
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "connectionId",
+                    "amountPaise",
+                    "currency",
+                    "description",
+                    "refundPolicy"
+                  ],
+                  "properties": {
+                    "connectionId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    "amountPaise": {
+                      "type": "integer",
+                      "minimum": 100,
+                      "maximum": 10000000
+                    },
+                    "currency": {
+                      "const": "INR"
+                    },
+                    "description": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160
+                    },
+                    "refundPolicy": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 1000
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "messagingConsent": {
+              "description": "Controls which separate, optional, initially unchecked WhatsApp choices are offered. These settings are never respondent consent.",
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "organizerWhatsapp",
+                "catchWhatsapp"
+              ],
+              "properties": {
+                "organizerWhatsapp": {
+                  "type": "boolean"
+                },
+                "catchWhatsapp": {
+                  "type": "boolean"
                 }
               }
             },
@@ -195160,6 +195720,15 @@ export const getPublicOrganizerFormCallableResponseSchema = {
                             "organizerCustom"
                           ]
                         },
+                        "answerDestination": {
+                          "description": "Omitted legacy values mean organizerOnly. A canonical mapping never grants profile sharing permission. Catch profile and organizer card answers remain private until participant claim and explicit sharing.",
+                          "type": "string",
+                          "enum": [
+                            "organizerOnly",
+                            "catchProfile",
+                            "organizerCard"
+                          ]
+                        },
                         "prefillPolicy": {
                           "type": "string",
                           "enum": [
@@ -195575,6 +196144,67 @@ export const getPublicOrganizerFormCallableResponseSchema = {
                   "type": "string",
                   "minLength": 1,
                   "maxLength": 1000
+                }
+              }
+            },
+            "payment": {
+              "anyOf": [
+                {
+                  "description": "An optional fee for form submission, separate from event purchases and admission. Null or omitted means free.",
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "connectionId",
+                    "amountPaise",
+                    "currency",
+                    "description",
+                    "refundPolicy"
+                  ],
+                  "properties": {
+                    "connectionId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    "amountPaise": {
+                      "type": "integer",
+                      "minimum": 100,
+                      "maximum": 10000000
+                    },
+                    "currency": {
+                      "const": "INR"
+                    },
+                    "description": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160
+                    },
+                    "refundPolicy": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 1000
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "messagingConsent": {
+              "description": "Controls which separate, optional, initially unchecked WhatsApp choices are offered. These settings are never respondent consent.",
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "organizerWhatsapp",
+                "catchWhatsapp"
+              ],
+              "properties": {
+                "organizerWhatsapp": {
+                  "type": "boolean"
+                },
+                "catchWhatsapp": {
+                  "type": "boolean"
                 }
               }
             },
@@ -196024,6 +196654,15 @@ export const beginOrganizerFormResponseCallableResponseSchema = {
                                 "organizerCustom"
                               ]
                             },
+                            "answerDestination": {
+                              "description": "Omitted legacy values mean organizerOnly. A canonical mapping never grants profile sharing permission. Catch profile and organizer card answers remain private until participant claim and explicit sharing.",
+                              "type": "string",
+                              "enum": [
+                                "organizerOnly",
+                                "catchProfile",
+                                "organizerCard"
+                              ]
+                            },
                             "prefillPolicy": {
                               "type": "string",
                               "enum": [
@@ -196439,6 +197078,67 @@ export const beginOrganizerFormResponseCallableResponseSchema = {
                       "type": "string",
                       "minLength": 1,
                       "maxLength": 1000
+                    }
+                  }
+                },
+                "payment": {
+                  "anyOf": [
+                    {
+                      "description": "An optional fee for form submission, separate from event purchases and admission. Null or omitted means free.",
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "connectionId",
+                        "amountPaise",
+                        "currency",
+                        "description",
+                        "refundPolicy"
+                      ],
+                      "properties": {
+                        "connectionId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 180
+                        },
+                        "amountPaise": {
+                          "type": "integer",
+                          "minimum": 100,
+                          "maximum": 10000000
+                        },
+                        "currency": {
+                          "const": "INR"
+                        },
+                        "description": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 160
+                        },
+                        "refundPolicy": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 1000
+                        }
+                      }
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "messagingConsent": {
+                  "description": "Controls which separate, optional, initially unchecked WhatsApp choices are offered. These settings are never respondent consent.",
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "organizerWhatsapp",
+                    "catchWhatsapp"
+                  ],
+                  "properties": {
+                    "organizerWhatsapp": {
+                      "type": "boolean"
+                    },
+                    "catchWhatsapp": {
+                      "type": "boolean"
                     }
                   }
                 },
