@@ -1,3 +1,13 @@
+/* firestore-index: programStaffInvites (
+  programId:ASCENDING,
+  phoneE164:ASCENDING,
+  status:ASCENDING
+) */
+/* firestore-index: programStaffGrants (
+  programId:ASCENDING,
+  status:ASCENDING,
+  expiresAt:ASCENDING
+) */
 import * as admin from "firebase-admin";
 import {randomUUID} from "node:crypto";
 import {CallableRequest, HttpsError, onCall} from

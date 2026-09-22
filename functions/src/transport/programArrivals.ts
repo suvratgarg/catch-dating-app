@@ -1,3 +1,14 @@
+/* firestore-index: programTravelLegs (
+  programId:ASCENDING,
+  kind:ASCENDING,
+  readiness:ASCENDING
+) */
+/* firestore-index: programTravelLegs (
+  programId:ASCENDING,
+  kind:ASCENDING,
+  readiness:ASCENDING,
+  pickupPointId:ASCENDING
+) */
 import * as admin from "firebase-admin";
 import {hashRequest} from "../shared/programOperationHash";
 import {CallableRequest, HttpsError, onCall} from

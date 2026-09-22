@@ -1,3 +1,20 @@
+/* firestore-index: programPickupPoints (
+  programId:ASCENDING,
+  active:ASCENDING
+) */
+/* firestore-index: programHotels (
+  programId:ASCENDING,
+  active:ASCENDING
+) */
+/* firestore-index: programStaffGrants (
+  programId:ASCENDING,
+  status:ASCENDING,
+  expiresAt:ASCENDING
+) */
+/* firestore-index: programStaffGrants (
+  programId:ASCENDING,
+  updatedAt:DESCENDING
+) */
 import * as admin from "firebase-admin";
 import {CallableRequest, HttpsError, onCall} from
   "firebase-functions/v2/https";

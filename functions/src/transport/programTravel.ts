@@ -1,3 +1,7 @@
+/* firestore-index: programTravelLegs (
+  programId:ASCENDING,
+  guestId:ASCENDING
+) */
 import * as admin from "firebase-admin";
 import {CallableRequest, HttpsError, onCall} from
   "firebase-functions/v2/https";

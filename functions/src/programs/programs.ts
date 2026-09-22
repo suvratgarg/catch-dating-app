@@ -1,3 +1,15 @@
+/* firestore-index: organizerPrograms (
+  organizerId:ASCENDING,
+  startsAt:DESCENDING
+) */
+/* firestore-index: programTravelLegs (
+  programId:ASCENDING,
+  kind:ASCENDING
+) */
+/* firestore-index: programStaffGrants (
+  programId:ASCENDING,
+  status:ASCENDING
+) */
 import * as admin from "firebase-admin";
 import {CallableRequest, HttpsError, onCall} from
   "firebase-functions/v2/https";

@@ -1,3 +1,18 @@
+/* firestore-index: transportTrips (
+  programId:ASCENDING,
+  destinationHotelId:ASCENDING,
+  status:ASCENDING,
+  departedAt:ASCENDING
+) */
+/* firestore-index: programTravelLegs (
+  programId:ASCENDING,
+  destinationHotelId:ASCENDING,
+  readiness:ASCENDING
+) */
+/* firestore-index: transportTrips (
+  programId:ASCENDING,
+  departedAt:DESCENDING
+) */
 import * as admin from "firebase-admin";
 import {CallableRequest, HttpsError, onCall} from
   "firebase-functions/v2/https";
