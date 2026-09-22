@@ -544,12 +544,7 @@ export async function finalizeOrganizerFormAssetHandler(
     throw new HttpsError("failed-precondition", "Upload has not completed.");
   }
   const sizeBytes = Number(metadata.size);
-  const sha256 = metadata.metadata?.sha256;
-  const assetId = metadata.metadata?.assetId;
-  if (!Number.isSafeInteger(sizeBytes) || sizeBytes < 1 ||
-      sizeBytes !== asset.declaredSizeBytes ||
-      metadata.contentType !== asset.contentType ||
-      sha256 !== asset.declaredSha256 || assetId !== data.assetId) {
+  if (!matchesAuthorizedFormAssetMetadata(metadata, asset, data.assetId)) {
     await Promise.all([
       file.delete({ignoreNotFound: true}),
       assetSnap.ref.update({status: "rejected", deletedAt: deps.timestamp()}),
@@ -567,6 +562,21 @@ export async function finalizeOrganizerFormAssetHandler(
     expiresAt: draft.expiresAt,
   });
   return {assetId: data.assetId, status: "ready", sizeBytes};
+}
+
+/** XML POST x-goog-meta-asset-id is returned as metadata["asset-id"]. */
+export function matchesAuthorizedFormAssetMetadata(
+  metadata: import("@google-cloud/storage").FileMetadata,
+  asset: Pick<OrganizerFormAssetDocument,
+    "declaredSizeBytes" | "contentType" | "declaredSha256">,
+  expectedAssetId: string
+): boolean {
+  const sizeBytes = Number(metadata.size);
+  return Number.isSafeInteger(sizeBytes) && sizeBytes >= 1 &&
+    sizeBytes === asset.declaredSizeBytes &&
+    metadata.contentType === asset.contentType &&
+    metadata.metadata?.sha256 === asset.declaredSha256 &&
+    metadata.metadata?.["asset-id"] === expectedAssetId;
 }
 
 /** Submits one draft exactly once while retaining its immutable version. */
@@ -1566,7 +1576,10 @@ export const createOrganizerFormAssetIntent = onCall(
 );
 
 export const finalizeOrganizerFormAsset = onCall(
-  appCheckCallableOptionsWithLimits(publicCallableLimits),
+  appCheckCallableOptionsWithLimits({
+    ...publicCallableLimits,
+    memory: "512MiB",
+  }),
   (request) => finalizeOrganizerFormAssetHandler(request)
 );
 
