@@ -25,7 +25,7 @@ const applicationLimit = 500;
 const responseScanLimit = 500;
 const scanPageSize = 100;
 
-/** Manager authorization and answer-filter validation are owned by the caller. */
+/** The caller owns manager authorization and answer-filter validation. */
 export async function listUnifiedResponses(params: {
   db: FirebaseFirestore.Firestore;
   data: Query;
@@ -47,9 +47,11 @@ export async function listUnifiedResponses(params: {
   const applications = await loadApplications(db, data.organizerId);
   const applicationBySource = new Map(applications.flatMap((row) =>
     row.sourceId ? [[row.sourceId, row] as const] : []));
-  const fingerprint = hash([params.filterHash, data.contactId ?? null,
+  const fingerprint = hash([data.organizerId, params.filterHash,
+    data.contactId ?? null,
     data.reviewStatus ?? null, applications.map((row) => [row.id,
-      row.data.revision, row.summary.reviewStatus, row.summary.dataAccessState, row.summary.contactId,
+      row.data.revision, row.summary.reviewStatus, row.summary.dataAccessState,
+      row.summary.contactId,
       row.sourceId])]);
   const cursor = decodeCursor(data.cursor, fingerprint);
   const after = (entry: Position) => !cursor ||
@@ -68,7 +70,7 @@ export async function listUnifiedResponses(params: {
   let scanned = 0;
   let last: FirebaseFirestore.QueryDocumentSnapshot | null = null;
   let responseExhausted = false;
-  // Read one extra matching response so the merged page has an honest successor.
+  // One extra matching response proves the merged page has a successor.
   while (matches.length <= data.limit && scanned < responseScanLimit) {
     let query: FirebaseFirestore.Query = db
       .collection("organizerFormResponses")
@@ -79,7 +81,7 @@ export async function listUnifiedResponses(params: {
     if (last) query = query.startAfter(last);
     else if (cursor) {
       // A unified cursor can name an application. Include equal timestamps;
-      // the global entry id comparator, not a fabricated response id, breaks ties.
+      // the global entry id breaks ties without fabricating a response id.
       const timestamp = admin.firestore.Timestamp
         .fromMillis(cursor.submittedAtMillis);
       query = cursor.entryId.startsWith("response:") ?
@@ -87,7 +89,9 @@ export async function listUnifiedResponses(params: {
         ascending ? query.startAt(timestamp) : query.startAfter(timestamp, "");
     }
     const page = await query.get();
-    if (page.empty) { responseExhausted = true; break; }
+    if (page.empty) {
+      responseExhausted = true; break;
+    }
     for (const doc of page.docs) {
       scanned++;
       last = doc;
@@ -113,7 +117,9 @@ export async function listUnifiedResponses(params: {
       if (matches.length > data.limit || scanned === responseScanLimit) break;
     }
     if (matches.length > data.limit || scanned === responseScanLimit) break;
-    if (page.size < scanPageSize) { responseExhausted = true; break; }
+    if (page.size < scanPageSize) {
+      responseExhausted = true; break;
+    }
   }
   const cutoff = last ? responsePosition(last.id,
     last.data() as OrganizerFormResponseDocument) : null;
@@ -123,12 +129,14 @@ export async function listUnifiedResponses(params: {
     applicationEntries.filter((entry) => cutoff &&
       compareEntries(entry, cutoff, ascending) <= 0);
   const projected = await params.project(matches);
-  const entries: Entry[] = [...safeApplications, ...projected.map((response) => ({
+  const responseEntries: Entry[] = projected.map((response) => ({
     entryId: `response:${response.responseId}`,
     submittedAtMillis: response.submittedAtMillis,
     response,
     application: applicationBySource.get(response.responseId)?.summary ?? null,
-  }))].sort((a, b) => compareEntries(a, b, ascending));
+  }));
+  const entries = [...safeApplications, ...responseEntries]
+    .sort((a, b) => compareEntries(a, b, ascending));
   const page = entries.slice(0, data.limit);
   const moreCandidates = entries.length > page.length;
   const nextPosition = moreCandidates ? page.at(-1) :
