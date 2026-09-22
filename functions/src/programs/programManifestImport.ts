@@ -27,7 +27,8 @@ import type {
 
 import {buildManifestPlans, normalizeManifestFlightNumber} from
   "./programManifestPlan";
-import {buildManifestWrites} from "./programManifestWrites";
+import {buildManifestChunk, completedManifestRows} from
+  "./programManifestChunks";
 
 interface ImportDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -43,7 +44,6 @@ const defaultDeps: ImportDeps = {
 
 const receiptRetentionMillis = 30 * 24 * 60 * 60 * 1000;
 const importCallableLimits = {timeoutSeconds: 120, maxInstances: 5};
-const rowsPerTransaction = 50;
 
 async function listByProgram<T>(
   db: FirebaseFirestore.Firestore,
@@ -110,15 +110,6 @@ export async function importProgramManifestHandler(
   });
   const receiptRef = db.collection("transportOperationReceipts").doc(
     `${data.programId}__manifestImport__${data.clientOperationId}`);
-  const planRows = (
-    state: Awaited<ReturnType<typeof loadManifest>>, start: number, end: number,
-    previousGuestIds: string[] = [],
-  ) => buildManifestPlans(
-    data.rows.slice(start, end), state.guests, state.legs,
-    state.households, state.parties, state.hotels, state.pickupPoints,
-    (collection) => db.collection(collection).doc().id,
-    data.rows.slice(0, start),
-    previousGuestIds);
   const emptyResult = (): ProgramManifestImportCallableResponse => ({
     mode: data.mode, totalRows: data.rows.length, guestsCreated: 0,
     guestsUpdated: 0, legsCreated: 0, legsUpdated: 0, householdsCreated: 0,
@@ -126,7 +117,7 @@ export async function importProgramManifestHandler(
   });
   const addResult = (
     result: ProgramManifestImportCallableResponse,
-    planned: ReturnType<typeof buildManifestPlans>, offset: number,
+    planned: ReturnType<typeof buildManifestPlans>,
   ): ProgramManifestImportCallableResponse => ({
     ...result,
     guestsCreated: result.guestsCreated + planned.plans
@@ -139,21 +130,35 @@ export async function importProgramManifestHandler(
       .filter((p) => p.legAction === "update").length,
     householdsCreated: result.householdsCreated + planned.newHouseholds.size,
     partiesCreated: result.partiesCreated + planned.newParties.size,
-    rowErrors: [...result.rowErrors, ...planned.issues.map((issue) =>
-      ({...issue, index: issue.index + offset}))],
+    rowErrors: [...result.rowErrors, ...planned.issues]
+      .sort((a, b) => a.index - b.index),
   });
   if (data.mode === "preview") {
     const access = await requireProgramAccess({
       db, programId: data.programId, actorUid, now: deps.now(),
     });
     requireProgramDuty(access, "programCoordinator");
-    return addResult(emptyResult(), planRows(
-      await loadManifest(db, data.programId), 0, data.rows.length), 0);
+    let state = await loadManifest(db, data.programId);
+    const completed: number[] = [];
+    const importedGuestIds: string[] = [];
+    let result = emptyResult();
+    while (completed.length < data.rows.length) {
+      const chunk = buildManifestChunk({rows: data.rows, state,
+        completed, importedGuestIds, programId: data.programId,
+        organizerId: access.program.organizerId,
+        allocateId: (collection) => db.collection(collection).doc().id,
+        now: deps.now()});
+      state = chunk.state;
+      completed.push(...chunk.resolvedIndices);
+      importedGuestIds.push(...chunk.planned.plans.map((plan) => plan.guestId));
+      result = addResult(result, chunk.planned);
+    }
+    return result;
   }
 
-  // Each chunk atomically commits its rows, group membership and progress.
-  // A retry resumes after the last committed row, never re-plans a partially
-  // written row. Concurrent retries serialize through the same receipt and
+  // Each chunk publishes complete travel parties and exact input indices.
+  // A retry skips resolved indices, including rejected rows. Concurrent
+  // retries serialize through the same receipt and
   // all authority/source reads are revalidated by Firestore on contention.
   let applied = false;
   while (true) {
@@ -172,20 +177,21 @@ export async function importProgramManifestHandler(
       }
       const previous = receipt ? JSON.parse(receipt.resultJson!) as
         ProgramManifestImportCallableResponse : emptyResult();
-      // Receipts from the earlier all-at-once importer are complete.
-      const start = receipt ? receipt.completedRows ?? data.rows.length : 0;
-      if (start === data.rows.length) {
+      const completed = completedManifestRows(receipt, data.rows.length);
+      if (completed.length === data.rows.length) {
         return {result: previous, done: true, applied: false};
       }
-      const end = Math.min(start + rowsPerTransaction, data.rows.length);
       const state = await loadManifest(db, data.programId, tx);
-      const planned = planRows(
-        state, start, end, receipt?.importedGuestIds ?? []);
-      const result = addResult(previous, planned, start);
       const now = deps.now();
-      const writes = buildManifestWrites(data.programId,
-        access.program.organizerId, planned, state.households, state.parties,
-        state.legs, now);
+      const {planned, writes, resolvedIndices} = buildManifestChunk({
+        rows: data.rows, completed, state,
+        importedGuestIds: receipt?.importedGuestIds ?? [],
+        programId: data.programId, organizerId: access.program.organizerId,
+        allocateId: (collection) => db.collection(collection).doc().id, now,
+      });
+      const result = addResult(previous, planned);
+      const completedRowIndices = [...completed, ...resolvedIndices]
+        .sort((a, b) => a - b);
       for (const write of writes) {
         tx.set(db.doc(write.path), write.data as admin.firestore.DocumentData);
       }
@@ -194,7 +200,8 @@ export async function importProgramManifestHandler(
         clientOperationId: data.clientOperationId, actorUid, requestHash,
         tripId: null, legId: null,
         resultRevision: (receipt?.resultRevision ?? 0) + 1,
-        completedRows: end, resultJson: JSON.stringify(result),
+        completedRows: completedRowIndices.length, completedRowIndices,
+        resultJson: JSON.stringify(result),
         importedGuestIds: [...(receipt?.importedGuestIds ?? []),
           ...planned.plans.map((plan) => plan.guestId)],
         createdAt: receipt?.createdAt ?? now,
@@ -202,7 +209,8 @@ export async function importProgramManifestHandler(
           now.toMillis() + receiptRetentionMillis),
       };
       tx.set(receiptRef, progress);
-      return {result, done: end === data.rows.length, applied: true};
+      return {result, done: completedRowIndices.length === data.rows.length,
+        applied: true};
     });
     applied ||= chunk.applied;
     if (chunk.done) return {...chunk.result, alreadyApplied: !applied};

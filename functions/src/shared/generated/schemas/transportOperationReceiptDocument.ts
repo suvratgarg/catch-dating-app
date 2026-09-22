@@ -135,7 +135,7 @@ export const transportOperationReceiptDocumentSchema: Record<string, unknown> = 
       "type": "integer",
       "minimum": 0,
       "maximum": 500,
-      "description": "For manifestImport only: rows committed atomically with this progress receipt. Retries resume at this input offset; absent on legacy completed receipts."
+      "description": "For manifestImport only: number of input rows already resolved. With completedRowIndices, rows may finish out of order so a whole travel party fits one transaction; older partial receipts use a contiguous input prefix."
     },
     "importedGuestIds": {
       "type": "array",
@@ -147,6 +147,17 @@ export const transportOperationReceiptDocumentSchema: Record<string, unknown> = 
         "maxLength": 180
       },
       "description": "Guests already applied by a resumable manifest import; prevents two source rows updating one person across chunks."
+    },
+    "completedRowIndices": {
+      "type": "array",
+      "maxItems": 500,
+      "uniqueItems": true,
+      "items": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 499
+      },
+      "description": "For manifestImport only: original input indices atomically resolved with their complete travel party. Includes explicitly rejected rows; its length equals completedRows."
     }
   }
 } as const;

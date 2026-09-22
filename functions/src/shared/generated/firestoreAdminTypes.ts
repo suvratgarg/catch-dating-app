@@ -8744,7 +8744,7 @@ export interface TransportOperationReceiptDocument {
    */
   resultJson: string | null;
   /**
-   * For manifestImport only: rows committed atomically with this progress receipt. Retries resume at this input offset; absent on legacy completed receipts.
+   * For manifestImport only: number of input rows already resolved. With completedRowIndices, rows may finish out of order so a whole travel party fits one transaction; older partial receipts use a contiguous input prefix.
    */
   completedRows?: number;
   /**
@@ -8753,6 +8753,12 @@ export interface TransportOperationReceiptDocument {
    * @maxItems 500
    */
   importedGuestIds?: string[];
+  /**
+   * For manifestImport only: original input indices atomically resolved with their complete travel party. Includes explicitly rejected rows; its length equals completedRows.
+   *
+   * @maxItems 500
+   */
+  completedRowIndices?: number[];
 }
 
 /**

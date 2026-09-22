@@ -19,67 +19,14 @@ const validators: Record<string, ValidateFunction> = {
 };
 import assert from "node:assert/strict";
 import test from "node:test";
-import * as admin from "firebase-admin";
-import {CallableRequest} from "firebase-functions/v2/https";
 
 import {importProgramManifestHandler} from "./programManifestImport";
 import {ProgramTravelLegDocument} from
   "../shared/generated/firestoreAdminTypes";
 
-const ts = (millis: number) => admin.firestore.Timestamp.fromMillis(millis);
-const NOW = 1_800_000_000_000;
-
-import {FakeFirestore as MiniFirestore, type FakeData} from
+import {seed, request, deps, row, ts, NOW} from "./programManifestFixture";
+import {FakeFirestore as MiniFirestore} from
   "../shared/testing/programFirestore";
-
-function seed(): Record<string, FakeData> {
-  return {
-    "organizerPrograms/program-1": {
-      organizerId: "org-1", timezone: "Asia/Kolkata",
-    },
-    "organizers/org-1": {
-      hostUserId: "manager-1",
-      ownerUserId: "manager-1",
-      hostUserIds: ["manager-1"],
-      hostProfiles: [],
-    },
-    "programHotels/hotel-1": {
-      programId: "program-1", organizerId: "org-1", name: "Taj Palace",
-      active: true,
-    },
-    "programPickupPoints/pickup-1": {
-      programId: "program-1", organizerId: "org-1", label: "DEL T3 Arrivals",
-      kind: "airport", active: true,
-    },
-  };
-}
-
-function request(data: unknown, uid = "manager-1") {
-  return {data, auth: {uid}} as CallableRequest<unknown>;
-}
-
-function deps(store: MiniFirestore) {
-  return {
-    firestore: () => store as unknown as FirebaseFirestore.Firestore,
-    checkRateLimit: async () => undefined,
-    now: () => ts(NOW),
-  } as never;
-}
-
-const row = {
-  displayName: "Rohan Sharma",
-  phoneE164: "+919900001111",
-  householdLabel: "Sharma Family",
-  partyLabel: "Sharma party",
-  flightNumber: "AI-847",
-  originIata: "BOM",
-  destinationIata: "DEL",
-  scheduledArrivalAtMillis: NOW + 2 * 3600_000,
-  pickupPointLabel: "DEL T3 Arrivals",
-  destinationHotelName: "Taj Palace",
-  passengers: 2,
-  luggageUnits: 3,
-};
 
 test("preview plans writes without touching storage", async () => {
   const store = new MiniFirestore(seed());
@@ -186,9 +133,9 @@ test("same-name rows without references are not merged", async () => {
       {...row, flightNumber: null, scheduledArrivalAtMillis: null},
     ],
   }), deps(store));
-  assert.equal(response.guestsCreated, 1);
-  assert.equal(response.rowErrors.length, 1);
-  assert.match(response.rowErrors[0].message, /Duplicate/);
+  assert.equal(response.guestsCreated, 0);
+  assert.equal(response.rowErrors.length, 2);
+  assert.match(response.rowErrors[1].message, /Duplicate/);
 });
 
 test("staff without coordinator duty cannot import", async () => {
@@ -289,10 +236,15 @@ test("failed later chunks resume without duplicating rows or losing groups",
       deps(store)), /connection lost/);
     const records = (collection: string) => [...store.docs.entries()]
       .filter(([key]) => key.startsWith(`${collection}/`));
-    assert.equal(records("programGuests").length, 50);
-    assert.equal(records("programTravelLegs").length, 50);
+    assert.equal(records("programGuests").length, 33);
+    assert.equal(records("programTravelLegs").length, 33);
     assert.equal((records("programHouseholds")[0][1].memberGuestIds as string[])
-      .length, 25);
+      .length, 33);
+    assert.equal(records("programTravelParties").length, 1);
+    assert.equal((records("programTravelParties")[0][1].legIds as string[])
+      .length, 33);
+    assert.deepEqual(records("transportOperationReceipts")[0][1]
+      .completedRowIndices, Array.from({length: 33}, (_, i) => i * 2));
     store.beforeCommit = undefined;
     const resumed = await importProgramManifestHandler(request(payload),
       deps(store));
@@ -331,8 +283,9 @@ test("duplicate source rows across chunk boundaries remain row errors",
     const rows = Array.from({length: 50}, (_, index) => ({
       ...row, displayName: `Guest ${index}`,
       externalReference: `ref-${index}`,
+      householdLabel: `Family ${index}`, partyLabel: `Party ${index}`,
     }));
-    rows.push(rows[0]);
+    rows.push({...rows[0], partyLabel: "Duplicate party"});
     const result = await importProgramManifestHandler(request({
       programId: "program-1", mode: "commit",
       clientOperationId: "boundary-import", rows,
@@ -355,9 +308,10 @@ test("preview and chunked commit reject groups exceeding the contract limit",
     const committed = await importProgramManifestHandler(
       request({...payload, mode: "commit"}), deps(store));
     assert.deepEqual(committed, {...preview, mode: "commit"});
-    assert.equal(committed.guestsCreated, 50);
-    assert.equal(committed.rowErrors.length, 2);
-    assert.equal(committed.rowErrors[0].index, 50);
+    assert.equal(committed.guestsCreated, 0);
+    assert.equal(new Set(committed.rowErrors.map((issue) => issue.index))
+      .size, 51);
+    assert.equal(store.docs.size, 5); // receipt only
   });
 
 test("imports refuse to replace dispatched journeys", async () => {
@@ -474,6 +428,7 @@ test("import rejects incompatible routes in a new party", async () => {
   const commit = await importProgramManifestHandler(
     request({...payload, mode: "commit"}), deps(store));
   assert.deepEqual(commit.rowErrors, preview.rowErrors);
-  assert.equal(commit.guestsCreated, 1);
-  assert.match(commit.rowErrors[0].message, /same pickup and destination/);
+  assert.equal(commit.guestsCreated, 0);
+  assert.equal(commit.rowErrors.length, 2);
+  assert.match(commit.rowErrors[1].message, /same pickup and destination/);
 });

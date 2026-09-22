@@ -97738,6 +97738,22 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const transportOperationReceiptDocumentCompletedRowIndices = CatchContractFieldConstraints(
+    path: 'transportOperationReceiptDocument.completedRowIndices',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['integer'],
+    maxItems: 500,
+    uniqueItems: true,
+  );
+
+  static const transportOperationReceiptDocumentCompletedRowIndicesItems = CatchContractFieldConstraints(
+    path: 'transportOperationReceiptDocument.completedRowIndices.items',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 499,
+  );
+
   static const transportOperationReceiptDocumentCompletedRows = CatchContractFieldConstraints(
     path: 'transportOperationReceiptDocument.completedRows',
     valueTypes: <String>['integer'],
@@ -119950,6 +119966,8 @@ abstract final class CatchContractConstraints {
     'transportActiveAssignmentDocument.tripId': transportActiveAssignmentDocumentTripId,
     'transportOperationReceiptDocument.actorUid': transportOperationReceiptDocumentActorUid,
     'transportOperationReceiptDocument.clientOperationId': transportOperationReceiptDocumentClientOperationId,
+    'transportOperationReceiptDocument.completedRowIndices': transportOperationReceiptDocumentCompletedRowIndices,
+    'transportOperationReceiptDocument.completedRowIndices.items': transportOperationReceiptDocumentCompletedRowIndicesItems,
     'transportOperationReceiptDocument.completedRows': transportOperationReceiptDocumentCompletedRows,
     'transportOperationReceiptDocument.createdAt._nanoseconds': transportOperationReceiptDocumentCreatedAtNanoseconds,
     'transportOperationReceiptDocument.createdAt._seconds': transportOperationReceiptDocumentCreatedAtSeconds,

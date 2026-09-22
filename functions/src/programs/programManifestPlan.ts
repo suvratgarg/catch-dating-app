@@ -11,7 +11,7 @@ import type {
 export type ManifestRow =
   ImportProgramManifestCallablePayload["rows"][number];
 
-interface RowIssue {
+export interface RowIssue {
   index: number;
   message: string;
 }
@@ -86,8 +86,11 @@ export function buildManifestPlans(
   previousGuestIds: string[] = [],
 ): {plans: RowPlan[]; issues: RowIssue[];
     newHouseholds: Map<string, string>; newParties: Map<string, string>;
-    newLabels: Map<string, string>} {
+    newLabels: Map<string, string>;
+    partyKeysByRow: Map<number, string[]>; identityIssues: RowIssue[]} {
   const issues: RowIssue[] = [];
+  const identityIssues: RowIssue[] = [];
+  const partyKeysByRow = new Map<number, string[]>();
   const plans: RowPlan[] = [];
   const seenKeys = new Set(previousRows.map((row) => guestDedupKey(row).key));
   const selectedGuests = new Set(previousGuestIds);
@@ -163,8 +166,10 @@ export function buildManifestPlans(
 
     const dedup = guestDedupKey(row);
     if (seenKeys.has(dedup.key)) {
-      rowErrors.push(
-        "Duplicate manifest row; add a distinct externalReference.");
+      const message =
+        "Duplicate manifest row; add a distinct externalReference.";
+      rowErrors.push(message);
+      identityIssues.push({index, message});
     }
     seenKeys.add(dedup.key);
 
@@ -199,7 +204,9 @@ export function buildManifestPlans(
         "Name alone cannot identify a guest; use externalReference.");
     }
     if (guestId && selectedGuests.has(guestId)) {
-      rowErrors.push("Multiple rows target the same guest; resolve the rows.");
+      const message = "Multiple rows target the same guest; resolve the rows.";
+      rowErrors.push(message);
+      identityIssues.push({index, message});
     }
     if (guestId) {
       plan.guestId = guestId;
@@ -302,6 +309,18 @@ export function buildManifestPlans(
       }
       if (rowErrors.length === 0) partyRoutes.set(partyLabel, route);
     }
+    // Preserve both current and requested party identities even for bad rows.
+    // Transaction batching must not publish the valid half of either party.
+    const partyKeys = new Set<string>();
+    if (partyLabel) partyKeys.add(`label:${partyLabel}`);
+    for (const id of [plan.existingLeg?.partyId,
+      partyLabel ? partyByLabel.get(partyLabel) : null]) {
+      if (!id) continue;
+      partyKeys.add(`id:${id}`);
+      const label = normalizeLabel(parties.get(id)?.label);
+      if (label) partyKeys.add(`label:${label}`);
+    }
+    partyKeysByRow.set(index, [...partyKeys]);
     // An errored row never creates groups or alters existing membership.
     if (rowErrors.length > 0) {
       for (const message of rowErrors) issues.push({index, message});
@@ -346,6 +365,7 @@ export function buildManifestPlans(
     selectedGuests.add(plan.guestId);
     plans.push(plan);
   }
-  return {plans, issues, newHouseholds, newParties, newLabels};
+  return {plans, issues, newHouseholds, newParties, newLabels,
+    partyKeysByRow, identityIssues};
 }
 

@@ -1267,11 +1267,16 @@ convert existing public Events or organizer contacts during implementation.
 
 Manifest planning, document materialization, and callable persistence are separate
 modules. The existing operation-receipt collection carries import progress;
-there is no additional import journal. Each transaction commits at most 50 source
-rows with their group updates and receipt cursor. Retrying the same request
-resumes after its last committed chunk, and concurrent retries serialize through
-the receipt. Preview is advisory; commit validates current authority and source
-records again. Earlier committed chunks remain applied if a later chunk fails.
+there is no additional import journal. Each transaction writes at most 50 source
+rows, keeping all rows for a travel party together even when interleaved in the
+input. A party with an invalid row is rejected as a whole; unrelated parties can
+still import. Receipts store resolved source indices, including rejected rows,
+so retries skip completed work and concurrent retries serialize through the
+same receipt. Legacy prefix cursors remain readable. Preview simulates these
+same groups; commit validates current authority and source records again.
+Earlier committed parties remain applied if a later transaction fails. Any
+legacy partially imported pilot parties must be resumed or reconciled before
+operational use; the new batching cannot repair an already published subset.
 
 An external reference identifies a person. A new reference may adopt exactly one
 unreferenced name/flight/service-day match; distinct references never merge.
