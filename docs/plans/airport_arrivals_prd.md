@@ -1216,10 +1216,29 @@ Landed slices, in order:
    needs no extra collection. Rate cards, room blocks, stays, import staging,
    flight instances and reconciliation tables remain deferred.
 
-Not yet landed: program management/staff callables, scoped roster and dispatch
-projections, the restricted work shell, offline transport outbox, provider
-adapters, and any client route. `exportedFunctions` entries and callable
-payload/response contracts ship with their owning Functions commit, not before.
+3. **A1–A3 staff surface (partial)** — program management callables, expiring
+   duty-scoped staff grants, the station-scoped redacted arrivals roster,
+   deterministic transport-plan projection, claim/ready/disruption writes,
+   transactional dispatch with plate/vendor capture and assignment
+   exclusivity, the hotel inbound projection, and the reconciliation trip
+   ledger. Flutter: the duty-scoped `ProgramWorkScreen` shell, arrivals
+   roster, dispatch desk, hotel inbound desk, trip ledger, and a
+   SharedPreferences-backed operations outbox with replay and needs-review
+   states. Not yet: CSV manifest import preview/commit, the staff
+   invite-before-first-login binding flow, the dispatcher cross-readiness
+   merge affordance, or offline read snapshots.
+4. **A4 flight adapter (partial)** — AeroDataBox polling integration in
+   `functions/src/transport/` (`aeroDataBox.ts`, `flightRefresh.ts`,
+   `programFlightRefresh.ts`): proximity-tiered refresh (cold 12h / warm 1h /
+   hot 10min) driven by a `flightNextRefreshAt` cursor, a 15-minute scheduled
+   sweep, a staff-callable manual refresh, and write-back rules where provider
+   data never un-lands an observed arrival and cancellation/diversion only
+   propagate pre-landing. `arrivalTerminal` flows to the roster row. Webhook
+   subscriptions (`/subscriptions/webhook`, `FlightByNumber`), the Routes API
+   transit estimate, and per-program provider cost caps remain deferred.
+
+`exportedFunctions` entries and callable payload/response contracts ship with
+their owning Functions commit, not before.
 
 The complete policy boundary is: landing-time precedence, cancellation/
 diversion handling, reviewed manual/ready-time precedence, deterministic

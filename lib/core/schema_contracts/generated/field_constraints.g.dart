@@ -88158,6 +88158,12 @@ abstract final class CatchContractConstraints {
     maxItems: 500,
   );
 
+  static const programArrivalsRosterCallableResponseRowsItemsArrivalTerminal = CatchContractFieldConstraints(
+    path: 'programArrivalsRosterCallableResponse.rows.items.arrivalTerminal',
+    maxLength: 8,
+    valueTypes: <String>['string'],
+  );
+
   static const programArrivalsRosterCallableResponseRowsItemsClaimedByDisplay = CatchContractFieldConstraints(
     path: 'programArrivalsRosterCallableResponse.rows.items.claimedByDisplay',
     maxLength: 120,
@@ -89735,6 +89741,12 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
+  static const programTravelLegDocumentArrivalTerminal = CatchContractFieldConstraints(
+    path: 'programTravelLegDocument.arrivalTerminal',
+    maxLength: 8,
+    valueTypes: <String>['string'],
+  );
+
   static const programTravelLegDocumentCarrierCode = CatchContractFieldConstraints(
     path: 'programTravelLegDocument.carrierCode',
     maxLength: 3,
@@ -89822,10 +89834,38 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const programTravelLegDocumentFlightNextRefreshAtNanoseconds = CatchContractFieldConstraints(
+    path: 'programTravelLegDocument.flightNextRefreshAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const programTravelLegDocumentFlightNextRefreshAtSeconds = CatchContractFieldConstraints(
+    path: 'programTravelLegDocument.flightNextRefreshAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
   static const programTravelLegDocumentFlightNumber = CatchContractFieldConstraints(
     path: 'programTravelLegDocument.flightNumber',
     valueTypes: <String>['string'],
     pattern: '^[A-Z0-9]{2,3}-?[0-9]{1,4}[A-Z]?\$',
+  );
+
+  static const programTravelLegDocumentFlightRefreshedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'programTravelLegDocument.flightRefreshedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const programTravelLegDocumentFlightRefreshedAtSeconds = CatchContractFieldConstraints(
+    path: 'programTravelLegDocument.flightRefreshedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
   );
 
   static const programTravelLegDocumentFlightStatus = CatchContractFieldConstraints(
@@ -92138,6 +92178,22 @@ abstract final class CatchContractConstraints {
     path: 'recordOrganizerAnalyticsEventCallableResponse.accepted',
     required: true,
     valueTypes: <String>['boolean'],
+  );
+
+  static const refreshProgramTravelLegCallablePayloadLegId = CatchContractFieldConstraints(
+    path: 'refreshProgramTravelLegCallablePayload.legId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const refreshProgramTravelLegCallablePayloadProgramId = CatchContractFieldConstraints(
+    path: 'refreshProgramTravelLegCallablePayload.programId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
   );
 
   static const registerPublicEventCallablePayloadDisplayName = CatchContractFieldConstraints(
@@ -117896,6 +117952,7 @@ abstract final class CatchContractConstraints {
     'programArrivalsRosterCallableResponse.pickupPointId': programArrivalsRosterCallableResponsePickupPointId,
     'programArrivalsRosterCallableResponse.programId': programArrivalsRosterCallableResponseProgramId,
     'programArrivalsRosterCallableResponse.rows': programArrivalsRosterCallableResponseRows,
+    'programArrivalsRosterCallableResponse.rows.items.arrivalTerminal': programArrivalsRosterCallableResponseRowsItemsArrivalTerminal,
     'programArrivalsRosterCallableResponse.rows.items.claimedByDisplay': programArrivalsRosterCallableResponseRowsItemsClaimedByDisplay,
     'programArrivalsRosterCallableResponse.rows.items.claimedByMe': programArrivalsRosterCallableResponseRowsItemsClaimedByMe,
     'programArrivalsRosterCallableResponse.rows.items.curbAtMillis': programArrivalsRosterCallableResponseRowsItemsCurbAtMillis,
@@ -118111,6 +118168,7 @@ abstract final class CatchContractConstraints {
     'programTransportPlanCallableResponse.unassigned.items.reason': programTransportPlanCallableResponseUnassignedItemsReason,
     'programTravelLegDocument.actualArrivalAt._nanoseconds': programTravelLegDocumentActualArrivalAtNanoseconds,
     'programTravelLegDocument.actualArrivalAt._seconds': programTravelLegDocumentActualArrivalAtSeconds,
+    'programTravelLegDocument.arrivalTerminal': programTravelLegDocumentArrivalTerminal,
     'programTravelLegDocument.carrierCode': programTravelLegDocumentCarrierCode,
     'programTravelLegDocument.claimedAt._nanoseconds': programTravelLegDocumentClaimedAtNanoseconds,
     'programTravelLegDocument.claimedAt._seconds': programTravelLegDocumentClaimedAtSeconds,
@@ -118124,7 +118182,11 @@ abstract final class CatchContractConstraints {
     'programTravelLegDocument.estimatedArrivalAt._nanoseconds': programTravelLegDocumentEstimatedArrivalAtNanoseconds,
     'programTravelLegDocument.estimatedArrivalAt._seconds': programTravelLegDocumentEstimatedArrivalAtSeconds,
     'programTravelLegDocument.flightInstanceId': programTravelLegDocumentFlightInstanceId,
+    'programTravelLegDocument.flightNextRefreshAt._nanoseconds': programTravelLegDocumentFlightNextRefreshAtNanoseconds,
+    'programTravelLegDocument.flightNextRefreshAt._seconds': programTravelLegDocumentFlightNextRefreshAtSeconds,
     'programTravelLegDocument.flightNumber': programTravelLegDocumentFlightNumber,
+    'programTravelLegDocument.flightRefreshedAt._nanoseconds': programTravelLegDocumentFlightRefreshedAtNanoseconds,
+    'programTravelLegDocument.flightRefreshedAt._seconds': programTravelLegDocumentFlightRefreshedAtSeconds,
     'programTravelLegDocument.flightStatus': programTravelLegDocumentFlightStatus,
     'programTravelLegDocument.guestId': programTravelLegDocumentGuestId,
     'programTravelLegDocument.international': programTravelLegDocumentInternational,
@@ -118435,6 +118497,8 @@ abstract final class CatchContractConstraints {
     'recordOrganizerAnalyticsEventCallablePayload.sessionId': recordOrganizerAnalyticsEventCallablePayloadSessionId,
     'recordOrganizerAnalyticsEventCallablePayload.source': recordOrganizerAnalyticsEventCallablePayloadSource,
     'recordOrganizerAnalyticsEventCallableResponse.accepted': recordOrganizerAnalyticsEventCallableResponseAccepted,
+    'refreshProgramTravelLegCallablePayload.legId': refreshProgramTravelLegCallablePayloadLegId,
+    'refreshProgramTravelLegCallablePayload.programId': refreshProgramTravelLegCallablePayloadProgramId,
     'registerPublicEventCallablePayload.displayName': registerPublicEventCallablePayloadDisplayName,
     'registerPublicEventCallablePayload.eventId': registerPublicEventCallablePayloadEventId,
     'registerPublicEventCallablePayload.inviteToken': registerPublicEventCallablePayloadInviteToken,

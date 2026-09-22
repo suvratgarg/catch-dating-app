@@ -47,6 +47,9 @@ const schemaProgramTravelLegDocumentSchema = <String, Object?>{
     'createdAt',
     'updatedAt',
     'revision',
+    'arrivalTerminal',
+    'flightRefreshedAt',
+    'flightNextRefreshAt',
   ],
   'properties': <String, Object?>{
     'programId': <String, Object?>{
@@ -445,6 +448,70 @@ const schemaProgramTravelLegDocumentSchema = <String, Object?>{
       'type': 'integer',
       'minimum': 1,
       'maximum': 9007199254740991,
+    },
+    'arrivalTerminal': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'maxLength': 8,
+      'description': 'Provider-reported arrival terminal (e.g. T3). Staff display only; pickup point authority stays with pickupPointId.',
+    },
+    'flightRefreshedAt': <String, Object?>{
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'type': 'object',
+          'description': 'Serialized Firestore Timestamp fixture shape.',
+          'x-firestore-type': 'timestamp',
+          'additionalProperties': false,
+          'required': <Object?>[
+            '_seconds',
+            '_nanoseconds',
+          ],
+          'properties': <String, Object?>{
+            '_seconds': <String, Object?>{
+              'type': 'integer',
+            },
+            '_nanoseconds': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 999999999,
+            },
+          },
+        },
+        <String, Object?>{
+          'type': 'null',
+        },
+      ],
+      'description': 'Last successful provider refresh; null when the leg has never been enriched.',
+    },
+    'flightNextRefreshAt': <String, Object?>{
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'type': 'object',
+          'description': 'Serialized Firestore Timestamp fixture shape.',
+          'x-firestore-type': 'timestamp',
+          'additionalProperties': false,
+          'required': <Object?>[
+            '_seconds',
+            '_nanoseconds',
+          ],
+          'properties': <String, Object?>{
+            '_seconds': <String, Object?>{
+              'type': 'integer',
+            },
+            '_nanoseconds': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 999999999,
+            },
+          },
+        },
+        <String, Object?>{
+          'type': 'null',
+        },
+      ],
+      'description': 'Scheduler cursor: refresh once this passes. Null for non-flight or terminal-state legs.',
     },
   },
 };

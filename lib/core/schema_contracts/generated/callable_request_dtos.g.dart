@@ -209,6 +209,7 @@ export 'callables/record_event_invite_link_open_callable_request.g.dart';
 export 'callables/record_event_no_show_callable_request.g.dart';
 export 'callables/record_event_share_intent_callable_request.g.dart';
 export 'callables/record_organizer_analytics_event_callable_request.g.dart';
+export 'callables/refresh_program_travel_leg_callable_request.g.dart';
 export 'callables/register_public_event_callable_request.g.dart';
 export 'callables/remove_club_host_callable_request.g.dart';
 export 'callables/remove_organizer_manager_callable_request.g.dart';

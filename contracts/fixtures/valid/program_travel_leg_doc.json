@@ -8,8 +8,14 @@
   "carrierCode": "AI",
   "originIata": "BOM",
   "destinationIata": "DEL",
-  "scheduledArrivalAt": {"_seconds": 1786625400, "_nanoseconds": 0},
-  "estimatedArrivalAt": {"_seconds": 1786625700, "_nanoseconds": 0},
+  "scheduledArrivalAt": {
+    "_seconds": 1786625400,
+    "_nanoseconds": 0
+  },
+  "estimatedArrivalAt": {
+    "_seconds": 1786625700,
+    "_nanoseconds": 0
+  },
   "actualArrivalAt": null,
   "flightStatus": "enroute",
   "flightInstanceId": null,
@@ -27,7 +33,23 @@
   "requiredCapabilities": [],
   "dedicatedVehicle": false,
   "source": "planner",
-  "createdAt": {"_seconds": 1786625400, "_nanoseconds": 0},
-  "updatedAt": {"_seconds": 1786625400, "_nanoseconds": 0},
-  "revision": 1
+  "createdAt": {
+    "_seconds": 1786625400,
+    "_nanoseconds": 0
+  },
+  "updatedAt": {
+    "_seconds": 1786625400,
+    "_nanoseconds": 0
+  },
+  "revision": 1,
+  "arrivalTerminal": null,
+  "flightRefreshedAt": {
+    "_seconds": 1786625000,
+    "_nanoseconds": 0
+  },
+  "flightNextRefreshAt": {
+    "_seconds": 1786626200,
+    "_nanoseconds": 0
+  },
+  "international": false
 }

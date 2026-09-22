@@ -115,4 +115,22 @@ export interface ProgramTravelLegDocument {
     _nanoseconds: number;
   };
   revision: number;
+  /**
+   * Provider-reported arrival terminal (e.g. T3). Staff display only; pickup point authority stays with pickupPointId.
+   */
+  arrivalTerminal: string | null;
+  /**
+   * Last successful provider refresh; null when the leg has never been enriched.
+   */
+  flightRefreshedAt: {
+    _seconds: number;
+    _nanoseconds: number;
+  } | null;
+  /**
+   * Scheduler cursor: refresh once this passes. Null for non-flight or terminal-state legs.
+   */
+  flightNextRefreshAt: {
+    _seconds: number;
+    _nanoseconds: number;
+  } | null;
 }

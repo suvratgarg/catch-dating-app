@@ -294,6 +294,7 @@ Do not edit it by hand.
 | SetProgramTravelReadinessCallablePayload | `callables/set_program_travel_readiness_payload.schema.json` | `functions/src/shared/generated/setProgramTravelReadinessCallablePayload.ts` |
 | DispatchProgramTripCallablePayload | `callables/dispatch_program_trip_payload.schema.json` | `functions/src/shared/generated/dispatchProgramTripCallablePayload.ts` |
 | ProgramTripActionCallablePayload | `callables/program_trip_action_payload.schema.json` | `functions/src/shared/generated/programTripActionCallablePayload.ts` |
+| RefreshProgramTravelLegCallablePayload | `callables/refresh_program_travel_leg_payload.schema.json` | `functions/src/shared/generated/refreshProgramTravelLegCallablePayload.ts` |
 | ProgramStationScopeCallablePayload | `callables/program_station_scope_payload.schema.json` | `functions/src/shared/generated/programStationScopeCallablePayload.ts` |
 | GetProgramHotelInboundCallablePayload | `callables/get_program_hotel_inbound_payload.schema.json` | `functions/src/shared/generated/getProgramHotelInboundCallablePayload.ts` |
 | ListTransportVendorsCallablePayload | `callables/list_transport_vendors_payload.schema.json` | `functions/src/shared/generated/listTransportVendorsCallablePayload.ts` |
@@ -1036,6 +1037,7 @@ Do not edit it by hand.
 | `schemaSetProgramTravelReadinessCallablePayloadSchema` | SetProgramTravelReadinessCallablePayload | `callables/set_program_travel_readiness_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/set_program_travel_readiness_callable_payload.g.dart` |
 | `schemaDispatchProgramTripCallablePayloadSchema` | DispatchProgramTripCallablePayload | `callables/dispatch_program_trip_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/dispatch_program_trip_callable_payload.g.dart` |
 | `schemaProgramTripActionCallablePayloadSchema` | ProgramTripActionCallablePayload | `callables/program_trip_action_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/program_trip_action_callable_payload.g.dart` |
+| `schemaRefreshProgramTravelLegCallablePayloadSchema` | RefreshProgramTravelLegCallablePayload | `callables/refresh_program_travel_leg_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/refresh_program_travel_leg_callable_payload.g.dart` |
 | `schemaProgramStationScopeCallablePayloadSchema` | ProgramStationScopeCallablePayload | `callables/program_station_scope_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/program_station_scope_callable_payload.g.dart` |
 | `schemaGetProgramHotelInboundCallablePayloadSchema` | GetProgramHotelInboundCallablePayload | `callables/get_program_hotel_inbound_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/get_program_hotel_inbound_callable_payload.g.dart` |
 | `schemaListTransportVendorsCallablePayloadSchema` | ListTransportVendorsCallablePayload | `callables/list_transport_vendors_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/list_transport_vendors_callable_payload.g.dart` |
@@ -1558,6 +1560,7 @@ Do not edit it by hand.
 | SetProgramTravelReadinessCallableRequest | SetProgramTravelReadinessCallablePayload | `callables/set_program_travel_readiness_payload.schema.json` | `lib/core/schema_contracts/generated/callables/set_program_travel_readiness_callable_request.g.dart` |
 | DispatchProgramTripCallableRequest | DispatchProgramTripCallablePayload | `callables/dispatch_program_trip_payload.schema.json` | `lib/core/schema_contracts/generated/callables/dispatch_program_trip_callable_request.g.dart` |
 | ProgramTripActionCallableRequest | ProgramTripActionCallablePayload | `callables/program_trip_action_payload.schema.json` | `lib/core/schema_contracts/generated/callables/program_trip_action_callable_request.g.dart` |
+| RefreshProgramTravelLegCallableRequest | RefreshProgramTravelLegCallablePayload | `callables/refresh_program_travel_leg_payload.schema.json` | `lib/core/schema_contracts/generated/callables/refresh_program_travel_leg_callable_request.g.dart` |
 | ProgramStationScopeCallableRequest | ProgramStationScopeCallablePayload | `callables/program_station_scope_payload.schema.json` | `lib/core/schema_contracts/generated/callables/program_station_scope_callable_request.g.dart` |
 | GetProgramHotelInboundCallableRequest | GetProgramHotelInboundCallablePayload | `callables/get_program_hotel_inbound_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_program_hotel_inbound_callable_request.g.dart` |
 | ListTransportVendorsCallableRequest | ListTransportVendorsCallablePayload | `callables/list_transport_vendors_payload.schema.json` | `lib/core/schema_contracts/generated/callables/list_transport_vendors_callable_request.g.dart` |

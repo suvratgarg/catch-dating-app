@@ -117593,7 +117593,10 @@ export const programTravelLegDocumentSchema = {
     "source",
     "createdAt",
     "updatedAt",
-    "revision"
+    "revision",
+    "arrivalTerminal",
+    "flightRefreshedAt",
+    "flightNextRefreshAt"
   ],
   "properties": {
     "programId": {
@@ -117992,6 +117995,70 @@ export const programTravelLegDocumentSchema = {
       "type": "integer",
       "minimum": 1,
       "maximum": 9007199254740991
+    },
+    "arrivalTerminal": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 8,
+      "description": "Provider-reported arrival terminal (e.g. T3). Staff display only; pickup point authority stays with pickupPointId."
+    },
+    "flightRefreshedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Last successful provider refresh; null when the leg has never been enriched."
+    },
+    "flightNextRefreshAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Scheduler cursor: refresh once this passes. Null for non-flight or terminal-state legs."
     }
   }
 };
@@ -120170,6 +120237,34 @@ export const programTripActionCallablePayloadSchema = {
   }
 };
 
+export const refreshProgramTravelLegCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/refresh_program_travel_leg_payload.schema.json",
+  "title": "RefreshProgramTravelLegCallablePayload",
+  "description": "Manual flight-status refresh for a single travel leg; any active program staff member may request it.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-callable-aliases": [
+    "refreshProgramTravelLeg"
+  ],
+  "required": [
+    "programId",
+    "legId"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "legId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+};
+
 export const programStationScopeCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/program_station_scope_payload.schema.json",
@@ -120274,7 +120369,8 @@ export const programMutationCallableResponseSchema = {
     "upsertProgramTravelParty",
     "setProgramTravelReadiness",
     "markProgramTripArrived",
-    "voidProgramTrip"
+    "voidProgramTrip",
+    "refreshProgramTravelLeg"
   ],
   "required": [
     "entityId",
@@ -121351,7 +121447,8 @@ export const programArrivalsRosterCallableResponseSchema = {
           "destinationLabel",
           "requiredCapabilities",
           "dedicatedVehicle",
-          "revision"
+          "revision",
+          "arrivalTerminal"
         ],
         "properties": {
           "legId": {
@@ -121514,6 +121611,14 @@ export const programArrivalsRosterCallableResponseSchema = {
           "revision": {
             "type": "integer",
             "minimum": 1
+          },
+          "arrivalTerminal": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 8,
+            "description": "Provider-reported arrival terminal; null until the leg is enriched or when unannounced."
           }
         }
       }

@@ -64,6 +64,7 @@ const schemaProgramArrivalsRosterCallableResponseSchema = <String, Object?>{
           'requiredCapabilities',
           'dedicatedVehicle',
           'revision',
+          'arrivalTerminal',
         ],
         'properties': <String, Object?>{
           'legId': <String, Object?>{
@@ -226,6 +227,14 @@ const schemaProgramArrivalsRosterCallableResponseSchema = <String, Object?>{
           'revision': <String, Object?>{
             'type': 'integer',
             'minimum': 1,
+          },
+          'arrivalTerminal': <String, Object?>{
+            'type': <Object?>[
+              'string',
+              'null',
+            ],
+            'maxLength': 8,
+            'description': 'Provider-reported arrival terminal; null until the leg is enriched or when unannounced.',
           },
         },
       },

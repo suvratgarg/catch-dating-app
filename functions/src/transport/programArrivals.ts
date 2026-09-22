@@ -242,6 +242,7 @@ export async function getProgramArrivalsRosterHandler(
         luggageUnits: leg.doc.luggageUnits,
         flightNumber: leg.doc.flightNumber,
         originIata: leg.doc.originIata,
+        arrivalTerminal: leg.doc.arrivalTerminal,
         flightStatus: leg.doc.flightStatus,
         curbAtMillis: timing.kind === "available" ?
           timing.curbAtMillis : null,

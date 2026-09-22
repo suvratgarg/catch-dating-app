@@ -251,6 +251,7 @@ class ArrivalsRosterRow {
     required this.luggageUnits,
     required this.flightNumber,
     required this.originIata,
+    required this.arrivalTerminal,
     required this.flightStatus,
     required this.curbAt,
     required this.curbSource,
@@ -277,6 +278,7 @@ class ArrivalsRosterRow {
         luggageUnits: requiredInt(map, 'luggageUnits'),
         flightNumber: map['flightNumber'] as String?,
         originIata: map['originIata'] as String?,
+        arrivalTerminal: map['arrivalTerminal'] as String?,
         flightStatus: TravelLegFlightStatus.values.byName(
           requiredString(map, 'flightStatus'),
         ),
@@ -310,6 +312,7 @@ class ArrivalsRosterRow {
   final int luggageUnits;
   final String? flightNumber;
   final String? originIata;
+  final String? arrivalTerminal;
   final TravelLegFlightStatus flightStatus;
   final DateTime? curbAt;
   final CurbSource? curbSource;

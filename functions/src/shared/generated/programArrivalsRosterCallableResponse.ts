@@ -72,6 +72,10 @@ export interface ProgramArrivalsRosterCallableResponse {
     )[];
     dedicatedVehicle: boolean;
     revision: number;
+    /**
+     * Provider-reported arrival terminal; null until the leg is enriched or when unannounced.
+     */
+    arrivalTerminal: string | null;
   }[];
   /**
    * @maxItems 16

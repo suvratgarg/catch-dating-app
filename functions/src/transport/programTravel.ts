@@ -11,6 +11,7 @@ import {
   requireProgramAccess,
   requireProgramDuty,
 } from "../shared/programAuthority";
+import {nextFlightRefreshAt} from "./flightRefresh";
 import type {
   ProgramGuestDocument,
   ProgramTravelLegDocument,
@@ -124,6 +125,10 @@ export async function upsertProgramTravelLegHandler(
       flightStatus: existing?.flightStatus ??
         (data.flightNumber ? "scheduled" : "unknown"),
       flightInstanceId: existing?.flightInstanceId ?? null,
+      // Provider-owned fields: itinerary edits never overwrite enrichment.
+      arrivalTerminal: existing?.arrivalTerminal ?? null,
+      flightRefreshedAt: existing?.flightRefreshedAt ?? null,
+      flightNextRefreshAt: existing?.flightNextRefreshAt ?? null,
       international: data.international === undefined ?
         existing?.international ?? null : data.international,
       pickupPointId: data.pickupPointId === undefined ?
@@ -147,6 +152,11 @@ export async function upsertProgramTravelLegHandler(
       updatedAt: now,
       revision: nextRevision(existing?.revision, now),
     };
+    // New flight legs, or legs whose number changed, join the refresh queue.
+    if (!snap.exists || document.flightNumber !== existing?.flightNumber) {
+      document.flightNextRefreshAt = nextFlightRefreshAt(
+        document.flightNumber, document.scheduledArrivalAt, now.toDate());
+    }
     committedRevision = document.revision;
     tx.set(ref, document);
   });

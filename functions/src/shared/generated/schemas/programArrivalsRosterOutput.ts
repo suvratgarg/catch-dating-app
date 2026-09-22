@@ -61,7 +61,8 @@ export const programArrivalsRosterCallableResponseSchema: Record<string, unknown
           "destinationLabel",
           "requiredCapabilities",
           "dedicatedVehicle",
-          "revision"
+          "revision",
+          "arrivalTerminal"
         ],
         "properties": {
           "legId": {
@@ -224,6 +225,14 @@ export const programArrivalsRosterCallableResponseSchema: Record<string, unknown
           "revision": {
             "type": "integer",
             "minimum": 1
+          },
+          "arrivalTerminal": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 8,
+            "description": "Provider-reported arrival terminal; null until the leg is enriched or when unannounced."
           }
         }
       }

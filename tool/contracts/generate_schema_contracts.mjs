@@ -1563,6 +1563,13 @@ const schemaSpecs = [
       "functions/src/shared/generated/programTripActionCallablePayload.ts",
   },
   {
+    name: "RefreshProgramTravelLegCallablePayload",
+    source: "callables/refresh_program_travel_leg_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/" +
+      "refreshProgramTravelLegCallablePayload.ts",
+  },
+  {
     name: "ProgramStationScopeCallablePayload",
     source: "callables/program_station_scope_payload.schema.json",
     typeOutput:

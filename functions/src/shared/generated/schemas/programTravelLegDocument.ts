@@ -44,7 +44,10 @@ export const programTravelLegDocumentSchema: Record<string, unknown> = {
     "source",
     "createdAt",
     "updatedAt",
-    "revision"
+    "revision",
+    "arrivalTerminal",
+    "flightRefreshedAt",
+    "flightNextRefreshAt"
   ],
   "properties": {
     "programId": {
@@ -443,6 +446,70 @@ export const programTravelLegDocumentSchema: Record<string, unknown> = {
       "type": "integer",
       "minimum": 1,
       "maximum": 9007199254740991
+    },
+    "arrivalTerminal": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 8,
+      "description": "Provider-reported arrival terminal (e.g. T3). Staff display only; pickup point authority stays with pickupPointId."
+    },
+    "flightRefreshedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Last successful provider refresh; null when the leg has never been enriched."
+    },
+    "flightNextRefreshAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Scheduler cursor: refresh once this passes. Null for non-flight or terminal-state legs."
     }
   }
 } as const;

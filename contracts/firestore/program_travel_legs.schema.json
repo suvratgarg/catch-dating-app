@@ -40,7 +40,10 @@
     "source",
     "createdAt",
     "updatedAt",
-    "revision"
+    "revision",
+    "arrivalTerminal",
+    "flightRefreshedAt",
+    "flightNextRefreshAt"
   ],
   "properties": {
     "programId": {
@@ -225,6 +228,22 @@
       "type": "integer",
       "minimum": 1,
       "maximum": 9007199254740991
+    },
+    "arrivalTerminal": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 8,
+      "description": "Provider-reported arrival terminal (e.g. T3). Staff display only; pickup point authority stays with pickupPointId."
+    },
+    "flightRefreshedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp",
+      "description": "Last successful provider refresh; null when the leg has never been enriched."
+    },
+    "flightNextRefreshAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp",
+      "description": "Scheduler cursor: refresh once this passes. Null for non-flight or terminal-state legs."
     }
   }
 }

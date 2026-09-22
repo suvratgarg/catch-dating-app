@@ -459,6 +459,7 @@ class ProgramArrivalRow extends StatelessWidget {
       if (row.luggageUnits > 0) '${row.luggageUnits} bags',
       if (row.flightNumber != null) row.flightNumber!,
       if (row.originIata != null) 'from ${row.originIata}',
+      if (row.arrivalTerminal != null) 'T${row.arrivalTerminal}',
       row.curbLabel(context),
       row.destinationLabel,
     ];

@@ -18,7 +18,8 @@
     "upsertProgramTravelParty",
     "setProgramTravelReadiness",
     "markProgramTripArrived",
-    "voidProgramTrip"
+    "voidProgramTrip",
+    "refreshProgramTravelLeg"
   ],
   "required": [
     "entityId",

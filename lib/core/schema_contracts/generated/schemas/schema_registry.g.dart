@@ -1427,6 +1427,11 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
     schema: schemaProgramTripActionCallablePayloadSchema,
   ),
   SchemaContractDefinition(
+    name: 'RefreshProgramTravelLegCallablePayload',
+    source: 'callables/refresh_program_travel_leg_payload.schema.json',
+    schema: schemaRefreshProgramTravelLegCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
     name: 'ProgramStationScopeCallablePayload',
     source: 'callables/program_station_scope_payload.schema.json',
     schema: schemaProgramStationScopeCallablePayloadSchema,
@@ -3986,6 +3991,7 @@ const schemaContractsByName = <String, Map<String, Object?>>{
   'SetProgramTravelReadinessCallablePayload': schemaSetProgramTravelReadinessCallablePayloadSchema,
   'DispatchProgramTripCallablePayload': schemaDispatchProgramTripCallablePayloadSchema,
   'ProgramTripActionCallablePayload': schemaProgramTripActionCallablePayloadSchema,
+  'RefreshProgramTravelLegCallablePayload': schemaRefreshProgramTravelLegCallablePayloadSchema,
   'ProgramStationScopeCallablePayload': schemaProgramStationScopeCallablePayloadSchema,
   'GetProgramHotelInboundCallablePayload': schemaGetProgramHotelInboundCallablePayloadSchema,
   'ListTransportVendorsCallablePayload': schemaListTransportVendorsCallablePayloadSchema,
@@ -4726,6 +4732,7 @@ const schemaContractsBySource = <String, Map<String, Object?>>{
   'callables/set_program_travel_readiness_payload.schema.json': schemaSetProgramTravelReadinessCallablePayloadSchema,
   'callables/dispatch_program_trip_payload.schema.json': schemaDispatchProgramTripCallablePayloadSchema,
   'callables/program_trip_action_payload.schema.json': schemaProgramTripActionCallablePayloadSchema,
+  'callables/refresh_program_travel_leg_payload.schema.json': schemaRefreshProgramTravelLegCallablePayloadSchema,
   'callables/program_station_scope_payload.schema.json': schemaProgramStationScopeCallablePayloadSchema,
   'callables/get_program_hotel_inbound_payload.schema.json': schemaGetProgramHotelInboundCallablePayloadSchema,
   'callables/list_transport_vendors_payload.schema.json': schemaListTransportVendorsCallablePayloadSchema,

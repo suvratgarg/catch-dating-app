@@ -25,6 +25,7 @@ const schemaProgramMutationCallableResponseSchema = <String, Object?>{
     'setProgramTravelReadiness',
     'markProgramTripArrived',
     'voidProgramTrip',
+    'refreshProgramTravelLeg',
   ],
   'required': <Object?>[
     'entityId',

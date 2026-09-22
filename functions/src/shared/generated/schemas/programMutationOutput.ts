@@ -22,7 +22,8 @@ export const programMutationCallableResponseSchema: Record<string, unknown> = {
     "upsertProgramTravelParty",
     "setProgramTravelReadiness",
     "markProgramTripArrived",
-    "voidProgramTrip"
+    "voidProgramTrip",
+    "refreshProgramTravelLeg"
   ],
   "required": [
     "entityId",

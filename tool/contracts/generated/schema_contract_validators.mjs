@@ -285,6 +285,7 @@ import {
   setProgramTravelReadinessCallablePayloadSchema,
   dispatchProgramTripCallablePayloadSchema,
   programTripActionCallablePayloadSchema,
+  refreshProgramTravelLegCallablePayloadSchema,
   programStationScopeCallablePayloadSchema,
   getProgramHotelInboundCallablePayloadSchema,
   listTransportVendorsCallablePayloadSchema,
@@ -1046,6 +1047,7 @@ export const validateUpsertProgramTravelPartyCallablePayload = ajv.compile(upser
 export const validateSetProgramTravelReadinessCallablePayload = ajv.compile(setProgramTravelReadinessCallablePayloadSchema);
 export const validateDispatchProgramTripCallablePayload = ajv.compile(dispatchProgramTripCallablePayloadSchema);
 export const validateProgramTripActionCallablePayload = ajv.compile(programTripActionCallablePayloadSchema);
+export const validateRefreshProgramTravelLegCallablePayload = ajv.compile(refreshProgramTravelLegCallablePayloadSchema);
 export const validateProgramStationScopeCallablePayload = ajv.compile(programStationScopeCallablePayloadSchema);
 export const validateGetProgramHotelInboundCallablePayload = ajv.compile(getProgramHotelInboundCallablePayloadSchema);
 export const validateListTransportVendorsCallablePayload = ajv.compile(listTransportVendorsCallablePayloadSchema);

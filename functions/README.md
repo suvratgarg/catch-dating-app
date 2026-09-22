@@ -121,6 +121,7 @@ options when specific functions need higher or lower limits.
 | `upsertProgramTravelLeg` / `upsertProgramTravelParty` | `src/transport/programTravel.ts` | Planner-owned travel legs and ride-together parties |
 | `getProgramArrivalsRoster` / `getProgramTransportPlan` / `setProgramTravelReadiness` | `src/transport/programArrivals.ts` | Station-scoped redacted arrivals roster, deterministic grouping suggestions, and claim/ready/disruption writes |
 | `dispatchProgramTrip` / `markProgramTripArrived` / `voidProgramTrip` / `getProgramHotelInbound` / `listProgramTrips` | `src/transport/programDispatch.ts` | Idempotent dispatch with plate/vendor capture and assignment exclusivity, trip lifecycle, hotel-scoped inbound projection, and the reconciliation trip ledger |
+| `refreshProgramTravelLeg` / `refreshProgramFlightStatuses` | `src/transport/programFlightRefresh.ts` | Manual leg refresh plus a scheduled proximity-tiered sweep that enriches flight legs from AeroDataBox without overwriting observed arrivals |
 | `setEventAttendeeAttendance` | `src/events/eventAttendees.ts` | Perform revision-safe, replay-safe operational attendance changes |
 | `markEventAttendance` | `src/events/` | Host marks attendance |
 | `selfCheckInAttendance` | `src/events/` | Participant self-check-in with GPS |

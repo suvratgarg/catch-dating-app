@@ -99,6 +99,7 @@ ArrivalsRosterRow _row({
     luggageUnits: passengers + 1,
     flightNumber: 'AI-847',
     originIata: 'BOM',
+    arrivalTerminal: '3',
     flightStatus: flight,
     curbAt: unavailableReason == null ? _now.add(curbOffset) : null,
     curbSource: curbSource,

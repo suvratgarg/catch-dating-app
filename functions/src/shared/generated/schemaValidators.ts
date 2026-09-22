@@ -287,6 +287,7 @@ export {validateUpsertProgramTravelPartyCallablePayload} from "./validators/upse
 export {validateSetProgramTravelReadinessCallablePayload} from "./validators/setProgramTravelReadinessInput";
 export {validateDispatchProgramTripCallablePayload} from "./validators/dispatchProgramTripInput";
 export {validateProgramTripActionCallablePayload} from "./validators/programTripActionInput";
+export {validateRefreshProgramTravelLegCallablePayload} from "./validators/refreshProgramTravelLegInput";
 export {validateProgramStationScopeCallablePayload} from "./validators/programStationScopeInput";
 export {validateGetProgramHotelInboundCallablePayload} from "./validators/getProgramHotelInboundInput";
 export {validateListTransportVendorsCallablePayload} from "./validators/listTransportVendorsInput";

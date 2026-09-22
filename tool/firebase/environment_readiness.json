@@ -377,6 +377,29 @@
       ]
     },
     {
+      "id": "functions.secret.aerodatabox-api-key",
+      "kind": "secret-version",
+      "name": "AERODATABOX_API_KEY",
+      "environments": [
+        "dev",
+        "staging",
+        "prod"
+      ],
+      "requiredWhen": {
+        "anyDeployTarget": [
+          "functions:refreshProgramTravelLeg",
+          "functions:refreshProgramFlightStatuses"
+        ]
+      },
+      "acceptedStates": [
+        "ENABLED"
+      ],
+      "owner": "programs",
+      "sourcePaths": [
+        "functions/src/transport/aeroDataBox.ts"
+      ]
+    },
+    {
       "id": "firestore.ttl.cross-paths-suggestion-exposures",
       "kind": "firestore-ttl",
       "collectionGroup": "crossPathsSuggestionExposures",
