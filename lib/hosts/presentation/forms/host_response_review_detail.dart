@@ -1,7 +1,9 @@
 import 'package:catch_dating_app/hosts/data/host_application_repository.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_response.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'host_response_review_detail.g.dart';
 
 typedef HostResponseReviewKey = ({
   String organizerId,
@@ -11,49 +13,45 @@ typedef HostResponseReviewKey = ({
 
 /// Joins authorized projections without manufacturing a response for imports.
 /// A failed linked projection fails the detail closed instead of dropping actions.
-final hostResponseReviewDetailProvider = FutureProvider.autoDispose
-    .family<HostResponseReviewDetail, HostResponseReviewKey>((ref, key) async {
-      HostApplicationDetail? application;
-      HostFormResponseDetail? response;
-      if (key.applicationId case final id?) {
-        final loadedApplication = await ref.watch(
-          hostApplicationDetailProvider(key.organizerId, id).future,
-        );
-        application = loadedApplication;
-        if (loadedApplication.sourceResponseId case final responseId?
-            when loadedApplication.dataAccessState !=
-                'revokedParticipantGrant') {
-          response = await ref.watch(
-            hostFormResponseDetailProvider(
-              organizerId: key.organizerId,
-              responseId: responseId,
-            ).future,
-          );
-        }
-      } else if (key.responseId case final id?) {
-        final loadedResponse = await ref.watch(
-          hostFormResponseDetailProvider(
-            organizerId: key.organizerId,
-            responseId: id,
-          ).future,
-        );
-        response = loadedResponse;
-        if (loadedResponse.applicationId case final applicationId?) {
-          application = await ref.watch(
-            hostApplicationDetailProvider(
-              key.organizerId,
-              applicationId,
-            ).future,
-          );
-        }
-      } else {
-        throw ArgumentError('A response or application identity is required.');
-      }
-      return HostResponseReviewDetail(
-        response: response,
-        application: application,
+@riverpod
+Future<HostResponseReviewDetail> hostResponseReviewDetail(
+  Ref ref,
+  HostResponseReviewKey key,
+) async {
+  HostApplicationDetail? application;
+  HostFormResponseDetail? response;
+  if (key.applicationId case final id?) {
+    final loadedApplication = await ref.watch(
+      hostApplicationDetailProvider(key.organizerId, id).future,
+    );
+    application = loadedApplication;
+    if (loadedApplication.sourceResponseId case final responseId?
+        when loadedApplication.dataAccessState != 'revokedParticipantGrant') {
+      response = await ref.watch(
+        hostFormResponseDetailProvider(
+          organizerId: key.organizerId,
+          responseId: responseId,
+        ).future,
       );
-    });
+    }
+  } else if (key.responseId case final id?) {
+    final loadedResponse = await ref.watch(
+      hostFormResponseDetailProvider(
+        organizerId: key.organizerId,
+        responseId: id,
+      ).future,
+    );
+    response = loadedResponse;
+    if (loadedResponse.applicationId case final applicationId?) {
+      application = await ref.watch(
+        hostApplicationDetailProvider(key.organizerId, applicationId).future,
+      );
+    }
+  } else {
+    throw ArgumentError('A response or application identity is required.');
+  }
+  return HostResponseReviewDetail(response: response, application: application);
+}
 
 class HostResponseReviewDetail {
   const HostResponseReviewDetail({this.response, this.application});

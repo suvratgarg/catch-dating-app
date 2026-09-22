@@ -15970,11 +15970,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
       hostApplicationDetailProvider(
         'org_1',
         'design-application-1',
-      ).overrideWithValue(
-        AsyncData(
-          _responseReviewCaptureApplication(imported: false, revoked: false),
-        ),
-      ),
+      ).overrideWithValue(AsyncData(_responseReviewCaptureApplication())),
     ],
     includeOverlays: true,
   ),
@@ -15996,9 +15992,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
         'org_1',
         'design-application-1',
       ).overrideWithValue(
-        AsyncData(
-          _responseReviewCaptureApplication(imported: true, revoked: false),
-        ),
+        AsyncData(_responseReviewCaptureApplication(imported: true)),
       ),
     ],
     includeOverlays: true,
@@ -16021,9 +16015,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
         'org_1',
         'design-application-1',
       ).overrideWithValue(
-        AsyncData(
-          _responseReviewCaptureApplication(imported: false, revoked: true),
-        ),
+        AsyncData(_responseReviewCaptureApplication(revoked: true)),
       ),
     ],
     includeOverlays: true,
