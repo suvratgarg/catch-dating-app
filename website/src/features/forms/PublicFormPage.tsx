@@ -551,12 +551,16 @@ function ReviewStage({
         ))}
       </PublicFormReview>
       {definition.payment ? (
-        <PublicFormSection title={formFeeLabel(definition.payment.amountPaise)}
-          description={definition.payment.description}>
-          <PublicFormReviewAnswer label={publicFormsCopy.paymentRefundPolicy}
-            answer={definition.payment.refundPolicy} />
+        <>
+          <PublicFormReview>
+            <PublicFormReviewAnswer
+              label={definition.payment.description || publicFormsCopy.paymentTitle}
+              answer={formFeeLabel(definition.payment.amountPaise)} />
+            <PublicFormReviewAnswer label={publicFormsCopy.paymentRefundPolicy}
+              answer={definition.payment.refundPolicy} />
+          </PublicFormReview>
           <FormStatus status={{message: publicFormsCopy.paymentBody, tone: ""}} />
-        </PublicFormSection>
+        </>
       ) : null}
       <PublicFormConsent>
         <h2>{publicFormsCopy.consentHeading}</h2>
@@ -628,13 +632,6 @@ function PaymentStage({controller}: {
           answer={payment?.refundPolicy ?? fee?.refundPolicy ?? ""} />
       </PublicFormReview>
       <PublicFormActions>
-        {payment?.checkout ? (
-          <Button loading={pending || controller.pending}
-            loadingLabel={publicFormsCopy.paymentChecking} type="button"
-            onClick={() => void pay(controller.form?.organizer.name ?? publicFormsCopy.brand)}>
-            {formFeePayLabel(payment.amountPaise)}
-          </Button>
-        ) : null}
         <Button loading={pending || controller.pending}
           loadingLabel={publicFormsCopy.paymentChecking} type="button" variant="ghost"
           onClick={() => void refresh()}>{publicFormsCopy.paymentCheck}</Button>
@@ -642,6 +639,13 @@ function PaymentStage({controller}: {
           <Button disabled={pending || controller.pending} type="button" variant="ghost"
             onClick={() => void controller.restartAfterPayment()}>
             {publicFormsCopy.paymentRestart}
+          </Button>
+        ) : null}
+        {payment?.checkout ? (
+          <Button loading={pending || controller.pending}
+            loadingLabel={publicFormsCopy.paymentChecking} type="button"
+            onClick={() => void pay(controller.form?.organizer.name ?? publicFormsCopy.brand)}>
+            {formFeePayLabel(payment.amountPaise)}
           </Button>
         ) : null}
       </PublicFormActions>
