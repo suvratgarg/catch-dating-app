@@ -1,60 +1,129 @@
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
+import 'package:catch_dating_app/events/data/event_draft_repository.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_state.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_draft_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/event_management/widgets/draft_picker_sheet.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
-import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-Future<HostEventEntryIntent?> showHostEventEntrySheet({
+Future<HostEventEntrySelection?> showHostEventEntrySheet({
   required BuildContext context,
   required HostEventEntryState state,
+  Future<void> Function(EventDraft)? onDeleteDraft,
 }) {
   assert(state.hasOrganizer, 'Event entry requires an organizer.');
-  return showCatchBottomSheet<HostEventEntryIntent>(
+  return showCatchBottomSheet<HostEventEntrySelection>(
     context: context,
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(CatchRadius.lg)),
+    builder: (sheetContext) => Consumer(
+      builder: (context, ref, _) => HostEventEntrySheet(
+        state: state,
+        onDeleteDraft:
+            onDeleteDraft ??
+            (draft) async {
+              await CreateEventDraftController.deleteDraftMutation.run(ref, (
+                tx,
+              ) {
+                return tx
+                    .get(createEventDraftControllerProvider.notifier)
+                    .deleteDraft(clubId: draft.clubId, draftId: draft.id);
+              });
+              ref.invalidate(clubEventDraftsProvider(clubId: draft.clubId));
+            },
+      ),
     ),
-    builder: (sheetContext) => HostEventEntrySheet(state: state),
   );
 }
 
-class HostEventEntrySheet extends StatelessWidget {
-  const HostEventEntrySheet({super.key, required this.state});
+class HostEventEntrySheet extends StatefulWidget {
+  const HostEventEntrySheet({
+    super.key,
+    required this.state,
+    this.onDeleteDraft,
+  });
 
   final HostEventEntryState state;
+  final Future<void> Function(EventDraft)? onDeleteDraft;
+
+  @override
+  State<HostEventEntrySheet> createState() => _HostEventEntrySheetState();
+}
+
+class _HostEventEntrySheetState extends State<HostEventEntrySheet> {
+  late final List<EventDraft> _drafts = List.of(widget.state.drafts);
+  String? _deletingDraftId;
+
+  Future<void> _deleteDraft(EventDraft draft) async {
+    final confirmed = await showDraftDeleteConfirmationDialog(
+      context: context,
+      draft: draft,
+    );
+    if (confirmed != true || !mounted) return;
+    setState(() => _deletingDraftId = draft.id);
+    try {
+      await widget.onDeleteDraft!(draft);
+      if (mounted) setState(() => _drafts.removeWhere((d) => d.id == draft.id));
+    } catch (error) {
+      if (mounted) {
+        showCatchErrorSnackBar(context, error);
+      }
+    } finally {
+      if (mounted) setState(() => _deletingDraftId = null);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return CatchSheet(
+    return CatchSheet.standard(
       key: const ValueKey<String>('host-event-entry-sheet'),
       title: context.l10n.hostsHostEventsListLabelNewEvent,
-      subtitle:
-          context.l10n.hostsHostEventEntrySheetSubtitleChooseHowYouWantToStart,
-      child: CatchSection.containedFieldGroups(
-        groups: [
-          if (state.continueIntents.isNotEmpty)
-            CatchSectionFieldGroup(
+      child: CatchSectionList(
+        emptyStateOmitted: true,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (_drafts.isNotEmpty || widget.state.repeatSource != null)
+            CatchSection.fieldRows(
+              first: true,
               title:
                   context.l10n.hostsHostEventEntrySheetSectionContinueExisting,
               children: [
-                for (final intent in state.continueIntents)
+                for (final draft in _drafts)
+                  DraftCard(
+                    draft: draft,
+                    isDeleting: _deletingDraftId == draft.id,
+                    onSelect: () => Navigator.of(
+                      context,
+                    ).pop(HostEventEntrySelection.resume(draft)),
+                    onDelete: widget.onDeleteDraft == null
+                        ? null
+                        : () => _deleteDraft(draft),
+                  ),
+                for (final intent in widget.state.continueIntents.where(
+                  (intent) => intent != HostEventEntryIntent.resumeDraft,
+                ))
                   _HostEventEntryRow(
                     intent: intent,
-                    state: state,
-                    onTap: () => Navigator.of(context).pop(intent),
+                    state: widget.state,
+                    onTap: () => Navigator.of(
+                      context,
+                    ).pop(HostEventEntrySelection.start(intent)),
                   ),
               ],
             ),
-          CatchSectionFieldGroup(
+          CatchSection.fieldRows(
+            first: true,
             title: context.l10n.hostsHostEventEntrySheetSectionStartNew,
             children: [
-              for (final intent in state.startIntents)
+              for (final intent in widget.state.startIntents)
                 _HostEventEntryRow(
                   intent: intent,
-                  state: state,
-                  onTap: () => Navigator.of(context).pop(intent),
+                  state: widget.state,
+                  onTap: () => Navigator.of(
+                    context,
+                  ).pop(HostEventEntrySelection.start(intent)),
                 ),
             ],
           ),

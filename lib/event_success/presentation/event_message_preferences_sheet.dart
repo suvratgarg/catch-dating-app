@@ -66,9 +66,8 @@ class _EventMessagePreferencesSheetState
     final page = ref.watch(query);
     final l = context.l10n;
     void reload() => ref.read(query.notifier).reload();
-    return CatchSheet(
+    return CatchSheet.standard(
       title: l.eventMessagesTitle,
-      mode: CatchSheetMode.scrollable,
       child: CatchAsyncBoundary<EventParticipantContextReview>(
         value: page,
         retainDataOn: const {},
@@ -81,6 +80,7 @@ class _EventMessagePreferencesSheetState
           if (!review.isCurrent) return const CatchLoadingIndicator();
           return switch (identity) {
             EventParticipantUnlinked() => Column(
+              mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(
@@ -96,6 +96,7 @@ class _EventMessagePreferencesSheetState
               ],
             ),
             EventParticipantAmbiguous() => Column(
+              mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(
@@ -111,6 +112,7 @@ class _EventMessagePreferencesSheetState
               ],
             ),
             EventParticipantLinked(:final scope) => Column(
+              mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(
@@ -119,6 +121,7 @@ class _EventMessagePreferencesSheetState
                 ),
                 gapH16,
                 CatchSection.fieldRows(
+                  first: true,
                   children: [
                     for (final channel in EventSenderChannel.values)
                       EventMessageSenderSection(

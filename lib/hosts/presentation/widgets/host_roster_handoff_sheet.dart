@@ -15,16 +15,17 @@ class HostRosterHandoffSheet extends StatelessWidget {
     final emailAlias = instructions.emailAlias;
     final whatsappNumber = instructions.whatsappNumber;
     final whatsappMessage = instructions.whatsappMessage;
-    return CatchSheet(
+    return CatchSheet.standard(
       title: context.l10n.hostsOperationalRosterForwardTitle,
       subtitle: context.l10n.hostsOperationalRosterForwardSubtitle,
       glyph: CatchIcons.alternateEmailOutlined,
-      footer: CatchButton(
+      footer: CatchButton.sheet(
+        role: CatchButtonEmphasis.dismiss,
         label: context.l10n.hostsOperationalRosterForwardDone,
         onPressed: () => Navigator.of(context).pop(),
-        fullWidth: true,
       ),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           if (!instructions.hasAvailableChannel) ...[
@@ -34,6 +35,7 @@ class HostRosterHandoffSheet extends StatelessWidget {
             gapH12,
           ],
           CatchSection.fieldRows(
+            first: true,
             children: [
               CatchField.read(
                 copy: catchFieldCopy(context.l10n),

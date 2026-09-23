@@ -57,7 +57,7 @@ class HostFormResponseListRequest {
   final DateTime? to;
   final String? cursor;
   final int limit;
-  final Map<String, String> answerFilters;
+  final Map<String, Set<String>> answerFilters;
   final bool oldestFirst;
 
   HostFormResponseListRequest copyWith({String? cursor}) =>
@@ -100,7 +100,10 @@ class HostFormResponseListRequest {
       oldestFirst == other.oldestFirst &&
       answerFilters.length == other.answerFilters.length &&
       answerFilters.entries.every(
-        (entry) => other.answerFilters[entry.key] == entry.value,
+        (entry) => formOperationSetEquals(
+          other.answerFilters[entry.key] ?? const {},
+          entry.value,
+        ),
       );
 
   @override
@@ -121,7 +124,9 @@ class HostFormResponseListRequest {
     limit,
     oldestFirst,
     Object.hashAllUnordered(
-      answerFilters.entries.map((entry) => Object.hash(entry.key, entry.value)),
+      answerFilters.entries.map(
+        (entry) => Object.hash(entry.key, Object.hashAllUnordered(entry.value)),
+      ),
     ),
   );
 }

@@ -99,6 +99,11 @@ HostAudienceQuery _queryFor(
   search: request.search,
   segment: hostAudienceSegmentForCustomerFilter(request.filter),
   manualTagId: request.manualTagId,
+  segments: {
+    for (final filter in request.filters)
+      ?hostAudienceSegmentForCustomerFilter(filter),
+  },
+  manualTagIds: request.manualTagIds,
   sort: switch (request.sort) {
     HostCustomerSort.lastSeen => HostAudienceSort.lastSeen,
     HostCustomerSort.mostAttended => HostAudienceSort.mostAttended,
@@ -127,9 +132,25 @@ HostAudienceSegment? hostAudienceSegmentForCustomerFilter(
 };
 
 HostSavedAudienceDefinition? hostSavedAudienceDefinitionForCustomerSelection({
-  required HostCustomerFilter filter,
-  required HostCustomerManualTag? manualTag,
+  HostCustomerFilter filter = HostCustomerFilter.all,
+  HostCustomerManualTag? manualTag,
+  Set<HostCustomerFilter> filters = const {},
+  List<HostCustomerManualTag> manualTags = const [],
 }) {
+  if (filters.isNotEmpty || manualTags.isNotEmpty) {
+    return HostSavedAudienceDefinition(
+      join: HostSavedAudienceJoin.all,
+      predicates: [
+        HostSavedAudienceDirectoryFilters(
+          segments: {
+            for (final value in filters)
+              ?hostAudienceSegmentForCustomerFilter(value),
+          },
+          manualTagIds: {for (final tag in manualTags) tag.tagId},
+        ),
+      ],
+    );
+  }
   if (manualTag != null) {
     return HostSavedAudienceDefinition(
       join: HostSavedAudienceJoin.all,
@@ -361,7 +382,8 @@ class HostCustomersController {
   Future<HostAudienceExport> exportCustomers({
     required String organizerId,
     HostAudienceSegment? segment,
-  }) => _repository.exportContacts(organizerId, segment: segment);
+    HostAudienceQuery query = const HostAudienceQuery(),
+  }) => _repository.exportContacts(organizerId, segment: segment, query: query);
 
   Future<void> mutateCustomer({
     required String organizerId,

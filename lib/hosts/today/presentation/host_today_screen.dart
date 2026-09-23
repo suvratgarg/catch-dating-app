@@ -381,7 +381,7 @@ class HostTodayLoadedRoute extends ConsumerWidget {
       ref: ref,
       club: organizer,
       state: state,
-      intent: intent,
+      selection: intent,
       createdAt: clockNow,
     );
     if (!context.mounted) return;

@@ -1,6 +1,6 @@
 ---
 doc_id: design_language
-version: 1.31.1
+version: 1.32.0
 updated: 2026-09-23
 owner: ui_elevation_initiative
 status: active # identity locked; Phase 0–1 complete (bundled optical-sized fonts, B&W tokens, ActivityPalette routing, matte grade, anti-drift gates); Phase 2 flagship Profile built
@@ -901,3 +901,64 @@ What we tried and why, so we don't relitigate it:
 **Remaining policy decision:** map pins still need an explicit art-vs-token
 decision. Either route `CatchMapPinColors` through `ActivityPalette`/tokens, or
 document the map-pin palette as a sanctioned expressive-art exception here.
+
+## Host bottom-sheet composition
+
+`CatchSheet.standard` and `.filter` own the modal surface, heading inset, body gap, scrolling,
+keyboard clearance and bottom safe region. Short sheets fit their content; long
+sheets use the shared viewport cap. Choices align with the heading through
+`CatchMenuRow.sheet`, wrap their labels, and show a trailing selection mark.
+Single-choice sort and membership menus use those rows. People and Forms filters
+use wrapping `CatchChoiceInput` chips in multiple mode inside titled sections.
+Selected chips include a checkmark. Choices within a category are OR; nonempty
+categories combine with AND. Empty categories do not restrict the result.
+Responses also presents its form context and promoted question filters as inline
+wrapped chips, without nested picker sheets. Form context is single-choice because
+the response API scopes question definitions to one form; answers are multi-select
+with OR within a question and AND across questions. Changing form clears answer
+conditions. Reset all clears the editable form scope and answers. Supported answer
+and active-question limits come from the request contract.
+
+Selections apply immediately and remain visible when the sheet reopens. These
+filters have Reset all in the header and a full-width Close action using
+`CatchSheet.filter` so dismissal remains visible while the
+choices scroll. Ordinary filter sheets have no instructional subtitle or filter-logic
+explanation. The filter constructor does not expose subtitle or footer styling.
+Counts belong in the directory summary rather than changing a
+chip's width.
+
+Use flat `CatchSection.fieldRows(first: true)` for the first field group in a
+sheet. Additional groups retain section spacing; do not add a contained card
+perimeter merely because the content is in a sheet. Keep different interaction
+contracts visible: choices apply on tap, Close dismisses immediate filters, and
+Save/Send confirms an editor through a full-width footer action.
+
+Titled chip groups use `CatchSection.choiceGroup`; field rows use
+`CatchSection.fieldRows`. Both retain the shared muted `ink2` field-section
+kicker and rule. The choice-group recipe owns `CatchFieldTokens.rowVerticalPadding`
+(12 points) between the rule and the first chip surface; bare chips must not be
+passed directly to the row recipe. `CatchSectionList` owns inter-group gaps.
+Do not override title color or build a separate filter heading style.
+Rendered geometry tests enforce the divider-to-chip clearance.
+
+Footer emphasis follows purpose through `CatchButton.sheet`: `dismiss` and
+`alternative` are outlined secondary actions; `commit` is filled primary.
+Width is independent of emphasis. Close and Start a fresh event are secondary;
+Save, Apply and Publish are commit actions. Filters apply immediately and Close
+only dismisses, so they must not suggest an additional commit.
+
+Create event owns saved drafts and new-event choices in one sheet. Its Continue
+section lists each draft directly, newest first, before Repeat last event. Selecting
+a draft carries that exact draft into the editor without another picker. Confirmed
+deletion removes only its row; deleting the last draft keeps Start new available.
+Direct editor entry uses the same composition when offering saved drafts.
+
+Draft rows use `CatchField.content(emphasis: CatchFieldEmphasis.title)`: draft
+identity is primary, saved time is supporting text, and the shared row centers
+leading and delete icons against the complete text block. Draft actions omit
+the disclosure chevron, matching the other Create event options. Do not
+correct alignment with feature-owned offsets. Secondary actions retain separate
+platform-sized hit targets. Blocking source policy and rendered geometry tests
+cover these rules in `catch_bottom_sheet_policy_test.dart` and
+`host_sheet_composition_test.dart`; shared sheet tests cover action roles and
+persistent dismissal at small viewports and 200% text.

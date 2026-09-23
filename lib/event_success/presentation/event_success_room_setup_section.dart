@@ -144,99 +144,95 @@ class _EventSuccessLayoutAuthorSheetState
     final minCapacity = capacityContract.minimum ?? 1;
     final maxCapacity = capacityContract.maximum ?? 1000;
     final maxColumns = (gridContract.maximum ?? 199) + 1;
-    return CatchSheet(
+    return CatchSheet.standard(
       title: context.l10n.hostsEventSuccessStepRoomLayoutAuthorTitle,
       subtitle: context.l10n.hostsEventSuccessStepRoomLayoutAuthorSubtitle,
-      keyboardSafe: true,
-      child: SingleChildScrollView(
-        child: CatchSectionList(
-          emptyStateOmitted: true,
-          children: [
-            CatchSection.fieldRows(
-              children: [
-                CatchField.input(
-                  copy: catchFieldCopy(context.l10n),
-                  title: context.l10n.hostsEventSuccessStepRoomLayoutName,
-                  contract: CatchContractConstraints
-                      .upsertEventSuccessLayoutCallablePayloadLabel,
-                  controller: _labelController,
-                  error: _labelError,
-                  onChanged: (_) {
-                    if (_labelError != null) {
-                      setState(() => _labelError = null);
-                    }
-                  },
-                ),
-                CatchField<EventSuccessLayoutShape>.select(
-                  copy: catchFieldCopy(context.l10n),
-                  title: context.l10n.hostsEventSuccessStepRoomLayoutShape,
-                  contract: CatchContractConstraints
-                      .upsertEventSuccessLayoutCallablePayloadUnitsItemsShape,
-                  contractValueBuilder: (shape) => shape.wireName,
-                  values: EventSuccessLayoutShape.values,
-                  itemLabelBuilder: (shape) => _shapeLabel(context, shape),
-                  value: _shape,
-                  onChanged: (shape) {
-                    if (shape != null) setState(() => _shape = shape);
-                  },
-                ),
-                CatchField.stepper(
-                  copy: catchFieldCopy(context.l10n),
-                  title: context.l10n.hostsEventSuccessStepRoomLayoutUnits,
-                  contract: unitListContract,
-                  value: _unitCount,
-                  min: minUnits,
-                  max: maxUnits,
-                  decreaseSemanticLabel:
-                      context.l10n.hostsEventSuccessStepRoomLayoutDecreaseUnits,
-                  increaseSemanticLabel:
-                      context.l10n.hostsEventSuccessStepRoomLayoutIncreaseUnits,
-                  onChanged: (value) => setState(() {
-                    _unitCount = value.toInt();
-                    if (_columnCount > _unitCount) _columnCount = _unitCount;
-                  }),
-                ),
-                CatchField.stepper(
-                  copy: catchFieldCopy(context.l10n),
-                  title: context.l10n.hostsEventSuccessStepRoomLayoutCapacity,
-                  contract: capacityContract,
-                  value: _unitCapacity,
-                  min: minCapacity,
-                  max: maxCapacity,
-                  decreaseSemanticLabel: context
-                      .l10n
-                      .hostsEventSuccessStepRoomLayoutDecreaseCapacity,
-                  increaseSemanticLabel: context
-                      .l10n
-                      .hostsEventSuccessStepRoomLayoutIncreaseCapacity,
-                  onChanged: (value) =>
-                      setState(() => _unitCapacity = value.toInt()),
-                ),
-                CatchField.stepper(
-                  copy: catchFieldCopy(context.l10n),
-                  title: context.l10n.hostsEventSuccessStepRoomLayoutColumns,
-                  contract: gridContract,
-                  value: _columnCount,
-                  min: 1,
-                  max: maxColumns.clamp(1, _unitCount),
-                  decreaseSemanticLabel: context
-                      .l10n
-                      .hostsEventSuccessStepRoomLayoutDecreaseColumns,
-                  increaseSemanticLabel: context
-                      .l10n
-                      .hostsEventSuccessStepRoomLayoutIncreaseColumns,
-                  onChanged: (value) =>
-                      setState(() => _columnCount = value.toInt()),
-                ),
-              ],
-            ),
-            CatchButton(
-              label: context.l10n.hostsEventSuccessStepRoomLayoutSave,
-              fullWidth: true,
-              onPressed: _save,
-            ),
-          ],
-        ),
+      child: CatchSectionList(
+        emptyStateOmitted: true,
+        children: [
+          CatchSection.fieldRows(
+            first: true,
+            children: [
+              CatchField.input(
+                copy: catchFieldCopy(context.l10n),
+                title: context.l10n.hostsEventSuccessStepRoomLayoutName,
+                contract: CatchContractConstraints
+                    .upsertEventSuccessLayoutCallablePayloadLabel,
+                controller: _labelController,
+                error: _labelError,
+                onChanged: (_) {
+                  if (_labelError != null) {
+                    setState(() => _labelError = null);
+                  }
+                },
+              ),
+              CatchField<EventSuccessLayoutShape>.select(
+                copy: catchFieldCopy(context.l10n),
+                title: context.l10n.hostsEventSuccessStepRoomLayoutShape,
+                contract: CatchContractConstraints
+                    .upsertEventSuccessLayoutCallablePayloadUnitsItemsShape,
+                contractValueBuilder: (shape) => shape.wireName,
+                values: EventSuccessLayoutShape.values,
+                itemLabelBuilder: (shape) => _shapeLabel(context, shape),
+                value: _shape,
+                onChanged: (shape) {
+                  if (shape != null) setState(() => _shape = shape);
+                },
+              ),
+              CatchField.stepper(
+                copy: catchFieldCopy(context.l10n),
+                title: context.l10n.hostsEventSuccessStepRoomLayoutUnits,
+                contract: unitListContract,
+                value: _unitCount,
+                min: minUnits,
+                max: maxUnits,
+                decreaseSemanticLabel:
+                    context.l10n.hostsEventSuccessStepRoomLayoutDecreaseUnits,
+                increaseSemanticLabel:
+                    context.l10n.hostsEventSuccessStepRoomLayoutIncreaseUnits,
+                onChanged: (value) => setState(() {
+                  _unitCount = value.toInt();
+                  if (_columnCount > _unitCount) _columnCount = _unitCount;
+                }),
+              ),
+              CatchField.stepper(
+                copy: catchFieldCopy(context.l10n),
+                title: context.l10n.hostsEventSuccessStepRoomLayoutCapacity,
+                contract: capacityContract,
+                value: _unitCapacity,
+                min: minCapacity,
+                max: maxCapacity,
+                decreaseSemanticLabel: context
+                    .l10n
+                    .hostsEventSuccessStepRoomLayoutDecreaseCapacity,
+                increaseSemanticLabel: context
+                    .l10n
+                    .hostsEventSuccessStepRoomLayoutIncreaseCapacity,
+                onChanged: (value) =>
+                    setState(() => _unitCapacity = value.toInt()),
+              ),
+              CatchField.stepper(
+                copy: catchFieldCopy(context.l10n),
+                title: context.l10n.hostsEventSuccessStepRoomLayoutColumns,
+                contract: gridContract,
+                value: _columnCount,
+                min: 1,
+                max: maxColumns.clamp(1, _unitCount),
+                decreaseSemanticLabel:
+                    context.l10n.hostsEventSuccessStepRoomLayoutDecreaseColumns,
+                increaseSemanticLabel:
+                    context.l10n.hostsEventSuccessStepRoomLayoutIncreaseColumns,
+                onChanged: (value) =>
+                    setState(() => _columnCount = value.toInt()),
+              ),
+            ],
+          ),
+          CatchButton(
+            label: context.l10n.hostsEventSuccessStepRoomLayoutSave,
+            fullWidth: true,
+            onPressed: _save,
+          ),
+        ],
       ),
     );
   }
