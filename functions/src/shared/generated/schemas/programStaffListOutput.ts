@@ -11,7 +11,8 @@ export const programStaffListCallableResponseSchema: Record<string, unknown> = {
   "additionalProperties": false,
   "required": [
     "programId",
-    "members"
+    "members",
+    "nextCursor"
   ],
   "properties": {
     "programId": {
@@ -21,7 +22,7 @@ export const programStaffListCallableResponseSchema: Record<string, unknown> = {
     },
     "members": {
       "type": "array",
-      "maxItems": 100,
+      "maxItems": 50,
       "items": {
         "type": "object",
         "additionalProperties": false,
@@ -120,6 +121,14 @@ export const programStaffListCallableResponseSchema: Record<string, unknown> = {
           }
         }
       }
+    },
+    "nextCursor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
     }
   }
 } as const;

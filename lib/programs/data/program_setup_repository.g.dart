@@ -70,7 +70,7 @@ final class ProgramStaffListProvider
     with $FutureModifier<ProgramStaffList>, $FutureProvider<ProgramStaffList> {
   ProgramStaffListProvider._({
     required ProgramStaffListFamily super.from,
-    required String super.argument,
+    required (String, {String? cursor}) super.argument,
   }) : super(
          retry: null,
          name: r'programStaffListProvider',
@@ -86,7 +86,7 @@ final class ProgramStaffListProvider
   String toString() {
     return r'programStaffListProvider'
         ''
-        '($argument)';
+        '$argument';
   }
 
   @$internal
@@ -97,8 +97,8 @@ final class ProgramStaffListProvider
 
   @override
   FutureOr<ProgramStaffList> create(Ref ref) {
-    final argument = this.argument as String;
-    return programStaffList(ref, argument);
+    final argument = this.argument as (String, {String? cursor});
+    return programStaffList(ref, argument.$1, cursor: argument.cursor);
   }
 
   @override
@@ -112,10 +112,14 @@ final class ProgramStaffListProvider
   }
 }
 
-String _$programStaffListHash() => r'd822b6ee3cea34745a7cdd085dd98f58fb700b81';
+String _$programStaffListHash() => r'57533bfb2443d4f8e1308095dcc75081231a6e9f';
 
 final class ProgramStaffListFamily extends $Family
-    with $FunctionalFamilyOverride<FutureOr<ProgramStaffList>, String> {
+    with
+        $FunctionalFamilyOverride<
+          FutureOr<ProgramStaffList>,
+          (String, {String? cursor})
+        > {
   ProgramStaffListFamily._()
     : super(
         retry: null,
@@ -125,8 +129,11 @@ final class ProgramStaffListFamily extends $Family
         isAutoDispose: true,
       );
 
-  ProgramStaffListProvider call(String programId) =>
-      ProgramStaffListProvider._(argument: programId, from: this);
+  ProgramStaffListProvider call(String programId, {String? cursor}) =>
+      ProgramStaffListProvider._(
+        argument: (programId, cursor: cursor),
+        from: this,
+      );
 
   @override
   String toString() => r'programStaffListProvider';

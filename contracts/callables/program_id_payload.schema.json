@@ -8,7 +8,6 @@
   "x-callable-aliases": [
     "getOrganizerProgram",
     "getProgramWorkAccess",
-    "listProgramStaff",
     "listProgramHouseholds"
   ],
   "required": [

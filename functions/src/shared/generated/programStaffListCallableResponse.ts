@@ -8,7 +8,7 @@
 export interface ProgramStaffListCallableResponse {
   programId: string;
   /**
-   * @maxItems 100
+   * @maxItems 50
    */
   members: {
     uid: string;
@@ -42,4 +42,5 @@ export interface ProgramStaffListCallableResponse {
     expiresAtMillis: number;
     revision: number;
   }[];
+  nextCursor: string | null;
 }

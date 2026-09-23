@@ -81,16 +81,20 @@ class ProgramSetupRepository {
     parse: ProgramMutationResult.fromCallableData,
   );
 
-  Future<ProgramStaffList> listStaff(String programId) => _call(
-    name: 'listProgramStaff',
-    payload: ProgramIdCallableRequest(programId: programId).toJson(),
-    action: 'load program staff',
-    parse: ProgramStaffList.fromCallableData,
-  );
+  Future<ProgramStaffList> listStaff(String programId, {String? cursor}) =>
+      _call(
+        name: 'listProgramStaff',
+        payload: ListProgramStaffCallableRequest(
+          programId: programId,
+          cursor: cursor,
+        ).toJson(),
+        action: 'load program staff',
+        parse: ProgramStaffList.fromCallableData,
+      );
 
   /// Grants are keyed by verified phone number; the callable resolves the
   /// phone to a UID and writes one grant per staff member.
-  Future<ProgramStaffList> grantStaff({
+  Future<ProgramMutationResult> grantStaff({
     required String programId,
     required String phoneNumber,
     required List<ProgramDutyAssignment> duties,
@@ -112,7 +116,7 @@ class ProgramSetupRepository {
       expiresAtMillis: expiresAt.millisecondsSinceEpoch,
     ).toJson(),
     action: 'grant program staff access',
-    parse: ProgramStaffList.fromCallableData,
+    parse: ProgramMutationResult.fromCallableData,
   );
 
   /// Invites bind a phone number to duties before the staff member has an
@@ -157,7 +161,7 @@ class ProgramSetupRepository {
     parse: ProgramMutationResult.fromCallableData,
   );
 
-  Future<ProgramStaffList> revokeStaff({
+  Future<ProgramMutationResult> revokeStaff({
     required String programId,
     required ProgramStaffMember member,
   }) => _call(
@@ -168,7 +172,7 @@ class ProgramSetupRepository {
       expectedRevision: member.revision,
     ).toJson(),
     action: 'revoke program staff access',
-    parse: ProgramStaffList.fromCallableData,
+    parse: ProgramMutationResult.fromCallableData,
   );
 
   Future<ProgramMutationResult> upsertGuest({
@@ -345,5 +349,10 @@ ProgramSetupRepository programSetupRepository(Ref ref) =>
     ProgramSetupRepository(ref.watch(firebaseFunctionsProvider));
 
 @riverpod
-Future<ProgramStaffList> programStaffList(Ref ref, String programId) =>
-    ref.read(programSetupRepositoryProvider).listStaff(programId);
+Future<ProgramStaffList> programStaffList(
+  Ref ref,
+  String programId, {
+  String? cursor,
+}) => ref
+    .read(programSetupRepositoryProvider)
+    .listStaff(programId, cursor: cursor);

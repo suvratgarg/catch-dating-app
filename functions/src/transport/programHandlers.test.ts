@@ -8,6 +8,7 @@ import {
 import {
   getProgramWorkAccessHandler,
   grantProgramStaffHandler,
+  listProgramStaffHandler,
 } from "../programs/programStaff";
 import {upsertProgramGuestHandler} from "../programs/programGuests";
 import {
@@ -117,7 +118,7 @@ test("staff grants are duty-scoped, expiring, and station-checked",
       (error: unknown) =>
         error instanceof HttpsError && error.code === "invalid-argument"
     );
-    const members = await grantProgramStaffHandler(request({
+    const receipt = await grantProgramStaffHandler(request({
       programId: "program-1",
       phoneNumber: "+91 90000 00009",
       duties: [{
@@ -127,6 +128,9 @@ test("staff grants are duty-scoped, expiring, and station-checked",
       }],
       expiresAtMillis: now.toMillis() + 86_400_000,
     }, "manager-1"), deps(firestore));
+    assert.equal(receipt.entityId, "new-staff-1");
+    const members = await listProgramStaffHandler(request({
+      programId: "program-1"}, "manager-1"), deps(firestore));
     assert.equal(members.members.length, 5);
     const grant = firestore.getDoc("programStaffGrants/program-1__new-staff-1");
     assert.equal(grant?.status, "active");

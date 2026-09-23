@@ -752,11 +752,16 @@ class ProgramStaffMember {
 }
 
 class ProgramStaffList {
-  const ProgramStaffList({required this.programId, required this.members});
+  const ProgramStaffList({
+    required this.programId,
+    required this.members,
+    required this.nextCursor,
+  });
 
   factory ProgramStaffList.fromCallableData(Object? value) {
     final map = requiredMap(value, 'program staff list');
     return ProgramStaffList(
+      nextCursor: requiredNullableString(map, 'nextCursor'),
       programId: requiredString(map, 'programId'),
       members: mapList(
         map['members'],
@@ -767,6 +772,7 @@ class ProgramStaffList {
 
   final String programId;
   final List<ProgramStaffMember> members;
+  final String? nextCursor;
 }
 
 class ProgramMutationResult {

@@ -1,9 +1,10 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import {Timestamp} from "firebase-admin/firestore";
 import {baseSeed, deps, now, request} from "../shared/testing/programFixtures";
 import {FakeFirestore} from "../shared/testing/programFirestore";
 import {getProgramWorkAccessHandler, grantProgramStaffHandler,
-  revokeProgramStaffHandler} from
+  revokeProgramStaffHandler, listProgramStaffHandler} from
   "./programStaff";
 
 const payload = {programId: "program-1", phoneNumber: "+919900001111",
@@ -149,3 +150,117 @@ test("the union of individually bounded assignments cannot truncate bootstrap",
       request({programId: "program-1"}, "greeter-1"), deps(store)),
     code("resource-exhausted"));
   });
+
+test("staff pages reach older active grants beyond newer history",
+  async () => {
+    const seed = baseSeed();
+    const template = seed["programStaffGrants/program-1__greeter-1"];
+    for (const path of Object.keys(seed)) {
+      if (path.startsWith("programStaffGrants/")) delete seed[path];
+    }
+    const expected = Array.from({length: 123}, (_, i) =>
+      `staff-${String(i).padStart(3, "0")}`);
+    for (const [i, uid] of expected.entries()) {
+      seed[`programStaffGrants/program-1__${uid}`] = {...template, uid,
+        status: i === 122 ? "active" : "revoked",
+        updatedAt: i === 122 ?
+          Timestamp.fromMillis(now.toMillis() - 60_000) : now};
+    }
+    for (let i = 0; i < 130; i++) {
+      const uid = `foreign-${i}`;
+      seed[`programStaffGrants/program-1__${uid}`] = {...template, uid,
+        organizerId: "foreign"};
+    }
+    const db = new FakeFirestore(seed);
+    const seen: string[] = [];
+    let cursor: string | null = null;
+    do {
+      const page = await listProgramStaffHandler(request({
+        programId: "program-1", ...(cursor ? {cursor} : {}),
+      }, "manager-1"), deps(db));
+      assert.ok(page.members.length <= 50);
+      seen.push(...page.members.map((member) => member.uid));
+      cursor = page.nextCursor;
+      assert.ok(seen.length <= expected.length, "cursor must advance");
+      if (!cursor) assert.equal(page.members.at(-1)?.status, "active");
+    } while (cursor);
+    assert.deepEqual(seen, expected);
+  });
+
+test("staff continuations survive revocation and deletion of the anchor",
+  async () => {
+    const db = new FakeFirestore(baseSeed());
+    const read = (cursor?: string) => listProgramStaffHandler(request({
+      programId: "program-1", limit: 1, ...(cursor ? {cursor} : {}),
+    }, "manager-1"), deps(db));
+    const first = await read();
+    assert.equal(first.nextCursor, "dispatcher-1");
+    db.updateDoc("programStaffGrants/program-1__dispatcher-1", {
+      status: "revoked", updatedAt: now,
+    });
+    assert.equal((await read(first.nextCursor!)).members[0].uid, "greeter-1");
+    db.docs.delete("programStaffGrants/program-1__dispatcher-1");
+    assert.equal((await read(first.nextCursor!)).members[0].uid, "greeter-1");
+    db.updateDoc("organizers/org-1", {ownerUserId: "other",
+      hostUserId: "other", hostUserIds: [], hostProfiles: []});
+    await assert.rejects(read(first.nextCursor!), code("permission-denied"));
+  });
+
+test("staff list rejects damaged identity bindings instead of looping pages",
+  async () => {
+    const db = new FakeFirestore(baseSeed());
+    db.updateDoc("programStaffGrants/program-1__dispatcher-1", {uid: "other"});
+    await assert.rejects(listProgramStaffHandler(request({
+      programId: "program-1", limit: 1,
+    }, "manager-1"), deps(db)), code("failed-precondition"));
+  });
+
+for (const action of ["grant", "revoke"]) {
+  test(`${action} returns the committed receipt without a follow-up read`,
+    async () => {
+      const db = new FakeFirestore(baseSeed());
+      const query = db.runQuery.bind(db);
+      const get = db.getDoc.bind(db);
+      db.runQuery = async (input) => {
+        assert.equal(db.transactionCommits, 0, "no post-commit list query");
+        return query(input);
+      };
+      db.getDoc = (path) => {
+        assert.equal(db.transactionCommits, 0, "no post-commit document read");
+        return get(path);
+      };
+      const receipt = action === "grant" ? await grantProgramStaffHandler(
+        request(payload, "manager-1"), deps(db)) :
+        await revokeProgramStaffHandler(request({
+          programId: "program-1", uid: "greeter-1", expectedRevision: 1,
+        }, "manager-1"), deps(db));
+      const uid = action === "grant" ? "new-staff-1" : "greeter-1";
+      const stored = db.docs.get(`programStaffGrants/program-1__${uid}`)!;
+      assert.deepEqual(receipt, {entityId: uid, revision: stored.revision,
+        alreadyApplied: false});
+      assert.equal(stored.status, action === "grant" ? "active" : "revoked");
+      assert.equal(db.transactionCommits, 1);
+    });
+}
+
+for (const organizerId of ["org-1", "foreign"]) {
+  test(`direct staff quota counts current owner only: ${organizerId}`,
+    async () => {
+      const seed = baseSeed();
+      for (let i = 0; i < 100; i++) {
+        const uid = `quota-${i}`;
+        seed[`programStaffGrants/program-1__${uid}`] = {
+          ...seed["programStaffGrants/program-1__greeter-1"], uid, organizerId};
+      }
+      const db = new FakeFirestore(seed);
+      const grant = grantProgramStaffHandler(request(payload, "manager-1"),
+        deps(db));
+      if (organizerId === "org-1") {
+        await assert.rejects(grant, code("resource-exhausted"));
+        assert.equal(db.transactionCommits, 0);
+      } else {
+        assert.equal((await grant).entityId, "new-staff-1");
+        assert.equal(db.transactionCommits, 1);
+      }
+    });
+}

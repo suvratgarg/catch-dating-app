@@ -1,6 +1,6 @@
 ---
 doc_id: airport_arrivals_prd
-version: 0.3.14
+version: 0.3.15
 updated: 2026-09-23
 owner: product
 status: draft
@@ -1442,6 +1442,16 @@ reconciliation rather than falling back to current names. Production retention
 and erasure policy still applies to these private operational records.
 
 ### Operational read scope
+
+Manager staff inventory pages up to 50 grants in stable staff-identity order,
+including expired and revoked records. Continuations use the staff UID and
+survive renewal, revocation, or deletion of an earlier grant. Every page
+rechecks management and filters organizer/program ownership before its cap.
+Grant and revoke return the affected staff UID and committed revision through
+the shared mutation acknowledgement; listing staff is a separate read, so a
+failed refresh cannot misreport a committed change as a failed mutation.
+The 100-active-grant quota remains separate from page size; direct grants and
+invite claims both count only grants owned by the current program organizer.
 
 The hotel desk independently pages incoming vehicles and expected guests,
 with at most 50 rows per list. Each response declares both continuations.

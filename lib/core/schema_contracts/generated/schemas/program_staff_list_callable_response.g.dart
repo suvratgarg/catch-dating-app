@@ -14,6 +14,7 @@ const schemaProgramStaffListCallableResponseSchema = <String, Object?>{
   'required': <Object?>[
     'programId',
     'members',
+    'nextCursor',
   ],
   'properties': <String, Object?>{
     'programId': <String, Object?>{
@@ -23,7 +24,7 @@ const schemaProgramStaffListCallableResponseSchema = <String, Object?>{
     },
     'members': <String, Object?>{
       'type': 'array',
-      'maxItems': 100,
+      'maxItems': 50,
       'items': <String, Object?>{
         'type': 'object',
         'additionalProperties': false,
@@ -122,6 +123,14 @@ const schemaProgramStaffListCallableResponseSchema = <String, Object?>{
           },
         },
       },
+    },
+    'nextCursor': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'minLength': 1,
+      'maxLength': 180,
     },
   },
 };

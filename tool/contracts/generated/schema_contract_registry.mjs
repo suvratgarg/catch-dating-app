@@ -119447,7 +119447,6 @@ export const programIdCallablePayloadSchema = {
   "x-callable-aliases": [
     "getOrganizerProgram",
     "getProgramWorkAccess",
-    "listProgramStaff",
     "listProgramHouseholds"
   ],
   "required": [
@@ -120132,6 +120131,37 @@ export const upsertProgramGuestCallablePayloadSchema = {
         "declined",
         "maybe"
       ]
+    }
+  }
+};
+
+export const listProgramStaffCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/list_program_staff_payload.schema.json",
+  "title": "ListProgramStaffCallablePayload",
+  "description": "Manager-only staff inventory in stable staff-identity order.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 50
+    },
+    "cursor": {
+      "type": "string",
+      "maxLength": 180,
+      "description": "Staff UID continuation returned by the preceding page. Ordering survives renewal and revocation.",
+      "minLength": 1,
+      "pattern": "^[^/]+$"
     }
   }
 };
@@ -121443,7 +121473,9 @@ export const programMutationCallableResponseSchema = {
     "setProgramTravelReadiness",
     "markProgramTripArrived",
     "voidProgramTrip",
-    "refreshProgramTravelLeg"
+    "refreshProgramTravelLeg",
+    "grantProgramStaff",
+    "revokeProgramStaff"
   ],
   "required": [
     "entityId",
@@ -122240,7 +122272,8 @@ export const programStaffListCallableResponseSchema = {
   "additionalProperties": false,
   "required": [
     "programId",
-    "members"
+    "members",
+    "nextCursor"
   ],
   "properties": {
     "programId": {
@@ -122250,7 +122283,7 @@ export const programStaffListCallableResponseSchema = {
     },
     "members": {
       "type": "array",
-      "maxItems": 100,
+      "maxItems": 50,
       "items": {
         "type": "object",
         "additionalProperties": false,
@@ -122349,6 +122382,14 @@ export const programStaffListCallableResponseSchema = {
           }
         }
       }
+    },
+    "nextCursor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 180
     }
   }
 };

@@ -436,6 +436,7 @@ export 'list_organizer_saved_audiences_callable_response.g.dart';
 export 'list_organizer_whatsapp_threads_callable_payload.g.dart';
 export 'list_organizer_whatsapp_threads_callable_response.g.dart';
 export 'list_program_guests_callable_payload.g.dart';
+export 'list_program_staff_callable_payload.g.dart';
 export 'list_program_trips_callable_payload.g.dart';
 export 'list_public_club_reviews_callable_payload.g.dart';
 export 'list_public_club_reviews_callable_response.g.dart';

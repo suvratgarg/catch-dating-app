@@ -512,3 +512,30 @@ for (const patch of [{active: false}, {organizerId: "foreign"}]) {
         "pending");
     });
 }
+
+for (const organizerId of ["org-1", "foreign"]) {
+  test(`invite quota counts current owner only: ${organizerId}`, async () => {
+    const store = new FakeFirestore(seed());
+    for (let i = 0; i < 100; i++) {
+      const uid = `quota-${i}`;
+      store.setDoc(`programStaffGrants/program-1__${uid}`, {
+        programId: "program-1", organizerId, uid,
+        status: "active", expiresAt: ts(EXPIRES),
+      });
+    }
+    const invite = await inviteProgramStaffHandler(
+      request(invitePayload), deps(store));
+    const claim = claimProgramStaffInviteHandler(
+      request({inviteId: invite.entityId}, "greeter-1", "+919900001111"),
+      deps(store));
+    if (organizerId === "org-1") {
+      await assert.rejects(claim, code("resource-exhausted"));
+      assert.equal(store.getDoc(`programStaffInvites/${invite.entityId}`)
+        ?.status, "pending");
+    } else {
+      assert.equal((await claim).programId, "program-1");
+      assert.equal(store.getDoc("programStaffGrants/program-1__greeter-1")
+        ?.status, "active");
+    }
+  });
+}

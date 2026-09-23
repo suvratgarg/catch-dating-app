@@ -69329,6 +69329,30 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const listProgramStaffCallablePayloadCursor = CatchContractFieldConstraints(
+    path: 'listProgramStaffCallablePayload.cursor',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[^/]+\$',
+  );
+
+  static const listProgramStaffCallablePayloadLimit = CatchContractFieldConstraints(
+    path: 'listProgramStaffCallablePayload.limit',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 50,
+  );
+
+  static const listProgramStaffCallablePayloadProgramId = CatchContractFieldConstraints(
+    path: 'listProgramStaffCallablePayload.programId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const listProgramTripsCallablePayloadCursor = CatchContractFieldConstraints(
     path: 'listProgramTripsCallablePayload.cursor',
     maxLength: 180,
@@ -90077,7 +90101,7 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['array'],
     itemValueTypes: <String>['object'],
-    maxItems: 100,
+    maxItems: 50,
   );
 
   static const programStaffListCallableResponseMembersItemsDisplayName = CatchContractFieldConstraints(
@@ -90177,6 +90201,13 @@ abstract final class CatchContractConstraints {
     maxLength: 180,
     minLength: 1,
     required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const programStaffListCallableResponseNextCursor = CatchContractFieldConstraints(
+    path: 'programStaffListCallableResponse.nextCursor',
+    maxLength: 180,
+    minLength: 1,
     valueTypes: <String>['string'],
   );
 
@@ -116349,6 +116380,9 @@ abstract final class CatchContractConstraints {
     'listProgramGuestsCallablePayload.cursor': listProgramGuestsCallablePayloadCursor,
     'listProgramGuestsCallablePayload.limit': listProgramGuestsCallablePayloadLimit,
     'listProgramGuestsCallablePayload.programId': listProgramGuestsCallablePayloadProgramId,
+    'listProgramStaffCallablePayload.cursor': listProgramStaffCallablePayloadCursor,
+    'listProgramStaffCallablePayload.limit': listProgramStaffCallablePayloadLimit,
+    'listProgramStaffCallablePayload.programId': listProgramStaffCallablePayloadProgramId,
     'listProgramTripsCallablePayload.cursor': listProgramTripsCallablePayloadCursor,
     'listProgramTripsCallablePayload.limit': listProgramTripsCallablePayloadLimit,
     'listProgramTripsCallablePayload.programId': listProgramTripsCallablePayloadProgramId,
@@ -119231,6 +119265,7 @@ abstract final class CatchContractConstraints {
     'programStaffListCallableResponse.members.items.revision': programStaffListCallableResponseMembersItemsRevision,
     'programStaffListCallableResponse.members.items.status': programStaffListCallableResponseMembersItemsStatus,
     'programStaffListCallableResponse.members.items.uid': programStaffListCallableResponseMembersItemsUid,
+    'programStaffListCallableResponse.nextCursor': programStaffListCallableResponseNextCursor,
     'programStaffListCallableResponse.programId': programStaffListCallableResponseProgramId,
     'programStationScopeCallablePayload.pickupPointId': programStationScopeCallablePayloadPickupPointId,
     'programStationScopeCallablePayload.programId': programStationScopeCallablePayloadProgramId,

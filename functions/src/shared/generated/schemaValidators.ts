@@ -281,6 +281,7 @@ export {validateInviteProgramStaffCallablePayload} from "./validators/inviteProg
 export {validateClaimProgramStaffInviteCallablePayload} from "./validators/claimProgramStaffInviteInput";
 export {validateRevokeProgramStaffInviteCallablePayload} from "./validators/revokeProgramStaffInviteInput";
 export {validateUpsertProgramGuestCallablePayload} from "./validators/upsertProgramGuestInput";
+export {validateListProgramStaffCallablePayload} from "./validators/listProgramStaffInput";
 export {validateListProgramTripsCallablePayload} from "./validators/listProgramTripsInput";
 export {validateListProgramGuestsCallablePayload} from "./validators/listProgramGuestsInput";
 export {validateUpsertProgramHouseholdCallablePayload} from "./validators/upsertProgramHouseholdInput";

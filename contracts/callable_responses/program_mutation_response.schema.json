@@ -19,7 +19,9 @@
     "setProgramTravelReadiness",
     "markProgramTripArrived",
     "voidProgramTrip",
-    "refreshProgramTravelLeg"
+    "refreshProgramTravelLeg",
+    "grantProgramStaff",
+    "revokeProgramStaff"
   ],
   "required": [
     "entityId",

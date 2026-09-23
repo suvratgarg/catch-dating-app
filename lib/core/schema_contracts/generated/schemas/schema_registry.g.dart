@@ -1397,6 +1397,11 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
     schema: schemaUpsertProgramGuestCallablePayloadSchema,
   ),
   SchemaContractDefinition(
+    name: 'ListProgramStaffCallablePayload',
+    source: 'callables/list_program_staff_payload.schema.json',
+    schema: schemaListProgramStaffCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
     name: 'ListProgramTripsCallablePayload',
     source: 'callables/list_program_trips_payload.schema.json',
     schema: schemaListProgramTripsCallablePayloadSchema,
@@ -4030,6 +4035,7 @@ const schemaContractsByName = <String, Map<String, Object?>>{
   'ClaimProgramStaffInviteCallablePayload': schemaClaimProgramStaffInviteCallablePayloadSchema,
   'RevokeProgramStaffInviteCallablePayload': schemaRevokeProgramStaffInviteCallablePayloadSchema,
   'UpsertProgramGuestCallablePayload': schemaUpsertProgramGuestCallablePayloadSchema,
+  'ListProgramStaffCallablePayload': schemaListProgramStaffCallablePayloadSchema,
   'ListProgramTripsCallablePayload': schemaListProgramTripsCallablePayloadSchema,
   'ListProgramGuestsCallablePayload': schemaListProgramGuestsCallablePayloadSchema,
   'UpsertProgramHouseholdCallablePayload': schemaUpsertProgramHouseholdCallablePayloadSchema,
@@ -4780,6 +4786,7 @@ const schemaContractsBySource = <String, Map<String, Object?>>{
   'callables/claim_program_staff_invite_payload.schema.json': schemaClaimProgramStaffInviteCallablePayloadSchema,
   'callables/revoke_program_staff_invite_payload.schema.json': schemaRevokeProgramStaffInviteCallablePayloadSchema,
   'callables/upsert_program_guest_payload.schema.json': schemaUpsertProgramGuestCallablePayloadSchema,
+  'callables/list_program_staff_payload.schema.json': schemaListProgramStaffCallablePayloadSchema,
   'callables/list_program_trips_payload.schema.json': schemaListProgramTripsCallablePayloadSchema,
   'callables/list_program_guests_payload.schema.json': schemaListProgramGuestsCallablePayloadSchema,
   'callables/upsert_program_household_payload.schema.json': schemaUpsertProgramHouseholdCallablePayloadSchema,

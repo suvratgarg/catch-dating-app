@@ -6,6 +6,7 @@
 ) */
 /* firestore-index: programStaffGrants (
   programId:ASCENDING,
+  organizerId:ASCENDING,
   status:ASCENDING,
   expiresAt:ASCENDING
 ) */
@@ -221,6 +222,7 @@ export async function claimProgramStaffInviteHandler(
       tx.get(grantRef),
       tx.get(db.collection("programStaffGrants")
         .where("programId", "==", invite.programId)
+        .where("organizerId", "==", program.organizerId)
         .where("status", "==", "active")
         .where("expiresAt", ">", now)
         .limit(maxProgramStaff)),

@@ -10,14 +10,16 @@
 ) */
 /* firestore-index: programStaffGrants (
   programId:ASCENDING,
+  organizerId:ASCENDING,
   status:ASCENDING,
   expiresAt:ASCENDING
 ) */
 /* firestore-index: programStaffGrants (
   programId:ASCENDING,
-  updatedAt:DESCENDING
+  organizerId:ASCENDING
 ) */
 import * as admin from "firebase-admin";
+import {FieldPath} from "firebase-admin/firestore";
 import {CallableRequest, HttpsError, onCall} from
   "firebase-functions/v2/https";
 import {requireAuth} from "../shared/auth";
@@ -50,6 +52,12 @@ import type {ProgramAccessCallableResponse} from
   "../shared/generated/programAccessCallableResponse";
 import type {ProgramStaffListCallableResponse} from
   "../shared/generated/programStaffListCallableResponse";
+import type {ProgramMutationCallableResponse} from
+  "../shared/generated/programMutationCallableResponse";
+import type {ListProgramStaffCallablePayload} from
+  "../shared/generated/listProgramStaffCallablePayload";
+import {validateListProgramStaffCallablePayload} from
+  "../shared/generated/validators/listProgramStaffInput";
 import {
   validateProgramIdCallablePayload,
 } from "../shared/generated/validators/programIdInput";
@@ -183,18 +191,18 @@ export async function listProgramStaffHandler(
   deps: ProgramStaffDeps = defaultDeps
 ): Promise<ProgramStaffListCallableResponse> {
   const actorUid = requireAuth(request);
-  const data = validateCallableWithAjv<ProgramIdCallablePayload>(
-    request, validateProgramIdCallablePayload, normalizePayload);
+  const data = validateCallableWithAjv<ListProgramStaffCallablePayload>(
+    request, validateListProgramStaffCallablePayload, normalizePayload);
   const db = deps.firestore();
   await deps.checkRateLimit(db, actorUid, "listProgramStaff");
-  await requireProgramManager(db, data.programId, actorUid);
-  return programStaffList(db, data.programId, deps.now());
+  const {program} = await requireProgramManager(db, data.programId, actorUid);
+  return programStaffList(db, data, program.organizerId, deps.now());
 }
 
 export async function grantProgramStaffHandler(
   request: CallableRequest<unknown>,
   deps: ProgramStaffDeps = defaultDeps
-): Promise<ProgramStaffListCallableResponse> {
+): Promise<ProgramMutationCallableResponse> {
   const actorUid = requireAuth(request);
   const data = validateCallableWithAjv<GrantProgramStaffCallablePayload>(
     request, validateGrantProgramStaffCallablePayload, normalizePayload);
@@ -226,7 +234,7 @@ export async function grantProgramStaffHandler(
   }
   const ref = db.collection("programStaffGrants").doc(
     programStaffGrantId(data.programId, authUser.uid));
-  await db.runTransaction(async (tx) => {
+  return db.runTransaction(async (tx) => {
     const fresh = await requireProgramManager(
       db, data.programId, actorUid, tx);
     if (fresh.program.organizerId !== program.organizerId ||
@@ -240,6 +248,7 @@ export async function grantProgramStaffHandler(
       tx.get(ref),
       tx.get(db.collection("programStaffGrants")
         .where("programId", "==", data.programId)
+        .where("organizerId", "==", fresh.program.organizerId)
         .where("status", "==", "active")
         .where("expiresAt", ">", now)
         .limit(maxProgramStaff)),
@@ -285,14 +294,15 @@ export async function grantProgramStaffHandler(
       revision: nextRevision(current?.revision, committedAt),
     };
     tx.set(ref, document);
+    return {entityId: authUser.uid, revision: document.revision,
+      alreadyApplied: false};
   });
-  return programStaffList(db, data.programId, deps.now());
 }
 
 export async function revokeProgramStaffHandler(
   request: CallableRequest<unknown>,
   deps: ProgramStaffDeps = defaultDeps
-): Promise<ProgramStaffListCallableResponse> {
+): Promise<ProgramMutationCallableResponse> {
   const actorUid = requireAuth(request);
   const data = validateCallableWithAjv<RevokeProgramStaffCallablePayload>(
     request, validateRevokeProgramStaffCallablePayload, normalizePayload);
@@ -302,7 +312,7 @@ export async function revokeProgramStaffHandler(
   const ref = db.collection("programStaffGrants").doc(
     programStaffGrantId(data.programId, data.uid));
   const now = deps.now();
-  await db.runTransaction(async (tx) => {
+  return db.runTransaction(async (tx) => {
     const {program} = await requireProgramManager(
       db, data.programId, actorUid, tx);
     const snap = await tx.get(ref);
@@ -315,33 +325,48 @@ export async function revokeProgramStaffHandler(
       throw new HttpsError(
         "aborted", "Staff access changed. Reload and retry.");
     }
+    const revision = nextRevision(grant.revision, now);
     tx.update(ref, {
       status: "revoked",
       revokedBy: actorUid,
       revokedAt: now,
       updatedAt: now,
-      revision: nextRevision(grant.revision, now),
+      revision,
     });
+    return {entityId: data.uid, revision, alreadyApplied: false};
   });
-  return programStaffList(db, data.programId, deps.now());
 }
 
 async function programStaffList(
   db: FirebaseFirestore.Firestore,
-  programId: string,
+  data: ListProgramStaffCallablePayload,
+  organizerId: string,
   now: FirebaseFirestore.Timestamp
 ): Promise<ProgramStaffListCallableResponse> {
-  const snap = await db.collection("programStaffGrants")
-    .where("programId", "==", programId)
-    .orderBy("updatedAt", "desc")
-    .limit(maxProgramStaff)
-    .get();
-  const members = snap.docs
-    .map((doc) => doc.data() as ProgramStaffGrantDocument)
-    .sort((a, b) =>
-      staffTimestampMillis(b.updatedAt) - staffTimestampMillis(a.updatedAt));
+  const limit = data.limit ?? 50;
+  let query = db.collection("programStaffGrants")
+    .where("programId", "==", data.programId)
+    .where("organizerId", "==", organizerId)
+    .orderBy(FieldPath.documentId())
+    .limit(limit + 1);
+  // Stable identity order survives grant renewal, revocation and deletion.
+  // The query reapplies current manager authorization and owner scope.
+  if (data.cursor) {
+    query = query.startAfter(programStaffGrantId(data.programId, data.cursor));
+  }
+  const snap = await query.get();
+  const page = snap.docs.slice(0, limit);
+  const members = page.map((doc) => {
+    const member = doc.data() as ProgramStaffGrantDocument;
+    if (doc.id !== programStaffGrantId(data.programId, member.uid)) {
+      throw new HttpsError("failed-precondition",
+        "Staff identity bindings need repair before continuing.");
+    }
+    return member;
+  });
   return {
-    programId,
+    programId: data.programId,
+    nextCursor: snap.size > limit ? members[members.length - 1].uid : null,
     members: members.map((member) => ({
       uid: member.uid,
       displayName: member.displayName,
@@ -364,7 +389,7 @@ function normalizePayload(value: unknown): unknown {
   }
   const input = value as Record<string, unknown>;
   const trimmed = {...input};
-  for (const key of ["programId", "uid", "phoneNumber"]) {
+  for (const key of ["programId", "uid", "phoneNumber", "cursor"]) {
     if (typeof trimmed[key] === "string") {
       trimmed[key] = (trimmed[key] as string).trim();
     }
