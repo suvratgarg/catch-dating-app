@@ -518,6 +518,17 @@ against its immutable version. Detail-only and withdrawn answers never satisfy
 an answer filter. Changing answer filters or chronological order starts a new
 query; cursors are bound to those selections. Bounded scans can yield an empty
 page with a continuation, so the UI must retain Load more and active controls.
+When an older client sends answer filters without a version ID, the server
+matches only the form's active published version and binds that resolved version
+to the cursor. An explicit version ID matches only that immutable version; equal
+labels or option values on another version do not widen the result.
+For a native form the Host response inbox first resolves the server's active
+published version, then shows that version as the selected scope. Hosts can
+select a historical version or all versions; selecting a different scope clears
+answer choices because question and option identities belong to one version.
+The server supplies the active version and publication count, and the client
+derives historical IDs from the published `formId_vN` identity. Imported forms
+without a native version scope keep their own response behavior.
 
 Application detail places authorized phone/social contact actions and review
 status controls before the answer list. Acceptance creates or reuses a CRM
@@ -574,6 +585,13 @@ The primary action uses the borderless shared page-action recipe. Decline is a
 neutral outlined secondary danger action at rest. The review status badge
 represents the existing decision. Withdrawn or revoked entries expose no review
 or conversion mutations.
+Opening a row from the response inbox carries its form, version, search, status,
+answer choices and order into the unified detail route. Previous and Next walk
+that same bounded queue. If a review removes the current row from the filter,
+Next takes the row now at its former position and Previous takes the preceding
+row; additional pages load under the same request. Returning to the inbox keeps
+its selected filters and loaded position. A direct detail link has no queue
+controls because it has no originating filter context.
 
 ## Automations And Conversion
 
