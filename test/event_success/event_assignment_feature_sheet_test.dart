@@ -117,6 +117,7 @@ void main() {
     ));
     await tester.pump();
     expect(find.textContaining('Easy pace'), findsNothing);
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
   });
 
   testWidgets('failed write retains error after authoritative refresh', (
