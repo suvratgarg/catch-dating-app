@@ -5,9 +5,55 @@
   "description": "Manager-only bounded organizer audience export request.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["organizerId"],
+  "required": [
+    "organizerId"
+  ],
   "properties": {
-    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
-    "segmentId": {"anyOf": [{"$ref": "../firestore/organizer_contact_traits.schema.json#/definitions/segmentId"}, {"type": "null"}]}
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "segmentId": {
+      "anyOf": [
+        {
+          "$ref": "../firestore/organizer_contact_traits.schema.json#/definitions/segmentId"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "segmentIds": {
+      "type": "array",
+      "maxItems": 12,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "../firestore/organizer_contact_traits.schema.json#/definitions/segmentId"
+      },
+      "description": "OR within attendance, reliability, advocacy and reachable categories; AND across selected categories."
+    },
+    "manualTagIds": {
+      "type": "array",
+      "maxItems": 20,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[a-f0-9]{32}$"
+      },
+      "description": "Match any selected manual tag, combined with all selected segment categories."
+    },
+    "query": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 120
+    },
+    "manualTagId": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[a-f0-9]{32}$"
+    }
   }
 }

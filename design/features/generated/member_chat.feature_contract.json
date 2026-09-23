@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/member_chat.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:d1ceb8f9ed770e130c766f08a698d78da6a7263cf711ab058abf83595240148b",
-  "resolvedDigest": "sha256:2c2e546aa68aeeae4550c85025a9b68af4a5a9196cc56d33f47a351400620135",
+  "resolvedDigest": "sha256:1468063470e12c9f9a4924e3cb706c5ba5fb0cdf7f0a8c9776df82d5faa4f387",
   "feature": {
     "id": "feature.member_chat",
     "name": "Chat Thread",
@@ -1664,7 +1664,8 @@
                 "CatchButton.command",
                 "CatchButton.selection",
                 "CatchButton.floating",
-                "CatchButton.text"
+                "CatchButton.text",
+                "CatchButton.sheet"
               ]
             }
           },
@@ -3951,7 +3952,8 @@
                 "CatchButton.command",
                 "CatchButton.selection",
                 "CatchButton.floating",
-                "CatchButton.text"
+                "CatchButton.text",
+                "CatchButton.sheet"
               ]
             }
           },

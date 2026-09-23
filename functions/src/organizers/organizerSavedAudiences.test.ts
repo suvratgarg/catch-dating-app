@@ -160,3 +160,23 @@ test("saved audience reach summaries reuse the shared route plan", () => {
     unavailable: 1,
   });
 });
+
+
+test("saved directory filters preserve OR within groups and AND across them",
+  () => {
+    const candidate = row();
+    candidate.trait.segmentIds.push("reliable_attendee");
+    const definition: OrganizerSavedAudienceDocument["definition"] = {
+      join: "all", predicates: [{kind: "directoryFilters",
+        segmentIds: ["first_time_attendee", "repeat_attendee",
+          "reliable_attendee"],
+        manualTagIds: ["b".repeat(32), "a".repeat(32)]}],
+    };
+    assert.equal(savedAudienceDefinitionMatches(candidate, definition, now),
+      true);
+    candidate.trait.segmentIds = ["repeat_attendee"];
+    assert.equal(savedAudienceDefinitionMatches(candidate, definition, now),
+      false);
+    const canonical = canonicalSavedAudienceDefinition(definition);
+    assert.deepEqual(canonicalSavedAudienceDefinition(canonical), canonical);
+  });

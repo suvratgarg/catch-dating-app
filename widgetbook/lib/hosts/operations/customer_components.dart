@@ -5,6 +5,8 @@ import 'package:catch_dating_app/hosts/presentation/customers/host_customer_deta
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_memory.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_timeline.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen_state.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_crm_summary.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
@@ -323,3 +325,31 @@ Widget hostCustomerSourcesSectionStates(BuildContext context) =>
         onReviewDuplicates: () {},
       ),
     );
+
+@widgetbook.UseCase(
+  name: 'Combined filter chips',
+  type: HostCustomerFilterSheet,
+  path: '[P1 product surfaces]/Host operations/Customers',
+)
+Widget hostCustomerFilterSheetStates(BuildContext context) => Scaffold(
+  body: Center(
+    child: CatchButton(
+      label: 'Open people filters',
+      onPressed: () => showCatchBottomSheet<void>(
+        context: context,
+        builder: (_) => const HostCustomerFilterSheet(
+          selectedFilters: {
+            HostCustomerFilter.firstTime,
+            HostCustomerFilter.repeat,
+            HostCustomerFilter.reliable,
+          },
+          manualTagVocabulary: [
+            HostCustomerManualTag(tagId: 'runners', label: 'Runners'),
+            HostCustomerManualTag(tagId: 'volunteers', label: 'Volunteers'),
+          ],
+          smsReadiness: HostCrmChannelReadiness.currentEventOnly,
+        ),
+      ),
+    ),
+  ),
+);

@@ -291,6 +291,23 @@ String _savedAudienceRuleSummary(
     '${context.l10n.hostAudienceRuleNamedEvent}: '
         '${options.events.where((e) => e.id == eventId).firstOrNull?.title ?? context.l10n.hostAudienceSourceUnavailable}',
 
+  HostSavedAudienceDirectoryFilters(:final segments, :final manualTagIds) =>
+    _customerSelectionLabel(
+      context,
+      segments.map(hostCustomerFilterForAudienceSegment).toSet(),
+      [
+        for (final id in manualTagIds)
+          HostCustomerManualTag(
+            tagId: id,
+            label:
+                options.tags
+                    .where((tag) => tag.tagId == id)
+                    .firstOrNull
+                    ?.label ??
+                context.l10n.hostAudienceSourceUnavailable,
+          ),
+      ],
+    ),
   HostSavedAudienceComputedSegment(:final segment) => _customerFilterLabel(
     context,
     hostCustomerFilterForAudienceSegment(segment),

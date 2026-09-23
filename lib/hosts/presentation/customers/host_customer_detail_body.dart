@@ -152,10 +152,8 @@ class HostCustomerDetailBody extends StatelessWidget {
 
   Future<void> _editDetails(BuildContext context) => showCatchBottomSheet<void>(
     context: context,
-    builder: (sheetContext) => CatchSheet(
+    builder: (sheetContext) => CatchSheet.standard(
       title: context.l10n.hostCustomersEditDetails,
-      mode: CatchSheetMode.scrollable,
-      keyboardSafe: true,
       child: HostCustomerIdentityCard(
         customer: customer,
         initiallyEditing: true,

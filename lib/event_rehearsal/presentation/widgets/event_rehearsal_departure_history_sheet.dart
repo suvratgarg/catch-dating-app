@@ -43,11 +43,10 @@ class _EventRehearsalDepartureHistorySheetState
       practiceOperatorId: widget.selection.practiceOperatorId,
     );
     final query = eventRehearsalMovementProvider(selection);
-    return CatchSheet(
+    return CatchSheet.standard(
       title: context.l10n.eventAssistanceHistoryTitle,
       badge: context.l10n.hostEventRehearsalBadge,
       badgeTone: CatchBadgeTone.danger,
-      mode: CatchSheetMode.scrollable,
       child: CatchAsyncBoundary<RehearsalMovementPage>(
         value: ref.watch(query),
         initialLoadTimeout: null,

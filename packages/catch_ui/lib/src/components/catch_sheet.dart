@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/components/catch_badge.dart';
+import 'package:catch_ui/src/components/catch_button.dart';
 import 'package:catch_ui/src/components/catch_sheet_header.dart';
 import 'package:catch_ui/src/primitives/catch_gap.dart';
 import 'package:catch_ui/src/primitives/catch_sheet_drag_indicator.dart';
@@ -61,7 +62,61 @@ class CatchSheet extends StatelessWidget {
     this.keyboardSafe = false,
     this.mode = CatchSheetMode.content,
     this.padding,
-  });
+  }) : _filterCloseLabel = null,
+       _onFilterClose = null,
+       _standard = false,
+       pinFooter = false;
+
+  /// Bounded, keyboard-safe sheet with one scroll owner and fixed geometry.
+  /// Supply natural-height content; the sheet owns vertical scrolling.
+  const CatchSheet.standard({
+    super.key,
+    required this.child,
+    this.title,
+    this.subtitle,
+    this.footer,
+    this.pinFooter = false,
+    this.glyph,
+    this.badge,
+    this.badgeTone = CatchBadgeTone.neutral,
+    this.trailing,
+  }) : _filterCloseLabel = null,
+       _onFilterClose = null,
+       _standard = true,
+       grabber = true,
+       keyboardSafe = true,
+       mode = CatchSheetMode.scrollable,
+       padding = null;
+
+  /// Immediate filters have no instructional subtitle or commit action.
+  /// The shell owns the persistent, secondary Close action.
+  const CatchSheet.filter({
+    super.key,
+    required this.title,
+    required this.child,
+    required String closeLabel,
+    required VoidCallback onClose,
+    this.trailing,
+  }) : _filterCloseLabel = closeLabel,
+       _onFilterClose = onClose,
+       _standard = true,
+       pinFooter = true,
+       subtitle = null,
+       footer = null,
+       glyph = null,
+       badge = null,
+       badgeTone = CatchBadgeTone.neutral,
+       grabber = true,
+       keyboardSafe = true,
+       mode = CatchSheetMode.scrollable,
+       padding = null;
+
+  final String? _filterCloseLabel;
+  final VoidCallback? _onFilterClose;
+  final bool _standard;
+
+  /// Keeps a filter dismissal action reachable while long choices scroll.
+  final bool pinFooter;
 
   final String? title;
   final String? subtitle;
@@ -87,9 +142,16 @@ class CatchSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final footer = _filterCloseLabel == null
+        ? this.footer
+        : CatchButton.sheet(
+            label: _filterCloseLabel,
+            onPressed: _onFilterClose,
+            role: CatchButtonEmphasis.dismiss,
+          );
     final mediaQuery = MediaQuery.maybeOf(context);
     final viewPaddingBottom = mediaQuery?.viewPadding.bottom ?? 0.0;
-    final keyboardInsetBottom = keyboardSafe
+    final keyboardInsetBottom = keyboardSafe && !_standard
         ? mediaQuery?.viewInsets.bottom ?? 0.0
         : 0.0;
     final obstructionBottom = math.max(viewPaddingBottom, keyboardInsetBottom);
@@ -125,10 +187,14 @@ class CatchSheet extends StatelessWidget {
       ),
       child: Padding(
         key: const ValueKey<String>('catch-bottom-sheet-content-padding'),
-        padding: effectivePadding,
+        padding: pinFooter && footer != null
+            ? effectivePadding.copyWith(bottom: 0)
+            : effectivePadding,
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: _standard
+              ? CrossAxisAlignment.stretch
+              : CrossAxisAlignment.start,
           children: [
             if (grabber) ...[
               const CatchSheetDragIndicator(),
@@ -150,11 +216,78 @@ class CatchSheet extends StatelessWidget {
             if (hasHeader)
               const SizedBox(height: CatchLayout.sheetHeaderBodyGap),
             child,
-            if (footer != null) ...[gapH16, footer!],
+            if (footer != null && !pinFooter) ...[gapH16, footer],
           ],
         ),
       ),
     );
+    if (_standard) {
+      // Keyboard obstruction belongs outside the scrollable surface so content
+      // remains visible rather than requiring a scroll through keyboard padding.
+      final keyboard = mediaQuery?.viewInsets.bottom ?? 0.0;
+      return LayoutBuilder(
+        builder: (context, constraints) {
+          final mediaHeight = mediaQuery?.size.height ?? 0.0;
+          final viewportHeight = mediaHeight > 0
+              ? mediaHeight
+              : constraints.maxHeight;
+          final availableHeight = math.min(
+            constraints.hasBoundedHeight
+                ? constraints.maxHeight
+                : viewportHeight,
+            viewportHeight - (mediaQuery?.padding.top ?? 0.0),
+          );
+          final height =
+              math.max(0.0, availableHeight - keyboard) *
+              CatchLayout.sheetViewportMaxHeightFraction;
+          return Padding(
+            padding: EdgeInsets.only(bottom: keyboard),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                maxHeight: height,
+                maxWidth: CatchLayout.maxContentWidth,
+              ),
+              child: ClipRRect(
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(CatchLayout.sheetTopRadius),
+                ),
+                child: pinFooter && footer != null
+                    ? CatchSurface(
+                        emphasis: CatchSurfaceEmphasis.floating,
+                        duration: Duration.zero,
+                        borderRadius: content.borderRadius,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Flexible(
+                              child: SingleChildScrollView(
+                                key: const ValueKey('catch-sheet-scroll'),
+                                child: content.child,
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.fromLTRB(
+                                CatchLayout.sheetHorizontalPadding,
+                                CatchSpacing.s4,
+                                CatchLayout.sheetHorizontalPadding,
+                                minimumBottomPadding,
+                              ),
+                              child: footer,
+                            ),
+                          ],
+                        ),
+                      )
+                    : SingleChildScrollView(
+                        key: const ValueKey('catch-sheet-scroll'),
+                        child: content,
+                      ),
+              ),
+            ),
+          );
+        },
+      );
+    }
     return mode == CatchSheetMode.scrollable
         ? SingleChildScrollView(child: content)
         : content;

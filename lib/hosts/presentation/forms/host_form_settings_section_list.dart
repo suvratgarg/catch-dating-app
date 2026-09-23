@@ -465,12 +465,12 @@ Future<void> _showLogicRuleBuilder(
                 )) &&
             (!questionAction || targetQuestionId != null) &&
             (!sectionAction || targetSectionId != null);
-        return CatchSheet(
+        return CatchSheet.standard(
           title: context.l10n.hostFormAddRule,
-          keyboardSafe: true,
-          footer: CatchButton(
+          footer: CatchButton.sheet(
+            role: CatchButtonEmphasis.commit,
             label: context.l10n.hostFormRuleSave,
-            fullWidth: true,
+
             onPressed: !canSave
                 ? null
                 : () {
@@ -487,133 +487,130 @@ Future<void> _showLogicRuleBuilder(
                     Navigator.of(sheetContext).pop();
                   },
           ),
-          child: SingleChildScrollView(
-            child: CatchSection.containedFieldRows(
-              children: [
+          child: CatchSection.fieldRows(
+            first: true,
+            children: [
+              CatchField<String>.select(
+                copy: catchFieldCopy(context.l10n),
+                key: ValueKey('logic-source-$sourceId'),
+                title: context.l10n.hostFormRuleQuestion,
+                contract: CatchContractConstraints
+                    .organizerFormDraftDocumentDefinitionLogicRulesItemsConditionsItemsQuestionId,
+                contractValueBuilder: (value) => value,
+                values: questions
+                    .map((question) => question.questionId)
+                    .toList(),
+                value: sourceId,
+                itemLabelBuilder: (value) => questions
+                    .firstWhere((question) => question.questionId == value)
+                    .label,
+                onChanged: (value) => setState(() {
+                  if (value == null) return;
+                  sourceId = value;
+                  expectedText = '';
+                  expectedChoice = null;
+                }),
+              ),
+              CatchField<HostFormLogicOperator>.select(
+                copy: catchFieldCopy(context.l10n),
+                key: ValueKey('logic-operator-$operator-$sourceId'),
+                title: context.l10n.hostFormRuleOperator,
+                contract: CatchContractConstraints
+                    .organizerFormDraftDocumentDefinitionLogicRulesItemsConditionsItemsOperator,
+                contractValueBuilder: (value) => value.name,
+                values: operators,
+                value: operator,
+                itemLabelBuilder: (value) =>
+                    hostFormLogicOperatorLabel(context, value),
+                onChanged: (value) {
+                  if (value != null) setState(() => operator = value);
+                },
+              ),
+              if (needsValue && choiceValues.isNotEmpty)
                 CatchField<String>.select(
                   copy: catchFieldCopy(context.l10n),
-                  key: ValueKey('logic-source-$sourceId'),
-                  title: context.l10n.hostFormRuleQuestion,
+                  key: ValueKey('logic-value-$sourceId-$expectedChoice'),
+                  title: context.l10n.hostFormRuleValue,
                   contract: CatchContractConstraints
-                      .organizerFormDraftDocumentDefinitionLogicRulesItemsConditionsItemsQuestionId,
+                      .organizerFormDraftDocumentDefinitionLogicRulesItemsConditionsItemsExpectedValuesItems,
                   contractValueBuilder: (value) => value,
-                  values: questions
+                  values: choiceValues,
+                  value: expectedChoice!,
+                  itemLabelBuilder: (value) =>
+                      source.kind == HostFormQuestionKind.boolean
+                      ? value == 'true'
+                            ? context.l10n.hostFormRuleTrue
+                            : context.l10n.hostFormRuleFalse
+                      : source.options
+                            .firstWhere((option) => option.value == value)
+                            .label,
+                  onChanged: (value) => setState(() => expectedChoice = value),
+                )
+              else if (needsValue)
+                CatchField.input(
+                  copy: catchFieldCopy(context.l10n),
+                  key: ValueKey('logic-value-$sourceId'),
+                  title: context.l10n.hostFormRuleValue,
+                  initialValue: expectedText,
+                  keyboardType: source.kind == HostFormQuestionKind.number
+                      ? const TextInputType.numberWithOptions(
+                          decimal: true,
+                          signed: true,
+                        )
+                      : TextInputType.text,
+                  contractExemption:
+                      'The form contract validates comparison values.',
+                  onChanged: (value) => setState(() => expectedText = value),
+                ),
+              CatchField<HostFormLogicAction>.select(
+                copy: catchFieldCopy(context.l10n),
+                key: ValueKey('logic-action-$action'),
+                title: context.l10n.hostFormRuleAction,
+                contract: CatchContractConstraints
+                    .organizerFormDraftDocumentDefinitionLogicRulesItemsAction,
+                contractValueBuilder: (value) => value.name,
+                values: HostFormLogicAction.values,
+                value: action,
+                itemLabelBuilder: (value) =>
+                    hostFormLogicActionLabel(context, value),
+                onChanged: (value) {
+                  if (value != null) setState(() => action = value);
+                },
+              ),
+              if (questionAction && targetQuestions.isNotEmpty)
+                CatchField<String>.select(
+                  copy: catchFieldCopy(context.l10n),
+                  title: context.l10n.hostFormRuleTargetQuestion,
+                  contract: CatchContractConstraints
+                      .organizerFormDraftDocumentDefinitionLogicRulesItemsTargetQuestionId,
+                  contractValueBuilder: (value) => value,
+                  values: targetQuestions
                       .map((question) => question.questionId)
                       .toList(),
-                  value: sourceId,
-                  itemLabelBuilder: (value) => questions
+                  value: targetQuestionId!,
+                  itemLabelBuilder: (value) => targetQuestions
                       .firstWhere((question) => question.questionId == value)
                       .label,
-                  onChanged: (value) => setState(() {
-                    if (value == null) return;
-                    sourceId = value;
-                    expectedText = '';
-                    expectedChoice = null;
-                  }),
+                  onChanged: (value) =>
+                      setState(() => targetQuestionId = value),
                 ),
-                CatchField<HostFormLogicOperator>.select(
+              if (sectionAction && targetSections.isNotEmpty)
+                CatchField<String>.select(
                   copy: catchFieldCopy(context.l10n),
-                  key: ValueKey('logic-operator-$operator-$sourceId'),
-                  title: context.l10n.hostFormRuleOperator,
+                  title: context.l10n.hostFormRuleTargetSection,
                   contract: CatchContractConstraints
-                      .organizerFormDraftDocumentDefinitionLogicRulesItemsConditionsItemsOperator,
-                  contractValueBuilder: (value) => value.name,
-                  values: operators,
-                  value: operator,
-                  itemLabelBuilder: (value) =>
-                      hostFormLogicOperatorLabel(context, value),
-                  onChanged: (value) {
-                    if (value != null) setState(() => operator = value);
-                  },
+                      .organizerFormDraftDocumentDefinitionLogicRulesItemsTargetSectionId,
+                  contractValueBuilder: (value) => value,
+                  values: targetSections
+                      .map((section) => section.sectionId)
+                      .toList(),
+                  value: targetSectionId!,
+                  itemLabelBuilder: (value) => targetSections
+                      .firstWhere((section) => section.sectionId == value)
+                      .title,
+                  onChanged: (value) => setState(() => targetSectionId = value),
                 ),
-                if (needsValue && choiceValues.isNotEmpty)
-                  CatchField<String>.select(
-                    copy: catchFieldCopy(context.l10n),
-                    key: ValueKey('logic-value-$sourceId-$expectedChoice'),
-                    title: context.l10n.hostFormRuleValue,
-                    contract: CatchContractConstraints
-                        .organizerFormDraftDocumentDefinitionLogicRulesItemsConditionsItemsExpectedValuesItems,
-                    contractValueBuilder: (value) => value,
-                    values: choiceValues,
-                    value: expectedChoice!,
-                    itemLabelBuilder: (value) =>
-                        source.kind == HostFormQuestionKind.boolean
-                        ? value == 'true'
-                              ? context.l10n.hostFormRuleTrue
-                              : context.l10n.hostFormRuleFalse
-                        : source.options
-                              .firstWhere((option) => option.value == value)
-                              .label,
-                    onChanged: (value) =>
-                        setState(() => expectedChoice = value),
-                  )
-                else if (needsValue)
-                  CatchField.input(
-                    copy: catchFieldCopy(context.l10n),
-                    key: ValueKey('logic-value-$sourceId'),
-                    title: context.l10n.hostFormRuleValue,
-                    initialValue: expectedText,
-                    keyboardType: source.kind == HostFormQuestionKind.number
-                        ? const TextInputType.numberWithOptions(
-                            decimal: true,
-                            signed: true,
-                          )
-                        : TextInputType.text,
-                    contractExemption:
-                        'The form contract validates comparison values.',
-                    onChanged: (value) => setState(() => expectedText = value),
-                  ),
-                CatchField<HostFormLogicAction>.select(
-                  copy: catchFieldCopy(context.l10n),
-                  key: ValueKey('logic-action-$action'),
-                  title: context.l10n.hostFormRuleAction,
-                  contract: CatchContractConstraints
-                      .organizerFormDraftDocumentDefinitionLogicRulesItemsAction,
-                  contractValueBuilder: (value) => value.name,
-                  values: HostFormLogicAction.values,
-                  value: action,
-                  itemLabelBuilder: (value) =>
-                      hostFormLogicActionLabel(context, value),
-                  onChanged: (value) {
-                    if (value != null) setState(() => action = value);
-                  },
-                ),
-                if (questionAction && targetQuestions.isNotEmpty)
-                  CatchField<String>.select(
-                    copy: catchFieldCopy(context.l10n),
-                    title: context.l10n.hostFormRuleTargetQuestion,
-                    contract: CatchContractConstraints
-                        .organizerFormDraftDocumentDefinitionLogicRulesItemsTargetQuestionId,
-                    contractValueBuilder: (value) => value,
-                    values: targetQuestions
-                        .map((question) => question.questionId)
-                        .toList(),
-                    value: targetQuestionId!,
-                    itemLabelBuilder: (value) => targetQuestions
-                        .firstWhere((question) => question.questionId == value)
-                        .label,
-                    onChanged: (value) =>
-                        setState(() => targetQuestionId = value),
-                  ),
-                if (sectionAction && targetSections.isNotEmpty)
-                  CatchField<String>.select(
-                    copy: catchFieldCopy(context.l10n),
-                    title: context.l10n.hostFormRuleTargetSection,
-                    contract: CatchContractConstraints
-                        .organizerFormDraftDocumentDefinitionLogicRulesItemsTargetSectionId,
-                    contractValueBuilder: (value) => value,
-                    values: targetSections
-                        .map((section) => section.sectionId)
-                        .toList(),
-                    value: targetSectionId!,
-                    itemLabelBuilder: (value) => targetSections
-                        .firstWhere((section) => section.sectionId == value)
-                        .title,
-                    onChanged: (value) =>
-                        setState(() => targetSectionId = value),
-                  ),
-              ],
-            ),
+            ],
           ),
         );
       },
