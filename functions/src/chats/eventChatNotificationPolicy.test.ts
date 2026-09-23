@@ -7,7 +7,9 @@ import type {CallableRequest} from "firebase-functions/v2/https";
 import {eventChatMembershipId, updateEventChatAccessHandler} from
   "./eventChatAccess";
 import {dispatchEventChatNotification,
+  dispatchEventChatNotificationCandidates,
   type EventChatNotificationPreview} from "./eventChatNotificationPolicy";
+import {blockDocId} from "../safety/blocking";
 
 const emulator = process.env.FIRESTORE_EMULATOR_HOST;
 test("queued chat previews suppress mute, leave, removal and closed rooms",
@@ -35,6 +37,11 @@ test("queued chat previews suppress mute, leave, removal and closed rooms",
           "event-chat-v1" : null}} as CallableRequest<unknown>, deps);
     const previews: EventChatNotificationPreview[] = [];
     const candidate = {eventId, messageId, recipientUid: person};
+    const fanout = () => dispatchEventChatNotificationCandidates({eventId,
+      messageId}, {db: () => db, enabled: true,
+      sink: async (preview) => {
+        previews.push(preview);
+      }});
     const dispatch = (enabled = true) => dispatchEventChatNotification(
       candidate, {db: () => db, enabled,
         sink: async (preview) => {
@@ -66,11 +73,22 @@ test("queued chat previews suppress mute, leave, removal and closed rooms",
       assert.equal(previews.length, 1);
       assert.equal(JSON.stringify(previews).includes("Private message"),
         false);
+      assert.equal(await fanout(), 1);
+      for (const [blocker, blocked] of [[person, host], [host, person]]) {
+        const edge = ref("blocks", blockDocId(blocker, blocked));
+        await edge.set({blockerUserId: blocker, blockedUserId: blocked,
+          createdAt: Timestamp.now(), source: "chat"});
+        assert.equal(await dispatch(), false);
+        assert.equal(await fanout(), 0);
+        await edge.delete();
+      }
       await change(person, "mute", 1);
       assert.equal(await dispatch(), false);
+      assert.equal(await fanout(), 0);
       await change(person, "unmute", 2);
       await change(person, "leave", 3);
       assert.equal(await dispatch(), false);
+      assert.equal(await fanout(), 0);
       await change(person, "join", 4);
       await member(person).update({status: "removed", revision: 6});
       assert.equal(await dispatch(), false);
@@ -83,6 +101,8 @@ test("queued chat previews suppress mute, leave, removal and closed rooms",
         ref("organizers", organizerId), ref("users", host),
         ref("users", person), ref("eventChatRooms", eventId),
         ref("eventChatMessages", messageId), member(host), member(person),
+        ref("blocks", blockDocId(person, host)),
+        ref("blocks", blockDocId(host, person)),
         ref("eventParticipations", `${eventId}_${person}`)]) {
         batch.delete(path);
       }

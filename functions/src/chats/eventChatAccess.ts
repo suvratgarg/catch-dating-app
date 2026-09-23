@@ -78,7 +78,8 @@ export async function readEventChatAccount(db: FirebaseFirestore.Firestore,
 
 /** Reads current event authority without trusting a cached roster grant. */
 export async function readEventChatAccess(db: FirebaseFirestore.Firestore,
-  tx: FirebaseFirestore.Transaction, eventId: string, uid: string) {
+  tx: FirebaseFirestore.Transaction, eventId: string, uid: string,
+  nowMillis = Date.now()) {
   const user = await readEventChatAccount(db, tx, uid);
   const eventSnap = await tx.get(db.collection("events").doc(eventId));
   if (!eventSnap.exists) throw unavailable();
@@ -117,7 +118,7 @@ export async function readEventChatAccess(db: FirebaseFirestore.Firestore,
     user.displayName.trim().length > 0 &&
     (user.profileComplete === true || user.profileClaimedAt != null);
   const mode = event.status === "active" ?
-    effectiveEventChatRoomMode(room, Date.now()) : "closed";
+    effectiveEventChatRoomMode(room, nowMillis) : "closed";
   const active = event.status === "active" && canReadEventChatMode(mode);
   const joined = member?.status === "joined";
   const canReadMessages = active && claimed && joined;
@@ -138,8 +139,9 @@ export async function readEventChatAccess(db: FirebaseFirestore.Firestore,
 }
 
 export async function requireEventChatMember(db: FirebaseFirestore.Firestore,
-  tx: FirebaseFirestore.Transaction, eventId: string, uid: string) {
-  const access = await readEventChatAccess(db, tx, eventId, uid);
+  tx: FirebaseFirestore.Transaction, eventId: string, uid: string,
+  nowMillis = Date.now()) {
+  const access = await readEventChatAccess(db, tx, eventId, uid, nowMillis);
   if (!access.view.canReadMessages) throw unavailable();
   return access;
 }
@@ -152,7 +154,8 @@ export async function getEventChatAccessHandler(
   const db = deps.db();
   await deps.rateLimit(db, uid, "getEventChatAccess");
   return db.runTransaction(async (tx) =>
-    (await readEventChatAccess(db, tx, data.eventId, uid)).view);
+    (await readEventChatAccess(db, tx, data.eventId, uid,
+      deps.now().toMillis())).view);
 }
 
 export async function updateEventChatAccessHandler(
@@ -184,9 +187,11 @@ export async function updateEventChatAccessHandler(
   await deps.rateLimit(db, uid, "updateEventChatAccess");
   const receiptRef = db.collection("eventChatAccessReceipts")
     .doc(hash([uid, data.requestId]));
-  const payloadHash = hash([data.eventId, data.action, data.expectedRevision,
-    data.termsVersion, data.opensAtMillis ?? null,
-    data.closesAtMillis ?? null]);
+  const legacyPayload = [data.eventId, data.action,
+    data.expectedRevision, data.termsVersion];
+  const payloadHash = hash(["join", "leave", "open", "close"].includes(
+    data.action) ? legacyPayload : [...legacyPayload,
+      data.opensAtMillis ?? null, data.closesAtMillis ?? null]);
   return db.runTransaction(async (tx) => {
     await readEventChatAccount(db, tx, uid);
     const receiptSnap = await tx.get(receiptRef);
@@ -229,7 +234,8 @@ export async function updateEventChatAccessHandler(
             member.notificationsMuted ?? false,
         updatedAt: now} satisfies Membership);
     } else {
-      const access = await readEventChatAccess(db, tx, data.eventId, uid);
+      const access = await readEventChatAccess(db, tx, data.eventId, uid,
+        now.toMillis());
       if (data.action === "join") {
         if (!access.view.canJoin) throw unavailable();
         if (access.member?.status === "removed" ||

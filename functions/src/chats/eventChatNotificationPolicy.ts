@@ -1,5 +1,6 @@
 import * as admin from "firebase-admin";
 import {requireDoc} from "../shared/validation";
+import {hasBlockingRelationshipInTransaction} from "../safety/blocking";
 import type {EventChatMessageDocument as Message} from
   "../shared/generated/firestoreAdminTypes";
 import {requireEventChatMember} from "./eventChatAccess";
@@ -44,7 +45,9 @@ export async function dispatchEventChatNotification(
           candidate.recipientUid),
         requireEventChatMember(db, tx, candidate.eventId, message.uid!),
       ]);
-      return !recipient.member?.notificationsMuted &&
+      const blocked = await hasBlockingRelationshipInTransaction(tx, db,
+        candidate.recipientUid, [message.uid!]);
+      return !blocked && !recipient.member?.notificationsMuted &&
         recipient.view.organizerId === message.organizerId &&
         sender.view.organizerId === message.organizerId;
     } catch {
@@ -55,4 +58,28 @@ export async function dispatchEventChatNotification(
   await deps.sink({...candidate, title: "Event room update",
     body: "Open the room to see the new message."});
   return true;
+}
+
+/** Bounded post-commit seam. Disabled by default; no queue or provider is
+ * activated by a message write. A future worker can call this with its
+ * approved sink and still gets dispatch-time authority rechecks. */
+export async function dispatchEventChatNotificationCandidates(
+  message: {eventId: string; messageId: string},
+  deps: Deps = defaults
+): Promise<number> {
+  if (!deps.enabled) return 0;
+  const db = deps.db();
+  const members = await db.collection("eventChatMemberships")
+    .where("eventId", "==", message.eventId).limit(101).get();
+  if (members.size > 100) return 0;
+  let delivered = 0;
+  for (const row of members.docs) {
+    const member = row.data();
+    if (member.status !== "joined" || typeof member.uid !== "string") {
+      continue;
+    }
+    if (await dispatchEventChatNotification({...message,
+      recipientUid: member.uid}, deps)) delivered++;
+  }
+  return delivered;
 }

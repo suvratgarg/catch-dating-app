@@ -5,6 +5,8 @@ import {requireAuth} from "../shared/auth";
 import {appCheckCallableOptionsWithLimits} from "../shared/callableOptions";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import {moderateText} from "../moderation/textFilter";
+import {dispatchEventChatNotificationCandidates} from
+  "./eventChatNotificationPolicy";
 import {eventChatMembershipId, requireEventChatMember,
   readEventChatAccount, requireEventChatActor} from "./eventChatAccess";
 import {chatHash, chatIdentityReader, emptyReactionCounts, eventChatReactionId,
@@ -47,9 +49,11 @@ export async function sendEventChatMessageHandler(
   const messageRef = db.collection("eventChatMessages")
     .doc(chatHash([data.eventId, uid, data.requestId]));
   const kind = data.kind ?? "text";
-  const payloadHash = chatHash([text, data.replyToMessageId, kind]);
-  return db.runTransaction(async (tx) => {
-    const access = await requireEventChatMember(db, tx, data.eventId, uid);
+  const payloadHash = chatHash(kind === "text" ?
+    [text, data.replyToMessageId] : [text, data.replyToMessageId, kind]);
+  const result = await db.runTransaction(async (tx) => {
+    const access = await requireEventChatMember(db, tx, data.eventId, uid,
+      deps.now().toMillis());
     if (!access.view.canPostMessages ||
         (kind === "announcement" && !access.view.canManage) ||
         (access.view.room.status === "announcementsOnly" &&
@@ -97,6 +101,16 @@ export async function sendEventChatMessageHandler(
     }
     return {messageId: messageRef.id, sequence, replayed: false};
   });
+  if (!result.replayed) {
+    try {
+      await (deps.notificationDispatch ??
+        dispatchEventChatNotificationCandidates)({eventId: data.eventId,
+        messageId: result.messageId});
+    } catch {
+      // Optional notification delivery cannot undo a committed room message.
+    }
+  }
+  return result;
 }
 
 export async function setEventChatReactionHandler(
