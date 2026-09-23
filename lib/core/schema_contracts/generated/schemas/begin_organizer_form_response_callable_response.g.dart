@@ -849,6 +849,15 @@ const schemaBeginOrganizerFormResponseCallableResponseSchema = <String, Object?>
                     'catchWhatsapp': <String, Object?>{
                       'type': 'boolean',
                     },
+                    'organizerOperationsWhatsapp': <String, Object?>{
+                      'type': 'boolean',
+                    },
+                    'organizerMarketingWhatsapp': <String, Object?>{
+                      'type': 'boolean',
+                    },
+                    'catchMarketingWhatsapp': <String, Object?>{
+                      'type': 'boolean',
+                    },
                   },
                 },
                 'completion': <String, Object?>{
@@ -912,8 +921,11 @@ const schemaBeginOrganizerFormResponseCallableResponseSchema = <String, Object?>
               ],
               'properties': <String, Object?>{
                 'termsVersion': <String, Object?>{
-                  'const': 'form-whatsapp-v1',
                   'type': 'string',
+                  'enum': <Object?>[
+                    'form-whatsapp-v1',
+                    'form-whatsapp-v2',
+                  ],
                 },
                 'organizerWhatsapp': <String, Object?>{
                   'type': <Object?>[
@@ -923,6 +935,27 @@ const schemaBeginOrganizerFormResponseCallableResponseSchema = <String, Object?>
                   'maxLength': 1000,
                 },
                 'catchWhatsapp': <String, Object?>{
+                  'type': <Object?>[
+                    'string',
+                    'null',
+                  ],
+                  'maxLength': 1000,
+                },
+                'organizerOperationsWhatsapp': <String, Object?>{
+                  'type': <Object?>[
+                    'string',
+                    'null',
+                  ],
+                  'maxLength': 1000,
+                },
+                'organizerMarketingWhatsapp': <String, Object?>{
+                  'type': <Object?>[
+                    'string',
+                    'null',
+                  ],
+                  'maxLength': 1000,
+                },
+                'catchMarketingWhatsapp': <String, Object?>{
                   'type': <Object?>[
                     'string',
                     'null',
@@ -988,13 +1021,25 @@ const schemaBeginOrganizerFormResponseCallableResponseSchema = <String, Object?>
           ],
           'properties': <String, Object?>{
             'termsVersion': <String, Object?>{
-              'const': 'form-whatsapp-v1',
               'type': 'string',
+              'enum': <Object?>[
+                'form-whatsapp-v1',
+                'form-whatsapp-v2',
+              ],
             },
             'organizerWhatsapp': <String, Object?>{
               'type': 'boolean',
             },
             'catchWhatsapp': <String, Object?>{
+              'type': 'boolean',
+            },
+            'organizerOperationsWhatsapp': <String, Object?>{
+              'type': 'boolean',
+            },
+            'organizerMarketingWhatsapp': <String, Object?>{
+              'type': 'boolean',
+            },
+            'catchMarketingWhatsapp': <String, Object?>{
               'type': 'boolean',
             },
           },

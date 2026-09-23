@@ -31,6 +31,72 @@ export const listParticipantMessagingPreferencesCallableResponseSchema: Record<s
             "optedOut"
           ]
         },
+        "purposes": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "eventOperations": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "status",
+                "receiptId"
+              ],
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "unknown",
+                    "optedIn",
+                    "optedOut"
+                  ]
+                },
+                "receiptId": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              }
+            },
+            "marketing": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "status",
+                "receiptId"
+              ],
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "unknown",
+                    "optedIn",
+                    "optedOut"
+                  ]
+                },
+                "receiptId": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
         "receiptId": {
           "anyOf": [
             {
@@ -85,6 +151,72 @@ export const listParticipantMessagingPreferencesCallableResponseSchema: Record<s
                   "optedOut"
                 ]
               },
+              "purposes": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "eventOperations": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "status",
+                      "receiptId"
+                    ],
+                    "properties": {
+                      "status": {
+                        "type": "string",
+                        "enum": [
+                          "unknown",
+                          "optedIn",
+                          "optedOut"
+                        ]
+                      },
+                      "receiptId": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 180
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "marketing": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "status",
+                      "receiptId"
+                    ],
+                    "properties": {
+                      "status": {
+                        "type": "string",
+                        "enum": [
+                          "unknown",
+                          "optedIn",
+                          "optedOut"
+                        ]
+                      },
+                      "receiptId": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 180
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              },
               "receiptId": {
                 "anyOf": [
                   {
@@ -113,6 +245,104 @@ export const listParticipantMessagingPreferencesCallableResponseSchema: Record<s
           "type": "null"
         }
       ]
+    }
+  },
+  "definitions": {
+    "purposeSummaries": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "eventOperations": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "receiptId"
+          ],
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": [
+                "unknown",
+                "optedIn",
+                "optedOut"
+              ]
+            },
+            "receiptId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        "marketing": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "receiptId"
+          ],
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": [
+                "unknown",
+                "optedIn",
+                "optedOut"
+              ]
+            },
+            "receiptId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "purposeSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "receiptId"
+      ],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "unknown",
+            "optedIn",
+            "optedOut"
+          ]
+        },
+        "receiptId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
     }
   }
 } as const;

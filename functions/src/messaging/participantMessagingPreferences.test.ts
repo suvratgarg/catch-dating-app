@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import {createHash} from "node:crypto";
 import test from "node:test";
 import {Timestamp} from "firebase-admin/firestore";
 import type {CallableRequest} from "firebase-functions/v2/https";
@@ -117,6 +118,82 @@ test("Catch and each organizer withdraw independently, preserving SMS",
       result.preference.receiptId);
   });
 
+test("purpose grants are visible and sender withdrawal revokes every purpose",
+  async () => {
+    const h = fixture();
+    const orgPath = "organizerCommunicationPreferences/" +
+      organizerCommunicationPreferenceId("org", "person");
+    const makeChannel = (purpose: "eventOperations" | "marketing") => ({
+      status: "optedIn", evidenceStatus: "complete",
+      currentReceiptId: `purpose-${purpose}`,
+      termsVersion: "form-whatsapp-v2", source: "hostFormResponse",
+      sourceEventId: null, sourceResponseId: "response",
+      endpointE164: "+919000000001", updatedAt: Timestamp.fromMillis(500),
+    });
+    h.store.records.set(orgPath, {organizerId: "org", uid: "person",
+      whatsapp: unknownOrganizerCommunicationChannel(),
+      whatsappPurposes: {eventOperations: makeChannel("eventOperations"),
+        marketing: makeChannel("marketing")},
+      sms: unknownOrganizerCommunicationChannel(),
+      createdAt: now, updatedAt: now});
+    for (const purpose of ["eventOperations", "marketing"]) {
+      h.store.records.set(
+        `organizerCommunicationPermissionReceipts/purpose-${purpose}`,
+        {organizerId: "org", uid: "person", channel: "whatsapp", purpose,
+          sourceResponseId: "response", endpointE164: "+919000000001",
+          decision: "optedIn", evidenceStatus: "complete",
+          consentCopyHash: "a".repeat(64), revokedAt: null});
+    }
+    const listed = await list(request({cursor: null, limit: 10}), h.deps);
+    assert.equal(listed.organizers[0].preference.purposes?.eventOperations
+      ?.status, "optedIn");
+    assert.equal(listed.organizers[0].preference.purposes?.marketing
+      ?.status, "optedIn");
+    const scoped = await withdraw(request({...input("organizer",
+      "purpose-eventOperations", "scope-operations"),
+    purpose: "eventOperations"}), h.deps);
+    assert.equal(scoped.preference.status, "optedIn");
+    assert.equal(scoped.preference.purposes?.eventOperations?.status,
+      "optedOut");
+    assert.equal(scoped.preference.purposes?.marketing?.status, "optedIn");
+    const partial = await list(request({cursor: null, limit: 10}), h.deps);
+    assert.equal(partial.organizers[0].preference.purposes?.eventOperations
+      ?.status, "optedOut");
+    assert.equal(partial.organizers[0].preference.purposes?.marketing
+      ?.status, "optedIn");
+    const result = await withdraw(request(input("organizer",
+      "purpose-marketing")), h.deps);
+    assert.equal(result.preference.status, "optedOut");
+    const after = await list(request({cursor: null, limit: 10}), h.deps);
+    assert.equal(after.organizers[0].preference.purposes?.eventOperations
+      ?.status, "optedOut");
+    assert.equal(after.organizers[0].preference.purposes?.marketing
+      ?.status, "optedOut");
+    const stored = h.store.records.get(orgPath)!;
+    h.store.records.set(orgPath, {...stored, whatsappPurposes: {
+      ...(stored.whatsappPurposes as Record<string, unknown>),
+      eventOperations: {...makeChannel("eventOperations"),
+        currentReceiptId: "later-operations",
+        updatedAt: Timestamp.fromMillis(2000)},
+    }});
+    h.store.records.set(
+      "organizerCommunicationPermissionReceipts/later-operations",
+      {organizerId: "org", uid: "person", channel: "whatsapp",
+        purpose: "eventOperations", sourceResponseId: "response",
+        endpointE164: "+919000000001", decision: "optedIn",
+        evidenceStatus: "complete", consentCopyHash: "a".repeat(64),
+        revokedAt: null});
+    const replay = await withdraw(request({...input("organizer",
+      "purpose-eventOperations", "scope-operations"),
+    purpose: "eventOperations"}), h.deps);
+    assert.equal(replay.replayed, true);
+    assert.equal(replay.preference.status, "optedIn");
+    assert.equal(replay.preference.purposes?.eventOperations?.status,
+      "optedIn");
+    await assert.rejects(withdraw(request({...input("catch"),
+      purpose: "eventOperations"}), h.deps), {code: "invalid-argument"});
+  });
+
 test("retry is immutable, payload bound, and cannot overwrite a newer grant",
   async () => {
     const h = fixture(); grant(h, "catch");
@@ -137,6 +214,24 @@ test("retry is immutable, payload bound, and cannot overwrite a newer grant",
       h.deps),
     {code: "aborted"});
     assert.notEqual(first.preference.receiptId, replay.preference.receiptId);
+  });
+
+test("legacy sender-wide withdrawal request IDs replay across upgrade",
+  async () => {
+    const h = fixture();
+    grant(h, "catch");
+    const data = input("catch", "catch-grant", "old-request");
+    const oldId = "pmpr_" + createHash("sha256")
+      .update(JSON.stringify(["person", "catch", null, "old-request"]))
+      .digest("hex").slice(0, 48);
+    h.store.records.set(`catchCommunicationPermissionReceipts/${oldId}`,
+      {uid: "person", source: "participantSettings",
+        decision: "optedOut", supersedesReceiptId: "catch-grant"});
+    const before = h.store.records.size;
+    const replay = await withdraw(request(data), h.deps);
+    assert.equal(replay.replayed, true);
+    assert.equal(replay.preference.status, "optedIn");
+    assert.equal(h.store.records.size, before);
   });
 
 test("auth, sender scope, deletion and foreign receipts cannot write",
@@ -194,6 +289,14 @@ test("actual withdrawals fence both grants from an earlier pending checkout",
     h.capture(paymentId);
     assert.equal(await h.finalize(paymentId), "submitted");
     const page = await list(request({cursor: null, limit: 10}), deps);
-    assert.deepEqual(page.catchPreference, a.preference);
-    assert.deepEqual(page.organizers[0].preference, b.preference);
+    assert.equal(page.catchPreference.status, a.preference.status);
+    assert.equal(page.catchPreference.receiptId, a.preference.receiptId);
+    assert.equal(page.catchPreference.purposes?.marketing?.status,
+      "optedOut");
+    assert.equal(page.organizers[0].preference.status,
+      b.preference.status);
+    assert.equal(page.organizers[0].preference.receiptId,
+      b.preference.receiptId);
+    assert.equal(page.organizers[0].preference.purposes
+      ?.eventOperations?.status, "optedOut");
   });

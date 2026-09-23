@@ -771,6 +771,15 @@ export const organizerFormVersionDocumentSchema: Record<string, unknown> = {
             },
             "catchWhatsapp": {
               "type": "boolean"
+            },
+            "organizerOperationsWhatsapp": {
+              "type": "boolean"
+            },
+            "organizerMarketingWhatsapp": {
+              "type": "boolean"
+            },
+            "catchMarketingWhatsapp": {
+              "type": "boolean"
             }
           }
         },

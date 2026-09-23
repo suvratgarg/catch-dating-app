@@ -94,6 +94,8 @@ import type {SubmitEventSuccessConversationGraphCallableResponse} from "../../fu
 import type {SubmitEventSuccessWingmanRequestCallablePayload} from "../../functions/src/shared/generated/submitEventSuccessWingmanRequestCallablePayload";
 import type {SubmitOrganizerFormResponseCallablePayload} from "../../functions/src/shared/generated/submitOrganizerFormResponseCallablePayload";
 import type {SubmitOrganizerFormResponseCallableResponse} from "../../functions/src/shared/generated/submitOrganizerFormResponseCallableResponse";
+import type {PromoteFormCommunicationIntentCallablePayload} from "../../functions/src/shared/generated/promoteFormCommunicationIntentCallablePayload";
+import type {PromoteFormCommunicationIntentCallableResponse} from "../../functions/src/shared/generated/promoteFormCommunicationIntentCallableResponse";
 import type {PrepareOrganizerFormPaymentCallablePayload} from "../../functions/src/shared/generated/prepareOrganizerFormPaymentCallablePayload";
 import type {GetOrganizerFormPaymentCallablePayload} from "../../functions/src/shared/generated/getOrganizerFormPaymentCallablePayload";
 import type {FindOrganizerFormPaymentCallablePayload} from "../../functions/src/shared/generated/findOrganizerFormPaymentCallablePayload";
@@ -287,6 +289,17 @@ export async function submitOrganizerFormResponse(
     payload,
     publicFormsFirebaseConfigured,
     "Public forms"
+  );
+}
+
+export async function promoteFormCommunicationIntent(
+  payload: PromoteFormCommunicationIntentCallablePayload
+): Promise<PromoteFormCommunicationIntentCallableResponse> {
+  return invokeWebsiteCallable(
+    "promoteFormCommunicationIntent",
+    payload,
+    publicFormsFirebaseConfigured,
+    "Public form messaging preferences"
   );
 }
 

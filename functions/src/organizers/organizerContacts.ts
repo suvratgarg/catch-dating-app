@@ -1043,6 +1043,48 @@ async function contactWhatsappPermission(params: {
     return unavailable;
   }
   const channel = preference.whatsapp;
+  const purposes: NonNullable<
+    GetOrganizerContactDetailCallableResponse["whatsappPermission"]["purposes"]
+  > = {};
+  for (const purpose of ["eventOperations", "marketing"] as const) {
+    const scoped = preference.whatsappPurposes?.[purpose];
+    if (!scoped) continue;
+    const scopedReceipt = scoped.currentReceiptId === null ? null :
+      await optionalContactQuery(
+        params.db.collection("organizerCommunicationPermissionReceipts")
+          .doc(scoped.currentReceiptId).get(),
+        "WhatsApp purpose receipt", params.organizerId,
+        params.contact.linkedUid
+      );
+    const evidence = scopedReceipt?.data() as
+      OrganizerCommunicationPermissionReceiptDocument | undefined;
+    const belongsToContact = evidence?.organizerId === params.organizerId &&
+      evidence.uid === params.contact.linkedUid &&
+      evidence.channel === "whatsapp";
+    const completeGrant = scoped.status === "optedIn" &&
+      scoped.evidenceStatus === "complete" && belongsToContact &&
+      evidence?.decision === "optedIn" && evidence.purpose === purpose &&
+      evidence.endpointE164 === scoped.endpointE164 &&
+      evidence.sourceResponseId === scoped.sourceResponseId &&
+      evidence.source === scoped.source &&
+      evidence.termsVersion === scoped.termsVersion &&
+      evidence.evidenceStatus === "complete" &&
+      typeof evidence.consentCopyHash === "string" &&
+      /^[a-f0-9]{64}$/u.test(evidence.consentCopyHash) &&
+      evidence.grantedAt !== null &&
+      evidence.revokedAt === null;
+    const broadStop = channel.status === "optedOut" &&
+      channel.updatedAt && (!scoped.updatedAt ||
+        channel.updatedAt.toMillis() >= scoped.updatedAt.toMillis());
+    const stopped = scoped.status === "optedOut" || broadStop;
+    purposes[purpose] = {
+      status: stopped ? "optedOut" : completeGrant ? "optedIn" : "unknown",
+      evidenceStatus: stopped || completeGrant ? "complete" : "incomplete",
+      receiptId: belongsToContact ? scoped.currentReceiptId : null,
+      decisionAtMillis: scoped.updatedAt?.toMillis() ?? null,
+      deliveryAvailable: false,
+    };
+  }
   const receiptSnapshot = channel.currentReceiptId === null ? null :
     await optionalContactQuery(
       params.db.collection("organizerCommunicationPermissionReceipts")
@@ -1078,6 +1120,7 @@ async function contactWhatsappPermission(params: {
     decisionAtMillis: decisionAt?.toMillis() ??
       channel.updatedAt?.toMillis() ?? null,
     identityStrength: validReceipt?.identityStrength ?? null,
+    purposes,
   };
 }
 

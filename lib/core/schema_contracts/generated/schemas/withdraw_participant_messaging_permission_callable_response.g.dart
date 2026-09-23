@@ -32,6 +32,72 @@ const schemaWithdrawParticipantMessagingPermissionCallableResponseSchema = <Stri
             'optedOut',
           ],
         },
+        'purposes': <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'properties': <String, Object?>{
+            'eventOperations': <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'status',
+                'receiptId',
+              ],
+              'properties': <String, Object?>{
+                'status': <String, Object?>{
+                  'type': 'string',
+                  'enum': <Object?>[
+                    'unknown',
+                    'optedIn',
+                    'optedOut',
+                  ],
+                },
+                'receiptId': <String, Object?>{
+                  'anyOf': <Object?>[
+                    <String, Object?>{
+                      'type': 'string',
+                      'minLength': 1,
+                      'maxLength': 180,
+                    },
+                    <String, Object?>{
+                      'type': 'null',
+                    },
+                  ],
+                },
+              },
+            },
+            'marketing': <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'status',
+                'receiptId',
+              ],
+              'properties': <String, Object?>{
+                'status': <String, Object?>{
+                  'type': 'string',
+                  'enum': <Object?>[
+                    'unknown',
+                    'optedIn',
+                    'optedOut',
+                  ],
+                },
+                'receiptId': <String, Object?>{
+                  'anyOf': <Object?>[
+                    <String, Object?>{
+                      'type': 'string',
+                      'minLength': 1,
+                      'maxLength': 180,
+                    },
+                    <String, Object?>{
+                      'type': 'null',
+                    },
+                  ],
+                },
+              },
+            },
+          },
+        },
         'receiptId': <String, Object?>{
           'anyOf': <Object?>[
             <String, Object?>{

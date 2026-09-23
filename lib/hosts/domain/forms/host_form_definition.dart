@@ -96,16 +96,50 @@ class HostFormDefinition {
   bool get offersCatchWhatsapp =>
       formDefinitionDeepStringMap(_json['messagingConsent'])['catchWhatsapp'] ==
       true;
+  bool get usesPurposeMessaging {
+    final settings = formDefinitionDeepStringMap(_json['messagingConsent']);
+    return settings.containsKey('organizerOperationsWhatsapp') ||
+        settings.containsKey('organizerMarketingWhatsapp') ||
+        settings.containsKey('catchMarketingWhatsapp');
+  }
+  bool get offersOrganizerOperationsWhatsapp =>
+      formDefinitionDeepStringMap(
+        _json['messagingConsent'],
+      )['organizerOperationsWhatsapp'] == true;
+  bool get offersOrganizerMarketingWhatsapp =>
+      formDefinitionDeepStringMap(
+        _json['messagingConsent'],
+      )['organizerMarketingWhatsapp'] == true;
+  bool get offersCatchMarketingWhatsapp =>
+      formDefinitionDeepStringMap(
+        _json['messagingConsent'],
+      )['catchMarketingWhatsapp'] == true;
 
   HostFormDefinition withMessagingConsent({
     bool? organizerWhatsapp,
     bool? catchWhatsapp,
+    bool? organizerOperationsWhatsapp,
+    bool? organizerMarketingWhatsapp,
+    bool? catchMarketingWhatsapp,
   }) {
     final next = toJson();
-    next['messagingConsent'] = {
-      'organizerWhatsapp': organizerWhatsapp ?? offersOrganizerWhatsapp,
-      'catchWhatsapp': catchWhatsapp ?? offersCatchWhatsapp,
-    };
+    final purposeEdit = organizerOperationsWhatsapp != null ||
+        organizerMarketingWhatsapp != null || catchMarketingWhatsapp != null;
+    next['messagingConsent'] = purposeEdit || usesPurposeMessaging
+        ? <String, Object?>{
+            'organizerWhatsapp': false,
+            'catchWhatsapp': false,
+            'organizerOperationsWhatsapp': organizerOperationsWhatsapp ??
+                offersOrganizerOperationsWhatsapp,
+            'organizerMarketingWhatsapp': organizerMarketingWhatsapp ??
+                offersOrganizerMarketingWhatsapp,
+            'catchMarketingWhatsapp': catchMarketingWhatsapp ??
+                offersCatchMarketingWhatsapp,
+          }
+        : <String, Object?>{
+            'organizerWhatsapp': organizerWhatsapp ?? offersOrganizerWhatsapp,
+            'catchWhatsapp': catchWhatsapp ?? offersCatchWhatsapp,
+          };
     return HostFormDefinition._(next);
   }
 

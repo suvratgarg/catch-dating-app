@@ -22,6 +22,9 @@
     "whatsapp": {
       "$ref": "organizer_communication_preferences.schema.json#/definitions/channelPreference"
     },
+    "whatsappPurposes": {
+      "$ref": "organizer_communication_preferences.schema.json#/definitions/whatsappPurposes"
+    },
     "createdAt": {
       "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
     },

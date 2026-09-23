@@ -1184,6 +1184,21 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/withdrawParticipantMessagingPermissionCallableResponse.ts",
   },
   {
+    name: "PromoteFormCommunicationIntentCallablePayload",
+    source: "callables/promote_form_communication_intent_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/promoteFormCommunicationIntentCallablePayload.ts",
+  },
+  {
+    name: "PromoteFormCommunicationIntentCallableResponse",
+    source: "callable_responses/promote_form_communication_intent_response.schema.json",
+    typeOutput: "functions/src/shared/generated/promoteFormCommunicationIntentCallableResponse.ts",
+  },
+  {
+    name: "FormCommunicationConsentIntentDocument",
+    source: "firestore/form_communication_consent_intents.schema.json",
+    typeOutput: "functions/src/shared/generated/formCommunicationConsentIntentDocument.ts",
+  },
+  {
     name: "CatchCommunicationPreferenceDocument",
     source: "firestore/catch_communication_preferences.schema.json",
     typeOutput: "functions/src/shared/generated/catchCommunicationPreferenceDocument.ts",

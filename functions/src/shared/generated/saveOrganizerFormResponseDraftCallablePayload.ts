@@ -7,9 +7,12 @@
  */
 export interface SaveOrganizerFormResponseDraftCallablePayload {
   messagingChoices?: {
-    termsVersion: "form-whatsapp-v1";
+    termsVersion: "form-whatsapp-v1" | "form-whatsapp-v2";
     organizerWhatsapp: boolean;
     catchWhatsapp: boolean;
+    organizerOperationsWhatsapp?: boolean;
+    organizerMarketingWhatsapp?: boolean;
+    catchMarketingWhatsapp?: boolean;
   };
   draftId: string;
   draftToken: string | null;

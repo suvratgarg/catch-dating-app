@@ -28,7 +28,7 @@ import {
   validateOrganizerCampaignActionCallablePayload,
 } from "../shared/generated/validators/organizerCampaignActionInput";
 import {
-  effectiveOrganizerCommunicationStatus,
+  effectiveOrganizerWhatsappPurposeStatus,
   organizerCommunicationPreferenceId,
 } from
   "../shared/organizerCommunicationPreferences";
@@ -620,9 +620,10 @@ function finalSuppressionReason(params: {
       params.preference.uid !== params.contact.linkedUid) {
     return "unknownPermission";
   }
-  const permissionStatus = effectiveOrganizerCommunicationStatus(
+  const permissionStatus = effectiveOrganizerWhatsappPurposeStatus(
     params.preference,
-    "whatsapp"
+    "marketing",
+    params.contact.phoneE164
   );
   if (permissionStatus === "unknown") return "unknownPermission";
   if (permissionStatus === "optedOut") return "optedOut";
