@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:io';
+import 'dart:ui' as ui;
 
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_response.dart';
@@ -8,6 +10,7 @@ import 'package:catch_dating_app/hosts/presentation/forms/host_form_responses_pa
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -216,7 +219,10 @@ void main() {
                 data: MediaQuery.of(
                   context,
                 ).copyWith(textScaler: TextScaler.linear(scale)),
-                child: child!,
+                child: RepaintBoundary(
+                  key: const ValueKey('response-filters-capture'),
+                  child: child!,
+                ),
               ),
               home: StatefulBuilder(
                 builder: (context, update) => Scaffold(
@@ -251,6 +257,7 @@ void main() {
           'city': {'Mumbai', 'Delhi'},
           'diet': {'vegetarian'},
         });
+        await _captureFilters(tester, 'filters-selected-$scale');
         final dinner = find.widgetWithText(CatchChip, 'Community dinner');
         await tester.ensureVisible(dinner);
         await tester.tap(dinner);
@@ -280,6 +287,22 @@ void main() {
       },
     );
   }
+}
+
+Future<void> _captureFilters(WidgetTester tester, String name) async {
+  final directory = Platform.environment['CATCH_HOST_RESPONSE_REVIEW_DIR'];
+  if (directory == null) return;
+  final boundary = tester.renderObject<RenderRepaintBoundary>(
+    find.byKey(const ValueKey('response-filters-capture')),
+  );
+  await tester.runAsync(() async {
+    final image = await boundary.toImage(pixelRatio: 2);
+    final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
+    image.dispose();
+    final file = File('$directory/$name.png');
+    await file.parent.create(recursive: true);
+    await file.writeAsBytes(bytes!.buffer.asUint8List());
+  });
 }
 
 const _page = HostFormResponsesState(

@@ -40,7 +40,7 @@ void main() {
           await tester.ensureVisible(payment);
           await pumpFeatureUi(tester);
           expect(tester.getSize(payment).height, greaterThanOrEqualTo(44));
-          await _capturePayment(tester, 'response-$label');
+          await _captureDetail(tester, 'response-$label');
           await tester.tap(payment);
           await pumpFeatureUi(tester);
           await pumpFeatureUiFor(tester, CatchMotion.slow);
@@ -51,7 +51,7 @@ void main() {
           expect(sheet.payment.amountPaise, 10000);
           expect(sheet.onOpenResponse, isNull);
           expect(tester.takeException(), isNull);
-          await _capturePayment(tester, 'payment-$label');
+          await _captureDetail(tester, 'payment-$label');
         });
       }
     }
@@ -327,6 +327,10 @@ void main() {
         container: container,
         child: MaterialApp.router(
           theme: AppTheme.light,
+          builder: (context, child) => RepaintBoundary(
+            key: const ValueKey('response-payment-capture'),
+            child: child!,
+          ),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           routerConfig: router,
@@ -337,6 +341,11 @@ void main() {
     await tester.tap(find.text('Open review'));
     await pumpFeatureUi(tester);
     expect(find.text('Bina'), findsOneWidget);
+    await _captureDetail(
+      tester,
+      'review-filtered-before',
+      directoryEnv: 'CATCH_HOST_RESPONSE_REVIEW_DIR',
+    );
 
     queue._reviewed = true;
     container.invalidate(hostFormResponsesControllerProvider(request));
@@ -346,9 +355,19 @@ void main() {
     expect(queue._loadMoreCalls, 1);
     expect(find.text('Cara'), findsOneWidget);
     expect(queue._requests.every((value) => value == request), isTrue);
+    await _captureDetail(
+      tester,
+      'review-filtered-next-page',
+      directoryEnv: 'CATCH_HOST_RESPONSE_REVIEW_DIR',
+    );
     await tester.tap(find.widgetWithText(CatchButton, 'Previous'));
     await pumpFeatureUi(tester);
     expect(find.text('Asha'), findsOneWidget);
+    await _captureDetail(
+      tester,
+      'review-filtered-previous',
+      directoryEnv: 'CATCH_HOST_RESPONSE_REVIEW_DIR',
+    );
     expect(tester.takeException(), isNull);
   });
 }
@@ -575,8 +594,12 @@ HostApplicationDetail _application({bool revoked = false}) =>
           : 'submittedFormResponse',
     );
 
-Future<void> _capturePayment(WidgetTester tester, String name) async {
-  final directory = Platform.environment['CATCH_RESPONSE_PAYMENT_REVIEW_DIR'];
+Future<void> _captureDetail(
+  WidgetTester tester,
+  String name, {
+  String directoryEnv = 'CATCH_RESPONSE_PAYMENT_REVIEW_DIR',
+}) async {
+  final directory = Platform.environment[directoryEnv];
   if (directory == null) return;
   final boundary = tester.renderObject<RenderRepaintBoundary>(
     find.byKey(const ValueKey('response-payment-capture')),
