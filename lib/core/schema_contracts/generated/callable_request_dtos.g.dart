@@ -163,6 +163,7 @@ export 'callables/list_organizer_campaigns_callable_request.g.dart';
 export 'callables/list_organizer_contact_merge_candidates_callable_request.g.dart';
 export 'callables/list_organizer_contacts_callable_request.g.dart';
 export 'callables/list_organizer_form_automation_runs_callable_request.g.dart';
+export 'callables/list_organizer_form_payments_callable_request.g.dart';
 export 'callables/list_organizer_form_responses_callable_request.g.dart';
 export 'callables/list_organizer_form_templates_callable_request.g.dart';
 export 'callables/list_organizer_forms_callable_request.g.dart';

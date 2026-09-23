@@ -414,6 +414,8 @@ export 'list_organizer_contacts_callable_payload.g.dart';
 export 'list_organizer_contacts_callable_response.g.dart';
 export 'list_organizer_form_automation_runs_callable_payload.g.dart';
 export 'list_organizer_form_automation_runs_callable_response.g.dart';
+export 'list_organizer_form_payments_callable_payload.g.dart';
+export 'list_organizer_form_payments_callable_response.g.dart';
 export 'list_organizer_form_responses_callable_payload.g.dart';
 export 'list_organizer_form_responses_callable_response.g.dart';
 export 'list_organizer_form_templates_callable_payload.g.dart';

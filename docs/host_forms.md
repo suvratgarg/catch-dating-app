@@ -332,6 +332,15 @@ new checkouts across all forms using that connection, while settlement recovery
 continues. Returning from OAuth only refreshes server status; it never marks a
 merchant ready locally.
 
+The manager-only fee ledger reads one owned form at a time. Its rows include
+unfinished checkout, captured/submitted, refund, and manual-review states with
+provider references and amounts. Response links appear only after finalization.
+The projection omits respondent identity, draft tokens, unsubmitted answers,
+credential bindings, and internal error details. Status-filtered cursors are
+bound to the organizer, form and filters, with document-id ordering to disambiguate
+payments created at the same instant. Payment history is separate from the
+application review inbox.
+
 Live Razorpay setup remains external: create Catch's Technology Partner
 application, register the HTTPS callback, provision its client credentials and
 vault permissions, connect the organizer account, and create and verify the

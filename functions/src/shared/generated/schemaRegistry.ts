@@ -542,6 +542,8 @@ export {prepareOrganizerFormPaymentCallablePayloadSchema} from "./schemas/prepar
 export {prepareOrganizerFormPaymentCallableResponseSchema} from "./schemas/prepareOrganizerFormPaymentOutput";
 export {getOrganizerFormPaymentCallablePayloadSchema} from "./schemas/getOrganizerFormPaymentInput";
 export {getOrganizerFormPaymentCallableResponseSchema} from "./schemas/getOrganizerFormPaymentOutput";
+export {listOrganizerFormPaymentsCallablePayloadSchema} from "./schemas/listOrganizerFormPaymentsInput";
+export {listOrganizerFormPaymentsCallableResponseSchema} from "./schemas/listOrganizerFormPaymentsOutput";
 export {manageOrganizerFormPaymentConnectionCallablePayloadSchema} from "./schemas/manageOrganizerFormPaymentConnectionInput";
 export {manageOrganizerFormPaymentConnectionCallableResponseSchema} from "./schemas/manageOrganizerFormPaymentConnectionOutput";
 export {submitOrganizerFormResponseCallablePayloadSchema} from "./schemas/submitOrganizerFormResponseInput";

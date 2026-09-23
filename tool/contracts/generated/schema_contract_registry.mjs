@@ -199004,6 +199004,219 @@ export const getOrganizerFormPaymentCallableResponseSchema = {
   ]
 };
 
+export const listOrganizerFormPaymentsCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/list_organizer_form_payments_payload.schema.json",
+  "title": "ListOrganizerFormPaymentsCallablePayload",
+  "description": "Manager-only bounded fee ledger for one owned form, independent of the response inbox.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "organizerId",
+    "formId",
+    "statuses",
+    "cursor",
+    "limit"
+  ],
+  "properties": {
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "formId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "statuses": {
+      "type": "array",
+      "uniqueItems": true,
+      "maxItems": 11,
+      "items": {
+        "enum": [
+          "creatingOrder",
+          "orderUnknown",
+          "checkoutReady",
+          "verifying",
+          "captured",
+          "submitted",
+          "failed",
+          "expired",
+          "refundPending",
+          "refunded",
+          "reviewRequired"
+        ],
+        "type": "string"
+      }
+    },
+    "cursor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 1000
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 50
+    }
+  }
+};
+
+export const listOrganizerFormPaymentsCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/list_organizer_form_payments_response.schema.json",
+  "title": "ListOrganizerFormPaymentsCallableResponse",
+  "description": "Minimal organizer fee records. No private credential, draft token, unsubmitted answers or respondent identity is exposed.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "items",
+    "nextCursor"
+  ],
+  "properties": {
+    "items": {
+      "type": "array",
+      "maxItems": 50,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "paymentId",
+          "status",
+          "mode",
+          "amountPaise",
+          "currency",
+          "refundedAmountPaise",
+          "createdAtMillis",
+          "updatedAtMillis",
+          "capturedAtMillis",
+          "submittedAtMillis",
+          "responseId",
+          "providerOrderId",
+          "providerPaymentId",
+          "providerRefundId",
+          "receipt"
+        ],
+        "properties": {
+          "paymentId": {
+            "type": "string",
+            "pattern": "^fp_[a-f0-9]{32}$"
+          },
+          "status": {
+            "enum": [
+              "creatingOrder",
+              "orderUnknown",
+              "checkoutReady",
+              "verifying",
+              "captured",
+              "submitted",
+              "failed",
+              "expired",
+              "refundPending",
+              "refunded",
+              "reviewRequired"
+            ],
+            "type": "string"
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "test",
+              "live"
+            ]
+          },
+          "amountPaise": {
+            "type": "integer",
+            "minimum": 100,
+            "maximum": 10000000
+          },
+          "currency": {
+            "const": "INR"
+          },
+          "refundedAmountPaise": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 10000000
+          },
+          "createdAtMillis": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "updatedAtMillis": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "capturedAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "submittedAtMillis": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "responseId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "providerOrderId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 160
+          },
+          "providerPaymentId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 160
+          },
+          "providerRefundId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 160
+          },
+          "receipt": {
+            "type": "string",
+            "pattern": "^cfp_[a-f0-9]{32}$"
+          }
+        }
+      }
+    },
+    "nextCursor": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 1000
+    }
+  }
+};
+
 export const manageOrganizerFormPaymentConnectionCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/manage_organizer_form_payment_connection_payload.schema.json",

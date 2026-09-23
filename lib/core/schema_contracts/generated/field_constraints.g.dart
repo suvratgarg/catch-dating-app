@@ -67112,6 +67112,171 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['pending', 'running', 'succeeded', 'partiallyFailed', 'failed', 'skipped'],
   );
 
+  static const listOrganizerFormPaymentsCallablePayloadCursor = CatchContractFieldConstraints(
+    path: 'listOrganizerFormPaymentsCallablePayload.cursor',
+    maxLength: 1000,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerFormPaymentsCallablePayloadFormId = CatchContractFieldConstraints(
+    path: 'listOrganizerFormPaymentsCallablePayload.formId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerFormPaymentsCallablePayloadLimit = CatchContractFieldConstraints(
+    path: 'listOrganizerFormPaymentsCallablePayload.limit',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 50,
+  );
+
+  static const listOrganizerFormPaymentsCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'listOrganizerFormPaymentsCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerFormPaymentsCallablePayloadStatuses = CatchContractFieldConstraints(
+    path: 'listOrganizerFormPaymentsCallablePayload.statuses',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['creatingOrder', 'orderUnknown', 'checkoutReady', 'verifying', 'captured', 'submitted', 'failed', 'expired', 'refundPending', 'refunded', 'reviewRequired'],
+    maxItems: 11,
+    uniqueItems: true,
+  );
+
+  static const listOrganizerFormPaymentsCallablePayloadStatusesItems = CatchContractFieldConstraints(
+    path: 'listOrganizerFormPaymentsCallablePayload.statuses.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['creatingOrder', 'orderUnknown', 'checkoutReady', 'verifying', 'captured', 'submitted', 'failed', 'expired', 'refundPending', 'refunded', 'reviewRequired'],
+  );
+
+  static const listOrganizerFormPaymentsCallableResponseItems = CatchContractFieldConstraints(
+    path: 'listOrganizerFormPaymentsCallableResponse.items',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 50,
+  );
+
+  static const listOrganizerFormPaymentsCallableResponseItemsItemsAmountPaise = CatchContractFieldConstraints(
+    path: 'listOrganizerFormPaymentsCallableResponse.items.items.amountPaise',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 100,
+    maximum: 10000000,
+  );
+
+  static const listOrganizerFormPaymentsCallableResponseItemsItemsCapturedAtMillis = CatchContractFieldConstraints(
+    path: 'listOrganizerFormPaymentsCallableResponse.items.items.capturedAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const listOrganizerFormPaymentsCallableResponseItemsItemsCreatedAtMillis = CatchContractFieldConstraints(
+    path: 'listOrganizerFormPaymentsCallableResponse.items.items.createdAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const listOrganizerFormPaymentsCallableResponseItemsItemsCurrency = CatchContractFieldConstraints(
+    path: 'listOrganizerFormPaymentsCallableResponse.items.items.currency',
+    required: true,
+  );
+
+  static const listOrganizerFormPaymentsCallableResponseItemsItemsMode = CatchContractFieldConstraints(
+    path: 'listOrganizerFormPaymentsCallableResponse.items.items.mode',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['test', 'live'],
+  );
+
+  static const listOrganizerFormPaymentsCallableResponseItemsItemsPaymentId = CatchContractFieldConstraints(
+    path: 'listOrganizerFormPaymentsCallableResponse.items.items.paymentId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^fp_[a-f0-9]{32}\$',
+  );
+
+  static const listOrganizerFormPaymentsCallableResponseItemsItemsProviderOrderId = CatchContractFieldConstraints(
+    path: 'listOrganizerFormPaymentsCallableResponse.items.items.providerOrderId',
+    maxLength: 160,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerFormPaymentsCallableResponseItemsItemsProviderPaymentId = CatchContractFieldConstraints(
+    path: 'listOrganizerFormPaymentsCallableResponse.items.items.providerPaymentId',
+    maxLength: 160,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerFormPaymentsCallableResponseItemsItemsProviderRefundId = CatchContractFieldConstraints(
+    path: 'listOrganizerFormPaymentsCallableResponse.items.items.providerRefundId',
+    maxLength: 160,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerFormPaymentsCallableResponseItemsItemsReceipt = CatchContractFieldConstraints(
+    path: 'listOrganizerFormPaymentsCallableResponse.items.items.receipt',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^cfp_[a-f0-9]{32}\$',
+  );
+
+  static const listOrganizerFormPaymentsCallableResponseItemsItemsRefundedAmountPaise = CatchContractFieldConstraints(
+    path: 'listOrganizerFormPaymentsCallableResponse.items.items.refundedAmountPaise',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 10000000,
+  );
+
+  static const listOrganizerFormPaymentsCallableResponseItemsItemsResponseId = CatchContractFieldConstraints(
+    path: 'listOrganizerFormPaymentsCallableResponse.items.items.responseId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const listOrganizerFormPaymentsCallableResponseItemsItemsStatus = CatchContractFieldConstraints(
+    path: 'listOrganizerFormPaymentsCallableResponse.items.items.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['creatingOrder', 'orderUnknown', 'checkoutReady', 'verifying', 'captured', 'submitted', 'failed', 'expired', 'refundPending', 'refunded', 'reviewRequired'],
+  );
+
+  static const listOrganizerFormPaymentsCallableResponseItemsItemsSubmittedAtMillis = CatchContractFieldConstraints(
+    path: 'listOrganizerFormPaymentsCallableResponse.items.items.submittedAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const listOrganizerFormPaymentsCallableResponseItemsItemsUpdatedAtMillis = CatchContractFieldConstraints(
+    path: 'listOrganizerFormPaymentsCallableResponse.items.items.updatedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const listOrganizerFormPaymentsCallableResponseNextCursor = CatchContractFieldConstraints(
+    path: 'listOrganizerFormPaymentsCallableResponse.nextCursor',
+    maxLength: 1000,
+    valueTypes: <String>['string'],
+  );
+
   static const listOrganizerFormResponsesCallablePayloadAnswerFilters = CatchContractFieldConstraints(
     path: 'listOrganizerFormResponsesCallablePayload.answerFilters',
     valueTypes: <String>['array'],
@@ -111374,6 +111539,29 @@ abstract final class CatchContractConstraints {
     'listOrganizerFormAutomationRunsCallableResponse.runs.items.runId': listOrganizerFormAutomationRunsCallableResponseRunsItemsRunId,
     'listOrganizerFormAutomationRunsCallableResponse.runs.items.sourceId': listOrganizerFormAutomationRunsCallableResponseRunsItemsSourceId,
     'listOrganizerFormAutomationRunsCallableResponse.runs.items.status': listOrganizerFormAutomationRunsCallableResponseRunsItemsStatus,
+    'listOrganizerFormPaymentsCallablePayload.cursor': listOrganizerFormPaymentsCallablePayloadCursor,
+    'listOrganizerFormPaymentsCallablePayload.formId': listOrganizerFormPaymentsCallablePayloadFormId,
+    'listOrganizerFormPaymentsCallablePayload.limit': listOrganizerFormPaymentsCallablePayloadLimit,
+    'listOrganizerFormPaymentsCallablePayload.organizerId': listOrganizerFormPaymentsCallablePayloadOrganizerId,
+    'listOrganizerFormPaymentsCallablePayload.statuses': listOrganizerFormPaymentsCallablePayloadStatuses,
+    'listOrganizerFormPaymentsCallablePayload.statuses.items': listOrganizerFormPaymentsCallablePayloadStatusesItems,
+    'listOrganizerFormPaymentsCallableResponse.items': listOrganizerFormPaymentsCallableResponseItems,
+    'listOrganizerFormPaymentsCallableResponse.items.items.amountPaise': listOrganizerFormPaymentsCallableResponseItemsItemsAmountPaise,
+    'listOrganizerFormPaymentsCallableResponse.items.items.capturedAtMillis': listOrganizerFormPaymentsCallableResponseItemsItemsCapturedAtMillis,
+    'listOrganizerFormPaymentsCallableResponse.items.items.createdAtMillis': listOrganizerFormPaymentsCallableResponseItemsItemsCreatedAtMillis,
+    'listOrganizerFormPaymentsCallableResponse.items.items.currency': listOrganizerFormPaymentsCallableResponseItemsItemsCurrency,
+    'listOrganizerFormPaymentsCallableResponse.items.items.mode': listOrganizerFormPaymentsCallableResponseItemsItemsMode,
+    'listOrganizerFormPaymentsCallableResponse.items.items.paymentId': listOrganizerFormPaymentsCallableResponseItemsItemsPaymentId,
+    'listOrganizerFormPaymentsCallableResponse.items.items.providerOrderId': listOrganizerFormPaymentsCallableResponseItemsItemsProviderOrderId,
+    'listOrganizerFormPaymentsCallableResponse.items.items.providerPaymentId': listOrganizerFormPaymentsCallableResponseItemsItemsProviderPaymentId,
+    'listOrganizerFormPaymentsCallableResponse.items.items.providerRefundId': listOrganizerFormPaymentsCallableResponseItemsItemsProviderRefundId,
+    'listOrganizerFormPaymentsCallableResponse.items.items.receipt': listOrganizerFormPaymentsCallableResponseItemsItemsReceipt,
+    'listOrganizerFormPaymentsCallableResponse.items.items.refundedAmountPaise': listOrganizerFormPaymentsCallableResponseItemsItemsRefundedAmountPaise,
+    'listOrganizerFormPaymentsCallableResponse.items.items.responseId': listOrganizerFormPaymentsCallableResponseItemsItemsResponseId,
+    'listOrganizerFormPaymentsCallableResponse.items.items.status': listOrganizerFormPaymentsCallableResponseItemsItemsStatus,
+    'listOrganizerFormPaymentsCallableResponse.items.items.submittedAtMillis': listOrganizerFormPaymentsCallableResponseItemsItemsSubmittedAtMillis,
+    'listOrganizerFormPaymentsCallableResponse.items.items.updatedAtMillis': listOrganizerFormPaymentsCallableResponseItemsItemsUpdatedAtMillis,
+    'listOrganizerFormPaymentsCallableResponse.nextCursor': listOrganizerFormPaymentsCallableResponseNextCursor,
     'listOrganizerFormResponsesCallablePayload.answerFilters': listOrganizerFormResponsesCallablePayloadAnswerFilters,
     'listOrganizerFormResponsesCallablePayload.answerFilters.items.questionId': listOrganizerFormResponsesCallablePayloadAnswerFiltersItemsQuestionId,
     'listOrganizerFormResponsesCallablePayload.answerFilters.items.values': listOrganizerFormResponsesCallablePayloadAnswerFiltersItemsValues,

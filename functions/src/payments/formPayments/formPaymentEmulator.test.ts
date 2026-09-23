@@ -7,6 +7,8 @@ import {createFormPaymentFixture} from "./formPaymentTestStore";
 import {reserveFormPayment, finalizeCapturedFormPayment,
   expireFormPaymentReservation} from "./formPaymentSubmission";
 
+import {listOrganizerFormPaymentsHandler} from "./formPaymentLedger";
+
 const emulator = process.env.FIRESTORE_EMULATOR_HOST;
 
 test("Firestore serializes payment reservations, finalization and late capture",
@@ -79,6 +81,36 @@ test("Firestore serializes payment reservations, finalization and late capture",
         (await db.collection("organizerFormResponses").get()).size, 1);
       assert.equal((await db.doc("organizerForms/form").get())
         .get("pendingPaymentCount"), 0);
+
+      // Equal timestamps still paginate exactly once by document id. Neither
+      // foreign financial records nor unsubmitted answers enter this ledger.
+      const foreignId = `fp_${"f".repeat(32)}`;
+      await db.doc(`organizerFormPayments/${foreignId}`).set({
+        ...(await paymentRef.get()).data(), organizerId: "foreign-org"});
+      const deps = {db: () => db, rateLimit: async () => undefined,
+        requireManager: async () => undefined};
+      const ledger = (cursor: string | null, statuses: string[] = []) =>
+        listOrganizerFormPaymentsHandler({auth: {uid: "host"}, data: {
+          organizerId: "org", formId: "form", statuses, cursor, limit: 1,
+        }} as CallableRequest<unknown>, deps);
+      const page1 = await ledger(null);
+      assert.equal(page1.items.length, 1);
+      assert.ok(page1.nextCursor);
+      const page2 = await ledger(page1.nextCursor);
+      assert.equal(page2.nextCursor, null);
+      assert.deepEqual(new Set([...page1.items, ...page2.items]
+        .map((row) => row.paymentId)),
+      new Set([first.paymentId, late.paymentId]));
+      const filtered = await ledger(null, ["refundPending"]);
+      assert.equal(filtered.items[0].paymentId, late.paymentId);
+      assert.equal(filtered.nextCursor, null);
+      await assert.rejects(ledger(page1.nextCursor, ["submitted"]),
+        /cursor is invalid/u);
+      for (const row of [...page1.items, ...page2.items]) {
+        assert.equal("identity" in row, false);
+        assert.equal("respondentUid" in row, false);
+        assert.equal("draftId" in row, false);
+      }
     } finally {
       for (const name of collections) {
         await db.recursiveDelete(db.collection(name));

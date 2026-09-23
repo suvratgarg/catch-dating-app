@@ -542,6 +542,8 @@ export {validatePrepareOrganizerFormPaymentCallablePayload} from "./validators/p
 export {validatePrepareOrganizerFormPaymentCallableResponse} from "./validators/prepareOrganizerFormPaymentOutput";
 export {validateGetOrganizerFormPaymentCallablePayload} from "./validators/getOrganizerFormPaymentInput";
 export {validateGetOrganizerFormPaymentCallableResponse} from "./validators/getOrganizerFormPaymentOutput";
+export {validateListOrganizerFormPaymentsCallablePayload} from "./validators/listOrganizerFormPaymentsInput";
+export {validateListOrganizerFormPaymentsCallableResponse} from "./validators/listOrganizerFormPaymentsOutput";
 export {validateManageOrganizerFormPaymentConnectionCallablePayload} from "./validators/manageOrganizerFormPaymentConnectionInput";
 export {validateManageOrganizerFormPaymentConnectionCallableResponse} from "./validators/manageOrganizerFormPaymentConnectionOutput";
 export {validateSubmitOrganizerFormResponseCallablePayload} from "./validators/submitOrganizerFormResponseInput";
