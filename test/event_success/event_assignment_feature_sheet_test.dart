@@ -86,12 +86,12 @@ void main() {
       'event-1', [_choice],
     ));
     await tester.pump();
-    expect(find.text('Easy pace'), findsNothing);
+    expect(find.textContaining('Easy pace'), findsNothing);
     store.reads[1].complete(const EventAssignmentFeatureChoices(
       'event-1', [],
     ));
     await tester.pump();
-    expect(find.text('Easy pace'), findsNothing);
+    expect(find.textContaining('Easy pace'), findsNothing);
   });
 
   testWidgets('background clears answer and rejects late result', (

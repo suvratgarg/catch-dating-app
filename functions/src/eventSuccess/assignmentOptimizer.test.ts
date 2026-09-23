@@ -37,7 +37,8 @@ test("typed answer feature changes pair order without relaxing blocked pairs",
     ].map(([uid, optionId]) => ({
       eventId: "event", organizerId: "org", uid, featureId: "pace",
       formId: "form", versionId: "version-1", questionId: "question",
-      transformVersion: 1, consentReceiptId: `${uid}-grant`,
+      transformVersion: 1, responseId: `response-${uid}`,
+      consentReceiptId: `${uid}-grant`,
       value: {kind: "category", optionId},
     }));
     const params = {
@@ -79,7 +80,8 @@ test("typed group balance distributes present categories across pods", () => {
   ].map(([uid, optionId]) => ({eventId: "event", organizerId: "org",
     uid, featureId: "experience", formId: "form",
     versionId: "version-1", questionId: "question", transformVersion: 1,
-    consentReceiptId: `${uid}-grant`, value: {kind: "category", optionId}}));
+    responseId: `response-${uid}`, consentReceiptId: `${uid}-grant`,
+    value: {kind: "category", optionId}}));
   const plan = runAssignmentEngine({
     participants: ["a", "b", "c", "d"].map(profileFreeParticipant),
     blockedPairs: new Set(),
@@ -118,7 +120,8 @@ test("weak group balance does not undo stronger similar-pair choices", () => {
     ]) {
       snapshots.push({eventId: "event", organizerId: "org", uid,
         featureId, formId: "form", versionId: "v1", questionId: featureId,
-        transformVersion: 1, consentReceiptId: `${uid}-grant`,
+        transformVersion: 1, responseId: `response-${uid}`,
+        consentReceiptId: `${uid}-grant`,
         value: {kind: "category", optionId}});
     }
   }
@@ -150,6 +153,7 @@ test("bounded typed matching cohort replays deterministically", () => {
     .map((participant, index) => ({eventId: "event", organizerId: "org",
       uid: participant.uid, featureId: "pace", formId: "form",
       versionId: "version-1", questionId: "pace", transformVersion: 1,
+      responseId: `response-${participant.uid}`,
       consentReceiptId: `receipt-${participant.uid}`,
       value: {kind: "ordinal", optionId:
         ["easy", "steady", "fast"][index % 3]}}));

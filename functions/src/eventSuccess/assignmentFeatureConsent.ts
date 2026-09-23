@@ -235,7 +235,7 @@ export function authorizedAssignmentFeatureSnapshot(params: {
   return {eventId, organizerId, uid, featureId: rule.featureId,
     formId: rule.formId, versionId: rule.versionId,
     questionId: rule.questionId, transformVersion: rule.transformVersion,
-    consentReceiptId: decision.receiptId, value};
+    responseId, consentReceiptId: decision.receiptId, value};
 }
 
 function answerFeatureValue(

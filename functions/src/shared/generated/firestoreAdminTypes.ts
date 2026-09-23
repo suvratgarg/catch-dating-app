@@ -11629,6 +11629,7 @@ export interface EventSuccessAssignmentDraftDocument {
       questionId: string;
       transformVersion: number;
       consentReceiptId: string;
+      responseId: string;
       value:
         | {
             kind: "category" | "ordinal";
@@ -11883,6 +11884,14 @@ export interface EventSuccessAssignmentDocument {
     )[];
   }[];
   source: "server_v1" | "host_override_v1" | "server";
+  /**
+   * Opaque, public-safe identity of the feature inputs used by a server assignment. Raw answer and source identifiers remain private.
+   */
+  assignmentFeatureAudit?: {
+    algorithmVersion: "typed-soft-features-v1";
+    configHash: string;
+    inputSnapshotId: string;
+  };
   createdAt: FirebaseFirestore.Timestamp;
   updatedAt: FirebaseFirestore.Timestamp;
 }

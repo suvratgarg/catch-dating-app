@@ -40,7 +40,7 @@ test("exact owned submitted answer maps versioned value to option ID", () => {
   assert.deepEqual(resolve(), {eventId: "event", organizerId: "organizer",
     uid: "person", featureId: "pace", formId: "form",
     versionId: "version", questionId: "question", transformVersion: 1,
-    consentReceiptId: "receipt",
+    responseId: "response", consentReceiptId: "receipt",
     value: {kind: "category", optionId: "option-slow"}});
 });
 

@@ -565,6 +565,31 @@ export const eventSuccessAssignmentDocumentSchema: Record<string, unknown> = {
       ],
       "x-catch-ownership": "callable-owned"
     },
+    "assignmentFeatureAudit": {
+      "description": "Opaque, public-safe identity of the feature inputs used by a server assignment. Raw answer and source identifiers remain private.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "algorithmVersion",
+        "configHash",
+        "inputSnapshotId"
+      ],
+      "properties": {
+        "algorithmVersion": {
+          "const": "typed-soft-features-v1"
+        },
+        "configHash": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "inputSnapshotId": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
     "createdAt": {
       "type": "object",
       "description": "Serialized Firestore Timestamp fixture shape.",

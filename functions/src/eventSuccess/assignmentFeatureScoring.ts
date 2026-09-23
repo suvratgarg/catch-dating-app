@@ -33,6 +33,7 @@ export interface EventAssignmentFeatureSnapshot {
   versionId: string;
   questionId: string;
   transformVersion: number;
+  responseId: string;
   consentReceiptId: string;
   value: AssignmentFeatureValue;
 }

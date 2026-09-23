@@ -18,6 +18,7 @@ const ordinal: AssignmentFeatureRule = {...lineage, kind: "ordinal",
 function snapshot(uid: string, value: EventAssignmentFeatureSnapshot["value"]):
   EventAssignmentFeatureSnapshot {
   return {...lineage, eventId: "event", organizerId: "org", uid,
+    responseId: `response-${uid}`,
     consentReceiptId: "event-assignment-grant", value};
 }
 

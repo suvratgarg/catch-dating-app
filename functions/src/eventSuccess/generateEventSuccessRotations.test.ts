@@ -434,6 +434,11 @@ test("configured consented answers affect generated rotation drafts",
     const guard = manOne?.assignmentFeatureGuard as FakeData;
     assert.equal(guard.configHash, "hash-1");
     assert.equal((guard.snapshots as unknown[]).length, 1);
+    const audit = assignment.assignmentFeatureAudit as FakeData;
+    assert.equal(audit.algorithmVersion, "typed-soft-features-v1");
+    assert.equal(audit.configHash, "hash-1");
+    assert.match(audit.inputSnapshotId as string, /^[a-f0-9]{64}$/u);
+    assert.equal(JSON.stringify(assignment).includes("response-man"), false);
     assert.equal(JSON.stringify(assignment).includes("answer"), false);
 
     for (let index = 0; index < 401; index++) {

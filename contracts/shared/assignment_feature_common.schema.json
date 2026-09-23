@@ -153,6 +153,7 @@
         "versionId",
         "questionId",
         "transformVersion",
+        "responseId",
         "consentReceiptId",
         "value"
       ],
@@ -184,6 +185,9 @@
           "maximum": 1000000
         },
         "consentReceiptId": {
+          "$ref": "event_common.schema.json#/definitions/documentId"
+        },
+        "responseId": {
           "$ref": "event_common.schema.json#/definitions/documentId"
         },
         "value": {

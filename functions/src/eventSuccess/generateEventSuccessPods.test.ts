@@ -635,6 +635,11 @@ test("configured consented answers influence published pod groups",
     const runnerOne = firestore.get(
       "eventSuccessAssignments/event-1_micro_pods_runner-1");
     assert.deepEqual(runnerOne?.peerUids, ["runner-3"]);
+    const audit = runnerOne?.assignmentFeatureAudit as FakeData;
+    assert.equal(audit.algorithmVersion, "typed-soft-features-v1");
+    assert.equal(audit.configHash, "hash-1");
+    assert.match(audit.inputSnapshotId as string, /^[a-f0-9]{64}$/u);
+    assert.equal(JSON.stringify(runnerOne).includes("response-runner"), false);
     assert.equal(JSON.stringify(runnerOne).includes("answer"), false);
 
     firestore.beforeTransaction = () => firestore.merge(

@@ -73,6 +73,8 @@ import {loadAuthorizedAssignmentFeatures,
   recheckAssignmentFeatureSnapshots} from "./assignmentFeatureConsent";
 import type {AssignmentFeatureRule,
   EventAssignmentFeatureSnapshot} from "./assignmentFeatureScoring";
+import {buildAssignmentFeatureAudit,
+  type AssignmentFeatureAudit} from "./assignmentFeatureAudit";
 import {
   eventSuccessPresencePolicy,
   loadLikelyDepartedEventSuccessUids,
@@ -236,6 +238,7 @@ interface GeneratedAssignment {
   rotationSlots: GeneratedRotationSlot[];
   sitOutSlots?: GeneratedSitOutSlot[];
   source: string;
+  assignmentFeatureAudit?: AssignmentFeatureAudit;
   createdAt: FirebaseFirestore.FieldValue;
   updatedAt: FirebaseFirestore.FieldValue;
 }
@@ -393,6 +396,15 @@ export async function prepareEventSuccessRotationDraft(
     plan,
     targetRoundIndex
   );
+  if (featureRules.length) {
+    const audit = buildAssignmentFeatureAudit({eventId: input.eventId,
+      organizerId: event.organizerId ?? event.clubId,
+      configHash: plan.assignmentFeatureConfigHash ?? "",
+      snapshots: featureSnapshots});
+    for (const assignment of assignments.values()) {
+      assignment.assignmentFeatureAudit = audit;
+    }
+  }
   await writeAssignmentDrafts({
     db,
     eventId: input.eventId,

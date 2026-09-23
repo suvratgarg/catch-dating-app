@@ -192,8 +192,9 @@ function ownAnswerLabel(
   const label = (id: string) => options.find((option) =>
     option.optionId === id)?.label ?? id;
   if (value.kind === "number") return String(value.value);
-  if (value.kind === "set") return value.optionIds.map(label).join(", ")
-    .slice(0, 500);
+  if (value.kind === "set") {
+    return value.optionIds.map(label).join(", ").slice(0, 500);
+  }
   return label(value.optionId);
 }
 

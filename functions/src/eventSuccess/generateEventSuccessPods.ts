@@ -60,6 +60,8 @@ import {loadAuthorizedAssignmentFeatures,
   recheckAssignmentFeatureSnapshots} from "./assignmentFeatureConsent";
 import type {AssignmentFeatureRule,
   EventAssignmentFeatureSnapshot} from "./assignmentFeatureScoring";
+import {buildAssignmentFeatureAudit,
+  type AssignmentFeatureAudit} from "./assignmentFeatureAudit";
 import {
   applyEventSuccessSpatialLayout,
   assignmentConstraintsForSpatialPlan,
@@ -186,6 +188,7 @@ interface GeneratedAssignment {
   rotationFairness?: RotationFairnessSummary;
   groupRotationSlots?: GeneratedGroupRotationSlot[];
   source: string;
+  assignmentFeatureAudit?: AssignmentFeatureAudit;
   createdAt: FirebaseFirestore.FieldValue;
   updatedAt: FirebaseFirestore.FieldValue;
 }
@@ -370,6 +373,15 @@ export async function generateEventSuccessPodsHandler(
     plan
   );
   applyEventSuccessSpatialLayout(assignments, layout, plan, 0);
+  if (featureRules.length) {
+    const audit = buildAssignmentFeatureAudit({eventId,
+      organizerId: event.organizerId ?? event.clubId,
+      configHash: plan.assignmentFeatureConfigHash ?? "",
+      snapshots: featureSnapshots});
+    for (const assignment of assignments.values()) {
+      assignment.assignmentFeatureAudit = audit;
+    }
+  }
   await writeAssignments(db, eventId, assignments, featureRules.length ? {
     organizerId: event.organizerId ?? event.clubId, rules: featureRules,
     snapshots: featureSnapshots,

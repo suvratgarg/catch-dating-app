@@ -632,6 +632,31 @@ const schemaEventSuccessAssignmentDraftDocumentSchema = <String, Object?>{
           ],
           'x-catch-ownership': 'callable-owned',
         },
+        'assignmentFeatureAudit': <String, Object?>{
+          'description': 'Opaque, public-safe identity of the feature inputs used by a server assignment. Raw answer and source identifiers remain private.',
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'algorithmVersion',
+            'configHash',
+            'inputSnapshotId',
+          ],
+          'properties': <String, Object?>{
+            'algorithmVersion': <String, Object?>{
+              'const': 'typed-soft-features-v1',
+            },
+            'configHash': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 128,
+            },
+            'inputSnapshotId': <String, Object?>{
+              'type': 'string',
+              'pattern': '^[a-f0-9]{64}\$',
+            },
+          },
+          'x-catch-ownership': 'callable-owned',
+        },
         'createdAt': <String, Object?>{
           'type': 'object',
           'description': 'Serialized Firestore Timestamp fixture shape.',
@@ -785,6 +810,7 @@ const schemaEventSuccessAssignmentDraftDocumentSchema = <String, Object?>{
               'versionId',
               'questionId',
               'transformVersion',
+              'responseId',
               'consentReceiptId',
               'value',
             ],
@@ -830,6 +856,11 @@ const schemaEventSuccessAssignmentDraftDocumentSchema = <String, Object?>{
                 'maximum': 1000000,
               },
               'consentReceiptId': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 180,
+              },
+              'responseId': <String, Object?>{
                 'type': 'string',
                 'minLength': 1,
                 'maxLength': 180,

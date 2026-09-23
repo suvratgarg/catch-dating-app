@@ -46,6 +46,7 @@ export interface EventSuccessAssignmentDraftDocument {
       questionId: string;
       transformVersion: number;
       consentReceiptId: string;
+      responseId: string;
       value:
         | {
             kind: "category" | "ordinal";

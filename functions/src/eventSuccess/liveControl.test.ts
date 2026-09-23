@@ -15,6 +15,7 @@ import {AudienceTestStore} from
   "../organizers/organizerAudienceTestStore";
 import {assignmentFeatureConsentId} from
   "./assignmentFeatureConsent";
+import {buildAssignmentFeatureAudit} from "./assignmentFeatureAudit";
 
 const baseState = (overrides: Partial<LivePlanState> = {}): LivePlanState => ({
   activeStepIndex: 0,
@@ -198,8 +199,10 @@ test("revoked answer blocks publishing a prepared round", async () => {
   const snapshot = {eventId, organizerId: "org-1", uid, featureId,
     formId: "form-1", versionId: "version-1",
     questionId: "question-1", transformVersion: 1,
-    consentReceiptId: "receipt-1",
-    value: {kind: "category", optionId: "option-1"}};
+    responseId: "response-1", consentReceiptId: "receipt-1",
+    value: {kind: "category" as const, optionId: "option-1"}};
+  const audit = buildAssignmentFeatureAudit({eventId, organizerId: "org-1",
+    configHash: "hash-1", snapshots: [snapshot]});
   const rule = {featureId, formId: "form-1", versionId: "version-1",
     questionId: "question-1", transformVersion: 1, kind: "category",
     mode: "preferSimilar", weight: 1, optionIds: ["option-1"]};
@@ -221,6 +224,7 @@ test("revoked answer blocks publishing a prepared round", async () => {
       assignmentFeatureGuard: {revision: 1, configHash: "hash-1",
         snapshots: [snapshot]},
       assignment: {eventId, uid, moduleId: "guided_rotations",
+        assignmentFeatureAudit: audit,
         rotationSlots: [], sitOutSlots: []},
     },
     [consentPath]: {eventId, organizerId: "org-1", uid,
@@ -248,6 +252,12 @@ test("revoked answer blocks publishing a prepared round", async () => {
   const current = await publishEventSuccessRotationRoundHandler(
     request as never, deps as never);
   assert.equal(current.assignmentCount, 1);
+  const published = store.docs[
+    `eventSuccessAssignments/${eventId}_guided_rotations_${uid}`];
+  assert.deepEqual(published.assignmentFeatureAudit, audit);
+  for (const privateValue of ["response-1", "receipt-1", "option-1"]) {
+    assert.equal(JSON.stringify(published).includes(privateValue), false);
+  }
 
   // Keep the prepared draft, restore the publish fence, then withdraw.
   store.docs[`eventSuccessPlans/${eventId}`].liveControlRevision = 4;
