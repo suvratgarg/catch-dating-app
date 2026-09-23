@@ -294,7 +294,9 @@ class _EventSuccessAssignmentFeaturesSectionState
     );
     _ownedSheetContext = null;
     if (selected == null || !_isCurrent(generation, eventId, uid) ||
-        _loading || _saving) return;
+        _loading || _saving) {
+      return;
+    }
     setState(() => _selectedFormId = selected);
     await _load(resetDraft: false);
   }
@@ -321,7 +323,9 @@ class _EventSuccessAssignmentFeaturesSectionState
     );
     _ownedSheetContext = null;
     if (updated == null || !_isCurrent(generation, eventId, uid) ||
-        _loading || _saving) return;
+        _loading || _saving) {
+      return;
+    }
     final next = _rules.where((item) => item.featureId != updated.featureId)
         .toList()..add(updated);
     _changeRules(next);
@@ -479,7 +483,9 @@ class _EventSuccessAssignmentFeaturesSectionState
       if (source.formId != rule.formId ||
           source.versionId != rule.versionId) continue;
       for (final question in source.questions) {
-        if (question.questionId == rule.questionId) return question.label;
+        if (question.questionId == rule.questionId) {
+          return question.label;
+        }
       }
     }
     return null;

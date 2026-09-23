@@ -16,6 +16,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../support/catch_test_fonts.dart';
+import '../test_pump_helpers.dart';
 
 const _choiceQuestion = EventSuccessAssignmentFeatureQuestion(
   questionId: 'question-1',
@@ -157,17 +158,17 @@ void main() {
         );
       },
     ));
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
     expect(find.text('Music style'), findsOneWidget);
     expect(find.textContaining('4 of 8 current roster'), findsOneWidget);
     expect(find.textContaining('Jazz'), findsNothing);
     await _captureMatchingFixture(tester);
     await tester.ensureVisible(find.text('Remove question'));
     await tester.tap(find.text('Remove question'));
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
     await tester.ensureVisible(find.text('Save matching preferences'));
     await tester.tap(find.text('Save matching preferences'));
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
     expect(savedRevision, 3);
     expect(savedRules, isEmpty);
   });
@@ -194,7 +195,7 @@ void main() {
       viewerUid: null, onPreview: preview, onSave: save,
     ));
     pending.complete(_preview());
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
     expect(find.text('Music style'), findsNothing);
     expect(find.text('Form answer matching'), findsNothing);
   });
@@ -215,22 +216,22 @@ void main() {
     await tester.pumpWidget(_harness(
       viewerUid: 'host-1', onPreview: preview, onSave: save,
     ));
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
     await tester.tap(find.text('Choose a published form'));
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
     await tester.tap(find.descendant(
       of: find.byType(CatchSheet),
       matching: find.widgetWithText(CatchField, 'Event questions'),
     ));
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
     await tester.tap(find.widgetWithText(CatchField, 'Music style'));
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
     expect(find.text('Answer type'), findsOneWidget);
 
     await tester.pumpWidget(_harness(
       viewerUid: 'host-2', onPreview: preview, onSave: save,
     ));
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
     expect(find.text('Answer type'), findsNothing);
     expect(find.text('Save matching preferences'), findsNothing);
   });
@@ -250,31 +251,33 @@ void main() {
       onSave: ({required eventId, required expectedRevision,
           required requestId, required rules}) => savePending.future,
     ));
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
     await tester.tap(find.text('Choose a published form'));
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
     await tester.tap(find.descendant(
       of: find.byType(CatchSheet),
       matching: find.widgetWithText(CatchField, 'Event questions'),
     ));
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
     await tester.tap(find.text('Remove question'));
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
     await tester.tap(find.text('Save matching preferences'));
     await tester.pump();
-    await tester.tap(find.widgetWithText(CatchField, 'Music style'),
-        warnIfMissed: false);
-    await tester.pump();
+    expect(find.descendant(
+      of: find.widgetWithText(CatchField, 'Music style'),
+      matching: find.byType(GestureDetector),
+    ), findsNothing);
     expect(find.text('Answer type'), findsNothing);
-    await tester.tap(find.text('Choose a published form'),
-        warnIfMissed: false);
-    await tester.pump();
+    expect(find.descendant(
+      of: find.widgetWithText(CatchField, 'Choose a published form'),
+      matching: find.byType(GestureDetector),
+    ), findsNothing);
     expect(find.byType(CatchSheet), findsNothing);
 
     savePending.complete(const EventSuccessAssignmentFeatureSaveResult(
       eventId: 'event-1', revision: 4, replayed: false,
     ));
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
     expect(tester.takeException(), isNull);
   });
 
@@ -297,7 +300,7 @@ void main() {
           required requestId, required rules}) =>
           throw const ValidationException('Unexpected save.'),
     ));
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
     expect(find.text('Form answer matching'), findsWidgets);
     tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
     await tester.pump();
@@ -306,7 +309,7 @@ void main() {
     await tester.pump();
     expect(find.text('Music style'), findsNothing);
     resumed.complete(_preview());
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
     expect(find.text('Form answer matching'), findsWidgets);
   });
 }

@@ -26,10 +26,6 @@ class EventAssignmentFeatureSheet extends ConsumerWidget {
         ),
         AsyncError(:final error) => CatchLocalizedErrorBanner(error),
         AsyncLoading() => const CatchLoadingIndicator(),
-        _ => Text(
-          context.l10n.eventMatchingUnavailable,
-          style: CatchTextStyles.supporting(context),
-        ),
       },
     );
   }

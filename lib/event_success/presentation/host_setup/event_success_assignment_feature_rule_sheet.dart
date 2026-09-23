@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 /// Published-question transform editor for one soft event matching feature.
 class EventSuccessAssignmentFeatureRuleSheet extends StatefulWidget {
   const EventSuccessAssignmentFeatureRuleSheet({
+    super.key,
     required this.source,
     required this.question,
     this.current,
@@ -31,7 +32,7 @@ class _EventSuccessAssignmentFeatureRuleSheetState
   };
   late String _mode = widget.current?.mode ?? 'preferSimilar';
   late double _weight = widget.current?.weight ?? 1;
-  late List<String> _ordinalOrder = widget.current?.scoreByOptionId == null
+  late final List<String> _ordinalOrder = widget.current?.scoreByOptionId == null
       ? widget.question.options.map((item) => item.optionId).toList()
       : (widget.question.options.map((item) => item.optionId).toList()
           ..sort((a, b) => (widget.current!.scoreByOptionId![a] ?? 0)

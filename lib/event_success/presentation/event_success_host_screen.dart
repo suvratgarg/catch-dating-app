@@ -400,6 +400,9 @@ class _EventSuccessHostSectionState
     final sourceFormsAsync = ref.watch(
       hostFormsDirectoryControllerProvider(sourceFormsRequest),
     );
+    final sourceFormsDirectoryState = catchAsyncStateFromAsyncValue(
+      sourceFormsAsync,
+    );
     final sourceFormsState = sourceFormsAsync.when(
       data: (value) => CatchAsyncState<List<HostFormSummary>>.data(
         value.forms,
@@ -467,7 +470,8 @@ class _EventSuccessHostSectionState
         sequenceUnsupported: state.plan.structureConfig.topology ==
             EventSuccessTopology.sequence,
         formsState: sourceFormsState,
-        onLoadMoreForms: sourceFormsAsync.asData?.value.canLoadMore == true
+        onLoadMoreForms: sourceFormsDirectoryState.isSettledData &&
+                sourceFormsDirectoryState.value?.canLoadMore == true
             ? () => unawaited(ref.read(
                 hostFormsDirectoryControllerProvider(sourceFormsRequest)
                     .notifier,
