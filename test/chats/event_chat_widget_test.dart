@@ -23,29 +23,29 @@ EventChatState fixture({
   bool removed = false,
 }) {
   final now = DateTime.utc(2026, 9, 23, 12);
-  final isClosed = roomStatus == 'closed' || roomStatus == 'archived';
+  final mode = roomStatus ?? (host ? 'notCreated' : 'open');
+  final readable = {'open', 'paused', 'announcementsOnly'}.contains(mode);
+  final canRead = joined && !removed && !claim && readable;
   return EventChatState(
     uid: 'sara',
     access: EventChatAccess(
       eventId: 'event',
       title: 'RSVP coffee afternoon',
       organizerId: 'rsvp',
-      roomStatus: roomStatus ?? (host ? 'notCreated' : 'open'),
+      roomStatus: mode,
       roomRevision: 0,
       membershipStatus: removed ? 'removed' : joined ? 'joined' : 'notJoined',
       membershipRevision: 0,
       canManage: host,
-      canJoin: !host && !claim && !isClosed,
-      canReadMessages: joined && !removed && !isClosed &&
-          roomStatus != 'scheduled',
-      canPostMessages: joined && !removed &&
-          !{'scheduled', 'paused', 'announcementsOnly', 'closed', 'archived'}
-              .contains(roomStatus),
+      canJoin: readable && !claim && !removed,
+      canReadMessages: canRead,
+      canPostMessages: canRead &&
+          (mode == 'open' || (mode == 'announcementsOnly' && host)),
       notificationsMuted: muted,
       profileClaimRequired: claim,
       termsVersion: 'event-chat-v1',
     ),
-    messages: joined && !removed && !isClosed && roomStatus != 'scheduled'
+    messages: canRead
         ? [
             EventChatMessage(
               messageId: 'reply',
@@ -185,6 +185,10 @@ void main() {
       }
       if (room == 'removed') {
         expect(find.textContaining('membership is unavailable'), findsOneWidget);
+      }
+      if (room == 'removed' || room == 'scheduled') {
+        expect(state.access.canJoin, isFalse);
+        expect(find.text('Join event chat'), findsNothing);
       }
       await capture(tester, 'fixture-$room');
     });
