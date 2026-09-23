@@ -307,7 +307,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: rsvp-synthetic-widget-captures-${{ github.run_id }}-${{ github.sha }}-${{ matrix.shard_index }}
+          name: rsvp-synthetic-widget-captures-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.sha }}-${{ matrix.shard_index }}
           path: ${{ runner.temp }}/rsvp-widget-captures/
           if-no-files-found: ignore
           retention-days: 14
