@@ -5,6 +5,7 @@ import type {
 } from "./generated/firestoreAdminTypes";
 
 export type OrganizerCommunicationChannel = "whatsapp" | "sms";
+export type WhatsappPurpose = "eventOperations" | "marketing";
 
 type ChannelPreference = OrganizerCommunicationPreferenceDocument["whatsapp"];
 
@@ -182,6 +183,35 @@ export function effectiveOrganizerCommunicationStatus(
   if (value?.status === "optedOut") return "optedOut";
   return hasCompleteOrganizerCommunicationGrant(preference, channel) ?
     "optedIn" : "unknown";
+}
+
+/** Purpose-aware campaign gate. Legacy copy is mapped only where its known
+ * wording expressly covered the requested purpose; unknown copy stays dark. */
+export function effectiveOrganizerWhatsappPurposeStatus(
+  preference: OrganizerCommunicationPreferenceDocument | null | undefined,
+  purpose: WhatsappPurpose,
+  endpointE164?: string | null
+): "unknown" | "optedIn" | "optedOut" {
+  if (preference?.whatsapp.status === "optedOut") return "optedOut";
+  const scoped = preference?.whatsappPurposes?.[purpose];
+  if (scoped?.status === "optedOut") return "optedOut";
+  if (scoped?.status === "optedIn") {
+    if (!endpointE164 || scoped.endpointE164 !== endpointE164) return "unknown";
+    return scoped.evidenceStatus === "complete" && scoped.currentReceiptId ?
+      "optedIn" : "unknown";
+  }
+  const legacy = preference?.whatsapp;
+  if (legacy?.status !== "optedIn" ||
+      legacy.evidenceStatus !== "complete" || !legacy.currentReceiptId) {
+    return "unknown";
+  }
+  if (purpose === "marketing" &&
+      legacy.source === "publicEventRegistration" &&
+      legacy.termsVersion === "organizer-updates-v1") return "optedIn";
+  if (purpose === "eventOperations" &&
+      legacy.source === "hostFormResponse" &&
+      legacy.termsVersion === "form-whatsapp-v1") return "optedIn";
+  return "unknown";
 }
 
 function sha256(value: string): string {

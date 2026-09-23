@@ -6,6 +6,8 @@ import {createFormPaymentFixture} from
 import {formMessagingOffer, formMessagingTerms,
   normalizeFormMessagingDecision} from "./organizerFormMessagingConsent";
 import {submitOrganizerFormResponseHandler} from "./organizerFormResponses";
+import {promoteFormCommunicationIntentHandler} from
+  "./organizerFormConsentPromotion";
 import {organizerCommunicationPreferenceId,
   unknownOrganizerCommunicationChannel} from
   "../shared/organizerCommunicationPreferences";
@@ -175,4 +177,45 @@ test("deleted participant cannot be re-subscribed by a delayed payment",
     assert.equal(h.records("catchCommunicationPermissionReceipts").length, 0);
     assert.equal(
       h.records("organizerCommunicationPermissionReceipts").length, 0);
+  });
+
+test("v2 keeps unverified choices pending until same-source verified claim",
+  async () => {
+    const h = createFormPaymentFixture();
+    h.version.definition.messagingConsent = {
+      organizerWhatsapp: false, catchWhatsapp: false,
+      organizerOperationsWhatsapp: true,
+      organizerMarketingWhatsapp: true, catchMarketingWhatsapp: true,
+    };
+    const choices = {termsVersion: "form-whatsapp-v2" as const,
+      organizerWhatsapp: false, catchWhatsapp: false,
+      organizerOperationsWhatsapp: true,
+      organizerMarketingWhatsapp: false, catchMarketingWhatsapp: true};
+    const decision = normalizeFormMessagingDecision({
+      choices, previous: undefined, definition: h.version.definition,
+      phoneVerified: false, now: chosenAt,
+    });
+    assert.equal(decision?.organizerOperationsWhatsapp, true);
+    h.store.records.set("organizerFormResponseDrafts/draft",
+      {...h.draft, messagingDecision: decision});
+    const {paymentId} = await h.reserve();
+    h.capture(paymentId);
+    assert.equal(await h.finalize(paymentId), "submitted");
+    const responseId = [...h.store.records.keys()].find((path) =>
+      path.startsWith("organizerFormResponses/"))!.split("/")[1];
+    const pending = h.store.records.get(
+      `formCommunicationConsentIntents/${responseId}`)!;
+    assert.equal(pending.endpointE164, "+919000000001");
+    assert.equal([...h.store.records.keys()].filter((path) =>
+      path.includes("CommunicationPermissionReceipts/")).length, 0);
+    const request = {data: {responseId, withdrawalToken: null,
+      requestId: "promote-1"}, auth: {uid: "person",
+      token: {phone_number: "+919000000001"}}} as never;
+    const deps = {db: () => h.db, now: () => now,
+      rateLimit: async () => undefined} as never;
+    const promoted = await promoteFormCommunicationIntentHandler(request, deps);
+    assert.deepEqual(promoted.promotedPurposes,
+      ["organizer:eventOperations", "catch:marketing"]);
+    assert.equal((await promoteFormCommunicationIntentHandler(request, deps))
+      .replayed, true);
   });

@@ -196,6 +196,10 @@ export async function withdrawParticipantMessagingPermissionHandler(
       createdAt: now};
     if (scope === "catch") {
       const document: CatchPreference = {uid, whatsapp: channel,
+        whatsappPurposes: {
+          ...(previous?.whatsappPurposes ?? {}),
+          eventOperations: channel, marketing: channel,
+        },
         createdAt: previous?.createdAt ?? now, updatedAt: now};
       const evidence: CatchReceipt = {...receipt, sourceOrganizerId: null};
       tx.create(receiptRef, evidence);
@@ -203,7 +207,10 @@ export async function withdrawParticipantMessagingPermissionHandler(
     } else {
       const document: OrganizerPreference = {uid, organizerId:
         data.organizerId!,
-      whatsapp: channel, sms: (previous as OrganizerPreference | null)?.sms ??
+      whatsapp: channel, whatsappPurposes: {
+        ...(previous?.whatsappPurposes ?? {}),
+        eventOperations: channel, marketing: channel,
+      }, sms: (previous as OrganizerPreference | null)?.sms ??
           unknownOrganizerCommunicationChannel(), createdAt:
             previous?.createdAt ?? now,
       updatedAt: now};

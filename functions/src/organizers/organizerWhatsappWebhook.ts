@@ -505,6 +505,20 @@ async function optOutPreference(params: {
         sourceEventId: null,
         updatedAt: params.now,
       },
+      whatsappPurposes: {
+        eventOperations: {
+          status: "optedOut", evidenceStatus: "complete",
+          currentReceiptId: receipt.id, termsVersion: null,
+          source: "inboundStop", sourceEventId: null,
+          updatedAt: params.now,
+        },
+        marketing: {
+          status: "optedOut", evidenceStatus: "complete",
+          currentReceiptId: receipt.id, termsVersion: null,
+          source: "inboundStop", sourceEventId: null,
+          updatedAt: params.now,
+        },
+      },
       sms: existing?.sms ?? unknownOrganizerCommunicationChannel(),
       createdAt: existing?.createdAt ?? params.now,
       updatedAt: params.now,

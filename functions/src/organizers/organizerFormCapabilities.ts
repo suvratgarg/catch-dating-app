@@ -48,6 +48,14 @@ export function validateFormCapabilities(definition: Definition,
   const asksWhatsapp =
     definition.messagingConsent?.organizerWhatsapp === true ||
     definition.messagingConsent?.catchWhatsapp === true;
+  const asksPendingWhatsapp =
+    definition.messagingConsent?.organizerOperationsWhatsapp === true ||
+    definition.messagingConsent?.organizerMarketingWhatsapp === true ||
+    definition.messagingConsent?.catchMarketingWhatsapp === true;
+  if (asksWhatsapp && asksPendingWhatsapp) {
+    add("mixedMessagingTerms", "messagingConsent",
+      "Publish either legacy messaging copy or separately scoped purpose choices.");
+  }
   if ((preparesProfile || asksWhatsapp || definition.payment) &&
       definition.identityPolicy !== "phoneVerified") {
     add("verifiedPhoneRequired", "identityPolicy",
