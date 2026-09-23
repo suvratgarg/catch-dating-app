@@ -23,6 +23,7 @@ export const materializedNonSecretParams = [
   "EVENT_ASSISTANCE_RCS_ENABLED",
   "EVENT_ASSISTANCE_RCS_WEBHOOK_ENABLED",
   "EVENT_ASSISTANCE_SMS_REPORTS_ENABLED",
+  "FORM_DOMAIN_CNAME_TARGET",
   "FLIGHT_WEBHOOK_BASE_URL",
   "FLIGHT_PROVIDER_CONFIG_VERSION",
 ];
@@ -80,6 +81,10 @@ function normalizedProviderParams(environment = process.env, projectId) {
     EVENT_ASSISTANCE_SMS_REPORTS_ENABLED: normalizedBooleanParam(
       environment, "EVENT_ASSISTANCE_SMS_REPORTS_ENABLED"),
   };
+  const formDomainTarget = environment.FORM_DOMAIN_CNAME_TARGET?.trim() ?? "";
+  assert(!formDomainTarget ||
+    /^[a-z0-9](?:[a-z0-9.-]*[a-z0-9])$/.test(formDomainTarget),
+  "FORM_DOMAIN_CNAME_TARGET must be a DNS hostname");
 
   const flightWebhookBaseUrl =
     environment.FLIGHT_WEBHOOK_BASE_URL?.trim() ?? "";
@@ -105,6 +110,8 @@ function normalizedProviderParams(environment = process.env, projectId) {
     META_WHATSAPP_GRAPH_VERSION: graphVersion,
     META_WHATSAPP_ENABLED: enabled,
     ...eventAssistance,
+    // Blank preserves a fail-closed callable until hosting is provisioned.
+    FORM_DOMAIN_CNAME_TARGET: formDomainTarget || " ",
     // Empty lets the function derive the URL from GCLOUD_PROJECT.
     FLIGHT_WEBHOOK_BASE_URL: flightWebhookBaseUrl || " ",
     FLIGHT_PROVIDER_CONFIG_VERSION: flightConfigVersion || " ",
