@@ -330,6 +330,8 @@ export 'fetch_event_success_wingman_candidates_callable_response.g.dart';
 export 'fetch_swipe_candidates_callable_response.g.dart';
 export 'finalize_organizer_form_asset_callable_payload.g.dart';
 export 'finalize_organizer_form_asset_callable_response.g.dart';
+export 'find_organizer_form_payment_callable_payload.g.dart';
+export 'find_organizer_form_payment_callable_response.g.dart';
 export 'function_event_receipt_document.g.dart';
 export 'get_cross_paths_suggestions_callable_payload.g.dart';
 export 'get_cross_paths_suggestions_callable_response.g.dart';

@@ -582,6 +582,8 @@ import {
   finalizeOrganizerFormAssetCallableResponseSchema,
   prepareOrganizerFormPaymentCallablePayloadSchema,
   prepareOrganizerFormPaymentCallableResponseSchema,
+  findOrganizerFormPaymentCallablePayloadSchema,
+  findOrganizerFormPaymentCallableResponseSchema,
   getOrganizerFormPaymentCallablePayloadSchema,
   getOrganizerFormPaymentCallableResponseSchema,
   listOrganizerFormPaymentsCallablePayloadSchema,
@@ -1353,6 +1355,8 @@ export const validateFinalizeOrganizerFormAssetCallablePayload = ajv.compile(fin
 export const validateFinalizeOrganizerFormAssetCallableResponse = ajv.compile(finalizeOrganizerFormAssetCallableResponseSchema);
 export const validatePrepareOrganizerFormPaymentCallablePayload = ajv.compile(prepareOrganizerFormPaymentCallablePayloadSchema);
 export const validatePrepareOrganizerFormPaymentCallableResponse = ajv.compile(prepareOrganizerFormPaymentCallableResponseSchema);
+export const validateFindOrganizerFormPaymentCallablePayload = ajv.compile(findOrganizerFormPaymentCallablePayloadSchema);
+export const validateFindOrganizerFormPaymentCallableResponse = ajv.compile(findOrganizerFormPaymentCallableResponseSchema);
 export const validateGetOrganizerFormPaymentCallablePayload = ajv.compile(getOrganizerFormPaymentCallablePayloadSchema);
 export const validateGetOrganizerFormPaymentCallableResponse = ajv.compile(getOrganizerFormPaymentCallableResponseSchema);
 export const validateListOrganizerFormPaymentsCallablePayload = ajv.compile(listOrganizerFormPaymentsCallablePayloadSchema);

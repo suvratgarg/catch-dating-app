@@ -22,6 +22,7 @@ import {
 import {publicFormsCopy} from "../../content/forms";
 import type {FormStatus} from "../../shared/forms/types";
 import {usePublicFormPayment} from "./usePublicFormPayment";
+import {readFormStorage, writeFormStorage, removeFormStorage} from "./publicFormStorage";
 import {
   validatePublicFormAnswers,
   visiblePublicFormSections,
@@ -59,7 +60,9 @@ export function usePublicFormController(publicFormId: string) {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [code, setCode] = useState("");
   const [email, setEmail] = useState(() =>
-    window.localStorage.getItem(emailStorageKey(publicFormId)) ?? "");
+    readFormStorage("local", emailStorageKey(publicFormId)) ?? "");
+  const [recoveringPayment, setRecoveringPayment] = useState(false);
+  const recoveringPaymentRef = useRef(false);
   const [saveState, setSaveState] = useState<"idle" | "saving" | "saved">("idle");
   const [dirtyRevision, setDirtyRevision] = useState(0);
   const [uploads, setUploads] = useState<
@@ -76,17 +79,17 @@ export function usePublicFormController(publicFormId: string) {
   const saveChainRef = useRef<Promise<void>>(Promise.resolve());
   const startPromiseRef = useRef<Promise<void> | null>(null);
   const submitRequestIdRef = useRef(requestId());
+  const startRequestIdRef = useRef(requestId());
   const showPayment = useCallback(() => setStage("payment"), []);
   const acceptReceipt = useCallback((submitted: PublicOrganizerFormReceipt) => {
     if (formRef.current && submitted.formId !== formRef.current.formId) return;
     setReceipt(submitted);
-    persistReceipt(publicFormId, submitted);
+    persistReceipt(publicFormId, submitted, userRef.current?.uid ?? null);
     setStage(submitted.status === "withdrawn" ? "withdrawn" : "complete");
     setStatus({message: "", tone: ""});
   }, [publicFormId]);
   const payments = usePublicFormPayment(publicFormId, showPayment, acceptReceipt);
   const resumePayment = payments.resume;
-  const pendingPayment = payments.hasPending;
   const resetPaymentSession = payments.resetSession;
   const sourceToken = useMemo(() => {
     const value = new URLSearchParams(window.location.search).get("source");
@@ -116,12 +119,28 @@ export function usePublicFormController(publicFormId: string) {
     if (startPromiseRef.current) return startPromiseRef.current;
     const generation = authGenerationRef.current;
     const operation = (async () => {
+      let checkingPayment = true;
       try {
         if (await resumePayment(userRef.current?.uid ?? null)) return;
+        checkingPayment = false;
+        if (generation !== authGenerationRef.current) return;
+        const savedReceipt = storedReceipt(publicFormId, userRef.current?.uid ?? null);
+        if (!nextForm.definition.payment && savedReceipt?.formId === nextForm.formId &&
+            savedReceipt.status === "submitted") {
+          setReceipt(savedReceipt);
+          setStage("complete");
+          return;
+        }
+        if (recoveringPaymentRef.current || nextForm.availabilityStatus !== "active") {
+          setStage("unavailable");
+          if (recoveringPaymentRef.current) setStatus({tone: "", message:
+            publicFormsCopy.paymentRecoveryEmpty});
+          return;
+        }
         const started = await beginOrganizerFormResponse({
           publicFormId,
           sourceToken,
-          requestId: stableStartRequestId(publicFormId),
+          requestId: stableStartRequestId(publicFormId, startRequestIdRef.current),
         });
         if (generation !== authGenerationRef.current) return;
         draftRef.current = started;
@@ -138,7 +157,8 @@ export function usePublicFormController(publicFormId: string) {
         if (generation !== authGenerationRef.current) return;
         setStatus({message: publicFormError(error), tone: "is-error"});
         const policy = nextForm.definition.identityPolicy;
-        setStage(policy === "anonymous" ? "unavailable" : "identity");
+        setStage((checkingPayment && userRef.current) || policy === "anonymous" ?
+          "unavailable" : "identity");
       }
     })();
     startPromiseRef.current = operation;
@@ -151,6 +171,17 @@ export function usePublicFormController(publicFormId: string) {
 
   useEffect(() => {
     let cancelled = false;
+    formRef.current = null;
+    draftRef.current = null;
+    answersRef.current = {};
+    recoveringPaymentRef.current = false;
+    setRecoveringPayment(false);
+    setForm(null);
+    setDraft(null);
+    setAnswers({});
+    setReceipt(null);
+    setStage("loading");
+    setStatus({message: "", tone: ""});
     const unsubscribe = watchPublicFormAuthState((user) => {
       if (cancelled) return;
       if (userRef.current?.uid !== user?.uid) {
@@ -172,9 +203,7 @@ export function usePublicFormController(publicFormId: string) {
       if (!user && loaded?.definition.identityPolicy !== "anonymous" && loaded) {
         setStage("identity");
       }
-      if (user && loaded && (loaded.availabilityStatus === "active" ||
-          pendingPayment()?.uid === user.uid) &&
-          loaded.definition.identityPolicy !== "anonymous") {
+      if (user && loaded) {
         void startDraft(loaded);
       }
     });
@@ -183,14 +212,15 @@ export function usePublicFormController(publicFormId: string) {
         if (cancelled) return;
         formRef.current = loaded;
         setForm(loaded);
-        const savedReceipt = storedReceipt(publicFormId);
-        if (!loaded.definition.payment && savedReceipt?.formId === loaded.formId &&
+        const savedReceipt = storedReceipt(publicFormId, userRef.current?.uid ?? null);
+        if (!userRef.current && !loaded.definition.payment &&
+            savedReceipt?.formId === loaded.formId &&
             savedReceipt.status === "submitted") {
           setReceipt(savedReceipt);
           setStage("complete");
           return;
         }
-        if (loaded.availabilityStatus !== "active" && !pendingPayment()) {
+        if (loaded.availabilityStatus !== "active" && !userRef.current) {
           setStage("unavailable");
           return;
         }
@@ -212,7 +242,7 @@ export function usePublicFormController(publicFormId: string) {
       verificationRef.current?.clear();
       unsubscribe();
     };
-  }, [pendingPayment, publicFormId, resetPaymentSession, sourceToken, startDraft]);
+  }, [publicFormId, resetPaymentSession, sourceToken, startDraft]);
 
   const flushSave = useCallback(() => {
     const generation = authGenerationRef.current;
@@ -324,10 +354,10 @@ export function usePublicFormController(publicFormId: string) {
       const currentUrl = window.location.href;
       if (currentUrl.includes("mode=signIn")) {
         await completePublicFormEmailSignIn(email.trim(), currentUrl);
-        window.localStorage.removeItem(key);
+        removeFormStorage("local", key);
         if (formRef.current) await startDraft(formRef.current);
       } else {
-        window.localStorage.setItem(key, email.trim());
+        writeFormStorage("local", key, email.trim());
         await sendPublicFormEmailSignInLink(email.trim(), currentUrl);
         setStage("emailSent");
       }
@@ -482,7 +512,10 @@ export function usePublicFormController(publicFormId: string) {
   async function restartAfterPayment() {
     await actionMutation.mutateAsync(async () => {
       if (!await payments.restart()) return;
-      window.sessionStorage.removeItem(`catch:form:${publicFormId}:start`);
+      removeFormStorage("session", `catch:form:${publicFormId}:start`);
+      startRequestIdRef.current = requestId();
+      recoveringPaymentRef.current = false;
+      setRecoveringPayment(false);
       clearReceipt(publicFormId);
       submitRequestIdRef.current = requestId();
       const current = await getPublicOrganizerForm({publicFormId, sourceToken});
@@ -492,6 +525,17 @@ export function usePublicFormController(publicFormId: string) {
       if (current.availabilityStatus !== "active") setStage("unavailable");
       else await startDraft(current);
     }).catch(() => undefined);
+  }
+
+  function recoverPayment() {
+    recoveringPaymentRef.current = true;
+    setRecoveringPayment(true);
+    setStatus({message: "", tone: ""});
+    if (userRef.current && formRef.current) {
+      setStage("loading");
+      void startDraft(formRef.current);
+    }
+    else setStage("identity");
   }
 
   return {
@@ -514,6 +558,8 @@ export function usePublicFormController(publicFormId: string) {
     previousSection,
     receipt,
     restartAfterPayment,
+    recoverPayment,
+    recoveringPayment,
     recaptchaContainerId,
     saveState,
     sectionIndex,
@@ -557,13 +603,12 @@ function requestId() {
     `request-${Date.now()}-${Math.random().toString(36).slice(2)}`;
 }
 
-function stableStartRequestId(publicFormId: string) {
+function stableStartRequestId(publicFormId: string, fallback: string) {
   const key = `catch:form:${publicFormId}:start`;
-  const existing = window.sessionStorage.getItem(key);
+  const existing = readFormStorage("session", key);
   if (existing) return existing;
-  const created = requestId();
-  window.sessionStorage.setItem(key, created);
-  return created;
+  writeFormStorage("session", key, fallback);
+  return fallback;
 }
 
 function emailStorageKey(publicFormId: string) {
@@ -572,20 +617,21 @@ function emailStorageKey(publicFormId: string) {
 
 function persistReceipt(
   publicFormId: string,
-  receipt: PublicOrganizerFormReceipt
+  receipt: PublicOrganizerFormReceipt,
+  ownerUid: string | null
 ) {
-  window.localStorage.setItem(
+  writeFormStorage("local",
     `catch:form:${publicFormId}:receipt`,
-    JSON.stringify(receipt)
+    JSON.stringify({...receipt, cacheOwnerUid: ownerUid})
   );
 }
 
 function clearReceipt(publicFormId: string) {
-  window.localStorage.removeItem(`catch:form:${publicFormId}:receipt`);
+  removeFormStorage("local", `catch:form:${publicFormId}:receipt`);
 }
 
-function storedReceipt(publicFormId: string): PublicOrganizerFormReceipt | null {
-  const value = window.localStorage.getItem(
+function storedReceipt(publicFormId: string, ownerUid: string | null = null): PublicOrganizerFormReceipt | null {
+  const value = readFormStorage("local",
     `catch:form:${publicFormId}:receipt`
   );
   if (!value) return null;
@@ -599,6 +645,10 @@ function storedReceipt(publicFormId: string): PublicOrganizerFormReceipt | null 
         !(parsed.withdrawalToken === null ||
           typeof parsed.withdrawalToken === "string") ||
         !isRecord(parsed.completion)) return null;
+    // Legacy anonymous receipts retain their bearer withdrawal token. Verified
+    // receipts need an explicit matching cache owner; never restore on sign-out.
+    if ("cacheOwnerUid" in parsed ? parsed.cacheOwnerUid !== ownerUid :
+        parsed.withdrawalToken === null) return null;
     return parsed as PublicOrganizerFormReceipt;
   } catch {
     return null;

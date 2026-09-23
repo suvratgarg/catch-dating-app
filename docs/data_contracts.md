@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.145.0
+version: 1.146.0
 updated: 2026-09-23
 owner: recursive_audit_loop
 status: active
@@ -2486,6 +2486,15 @@ through one deterministic draft-to-payment point read. Organizer, form, version,
 draft, respondent and response links must all match before money or provider
 references are returned. Free responses have no payment row. Refund and manual
 review states remain financial facts and do not change application review.
+
+`findOrganizerFormPayment` resolves the public form id with a bounded unique
+lookup, then reads only the authenticated respondent's latest form payment.
+Discovery does not call the provider or depend on the current published version,
+fee, availability or browser storage. Ended attempts without a response do not
+block a fresh start; completed responses remain recoverable, including refunds.
+Client session generations discard late lookup, checkout and error results
+after account or form changes. Reading an ended or manual-review payment never
+retries financial mutations.
 
 
 ### Form messaging decisions

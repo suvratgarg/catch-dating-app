@@ -5,6 +5,12 @@ import type {PrepareOrganizerFormPaymentCallablePayload} from
   "../../shared/generated/prepareOrganizerFormPaymentCallablePayload";
 import type {GetOrganizerFormPaymentCallablePayload} from
   "../../shared/generated/getOrganizerFormPaymentCallablePayload";
+import type {FindOrganizerFormPaymentCallablePayload} from
+  "../../shared/generated/findOrganizerFormPaymentCallablePayload";
+import type {FindOrganizerFormPaymentCallableResponse} from
+  "../../shared/generated/findOrganizerFormPaymentCallableResponse";
+import {validateFindOrganizerFormPaymentCallablePayload} from
+  "../../shared/generated/validators/findOrganizerFormPaymentInput";
 import type {ManageOrganizerFormPaymentConnectionCallablePayload} from
   "../../shared/generated/manageOrganizerFormPaymentConnectionCallablePayload";
 import type {ManageOrganizerFormPaymentConnectionCallableResponse} from
@@ -16,6 +22,7 @@ import {validateGetOrganizerFormPaymentCallablePayload} from
 import {validateManageOrganizerFormPaymentConnectionCallablePayload} from
   "../../shared/generated/validators/manageOrganizerFormPaymentConnectionInput";
 import type {OrganizerFormResponseDraftDocument as Draft,
+  OrganizerFormDocument as Form,
   OrganizerFormVersionDocument as Version,
   OrganizerFormPaymentDocument as Payment,
   OrganizerPaymentConnectionDocument as Connection} from
@@ -84,9 +91,11 @@ export async function getOrganizerFormPaymentHandler(
     .collection("organizerFormPayments").doc(data.paymentId).get(),
   "OrganizerFormPaymentDocument");
   if (current.respondentUid !== uid) unavailable();
-  // Completed receipts do not depend on provider availability. Refund updates
-  // continue through signed callbacks and the recovery sweep.
-  if (current.responseId) {
+  // Receipts and ended/manual-review attempts remain readable during provider
+  // outages. A read is never permission to retry a payment needing review.
+  // Late capture/refund updates continue through callbacks and the sweep.
+  if (current.responseId ||
+      ["expired", "refunded", "reviewRequired"].includes(current.status)) {
     return projectFormPayment({db,
       paymentId: data.paymentId, payment: current, respondentUid: uid});
   }
@@ -98,6 +107,37 @@ export async function getOrganizerFormPaymentHandler(
     await processor.reconcile(data.paymentId);
   return projectFormPayment({db, paymentId: data.paymentId, payment,
     respondentUid: uid});
+}
+
+/** Read-only discovery works for full, paused, or republished forms.
+ * Provider reconciliation still happens through the owned get/pay operation. */
+export async function findOrganizerFormPaymentHandler(
+  request: CallableRequest<unknown>, deps: HandlerDeps = defaults):
+  Promise<FindOrganizerFormPaymentCallableResponse> {
+  const uid = requireAuth(request);
+  const data = validateCallableWithAjv<FindOrganizerFormPaymentCallablePayload>(
+    request, validateFindOrganizerFormPaymentCallablePayload);
+  const db = deps.db();
+  await deps.rateLimit(db, uid, "findOrganizerFormPayment");
+  const forms = await db.collection("organizerForms")
+    .where("publicFormId", "==", data.publicFormId).limit(2).get();
+  if (forms.docs.length !== 1) return {payment: null};
+  const formSnap = forms.docs[0];
+  const form = requireDoc<Form>(formSnap, "OrganizerFormDocument");
+  const payments = await db.collection("organizerFormPayments")
+    .where("formId", "==", formSnap.id)
+    .where("respondentUid", "==", uid)
+    .orderBy("createdAt", "desc").limit(1).get();
+  if (!payments.docs.length) return {payment: null};
+  const snap = payments.docs[0];
+  const payment = requireDoc<Payment>(snap, "OrganizerFormPaymentDocument");
+  if (payment.respondentUid !== uid || payment.formId !== formSnap.id ||
+      payment.organizerId !== form.organizerId) unavailable();
+  // Ended attempts without a submission do not trap a deliberate fresh start.
+  if (!payment.responseId &&
+      ["expired", "refunded"].includes(payment.status)) return {payment: null};
+  return {payment: await projectFormPayment({db, paymentId: snap.id,
+    payment, respondentUid: uid})};
 }
 
 export async function manageOrganizerFormPaymentConnectionHandler(
@@ -162,6 +202,9 @@ export const prepareOrganizerFormPayment = onCall(
 export const getOrganizerFormPayment = onCall(
   appCheckCallableOptionsWithLimits(limits),
   (request) => getOrganizerFormPaymentHandler(request));
+export const findOrganizerFormPayment = onCall(
+  appCheckCallableOptionsWithLimits({timeoutSeconds: 30, maxInstances: 20}),
+  (request) => findOrganizerFormPaymentHandler(request));
 export const manageOrganizerFormPaymentConnection = onCall(
   appCheckCallableOptionsWithLimits(limits),
   (request) => manageOrganizerFormPaymentConnectionHandler(request));

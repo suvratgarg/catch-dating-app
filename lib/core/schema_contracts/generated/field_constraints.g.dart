@@ -58680,6 +58680,188 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['ready'],
   );
 
+  static const findOrganizerFormPaymentCallablePayloadPublicFormId = CatchContractFieldConstraints(
+    path: 'findOrganizerFormPaymentCallablePayload.publicFormId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{20,80}\$',
+  );
+
+  static const findOrganizerFormPaymentCallableResponsePaymentAmountPaise = CatchContractFieldConstraints(
+    path: 'findOrganizerFormPaymentCallableResponse.payment.amountPaise',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 100,
+    maximum: 10000000,
+  );
+
+  static const findOrganizerFormPaymentCallableResponsePaymentCheckoutAmountPaise = CatchContractFieldConstraints(
+    path: 'findOrganizerFormPaymentCallableResponse.payment.checkout.amountPaise',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 100,
+    maximum: 10000000,
+  );
+
+  static const findOrganizerFormPaymentCallableResponsePaymentCheckoutCurrency = CatchContractFieldConstraints(
+    path: 'findOrganizerFormPaymentCallableResponse.payment.checkout.currency',
+    required: true,
+  );
+
+  static const findOrganizerFormPaymentCallableResponsePaymentCheckoutDescription = CatchContractFieldConstraints(
+    path: 'findOrganizerFormPaymentCallableResponse.payment.checkout.description',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const findOrganizerFormPaymentCallableResponsePaymentCheckoutExpiresAtMillis = CatchContractFieldConstraints(
+    path: 'findOrganizerFormPaymentCallableResponse.payment.checkout.expiresAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const findOrganizerFormPaymentCallableResponsePaymentCheckoutOrderId = CatchContractFieldConstraints(
+    path: 'findOrganizerFormPaymentCallableResponse.payment.checkout.orderId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^order_[A-Za-z0-9]+\$',
+  );
+
+  static const findOrganizerFormPaymentCallableResponsePaymentCheckoutPublicToken = CatchContractFieldConstraints(
+    path: 'findOrganizerFormPaymentCallableResponse.payment.checkout.publicToken',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^rzp_(test|live)_oauth_[A-Za-z0-9]+\$',
+  );
+
+  static const findOrganizerFormPaymentCallableResponsePaymentCurrency = CatchContractFieldConstraints(
+    path: 'findOrganizerFormPaymentCallableResponse.payment.currency',
+    required: true,
+  );
+
+  static const findOrganizerFormPaymentCallableResponsePaymentMode = CatchContractFieldConstraints(
+    path: 'findOrganizerFormPaymentCallableResponse.payment.mode',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['test', 'live'],
+  );
+
+  static const findOrganizerFormPaymentCallableResponsePaymentPaymentId = CatchContractFieldConstraints(
+    path: 'findOrganizerFormPaymentCallableResponse.payment.paymentId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^fp_[a-f0-9]{32}\$',
+  );
+
+  static const findOrganizerFormPaymentCallableResponsePaymentReceiptCompletionActionKind = CatchContractFieldConstraints(
+    path: 'findOrganizerFormPaymentCallableResponse.payment.receipt.completion.actionKind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['none', 'externalUrl', 'event', 'eventRuntime'],
+  );
+
+  static const findOrganizerFormPaymentCallableResponsePaymentReceiptCompletionActionLabel = CatchContractFieldConstraints(
+    path: 'findOrganizerFormPaymentCallableResponse.payment.receipt.completion.actionLabel',
+    maxLength: 80,
+    valueTypes: <String>['string'],
+  );
+
+  static const findOrganizerFormPaymentCallableResponsePaymentReceiptCompletionActionUrl = CatchContractFieldConstraints(
+    path: 'findOrganizerFormPaymentCallableResponse.payment.receipt.completion.actionUrl',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+    format: 'uri',
+  );
+
+  static const findOrganizerFormPaymentCallableResponsePaymentReceiptCompletionMessage = CatchContractFieldConstraints(
+    path: 'findOrganizerFormPaymentCallableResponse.payment.receipt.completion.message',
+    maxLength: 1000,
+    valueTypes: <String>['string'],
+  );
+
+  static const findOrganizerFormPaymentCallableResponsePaymentReceiptCompletionTitle = CatchContractFieldConstraints(
+    path: 'findOrganizerFormPaymentCallableResponse.payment.receipt.completion.title',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const findOrganizerFormPaymentCallableResponsePaymentReceiptFormId = CatchContractFieldConstraints(
+    path: 'findOrganizerFormPaymentCallableResponse.payment.receipt.formId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const findOrganizerFormPaymentCallableResponsePaymentReceiptProfileReviewAvailable = CatchContractFieldConstraints(
+    path: 'findOrganizerFormPaymentCallableResponse.payment.receipt.profileReviewAvailable',
+    valueTypes: <String>['boolean'],
+  );
+
+  static const findOrganizerFormPaymentCallableResponsePaymentReceiptResponseId = CatchContractFieldConstraints(
+    path: 'findOrganizerFormPaymentCallableResponse.payment.receipt.responseId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const findOrganizerFormPaymentCallableResponsePaymentReceiptStatus = CatchContractFieldConstraints(
+    path: 'findOrganizerFormPaymentCallableResponse.payment.receipt.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['submitted', 'withdrawn'],
+  );
+
+  static const findOrganizerFormPaymentCallableResponsePaymentReceiptSubmittedAtMillis = CatchContractFieldConstraints(
+    path: 'findOrganizerFormPaymentCallableResponse.payment.receipt.submittedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const findOrganizerFormPaymentCallableResponsePaymentReceiptVersionId = CatchContractFieldConstraints(
+    path: 'findOrganizerFormPaymentCallableResponse.payment.receipt.versionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const findOrganizerFormPaymentCallableResponsePaymentReceiptWithdrawalToken = CatchContractFieldConstraints(
+    path: 'findOrganizerFormPaymentCallableResponse.payment.receipt.withdrawalToken',
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9_-]{32,160}\$',
+  );
+
+  static const findOrganizerFormPaymentCallableResponsePaymentRefundedAmountPaise = CatchContractFieldConstraints(
+    path: 'findOrganizerFormPaymentCallableResponse.payment.refundedAmountPaise',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const findOrganizerFormPaymentCallableResponsePaymentRefundPolicy = CatchContractFieldConstraints(
+    path: 'findOrganizerFormPaymentCallableResponse.payment.refundPolicy',
+    maxLength: 1000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const findOrganizerFormPaymentCallableResponsePaymentStatus = CatchContractFieldConstraints(
+    path: 'findOrganizerFormPaymentCallableResponse.payment.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['creatingOrder', 'orderUnknown', 'checkoutReady', 'verifying', 'captured', 'submitted', 'failed', 'expired', 'refundPending', 'refunded', 'reviewRequired'],
+  );
+
   static const functionEventReceiptDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
     path: 'functionEventReceiptDocument.createdAt._nanoseconds',
     required: true,
@@ -113688,6 +113870,32 @@ abstract final class CatchContractConstraints {
     'finalizeOrganizerFormAssetCallableResponse.assetId': finalizeOrganizerFormAssetCallableResponseAssetId,
     'finalizeOrganizerFormAssetCallableResponse.sizeBytes': finalizeOrganizerFormAssetCallableResponseSizeBytes,
     'finalizeOrganizerFormAssetCallableResponse.status': finalizeOrganizerFormAssetCallableResponseStatus,
+    'findOrganizerFormPaymentCallablePayload.publicFormId': findOrganizerFormPaymentCallablePayloadPublicFormId,
+    'findOrganizerFormPaymentCallableResponse.payment.amountPaise': findOrganizerFormPaymentCallableResponsePaymentAmountPaise,
+    'findOrganizerFormPaymentCallableResponse.payment.checkout.amountPaise': findOrganizerFormPaymentCallableResponsePaymentCheckoutAmountPaise,
+    'findOrganizerFormPaymentCallableResponse.payment.checkout.currency': findOrganizerFormPaymentCallableResponsePaymentCheckoutCurrency,
+    'findOrganizerFormPaymentCallableResponse.payment.checkout.description': findOrganizerFormPaymentCallableResponsePaymentCheckoutDescription,
+    'findOrganizerFormPaymentCallableResponse.payment.checkout.expiresAtMillis': findOrganizerFormPaymentCallableResponsePaymentCheckoutExpiresAtMillis,
+    'findOrganizerFormPaymentCallableResponse.payment.checkout.orderId': findOrganizerFormPaymentCallableResponsePaymentCheckoutOrderId,
+    'findOrganizerFormPaymentCallableResponse.payment.checkout.publicToken': findOrganizerFormPaymentCallableResponsePaymentCheckoutPublicToken,
+    'findOrganizerFormPaymentCallableResponse.payment.currency': findOrganizerFormPaymentCallableResponsePaymentCurrency,
+    'findOrganizerFormPaymentCallableResponse.payment.mode': findOrganizerFormPaymentCallableResponsePaymentMode,
+    'findOrganizerFormPaymentCallableResponse.payment.paymentId': findOrganizerFormPaymentCallableResponsePaymentPaymentId,
+    'findOrganizerFormPaymentCallableResponse.payment.receipt.completion.actionKind': findOrganizerFormPaymentCallableResponsePaymentReceiptCompletionActionKind,
+    'findOrganizerFormPaymentCallableResponse.payment.receipt.completion.actionLabel': findOrganizerFormPaymentCallableResponsePaymentReceiptCompletionActionLabel,
+    'findOrganizerFormPaymentCallableResponse.payment.receipt.completion.actionUrl': findOrganizerFormPaymentCallableResponsePaymentReceiptCompletionActionUrl,
+    'findOrganizerFormPaymentCallableResponse.payment.receipt.completion.message': findOrganizerFormPaymentCallableResponsePaymentReceiptCompletionMessage,
+    'findOrganizerFormPaymentCallableResponse.payment.receipt.completion.title': findOrganizerFormPaymentCallableResponsePaymentReceiptCompletionTitle,
+    'findOrganizerFormPaymentCallableResponse.payment.receipt.formId': findOrganizerFormPaymentCallableResponsePaymentReceiptFormId,
+    'findOrganizerFormPaymentCallableResponse.payment.receipt.profileReviewAvailable': findOrganizerFormPaymentCallableResponsePaymentReceiptProfileReviewAvailable,
+    'findOrganizerFormPaymentCallableResponse.payment.receipt.responseId': findOrganizerFormPaymentCallableResponsePaymentReceiptResponseId,
+    'findOrganizerFormPaymentCallableResponse.payment.receipt.status': findOrganizerFormPaymentCallableResponsePaymentReceiptStatus,
+    'findOrganizerFormPaymentCallableResponse.payment.receipt.submittedAtMillis': findOrganizerFormPaymentCallableResponsePaymentReceiptSubmittedAtMillis,
+    'findOrganizerFormPaymentCallableResponse.payment.receipt.versionId': findOrganizerFormPaymentCallableResponsePaymentReceiptVersionId,
+    'findOrganizerFormPaymentCallableResponse.payment.receipt.withdrawalToken': findOrganizerFormPaymentCallableResponsePaymentReceiptWithdrawalToken,
+    'findOrganizerFormPaymentCallableResponse.payment.refundedAmountPaise': findOrganizerFormPaymentCallableResponsePaymentRefundedAmountPaise,
+    'findOrganizerFormPaymentCallableResponse.payment.refundPolicy': findOrganizerFormPaymentCallableResponsePaymentRefundPolicy,
+    'findOrganizerFormPaymentCallableResponse.payment.status': findOrganizerFormPaymentCallableResponsePaymentStatus,
     'functionEventReceiptDocument.createdAt._nanoseconds': functionEventReceiptDocumentCreatedAtNanoseconds,
     'functionEventReceiptDocument.createdAt._seconds': functionEventReceiptDocumentCreatedAtSeconds,
     'functionEventReceiptDocument.eventId': functionEventReceiptDocumentEventId,

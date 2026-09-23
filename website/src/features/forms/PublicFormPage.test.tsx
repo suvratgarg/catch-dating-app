@@ -77,6 +77,27 @@ describe("public form choices", () => {
 });
 
 describe("public form payment", () => {
+  it("offers recovery on a closed form without implying a new submission", () => {
+    const recoverPayment = vi.fn();
+    usePublicFormController.mockReturnValue({stage: "unavailable",
+      form: {organizer: {name: "RSVP"}, definition: {sections: [],
+        appearance: {preset: "minimal"}}}, status: {message: "", tone: ""}, recoverPayment});
+    render(<MemoryRouter><PublicFormPage /></MemoryRouter>);
+    fireEvent.click(screen.getByRole("button", {name: "Check an existing payment"}));
+    expect(recoverPayment).toHaveBeenCalledOnce();
+    expect(screen.queryByRole("button", {name: /Pay ₹/u})).toBeNull();
+  });
+
+  it("recovery requests the original phone even after the form changed to anonymous", () => {
+    usePublicFormController.mockReturnValue({stage: "identity", recoveringPayment: true,
+      form: {organizer: {name: "RSVP"}, definition: {sections: [], identityPolicy: "anonymous",
+        appearance: {preset: "minimal"}}}, status: {message: "", tone: ""}, phoneNumber: "",
+      setPhoneNumber: vi.fn(), handlePhoneSubmit: vi.fn()});
+    render(<MemoryRouter><PublicFormPage /></MemoryRouter>);
+    expect(screen.getByRole("heading", {name: "Find your payment"})).not.toBeNull();
+    expect(screen.getByRole("textbox", {name: "Mobile number"})).not.toBeNull();
+    expect(screen.getByText(/This does not start another payment/u)).not.toBeNull();
+  });
   function renderPayment(status: string, checkout = true) {
     const pay = vi.fn();
     const refresh = vi.fn();
@@ -138,7 +159,7 @@ describe("review messaging choices", () => {
 });
 
 describe("profile review after submission", () => {
-  function complete(profileReviewAvailable?: boolean) {
+  function complete(profileReviewAvailable?: boolean, paymentStatus?: string) {
     vi.stubEnv("VITE_FIREBASE_PROJECT_ID", "catch-dating-app-64e51");
     usePublicFormController.mockReturnValue({stage: "complete",
       form: {organizer: {name: "RSVP"}, definition: {
@@ -148,9 +169,15 @@ describe("profile review after submission", () => {
         completion: {title: "Received", message: "Thank you",
           actionUrl: "https://example.test/next", actionLabel: "Organizer next step"}},
       withdraw: vi.fn(),
+      payments: paymentStatus ? {payment: {status: paymentStatus}} : undefined,
     });
     render(<MemoryRouter><PublicFormPage /></MemoryRouter>);
   }
+  it("does not claim an existing response disappeared after a refund", () => {
+    complete(false, "refunded");
+    expect(screen.getByText(/Your payment was refunded\. Your response is still submitted/u)).not.toBeNull();
+    expect(screen.queryByText(/No response was submitted/u)).toBeNull();
+  });
   it("offers owned review alongside the organizer action and withdrawal", () => {
     complete(true);
     expect(screen.getByRole("link", {name: "Review my profile in Catch"})

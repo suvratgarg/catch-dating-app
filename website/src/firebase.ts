@@ -96,6 +96,8 @@ import type {SubmitOrganizerFormResponseCallablePayload} from "../../functions/s
 import type {SubmitOrganizerFormResponseCallableResponse} from "../../functions/src/shared/generated/submitOrganizerFormResponseCallableResponse";
 import type {PrepareOrganizerFormPaymentCallablePayload} from "../../functions/src/shared/generated/prepareOrganizerFormPaymentCallablePayload";
 import type {GetOrganizerFormPaymentCallablePayload} from "../../functions/src/shared/generated/getOrganizerFormPaymentCallablePayload";
+import type {FindOrganizerFormPaymentCallablePayload} from "../../functions/src/shared/generated/findOrganizerFormPaymentCallablePayload";
+import type {FindOrganizerFormPaymentCallableResponse} from "../../functions/src/shared/generated/findOrganizerFormPaymentCallableResponse";
 import type {GetOrganizerFormPaymentCallableResponse} from "../../functions/src/shared/generated/getOrganizerFormPaymentCallableResponse";
 import type {WithdrawOrganizerFormResponseCallablePayload} from "../../functions/src/shared/generated/withdrawOrganizerFormResponseCallablePayload";
 import type {WithdrawOrganizerFormResponseCallableResponse} from "../../functions/src/shared/generated/withdrawOrganizerFormResponseCallableResponse";
@@ -290,6 +292,13 @@ export async function submitOrganizerFormResponse(
 
 export type PublicOrganizerFormPayment = GetOrganizerFormPaymentCallableResponse;
 export type PublicOrganizerFormPaymentRequest = PrepareOrganizerFormPaymentCallablePayload;
+
+export async function findOrganizerFormPayment(
+  payload: FindOrganizerFormPaymentCallablePayload
+): Promise<FindOrganizerFormPaymentCallableResponse> {
+  return invokeWebsiteCallable("findOrganizerFormPayment", payload,
+    publicFormsFirebaseConfigured, "Public form payment recovery");
+}
 
 export async function prepareOrganizerFormPayment(
   payload: PrepareOrganizerFormPaymentCallablePayload

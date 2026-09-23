@@ -14,6 +14,7 @@ import {listParticipantFormProfilesHandler} from
 import {listOrganizerFormPaymentsHandler} from "./formPaymentLedger";
 import {reconcileOrganizerFormPaymentsHandler} from "./formPaymentTriggers";
 import type {formPaymentRuntime} from "./formPaymentRuntime";
+import {findOrganizerFormPaymentHandler} from "./formPaymentHandlers";
 import {getOrganizerFormResponseDetailHandler} from
   "../../organizers/organizerFormOperations";
 
@@ -109,6 +110,27 @@ test("Firestore serializes payment reservations, finalization and late capture",
       await assert.rejects(getOrganizerFormResponseDetailHandler(
         detailRequest, detailDeps), /Response payment could not be loaded/u);
       await paymentRef.update({organizerId: "org"});
+      // A returning phone-verified account can recover without a browser-local
+      // payment id, even after the form filled up and changed its version.
+      await db.doc("organizerForms/form").update({status: "paused",
+        activeVersionId: "new-version"});
+      const discoveryDeps = {db: () => db, configured: () => false,
+        rateLimit: async () => undefined, requireManager: async () => undefined,
+        runtime: async (): Promise<never> => {
+          throw new Error("Discovery must not call the provider");
+        }};
+      const discoveryRequest = {...fixture.request,
+        data: {publicFormId: fixture.draft.publicFormId}};
+      const discovery = await findOrganizerFormPaymentHandler(
+        discoveryRequest, discoveryDeps);
+      assert.equal(discovery.payment?.paymentId, first.paymentId);
+      assert.equal(discovery.payment?.receipt?.versionId, "version");
+      const outsider = await findOrganizerFormPaymentHandler({
+        ...discoveryRequest, auth: {uid: "other"},
+      } as CallableRequest<unknown>, discoveryDeps);
+      assert.equal(outsider.payment, null);
+      await db.doc("organizerForms/form").update({status: "published",
+        activeVersionId: "version"});
       for (const collection of ["organizerCommunicationPermissionReceipts",
         "catchCommunicationPermissionReceipts"]) {
         const receipts = await db.collection(collection).get();

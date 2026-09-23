@@ -105,6 +105,7 @@ export 'callables/event_success_spatial_action_callable_request.g.dart';
 export 'callables/explore_search_callable_request.g.dart';
 export 'callables/export_organizer_contacts_callable_request.g.dart';
 export 'callables/finalize_organizer_form_asset_callable_request.g.dart';
+export 'callables/find_organizer_form_payment_callable_request.g.dart';
 export 'callables/get_cross_paths_suggestions_callable_request.g.dart';
 export 'callables/get_event_assistance_accountability_callable_request.g.dart';
 export 'callables/get_event_assistance_checkpoint_callable_request.g.dart';

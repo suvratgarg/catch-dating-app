@@ -3465,6 +3465,16 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/prepareOrganizerFormPaymentCallableResponse.ts",
   },
   {
+    name: "FindOrganizerFormPaymentCallablePayload",
+    source: "callables/find_organizer_form_payment_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/findOrganizerFormPaymentCallablePayload.ts",
+  },
+  {
+    name: "FindOrganizerFormPaymentCallableResponse",
+    source: "callable_responses/find_organizer_form_payment_response.schema.json",
+    typeOutput: "functions/src/shared/generated/findOrganizerFormPaymentCallableResponse.ts",
+  },
+  {
     name: "GetOrganizerFormPaymentCallablePayload",
     source: "callables/get_organizer_form_payment_payload.schema.json",
     typeOutput: "functions/src/shared/generated/getOrganizerFormPaymentCallablePayload.ts",

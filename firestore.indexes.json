@@ -16,6 +16,7 @@
         {"fieldPath": "expiresAt", "order": "DESCENDING"}
       ]
     },
+    {"collectionGroup":"organizerFormPayments","queryScope":"COLLECTION","fields":[{"fieldPath":"formId","order":"ASCENDING"},{"fieldPath":"respondentUid","order":"ASCENDING"},{"fieldPath":"createdAt","order":"DESCENDING"}]},
     {"collectionGroup":"organizerFormPayments","queryScope":"COLLECTION","fields":[{"fieldPath":"organizerId","order":"ASCENDING"},{"fieldPath":"formId","order":"ASCENDING"},{"fieldPath":"createdAt","order":"DESCENDING"},{"fieldPath":"__name__","order":"DESCENDING"}]},
     {"collectionGroup":"organizerFormPayments","queryScope":"COLLECTION","fields":[{"fieldPath":"organizerId","order":"ASCENDING"},{"fieldPath":"formId","order":"ASCENDING"},{"fieldPath":"status","order":"ASCENDING"},{"fieldPath":"createdAt","order":"DESCENDING"},{"fieldPath":"__name__","order":"DESCENDING"}]},
     {"collectionGroup": "organizerPaymentConnections","queryScope": "COLLECTION","fields": [{"fieldPath": "organizerId","order": "ASCENDING"},{"fieldPath": "createdAt","order": "DESCENDING"}]},

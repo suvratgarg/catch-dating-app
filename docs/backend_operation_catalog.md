@@ -1,6 +1,6 @@
 ---
 doc_id: backend_operation_catalog
-version: 1.81.0
+version: 1.82.0
 updated: 2026-09-23
 owner: recursive_audit_loop
 status: active
@@ -204,6 +204,7 @@ is `docs/migrations/clubs_to_organizers.md`.
 | `manageOrganizerFormPaymentConnection` | Callable | Host form payment settings | Merchant bindings and hashed OAuth state | Manager-only, App Check and rate limited. Begins one-use OAuth, lists safe status, refreshes an organizer-bound credential, or disables new checkout. |
 | `organizerFormPaymentOauthCallback` | HTTP | Razorpay OAuth redirect | Connection and credential vault | Rechecks initiating manager, consumes expiring state once, provisions and verifies merchant webhook before readiness. |
 | `prepareOrganizerFormPayment` / `getOrganizerFormPayment` | Callable | Public form checkout and recovery | Frozen payment ledger, locked draft, reserved capacity, normal response receipt | Verified-phone owner only. Amount/order/merchant and captured provider state are server authority; redirect requires a persisted response. |
+| `findOrganizerFormPayment` | Callable | Account-owned recovery without browser identifiers | Latest financial projection and existing response receipt | Authenticated respondent and public-form scope; bounded reads; no provider side effects or dependency on current availability/version. |
 | `organizerFormPaymentWebhook` / `onOrganizerFormPaymentWebhook` / `reconcileOrganizerFormPayments` | HTTP, trigger, schedule | Razorpay delivery and missed-callback recovery | Signed receipts, payment ledger, submitted response or idempotent refund | Exact raw-body signature and account binding; durable receipt before acknowledgment; retryable worker and bounded sweep; no automatic admission. |
 | `getOrganizerFormShareAssets` / `createOrganizerFormShareLink` | Callable | Host Form share workspace | Reads one manager-owned published form; writes `organizerFormShareLinks/{linkId}` | Returns canonical, QR, and iframe assets. Organizer-created source links use opaque deterministic tokens; labels are bounded metadata and do not affect authority. |
 | `publishOrganizerApplicationForm` | Callable | Host Applications import/form publishing | `organizerApplicationForms/{formId}`, immutable `organizerApplicationFormVersions/{versionId}` | App-Check-protected, rate-limited organizer-manager boundary. Import publishing accepts a deterministic form id so exact retries return the existing published version; changed content at that id fails closed. Provider names are provenance only. Canonical person-field ids and provider-header aliases come from `contracts/catalogs/person_fields.json`; proprietary questions stay unmapped and organizer-scoped. |

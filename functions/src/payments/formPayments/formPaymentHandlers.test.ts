@@ -3,7 +3,8 @@ import test from "node:test";
 import type {CallableRequest} from "firebase-functions/v2/https";
 import {createFormPaymentFixture} from "./formPaymentTestStore";
 import {getOrganizerFormPaymentHandler, prepareOrganizerFormPaymentHandler,
-  manageOrganizerFormPaymentConnectionHandler} from "./formPaymentHandlers";
+  manageOrganizerFormPaymentConnectionHandler, findOrganizerFormPaymentHandler}
+  from "./formPaymentHandlers";
 
 function request(data: unknown, uid = "person"): CallableRequest<unknown> {
   return {data, auth: {uid, token: {phone_number: "+919000000001"}}} as
@@ -45,6 +46,54 @@ test("completed receipt remains readable without provider configuration",
     const value = await getOrganizerFormPaymentHandler(request({paymentId,
       callback: null}), h.deps);
     assert.equal(value.receipt?.completion.title, "Received");
+    assert.equal(h.runtimeCalls(), 0);
+  });
+
+test("discovery is account-owned and independent of current form availability",
+  async () => {
+    const h = harness();
+    const input = {publicFormId: h.draft.publicFormId};
+    assert.deepEqual(await findOrganizerFormPaymentHandler(request(input),
+      h.deps), {payment: null});
+    const {paymentId} = await h.reserve();
+    h.capture(paymentId);
+    await h.finalize(paymentId);
+    h.store.records.set("organizerForms/form", {...h.form,
+      status: "paused", activeVersionId: "new-version"});
+    const found = await findOrganizerFormPaymentHandler(request(input), h.deps);
+    assert.equal(found.payment?.paymentId, paymentId);
+    assert.equal(found.payment?.receipt?.versionId, "version");
+    assert.equal(h.runtimeCalls(), 0);
+    assert.deepEqual(await findOrganizerFormPaymentHandler(
+      request(input, "other"), h.deps), {payment: null});
+    await assert.rejects(findOrganizerFormPaymentHandler(
+      {data: input} as CallableRequest<unknown>, h.deps), /signed in/u);
+    await assert.rejects(findOrganizerFormPaymentHandler(
+      request({publicFormId: "../private"}), h.deps));
+    h.store.records.set(`organizerFormPayments/${paymentId}`, {
+      ...h.store.records.get(`organizerFormPayments/${paymentId}`),
+      organizerId: "other-org",
+    });
+    await assert.rejects(findOrganizerFormPaymentHandler(request(input),
+      h.deps), /unavailable/u);
+  });
+
+test("ended and manual-review payments can be read without provider mutations",
+  async () => {
+    const h = harness();
+    const {paymentId, payment} = await h.reserve();
+    for (const status of ["expired", "refunded", "reviewRequired"]) {
+      h.store.records.set(`organizerFormPayments/${paymentId}`, {
+        ...payment, status,
+      });
+      const current = await getOrganizerFormPaymentHandler(
+        request({paymentId, callback: null}), h.deps);
+      assert.equal(current.status, status);
+      const found = await findOrganizerFormPaymentHandler(
+        request({publicFormId: h.draft.publicFormId}), h.deps);
+      assert.equal(found.payment?.paymentId ?? null,
+        status === "reviewRequired" ? paymentId : null);
+    }
     assert.equal(h.runtimeCalls(), 0);
   });
 

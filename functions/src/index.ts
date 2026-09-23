@@ -11,6 +11,7 @@ export {razorpayWebhook} from "./payments/razorpayWebhook";
 export {listOrganizerFormPayments} from
   "./payments/formPayments/formPaymentLedger";
 export {prepareOrganizerFormPayment, getOrganizerFormPayment,
+  findOrganizerFormPayment,
   manageOrganizerFormPaymentConnection} from
   "./payments/formPayments/formPaymentHandlers";
 export {organizerFormPaymentOauthCallback, organizerFormPaymentWebhook,

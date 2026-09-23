@@ -80,6 +80,13 @@ function PublicFormStage({
         body={controller.form?.availabilityMessage ?? publicFormsCopy.unavailableBody}
       >
         <FormStatus status={controller.status} />
+        {controller.form ? (
+          <PublicFormActions>
+            <Button type="button" variant="ghost" onClick={controller.recoverPayment}>
+              {publicFormsCopy.paymentRecoveryAction}
+            </Button>
+          </PublicFormActions>
+        ) : null}
       </PublicFormPanel>
     );
   }
@@ -108,7 +115,14 @@ function PublicFormStage({
         body={completion.message}
       >
         {controller.payments?.payment ? (
-          <FormStatus status={{message: publicFormsCopy.paymentWithdrawNote, tone: ""}} />
+          <>
+            {controller.payments.payment.status === "refunded" ? (
+              <FormStatus status={{message: publicFormsCopy.paymentReceiptRefunded, tone: ""}} />
+            ) : controller.payments.payment.status === "reviewRequired" ? (
+              <FormStatus status={{message: publicFormPaymentStatuses.reviewRequired, tone: ""}} />
+            ) : null}
+            <FormStatus status={{message: publicFormsCopy.paymentWithdrawNote, tone: ""}} />
+          </>
         ) : null}
         {reviewUrl ? (
           <FormStatus status={{message: publicFormsCopy.profileReviewHelp, tone: ""}} />
@@ -156,10 +170,10 @@ function IdentityStage({
   controller: ReturnType<typeof usePublicFormController>;
 }) {
   const policy = controller.form?.definition.identityPolicy;
-  const permitsPhone = policy === "phoneVerified" ||
+  const permitsPhone = controller.recoveringPayment || policy === "phoneVerified" ||
     policy === "emailOrPhoneVerified" || policy === "catchAccount";
-  const permitsEmail = policy === "emailVerified" ||
-    policy === "emailOrPhoneVerified" || policy === "catchAccount";
+  const permitsEmail = !controller.recoveringPayment && (policy === "emailVerified" ||
+    policy === "emailOrPhoneVerified" || policy === "catchAccount");
   if (controller.stage === "emailSent") {
     return (
       <PublicFormPanel
@@ -174,8 +188,8 @@ function IdentityStage({
   return (
     <PublicFormPanel
       kicker={publicFormsCopy.identityKicker}
-      title={publicFormsCopy.identityTitle}
-      body={publicFormsCopy.identityBody}
+      title={controller.recoveringPayment ? publicFormsCopy.paymentRecoveryTitle : publicFormsCopy.identityTitle}
+      body={controller.recoveringPayment ? publicFormsCopy.paymentRecoveryBody : publicFormsCopy.identityBody}
     >
       {controller.stage === "phoneCode" ? (
         <PublicFormForm

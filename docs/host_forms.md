@@ -1,6 +1,6 @@
 ---
 doc_id: host_forms_product_spec
-version: 1.2.2
+version: 1.2.3
 updated: 2026-09-23
 owner: host_tooling
 status: active
@@ -349,6 +349,14 @@ exists. They do not imply that declining an application issues a refund.
 The unified response screen also shows its submission fee, current ledger
 status and test-mode label. Its row opens the same details sheet, without
 routing back to the response or introducing a second application screen.
+
+Returning respondents can recover their latest payment with the same verified
+phone account when browser storage is missing or unavailable. Closed and full
+forms expose **Check an existing payment**, including when the current version
+no longer charges a fee. Discovery is read-only; it does not open checkout or
+create a draft. An uncertain lookup blocks a fresh draft and offers retry without
+requiring another OTP when already signed in. Recovery uses the frozen version's
+receipt and preserves the distinction between refunds and application review.
 
 The question editor separates the CRM Person field classification from Profile
 use. Classification alone preserves organizer-only behavior. A Host explicitly

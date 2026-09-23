@@ -4,9 +4,9 @@ import type {PropsWithChildren} from "react";
 import {afterEach, beforeEach, describe, expect, it, vi} from "vitest";
 import type {PublicOrganizerFormPayment} from "../../firebase";
 
-const api = vi.hoisted(() => ({prepare: vi.fn(), get: vi.fn(), open: vi.fn()}));
+const api = vi.hoisted(() => ({prepare: vi.fn(), get: vi.fn(), open: vi.fn(), find: vi.fn()}));
 vi.mock("../../firebase", () => ({prepareOrganizerFormPayment: api.prepare,
-  getOrganizerFormPayment: api.get}));
+  getOrganizerFormPayment: api.get, findOrganizerFormPayment: api.find}));
 vi.mock("./razorpayFormCheckout", () => ({openFormCheckout: api.open}));
 import {usePublicFormPayment} from "./usePublicFormPayment";
 
@@ -30,10 +30,84 @@ const completed: PublicOrganizerFormPayment = {...ready, status: "submitted",
     completion: {title: "Received", message: null, actionKind: "none",
       actionLabel: null, actionUrl: null}}};
 
-beforeEach(() => {vi.clearAllMocks(); window.localStorage.clear();});
-afterEach(cleanup);
+beforeEach(() => {vi.clearAllMocks(); window.localStorage.clear(); api.find.mockResolvedValue({payment: null});});
+afterEach(() => {cleanup(); vi.restoreAllMocks();});
 
 describe("form payment recovery", () => {
+  it("discovers an owned receipt without local storage or starting checkout", async () => {
+    api.find.mockResolvedValue({payment: completed});
+    const onReceipt = vi.fn();
+    const {result} = renderHook(() => usePublicFormPayment("public", vi.fn(), onReceipt), {wrapper});
+    await act(async () => {expect(await result.current.resume("person")).toBe(true);});
+    expect(api.find).toHaveBeenCalledExactlyOnceWith({publicFormId: "public"});
+    expect(onReceipt).toHaveBeenCalledExactlyOnceWith(completed.receipt);
+    expect(api.prepare).not.toHaveBeenCalled();
+    expect(api.open).not.toHaveBeenCalled();
+  });
+
+  it("keeps payment and server recovery usable when all browser storage is denied", async () => {
+    for (const method of ["getItem", "setItem", "removeItem"] as const) {
+      vi.spyOn(Storage.prototype, method).mockImplementation(() => {throw new Error("Denied");});
+    }
+    api.prepare.mockResolvedValue(ready);
+    const first = renderHook(() => usePublicFormPayment("public", vi.fn(), vi.fn()), {wrapper});
+    await act(async () => {await first.result.current.prepare(request, "person");});
+    expect(first.result.current.payment?.paymentId).toBe(ready.paymentId);
+    first.unmount();
+    api.find.mockResolvedValue({payment: ready});
+    api.get.mockResolvedValue({...ready, checkout: null, status: "expired"});
+    const second = renderHook(() => usePublicFormPayment("public", vi.fn(), vi.fn()), {wrapper});
+    await act(async () => {expect(await second.result.current.resume("person")).toBe(true);});
+    await act(async () => {expect(await second.result.current.restart()).toBe(true);});
+    expect(second.result.current.payment).toBeNull();
+  });
+
+  it("deduplicates discovery and does not treat a failed lookup as no payment", async () => {
+    let finish!: (value: {payment: PublicOrganizerFormPayment}) => void;
+    api.find.mockImplementationOnce(() => new Promise((resolve) => {finish = resolve;}));
+    const {result} = renderHook(() => usePublicFormPayment("public", vi.fn(), vi.fn()), {wrapper});
+    let first!: Promise<boolean>; let second!: Promise<boolean>;
+    act(() => {first = result.current.resume("person"); second = result.current.resume("person");});
+    expect(api.find).toHaveBeenCalledTimes(1);
+    await act(async () => {finish({payment: ready}); expect(await first).toBe(true); expect(await second).toBe(true);});
+    act(() => result.current.resetSession());
+    window.localStorage.clear();
+    api.find.mockRejectedValueOnce(new Error("Lookup unavailable"));
+    await act(async () => {await expect(result.current.resume("person")).rejects.toThrow("Lookup unavailable");});
+    expect(api.prepare).not.toHaveBeenCalled();
+  });
+
+  it("ignores discovery after account changes, including returning to the same account", async () => {
+    let finish!: (value: {payment: PublicOrganizerFormPayment}) => void;
+    api.find.mockImplementationOnce(() => new Promise((resolve) => {finish = resolve;}));
+    const onReceipt = vi.fn();
+    const {result} = renderHook(() => usePublicFormPayment("public", vi.fn(), onReceipt), {wrapper});
+    let old!: Promise<boolean>;
+    act(() => {old = result.current.resume("person");});
+    act(() => result.current.resetSession());
+    await act(async () => {await result.current.resume("other");});
+    act(() => result.current.resetSession());
+    await act(async () => {await result.current.resume("person");});
+    await act(async () => {finish({payment: completed}); await old;});
+    expect(result.current.payment).toBeNull();
+    expect(onReceipt).not.toHaveBeenCalled();
+  });
+
+  it("clears an old form's in-flight result when the route changes", async () => {
+    let finish!: (value: {payment: PublicOrganizerFormPayment}) => void;
+    api.find.mockImplementationOnce(() => new Promise((resolve) => {finish = resolve;}));
+    const onReceipt = vi.fn();
+    const {result, rerender} = renderHook(({id}) => usePublicFormPayment(id, vi.fn(), onReceipt),
+      {wrapper, initialProps: {id: "first"}});
+    let old!: Promise<boolean>;
+    act(() => {old = result.current.resume("person");});
+    rerender({id: "second"});
+    await act(async () => {expect(await result.current.resume("person")).toBe(false);});
+    await act(async () => {finish({payment: completed}); await old;});
+    expect(onReceipt).not.toHaveBeenCalled();
+    expect(result.current.payment).toBeNull();
+  });
+
   it("persists before prepare, resumes a lost reply and never opens checkout automatically", async () => {
     const onReceipt = vi.fn();
     api.prepare.mockImplementationOnce(async () => {
@@ -97,5 +171,20 @@ describe("form payment recovery", () => {
     await act(async () => {release(completed); await pending;});
     expect(result.current.payment).toBeNull();
     expect(onReceipt).not.toHaveBeenCalled();
+  });
+
+  it("does not show another account's delayed payment error", async () => {
+    api.prepare.mockResolvedValue(ready);
+    let rejectOld!: (error: Error) => void;
+    api.get.mockImplementationOnce(() => new Promise((_, reject) => {rejectOld = reject;}));
+    const {result} = renderHook(() => usePublicFormPayment("public", vi.fn(), vi.fn()), {wrapper});
+    await act(async () => {await result.current.prepare(request, "person");});
+    let old!: Promise<void>;
+    act(() => {old = result.current.refresh();});
+    await waitFor(() => expect(api.get).toHaveBeenCalled());
+    act(() => result.current.resetSession());
+    await act(async () => {rejectOld(new Error("Private prior account problem")); await old;});
+    expect(result.current.status.message).toBe("");
+    expect(result.current.payment).toBeNull();
   });
 });
