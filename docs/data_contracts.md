@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.147.0
+version: 1.149.0
 updated: 2026-09-23
 owner: recursive_audit_loop
 status: active
@@ -2503,12 +2503,25 @@ retries financial mutations.
 
 ### Form messaging decisions
 
-`organizerFormResponseDrafts.messagingDecision` stores separate organizer and
-Catch WhatsApp choices with versioned server copy and independent decision
-timestamps. Missing legacy choices grant nothing. Paid checkout includes the
-choices in its frozen-content hash; finalization and free submission write
-consent receipts atomically with the response. The submitted organizer response
-does not expose Catch's private preference.
+`organizerFormResponseDrafts.messagingDecision` stores independent organizer
+application/event operations, organizer future-event marketing and Catch
+future-experience marketing choices for `form-whatsapp-v2`, each with its own
+decision timestamp and reviewed server copy. All choices start unchecked.
+Legacy v1 organizer/Catch choices remain phone-verified-first; ambiguous v1
+form copy does not gain new operations or marketing scope. Missing choices grant
+nothing. Paid checkout includes choices in the frozen-content hash; finalization
+and free submission write the consent outcome atomically with the response.
+The submitted organizer response does not expose Catch's private preference.
+
+An unverified v2 positive choice creates a private
+`formCommunicationConsentIntents/{responseId}` only when the submitted source
+provides a valid WhatsApp endpoint. This is pending evidence, not a permission.
+`promoteFormCommunicationIntent` requires the signed phone claim to match that
+exact endpoint and the caller to own the submitted response by respondent UID
+or its withdrawal bearer. It rechecks form/version/response lineage, immutable
+copy hashes, timestamps, deletion and withdrawal before atomically promoting
+each selected principal and purpose. Replayed requests return current state;
+an older intent cannot reverse a later STOP or purpose withdrawal.
 
 Organizer decisions use `organizerCommunicationPreferences` and
 `organizerCommunicationPermissionReceipts`. Catch decisions use separate
@@ -2521,15 +2534,19 @@ consent again. `listParticipantMessagingPreferences` lists only the signed-in
 UID's permissions, with at most 30 organizer rows and a document-ID cursor.
 Confirmed opt-in requires matching grant evidence. The exact authenticated
 `/settings/whatsapp` route remains available before profile setup.
-`withdrawParticipantMessagingPermission` stops exactly one sender, preserves
-SMS and all other organizers, and writes an immutable `participantSettings`
-receipt. Catch withdrawal receipts have a null source organizer. The reviewed
-receipt is an optimistic fence; retries reuse their receipt and return current
-status without overwriting later consent. Withdrawal timestamps also fence
-older pending form payments. No profile or phone re-verification is needed to
-withdraw existing account permission. The UI discards results after account
-changes. Any Catch sender must use this same authority; collecting permission
-does not itself dispatch messages.
+`withdrawParticipantMessagingPermission` stops one chosen purpose or the whole
+sender, preserving SMS and other organizers, and writes an immutable
+`participantSettings` receipt. Catch has marketing only; its withdrawal receipts
+have a null source organizer. Sender-wide STOP covers both active and pending
+purposes. The reviewed receipt is an optimistic fence; fresh and replayed
+withdrawals return the current canonical purpose projection rather than an
+optimistic local state. Decision ordering allows an explicit newer grant after
+an earlier STOP but never upgrades an ambiguous legacy receipt. Withdrawal
+timestamps also fence older pending form payments. No profile or phone
+re-verification is needed to withdraw account permission. The UI discards
+results after account changes. Campaign selection and send-time dispatch check
+marketing purpose; new form-originated managed WhatsApp delivery remains
+provider-disabled. Existing event-service permission paths are independent.
 
 ### Private form profile preparation
 

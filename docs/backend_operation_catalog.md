@@ -1,6 +1,6 @@
 ---
 doc_id: backend_operation_catalog
-version: 1.82.0
+version: 1.84.0
 updated: 2026-09-23
 owner: recursive_audit_loop
 status: active
