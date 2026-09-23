@@ -263,7 +263,7 @@ export async function withdrawParticipantMessagingPermissionHandler(
       const document: CatchPreference = {uid,
         whatsapp: purpose ? previous?.whatsapp ??
           unknownOrganizerCommunicationChannel() : channel,
-      whatsappPurposes: purpose ? {
+        whatsappPurposes: purpose ? {
           ...(previous?.whatsappPurposes ?? {}), [purpose]: channel,
         } : {marketing: channel},
         createdAt: previous?.createdAt ?? now, updatedAt: now};
