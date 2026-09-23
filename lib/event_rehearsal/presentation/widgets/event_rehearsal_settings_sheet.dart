@@ -66,13 +66,12 @@ class EventRehearsalSettingsSheet extends ConsumerWidget {
 
     return PopScope(
       canPop: state.canDismiss,
-      child: CatchSheet(
+      child: CatchSheet.standard(
         title: target == null
             ? context.l10n.eventAssistanceRuntimeTitle
             : context.l10n.eventAssistanceLateJoinTitle,
         badge: context.l10n.hostEventRehearsalBadge,
         badgeTone: CatchBadgeTone.danger,
-        mode: CatchSheetMode.scrollable,
         child: state is RehearsalSettingsUnavailable
             ? CatchLocalizedErrorBanner(state.error)
             : CatchAsyncBoundary<RehearsalAssistanceReview>(

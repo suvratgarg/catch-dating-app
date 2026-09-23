@@ -46,9 +46,8 @@ class _EventAssistanceDeliveryQueueSheetState
           builder: (_) =>
               EventAssistanceDeliverySheet(scope: scope, query: query),
         );
-    return CatchSheet(
+    return CatchSheet.standard(
       title: context.l10n.eventAssistanceDeliveryTitle,
-      mode: CatchSheetMode.scrollable,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,

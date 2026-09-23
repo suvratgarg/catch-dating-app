@@ -108,11 +108,7 @@ void main() {
       find.byKey(const ValueKey<String>('host-organizer-switcher-sheet')),
       findsOneWidget,
     );
-    await tester.tap(
-      find.byKey(
-        const ValueKey<String>('host-organizer-switcher-option-lodhi-social'),
-      ),
-    );
+    await tester.tap(find.byKey(const ValueKey<Object?>('lodhi-social')));
     await pumpFeatureUi(tester);
     final container = ProviderScope.containerOf(
       tester.element(find.byType(HostAppShell)),

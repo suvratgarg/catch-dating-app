@@ -161,6 +161,8 @@ import 'package:catch_dating_app/hosts/domain/forms/host_form_response.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_share.dart';
 import 'package:catch_dating_app/hosts/domain/forms/host_form_summary.dart';
 import 'package:catch_dating_app/hosts/domain/host_profile.dart';
+import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_sheet.dart';
+import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_state.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_events_timeline_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/applications/host_application_detail_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/applications/host_applications_controller.dart';
@@ -4037,11 +4039,15 @@ List<Object> _hostManageRouteProviderOverrides({
   ];
 }
 
-class _CaptureHostAttendanceOutboxStore extends Fake implements HostAttendanceOutboxStore {
+class _CaptureHostAttendanceOutboxStore extends Fake
+    implements HostAttendanceOutboxStore {
   List<HostAttendanceOutboxEntry> entries = [];
   @override
-  Future<List<HostAttendanceOutboxEntry>> load(String accountId,
-      {String? scope, DateTime? now}) async => List.of(entries);
+  Future<List<HostAttendanceOutboxEntry>> load(
+    String accountId, {
+    String? scope,
+    DateTime? now,
+  }) async => List.of(entries);
 }
 
 final class _CaptureFirebaseFunctions extends Fake
@@ -12386,10 +12392,11 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     providerOverrides: _hostCreateEventProviderOverrides(),
     builder: (context) => _InlineDialogCapture(
       dialog: DraftDeleteConfirmationDialog(draft: _hostEventSetupDraft),
-      child: DraftPickerSheet(
-        drafts: <EventDraft>[_hostEventSetupDraft],
-        onSelectDraft: (_) {},
-        onStartFresh: () {},
+      child: HostEventEntrySheet(
+        state: HostEventEntryState.resolve(
+          organizerId: _hostEventSetupDraft.clubId,
+          drafts: [_hostEventSetupDraft],
+        ),
         onDeleteDraft: (_) async {},
       ),
     ),

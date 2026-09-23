@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/event_recap.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:e269308b4e0f26106555a2ebcc36b0911dc91a3df3b81cdd968e330e71d2a789",
-  "resolvedDigest": "sha256:944282a99c9036150468fad104cb3364f0540055a12140f7ac4e8adc5199b475",
+  "resolvedDigest": "sha256:74a38927fe55ce6d5050983e4a298f38f1f74a7bb73271211fe963c64d7e2d23",
   "feature": {
     "id": "feature.event_recap",
     "name": "Event Recap",
@@ -904,7 +904,8 @@
                 "CatchButton.command",
                 "CatchButton.selection",
                 "CatchButton.floating",
-                "CatchButton.text"
+                "CatchButton.text",
+                "CatchButton.sheet"
               ]
             }
           },

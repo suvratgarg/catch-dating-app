@@ -27,8 +27,10 @@ class CatchSheetHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final branded = variant == CatchSheetHeaderVariant.branded;
-    return Row(
-      crossAxisAlignment: branded
+    final stackTrailing =
+        trailing != null && MediaQuery.textScalerOf(context).scale(1) >= 1.6;
+    final header = Row(
+      crossAxisAlignment: branded || !(subtitle?.isNotEmpty ?? false)
           ? CrossAxisAlignment.center
           : CrossAxisAlignment.start,
       children: [
@@ -70,10 +72,20 @@ class CatchSheetHeader extends StatelessWidget {
             ],
           ),
         ),
-        if (trailing != null) ...[
+        if (trailing != null && !stackTrailing) ...[
           const SizedBox(width: CatchLayout.sheetHeaderGap),
           trailing!,
         ],
+      ],
+    );
+    if (!stackTrailing) return header;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        header,
+        const SizedBox(height: CatchLayout.sheetHeaderGap),
+        Align(alignment: AlignmentDirectional.centerStart, child: trailing),
       ],
     );
   }

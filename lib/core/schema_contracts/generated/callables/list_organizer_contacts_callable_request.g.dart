@@ -15,6 +15,8 @@ final class ListOrganizerContactsCallableRequest {
     this.sort,
     this.segmentId,
     this.manualTagId,
+    this.segmentIds,
+    this.manualTagIds,
   });
 
   final String organizerId;
@@ -24,6 +26,8 @@ final class ListOrganizerContactsCallableRequest {
   final String? sort;
   final String? segmentId;
   final String? manualTagId;
+  final List<String>? segmentIds;
+  final List<String>? manualTagIds;
 
   Map<String, Object?> toJson() => {
     'organizerId': organizerId,
@@ -33,5 +37,7 @@ final class ListOrganizerContactsCallableRequest {
     'sort': ?sort,
     'segmentId': ?segmentId,
     'manualTagId': ?manualTagId,
+    'segmentIds': ?segmentIds,
+    'manualTagIds': ?manualTagIds,
   };
 }
