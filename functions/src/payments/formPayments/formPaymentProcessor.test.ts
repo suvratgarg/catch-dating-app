@@ -171,3 +171,37 @@ test("stale authorization does not regress a completed response", async () => {
   assert.equal((await h.processor.reconcile(h.paymentId)).status, "submitted");
   assert.equal(h.responseCount(), 1);
 });
+
+test("reviewed checkouts do not capture or refund on provider replay",
+  async () => {
+    const h = await harness();
+    await h.processor.ensureOrder(h.paymentId);
+    const key = `organizerFormPayments/${h.paymentId}`;
+    h.store.records.set(key, {...h.store.records.get(key),
+      status: "reviewRequired"});
+    assert.equal((await h.processor.reconcile(h.paymentId)).status,
+      "reviewRequired");
+    assert.equal(h.captured(), false);
+    h.setNow(h.ledger.checkoutExpiresAt.toMillis() + 1);
+    h.setPayment({status: "captured", captured: true});
+    assert.equal((await h.processor.reconcile(h.paymentId)).status,
+      "reviewRequired");
+    assert.equal(h.responseCount(), 0);
+    assert.deepEqual(h.refundKeys, []);
+  });
+
+test("duplicate-capture review survives original payment reconciliation",
+  async () => {
+    const h = await harness();
+    const original = await h.processor.reconcile(h.paymentId);
+    h.setPayment({id: "pay_duplicate"});
+    assert.equal((await h.processor.reconcile(h.paymentId)).status,
+      "reviewRequired");
+    h.setPayment({id: "pay_one"});
+    const replayed = await h.processor.reconcile(h.paymentId);
+    assert.equal(replayed.status, "reviewRequired");
+    assert.equal(replayed.providerPaymentId, "pay_one");
+    assert.equal(replayed.responseId, original.responseId);
+    assert.equal(h.responseCount(), 1);
+    assert.deepEqual(h.refundKeys, []);
+  });

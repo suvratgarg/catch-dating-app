@@ -2480,6 +2480,10 @@ record. Four bounded workers prevent one slow merchant from serializing the
 batch; the sweep leaves unstarted work eligible when its run budget is spent.
 Manual-review payments release expired reservations without automatically
 retrying capture/refund or clearing their review status.
+Provider replays also preserve financial review: original-payment capture or
+refund updates cannot clear a duplicate-capture anomaly. Refund totals still
+advance for the original payment; another payment's refund never overwrites
+that identity or amount. A reviewed checkout cannot initiate another capture.
 
 The authorized response-detail projection includes its financial ledger row
 through one deterministic draft-to-payment point read. Organizer, form, version,

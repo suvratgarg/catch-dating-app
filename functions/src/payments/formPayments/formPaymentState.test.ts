@@ -72,6 +72,27 @@ test("refunds are monotonic and do not erase the response link", () => {
   assert.equal(stale.action, "none");
 });
 
+test("provider replays cannot clear duplicate-capture review", () => {
+  const submitted = {...state, status: "submitted" as const,
+    responseId: "response", providerPaymentId: payment.id,
+    capturedAt: Timestamp.fromMillis(1000)};
+  const duplicate = decideFormPaymentObservation(submitted,
+    {...payment, id: "pay_duplicate"});
+  const review = {...submitted, ...duplicate};
+  for (const observation of [payment,
+    {...payment, status: "authorized" as const, captured: false},
+    {...payment, status: "refunded" as const, amountRefunded: 20000},
+    {...payment, id: "pay_duplicate", amountRefunded: 20000}]) {
+    const next = decideFormPaymentObservation(review, observation);
+    assert.equal(next.status, "reviewRequired");
+    assert.equal(next.providerPaymentId, payment.id);
+    assert.equal(next.refundedAmountPaise,
+      observation.id === payment.id ? observation.amountRefunded : 0);
+    assert.notEqual(next.action, "finalize");
+    assert.notEqual(next.action, "refund");
+  }
+});
+
 test("foreign orders, currencies and amounts fail closed", () => {
   for (const patch of [{orderId: "order_other"}, {currency: "USD"},
     {amount: 10000}, {amountRefunded: -1}, {amountRefunded: 30000}]) {

@@ -40,6 +40,11 @@ export function decideFormPaymentObservation(state: State,
       {...unchanged, status: "reviewRequired", action: "review"} : unchanged;
   }
   const refunded = Math.max(state.refundedAmountPaise, payment.amountRefunded);
+  // Provider replays cannot resolve a financial anomaly. Continue recording
+  // refunds for the original payment, but keep explicit review outstanding.
+  if (state.status === "reviewRequired") {
+    return {...unchanged, refundedAmountPaise: refunded};
+  }
   if (refunded > 0) {
     return {action: state.responseId ? "none" : "review",
       status: refunded === state.amountPaise ? "refunded" : "reviewRequired",
@@ -52,7 +57,6 @@ export function decideFormPaymentObservation(state: State,
       return {action: "refund", status: "refundPending",
         providerPaymentId: payment.id, refundedAmountPaise: 0};
     }
-    if (state.status === "reviewRequired") return unchanged;
     return {action: "finalize", status: "captured",
       providerPaymentId: payment.id, refundedAmountPaise: 0};
   }

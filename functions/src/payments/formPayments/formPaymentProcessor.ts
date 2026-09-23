@@ -159,7 +159,9 @@ export class FormPaymentProcessor {
     for (let payment of observations) {
       // Validate before attempting capture. No unrelated payment is mutated.
       decideFormPaymentObservation(ledger, payment);
-      if (payment.status === "authorized" && !ledger.reservationReleased &&
+      if (payment.status === "authorized" && !ledger.responseId &&
+          !ledger.capturedAt && !ledger.reservationReleased &&
+          ["checkoutReady", "failed", "verifying"].includes(ledger.status) &&
           ledger.checkoutExpiresAt.toMillis() > this.now()) {
         try {
           payment = await this.deps.provider.capturePayment(token, payment.id,
