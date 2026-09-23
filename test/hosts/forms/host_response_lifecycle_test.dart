@@ -24,6 +24,33 @@ import '../../clubs/clubs_test_helpers.dart';
 import '../../test_pump_helpers.dart';
 
 void main() {
+  test('response contact links normalize E.164 and restrict social hosts', () {
+    expect(
+      hostResponsePhoneUri(' +919876543210 ')?.toString(),
+      'tel:+919876543210',
+    );
+    expect(hostResponsePhoneUri('91 98765 43210'), isNull);
+    expect(hostResponsePhoneUri('tel:+919876543210'), isNull);
+    expect(
+      hostResponseSocialUri(
+        ' https://www.instagram.com/runner/ ',
+        'instagram.com',
+      )?.toString(),
+      'https://www.instagram.com/runner/',
+    );
+    expect(
+      hostResponseSocialUri('javascript:alert(1)', 'instagram.com'),
+      isNull,
+    );
+    expect(
+      hostResponseSocialUri('https://instagram.com.evil.test/a', 'instagram.com'),
+      isNull,
+    );
+    expect(
+      hostResponseSocialUri('https://linkedin.com:444/a', 'linkedin.com'),
+      isNull,
+    );
+  });
   testWidgets(
     'Responses app-bar import confirms in a sheet and refreshes unfiltered inbox',
     (tester) async {
