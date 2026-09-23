@@ -231,6 +231,9 @@ export {validateListParticipantMessagingPreferencesCallablePayload} from "./vali
 export {validateListParticipantMessagingPreferencesCallableResponse} from "./validators/listParticipantMessagingPreferencesOutput";
 export {validateWithdrawParticipantMessagingPermissionCallablePayload} from "./validators/withdrawParticipantMessagingPermissionInput";
 export {validateWithdrawParticipantMessagingPermissionCallableResponse} from "./validators/withdrawParticipantMessagingPermissionOutput";
+export {validatePromoteFormCommunicationIntentCallablePayload} from "./validators/promoteFormCommunicationIntentInput";
+export {validatePromoteFormCommunicationIntentCallableResponse} from "./validators/promoteFormCommunicationIntentOutput";
+export {validateFormCommunicationConsentIntentDocument} from "./validators/formCommunicationConsentIntentDocument";
 export {validateCatchCommunicationPreferenceDocument} from "./validators/catchCommunicationPreferenceDocument";
 export {validateCatchCommunicationPermissionReceiptDocument} from "./validators/catchCommunicationPermissionReceiptDocument";
 export {validateOrganizerCommunicationPreferenceDocument} from "./validators/organizerCommunicationPreferenceDocument";

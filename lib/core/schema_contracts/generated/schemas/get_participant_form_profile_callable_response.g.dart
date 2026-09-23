@@ -68,6 +68,7 @@ const schemaGetParticipantFormProfileCallableResponseSchema = <String, Object?>{
           'kind',
           'value',
           'options',
+          'eventProfileEligible',
         ],
         'properties': <String, Object?>{
           'questionId': <String, Object?>{
@@ -199,6 +200,10 @@ const schemaGetParticipantFormProfileCallableResponseSchema = <String, Object?>{
                 },
               },
             },
+          },
+          'eventProfileEligible': <String, Object?>{
+            'type': 'boolean',
+            'description': 'True only for a published field explicitly proposed for optional event-member sharing; the owner must still grant event-specific consent.',
           },
         },
       },

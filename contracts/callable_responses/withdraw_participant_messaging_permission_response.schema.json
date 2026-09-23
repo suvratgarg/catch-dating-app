@@ -26,6 +26,9 @@
             "optedOut"
           ]
         },
+        "purposes": {
+          "$ref": "list_participant_messaging_preferences_response.schema.json#/definitions/purposeSummaries"
+        },
         "receiptId": {
           "anyOf": [
             {

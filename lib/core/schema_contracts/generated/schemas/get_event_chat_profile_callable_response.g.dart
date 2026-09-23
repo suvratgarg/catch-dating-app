@@ -34,6 +34,13 @@ const schemaGetEventChatProfileCallableResponseSchema = <String, Object?>{
       'minLength': 1,
       'maxLength': 120,
     },
+    'introduction': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'maxLength': 500,
+    },
     'coreFields': <String, Object?>{
       'type': 'array',
       'maxItems': 14,

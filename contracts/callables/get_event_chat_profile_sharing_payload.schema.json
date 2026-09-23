@@ -14,6 +14,10 @@
     },
     "expectedUid": {
       "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "previewSelection": {
+      "$ref": "../shared/event_chat_profile_common.schema.json#/definitions/selection",
+      "description": "Owner-only proposed selection; no sharing receipt is written."
     }
   }
 }

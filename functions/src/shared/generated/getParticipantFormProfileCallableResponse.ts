@@ -70,6 +70,10 @@ export interface GetParticipantFormProfileCallableResponse {
       label: string;
       value: string;
     }[];
+    /**
+     * True only for a published field explicitly proposed for optional event-member sharing; the owner must still grant event-specific consent.
+     */
+    eventProfileEligible: boolean;
   }[];
   profileRevision: number;
   termsVersion: "form-profile-claim-v1";

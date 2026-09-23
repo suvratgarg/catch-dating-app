@@ -5,6 +5,7 @@ import type {
 } from "./generated/firestoreAdminTypes";
 
 export type OrganizerCommunicationChannel = "whatsapp" | "sms";
+export type WhatsappPurpose = "eventOperations" | "marketing";
 
 type ChannelPreference = OrganizerCommunicationPreferenceDocument["whatsapp"];
 
@@ -182,6 +183,59 @@ export function effectiveOrganizerCommunicationStatus(
   if (value?.status === "optedOut") return "optedOut";
   return hasCompleteOrganizerCommunicationGrant(preference, channel) ?
     "optedIn" : "unknown";
+}
+
+/** Purpose-aware campaign gate. Legacy copy is mapped only where its known
+ * wording expressly covered the requested purpose; unknown copy stays dark. */
+export function effectiveOrganizerWhatsappPurposeStatus(
+  preference: OrganizerCommunicationPreferenceDocument | null | undefined,
+  purpose: WhatsappPurpose,
+  endpointE164?: string | null,
+  sourceResponseId?: string | null
+): "unknown" | "optedIn" | "optedOut" {
+  const scoped = preference?.whatsappPurposes?.[purpose];
+  const broad = preference?.whatsapp;
+  if (broad?.status === "optedOut" &&
+      (!scoped?.updatedAt || !broad.updatedAt ||
+        scoped.updatedAt.toMillis() <= broad.updatedAt.toMillis())) {
+    return "optedOut";
+  }
+  if (scoped?.status === "optedOut") {
+    // A later, expressly reviewed registration opt-in may reverse a prior
+    // marketing withdrawal. Ambiguous legacy copy cannot do so.
+    if (purpose === "marketing" && broad?.updatedAt && scoped.updatedAt &&
+        broad.updatedAt.toMillis() > scoped.updatedAt.toMillis() &&
+        isReviewedLegacyMarketingGrant(broad)) return "optedIn";
+    return "optedOut";
+  }
+  if (scoped?.status === "optedIn") {
+    if (!endpointE164 || scoped.endpointE164 !== endpointE164) return "unknown";
+    if (purpose === "eventOperations" &&
+        (!sourceResponseId || scoped.sourceResponseId !== sourceResponseId)) {
+      return "unknown";
+    }
+    // Capturing consent is separate from provider approval for this use case.
+    // Leave new form-originated WhatsApp sending disabled until reviewed.
+    if (scoped.source === "hostFormResponse" &&
+        scoped.termsVersion === "form-whatsapp-v2") return "unknown";
+    return scoped.evidenceStatus === "complete" && scoped.currentReceiptId ?
+      "optedIn" : "unknown";
+  }
+  const legacy = broad;
+  if (legacy?.status !== "optedIn" ||
+      legacy.evidenceStatus !== "complete" || !legacy.currentReceiptId) {
+    return "unknown";
+  }
+  if (purpose === "marketing" && isReviewedLegacyMarketingGrant(legacy)) {
+    return "optedIn";
+  }
+  return "unknown";
+}
+
+function isReviewedLegacyMarketingGrant(value: ChannelPreference): boolean {
+  return value.status === "optedIn" && value.evidenceStatus === "complete" &&
+    !!value.currentReceiptId && value.source === "publicEventRegistration" &&
+    value.termsVersion === "organizer-updates-v1";
 }
 
 function sha256(value: string): string {

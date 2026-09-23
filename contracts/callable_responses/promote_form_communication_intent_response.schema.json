@@ -1,0 +1,13 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/promote_form_communication_intent_response.schema.json",
+  "title": "PromoteFormCommunicationIntentCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["responseId", "promotedPurposes", "replayed"],
+  "properties": {
+    "responseId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "promotedPurposes": {"type": "array", "uniqueItems": true, "items": {"type": "string", "enum": ["organizer:eventOperations", "organizer:marketing", "catch:marketing"]}},
+    "replayed": {"type": "boolean"}
+  }
+}

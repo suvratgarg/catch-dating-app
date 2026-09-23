@@ -31755,6 +31755,30 @@ abstract class AppLocalizations {
   /// **'Choose verified phone in Access to offer WhatsApp updates.'**
   String get hostFormMessagingPhoneRequired;
 
+  /// Host form operational purpose choice; consent remains participant controlled.
+  ///
+  /// In en, this message translates to:
+  /// **'Offer application and event WhatsApp updates'**
+  String get hostFormMessagingOperations;
+
+  /// Host form organizer marketing purpose choice.
+  ///
+  /// In en, this message translates to:
+  /// **'Offer future event and offer WhatsApp messages'**
+  String get hostFormMessagingFuture;
+
+  /// Host form separate Catch marketing purpose choice.
+  ///
+  /// In en, this message translates to:
+  /// **'Offer Catch experience and offer WhatsApp messages'**
+  String get hostFormMessagingCatchFuture;
+
+  /// Host form deferred purpose consent explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Each choice is optional and unchecked for applicants. They can submit without subscribing. A selected choice stays pending until they verify the same phone number.'**
+  String get hostFormMessagingPurposeHelp;
+
   /// Host form answer destination and privacy disclosure.
   ///
   /// In en, this message translates to:
@@ -31851,6 +31875,42 @@ abstract class AppLocalizations {
   /// **'Stop updates'**
   String get messagingPermissionsStop;
 
+  /// Participant organizer operational WhatsApp purpose.
+  ///
+  /// In en, this message translates to:
+  /// **'Application and event updates'**
+  String get messagingPermissionsOperations;
+
+  /// Participant organizer marketing WhatsApp purpose.
+  ///
+  /// In en, this message translates to:
+  /// **'Future events and offers'**
+  String get messagingPermissionsOrganizerMarketing;
+
+  /// Participant Catch marketing WhatsApp purpose.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch experiences and offers'**
+  String get messagingPermissionsCatchMarketing;
+
+  /// Withdraw one WhatsApp purpose while leaving other purposes unchanged.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop these messages'**
+  String get messagingPermissionsStopPurpose;
+
+  /// CRM display of organizer operational WhatsApp consent purpose.
+  ///
+  /// In en, this message translates to:
+  /// **'Application and event updates'**
+  String get hostCustomersWhatsappOperations;
+
+  /// CRM display of organizer marketing WhatsApp consent purpose.
+  ///
+  /// In en, this message translates to:
+  /// **'Future events and offers'**
+  String get hostCustomersWhatsappMarketing;
+
   /// Participant-owned WhatsApp permission controls.
   ///
   /// In en, this message translates to:
@@ -31862,6 +31922,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Manage Catch and organizer WhatsApp updates separately.'**
   String get messagingPermissionsSettingsHelp;
+
+  /// Participant event profile personalization action.
+  ///
+  /// In en, this message translates to:
+  /// **'Personalize your event profile'**
+  String get eventProfilePersonalize;
+
+  /// Participant event-local first name field.
+  ///
+  /// In en, this message translates to:
+  /// **'First name for this event'**
+  String get eventProfileFirstName;
+
+  /// Participant event-local introduction field.
+  ///
+  /// In en, this message translates to:
+  /// **'Introduction for this event'**
+  String get eventProfileIntroduction;
+
+  /// Participant per-answer event member sharing choice.
+  ///
+  /// In en, this message translates to:
+  /// **'Share this answer with event members'**
+  String get eventProfileQuestionAudience;
+
+  /// Exact event member profile preview action.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview what event members can see'**
+  String get eventProfilePreview;
 
   /// Own-profile tab for form submissions and private organizer cards.
   ///

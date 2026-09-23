@@ -92,6 +92,7 @@ class FormProfileField {
     required this.label,
     required this.kind,
     required Object? value,
+    this.eventProfileEligible = false,
     Map<String, String> options = const {},
   }) : value = value is List
            ? List<String>.unmodifiable(value.cast<String>())
@@ -108,6 +109,7 @@ class FormProfileField {
         label: json['label']! as String,
         kind: json['kind']! as String,
         value: json['value'],
+        eventProfileEligible: json['eventProfileEligible'] == true,
         options: {
           for (final option in json['options']! as List)
             (option as Map)['value']! as String: option['label']! as String,
@@ -119,6 +121,7 @@ class FormProfileField {
   final String? canonicalFieldId;
   final String label;
   final String kind;
+  final bool eventProfileEligible;
   final Object? value;
   final Map<String, String> options;
 

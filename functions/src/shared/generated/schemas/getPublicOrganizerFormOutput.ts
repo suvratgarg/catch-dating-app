@@ -344,6 +344,34 @@ export const getPublicOrganizerFormCallableResponseSchema: Record<string, unknow
                             "organizerCard"
                           ]
                         },
+                        "answerAudience": {
+                          "description": "Optional published audience intent. Omission on older versions means organizerOnly; selection and event-specific consent are still required before any attendee projection.",
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "mode",
+                            "eventProfileSlot"
+                          ],
+                          "properties": {
+                            "mode": {
+                              "type": "string",
+                              "enum": [
+                                "organizerOnly",
+                                "eventMembersWithConsent"
+                              ]
+                            },
+                            "eventProfileSlot": {
+                              "type": [
+                                "string",
+                                "null"
+                              ],
+                              "enum": [
+                                null,
+                                "customRow"
+                              ]
+                            }
+                          }
+                        },
                         "prefillPolicy": {
                           "type": "string",
                           "enum": [
@@ -820,6 +848,53 @@ export const getPublicOrganizerFormCallableResponseSchema: Record<string, unknow
                 },
                 "catchWhatsapp": {
                   "type": "boolean"
+                },
+                "organizerOperationsWhatsapp": {
+                  "type": "boolean"
+                },
+                "organizerMarketingWhatsapp": {
+                  "type": "boolean"
+                },
+                "catchMarketingWhatsapp": {
+                  "type": "boolean"
+                }
+              }
+            },
+            "eventProfile": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "enabled",
+                "allowedSlots",
+                "maxCustomRows",
+                "noticeVersion"
+              ],
+              "properties": {
+                "enabled": {
+                  "type": "boolean"
+                },
+                "allowedSlots": {
+                  "type": "array",
+                  "uniqueItems": true,
+                  "maxItems": 4,
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "displayName",
+                      "portrait",
+                      "introduction",
+                      "customRow"
+                    ]
+                  }
+                },
+                "maxCustomRows": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 20
+                },
+                "noticeVersion": {
+                  "type": "string",
+                  "const": "event-profile-sharing-v2"
                 }
               }
             },
@@ -884,8 +959,11 @@ export const getPublicOrganizerFormCallableResponseSchema: Record<string, unknow
           ],
           "properties": {
             "termsVersion": {
-              "const": "form-whatsapp-v1",
-              "type": "string"
+              "type": "string",
+              "enum": [
+                "form-whatsapp-v1",
+                "form-whatsapp-v2"
+              ]
             },
             "organizerWhatsapp": {
               "type": [
@@ -895,6 +973,27 @@ export const getPublicOrganizerFormCallableResponseSchema: Record<string, unknow
               "maxLength": 1000
             },
             "catchWhatsapp": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 1000
+            },
+            "organizerOperationsWhatsapp": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 1000
+            },
+            "organizerMarketingWhatsapp": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 1000
+            },
+            "catchMarketingWhatsapp": {
               "type": [
                 "string",
                 "null"
