@@ -32,6 +32,13 @@ export const getEventChatProfileCallableResponseSchema: Record<string, unknown> 
       "minLength": 1,
       "maxLength": 120
     },
+    "introduction": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 500
+    },
     "coreFields": {
       "type": "array",
       "maxItems": 14,

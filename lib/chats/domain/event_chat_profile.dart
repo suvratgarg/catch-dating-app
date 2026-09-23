@@ -33,6 +33,8 @@ class EventProfileSelection {
     required Iterable<String> coreFieldIds,
     required this.photoId,
     required this.card,
+    this.firstName,
+    this.introduction,
     this.termsVersion = 'event-profile-sharing-v1',
   }) : coreFieldIds = Set.unmodifiable(coreFieldIds);
   factory EventProfileSelection.fromMap(Map<Object?, Object?> json) =>
@@ -44,20 +46,30 @@ class EventProfileSelection {
         card: json['card'] == null
             ? null
             : EventProfileCardSelection.fromMap(json['card']! as Map),
+        firstName: json['firstName'] as String?,
+        introduction: json['introduction'] as String?,
         termsVersion: json['termsVersion']! as String,
       );
   final int profileRevision, membershipRevision;
   final Set<String> coreFieldIds;
   final String? photoId;
   final EventProfileCardSelection? card;
+  final String? firstName, introduction;
   final String termsVersion;
-  bool get isEmpty => coreFieldIds.isEmpty && photoId == null && card == null;
+  bool get isEmpty =>
+      coreFieldIds.isEmpty &&
+      photoId == null &&
+      card == null &&
+      firstName == null &&
+      introduction == null;
   Map<String, Object?> toJson() => {
     'profileRevision': profileRevision,
     'membershipRevision': membershipRevision,
     'coreFieldIds': coreFieldIds.toList()..sort(),
     'photoId': photoId,
     'card': card?.toJson(),
+    if (firstName != null) 'firstName': firstName,
+    if (introduction != null) 'introduction': introduction,
     'termsVersion': termsVersion,
   };
 }
@@ -84,6 +96,7 @@ class EventProfileSettings {
     required this.membershipRevision,
     required Iterable<EventProfileField> coreFields,
     required Iterable<String> photoIds,
+    this.preview,
   }) : coreFields = List.unmodifiable(coreFields),
        photoIds = List.unmodifiable(photoIds);
   factory EventProfileSettings.fromMap(Map<Object?, Object?> json) =>
@@ -105,6 +118,9 @@ class EventProfileSettings {
           );
         }),
         photoIds: (json['photoIds']! as List).cast<String>(),
+        preview: json['preview'] == null
+            ? null
+            : EventParticipantProfile.fromMap(json['preview']! as Map),
       );
   final String eventId;
   final String? organizerId;
@@ -114,6 +130,7 @@ class EventProfileSettings {
   final EventProfileSelection? selection;
   final List<EventProfileField> coreFields;
   final List<String> photoIds;
+  final EventParticipantProfile? preview;
 }
 
 @immutable
@@ -122,6 +139,7 @@ class EventParticipantProfile {
     required this.eventId,
     required this.participantUid,
     required this.displayName,
+    this.introduction,
     required Iterable<EventProfileField> coreFields,
     required Iterable<EventProfileField> cardFields,
     required this.photo,
@@ -132,6 +150,7 @@ class EventParticipantProfile {
         eventId: json['eventId']! as String,
         participantUid: json['participantUid']! as String,
         displayName: json['displayName']! as String,
+        introduction: json['introduction'] as String?,
         coreFields: (json['coreFields']! as List).map((raw) {
           final field = raw as Map;
           return EventProfileField(
@@ -151,6 +170,7 @@ class EventParticipantProfile {
             : FormProfilePhotoPreview.fromMap(json['photo']! as Map),
       );
   final String eventId, participantUid, displayName;
+  final String? introduction;
   final List<EventProfileField> coreFields, cardFields;
   final FormProfilePhotoPreview? photo;
 }
@@ -171,6 +191,7 @@ List<FormProfileField> eventCardFields(
       .where(
         (field) =>
             field.destination == FormProfileDestination.organizerCard &&
+            field.eventProfileEligible &&
             card.selectedCardQuestionIds.contains(field.questionId) &&
             field.kind != 'file' &&
             field.value != null,
@@ -184,9 +205,13 @@ class EventProfileDraft {
   EventProfileDraft(this.settings, this.card) {
     final saved = settings.selection;
     if (saved == null ||
-        saved.membershipRevision != settings.membershipRevision) {
+        (saved.membershipRevision != settings.membershipRevision &&
+            !(saved.membershipRevision == 0 &&
+                settings.membershipRevision == 1))) {
       return;
     }
+    firstName = saved.firstName;
+    introduction = saved.introduction;
     if (saved.profileRevision == settings.profileRevision) {
       coreFieldIds.addAll(
         saved.coreFieldIds.intersection(
@@ -216,12 +241,17 @@ class EventProfileDraft {
   final coreFieldIds = <String>{};
   final questionIds = <String>{};
   String? photoId;
+  String? firstName, introduction;
   EventProfileSelection? selection() {
     final result = EventProfileSelection(
       profileRevision: settings.profileRevision,
       membershipRevision: settings.membershipRevision ?? 0,
       coreFieldIds: coreFieldIds,
       photoId: photoId,
+      firstName: firstName?.trim().isEmpty == true ? null : firstName?.trim(),
+      introduction: introduction?.trim().isEmpty == true
+          ? null
+          : introduction?.trim(),
       card: questionIds.isEmpty || card == null
           ? null
           : EventProfileCardSelection(
@@ -229,6 +259,12 @@ class EventProfileDraft {
               revision: card!.cardRevision,
               questionIds: questionIds,
             ),
+      termsVersion:
+          (firstName?.trim().isNotEmpty == true ||
+              introduction?.trim().isNotEmpty == true ||
+              questionIds.isNotEmpty)
+          ? 'event-profile-sharing-v2'
+          : 'event-profile-sharing-v1',
     );
     return result.isEmpty ? null : result;
   }

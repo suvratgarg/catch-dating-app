@@ -4,8 +4,15 @@ import {createHmac, randomUUID} from "node:crypto";
 import {deleteApp, initializeApp} from "firebase-admin/app";
 import {getFirestore, Timestamp} from "firebase-admin/firestore";
 import {FakeFirestore} from "../operations/testFirestore";
-import {ingestMetaWhatsappWebhook, parseMetaWhatsappWebhook} from
+import {ingestMetaWhatsappWebhook, parseMetaWhatsappWebhook,
+  processOrganizerMessagingWebhookEvent} from
   "./organizerWhatsappWebhook";
+import type {OrganizerMessagingWebhookEventDocument} from
+  "../shared/generated/firestoreAdminTypes";
+import {organizerCommunicationPreferenceId} from
+  "../shared/organizerCommunicationPreferences";
+import {hashEndpoint, organizerContactChannelStateId} from
+  "./organizerCampaignModel";
 import {validateOrganizerMessagingWebhookEventDocument} from
   "../shared/generated/validators/organizerMessagingWebhookEventDocument";
 import {WHATSAPP_ENDPOINT_STOPS, parseWhatsappStop} from
@@ -383,6 +390,127 @@ test("Firestore deduplicates competing signed WhatsApp replies", {
     }
     await batch.commit();
     await connectionRef.delete();
+    await deleteApp(app);
+  }
+});
+
+test("processing the same STOP after a fresh v2 grant preserves its decision", {
+  skip: !process.env.FIRESTORE_EMULATOR_HOST, timeout: 60_000,
+}, async () => {
+  const id = randomUUID();
+  const app = initializeApp({projectId: "demo-catch-rules"}, "wa-stop-" + id);
+  const db = getFirestore(app);
+  const organizerId = `org-${id}`;
+  const uid = `person-${id}`;
+  const contactId = `contact-${id}`;
+  const phoneNumberId = BigInt("0x" + id.replace(/-/g, "").slice(0, 16))
+    .toString();
+  const connectionRef = db.collection("organizerSenderConnections").doc(id);
+  const contactRef = db.collection("organizerContacts").doc(contactId);
+  const stateRef = db.collection("organizerContactChannelStates")
+    .doc(organizerContactChannelStateId(organizerId, contactId));
+  const preferenceRef = db.collection("organizerCommunicationPreferences")
+    .doc(organizerCommunicationPreferenceId(organizerId, uid));
+  const grantRef = db.collection("organizerCommunicationPermissionReceipts")
+    .doc(`fresh-${id}`);
+  const endpointHash = hashEndpoint("+919999999999");
+  const firstAt = Timestamp.fromMillis(1720000001000);
+  const grantAt = Timestamp.fromMillis(1720000005000);
+  const replayAt = Timestamp.fromMillis(1720000010000);
+  const nextStopAt = Timestamp.fromMillis(1720000015000);
+  let eventRef: FirebaseFirestore.DocumentReference | null = null;
+  let nextEventRef: FirebaseFirestore.DocumentReference | null = null;
+  try {
+    await connectionRef.set({...sender(), organizerId, phoneNumberId});
+    await contactRef.set({organizerId, linkedUid: uid,
+      phoneE164: "+919999999999", displayName: "Synthetic"});
+    await stateRef.set({organizerId, contactId, channel: "whatsapp",
+      endpointHash});
+    const rawBody = webhook([incoming({id: `wamid.${id}`, type: "text",
+      text: {body: "STOP"}})], [], phoneNumberId);
+    await ingestMetaWhatsappWebhook({db, rawBody,
+      signatureHeader: signature(rawBody), appSecret, now: firstAt});
+    const events = await db.collection("organizerMessagingWebhookEvents")
+      .where("providerMessageId", "==", `wamid.${id}`).get();
+    assert.equal(events.size, 1);
+    eventRef = events.docs[0].ref;
+    const event = events.docs[0].data() as
+      OrganizerMessagingWebhookEventDocument;
+    await processOrganizerMessagingWebhookEvent({db, eventId: eventRef.id,
+      event, now: firstAt});
+    const stopped = (await preferenceRef.get()).data()!;
+    const stopReceiptRef = db.collection(
+      "organizerCommunicationPermissionReceipts")
+      .doc(stopped.whatsapp.currentReceiptId);
+    const stopReceipt = (await stopReceiptRef.get()).data()!;
+    assert.equal(stopReceipt.revokedAt.toMillis(), firstAt.toMillis());
+    const grant = {organizerId, uid, channel: "whatsapp",
+      purpose: "marketing", endpointE164: "+919999999999",
+      sourceVersionId: `version-${id}`, sourceDecidedAt: grantAt,
+      decision: "optedIn", evidenceStatus: "complete",
+      termsVersion: "form-whatsapp-v2", consentCopyHash: "a".repeat(64),
+      source: "hostFormResponse", sourceEventId: null,
+      sourceFormId: `form-${id}`, sourceResponseId: `response-${id}`,
+      sourceProviderEventId: null, actorClass: "participant", actorUid: uid,
+      identityStrength: "phoneVerified", grantedAt: grantAt, revokedAt: null,
+      supersedesReceiptId: stopReceiptRef.id, createdAt: grantAt};
+    await grantRef.create(grant);
+    const fresh = {...stopped, whatsappPurposes: {
+      ...stopped.whatsappPurposes,
+      marketing: {status: "optedIn", evidenceStatus: "complete",
+        currentReceiptId: `fresh-${id}`, termsVersion: "form-whatsapp-v2",
+        source: "hostFormResponse", sourceEventId: null,
+        sourceResponseId: `response-${id}`,
+        endpointE164: "+919999999999", updatedAt: grantAt},
+    }, updatedAt: grantAt};
+    await preferenceRef.set(fresh);
+    await processOrganizerMessagingWebhookEvent({db, eventId: eventRef.id,
+      event, now: replayAt});
+    assert.deepEqual((await preferenceRef.get()).data(), fresh);
+    assert.deepEqual((await stopReceiptRef.get()).data(), stopReceipt);
+    assert.deepEqual((await grantRef.get()).data(), grant);
+    const nextRawBody = webhook([incoming({id: `wamid.${id}.next`,
+      type: "text", text: {body: "STOP"}})], [], phoneNumberId);
+    await ingestMetaWhatsappWebhook({db, rawBody: nextRawBody,
+      signatureHeader: signature(nextRawBody), appSecret, now: nextStopAt});
+    const nextEvents = await db.collection("organizerMessagingWebhookEvents")
+      .where("providerMessageId", "==", `wamid.${id}.next`).get();
+    assert.equal(nextEvents.size, 1);
+    nextEventRef = nextEvents.docs[0].ref;
+    await processOrganizerMessagingWebhookEvent({db,
+      eventId: nextEventRef.id,
+      event: nextEvents.docs[0].data() as
+        OrganizerMessagingWebhookEventDocument,
+      now: nextStopAt});
+    const stoppedAgain = (await preferenceRef.get()).data()!;
+    assert.equal(stoppedAgain.whatsapp.updatedAt.toMillis(),
+      nextStopAt.toMillis());
+    assert.equal(stoppedAgain.whatsappPurposes.eventOperations.status,
+      "optedOut");
+    assert.equal(stoppedAgain.whatsappPurposes.marketing.status, "optedOut");
+    assert.notEqual(stoppedAgain.whatsapp.currentReceiptId,
+      stopReceiptRef.id);
+    assert.deepEqual((await grantRef.get()).data(), grant);
+    assert.equal((await db.collection(
+      "organizerCommunicationPermissionReceipts")
+      .where("organizerId", "==", organizerId).get()).size, 3);
+  } finally {
+    const receipts = await db.collection(
+      "organizerCommunicationPermissionReceipts")
+      .where("organizerId", "==", organizerId).get();
+    const batch = db.batch();
+    for (const ref of [eventRef, nextEventRef, connectionRef, contactRef,
+      stateRef, preferenceRef].filter((item) => item !== null)) {
+      batch.delete(ref!);
+    }
+    for (const queued of [eventRef, nextEventRef]) {
+      if (queued) {
+        batch.delete(db.collection("organizerCampaignWebhookReceipts")
+          .doc(queued.id));
+      }
+    }
+    for (const receipt of receipts.docs) batch.delete(receipt.ref);
+    await batch.commit();
     await deleteApp(app);
   }
 });

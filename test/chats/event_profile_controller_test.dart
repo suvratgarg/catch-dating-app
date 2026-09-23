@@ -25,9 +25,17 @@ class ProfileRepository extends Fake implements EventChatRepository {
       >[];
   Future<EventParticipantProfile> Function(String) readProfile = (_) async =>
       miniProfile();
+  Future<EventProfileSettings> Function(EventProfileSelection) readPreview =
+      (_) async => settingsFixture();
   @override
   Future<EventProfileSettings> profileSettings(String uid, String eventId) =>
       readSettings(uid);
+  @override
+  Future<EventProfileSettings> previewProfile(
+    String uid,
+    EventProfileSettings reviewed,
+    EventProfileSelection selection,
+  ) => readPreview(selection);
   @override
   Future<void> shareProfile(
     String uid,
@@ -147,6 +155,27 @@ void main() {
       await c.save(null, reviewedUid: 'person', reviewedRevision: 0),
       false,
     );
+    expect(repo.writes, isEmpty);
+  });
+  test('preview checks the same reviewed revision before any write', () async {
+    container.listen(editor, (_, _) {});
+    await container.read(editor.future);
+    final c = container.read(editor.notifier);
+    final selected = selectionFixture();
+    repo.readPreview = (_) async => settingsFixture(
+      preview: miniProfile(name: 'Mira'),
+    );
+    expect(await c.preview(selected,
+      reviewedUid: 'person', reviewedRevision: 0), isNull);
+    expect(await c.preview(selected,
+      reviewedUid: 'person', reviewedRevision: 1),
+      isA<EventParticipantProfile>());
+    expect(repo.writes, isEmpty);
+    repo.readPreview = (_) async => settingsFixture(
+      revision: 2, preview: miniProfile(name: 'Changed'),
+    );
+    expect(await c.preview(selected,
+      reviewedUid: 'person', reviewedRevision: 1), isNull);
     expect(repo.writes, isEmpty);
   });
   test('pending save freezes duplicates, card changes and refreshes', () async {

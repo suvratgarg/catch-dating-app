@@ -165,6 +165,10 @@ test("flags unreviewed permission-authority access", () => {
     source: 'db.collection("organizerCommunicationPreferences").doc(id)',
   });
   assert.match(findings[0].reason, /explicit reviewed owner/u);
+  assert.deepEqual(scanBackendFile({
+    relativePath: "functions/src/organizers/organizerFormConsentPromotion.ts",
+    source: 'db.collection("organizerCommunicationPreferences").doc(id)',
+  }), []);
 });
 
 test("flags direct contact creation outside canonical projection owners", () => {

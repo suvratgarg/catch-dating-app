@@ -79,6 +79,15 @@ export const organizerCommunicationPreferenceDocumentSchema: Record<string, unkn
           ],
           "x-catch-ownership": "server-only"
         },
+        "endpointE164": {
+          "type": "string",
+          "pattern": "^\\+[1-9][0-9]{6,14}$"
+        },
+        "sourceResponseId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
         "termsVersion": {
           "type": [
             "string",
@@ -148,6 +157,258 @@ export const organizerCommunicationPreferenceDocumentSchema: Record<string, unkn
         }
       }
     },
+    "whatsappPurposes": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "eventOperations": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "evidenceStatus",
+            "currentReceiptId",
+            "termsVersion",
+            "source",
+            "sourceEventId",
+            "updatedAt"
+          ],
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": [
+                "unknown",
+                "optedIn",
+                "optedOut"
+              ],
+              "x-catch-ownership": "server-only"
+            },
+            "evidenceStatus": {
+              "type": "string",
+              "enum": [
+                "notApplicable",
+                "complete",
+                "incomplete"
+              ],
+              "description": "Only complete evidence may make an opted-in channel eligible for managed delivery.",
+              "x-catch-ownership": "server-only"
+            },
+            "currentReceiptId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "x-catch-ownership": "server-only"
+            },
+            "endpointE164": {
+              "type": "string",
+              "pattern": "^\\+[1-9][0-9]{6,14}$"
+            },
+            "sourceResponseId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "termsVersion": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 1,
+              "maxLength": 80,
+              "x-catch-ownership": "server-only"
+            },
+            "source": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "enum": [
+                null,
+                "publicEventRegistration",
+                "hostFormResponse",
+                "participantSettings",
+                "unsubscribeLink",
+                "inboundStop",
+                "providerWebhook",
+                "legacyIncomplete"
+              ],
+              "x-catch-ownership": "server-only"
+            },
+            "sourceEventId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "x-catch-ownership": "server-only"
+            },
+            "updatedAt": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "description": "Serialized Firestore Timestamp fixture shape.",
+                  "x-firestore-type": "timestamp",
+                  "additionalProperties": false,
+                  "required": [
+                    "_seconds",
+                    "_nanoseconds"
+                  ],
+                  "properties": {
+                    "_seconds": {
+                      "type": "integer"
+                    },
+                    "_nanoseconds": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 999999999
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "x-catch-ownership": "server-only"
+            }
+          }
+        },
+        "marketing": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "evidenceStatus",
+            "currentReceiptId",
+            "termsVersion",
+            "source",
+            "sourceEventId",
+            "updatedAt"
+          ],
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": [
+                "unknown",
+                "optedIn",
+                "optedOut"
+              ],
+              "x-catch-ownership": "server-only"
+            },
+            "evidenceStatus": {
+              "type": "string",
+              "enum": [
+                "notApplicable",
+                "complete",
+                "incomplete"
+              ],
+              "description": "Only complete evidence may make an opted-in channel eligible for managed delivery.",
+              "x-catch-ownership": "server-only"
+            },
+            "currentReceiptId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "x-catch-ownership": "server-only"
+            },
+            "endpointE164": {
+              "type": "string",
+              "pattern": "^\\+[1-9][0-9]{6,14}$"
+            },
+            "sourceResponseId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "termsVersion": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 1,
+              "maxLength": 80,
+              "x-catch-ownership": "server-only"
+            },
+            "source": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "enum": [
+                null,
+                "publicEventRegistration",
+                "hostFormResponse",
+                "participantSettings",
+                "unsubscribeLink",
+                "inboundStop",
+                "providerWebhook",
+                "legacyIncomplete"
+              ],
+              "x-catch-ownership": "server-only"
+            },
+            "sourceEventId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "x-catch-ownership": "server-only"
+            },
+            "updatedAt": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "description": "Serialized Firestore Timestamp fixture shape.",
+                  "x-firestore-type": "timestamp",
+                  "additionalProperties": false,
+                  "required": [
+                    "_seconds",
+                    "_nanoseconds"
+                  ],
+                  "properties": {
+                    "_seconds": {
+                      "type": "integer"
+                    },
+                    "_nanoseconds": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 999999999
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "x-catch-ownership": "server-only"
+            }
+          }
+        }
+      }
+    },
     "sms": {
       "type": "object",
       "additionalProperties": false,
@@ -192,6 +453,15 @@ export const organizerCommunicationPreferenceDocumentSchema: Record<string, unkn
             }
           ],
           "x-catch-ownership": "server-only"
+        },
+        "endpointE164": {
+          "type": "string",
+          "pattern": "^\\+[1-9][0-9]{6,14}$"
+        },
+        "sourceResponseId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
         },
         "termsVersion": {
           "type": [
@@ -306,6 +576,258 @@ export const organizerCommunicationPreferenceDocumentSchema: Record<string, unkn
     }
   },
   "definitions": {
+    "whatsappPurposes": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "eventOperations": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "evidenceStatus",
+            "currentReceiptId",
+            "termsVersion",
+            "source",
+            "sourceEventId",
+            "updatedAt"
+          ],
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": [
+                "unknown",
+                "optedIn",
+                "optedOut"
+              ],
+              "x-catch-ownership": "server-only"
+            },
+            "evidenceStatus": {
+              "type": "string",
+              "enum": [
+                "notApplicable",
+                "complete",
+                "incomplete"
+              ],
+              "description": "Only complete evidence may make an opted-in channel eligible for managed delivery.",
+              "x-catch-ownership": "server-only"
+            },
+            "currentReceiptId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "x-catch-ownership": "server-only"
+            },
+            "endpointE164": {
+              "type": "string",
+              "pattern": "^\\+[1-9][0-9]{6,14}$"
+            },
+            "sourceResponseId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "termsVersion": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 1,
+              "maxLength": 80,
+              "x-catch-ownership": "server-only"
+            },
+            "source": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "enum": [
+                null,
+                "publicEventRegistration",
+                "hostFormResponse",
+                "participantSettings",
+                "unsubscribeLink",
+                "inboundStop",
+                "providerWebhook",
+                "legacyIncomplete"
+              ],
+              "x-catch-ownership": "server-only"
+            },
+            "sourceEventId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "x-catch-ownership": "server-only"
+            },
+            "updatedAt": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "description": "Serialized Firestore Timestamp fixture shape.",
+                  "x-firestore-type": "timestamp",
+                  "additionalProperties": false,
+                  "required": [
+                    "_seconds",
+                    "_nanoseconds"
+                  ],
+                  "properties": {
+                    "_seconds": {
+                      "type": "integer"
+                    },
+                    "_nanoseconds": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 999999999
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "x-catch-ownership": "server-only"
+            }
+          }
+        },
+        "marketing": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "evidenceStatus",
+            "currentReceiptId",
+            "termsVersion",
+            "source",
+            "sourceEventId",
+            "updatedAt"
+          ],
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": [
+                "unknown",
+                "optedIn",
+                "optedOut"
+              ],
+              "x-catch-ownership": "server-only"
+            },
+            "evidenceStatus": {
+              "type": "string",
+              "enum": [
+                "notApplicable",
+                "complete",
+                "incomplete"
+              ],
+              "description": "Only complete evidence may make an opted-in channel eligible for managed delivery.",
+              "x-catch-ownership": "server-only"
+            },
+            "currentReceiptId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "x-catch-ownership": "server-only"
+            },
+            "endpointE164": {
+              "type": "string",
+              "pattern": "^\\+[1-9][0-9]{6,14}$"
+            },
+            "sourceResponseId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "termsVersion": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 1,
+              "maxLength": 80,
+              "x-catch-ownership": "server-only"
+            },
+            "source": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "enum": [
+                null,
+                "publicEventRegistration",
+                "hostFormResponse",
+                "participantSettings",
+                "unsubscribeLink",
+                "inboundStop",
+                "providerWebhook",
+                "legacyIncomplete"
+              ],
+              "x-catch-ownership": "server-only"
+            },
+            "sourceEventId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "x-catch-ownership": "server-only"
+            },
+            "updatedAt": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "description": "Serialized Firestore Timestamp fixture shape.",
+                  "x-firestore-type": "timestamp",
+                  "additionalProperties": false,
+                  "required": [
+                    "_seconds",
+                    "_nanoseconds"
+                  ],
+                  "properties": {
+                    "_seconds": {
+                      "type": "integer"
+                    },
+                    "_nanoseconds": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 999999999
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "x-catch-ownership": "server-only"
+            }
+          }
+        }
+      }
+    },
     "channelPreference": {
       "type": "object",
       "additionalProperties": false,
@@ -350,6 +872,15 @@ export const organizerCommunicationPreferenceDocumentSchema: Record<string, unkn
             }
           ],
           "x-catch-ownership": "server-only"
+        },
+        "endpointE164": {
+          "type": "string",
+          "pattern": "^\\+[1-9][0-9]{6,14}$"
+        },
+        "sourceResponseId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
         },
         "termsVersion": {
           "type": [

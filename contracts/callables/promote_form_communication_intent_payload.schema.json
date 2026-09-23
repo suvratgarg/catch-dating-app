@@ -1,0 +1,13 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/promote_form_communication_intent_payload.schema.json",
+  "title": "PromoteFormCommunicationIntentCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["responseId", "withdrawalToken", "requestId"],
+  "properties": {
+    "responseId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "withdrawalToken": {"type": ["string", "null"], "pattern": "^[A-Za-z0-9_-]{32,160}$"},
+    "requestId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"}
+  }
+}

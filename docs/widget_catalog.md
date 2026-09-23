@@ -814,9 +814,9 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>HostCustomerTagsSheet</code> | <code>lib/hosts/presentation/customers/host_customer_memory.dart:243</code> | — | — | No class documentation or registry summary. |
 | <code>HostCustomerSourcesSection</code> | <code>lib/hosts/presentation/customers/host_customer_sources_section.dart:4</code> | — | — | Contact provenance is independent of current communication availability. |
 | <code>HostCustomerSubmissionsSection</code> | <code>lib/hosts/presentation/customers/host_customer_submissions_section.dart:3</code> | — | — | No class documentation or registry summary. |
-| <code>HostCustomerHistoryFilters</code> | <code>lib/hosts/presentation/customers/host_customer_timeline.dart:310</code> | — | — | No class documentation or registry summary. |
+| <code>HostCustomerHistoryFilters</code> | <code>lib/hosts/presentation/customers/host_customer_timeline.dart:342</code> | — | — | No class documentation or registry summary. |
 | <code>HostCustomerReachSection</code> | <code>lib/hosts/presentation/customers/host_customer_timeline.dart:16</code> | — | — | No class documentation or registry summary. |
-| <code>HostCustomerTimelineSection</code> | <code>lib/hosts/presentation/customers/host_customer_timeline.dart:365</code> | — | — | No class documentation or registry summary. |
+| <code>HostCustomerTimelineSection</code> | <code>lib/hosts/presentation/customers/host_customer_timeline.dart:397</code> | — | — | No class documentation or registry summary. |
 | <code>HostCustomerDirectoryControls</code> | <code>lib/hosts/presentation/customers/host_customers_directory.dart:3</code> | — | — | No class documentation or registry summary. |
 | <code>HostCustomerFilterSummary</code> | <code>lib/hosts/presentation/customers/host_customers_directory.dart:89</code> | — | — | No class documentation or registry summary. |
 | <code>HostCustomersDirectory</code> | <code>lib/hosts/presentation/customers/host_customers_directory.dart:201</code> | — | — | Sliver-native directory. The page owns scrolling; the section builds only visible people and preserves each contact's identity across filter changes. |
@@ -1088,7 +1088,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>StarRatingPicker</code> | <code>lib/reviews/shared/star_rating.dart:37</code> | — | — | Tappable star row for picking a rating. |
 | <code>WriteReviewSheet</code> | <code>lib/reviews/shared/write_review_sheet.dart:36</code> | — | — | No class documentation or registry summary. |
 | <code>BlockedAccountsSection</code> | <code>lib/safety/presentation/blocked_account_tile.dart:12</code> | — | — | No class documentation or registry summary. |
-| <code>MessagingPermissionsPageBody</code> | <code>lib/safety/presentation/messaging_permissions_screen.dart:45</code> | — | — | No class documentation or registry summary. |
+| <code>MessagingPermissionsPageBody</code> | <code>lib/safety/presentation/messaging_permissions_screen.dart:48</code> | — | — | No class documentation or registry summary. |
 | <code>AccountProfileStatus</code> | <code>lib/safety/presentation/settings_screen.dart:663</code> | — | — | No class documentation or registry summary. |
 | <code>BlockedAccountsSkeleton</code> | <code>lib/safety/presentation/settings_screen.dart:707</code> | — | — | No class documentation or registry summary. |
 | <code>EventRecapLoadingBody</code> | <code>lib/swipes/presentation/event_recap_screen.dart:277</code> | — | — | No class documentation or registry summary. |

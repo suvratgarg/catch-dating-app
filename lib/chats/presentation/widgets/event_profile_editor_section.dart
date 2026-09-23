@@ -50,6 +50,8 @@ class _EventProfileEditorSectionState extends State<EventProfileEditorSection> {
           before.revision == after.revision &&
           before.profileRevision == after.profileRevision &&
           before.membershipRevision == after.membershipRevision) {
+        _draft.firstName = previous.firstName;
+        _draft.introduction = previous.introduction;
         _draft.coreFieldIds
           ..clear()
           ..addAll(
@@ -108,6 +110,45 @@ class _EventProfileEditorSectionState extends State<EventProfileEditorSection> {
             style: CatchTextStyles.recordBody(context),
           ),
         ] else ...[
+          gapH24,
+          CatchSection.fieldRows(
+            title: l.eventProfilePersonalize,
+            children: [
+              CatchField.input(
+                key: const ValueKey('event-profile-first-name'),
+                copy: catchFieldCopy(l),
+                title: l.eventProfileFirstName,
+                titleMaxLines: 3,
+                emptyValueText: l.onboardingNameDobPageStateVisiblecopyFirstName,
+                initialValue: _draft.firstName,
+                maxLength: 80,
+                states: disabled ? const {WidgetState.disabled} : const {},
+                labelMode: CatchFieldLabelTextMode.optional,
+                contractExemption:
+                    'Event-scoped chosen name is capped by the sharing contract.',
+                onChanged: disabled
+                    ? null
+                    : (value) => _draft.firstName = value,
+              ),
+              CatchField.input(
+                key: const ValueKey('event-profile-introduction'),
+                copy: catchFieldCopy(l),
+                title: l.eventProfileIntroduction,
+                titleMaxLines: 3,
+                emptyValueText: l.userProfileProfileTabTitleAboutYou,
+                initialValue: _draft.introduction,
+                maxLength: 500,
+                maxLines: 5,
+                states: disabled ? const {WidgetState.disabled} : const {},
+                labelMode: CatchFieldLabelTextMode.optional,
+                contractExemption:
+                    'Event-scoped introduction is capped by the sharing contract.',
+                onChanged: disabled
+                    ? null
+                    : (value) => _draft.introduction = value,
+              ),
+            ],
+          ),
           gapH24,
           CatchSection.fieldRows(
             title: l.eventProfileCore,
@@ -188,24 +229,33 @@ class _EventProfileEditorSectionState extends State<EventProfileEditorSection> {
                   style: CatchTextStyles.supporting(context),
                 ),
               for (final field in fields)
-                EventProfileAnswerField.share(
-                  label: field.label,
-                  answer: field.answerText(
-                    yes: l.formProfileYes,
-                    no: l.formProfileNo,
-                    empty: l.formProfileEmptyAnswer,
-                    attachment: l.formProfileAttachment,
-                  ),
-                  selected: _draft.questionIds.contains(field.questionId),
-                  onChanged: disabled
-                      ? null
-                      : (value) => setState(() {
-                          if (value) {
-                            _draft.questionIds.add(field.questionId);
-                          } else {
-                            _draft.questionIds.remove(field.questionId);
-                          }
-                        }),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    EventProfileAnswerField.share(
+                      label: field.label,
+                      answer: field.answerText(
+                        yes: l.formProfileYes,
+                        no: l.formProfileNo,
+                        empty: l.formProfileEmptyAnswer,
+                        attachment: l.formProfileAttachment,
+                      ),
+                      selected: _draft.questionIds.contains(field.questionId),
+                      onChanged: disabled
+                          ? null
+                          : (value) => setState(() {
+                              if (value) {
+                                _draft.questionIds.add(field.questionId);
+                              } else {
+                                _draft.questionIds.remove(field.questionId);
+                              }
+                            }),
+                    ),
+                    Text(
+                      l.eventProfileQuestionAudience,
+                      style: CatchTextStyles.supporting(context),
+                    ),
+                  ],
                 ),
             ],
           ),
@@ -221,7 +271,7 @@ class _EventProfileEditorSectionState extends State<EventProfileEditorSection> {
           ],
           gapH24,
           CatchButton(
-            label: l.eventProfileSave,
+            label: l.eventProfilePreview,
             fullWidth: true,
             status: current.busy
                 ? CatchButtonStatus.loading

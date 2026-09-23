@@ -54,7 +54,23 @@
         "sourceFormId": {"anyOf": [{"$ref": "../shared/event_common.schema.json#/definitions/documentId"}, {"type": "null"}]},
         "sourceFormTitle": {"type": ["string", "null"], "minLength": 1, "maxLength": 160},
         "decisionAtMillis": {"type": ["integer", "null"], "minimum": 0},
-        "identityStrength": {"type": ["string", "null"], "enum": [null, "unknown", "emailVerified", "phoneVerified", "catchAccount"]}
+        "identityStrength": {"type": ["string", "null"], "enum": [null, "unknown", "emailVerified", "phoneVerified", "catchAccount"]},
+        "purposes": {"type": "object", "additionalProperties": false,
+          "properties": {
+            "eventOperations": {"$ref": "#/definitions/purposePermission"},
+            "marketing": {"$ref": "#/definitions/purposePermission"}
+          }}
+      }
+    },
+    "purposePermission": {
+      "type": "object", "additionalProperties": false,
+      "required": ["status", "evidenceStatus", "receiptId", "decisionAtMillis", "deliveryAvailable"],
+      "properties": {
+        "status": {"type": "string", "enum": ["unknown", "optedIn", "optedOut"]},
+        "evidenceStatus": {"type": "string", "enum": ["complete", "incomplete"]},
+        "receiptId": {"anyOf": [{"$ref": "../shared/event_common.schema.json#/definitions/documentId"}, {"type": "null"}]},
+        "decisionAtMillis": {"type": ["integer", "null"], "minimum": 0},
+        "deliveryAvailable": {"type": "boolean", "description": "False for form-originated WhatsApp purposes pending provider review; consent can still be recorded."}
       }
     },
     "origin": {

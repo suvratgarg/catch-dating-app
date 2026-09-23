@@ -117,7 +117,7 @@ class HostCustomerReachSection extends StatelessWidget {
                 color: switch (customer.whatsappPermission.evidenceStatus) {
                   HostCustomerPermissionEvidenceStatus.unavailable => t.ink2,
                   HostCustomerPermissionEvidenceStatus.incomplete => t.warning,
-                  _ => switch (customer.whatsappPermission.status) {
+                  _ => switch (customer.whatsappPermission.effectiveStatus) {
                     HostAudiencePermissionStatus.optedIn => t.success,
                     HostAudiencePermissionStatus.optedOut => t.danger,
                     HostAudiencePermissionStatus.unknown => t.ink2,
@@ -222,6 +222,38 @@ String _communicationRouteBlockerLabel(
 };
 
 String _permissionSummary(
+  BuildContext context,
+  HostCustomerWhatsappPermission permission,
+) {
+  final scoped = <String>[];
+  for (final entry in permission.purposes.entries) {
+    final label = switch (entry.key) {
+      'eventOperations' => context.l10n.hostCustomersWhatsappOperations,
+      'marketing' => context.l10n.hostCustomersWhatsappMarketing,
+      _ => null,
+    };
+    if (label == null) continue;
+    final purpose = entry.value;
+    final status = purpose.evidenceStatus ==
+            HostCustomerPermissionEvidenceStatus.incomplete
+        ? context.l10n.hostCustomersWhatsappPermissionIncomplete
+        : _permissionStatusLabel(context, purpose.status);
+    scoped.add('$label: $status');
+    if (purpose.status == HostAudiencePermissionStatus.optedIn &&
+        !purpose.deliveryAvailable) {
+      scoped.add(context.l10n.hostCustomersMessageOptionsUnavailable);
+    }
+  }
+  final broad = _broadPermissionSummary(context, permission);
+  if (scoped.isEmpty) return broad;
+  if (permission.status == HostAudiencePermissionStatus.unknown ||
+      permission.effectiveStatus != permission.status) {
+    return scoped.join('\n');
+  }
+  return [broad, ...scoped].join('\n');
+}
+
+String _broadPermissionSummary(
   BuildContext context,
   HostCustomerWhatsappPermission permission,
 ) {
