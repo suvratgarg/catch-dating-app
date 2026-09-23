@@ -11,6 +11,7 @@ class EventChatMessageTile extends StatelessWidget {
     required this.message,
     required this.isMe,
     required this.enabled,
+    this.safetyEnabled = false,
     required this.onReply,
     required this.onReact,
     required this.onReaction,
@@ -21,6 +22,7 @@ class EventChatMessageTile extends StatelessWidget {
   });
   final EventChatMessage message;
   final bool isMe, enabled;
+  final bool safetyEnabled;
   final VoidCallback onReply, onReact;
   final VoidCallback? onViewProfile, onReport, onBlock, onRemove;
   final ValueChanged<EventChatReaction?> onReaction;
@@ -43,6 +45,11 @@ class EventChatMessageTile extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            if (message.available && message.kind == 'announcement')
+              Text(
+                l.eventChatAnnouncement,
+                style: CatchTextStyles.supporting(context),
+              ),
             if (message.available)
               Row(
                 children: [
@@ -63,7 +70,9 @@ class EventChatMessageTile extends StatelessWidget {
                                 minimumSize: const Size(0, CatchSpacing.s12),
                                 padding: EdgeInsets.zero,
                                 textStyle: CatchTextStyles.supporting(context),
-                                onPressed: enabled ? onViewProfile : null,
+                                onPressed: enabled || safetyEnabled
+                                    ? onViewProfile
+                                    : null,
                               ),
                             ),
                           ),
@@ -71,16 +80,18 @@ class EventChatMessageTile extends StatelessWidget {
                   CatchActionMenu<String>(
                     variant: CatchIconActionVariant.plain,
                     tooltip: l.eventChatMessageActions,
-                    enabled: enabled,
+                    enabled: enabled || safetyEnabled,
                     items: [
-                      CatchActionMenuItem(
-                        value: 'reply',
-                        label: l.eventChatReply,
-                      ),
-                      CatchActionMenuItem(
-                        value: 'react',
-                        label: l.eventChatReact,
-                      ),
+                      if (enabled) ...[
+                        CatchActionMenuItem(
+                          value: 'reply',
+                          label: l.eventChatReply,
+                        ),
+                        CatchActionMenuItem(
+                          value: 'react',
+                          label: l.eventChatReact,
+                        ),
+                      ],
                       if (onReport != null)
                         CatchActionMenuItem(
                           value: 'report',

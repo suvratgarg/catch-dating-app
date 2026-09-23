@@ -5050,13 +5050,15 @@ export interface EventChatProfileShareDocument {
 export interface EventChatRoomDocument {
   eventId: string;
   organizerId: string;
-  status: "open" | "closed";
+  status: "open" | "announcementsOnly" | "paused" | "closed" | "archived";
   revision: number;
   createdByUid: string;
   updatedByUid: string;
   createdAt: FirebaseFirestore.Timestamp;
   updatedAt: FirebaseFirestore.Timestamp;
   lastMessageSequence?: number;
+  opensAtMillis?: number | null;
+  closesAtMillis?: number | null;
 }
 
 /**
@@ -5066,13 +5068,16 @@ export interface EventChatMembershipDocument {
   eventId: string;
   organizerId: string;
   uid: string;
-  status: "joined" | "left";
+  status: "joined" | "left" | "removed" | "banned";
   revision: number;
   termsVersion: "event-chat-v1";
   joinedAt: FirebaseFirestore.Timestamp;
   leftAt: FirebaseFirestore.Timestamp | null;
   createdAt: FirebaseFirestore.Timestamp;
   updatedAt: FirebaseFirestore.Timestamp;
+  notificationsMuted?: boolean;
+  removedAt?: FirebaseFirestore.Timestamp | null;
+  removedByUid?: string | null;
 }
 
 /**
@@ -5097,6 +5102,10 @@ export interface EventChatMessageDocument {
   text: string | null;
   replyToMessageId: string | null;
   status: "visible" | "removed";
+  /**
+   * Legacy omission means text.
+   */
+  kind?: "text" | "announcement";
   payloadHash: string;
   reactionCounts: {
     like: number;

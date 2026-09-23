@@ -611,6 +611,7 @@ export {promoteFormCommunicationIntent} from
 
 export {getEventChatAccess, updateEventChatAccess}
   from "./chats/eventChatAccess";
+export {manageEventChatMember} from "./chats/manageEventChatMember";
 
 export {sendEventChatMessage, setEventChatReaction, setEventChatTyping}
   from "./chats/eventChatMessages";

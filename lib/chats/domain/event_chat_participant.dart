@@ -6,15 +6,24 @@ class EventChatParticipant {
     required this.uid,
     required this.displayName,
     required this.isHost,
+    this.membershipStatus = 'joined',
+    this.membershipRevision = 0,
   });
   factory EventChatParticipant.fromMap(Map<Object?, Object?> json) =>
       EventChatParticipant(
         uid: json['uid']! as String,
         displayName: json['displayName']! as String,
         isHost: json['role'] == 'host',
+        membershipStatus: json['membershipStatus']! as String,
+        membershipRevision: (json['membershipRevision']! as num).toInt(),
       );
   final String uid, displayName;
   final bool isHost;
+  final String membershipStatus;
+  final int membershipRevision;
+  bool get isJoined => membershipStatus == 'joined';
+  bool get isRemoved => membershipStatus == 'removed';
+  bool get isBanned => membershipStatus == 'banned';
 }
 
 @immutable

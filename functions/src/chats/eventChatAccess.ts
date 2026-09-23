@@ -23,6 +23,8 @@ import {validateGetEventChatAccessCallablePayload} from
   "../shared/generated/validators/getEventChatAccessInput";
 import {validateUpdateEventChatAccessCallablePayload} from
   "../shared/generated/validators/updateEventChatAccessInput";
+import {canPostEventChatMode, canReadEventChatMode,
+  effectiveEventChatRoomMode} from "./eventChatRoomPolicy";
 
 export function requireEventChatActor(uid: string, expectedUid: string) {
   if (uid !== expectedUid) {
@@ -76,7 +78,8 @@ export async function readEventChatAccount(db: FirebaseFirestore.Firestore,
 
 /** Reads current event authority without trusting a cached roster grant. */
 export async function readEventChatAccess(db: FirebaseFirestore.Firestore,
-  tx: FirebaseFirestore.Transaction, eventId: string, uid: string) {
+  tx: FirebaseFirestore.Transaction, eventId: string, uid: string,
+  nowMillis = Date.now()) {
   const user = await readEventChatAccount(db, tx, uid);
   const eventSnap = await tx.get(db.collection("events").doc(eventId));
   if (!eventSnap.exists) throw unavailable();
@@ -114,21 +117,31 @@ export async function readEventChatAccess(db: FirebaseFirestore.Firestore,
   const claimed = user !== null && typeof user.displayName === "string" &&
     user.displayName.trim().length > 0 &&
     (user.profileComplete === true || user.profileClaimedAt != null);
-  const active = event.status === "active" && room?.status === "open";
+  const mode = event.status === "active" ?
+    effectiveEventChatRoomMode(room, nowMillis) : "closed";
+  const active = event.status === "active" && canReadEventChatMode(mode);
+  const joined = member?.status === "joined";
+  const canReadMessages = active && claimed && joined;
   const view: View = {eventId, organizerId, title: event.name ?? "",
     role: host ? "host" : "attendee",
-    room: {status: room?.status ?? "notCreated", revision: room?.revision ?? 0},
+    room: {status: mode, revision: room?.revision ?? 0,
+      opensAtMillis: room?.opensAtMillis ?? null,
+      closesAtMillis: room?.closesAtMillis ?? null},
     membership: {status: member?.status ?? "notJoined",
-      revision: member?.revision ?? 0},
-    canManage: host, canJoin: active && claimed,
-    canReadMessages: active && claimed && member?.status === "joined",
+      revision: member?.revision ?? 0,
+      notificationsMuted: member?.notificationsMuted === true},
+    canManage: host, canJoin: active && claimed &&
+      member?.status !== "removed" && member?.status !== "banned",
+    canReadMessages,
+    canPostMessages: canReadMessages && canPostEventChatMode(mode, host),
     profileClaimRequired: !claimed, termsVersion: eventChatTermsVersion};
   return {event, room, member, user, view};
 }
 
 export async function requireEventChatMember(db: FirebaseFirestore.Firestore,
-  tx: FirebaseFirestore.Transaction, eventId: string, uid: string) {
-  const access = await readEventChatAccess(db, tx, eventId, uid);
+  tx: FirebaseFirestore.Transaction, eventId: string, uid: string,
+  nowMillis = Date.now()) {
+  const access = await readEventChatAccess(db, tx, eventId, uid, nowMillis);
   if (!access.view.canReadMessages) throw unavailable();
   return access;
 }
@@ -141,7 +154,8 @@ export async function getEventChatAccessHandler(
   const db = deps.db();
   await deps.rateLimit(db, uid, "getEventChatAccess");
   return db.runTransaction(async (tx) =>
-    (await readEventChatAccess(db, tx, data.eventId, uid)).view);
+    (await readEventChatAccess(db, tx, data.eventId, uid,
+      deps.now().toMillis())).view);
 }
 
 export async function updateEventChatAccessHandler(
@@ -159,12 +173,25 @@ export async function updateEventChatAccessHandler(
   } else if (data.termsVersion !== null) {
     throw new HttpsError("invalid-argument", "Terms apply only when joining.");
   }
+  if (data.action === "schedule") {
+    if (!Number.isSafeInteger(data.opensAtMillis) ||
+        !Number.isSafeInteger(data.closesAtMillis) ||
+        data.opensAtMillis! >= data.closesAtMillis!) {
+      throw new HttpsError("invalid-argument", "Choose a valid room window.");
+    }
+  } else if (data.opensAtMillis !== undefined ||
+      data.closesAtMillis !== undefined) {
+    throw new HttpsError("invalid-argument", "Timing applies to schedule.");
+  }
   const db = deps.db();
   await deps.rateLimit(db, uid, "updateEventChatAccess");
   const receiptRef = db.collection("eventChatAccessReceipts")
     .doc(hash([uid, data.requestId]));
-  const payloadHash = hash([data.eventId, data.action, data.expectedRevision,
-    data.termsVersion]);
+  const legacyPayload = [data.eventId, data.action,
+    data.expectedRevision, data.termsVersion];
+  const payloadHash = hash(["join", "leave", "open", "close"].includes(
+    data.action) ? legacyPayload : [...legacyPayload,
+      data.opensAtMillis ?? null, data.closesAtMillis ?? null]);
   return db.runTransaction(async (tx) => {
     await readEventChatAccount(db, tx, uid);
     const receiptSnap = await tx.get(receiptRef);
@@ -183,7 +210,7 @@ export async function updateEventChatAccessHandler(
       .doc(eventChatMembershipId(data.eventId, uid));
     const now = deps.now();
     let revision: number;
-    if (data.action === "leave") {
+    if (["leave", "mute", "unmute"].includes(data.action)) {
       // Withdrawal is available even after admission or the event disappears.
       const snap = await tx.get(memberRef);
       const member = snap.exists ? requireDoc<Membership>(snap,
@@ -191,29 +218,64 @@ export async function updateEventChatAccessHandler(
       if (!member || member.uid !== uid || member.eventId !== data.eventId) {
         throw unavailable();
       }
+      if (member.status !== "joined" && data.action !== "leave") {
+        throw unavailable();
+      }
+      if (member.status === "removed" || member.status === "banned") {
+        throw unavailable();
+      }
       assertRevision(member.revision, data.expectedRevision);
       revision = member.revision + 1;
-      tx.set(memberRef, {...member, revision, status: "left", leftAt: now,
+      tx.set(memberRef, {...member, revision,
+        status: data.action === "leave" ? "left" : member.status,
+        leftAt: data.action === "leave" ? now : member.leftAt,
+        notificationsMuted: data.action === "mute" ? true :
+          data.action === "unmute" ? false :
+            member.notificationsMuted ?? false,
         updatedAt: now} satisfies Membership);
     } else {
-      const access = await readEventChatAccess(db, tx, data.eventId, uid);
+      const access = await readEventChatAccess(db, tx, data.eventId, uid,
+        now.toMillis());
       if (data.action === "join") {
         if (!access.view.canJoin) throw unavailable();
+        if (access.member?.status === "removed" ||
+            access.member?.status === "banned") throw unavailable();
         assertRevision(access.member?.revision ?? 0, data.expectedRevision);
         revision = (access.member?.revision ?? 0) + 1;
         tx.set(memberRef, {eventId: data.eventId,
           organizerId: access.view.organizerId, uid, revision, status: "joined",
           termsVersion: eventChatTermsVersion, joinedAt: now, leftAt: null,
+          notificationsMuted: access.member?.notificationsMuted ?? false,
+          removedAt: null, removedByUid: null,
           createdAt: access.member?.createdAt ?? now, updatedAt: now} satisfies
           Membership);
       } else {
-        if (!access.view.canManage || (data.action === "open" &&
-            access.event.status !== "active")) throw unavailable();
+        if (!access.view.canManage ||
+            access.room?.status === "archived" ||
+            (!["close", "archive"].includes(data.action) &&
+              access.event.status !== "active")) throw unavailable();
+        if (["pause", "announcementsOnly", "resume", "archive"].includes(
+          data.action) && (!access.room ||
+            !["open", "paused", "announcementsOnly", "closed"].includes(
+              access.room.status))) throw unavailable();
+        if (["pause", "announcementsOnly", "resume"].includes(data.action) &&
+            access.room?.status === "closed") throw unavailable();
         assertRevision(access.room?.revision ?? 0, data.expectedRevision);
         revision = (access.room?.revision ?? 0) + 1;
+        const status = data.action === "close" ? "closed" :
+          data.action === "archive" ? "archived" :
+            data.action === "pause" ? "paused" :
+              data.action === "announcementsOnly" ? "announcementsOnly" :
+                "open";
         tx.set(db.collection("eventChatRooms").doc(data.eventId), {
           eventId: data.eventId, organizerId: access.view.organizerId,
-          status: data.action === "open" ? "open" : "closed", revision,
+          status, revision,
+          opensAtMillis: data.action === "schedule" ? data.opensAtMillis! :
+            data.action === "open" ? null :
+              access.room?.opensAtMillis ?? null,
+          closesAtMillis: data.action === "schedule" ? data.closesAtMillis! :
+            data.action === "open" ? null :
+              access.room?.closesAtMillis ?? null,
           lastMessageSequence: access.room?.lastMessageSequence ?? 0,
           createdByUid: access.room?.createdByUid ?? uid, updatedByUid: uid,
           createdAt: access.room?.createdAt ?? now, updatedAt: now,

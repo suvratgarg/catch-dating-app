@@ -66,13 +66,32 @@ test("Firestore room participants are current, bounded and private",
         assert.ok(valid(result), JSON.stringify(valid.errors));
         assert.deepEqual(
           result.items.sort((a, b) => a.uid.localeCompare(b.uid)), [
-            {uid: host, displayName: "Host", role: "host"},
-            {uid: person, displayName: "Sara", role: "attendee"},
+            {uid: host, displayName: "Host", role: "host",
+              membershipStatus: "joined", membershipRevision: 1},
+            {uid: person, displayName: "Sara", role: "attendee",
+              membershipStatus: "joined", membershipRevision: 1},
           ].sort((a, b) => a.uid.localeCompare(b.uid)));
         assert.equal(result.nextCursor, null);
         assert.equal(
           JSON.stringify(result).includes("Private occupation"), false);
       });
+      await t.test("managers see removed or banned revision; subject cannot",
+        async () => {
+          const subject = ref("eventChatMemberships", memberId(eventId,
+            person));
+          for (const status of ["removed", "banned"]) {
+            await subject.update({status, revision: 2});
+            const owner = await read();
+            assert.ok(valid(owner), JSON.stringify(valid.errors));
+            assert.equal(owner.items.find((row) => row.uid === person)
+              ?.membershipStatus, status);
+            assert.equal(owner.items.find((row) => row.uid === person)
+              ?.membershipRevision, 2);
+            await assert.rejects(list(request(person), deps),
+              {code: "permission-denied"});
+          }
+          await subject.update({status: "joined", revision: 1});
+        });
       await t.test("browsing needs membership and account", async () => {
         for (const req of [request("outsider"),
           request(host, {expectedUid: person}),

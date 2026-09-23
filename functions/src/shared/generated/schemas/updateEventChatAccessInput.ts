@@ -28,7 +28,14 @@ export const updateEventChatAccessCallablePayloadSchema: Record<string, unknown>
         "open",
         "close",
         "join",
-        "leave"
+        "leave",
+        "mute",
+        "unmute",
+        "pause",
+        "announcementsOnly",
+        "resume",
+        "schedule",
+        "archive"
       ]
     },
     "expectedRevision": {
@@ -58,6 +65,14 @@ export const updateEventChatAccessCallablePayloadSchema: Record<string, unknown>
       "type": "string",
       "minLength": 1,
       "maxLength": 180
+    },
+    "opensAtMillis": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "closesAtMillis": {
+      "type": "integer",
+      "minimum": 0
     }
   }
 } as const;

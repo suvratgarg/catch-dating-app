@@ -32187,6 +32187,138 @@ abstract class AppLocalizations {
   /// **'Close event chat'**
   String get eventChatClose;
 
+  /// Host room schedule action.
+  ///
+  /// In en, this message translates to:
+  /// **'Schedule room hours'**
+  String get eventChatSchedule;
+
+  /// Host room posting pause action.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause posting'**
+  String get eventChatPause;
+
+  /// Host announcement-only room action.
+  ///
+  /// In en, this message translates to:
+  /// **'Announcements only'**
+  String get eventChatAnnouncementsOnly;
+
+  /// Host room posting resume action.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume posting'**
+  String get eventChatResume;
+
+  /// Host permanent room archive action.
+  ///
+  /// In en, this message translates to:
+  /// **'Archive room'**
+  String get eventChatArchive;
+
+  /// Destructive room archive confirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Archiving permanently closes this room. Members will no longer read or post messages, and you cannot reopen it.'**
+  String get eventChatArchiveDisclosure;
+
+  /// Participant notification mute action.
+  ///
+  /// In en, this message translates to:
+  /// **'Mute room notifications'**
+  String get eventChatMute;
+
+  /// Participant notification unmute action.
+  ///
+  /// In en, this message translates to:
+  /// **'Unmute room notifications'**
+  String get eventChatUnmute;
+
+  /// Manager announcement message label.
+  ///
+  /// In en, this message translates to:
+  /// **'Announcement'**
+  String get eventChatAnnouncement;
+
+  /// Invalid room time window.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a future opening and a later closing time.'**
+  String get eventChatInvalidSchedule;
+
+  /// Readable room with posting paused.
+  ///
+  /// In en, this message translates to:
+  /// **'Posting is paused. You can still read messages.'**
+  String get eventChatReadOnly;
+
+  /// Participant read-only announcement room state.
+  ///
+  /// In en, this message translates to:
+  /// **'Only hosts can post announcements right now. You can still read messages.'**
+  String get eventChatAnnouncementsReadOnly;
+
+  /// Removed or banned room access state.
+  ///
+  /// In en, this message translates to:
+  /// **'Your room membership is unavailable. Contact the host if you need help.'**
+  String get eventChatRemoved;
+
+  /// Manager member removal action.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from room'**
+  String get eventChatRemoveMember;
+
+  /// Manager member ban action.
+  ///
+  /// In en, this message translates to:
+  /// **'Ban from room'**
+  String get eventChatBanMember;
+
+  /// Manager allows a removed member to rejoin.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow rejoin'**
+  String get eventChatReinstateMember;
+
+  /// Removed member status.
+  ///
+  /// In en, this message translates to:
+  /// **'Removed from room'**
+  String get eventChatMemberRemoved;
+
+  /// Banned member status.
+  ///
+  /// In en, this message translates to:
+  /// **'Banned from room'**
+  String get eventChatMemberBanned;
+
+  /// Manager room member action menu tooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Member actions'**
+  String get eventChatMemberActions;
+
+  /// Manager room removal confirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'They will lose access to this room until a host allows them to rejoin. Their event booking is unchanged.'**
+  String get eventChatRemoveMemberDisclosure;
+
+  /// Manager room ban confirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'They cannot access or rejoin this room until a host allows them to rejoin. Their event booking is unchanged.'**
+  String get eventChatBanMemberDisclosure;
+
+  /// Manager room reinstatement confirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'They can choose to join again if they still have event admission. This does not join them automatically.'**
+  String get eventChatReinstateMemberDisclosure;
+
   /// Event conversation interface copy.
   ///
   /// In en, this message translates to:

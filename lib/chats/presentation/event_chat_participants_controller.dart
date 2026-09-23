@@ -1,6 +1,9 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:math';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/chats/data/event_chat_repository.dart';
+import 'package:catch_dating_app/chats/domain/event_chat.dart';
 import 'package:catch_dating_app/chats/domain/event_chat_participant.dart';
 import 'package:catch_dating_app/chats/domain/event_chat_timing.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
@@ -9,9 +12,14 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'event_chat_participants_controller.g.dart';
 
 class EventChatParticipantsState {
-  const EventChatParticipantsState({required this.uid, required this.page});
+  const EventChatParticipantsState({
+    required this.uid,
+    required this.page,
+    this.access,
+  });
   final String uid;
   final EventChatParticipantPage page;
+  final EventChatAccess? access;
 }
 
 /// No offline roster: refresh every loaded page, discard on authority failure,
@@ -22,6 +30,7 @@ class EventChatParticipantsController
   int _generation = 0, _epoch = 0, _pages = 1;
   bool _foreground = true, _loading = false;
   Timer? _timer;
+  final _requests = <String, String>{};
 
   @override
   Future<EventChatParticipantsState> build(String eventId) async {
@@ -30,6 +39,7 @@ class EventChatParticipantsController
     _pages = 1;
     _loading = false;
     _timer?.cancel();
+    _requests.clear();
     ref.onDispose(() => _timer?.cancel());
     final uid = await ref.watch(uidProvider.future);
     if (uid == null) throw const SignInRequiredException('view participants');
@@ -51,6 +61,7 @@ class EventChatParticipantsController
 
   Future<EventChatParticipantsState> _read(String uid) async {
     final repo = ref.read(eventChatRepositoryProvider);
+    final access = await repo.access(eventId);
     final items = <String, EventChatParticipant>{};
     Map<String, Object?>? cursor;
     for (var page = 0; page < _pages; page++) {
@@ -63,8 +74,63 @@ class EventChatParticipantsController
     }
     return EventChatParticipantsState(
       uid: uid,
+      access: access,
       page: EventChatParticipantPage(items: items.values, nextCursor: cursor),
     );
+  }
+
+  Future<bool> manageMember(EventChatParticipant person, String action) async {
+    final current = state.asData?.value;
+    if (current == null ||
+        !_foreground ||
+        _loading ||
+        current.access?.canManage != true ||
+        person.uid == current.uid ||
+        person.isHost ||
+        !current.page.items.any(
+          (row) => row.uid == person.uid &&
+              row.membershipRevision == person.membershipRevision &&
+              row.membershipStatus == person.membershipStatus,
+        )) {
+      return false;
+    }
+    final uid = ref.read(uidProvider).asData?.value;
+    if (uid != current.uid) {
+      return false;
+    }
+    final key = jsonEncode([
+      uid,
+      eventId,
+      person.uid,
+      action,
+      person.membershipRevision,
+    ]);
+    final requestId = _requests.putIfAbsent(
+      key,
+      () => base64Url.encode(
+        List.generate(24, (_) => Random.secure().nextInt(256)),
+      ),
+    );
+    _timer?.cancel();
+    state = const AsyncLoading();
+    try {
+      await ref.read(eventChatRepositoryProvider).manageMember(
+        uid!,
+        current.access!,
+        person.uid,
+        action,
+        person.membershipRevision,
+        requestId,
+      );
+      _requests.remove(key);
+      await refresh();
+      return true;
+    } on Object catch (error, stack) {
+      if (ref.mounted && ref.read(uidProvider).asData?.value == uid) {
+        state = AsyncError(error, stack);
+      }
+      return false;
+    }
   }
 
   void _schedule() {

@@ -47,6 +47,41 @@ void main() {
     });
   });
 
+  group('eventChatRouteFromMessageData', () {
+    test('routes a validated room payload for either app role', () {
+      expect(
+        eventChatRouteFromMessageData({
+          'type': 'eventChatMessage',
+          'eventId': 'event-7',
+        }),
+        '/events/event-7/chat',
+      );
+    });
+
+    test('fails closed on missing or unsafe event id, even with match id', () {
+      for (final eventId in [
+        null,
+        '',
+        '.',
+        '..',
+        '../other',
+        'a/b',
+        ' event-7',
+        'event-7 ',
+        'event\\7',
+      ]) {
+        expect(
+          routeFromMessageData({
+            'type': 'eventChatMessage',
+            'eventId': eventId,
+            'matchId': 'match-7',
+          }),
+          isNull,
+        );
+      }
+    });
+  });
+
   group('routeFromMessageData', () {
     test('keeps chat notification routing intact', () {
       expect(routeFromMessageData({'matchId': 'match-7'}), '/chats/match-7');
@@ -79,6 +114,11 @@ void main() {
                 path: 'chats/:matchId',
                 builder: (context, state) =>
                     Text(state.pathParameters['matchId']!),
+              ),
+              GoRoute(
+                path: 'events/:eventId/chat',
+                builder: (context, state) =>
+                    Text('Room ${state.pathParameters['eventId']}'),
               ),
               GoRoute(
                 path: 'organizers/:clubId/events/:eventId/companion',
@@ -119,6 +159,17 @@ void main() {
       await pumpFeatureUi(tester);
 
       expect(find.text('Companion club-1 event-7'), findsOneWidget);
+    });
+
+    testWidgets('navigates to validated event room payload', (tester) async {
+      await tester.pumpWidget(MaterialApp.router(routerConfig: router));
+      await pumpFeatureUi(tester);
+      navigateToMessageRoute(router, {
+        'type': 'eventChatMessage',
+        'eventId': 'event-7',
+      });
+      await pumpFeatureUi(tester);
+      expect(find.text('Room event-7'), findsOneWidget);
     });
 
     testWidgets('does nothing when chat data is invalid', (tester) async {

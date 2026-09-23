@@ -96496,7 +96496,9 @@ export const listEventChatParticipantsCallableResponseSchema = {
         "required": [
           "uid",
           "displayName",
-          "role"
+          "role",
+          "membershipStatus",
+          "membershipRevision"
         ],
         "properties": {
           "uid": {
@@ -96515,6 +96517,18 @@ export const listEventChatParticipantsCallableResponseSchema = {
               "host",
               "attendee"
             ]
+          },
+          "membershipStatus": {
+            "enum": [
+              "joined",
+              "removed",
+              "banned"
+            ]
+          },
+          "membershipRevision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
           }
         }
       }
@@ -97555,7 +97569,10 @@ export const eventChatRoomDocumentSchema = {
       "type": "string",
       "enum": [
         "open",
-        "closed"
+        "announcementsOnly",
+        "paused",
+        "closed",
+        "archived"
       ]
     },
     "revision": {
@@ -97617,6 +97634,20 @@ export const eventChatRoomDocumentSchema = {
       "type": "integer",
       "minimum": 0,
       "maximum": 9007199254740991
+    },
+    "opensAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "closesAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
     }
   },
   "description": "Host-controlled event conversation availability. No attendee admission or profile data.",
@@ -97664,7 +97695,9 @@ export const eventChatMembershipDocumentSchema = {
       "type": "string",
       "enum": [
         "joined",
-        "left"
+        "left",
+        "removed",
+        "banned"
       ]
     },
     "revision": {
@@ -97764,6 +97797,48 @@ export const eventChatMembershipDocumentSchema = {
           "maximum": 999999999
         }
       }
+    },
+    "notificationsMuted": {
+      "type": "boolean"
+    },
+    "removedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "removedByUid": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
     }
   },
   "description": "Explicit room participation. Current admission and claimed identity must still be rechecked on every access.",
@@ -97911,6 +97986,14 @@ export const eventChatMessageDocumentSchema = {
         "visible",
         "removed"
       ]
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "text",
+        "announcement"
+      ],
+      "description": "Legacy omission means text."
     },
     "payloadHash": {
       "type": "string",
@@ -98218,6 +98301,13 @@ export const sendEventChatMessageCallablePayloadSchema = {
       "type": "string",
       "minLength": 1,
       "maxLength": 180
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "text",
+        "announcement"
+      ]
     }
   }
 };
@@ -98482,6 +98572,7 @@ export const listEventChatsCallableResponseSchema = {
           "canManage",
           "canJoin",
           "canReadMessages",
+          "canPostMessages",
           "profileClaimRequired",
           "termsVersion"
         ],
@@ -98519,14 +98610,32 @@ export const listEventChatsCallableResponseSchema = {
                 "type": "string",
                 "enum": [
                   "notCreated",
+                  "scheduled",
                   "open",
-                  "closed"
+                  "announcementsOnly",
+                  "paused",
+                  "closed",
+                  "archived"
                 ]
               },
               "revision": {
                 "type": "integer",
                 "minimum": 0,
                 "maximum": 9007199254740991
+              },
+              "opensAtMillis": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 0
+              },
+              "closesAtMillis": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 0
               }
             }
           },
@@ -98543,13 +98652,18 @@ export const listEventChatsCallableResponseSchema = {
                 "enum": [
                   "notJoined",
                   "joined",
-                  "left"
+                  "left",
+                  "removed",
+                  "banned"
                 ]
               },
               "revision": {
                 "type": "integer",
                 "minimum": 0,
                 "maximum": 9007199254740991
+              },
+              "notificationsMuted": {
+                "type": "boolean"
               }
             }
           },
@@ -98560,6 +98674,9 @@ export const listEventChatsCallableResponseSchema = {
             "type": "boolean"
           },
           "canReadMessages": {
+            "type": "boolean"
+          },
+          "canPostMessages": {
             "type": "boolean"
           },
           "profileClaimRequired": {
@@ -98686,6 +98803,7 @@ export const listEventChatMessagesCallableResponseSchema = {
           "senderUid",
           "senderName",
           "available",
+          "kind",
           "text",
           "reply",
           "reactionCounts",
@@ -98733,6 +98851,12 @@ export const listEventChatMessagesCallableResponseSchema = {
           },
           "available": {
             "type": "boolean"
+          },
+          "kind": {
+            "enum": [
+              "text",
+              "announcement"
+            ]
           },
           "text": {
             "anyOf": [
@@ -98980,7 +99104,14 @@ export const updateEventChatAccessCallablePayloadSchema = {
         "open",
         "close",
         "join",
-        "leave"
+        "leave",
+        "mute",
+        "unmute",
+        "pause",
+        "announcementsOnly",
+        "resume",
+        "schedule",
+        "archive"
       ]
     },
     "expectedRevision": {
@@ -99010,6 +99141,14 @@ export const updateEventChatAccessCallablePayloadSchema = {
       "type": "string",
       "minLength": 1,
       "maxLength": 180
+    },
+    "opensAtMillis": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "closesAtMillis": {
+      "type": "integer",
+      "minimum": 0
     }
   }
 };
@@ -99030,6 +99169,7 @@ export const getEventChatAccessCallableResponseSchema = {
     "canManage",
     "canJoin",
     "canReadMessages",
+    "canPostMessages",
     "profileClaimRequired",
     "termsVersion"
   ],
@@ -99067,14 +99207,32 @@ export const getEventChatAccessCallableResponseSchema = {
           "type": "string",
           "enum": [
             "notCreated",
+            "scheduled",
             "open",
-            "closed"
+            "announcementsOnly",
+            "paused",
+            "closed",
+            "archived"
           ]
         },
         "revision": {
           "type": "integer",
           "minimum": 0,
           "maximum": 9007199254740991
+        },
+        "opensAtMillis": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "closesAtMillis": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
         }
       }
     },
@@ -99091,13 +99249,18 @@ export const getEventChatAccessCallableResponseSchema = {
           "enum": [
             "notJoined",
             "joined",
-            "left"
+            "left",
+            "removed",
+            "banned"
           ]
         },
         "revision": {
           "type": "integer",
           "minimum": 0,
           "maximum": 9007199254740991
+        },
+        "notificationsMuted": {
+          "type": "boolean"
         }
       }
     },
@@ -99108,6 +99271,9 @@ export const getEventChatAccessCallableResponseSchema = {
       "type": "boolean"
     },
     "canReadMessages": {
+      "type": "boolean"
+    },
+    "canPostMessages": {
       "type": "boolean"
     },
     "profileClaimRequired": {
@@ -99136,6 +99302,80 @@ export const updateEventChatAccessCallableResponseSchema = {
     "revision": {
       "type": "integer",
       "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "replayed": {
+      "type": "boolean"
+    }
+  }
+};
+
+export const manageEventChatMemberCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/manage_event_chat_member_payload.schema.json",
+  "title": "ManageEventChatMemberCallablePayload",
+  "description": "Organizer manager removes, bans or explicitly reinstates a room member. Reinstatement never joins on the participant's behalf.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "targetUid",
+    "action",
+    "expectedRevision",
+    "requestId",
+    "expectedUid"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "targetUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "action": {
+      "enum": [
+        "remove",
+        "ban",
+        "reinstate"
+      ]
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+};
+
+export const manageEventChatMemberCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/manage_event_chat_member_response.schema.json",
+  "title": "ManageEventChatMemberCallableResponse",
+  "description": "Revisioned manager moderation receipt, not a current access grant.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "revision",
+    "replayed"
+  ],
+  "properties": {
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
       "maximum": 9007199254740991
     },
     "replayed": {
