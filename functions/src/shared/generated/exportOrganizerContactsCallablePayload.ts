@@ -23,4 +23,31 @@ export interface ExportOrganizerContactsCallablePayload {
         | "sms_reachable"
       )
     | null;
+  /**
+   * OR within attendance, reliability, advocacy and reachable categories; AND across selected categories.
+   *
+   * @maxItems 12
+   */
+  segmentIds?: (
+    | "new_to_organizer"
+    | "past_attendee"
+    | "first_time_attendee"
+    | "repeat_attendee"
+    | "regular"
+    | "lapsed_regular"
+    | "reliable_attendee"
+    | "needs_confirmation"
+    | "advocate"
+    | "high_impact_advocate"
+    | "whatsapp_reachable"
+    | "sms_reachable"
+  )[];
+  /**
+   * Match any selected manual tag, combined with all selected segment categories.
+   *
+   * @maxItems 20
+   */
+  manualTagIds?: string[];
+  query?: string | null;
+  manualTagId?: string | null;
 }

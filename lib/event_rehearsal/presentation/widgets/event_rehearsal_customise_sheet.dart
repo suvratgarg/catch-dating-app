@@ -77,210 +77,204 @@ class _EventRehearsalCustomiseSheetState
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    return CatchSheet(
+    return CatchSheet.standard(
       title: l10n.hostRehearsalCustomise,
-      keyboardSafe: true,
-      trailing: CatchButton.text(
+      footer: CatchButton.sheet(
+        role: CatchButtonEmphasis.commit,
+
         label: l10n.coreCatchFieldLabelDone,
         onPressed: _done,
       ),
-      child: Flexible(
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                l10n.hostRehearsalChangesLocal,
-                style: CatchTextStyles.recordContext(context),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            l10n.hostRehearsalChangesLocal,
+            style: CatchTextStyles.recordContext(context),
+          ),
+          gapH16,
+          CatchSection.plain(
+            title: l10n.hostRehearsalEventType,
+            padding: EdgeInsets.zero,
+            child: EventRehearsalChoiceTile(
+              title: _draft.format.activityKind.label,
+              description: l10n.hostRehearsalEventTypeDescription,
+              onTap: _chooseActivity,
+            ),
+          ),
+          gapH16,
+          Text(
+            l10n.hostRehearsalGuests,
+            style: CatchTextStyles.sectionTitle(context),
+          ),
+          if (_draft.sourceEvent case final event?) ...[
+            gapH8,
+            Text(
+              l10n.hostRehearsalCopiedGuests(
+                count: _draft.sourceGuestCount ?? event.signedUpCount,
               ),
-              gapH16,
-              CatchSection.plain(
-                title: l10n.hostRehearsalEventType,
-                padding: EdgeInsets.zero,
-                child: EventRehearsalChoiceTile(
-                  title: _draft.format.activityKind.label,
-                  description: l10n.hostRehearsalEventTypeDescription,
-                  onTap: _chooseActivity,
-                ),
-              ),
-              gapH16,
-              Text(
-                l10n.hostRehearsalGuests,
-                style: CatchTextStyles.sectionTitle(context),
-              ),
-              if (_draft.sourceEvent case final event?) ...[
-                gapH8,
-                Text(
-                  l10n.hostRehearsalCopiedGuests(
-                    count: _draft.sourceGuestCount ?? event.signedUpCount,
-                  ),
-                  style: CatchTextStyles.recordContext(context),
-                ),
-                CatchFieldLanes.single(
-                  child: CatchField.toggle(
-                    copy: catchFieldCopy(context.l10n),
-                    titleMaxLines: 3,
-                    title: l10n.hostRehearsalSimulatedGuests,
-                    contractExemption:
-                        'Rehearsal-only guest source choice; production roster remains read-only.',
-                    value: _draft.useSimulatedGuests,
-                    onChanged: (value) => setState(() {
-                      _draft = _draft.changeGuestSource(value);
-                      _count.text = _draft.actorCount.toString();
-                    }),
-                  ),
-                ),
-              ],
-              if (_draft.useSimulatedGuests) ...[
-                gapH8,
-                EventRehearsalConfigInput(
-                  showErrors: _showErrors,
-                  onEdited: () => setState(() {}),
-                  label: l10n.hostRehearsalGuestCount,
-                  controller: _count,
-                  contract: CatchContractConstraints
-                      .createEventRehearsalCallablePayloadActorCount,
-                  numeric: true,
-                  error: _showErrors && !_validCount
-                      ? l10n.hostRehearsalGuestCountRange
-                      : null,
-                  onChanged: (value) => _draft = _draft.copyWith(
-                    actorCount: int.tryParse(value),
-                    customActorCount: true,
-                  ),
-                ),
-              ],
-              gapH16,
-              const CatchDivider.section(),
-              EventRehearsalChoiceTile(
-                title: l10n.hostRehearsalEventDetails,
-                description: l10n.hostRehearsalEventDetailsDescription,
-                expanded: _detailsOpen,
-                onTap: () => setState(() => _detailsOpen = !_detailsOpen),
-              ),
-              if (_detailsOpen) ...[
-                EventRehearsalConfigInput(
-                  showErrors: _showErrors,
-                  onEdited: () => setState(() {}),
-                  label: l10n.hostRehearsalEventTitle,
-                  controller: _title,
-                  contract: CatchContractConstraints
-                      .updateEventRehearsalSetupCallablePayloadSetupTitle,
-                  onChanged: (value) => _draft = _draft.copyWith(title: value),
-                ),
-                gapH16,
-                EventRehearsalConfigInput(
-                  showErrors: _showErrors,
-                  onEdited: () => setState(() {}),
-                  label: l10n.hostRehearsalVenue,
-                  controller: _venue,
-                  contract: CatchContractConstraints
-                      .updateEventRehearsalSetupCallablePayloadSetupLocationName,
-                  onChanged: (value) =>
-                      _draft = _draft.copyWith(locationName: value),
-                ),
-                gapH16,
-                EventRehearsalConfigInput(
-                  showErrors: _showErrors,
-                  onEdited: () => setState(() {}),
-                  label: l10n.hostRehearsalDuration,
-                  controller: _duration,
-                  numeric: true,
-                  contract: CatchContractConstraints
-                      .updateEventRehearsalSetupCallablePayloadSetupDurationMinutes,
-                  error: _showErrors && !_validDuration
-                      ? l10n.hostRehearsalDurationRange
-                      : null,
-                  onChanged: (value) => _draft = _draft.copyWith(
-                    durationMinutes: int.tryParse(value),
-                  ),
-                ),
-                gapH16,
-                EventRehearsalConfigInput(
-                  showErrors: _showErrors,
-                  onEdited: () => setState(() {}),
-                  label: l10n.hostRehearsalHostGoal,
-                  controller: _goal,
-                  contract: CatchContractConstraints
-                      .updateEventRehearsalSetupCallablePayloadSetupHostGoal,
-                  multiline: true,
-                  onChanged: (value) =>
-                      _draft = _draft.copyWith(hostGoal: value),
-                ),
-                gapH16,
-                EventRehearsalConfigInput(
-                  showErrors: _showErrors,
-                  onEdited: () => setState(() {}),
-                  label: l10n.hostRehearsalGuestPrompt,
-                  controller: _prompt,
-                  contract: CatchContractConstraints
-                      .updateEventRehearsalSetupCallablePayloadSetupAttendeePrompt,
-                  multiline: true,
-                  onChanged: (value) =>
-                      _draft = _draft.copyWith(attendeePrompt: value),
-                ),
-                gapH16,
-              ],
-              const CatchDivider.section(),
-              EventRehearsalChoiceTile(
-                title: l10n.hostRehearsalPlaybook,
-                description: l10n.hostRehearsalPlaybookDescription,
-                expanded: _playbookOpen,
-                onTap: () => setState(() => _playbookOpen = !_playbookOpen),
-              ),
-              if (_playbookOpen)
-                CatchSection.fieldRows(
-                  first: true,
-                  children: [
-                    for (final module in _draft.availableModules)
-                      CatchField.toggle(
-                        copy: catchFieldCopy(context.l10n),
-                        titleMaxLines: 3,
-                        title: eventRehearsalConfigurationModuleLabel(
-                          l10n,
-                          module,
-                        ),
-                        contractExemption:
-                            'One item in the rehearsal setup moduleIds collection.',
-                        body: _draft.canConfigureModule(module)
-                            ? null
-                            : l10n.hostRehearsalRequiredModule,
-                        value: _draft.selectedModules.contains(module),
-                        onChanged: !_draft.canConfigureModule(module)
-                            ? null
-                            : (selected) => setState(
-                                () => _draft = _draft.copyWith(
-                                  moduleOverrides: {
-                                    ..._draft.moduleOverrides,
-                                    module: selected,
-                                  },
-                                ),
-                              ),
-                      ),
-                  ],
-                ),
-              if (_showErrors && _draft.selectedModules.isEmpty)
-                Text(
-                  l10n.hostRehearsalSelectModule,
-                  style: CatchTextStyles.recordContext(
-                    context,
-                    color: CatchTokens.of(context).danger,
-                  ),
-                ),
-              gapH16,
-              CatchButton(
-                label: l10n.hostRehearsalReset,
-                variant: CatchButtonVariant.ghost,
-                fullWidth: true,
-                onPressed: () => setState(() {
-                  _draft = _draft.reset();
-                  _showErrors = false;
-                  _loadInputs();
+              style: CatchTextStyles.recordContext(context),
+            ),
+            CatchFieldLanes.single(
+              child: CatchField.toggle(
+                copy: catchFieldCopy(context.l10n),
+                titleMaxLines: 3,
+                title: l10n.hostRehearsalSimulatedGuests,
+                contractExemption:
+                    'Rehearsal-only guest source choice; production roster remains read-only.',
+                value: _draft.useSimulatedGuests,
+                onChanged: (value) => setState(() {
+                  _draft = _draft.changeGuestSource(value);
+                  _count.text = _draft.actorCount.toString();
                 }),
               ),
-            ],
+            ),
+          ],
+          if (_draft.useSimulatedGuests) ...[
+            gapH8,
+            EventRehearsalConfigInput(
+              showErrors: _showErrors,
+              onEdited: () => setState(() {}),
+              label: l10n.hostRehearsalGuestCount,
+              controller: _count,
+              contract: CatchContractConstraints
+                  .createEventRehearsalCallablePayloadActorCount,
+              numeric: true,
+              error: _showErrors && !_validCount
+                  ? l10n.hostRehearsalGuestCountRange
+                  : null,
+              onChanged: (value) => _draft = _draft.copyWith(
+                actorCount: int.tryParse(value),
+                customActorCount: true,
+              ),
+            ),
+          ],
+          gapH16,
+          const CatchDivider.section(),
+          EventRehearsalChoiceTile(
+            title: l10n.hostRehearsalEventDetails,
+            description: l10n.hostRehearsalEventDetailsDescription,
+            expanded: _detailsOpen,
+            onTap: () => setState(() => _detailsOpen = !_detailsOpen),
           ),
-        ),
+          if (_detailsOpen) ...[
+            EventRehearsalConfigInput(
+              showErrors: _showErrors,
+              onEdited: () => setState(() {}),
+              label: l10n.hostRehearsalEventTitle,
+              controller: _title,
+              contract: CatchContractConstraints
+                  .updateEventRehearsalSetupCallablePayloadSetupTitle,
+              onChanged: (value) => _draft = _draft.copyWith(title: value),
+            ),
+            gapH16,
+            EventRehearsalConfigInput(
+              showErrors: _showErrors,
+              onEdited: () => setState(() {}),
+              label: l10n.hostRehearsalVenue,
+              controller: _venue,
+              contract: CatchContractConstraints
+                  .updateEventRehearsalSetupCallablePayloadSetupLocationName,
+              onChanged: (value) =>
+                  _draft = _draft.copyWith(locationName: value),
+            ),
+            gapH16,
+            EventRehearsalConfigInput(
+              showErrors: _showErrors,
+              onEdited: () => setState(() {}),
+              label: l10n.hostRehearsalDuration,
+              controller: _duration,
+              numeric: true,
+              contract: CatchContractConstraints
+                  .updateEventRehearsalSetupCallablePayloadSetupDurationMinutes,
+              error: _showErrors && !_validDuration
+                  ? l10n.hostRehearsalDurationRange
+                  : null,
+              onChanged: (value) => _draft = _draft.copyWith(
+                durationMinutes: int.tryParse(value),
+              ),
+            ),
+            gapH16,
+            EventRehearsalConfigInput(
+              showErrors: _showErrors,
+              onEdited: () => setState(() {}),
+              label: l10n.hostRehearsalHostGoal,
+              controller: _goal,
+              contract: CatchContractConstraints
+                  .updateEventRehearsalSetupCallablePayloadSetupHostGoal,
+              multiline: true,
+              onChanged: (value) => _draft = _draft.copyWith(hostGoal: value),
+            ),
+            gapH16,
+            EventRehearsalConfigInput(
+              showErrors: _showErrors,
+              onEdited: () => setState(() {}),
+              label: l10n.hostRehearsalGuestPrompt,
+              controller: _prompt,
+              contract: CatchContractConstraints
+                  .updateEventRehearsalSetupCallablePayloadSetupAttendeePrompt,
+              multiline: true,
+              onChanged: (value) =>
+                  _draft = _draft.copyWith(attendeePrompt: value),
+            ),
+            gapH16,
+          ],
+          const CatchDivider.section(),
+          EventRehearsalChoiceTile(
+            title: l10n.hostRehearsalPlaybook,
+            description: l10n.hostRehearsalPlaybookDescription,
+            expanded: _playbookOpen,
+            onTap: () => setState(() => _playbookOpen = !_playbookOpen),
+          ),
+          if (_playbookOpen)
+            CatchSection.fieldRows(
+              first: true,
+              children: [
+                for (final module in _draft.availableModules)
+                  CatchField.toggle(
+                    copy: catchFieldCopy(context.l10n),
+                    titleMaxLines: 3,
+                    title: eventRehearsalConfigurationModuleLabel(l10n, module),
+                    contractExemption:
+                        'One item in the rehearsal setup moduleIds collection.',
+                    body: _draft.canConfigureModule(module)
+                        ? null
+                        : l10n.hostRehearsalRequiredModule,
+                    value: _draft.selectedModules.contains(module),
+                    onChanged: !_draft.canConfigureModule(module)
+                        ? null
+                        : (selected) => setState(
+                            () => _draft = _draft.copyWith(
+                              moduleOverrides: {
+                                ..._draft.moduleOverrides,
+                                module: selected,
+                              },
+                            ),
+                          ),
+                  ),
+              ],
+            ),
+          if (_showErrors && _draft.selectedModules.isEmpty)
+            Text(
+              l10n.hostRehearsalSelectModule,
+              style: CatchTextStyles.recordContext(
+                context,
+                color: CatchTokens.of(context).danger,
+              ),
+            ),
+          gapH16,
+          CatchButton(
+            label: l10n.hostRehearsalReset,
+            variant: CatchButtonVariant.ghost,
+            fullWidth: true,
+            onPressed: () => setState(() {
+              _draft = _draft.reset();
+              _showErrors = false;
+              _loadInputs();
+            }),
+          ),
+        ],
       ),
     );
   }

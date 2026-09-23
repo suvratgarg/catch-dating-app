@@ -5,11 +5,10 @@ mixin _HostEventRehearsalScreenActions
   Future<void> _showGuests(EventRehearsalBootstrap rehearsal) =>
       showCatchBottomSheet<void>(
         context: context,
-        builder: (_) => CatchSheet(
+        builder: (_) => CatchSheet.standard(
           title: context.l10n.eventSuccessLiveWorkspaceGuests,
           badge: context.l10n.hostEventRehearsalBadge,
           badgeTone: CatchBadgeTone.danger,
-          mode: CatchSheetMode.scrollable,
           child: EventRehearsalRosterSection(rehearsal: rehearsal),
         ),
       );

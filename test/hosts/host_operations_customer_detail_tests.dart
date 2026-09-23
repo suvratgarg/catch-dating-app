@@ -131,7 +131,7 @@ void _registerHostOperationsCustomerDetailTests() {
 
     await tester.tap(_customerSummaryChoice(HostCustomerFilter.repeat));
     await pumpFeatureUi(tester);
-    expect(requests.last.filter, HostCustomerFilter.repeat);
+    expect(requests.last.filters, {HostCustomerFilter.repeat});
     expect(find.textContaining('Repeat attendees'), findsWidgets);
     final attendedSemantics = tester.getSemantics(
       _customerSummaryChoice(HostCustomerFilter.repeat),
@@ -146,7 +146,7 @@ void _registerHostOperationsCustomerDetailTests() {
 
     await tester.tap(_customerSummaryChoice(HostCustomerFilter.repeat));
     await pumpFeatureUi(tester);
-    expect(requests.last.filter, HostCustomerFilter.all);
+    expect(requests.last.filters, isEmpty);
     expect(find.text('All  0'), findsOneWidget);
 
     await tester.tap(find.text('Filters'));
@@ -326,6 +326,10 @@ void _registerHostOperationsCustomerDetailTests() {
     await tester.ensureVisible(atRiskFilter);
     await pumpFeatureUi(tester);
     await tester.tap(atRiskFilter);
+    await pumpFeatureUi(tester);
+
+    await tester.ensureVisible(find.text('Close'));
+    await tester.tap(find.text('Close'));
     await pumpFeatureUi(tester);
 
     expect(find.text('Sender verification is incomplete'), findsOneWidget);

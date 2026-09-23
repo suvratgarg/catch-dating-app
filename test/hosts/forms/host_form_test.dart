@@ -373,19 +373,28 @@ void main() {
       const first = HostFormResponseListRequest(
         organizerId: 'org_1',
         formId: 'form_1',
-        answerFilters: {'city': 'Mumbai', 'intent': 'Friendship'},
+        answerFilters: {
+          'city': {'Mumbai', 'Dubai'},
+          'intent': {'Friendship'},
+        },
         oldestFirst: true,
       );
       const reordered = HostFormResponseListRequest(
         organizerId: 'org_1',
         formId: 'form_1',
-        answerFilters: {'intent': 'Friendship', 'city': 'Mumbai'},
+        answerFilters: {
+          'intent': {'Friendship'},
+          'city': {'Dubai', 'Mumbai'},
+        },
         oldestFirst: true,
       );
       const different = HostFormResponseListRequest(
         organizerId: 'org_1',
         formId: 'form_1',
-        answerFilters: {'city': 'Dubai', 'intent': 'Friendship'},
+        answerFilters: {
+          'city': {'Dubai'},
+          'intent': {'Friendship'},
+        },
         oldestFirst: true,
       );
       expect(first, reordered);

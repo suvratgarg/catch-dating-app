@@ -81,6 +81,7 @@ void main() {
       );
       await tester.ensureVisible(title);
       await tester.enterText(title, 'Only this practice copy');
+      await tester.ensureVisible(find.text('Done'));
       await tester.tap(find.text('Done'));
       await pumpFeatureUi(tester);
       await tester.tap(find.text('Start rehearsal'));

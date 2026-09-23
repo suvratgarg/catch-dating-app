@@ -44,11 +44,10 @@ class EventAssistanceMembershipSheet extends ConsumerWidget {
     };
     return PopScope(
       canPop: state.canDismiss,
-      child: CatchSheet(
+      child: CatchSheet.standard(
         title: state is MembershipUnavailable
             ? context.l10n.eventAssistanceGroupReview
             : guestName,
-        mode: CatchSheetMode.scrollable,
         child: switch (state) {
           MembershipUnavailable(:final error) => CatchLocalizedErrorBanner(
             error,

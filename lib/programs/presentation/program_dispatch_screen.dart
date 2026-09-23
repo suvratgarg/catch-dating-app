@@ -484,7 +484,7 @@ class _ProgramDispatchSheetState extends ConsumerState<ProgramDispatchSheet> {
         ) ==
         widget.authorityGeneration;
     if (!accountMatches || !active || !authorityMatches) {
-      return CatchSheet(
+      return CatchSheet.standard(
         title: context.l10n.programsDispatchSheetTitle,
         child: CatchLocalizedErrorState(
           const PermissionException(
@@ -514,15 +514,22 @@ class _ProgramDispatchSheetState extends ConsumerState<ProgramDispatchSheet> {
         operations.value?.busy == false &&
         _plateController.text.trim().isNotEmpty &&
         !_busy;
-    return CatchSheet(
+    return CatchSheet.standard(
+      footer: CatchButton.sheet(
+        role: CatchButtonEmphasis.commit,
+        label: context.l10n.programsDispatchConfirm,
+        leading: Icon(CatchIcons.taxi),
+
+        status: _busy ? CatchButtonStatus.loading : CatchButtonStatus.idle,
+        onPressed: canDispatch ? _dispatch : null,
+      ),
       title: context.l10n.programsDispatchSheetTitle,
       subtitle: context.l10n.programsDispatchSheetSubtitle(
         destination: widget.group.destinationLabel,
       ),
       glyph: CatchIcons.taxi,
-      keyboardSafe: true,
-      mode: CatchSheetMode.scrollable,
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           if (_error != null)
@@ -628,14 +635,6 @@ class _ProgramDispatchSheetState extends ConsumerState<ProgramDispatchSheet> {
               icon: CatchIcons.warningAmberRounded,
               label: context.l10n.programsDispatchVendorsUnavailable,
             ),
-          ),
-          gapH20,
-          CatchButton(
-            label: context.l10n.programsDispatchConfirm,
-            leading: Icon(CatchIcons.taxi),
-            fullWidth: true,
-            status: _busy ? CatchButtonStatus.loading : CatchButtonStatus.idle,
-            onPressed: canDispatch ? _dispatch : null,
           ),
         ],
       ),

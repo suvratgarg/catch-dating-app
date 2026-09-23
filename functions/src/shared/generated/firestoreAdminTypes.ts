@@ -5488,6 +5488,30 @@ export interface OrganizerSavedAudienceDocument {
            */
           contactIds: string[];
         }
+      | {
+          kind: "directoryFilters";
+          /**
+           * @maxItems 12
+           */
+          segmentIds: (
+            | "new_to_organizer"
+            | "past_attendee"
+            | "first_time_attendee"
+            | "repeat_attendee"
+            | "regular"
+            | "lapsed_regular"
+            | "reliable_attendee"
+            | "needs_confirmation"
+            | "advocate"
+            | "high_impact_advocate"
+            | "whatsapp_reachable"
+            | "sms_reachable"
+          )[];
+          /**
+           * @maxItems 20
+           */
+          manualTagIds: string[];
+        }
     )[];
   };
   definitionHash: string;

@@ -92,6 +92,18 @@ class Query {
         this.filters.every(([field, op, value]) => {
           const actual = field.split(".").reduce<unknown>((v, key) =>
             (v as Data)?.[key], data);
+          if (op === "array-contains-any") {
+            return Array.isArray(actual) &&
+            (value as unknown[]).some((item) => actual.includes(item));
+          }
+          if (op === "array-contains") {
+            return Array.isArray(actual) &&
+            actual.includes(value);
+          }
+          if (op === ">") {
+            return actual != null &&
+            scalar(actual) > scalar(value);
+          }
           if (op === "in") return (value as unknown[]).includes(actual);
           if (op === "<=" || op === ">=") {
             if (actual == null) return false;
