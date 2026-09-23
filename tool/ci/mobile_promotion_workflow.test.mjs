@@ -214,7 +214,7 @@ test("fresh source, artifact, and package verification immediately precedes cred
     "unzip -q build/mobile-promotion/authority.zip",
     "unzip -q build/mobile-promotion/package.zip",
     "mobile_promotion_core.mjs verify-package",
-    "EXPECTED_ARTIFACT_SHA256",
+    "EXPECTED_ARTIFACT_SHA256", "PLATFORM_AUTHORITY: ${{ steps.producer.outputs.platform_authority }}",
   ]) assert.ok(finalSlice.includes(binding), `missing immediate final binding: ${binding}`);
 });
 
@@ -302,9 +302,9 @@ test("upload claim is durable before idempotent distribution and credentials are
 test("actual producer predicates allow sibling failure but reject stale or cancelled runs", async () => {
   const {spawnSync} = await import("node:child_process");
   // Execute the workflow's jq predicates rather than a JavaScript approximation.
-  const runPredicates = [...workflow.matchAll(/'\n(\s+(?:select\(|\(\.id)[^']*?)\n\s+' <<< "\$(current_run|exact_attempt)"/gu)]
-    .map((match) => match[1]).filter((query) => query.includes("$platform_authority"));
-  assert.equal(runPredicates.length, 3, "initial, exact-attempt, and pre-credential gates");
+  const runPredicates = [...workflow.matchAll(/'\n(\s+(?:select\(|\(\.id)[^']*?)\n\s+' <<< "\$(current_run|exact_attempt|producer)"/gu)]
+    .map((match) => match[1]);
+  assert.equal(runPredicates.length, 4, "initial, exact-attempt, pre-claim, and immediate pre-credential gates");
   const valid = {id: 7001, run_attempt: 3, workflow_id: 77, run_number: 91,
     name: "Mobile Internal Release", path: ".github/workflows/mobile-internal-release.yml",
     event: "workflow_run", head_branch: "main", head_repository: {full_name: "catch/repo"},
@@ -330,7 +330,7 @@ test("actual producer predicates allow sibling failure but reject stale or cance
     }
   }
   const jobPredicates = [...workflow.matchAll(/'\n(\s+\[\.\[\]\.jobs\[\][^']*?)\n\s+' <<< "\$jobs"/gu)].map((match) => match[1]);
-  assert.equal(jobPredicates.length, 2, "platform proof is repeated before credentials");
+  assert.equal(jobPredicates.length, 3, "platform proof is repeated at both final verification gates");
   for (const query of jobPredicates) {
     const name = "Verify ios packages / Publish verified mobile build authority";
     const own = {name, status: "completed", conclusion: "success"};

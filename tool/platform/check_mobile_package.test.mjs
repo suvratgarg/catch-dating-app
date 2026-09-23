@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import {
   comparePackageReports,
   evaluatePackageReport,
+  packageBudgetHeadroom,
   validatePackagePolicy,
 } from "./check_mobile_package.mjs";
 
@@ -112,4 +113,17 @@ test("signed-package baselines must fit inside bounded budget headroom", () => {
 
 test("legacy test policies may omit signed baselines", () => {
   assert.deepEqual(validatePackagePolicy(policy), []);
+});
+
+
+test("headroom reports remaining capacity, exact limits, overruns, and expanded payloads", () => {
+  const report = {role: "host", platform: "ios", artifactKind: "archive",
+    artifactBytes: 80, uncompressedBytes: 200};
+  assert.deepEqual(packageBudgetHeadroom({report, policy}), {
+    artifact: {budgetBytes: 100, remainingBytes: 20, remainingRatio: 0.2},
+    uncompressed: {budgetBytes: 200, remainingBytes: 0, remainingRatio: 0},
+  });
+  assert.equal(packageBudgetHeadroom({report: {...report, artifactBytes: 110}, policy}).artifact.remainingBytes, -10);
+  assert.equal(packageBudgetHeadroom({report: {...report, artifactKind: "expandedDirectory"}, policy}).artifact, null);
+  assert.equal(packageBudgetHeadroom({report: {...report, role: "missing"}, policy}), null);
 });

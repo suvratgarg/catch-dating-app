@@ -46,16 +46,40 @@ if (!fs.existsSync(indexPath)) {
 
 const registry = readJson(fromRepo(config.registry));
 const storyIndex = readJson(indexPath);
+const allReadyStories = readyStories(registry, config.previewKey);
 let expectedStories;
 try {
-  expectedStories = selectStories(
-    readyStories(registry, config.previewKey),
-    args.components
-  );
+  expectedStories = selectStories(allReadyStories, args.components);
 } catch (error) {
   fail(error.message);
 }
 const resolvedStories = resolveStories(expectedStories, storyIndex.entries ?? {});
+
+const thresholdsPath = fromRepo("tool/web/storybook_visual_thresholds.json");
+let thresholdOverrides = new Map();
+try {
+  thresholdOverrides = fs.existsSync(thresholdsPath)
+    ? parseThresholdOverrides(readJson(thresholdsPath))
+    : new Map();
+} catch (error) {
+  fail(error.message);
+}
+const knownStoryIds = new Set(
+  resolveStories(allReadyStories, storyIndex.entries ?? {}).map((story) => story.id)
+);
+thresholdOverrides = thresholdsForSurface(thresholdOverrides, args.surface);
+const unusedOverrides = [...thresholdOverrides.keys()].filter((id) => !knownStoryIds.has(id));
+if (unusedOverrides.length > 0) {
+  fail(`storybook_visual_thresholds.json lists unknown ready-story id(s): ${unusedOverrides.join(", ")}`);
+}
+const expiredOverrides = expiredThresholdOverrides(thresholdOverrides, currentDateKey());
+if (expiredOverrides.length > 0) {
+  fail(
+    "Expired visual threshold override(s): " +
+    expiredOverrides.map(([id, entry]) => `${id} (expired ${entry.expires})`).join(", ") +
+    "; renew or remove them in tool/web/storybook_visual_thresholds.json."
+  );
+}
 const viewports = [
   {name: "desktop", width: 1280, height: 800},
   {name: "mobile", width: 375, height: 812},
@@ -137,13 +161,15 @@ try {
         fs.writeFileSync(actualPath, actual);
         failures.push(`${story.id} (${viewport.name}): missing baseline`);
       } else {
-        const comparison = comparePng(fs.readFileSync(baselinePath), actual, args.threshold);
+        const threshold = thresholdOverrides.get(story.id)?.threshold ?? args.threshold;
+        const comparison = comparePng(fs.readFileSync(baselinePath), actual, threshold);
         if (!comparison.matches) {
           const diffPath = path.join(diffRoot, fileName);
           fs.writeFileSync(actualPath, actual);
           fs.writeFileSync(diffPath, comparison.diff);
           failures.push(
-            `${story.id} (${viewport.name}): ${(comparison.ratio * 100).toFixed(3)}% pixels changed; ` +
+            `${story.id} (${viewport.name}): ${(comparison.ratio * 100).toFixed(3)}% pixels changed ` +
+            `(threshold ${(threshold * 100).toFixed(3)}%); ` +
             `diff ${path.relative(fromRepo("."), diffPath)}`
           );
         }
@@ -254,6 +280,58 @@ function pathsMatch(expected, actual) {
   const actualPath = clean(actual);
   return expectedPath.endsWith(actualPath) || actualPath.endsWith(expectedPath) ||
     path.posix.basename(expectedPath) === path.posix.basename(actualPath);
+}
+
+function parseThresholdOverrides(data) {
+  if (data === null || typeof data !== "object" || Array.isArray(data)) {
+    throw new Error("storybook_visual_thresholds.json must contain an object");
+  }
+  if (data.version !== 1) {
+    throw new Error("storybook_visual_thresholds.json requires \"version\": 1");
+  }
+  const stories = data.stories ?? {};
+  if (stories === null || typeof stories !== "object" || Array.isArray(stories)) {
+    throw new Error("storybook_visual_thresholds.json \"stories\" must be an object");
+  }
+  const overrides = new Map();
+  for (const [storyId, entry] of Object.entries(stories)) {
+    const label = `threshold override ${storyId}`;
+    if (entry === null || typeof entry !== "object" || Array.isArray(entry)) {
+      throw new Error(`${label}: entry must be an object`);
+    }
+    const extra = Object.keys(entry).filter((key) => !["surface", "threshold", "reason", "expires"].includes(key));
+    if (extra.length > 0) {
+      throw new Error(`${label}: unsupported field(s) ${extra.join(", ")}`);
+    }
+    const {surface, threshold, reason, expires} = entry;
+    if (!["admin", "website", "webui"].includes(surface)) {
+      throw new Error(`${label}: surface must be admin, website, or webui`);
+    }
+    if (!Number.isFinite(threshold) || threshold <= 0 || threshold > 1) {
+      throw new Error(`${label}: threshold must be a number in (0, 1]`);
+    }
+    if (typeof reason !== "string" || reason.trim() === "") {
+      throw new Error(`${label}: reason must be a non-empty string`);
+    }
+    if (typeof expires !== "string" || !/^\d{4}-\d{2}-\d{2}$/u.test(expires) ||
+        !Number.isFinite(Date.parse(expires)) || new Date(expires).toISOString().slice(0, 10) !== expires) {
+      throw new Error(`${label}: expires must be a YYYY-MM-DD date`);
+    }
+    overrides.set(storyId, {surface, threshold, reason, expires});
+  }
+  return overrides;
+}
+
+function thresholdsForSurface(overrides, surface) {
+  return new Map([...overrides].filter(([, entry]) => entry.surface === surface));
+}
+
+function currentDateKey() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function expiredThresholdOverrides(overrides, today) {
+  return [...overrides.entries()].filter(([, entry]) => entry.expires !== undefined && entry.expires < today);
 }
 
 function comparePng(expectedBuffer, actualBuffer, ratioThreshold) {
@@ -454,6 +532,46 @@ async function runSelfTest() {
     (error) => error === captureFailure,
     "worker failure must reject the capture pool"
   );
+  const overrides = parseThresholdOverrides({
+    version: 1,
+    stories: {
+      "story-a": {surface: "admin", threshold: 0.003, reason: "subpixel drift", expires: "2099-01-01"},
+      "story-b": {surface: "website", threshold: 0.5, reason: "kept", expires: "2099-02-01"},
+    },
+  });
+  assert.equal(overrides.get("story-a").threshold, 0.003);
+  assert.equal(overrides.get("story-b").threshold, 0.5);
+  assert.deepEqual(parseThresholdOverrides({version: 1}), new Map());
+  for (const patch of [{surface: "typo"}, {expires: undefined}, {expires: "2099-02-30"}]) {
+    assert.throws(() => parseThresholdOverrides({version: 1, stories: {
+      a: {surface: "admin", threshold: 0.003, reason: "evidence", expires: "2099-01-01", ...patch},
+    }}));
+  }
+  assert.deepEqual([...thresholdsForSurface(overrides, "webui")], []);
+  assert.deepEqual([...thresholdsForSurface(overrides, "website").keys()], ["story-b"]);
+  for (const bad of [
+    null, [], "x",
+    {version: 2, stories: {}},
+    {version: 1, stories: []},
+    {version: 1, stories: {a: null}},
+    {version: 1, stories: {a: {threshold: 0}}},
+    {version: 1, stories: {a: {threshold: 1.5}}},
+    {version: 1, stories: {a: {threshold: "0.1"}}},
+    {version: 1, stories: {a: {threshold: 0.5}}},
+    {version: 1, stories: {a: {threshold: 0.5, reason: ""}}},
+    {version: 1, stories: {a: {threshold: 0.5, expires: "soon"}}},
+    {version: 1, stories: {a: {threshold: 0.5, extra: true}}},
+  ]) {
+    if (bad?.stories?.a && typeof bad.stories.a === "object") {
+      bad.stories.a = {surface: "admin", expires: "2099-01-01", ...bad.stories.a};
+    }
+    assert.throws(() => parseThresholdOverrides(bad), Error);
+  }
+  assert.deepEqual(
+    expiredThresholdOverrides(overrides, "2099-01-02").map(([id]) => id),
+    ["story-a"]
+  );
+  assert.deepEqual(expiredThresholdOverrides(overrides, "2099-01-01"), []);
   console.log("Storybook visual checker self-test passed.");
 }
 
@@ -469,6 +587,11 @@ Options:
   --threshold <ratio>            Maximum changed-pixel ratio (default 0.001).
   --concurrency <1|2>            Capture workers (default: admin 2, website/webui 1).
   --self-test                    Run pixel-comparison and capture-scheduler proofs.
+
+Per-story overrides live in tool/web/storybook_visual_thresholds.json:
+{"version": 1, "stories": {"<story-id>": {"surface": "admin|website|webui", "threshold": <ratio>, "reason": "...", "expires": "YYYY-MM-DD"}}}
+Overrides apply only to the named surface, cover both viewports, and must reference a
+registry-ready story, and fail the check once their expires date passes.
 `);
 }
 

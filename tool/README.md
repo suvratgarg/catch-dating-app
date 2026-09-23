@@ -801,6 +801,13 @@ between Darwin and Linux. A mismatch writes both the rendered image and its
 diff under `artifacts/visual-actuals/<surface>/<platform>/` and
 `artifacts/visual-diffs/<surface>/<platform>/`.
 
+A story that provably drifts a few tenths of a percent between identical
+builds can take a scoped waiver instead of forcing a global threshold raise.
+`tool/web/storybook_visual_thresholds.json` maps a built story id to its own
+changed-pixel ratio with a required `surface`, evidence `reason`, and valid
+`expires` date; the check fails on unknown story ids, malformed entries, and
+expired overrides so waivers cannot rot silently.
+
 The Admin Website and Marketing Website workflows pin the blocking Linux
 capture to Ubuntu 24.04. Their manual `workflow_dispatch` input
 `update_visual_baselines=true` captures Linux baselines and uploads them as a

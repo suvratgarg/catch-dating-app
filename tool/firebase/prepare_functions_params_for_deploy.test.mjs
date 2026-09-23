@@ -39,6 +39,7 @@ test("disabled legacy Meta params remain visibly unconfigured", () => {
     'EVENT_ASSISTANCE_RCS_WEBHOOK_ENABLED="false"',
     'EVENT_ASSISTANCE_SMS_REPORTS_ENABLED="false"',
     'FLIGHT_WEBHOOK_BASE_URL=" "',
+    'FLIGHT_PROVIDER_CONFIG_VERSION=" "',
     "",
   ].join("\n"));
   assert.equal(fs.statSync(result.outputPath).mode & 0o777, 0o600);
@@ -70,6 +71,7 @@ test("empty GitHub repository variables default Meta to disabled", () => {
     'EVENT_ASSISTANCE_RCS_WEBHOOK_ENABLED="false"',
     'EVENT_ASSISTANCE_SMS_REPORTS_ENABLED="false"',
     'FLIGHT_WEBHOOK_BASE_URL=" "',
+    'FLIGHT_PROVIDER_CONFIG_VERSION=" "',
     "",
   ].join("\n"));
 });
@@ -198,6 +200,26 @@ test("form partner config is opt-in and pins only a project-local version", () =
     assert.throws(() => prepareFunctionsParamsForDeploy({
       functionsDir, projectId: "catchdates-dev",
       environment: {...publicIds, FORM_RAZORPAY_PARTNER_CONFIG_VERSION: value},
+    }), /must pin a secret in this project/);
+    assert.equal(fs.existsSync(path.join(functionsDir, ".env.catchdates-dev")),
+      false);
+  }
+});
+
+test("flight provider config is opt-in and pins only a project-local version", () => {
+  const version = "projects/catchdates-dev/secrets/FLIGHT_PROVIDER/versions/12";
+  const result = prepareFunctionsParamsForDeploy({
+    functionsDir: fixture(), projectId: "catchdates-dev",
+    environment: {...publicIds, FLIGHT_PROVIDER_CONFIG_VERSION: version},
+  });
+  assert.ok(fs.readFileSync(result.outputPath, "utf8").includes(
+    `FLIGHT_PROVIDER_CONFIG_VERSION="${version}"`));
+  for (const value of [version.replace("catchdates-dev", "catchdates-prod"),
+    version.replace("/12", "/latest"), "private-secret-value", `${version}\nx=y`]) {
+    const functionsDir = fixture();
+    assert.throws(() => prepareFunctionsParamsForDeploy({
+      functionsDir, projectId: "catchdates-dev",
+      environment: {...publicIds, FLIGHT_PROVIDER_CONFIG_VERSION: value},
     }), /must pin a secret in this project/);
     assert.equal(fs.existsSync(path.join(functionsDir, ".env.catchdates-dev")),
       false);

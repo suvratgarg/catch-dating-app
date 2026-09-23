@@ -815,6 +815,7 @@ jobs:
           PACKAGE_ARTIFACT_DIGEST: ${{ steps.authority.outputs.package_artifact_digest }}
           PACKAGE_ARTIFACT_ID: ${{ steps.authority.outputs.package_artifact_id }}
           PACKAGE_ARTIFACT_NAME: ${{ steps.authority.outputs.package_artifact_name }}
+          PLATFORM_AUTHORITY: ${{ steps.producer.outputs.platform_authority }}
           PRODUCER_HEAD_SHA: ${{ steps.producer.outputs.producer_head_sha }}
           PRODUCER_RUN_ATTEMPT: ${{ inputs.producer_run_attempt }}
           PRODUCER_RUN_ID: ${{ inputs.producer_run_id }}
@@ -868,6 +869,7 @@ jobs:
 
           producer="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$PRODUCER_RUN_ID")"
           jq -e \
+            --argjson platform_authority "$PLATFORM_AUTHORITY" \
             --arg producer_head_sha "$PRODUCER_HEAD_SHA" \
             --arg repository "$GITHUB_REPOSITORY" \
             --arg run_id "$PRODUCER_RUN_ID" \
@@ -879,8 +881,21 @@ jobs:
                 ".github/workflows/mobile-internal-release.yml" and
               .event == "workflow_run" and .head_branch == "main" and
               .head_repository.full_name == $repository and
-              .status == "completed" and .conclusion == "success"
+              ((.status == "completed" and .conclusion == "success") or
+               ($platform_authority and (
+                 ((.status == "in_progress" or .status == "queued") and .conclusion == null) or
+                 (.status == "completed" and .conclusion == "failure"))))
             ' <<< "$producer" > /dev/null
+
+          if [[ "$PLATFORM_AUTHORITY" == "true" ]]; then
+            jobs="$(gh api --paginate --slurp \
+              "repos/$GITHUB_REPOSITORY/actions/runs/$PRODUCER_RUN_ID/attempts/$PRODUCER_RUN_ATTEMPT/jobs?per_page=100")"
+            jq -e --arg name "Verify ${RELEASE_TARGET##*-} packages / Publish verified mobile build authority" '
+              [.[].jobs[] | select(.name == $name)] as $jobs |
+              ($jobs | length) == 1 and
+              $jobs[0].status == "completed" and $jobs[0].conclusion == "success"
+            ' <<< "$jobs" > /dev/null
+          fi
 
           source_current="$(gh api \
             "repos/$GITHUB_REPOSITORY/actions/runs/$SOURCE_CI_RUN_ID")"

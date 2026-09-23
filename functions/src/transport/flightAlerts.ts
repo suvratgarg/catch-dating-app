@@ -2,7 +2,7 @@ import * as admin from "firebase-admin";
 import {snapshotMatchesLeg} from "./flightIdentity";
 import * as logger from "firebase-functions/logger";
 import {onRequest} from "firebase-functions/v2/https";
-import {flightWebhookSecret} from "./flightProviderConfig";
+import {loadFlightProviderConfig} from "./flightProviderConfig";
 
 import type {ProgramTravelLegDocument} from
   "../shared/generated/firestoreAdminTypes";
@@ -61,13 +61,13 @@ export function pushedFlights(body: unknown): PushedFlight[] {
 
 export interface FlightAlertWebhookDeps {
   firestore: () => FirebaseFirestore.Firestore;
-  secret: () => string;
+  secret: () => string | Promise<string>;
   now: () => Date;
 }
 
 export const defaultFlightAlertWebhookDeps: FlightAlertWebhookDeps = {
   firestore: () => admin.firestore(),
-  secret: () => flightWebhookSecret.value(),
+  secret: async () => (await loadFlightProviderConfig())?.webhookSecret ?? "",
   now: () => new Date(),
 };
 
@@ -86,7 +86,8 @@ export async function flightAlertWebhookHandler(
   body: unknown,
   deps: FlightAlertWebhookDeps = defaultFlightAlertWebhookDeps,
 ): Promise<FlightAlertOutcome> {
-  if (!deps.secret() || query["key"] !== deps.secret()) {
+  const secret = await deps.secret();
+  if (!secret || query["key"] !== secret) {
     throw new FlightAlertAuthError();
   }
   const legId = typeof query["leg"] === "string" ? query["leg"] : null;
@@ -122,7 +123,7 @@ export class FlightAlertAuthError extends Error {
 }
 
 export const flightAlertWebhook = onRequest(
-  {secrets: [flightWebhookSecret]},
+  {},
   async (request, response) => {
     if (request.method !== "POST") {
       response.status(405).send("POST only.");

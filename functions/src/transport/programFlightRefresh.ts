@@ -4,7 +4,7 @@ import {CallableRequest, onCall} from "firebase-functions/v2/https";
 import {onSchedule} from "firebase-functions/v2/scheduler";
 
 import {requireAuth} from "../shared/auth";
-import {appCheckCallableOptionsWithSecrets} from
+import {appCheckCallableOptionsWithLimits} from
   "../shared/callableOptions";
 import {checkRateLimit} from "../shared/rateLimit";
 import {requireProgramAccess} from "../shared/programAuthority";
@@ -19,7 +19,6 @@ import {
 import type {ProgramTravelLegDocument} from
   "../shared/generated/firestoreAdminTypes";
 import {
-  aeroDataBoxApiKey,
   fetchFlightStatus,
 } from "./aeroDataBox";
 import {
@@ -28,7 +27,8 @@ import {
   syncLegAlertSubscription,
   listFlightSubscriptions,
 } from "./flightSubscriptions";
-import {defaultAlertBaseUrl, flightWebhookSecret} from
+import {defaultAlertBaseUrl, loadFlightProviderConfig,
+  flightProviderUnavailable, type FlightProviderConfig} from
   "./flightProviderConfig";
 import {
   refreshDueFlightLegs,
@@ -41,28 +41,35 @@ export interface RefreshDeps extends FlightRefreshDeps {
   checkRateLimit: typeof checkRateLimit;
 }
 
-const defaultRefreshDeps: RefreshDeps = {
-  firestore: () => admin.firestore(),
-  checkRateLimit,
-  now: () => new Date(),
-  apiKey: () => aeroDataBoxApiKey.value(),
-  fetchStatus: fetchFlightStatus,
-  syncAlert: (legRef) => syncLegAlertSubscription(legRef, {
+function configuredRefreshDeps(config: FlightProviderConfig): RefreshDeps {
+  return {
+    firestore: () => admin.firestore(),
+    checkRateLimit,
     now: () => new Date(),
-    listSubscriptions: listFlightSubscriptions,
-    apiKey: () => aeroDataBoxApiKey.value(),
-    secret: () => flightWebhookSecret.value(),
-    baseUrl: defaultAlertBaseUrl,
-    createSubscription: createFlightSubscription,
-    deleteSubscription: deleteFlightSubscription,
-  }),
-};
+    apiKey: () => config.apiKey,
+    fetchStatus: fetchFlightStatus,
+    syncAlert: (legRef) => syncLegAlertSubscription(legRef, {
+      now: () => new Date(),
+      listSubscriptions: listFlightSubscriptions,
+      apiKey: () => config.apiKey,
+      secret: () => config.webhookSecret,
+      baseUrl: defaultAlertBaseUrl,
+      createSubscription: createFlightSubscription,
+      deleteSubscription: deleteFlightSubscription,
+    }),
+  };
+}
 
 export async function refreshProgramTravelLegHandler(
   request: CallableRequest<unknown>,
-  deps: RefreshDeps = defaultRefreshDeps
+  deps?: RefreshDeps
 ): Promise<ProgramMutationCallableResponse> {
   const actorUid = requireAuth(request);
+  if (!deps) {
+    const config = await loadFlightProviderConfig();
+    if (!config) return flightProviderUnavailable();
+    deps = configuredRefreshDeps(config);
+  }
   const data =
     validateCallableWithAjv<RefreshProgramTravelLegCallablePayload>(
       request,
@@ -90,8 +97,7 @@ export async function refreshProgramTravelLegHandler(
 }
 
 export const refreshProgramTravelLeg = onCall(
-  appCheckCallableOptionsWithSecrets([aeroDataBoxApiKey],
-    {timeoutSeconds: 30}),
+  appCheckCallableOptionsWithLimits({timeoutSeconds: 30}),
   async (request) => refreshProgramTravelLegHandler(request),
 );
 
@@ -101,11 +107,12 @@ export const refreshProgramFlightStatuses = onSchedule(
     timeoutSeconds: 540,
     maxInstances: 1,
     timeZone: "Asia/Kolkata",
-    secrets: [aeroDataBoxApiKey, flightWebhookSecret],
   },
   async () => {
+    const config = await loadFlightProviderConfig();
+    if (!config) return;
     const summary = await refreshDueFlightLegs(
-      admin.firestore(), defaultRefreshDeps);
+      admin.firestore(), configuredRefreshDeps(config));
     if (summary.updated + summary.failed > 0) {
       logger.info("Program flight refresh sweep completed", summary);
     }
