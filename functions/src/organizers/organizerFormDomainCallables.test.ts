@@ -63,7 +63,8 @@ describe("organizer form domain management input", () => {
       data: () => ({hostname: "apply.client.example",
         organizerId: "organizer-a", formId: "form-a",
         publicFormId: "ABCDEFGHIJKLMNOPQRST",
-        ownershipChallenge: "catch-verification=AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        ownershipChallenge: "catch-verification=" +
+          "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
         expectedCname: "custom.catchdates.com", status: "pending",
         certificateStatus: "pending", verifiedAtMillis: null,
         generation: 1, reservedAtMillis: 1,
