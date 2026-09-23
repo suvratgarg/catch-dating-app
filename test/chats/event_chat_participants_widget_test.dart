@@ -99,6 +99,10 @@ class ScheduleFixtureController extends RoomFixtureController {
     DateTime? opensAt,
     DateTime? closesAt,
   }) async {
+    if (action == EventChatAction.archive) {
+      _actions.add(action);
+      return true;
+    }
     if (action == EventChatAction.schedule &&
         opensAt != null &&
         closesAt != null &&
@@ -321,6 +325,51 @@ void main() {
     await tester.tap(find.text('Use schedule'));
     await pumpFeatureUi(tester);
     expect(ScheduleFixtureController._actions, [EventChatAction.schedule]);
+    expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+  testWidgets('archive needs explicit confirmation and preserves authority', (
+    tester,
+  ) async {
+    ScheduleFixtureController._actions.clear();
+    ScheduleFixtureController._foregroundStates.clear();
+    final router = GoRouter(
+      initialLocation: '/room',
+      routes: [
+        GoRoute(
+          path: '/room',
+          builder: (_, _) => const EventChatScreen(eventId: 'event'),
+        ),
+      ],
+    );
+    addTearDown(router.dispose);
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          uidProvider.overrideWith((_) => Stream.value('maya')),
+          eventChatControllerProvider('event').overrideWith(
+            ScheduleFixtureController.new,
+          ),
+        ],
+        child: MaterialApp.router(
+          routerConfig: router,
+          theme: AppTheme.light,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+        ),
+      ),
+    );
+    await pumpFeatureUi(tester);
+    await tester.tap(find.byTooltip('Event chat'));
+    await pumpFeatureUi(tester);
+    await tester.tap(find.text('Archive room'));
+    await pumpFeatureUi(tester);
+    expect(ScheduleFixtureController._actions, isEmpty);
+    expect(find.textContaining('cannot reopen it'), findsOneWidget);
+    expect(ScheduleFixtureController._foregroundStates, isNot(contains(false)));
+    await tester.tap(find.text('Archive room').last);
+    await pumpFeatureUi(tester);
+    expect(ScheduleFixtureController._actions, [EventChatAction.archive]);
     expect(tester.takeException(), isNull);
     await tester.pumpWidget(const SizedBox.shrink());
   });

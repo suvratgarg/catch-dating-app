@@ -32639,6 +32639,12 @@ abstract class AppLocalizations {
   /// **'Archive room'**
   String get eventChatArchive;
 
+  /// Destructive room archive confirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Archiving permanently closes this room. Members will no longer read or post messages, and you cannot reopen it.'**
+  String get eventChatArchiveDisclosure;
+
   /// Participant notification mute action.
   ///
   /// In en, this message translates to:

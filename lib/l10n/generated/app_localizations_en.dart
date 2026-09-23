@@ -20462,6 +20462,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get eventChatArchive => 'Archive room';
 
   @override
+  String get eventChatArchiveDisclosure =>
+      'Archiving permanently closes this room. Members will no longer read or post messages, and you cannot reopen it.';
+
+  @override
   String get eventChatMute => 'Mute room notifications';
 
   @override

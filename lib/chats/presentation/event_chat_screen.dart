@@ -38,8 +38,8 @@ class _EventChatScreenState extends ConsumerState<EventChatScreen>
   String? _replyId, _reactionId;
   bool _announcement = false;
   bool _resumed = true;
-  bool _ownedPicker = false;
-  bool _pickerBackgrounded = false;
+  bool _ownedDialog = false;
+  bool _dialogBackgrounded = false;
   bool? _active;
   Timer? _clock;
   @override
@@ -59,8 +59,8 @@ class _EventChatScreenState extends ConsumerState<EventChatScreen>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     _resumed = state == AppLifecycleState.resumed;
-    if (!_resumed && _ownedPicker) {
-      _pickerBackgrounded = true;
+    if (!_resumed && _ownedDialog) {
+      _dialogBackgrounded = true;
     }
     if (mounted) {
       setState(() {});
@@ -136,7 +136,8 @@ class _EventChatScreenState extends ConsumerState<EventChatScreen>
     EventChatAction action,
     String reviewedUid,
   ) async {
-    if (action != EventChatAction.schedule) {
+    if (action != EventChatAction.schedule &&
+        action != EventChatAction.archive) {
       await _controller.updateAccess(action, reviewedUid: reviewedUid);
       return;
     }
@@ -147,20 +148,35 @@ class _EventChatScreenState extends ConsumerState<EventChatScreen>
         !reviewed.access.canManage) {
       return;
     }
-    _ownedPicker = true;
-    _pickerBackgrounded = false;
+    _ownedDialog = true;
+    _dialogBackgrounded = false;
     try {
-      final window = await (widget.pickSchedule ?? _pickSchedule)(context);
-      if (!mounted || window == null) {
-        return;
-      }
-      if (!window.opensAt.isAfter(DateTime.now()) ||
-          !window.closesAt.isAfter(window.opensAt)) {
-        showCatchSnackBar(context, context.l10n.eventChatInvalidSchedule);
-        return;
+      ({DateTime opensAt, DateTime closesAt})? window;
+      if (action == EventChatAction.schedule) {
+        window = await (widget.pickSchedule ?? _pickSchedule)(context);
+        if (!mounted || window == null) {
+          return;
+        }
+        if (!window.opensAt.isAfter(DateTime.now()) ||
+            !window.closesAt.isAfter(window.opensAt)) {
+          showCatchSnackBar(context, context.l10n.eventChatInvalidSchedule);
+          return;
+        }
+      } else {
+        final confirmed = await showCatchConfirmDialog(
+          context: context,
+          copy: catchDialogCopy(context.l10n),
+          title: context.l10n.eventChatArchive,
+          message: context.l10n.eventChatArchiveDisclosure,
+          confirmLabel: context.l10n.eventChatArchive,
+          danger: true,
+        );
+        if (confirmed != true || !mounted) {
+          return;
+        }
       }
       final latest = ref.read(provider).asData?.value;
-      if (_pickerBackgrounded ||
+      if (_dialogBackgrounded ||
           !_resumed ||
           ref.read(uidProvider).asData?.value != reviewedUid ||
           latest == null ||
@@ -170,13 +186,13 @@ class _EventChatScreenState extends ConsumerState<EventChatScreen>
         return;
       }
       await _controller.updateAccess(
-        EventChatAction.schedule,
+        action,
         reviewedUid: reviewedUid,
-        opensAt: window.opensAt,
-        closesAt: window.closesAt,
+        opensAt: window?.opensAt,
+        closesAt: window?.closesAt,
       );
     } finally {
-      _ownedPicker = false;
+      _ownedDialog = false;
       if (mounted) {
         _syncActive(_resumed && (ModalRoute.isCurrentOf(context) ?? true));
       }
@@ -299,7 +315,7 @@ class _EventChatScreenState extends ConsumerState<EventChatScreen>
     final display = catchAsyncStateFromAsyncValue(value);
     final current = display.isSettledData ? display.value : null;
     _syncActive(_resumed &&
-        ((ModalRoute.isCurrentOf(context) ?? true) || _ownedPicker));
+        ((ModalRoute.isCurrentOf(context) ?? true) || _ownedDialog));
     ref.listen(uidProvider, (before, after) {
       if (before?.asData?.value != after.asData?.value) {
         _draft.clear();
@@ -729,14 +745,22 @@ class EventChatPageBody extends StatelessWidget {
               style: CatchTextStyles.supporting(context),
             ),
           ),
-        if (reacting == null && access.canPostMessages && access.canManage &&
+        if (reacting == null &&
+            access.canPostMessages &&
+            access.canManage &&
             access.roomStatus == 'open')
-          CheckboxListTile(
-            title: Text(l.eventChatAnnouncement),
-            value: announcement,
-            onChanged: onAnnouncementChanged == null
-                ? null
-                : (value) => onAnnouncementChanged!(value ?? false),
+          Padding(
+            padding: CatchInsets.contentHorizontal,
+            child: CatchFieldLanes.single(
+              child: CatchField.toggle(
+                copy: catchFieldCopy(l),
+                title: l.eventChatAnnouncement,
+                value: announcement,
+                contractExemption:
+                    'The callable validates announcement authority and mode.',
+                onChanged: onAnnouncementChanged,
+              ),
+            ),
           ),
         if (reacting == null && access.canPostMessages)
           ChatInputBar(
