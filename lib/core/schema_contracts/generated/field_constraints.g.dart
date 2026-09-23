@@ -68387,6 +68387,20 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const listEventChatParticipantsCallableResponseItemsItemsMembershipRevision = CatchContractFieldConstraints(
+    path: 'listEventChatParticipantsCallableResponse.items.items.membershipRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const listEventChatParticipantsCallableResponseItemsItemsMembershipStatus = CatchContractFieldConstraints(
+    path: 'listEventChatParticipantsCallableResponse.items.items.membershipStatus',
+    required: true,
+    enumValues: <String>['joined', 'removed', 'banned'],
+  );
+
   static const listEventChatParticipantsCallableResponseItemsItemsRole = CatchContractFieldConstraints(
     path: 'listEventChatParticipantsCallableResponse.items.items.role',
     required: true,
@@ -121526,6 +121540,8 @@ abstract final class CatchContractConstraints {
     'listEventChatParticipantsCallablePayload.limit': listEventChatParticipantsCallablePayloadLimit,
     'listEventChatParticipantsCallableResponse.items': listEventChatParticipantsCallableResponseItems,
     'listEventChatParticipantsCallableResponse.items.items.displayName': listEventChatParticipantsCallableResponseItemsItemsDisplayName,
+    'listEventChatParticipantsCallableResponse.items.items.membershipRevision': listEventChatParticipantsCallableResponseItemsItemsMembershipRevision,
+    'listEventChatParticipantsCallableResponse.items.items.membershipStatus': listEventChatParticipantsCallableResponseItemsItemsMembershipStatus,
     'listEventChatParticipantsCallableResponse.items.items.role': listEventChatParticipantsCallableResponseItemsItemsRole,
     'listEventChatParticipantsCallableResponse.items.items.uid': listEventChatParticipantsCallableResponseItemsItemsUid,
     'listEventChatParticipantsCallableResponse.nextCursor.accountUid': listEventChatParticipantsCallableResponseNextCursorAccountUid,

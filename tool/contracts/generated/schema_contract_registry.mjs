@@ -96476,7 +96476,9 @@ export const listEventChatParticipantsCallableResponseSchema = {
         "required": [
           "uid",
           "displayName",
-          "role"
+          "role",
+          "membershipStatus",
+          "membershipRevision"
         ],
         "properties": {
           "uid": {
@@ -96495,6 +96497,18 @@ export const listEventChatParticipantsCallableResponseSchema = {
               "host",
               "attendee"
             ]
+          },
+          "membershipStatus": {
+            "enum": [
+              "joined",
+              "removed",
+              "banned"
+            ]
+          },
+          "membershipRevision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
           }
         }
       }
