@@ -427,7 +427,7 @@ export async function publishEventSuccessRotationRoundHandler(
     uid,
     "publishEventSuccessRotationRound"
   );
-  await requireEventManager(db, payload.eventId, uid);
+  const event = await requireEventManager(db, payload.eventId, uid);
   const planRef = db.collection("eventSuccessPlans").doc(payload.eventId);
   const draftQuery = db.collection("eventSuccessAssignmentDrafts")
     .where("eventId", "==", payload.eventId)
@@ -505,7 +505,12 @@ export async function publishEventSuccessRotationRoundHandler(
         "Prepared assignments have mixed matching consent audits.");
     }
     if (guardedDrafts) {
-      const organizerId = drafts[0].data().organizerId;
+      const organizerId = event.organizerId;
+      if (!organizerId || drafts.some((draft) =>
+        draft.data().organizerId !== organizerId)) {
+        throw new HttpsError("aborted",
+          "Prepared assignments do not match this organizer.");
+      }
       await recheckAssignmentFeatureSnapshots({tx: transaction, db,
         eventId: payload.eventId, organizerId, rules,
         snapshots: featureSnapshots});

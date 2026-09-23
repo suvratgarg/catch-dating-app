@@ -1264,8 +1264,15 @@ async function writeAssignments(
     await db.runTransaction(async (tx) => {
       const planRef = db.collection("eventSuccessPlans").doc(eventId);
       const [planSnap, existingSnap] = await Promise.all([
-        tx.get(planRef), tx.get(existingQuery),
+        tx.get(planRef), tx.get(existingQuery.limit(401)),
       ]);
+      const staleDocs = existingSnap.docs.filter((doc) =>
+        !assignments.has(doc.id));
+      if (existingSnap.size > 400 ||
+          staleDocs.length + assignments.size > 400) {
+        throw new HttpsError("failed-precondition",
+          "Structured matching exceeds the supported publication size.");
+      }
       if (!planSnap.exists) {
         throw new HttpsError("aborted",
           "Assignment feature setup changed.");
@@ -1279,9 +1286,7 @@ async function writeAssignments(
         organizerId: featureGuard.organizerId,
         rules: featureGuard.rules,
         snapshots: featureGuard.snapshots});
-      for (const doc of existingSnap.docs) {
-        if (!assignments.has(doc.id)) tx.delete(doc.ref);
-      }
+      for (const doc of staleDocs) tx.delete(doc.ref);
       for (const [docId, assignment] of assignments.entries()) {
         tx.set(db.collection("eventSuccessAssignments").doc(docId),
           assignment);
