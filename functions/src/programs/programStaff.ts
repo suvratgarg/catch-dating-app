@@ -24,6 +24,7 @@ import {checkRateLimit} from "../shared/rateLimit";
 import {validateCallableWithAjv} from "../shared/validation";
 import {isOrganizerManager} from "../shared/organizerHosts";
 import {
+  activeProgramDuties,
   nextRevision,
   programStaffGrantId,
   requireProgramAccess,
@@ -58,7 +59,7 @@ import {
 } from "../shared/generated/validators/revokeProgramStaffInput";
 
 import {
-  dedupeDuties,
+  grantDuties,
   maxGrantDurationMillis,
   maxProgramStaff,
   requireProgramManager,
@@ -229,7 +230,7 @@ export async function grantProgramStaffHandler(
       uid: authUser.uid,
       displayName: eventStaffDisplayName(authUser),
       phoneLastFour: phone.value!.slice(-4),
-      duties: dedupeDuties(data.duties),
+      duties: grantDuties(data.duties, data.expiresAtMillis),
       status: "active",
       createdBy: current?.createdBy ?? actorUid,
       createdAt: current?.createdAt ?? committedAt,
@@ -300,9 +301,11 @@ async function programStaffList(
       uid: member.uid,
       displayName: member.displayName,
       phoneLastFour: member.phoneLastFour,
-      duties: member.duties,
+      duties: member.duties.map((assignment) => ({...assignment,
+        expiresAtMillis: Number.isSafeInteger(assignment.expiresAtMillis) &&
+          assignment.expiresAtMillis > 0 ? assignment.expiresAtMillis : 1})),
       status: member.status === "revoked" ? "revoked" :
-        staffTimestampMillis(member.expiresAt) <= now.toMillis() ?
+        activeProgramDuties(member, now.toMillis()).length === 0 ?
           "expired" : "active",
       expiresAtMillis: staffTimestampMillis(member.expiresAt),
       revision: member.revision,

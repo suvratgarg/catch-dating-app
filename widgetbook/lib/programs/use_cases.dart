@@ -53,19 +53,21 @@ final _access = ProgramWorkAccess(
   timezone: 'Asia/Kolkata',
   status: ProgramStatus.active,
   actorRole: ProgramActorRole.staff,
-  duties: const [
+  duties: [
     ProgramDutyAssignment(
       duty: ProgramStaffDuty.airportGreeter,
       pickupPointIds: {'del_t3'},
       hotelIds: {},
+      expiresAt: _now.add(const Duration(hours: 8)),
     ),
     ProgramDutyAssignment(
       duty: ProgramStaffDuty.transportDispatcher,
       pickupPointIds: {'del_t3'},
       hotelIds: {},
+      expiresAt: _now.add(const Duration(hours: 8)),
     ),
   ],
-  grantExpiresAt: null,
+  grantExpiresAt: _now.add(const Duration(hours: 8)),
   capabilities: const {'arrivalsTransport'},
   pickupPoints: const [
     ProgramStation(
@@ -314,7 +316,7 @@ Widget programWorkScreenStates(BuildContext context) {
         child: WidgetbookUtilityDeviceFrame(
           child: ProviderScope(
             overrides: _programOverrides(),
-            child: const ProgramWorkScreen(programId: _programId),
+            child: ProgramWorkScreen(programId: _programId, now: () => _now),
           ),
         ),
       ),
@@ -434,7 +436,7 @@ Widget programWorkPageBodyStates(BuildContext context) {
   return WidgetbookUtilityDeviceFrame(
     child: ProviderScope(
       overrides: _programOverrides(),
-      child: ProgramWorkPageBody(access: _access),
+      child: ProgramWorkPageBody(access: _access, now: _now),
     ),
   );
 }

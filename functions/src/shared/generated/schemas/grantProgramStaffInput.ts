@@ -58,7 +58,7 @@ export const grantProgramStaffCallablePayloadSchema: Record<string, unknown> = {
               "minLength": 1,
               "maxLength": 180
             },
-            "description": "Station scope for airportGreeter/transportDispatcher duties. Empty means all pickup points in the program."
+            "description": "Pickup restriction; empty means all program pickup points. Both resource restrictions must be met by the same assignment."
           },
           "hotelIds": {
             "type": "array",
@@ -69,7 +69,7 @@ export const grantProgramStaffCallablePayloadSchema: Record<string, unknown> = {
               "minLength": 1,
               "maxLength": 180
             },
-            "description": "Hotel scope for hotelDesk duties. Empty means all hotels in the program."
+            "description": "Destination restriction; empty means all program hotels. Restrictions from different assignments never combine into new routes."
           }
         }
       }

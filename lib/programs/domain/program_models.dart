@@ -61,6 +61,7 @@ class ProgramDutyAssignment {
     required this.duty,
     required this.pickupPointIds,
     required this.hotelIds,
+    this.expiresAt,
   });
 
   factory ProgramDutyAssignment.fromMap(Map<Object?, Object?> map) =>
@@ -68,11 +69,21 @@ class ProgramDutyAssignment {
         duty: ProgramStaffDuty.values.byName(requiredString(map, 'duty')),
         pickupPointIds: stringList(map['pickupPointIds']).toSet(),
         hotelIds: stringList(map['hotelIds']).toSet(),
+        expiresAt: nullableDateTime(map['expiresAtMillis']),
       );
 
   final ProgramStaffDuty duty;
   final Set<String> pickupPointIds;
   final Set<String> hotelIds;
+
+  /// Null is an ungranted request scope or a legacy assignment, never authority.
+  final DateTime? expiresAt;
+
+  bool isActiveAt(DateTime now) =>
+      expiresAt != null &&
+      expiresAt!.isAfter(now) &&
+      (duty != ProgramStaffDuty.programCoordinator ||
+          (pickupPointIds.isEmpty && hotelIds.isEmpty));
 
   bool get coversAllStations => pickupPointIds.isEmpty;
   bool get coversAllHotels => hotelIds.isEmpty;
@@ -183,17 +194,22 @@ class ProgramWorkAccess {
 
   bool get isManager => actorRole == ProgramActorRole.manager;
 
-  bool hasDuty(ProgramStaffDuty duty) =>
+  Iterable<ProgramDutyAssignment> activeDutiesAt(DateTime now) =>
+      grantExpiresAt == null || !grantExpiresAt!.isAfter(now)
+      ? const []
+      : duties.where((assignment) => assignment.isActiveAt(now));
+
+  bool hasDuty(ProgramStaffDuty duty, {required DateTime now}) =>
       isManager ||
-      duties.any(
+      activeDutiesAt(now).any(
         (a) => a.duty == duty || a.duty == ProgramStaffDuty.programCoordinator,
       );
 
   /// Stations this actor may open; empty scope on a duty means all.
-  Set<String>? stationScope(ProgramStaffDuty duty) {
+  Set<String>? stationScope(ProgramStaffDuty duty, {required DateTime now}) {
     if (isManager) return null;
     final scoped = <String>{};
-    for (final a in duties) {
+    for (final a in activeDutiesAt(now)) {
       if (a.duty != duty && a.duty != ProgramStaffDuty.programCoordinator) {
         continue;
       }
@@ -203,10 +219,10 @@ class ProgramWorkAccess {
     return scoped;
   }
 
-  Set<String>? hotelScope(ProgramStaffDuty duty) {
+  Set<String>? hotelScope(ProgramStaffDuty duty, {required DateTime now}) {
     if (isManager) return null;
     final scoped = <String>{};
-    for (final a in duties) {
+    for (final a in activeDutiesAt(now)) {
       if (a.duty != duty && a.duty != ProgramStaffDuty.programCoordinator) {
         continue;
       }

@@ -217,7 +217,7 @@ export function baseSeed(): Record<string, FakeData> {
       displayName: "Arjun",
       phoneLastFour: "0001",
       duties: [{
-        duty: "airportGreeter",
+        duty: "airportGreeter", expiresAtMillis: 1_800_086_400_000,
         pickupPointIds: ["pp-t3"],
         hotelIds: [],
       }],
@@ -238,7 +238,7 @@ export function baseSeed(): Record<string, FakeData> {
       displayName: "Sana",
       phoneLastFour: "0002",
       duties: [{
-        duty: "airportGreeter",
+        duty: "airportGreeter", expiresAtMillis: 1_800_086_400_000,
         pickupPointIds: ["pp-t3"],
         hotelIds: [],
       }],
@@ -259,7 +259,7 @@ export function baseSeed(): Record<string, FakeData> {
       displayName: "Meera",
       phoneLastFour: "0003",
       duties: [{
-        duty: "transportDispatcher",
+        duty: "transportDispatcher", expiresAtMillis: 1_800_086_400_000,
         pickupPointIds: [],
         hotelIds: [],
       }],
@@ -280,7 +280,7 @@ export function baseSeed(): Record<string, FakeData> {
       displayName: "Dev",
       phoneLastFour: "0004",
       duties: [{
-        duty: "hotelDesk",
+        duty: "hotelDesk", expiresAtMillis: 1_800_086_400_000,
         pickupPointIds: [],
         hotelIds: ["hotel-1"],
       }],

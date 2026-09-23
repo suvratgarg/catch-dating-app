@@ -59,27 +59,42 @@ export async function validateDutyStations(
   }
 }
 
-export function dedupeDuties(
-  duties: GrantProgramStaffCallablePayload["duties"]
-): ProgramStaffGrantDocument["duties"] {
-  const byDuty = new Map<string,
-    ProgramStaffGrantDocument["duties"][number]>();
+type DutyScope = GrantProgramStaffCallablePayload["duties"][number];
+
+/** Canonicalize exact scope tuples, never their Cartesian product. */
+export function dedupeDuties<T extends DutyScope>(duties: T[]): T[] {
+  const byScope = new Map<string, T>();
   for (const assignment of duties) {
-    const existing = byDuty.get(assignment.duty);
-    if (existing) {
-      existing.pickupPointIds = unionStationScope(
-        existing.pickupPointIds, assignment.pickupPointIds);
-      existing.hotelIds = unionStationScope(
-        existing.hotelIds, assignment.hotelIds);
-    } else {
-      byDuty.set(assignment.duty, {
-        duty: assignment.duty,
-        pickupPointIds: [...assignment.pickupPointIds],
-        hotelIds: [...assignment.hotelIds],
-      });
+    if (assignment.duty === "programCoordinator" &&
+        (assignment.pickupPointIds.length || assignment.hotelIds.length)) {
+      throw new HttpsError("invalid-argument",
+        "Program coordinators must have program-wide scope.");
     }
+    const normalized = {...assignment,
+      pickupPointIds: [...new Set(assignment.pickupPointIds)].sort(),
+      hotelIds: [...new Set(assignment.hotelIds)].sort()};
+    const key = JSON.stringify([normalized.duty,
+      normalized.pickupPointIds, normalized.hotelIds]);
+    const existing = byScope.get(key);
+    if (existing && "expiresAtMillis" in existing &&
+        "expiresAtMillis" in normalized) {
+      normalized.expiresAtMillis = Math.max(
+        existing.expiresAtMillis as number,
+        normalized.expiresAtMillis as number);
+    }
+    byScope.set(key, normalized);
   }
-  return [...byDuty.values()];
+  if (byScope.size > 8) {
+    throw new HttpsError("resource-exhausted",
+      "More than eight duty scopes. Ask a manager to review staff access.");
+  }
+  return [...byScope.values()];
+}
+
+export function grantDuties(duties: DutyScope[], expiresAtMillis: number):
+  ProgramStaffGrantDocument["duties"] {
+  return dedupeDuties(duties).map((assignment) =>
+    ({...assignment, expiresAtMillis}));
 }
 
 export function unionScope(grant: ProgramStaffGrantDocument,
@@ -90,10 +105,4 @@ export function unionScope(grant: ProgramStaffGrantDocument,
     for (const id of assignment[field]) scoped.add(id);
   }
   return scoped;
-}
-
-/** Empty scope means all stations, so it absorbs any narrower scope. */
-function unionStationScope(first: string[], second: string[]): string[] {
-  return first.length === 0 || second.length === 0 ? [] :
-    [...new Set([...first, ...second])].sort();
 }

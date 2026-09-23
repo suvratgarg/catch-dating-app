@@ -51,9 +51,9 @@
       "minItems": 1,
       "maxItems": 8,
       "items": {
-        "$ref": "../shared/program_common.schema.json#/definitions/programStaffDutyAssignment"
+        "$ref": "../shared/program_common.schema.json#/definitions/programStaffGrantedDuty"
       },
-      "description": "At most one assignment per duty; each duty independently scopes pickup points and hotels."
+      "description": "Up to eight independently expiring scope tuples. Identical tuples may be renewed; different tuples remain separate."
     },
     "status": {
       "type": "string",
@@ -72,7 +72,7 @@
     },
     "expiresAt": {
       "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
-      "description": "Whole-grant expiry; individual duties do not outlive it."
+      "description": "Maximum assignment expiry for indexed grant inventory; authorization also checks each assignment expiry."
     },
     "revokedBy": {
       "type": [

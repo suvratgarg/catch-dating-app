@@ -21,9 +21,15 @@ import 'package:go_router/go_router.dart';
 /// the shell renders exactly the scopes the server returned, and every
 /// destination is re-checked server-side.
 class ProgramWorkScreen extends ConsumerWidget {
-  const ProgramWorkScreen({super.key, required this.programId, this.inviteId});
+  const ProgramWorkScreen({
+    super.key,
+    required this.programId,
+    this.inviteId,
+    this.now,
+  });
 
   final String programId;
+  final DateTime Function()? now;
 
   /// Staff invite token carried by a join deep link; claimed before access
   /// resolves so the shell lands directly on the granted program.
@@ -72,6 +78,7 @@ class ProgramWorkScreen extends ConsumerWidget {
       ),
       builder: (context, result) => ProgramWorkPageBody(
         access: result.value,
+        now: now?.call() ?? DateTime.now(),
         snapshotAt: result.snapshotAt,
       ),
     );
@@ -79,30 +86,38 @@ class ProgramWorkScreen extends ConsumerWidget {
 }
 
 class ProgramWorkPageBody extends StatelessWidget {
-  const ProgramWorkPageBody({super.key, required this.access, this.snapshotAt});
+  const ProgramWorkPageBody({
+    super.key,
+    required this.access,
+    required this.now,
+    this.snapshotAt,
+  });
 
   final ProgramWorkAccess access;
+  final DateTime now;
   final DateTime? snapshotAt;
 
   @override
   Widget build(BuildContext context) {
     final dispatcherScope = access.stationScope(
       ProgramStaffDuty.transportDispatcher,
+      now: now,
     );
-    final hotelScope = access.hotelScope(ProgramStaffDuty.hotelDesk);
+    final hotelScope = access.hotelScope(ProgramStaffDuty.hotelDesk, now: now);
     final arrivalsStations = access.pickupPoints
         .where(
           (station) => canReadProgramStation(
             access,
             station.pickupPointId,
             dispatch: false,
+            now: now,
           ),
         )
         .toList(growable: false);
     final dispatchStations = access.pickupPoints
         .where(
           (station) =>
-              access.hasDuty(ProgramStaffDuty.transportDispatcher) &&
+              access.hasDuty(ProgramStaffDuty.transportDispatcher, now: now) &&
               (dispatcherScope?.contains(station.pickupPointId) ??
                   dispatcherScope == null),
         )
@@ -110,14 +125,14 @@ class ProgramWorkPageBody extends StatelessWidget {
     final hotels = access.hotels
         .where(
           (hotel) =>
-              access.hasDuty(ProgramStaffDuty.hotelDesk) &&
+              access.hasDuty(ProgramStaffDuty.hotelDesk, now: now) &&
               (hotelScope?.contains(hotel.hotelId) ?? hotelScope == null),
         )
         .toList(growable: false);
     final canSeeLedger =
         access.isManager ||
-        access.hasDuty(ProgramStaffDuty.transportDispatcher) ||
-        access.hasDuty(ProgramStaffDuty.reconciliationViewer);
+        access.hasDuty(ProgramStaffDuty.transportDispatcher, now: now) ||
+        access.hasDuty(ProgramStaffDuty.reconciliationViewer, now: now);
 
     return CatchRouteScaffold(
       topBarBuilder: (context, scrolledUnder) => CatchTopBar.route(

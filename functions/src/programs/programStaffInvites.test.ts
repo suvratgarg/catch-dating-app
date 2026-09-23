@@ -230,7 +230,8 @@ for (const status of ["revoked", "expired"] as const) {
       request({inviteId: invite.entityId}, "greeter-1", "+919900001111"),
       deps(store));
     const grant = store.getDoc("programStaffGrants/program-1__greeter-1")!;
-    assert.deepEqual(grant.duties, invitePayload.duties);
+    assert.deepEqual(grant.duties, invitePayload.duties.map((duty) =>
+      ({...duty, expiresAtMillis: EXPIRES})));
     assert.equal(timestampMillis(grant.expiresAt), EXPIRES);
     assert.equal(grant.status, "active");
     assert.ok((grant.revision as number) > 8);
@@ -242,7 +243,8 @@ test("claim preserves only still-active existing authority", async () => {
   store.setDoc("programStaffGrants/program-1__greeter-1", {
     programId: "program-1", organizerId: "org-1", uid: "greeter-1",
     status: "active", expiresAt: ts(EXPIRES + 3600_000), revision: 8,
-    duties: [{duty: "airportGreeter", pickupPointIds: [], hotelIds: []}],
+    duties: [{duty: "airportGreeter", pickupPointIds: [], hotelIds: [],
+      expiresAtMillis: EXPIRES + 3600_000}],
   });
   const invite = await inviteProgramStaffHandler(
     request(invitePayload), deps(store));
@@ -251,7 +253,9 @@ test("claim preserves only still-active existing authority", async () => {
     deps(store));
   const grant = store.getDoc("programStaffGrants/program-1__greeter-1")!;
   assert.deepEqual(grant.duties, [
-    {duty: "airportGreeter", pickupPointIds: [], hotelIds: []},
+    {duty: "airportGreeter", pickupPointIds: [], hotelIds: [],
+      expiresAtMillis: EXPIRES + 3600_000},
+    {...invitePayload.duties[0], expiresAtMillis: EXPIRES},
   ]);
   assert.equal(timestampMillis(grant.expiresAt), EXPIRES + 3600_000);
 });
@@ -272,3 +276,67 @@ test("claim fails when the program no longer belongs to the invite owner",
     assert.equal(store.getDoc("programStaffGrants/program-1__greeter-1"),
       undefined);
   });
+
+test("later hotel invite preserves the airport deadline", async () => {
+  const store = new FakeFirestore(seed());
+  const early = NOW + 60_000;
+  store.setDoc("programStaffGrants/program-1__greeter-1", {
+    programId: "program-1", organizerId: "org-1", uid: "greeter-1",
+    status: "active", expiresAt: ts(early), revision: 8,
+    duties: [{duty: "airportGreeter", pickupPointIds: ["pickup-1"],
+      hotelIds: [], expiresAtMillis: early}],
+  });
+  const invite = await inviteProgramStaffHandler(request({...invitePayload,
+    duties: [{duty: "hotelDesk", pickupPointIds: [], hotelIds: []}]}),
+  deps(store));
+  await claimProgramStaffInviteHandler(
+    request({inviteId: invite.entityId}, "greeter-1", "+919900001111"),
+    deps(store));
+  const grant = store.getDoc("programStaffGrants/program-1__greeter-1")!;
+  assert.deepEqual(grant.duties, [
+    {duty: "airportGreeter", pickupPointIds: ["pickup-1"],
+      hotelIds: [], expiresAtMillis: early},
+    {duty: "hotelDesk", pickupPointIds: [], hotelIds: [],
+      expiresAtMillis: EXPIRES},
+  ]);
+  assert.equal(timestampMillis(grant.expiresAt), EXPIRES);
+});
+
+test("claim cannot recover legacy duty deadlines from the grant maximum",
+  async () => {
+    const store = new FakeFirestore(seed());
+    store.setDoc("programStaffGrants/program-1__greeter-1", {
+      programId: "program-1", organizerId: "org-1", uid: "greeter-1",
+      status: "active", expiresAt: ts(EXPIRES + 3600_000), revision: 8,
+      duties: [{duty: "programCoordinator", pickupPointIds: [], hotelIds: []}],
+    });
+    const invite = await inviteProgramStaffHandler(
+      request(invitePayload), deps(store));
+    await claimProgramStaffInviteHandler(
+      request({inviteId: invite.entityId}, "greeter-1", "+919900001111"),
+      deps(store));
+    const grant = store.getDoc("programStaffGrants/program-1__greeter-1")!;
+    assert.deepEqual(grant.duties, invitePayload.duties.map((duty) =>
+      ({...duty, expiresAtMillis: EXPIRES})));
+    assert.equal(timestampMillis(grant.expiresAt), EXPIRES);
+  });
+
+test("an invite exceeding eight scope tuples remains unclaimed", async () => {
+  const store = new FakeFirestore(seed());
+  const existing = Array.from({length: 8}, (_, i) => ({duty: "hotelDesk",
+    pickupPointIds: [], hotelIds: [`h${i}`], expiresAtMillis: EXPIRES}));
+  store.setDoc("programStaffGrants/program-1__greeter-1", {
+    programId: "program-1", organizerId: "org-1", uid: "greeter-1",
+    status: "active", expiresAt: ts(EXPIRES), revision: 8, duties: existing,
+  });
+  const invite = await inviteProgramStaffHandler(
+    request(invitePayload), deps(store));
+  await assert.rejects(claimProgramStaffInviteHandler(
+    request({inviteId: invite.entityId}, "greeter-1", "+919900001111"),
+    deps(store)), (error: unknown) =>
+    error instanceof HttpsError && error.code === "resource-exhausted");
+  assert.equal(store.getDoc(`programStaffInvites/${invite.entityId}`)?.status,
+    "pending");
+  assert.deepEqual(store.getDoc("programStaffGrants/program-1__greeter-1")!
+    .duties, existing);
+});

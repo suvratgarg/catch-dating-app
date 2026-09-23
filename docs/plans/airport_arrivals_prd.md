@@ -1,7 +1,7 @@
 ---
 doc_id: airport_arrivals_prd
-version: 0.3.0
-updated: 2026-09-22
+version: 0.3.1
+updated: 2026-09-23
 owner: product
 status: draft
 ---
@@ -575,6 +575,23 @@ Global revocation invalidates all duties; extending a hotel duty cannot extend
 airport access. Duties are initially capped and short-lived using reviewed
 limits comparable to existing staff grants. Longer-term planner access must not
 be silently inferred from temporary staff renewal.
+
+The pilot stores `expiresAtMillis` on each granted duty scope; the enclosing
+`expiresAt` is the maximum deadline used by the active-grant inventory query.
+Exact duplicate duty/pickup/hotel tuples can renew to a later deadline. Different
+tuples stay separate, including an unrestricted short assignment beside a
+narrower long assignment. The eight-assignment cap rejects an oversized merge
+without consuming the invite. Coordinators require empty (program-wide) scopes.
+Legacy grants without per-assignment deadlines are denied and must be reissued
+by a manager; the old maximum deadline cannot reconstruct original authority.
+Any pending invites issued before tuple preservation must likewise be revoked
+and reissued before rollout, because their original scope cannot be recovered.
+
+Offline access checks the individual deadlines. A cached station projection
+must refresh after any of its applicable scope tuples expires. Other valid
+work access is retained. Refreshing a changed access scope clears older program
+projections and fences in-flight cache writes. The v2 cache removes old v1
+private entries instead of interpreting their missing deadlines as permission.
 
 #### Staff onboarding and discovery
 

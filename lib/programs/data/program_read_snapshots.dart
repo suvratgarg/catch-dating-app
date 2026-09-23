@@ -76,7 +76,7 @@ class SharedPreferencesProgramReadSnapshotStore
 
   String _programId(String scope) => scope.split(':').elementAtOrNull(1) ?? '';
 
-  static const _keyPrefix = 'program_read_snapshots_v1_';
+  static const _keyPrefix = 'program_read_snapshots_v2_';
   static const _maxScopes = 30;
 
   Future<SharedPreferences> get _prefs async {
@@ -90,6 +90,12 @@ class SharedPreferencesProgramReadSnapshotStore
         resource: 'shared_preferences',
       ),
     );
+    // Old entries did not preserve independent duty deadlines.
+    for (final key in loaded.getKeys()) {
+      if (key.startsWith('program_read_snapshots_v1_')) {
+        await loaded.remove(key);
+      }
+    }
     _preferences = loaded;
     return loaded;
   }
@@ -114,6 +120,14 @@ class SharedPreferencesProgramReadSnapshotStore
       return;
     }
     final entries = _decode(prefs.getString(key));
+    if (scope == programSnapshotScope('work', programId) &&
+        _authority(entries[scope]?['data']) != _authority(data)) {
+      // A fresh narrower bootstrap must never authorize an older broad roster.
+      _blockedPrograms.add('$accountId:$programId');
+      entries.removeWhere((key, _) => _programId(key) == programId);
+      _generations['$accountId:$programId'] =
+          generation(accountId, programId) + 1;
+    }
     final cutoff = DateTime.now().subtract(maxAge).millisecondsSinceEpoch;
     entries.removeWhere(
       (_, entry) =>
@@ -156,6 +170,16 @@ class SharedPreferencesProgramReadSnapshotStore
     final age = DateTime.now().difference(savedAt);
     if (age.isNegative || age > maxAge) return null;
     return ProgramReadSnapshot(data: entry['data'], savedAt: savedAt);
+  }
+
+  String? _authority(Object? data) {
+    if (data is! Map) return null;
+    return jsonEncode([
+      data['organizerId'],
+      data['actorRole'],
+      data['duties'],
+      data['grantExpiresAtMillis'],
+    ]);
   }
 
   Map<String, Map<String, Object?>> _decode(String? raw) {

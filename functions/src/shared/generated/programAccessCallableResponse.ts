@@ -24,17 +24,21 @@ export interface ProgramAccessCallableResponse {
       | "transportDispatcher"
       | "reconciliationViewer";
     /**
-     * Station scope for airportGreeter/transportDispatcher duties. Empty means all pickup points in the program.
+     * Pickup restriction; empty means all program pickup points. Both resource restrictions must be met by the same assignment.
      *
      * @maxItems 32
      */
     pickupPointIds: string[];
     /**
-     * Hotel scope for hotelDesk duties. Empty means all hotels in the program.
+     * Destination restriction; empty means all program hotels. Restrictions from different assignments never combine into new routes.
      *
      * @maxItems 64
      */
     hotelIds: string[];
+    /**
+     * Exclusive expiry of this exact duty and resource scope. Independent of other assignments.
+     */
+    expiresAtMillis: number;
   }[];
   grantExpiresAtMillis: number | null;
   capabilities: (

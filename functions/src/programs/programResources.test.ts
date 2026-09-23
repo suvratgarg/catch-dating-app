@@ -82,6 +82,8 @@ for (const scope of scopes) {
       const db = new FakeFirestore(resourceSeed());
       db.updateDoc("programStaffGrants/program-1__dispatcher-1", {
         duties: [{duty: "programCoordinator",
+          expiresAtMillis: 1_800_086_400_000,
+
           pickupPointIds: [], hotelIds: []}],
       });
       db.beforeCommit = async () => {

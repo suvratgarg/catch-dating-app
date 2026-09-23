@@ -19,11 +19,14 @@ void main() {
     'status': 'active',
     'actorRole': 'staff',
     'capabilities': ['arrivalsTransport'],
-    'duties': [
+    'duties': <Map<String, Object?>>[
       {
         'duty': 'airportGreeter',
         'pickupPointIds': ['t3'],
         'hotelIds': [],
+        'expiresAtMillis': DateTime.now()
+            .add(Duration(hours: expired ? -1 : 1))
+            .millisecondsSinceEpoch,
       },
     ],
     'grantExpiresAtMillis': DateTime.now()
@@ -55,7 +58,13 @@ void main() {
     live: () async => throw error,
     parse: (value) =>
         requiredMap(value, 'test snapshot').cast<String, Object?>(),
-    allowsAccess: (a) => canReadProgramStation(a, station, dispatch: false),
+    allowsAccess: (a) => canReadProgramStation(
+      a,
+      station,
+      dispatch: false,
+      now: DateTime.now(),
+      forSnapshot: true,
+    ),
   );
 
   setUp(() {
@@ -181,4 +190,127 @@ void main() {
       );
     }
   });
+  test('expired airport duty preserves longer hotel and work access', () async {
+    final raw = access();
+    final duties = raw['duties']! as List<Map<String, Object?>>;
+    duties.first['expiresAtMillis'] = DateTime.now()
+        .subtract(const Duration(seconds: 1))
+        .millisecondsSinceEpoch;
+    duties.add({
+      'duty': 'hotelDesk',
+      'pickupPointIds': [],
+      'hotelIds': ['hotel'],
+      'expiresAtMillis': DateTime.now()
+          .add(const Duration(hours: 1))
+          .millisecondsSinceEpoch,
+    });
+    await store.save('account', programSnapshotScope('work', 'p1'), raw);
+    await store.save('account', scope, {'programId': 'p1', 'guest': 'Private'});
+    await expectLater(
+      read(const NetworkException('connection-failed', 'Offline')),
+      throwsA(isA<NetworkException>()),
+    );
+    final result = await readProgramWithSnapshot(
+      accountId: 'account',
+      programId: 'p1',
+      scope: programSnapshotScope('work', 'p1'),
+      store: store,
+      isCurrentAccount: () => true,
+      live: () async =>
+          throw const NetworkException('connection-failed', 'Offline'),
+      parse: ProgramWorkAccess.fromCallableData,
+    );
+    expect(
+      result.value.hasDuty(
+        ProgramStaffDuty.airportGreeter,
+        now: DateTime.now(),
+      ),
+      isFalse,
+    );
+    expect(
+      result.value.hasDuty(ProgramStaffDuty.hotelDesk, now: DateTime.now()),
+      isTrue,
+    );
+    expect(
+      result.value.hotelScope(ProgramStaffDuty.hotelDesk, now: DateTime.now()),
+      {'hotel'},
+    );
+  });
+
+  test(
+    'expired broad tuple cannot expose its rows via a remaining narrow tuple',
+    () async {
+      final raw = access();
+      final duties = raw['duties']! as List<Map<String, Object?>>;
+      duties.add({
+        'duty': 'airportGreeter',
+        'pickupPointIds': ['t3'],
+        'hotelIds': [],
+        'expiresAtMillis': DateTime.now()
+            .subtract(const Duration(seconds: 1))
+            .millisecondsSinceEpoch,
+      });
+      duties.first['hotelIds'] = ['hotel'];
+      await store.save('account', programSnapshotScope('work', 'p1'), raw);
+      await store.save('account', scope, {
+        'programId': 'p1',
+        'guest': 'Private',
+      });
+      await expectLater(
+        read(const NetworkException('connection-failed', 'Offline')),
+        throwsA(isA<NetworkException>()),
+      );
+    },
+  );
+
+  test('legacy snapshot without assignment expiry fails closed', () async {
+    final raw = access();
+    (raw['duties']! as List<Map<String, Object?>>).first.remove(
+      'expiresAtMillis',
+    );
+    await store.save('account', programSnapshotScope('work', 'p1'), raw);
+    await store.save('account', scope, {'programId': 'p1', 'guest': 'Private'});
+    await expectLater(
+      read(const NetworkException('connection-failed', 'Offline')),
+      throwsA(isA<NetworkException>()),
+    );
+    expect(await store.load('account', scope), isNull);
+  });
+  test(
+    'fresh narrower work access discards broad snapshots and late saves',
+    () async {
+      await seed();
+      final generation = store.generation('account', 'p1');
+      final narrowed = access();
+      (narrowed['duties']! as List<Map<String, Object?>>).first['hotelIds'] = [
+        'hotel',
+      ];
+      await store.save(
+        'account',
+        programSnapshotScope('work', 'p1'),
+        narrowed,
+        expectedGeneration: generation,
+      );
+      expect(await store.load('account', scope), isNull);
+      await store.save('account', scope, {
+        'programId': 'p1',
+        'guest': 'Private',
+      }, expectedGeneration: generation);
+      expect(await store.load('account', scope), isNull);
+    },
+  );
+
+  test(
+    'initializing the new cache removes obsolete private snapshots',
+    () async {
+      SharedPreferences.setMockInitialValues({
+        'program_read_snapshots_v1_account': '{"private":"old guest"}',
+        'unrelatedPreference': 'keep',
+      });
+      await store.load('account', scope);
+      final prefs = await SharedPreferences.getInstance();
+      expect(prefs.containsKey('program_read_snapshots_v1_account'), isFalse);
+      expect(prefs.getString('unrelatedPreference'), 'keep');
+    },
+  );
 }

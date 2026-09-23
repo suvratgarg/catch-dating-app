@@ -48,7 +48,7 @@
           "duties": {
             "type": "array",
             "items": {
-              "$ref": "../shared/program_common.schema.json#/definitions/programStaffDutyAssignment"
+              "$ref": "../shared/program_common.schema.json#/definitions/programStaffGrantedDuty"
             }
           },
           "status": {

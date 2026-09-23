@@ -143,7 +143,8 @@ test("staff without coordinator duty cannot import", async () => {
     ...seed(),
     "programStaffGrants/program-1__greeter-1": {
       programId: "program-1", organizerId: "org-1", uid: "greeter-1",
-      status: "active", duties: [{duty: "airportGreeter"}],
+      status: "active", duties: [{duty: "airportGreeter",
+        pickupPointIds: [], hotelIds: [], expiresAtMillis: NOW + 3600_000}],
       expiresAt: ts(NOW + 3600_000),
     },
   });

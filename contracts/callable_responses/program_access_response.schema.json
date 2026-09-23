@@ -57,7 +57,7 @@
     "duties": {
       "type": "array",
       "items": {
-        "$ref": "../shared/program_common.schema.json#/definitions/programStaffDutyAssignment"
+        "$ref": "../shared/program_common.schema.json#/definitions/programStaffGrantedDuty"
       },
       "description": "Managers receive an empty list meaning unrestricted; staff receive their granted duties."
     },

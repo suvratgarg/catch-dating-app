@@ -49,7 +49,9 @@ for (const [path, patch, code] of [
 test("dispatch enforces both resource scopes from the same duty", async () => {
   const seed = readySeed();
   seed["programStaffGrants/program-1__dispatcher-1"].duties = [{
-    duty: "transportDispatcher", pickupPointIds: ["pp-t3"],
+    duty: "transportDispatcher",
+    expiresAtMillis: 1_800_086_400_000,
+    pickupPointIds: ["pp-t3"],
     hotelIds: ["hotel-2"],
   }];
   await assert.rejects(dispatch(new FakeFirestore(seed)),
@@ -121,7 +123,9 @@ for (const action of [markProgramTripArrivedHandler, voidProgramTripHandler]) {
       clientOperationId: "complete-1"};
     await action(request(data, "dispatcher-1"), deps(db));
     db.updateDoc("programStaffGrants/program-1__dispatcher-1", {duties: [{
-      duty: "transportDispatcher", pickupPointIds: ["pp-t1"], hotelIds: [],
+      duty: "transportDispatcher",
+      expiresAtMillis: 1_800_086_400_000,
+      pickupPointIds: ["pp-t1"], hotelIds: [],
     }]});
     await assert.rejects(action(request(data, "dispatcher-1"), deps(db)),
       isCode("permission-denied"));

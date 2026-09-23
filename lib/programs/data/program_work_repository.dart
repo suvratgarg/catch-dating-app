@@ -505,8 +505,13 @@ Future<ProgramReadView<ProgramArrivalsRoster>> programArrivalsRosterView(
       programArrivalsRosterProvider(programId, pickupPointId).future,
     ),
     ProgramArrivalsRoster.fromCallableData,
-    allowsAccess: (access) =>
-        canReadProgramStation(access, pickupPointId, dispatch: false),
+    allowsAccess: (access) => canReadProgramStation(
+      access,
+      pickupPointId,
+      dispatch: false,
+      now: DateTime.now(),
+      forSnapshot: true,
+    ),
   );
 }
 
@@ -542,8 +547,13 @@ Future<ProgramReadView<ProgramTransportPlan>> programTransportPlanView(
       programTransportPlanProvider(programId, pickupPointId).future,
     ),
     ProgramTransportPlan.fromCallableData,
-    allowsAccess: (access) =>
-        canReadProgramStation(access, pickupPointId, dispatch: true),
+    allowsAccess: (access) => canReadProgramStation(
+      access,
+      pickupPointId,
+      dispatch: true,
+      now: DateTime.now(),
+      forSnapshot: true,
+    ),
   );
 }
 

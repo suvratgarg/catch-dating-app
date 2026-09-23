@@ -88151,6 +88151,14 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['programCoordinator', 'airportGreeter', 'hotelDesk', 'transportDispatcher', 'reconciliationViewer'],
   );
 
+  static const programAccessCallableResponseDutiesItemsExpiresAtMillis = CatchContractFieldConstraints(
+    path: 'programAccessCallableResponse.duties.items.expiresAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
   static const programAccessCallableResponseDutiesItemsHotelIds = CatchContractFieldConstraints(
     path: 'programAccessCallableResponse.duties.items.hotelIds',
     required: true,
@@ -89647,6 +89655,14 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['programCoordinator', 'airportGreeter', 'hotelDesk', 'transportDispatcher', 'reconciliationViewer'],
   );
 
+  static const programStaffGrantDocumentDutiesItemsExpiresAtMillis = CatchContractFieldConstraints(
+    path: 'programStaffGrantDocument.duties.items.expiresAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
   static const programStaffGrantDocumentDutiesItemsHotelIds = CatchContractFieldConstraints(
     path: 'programStaffGrantDocument.duties.items.hotelIds',
     required: true,
@@ -89993,6 +90009,14 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     enumValues: <String>['programCoordinator', 'airportGreeter', 'hotelDesk', 'transportDispatcher', 'reconciliationViewer'],
+  );
+
+  static const programStaffListCallableResponseMembersItemsDutiesItemsExpiresAtMillis = CatchContractFieldConstraints(
+    path: 'programStaffListCallableResponse.members.items.duties.items.expiresAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
   );
 
   static const programStaffListCallableResponseMembersItemsDutiesItemsHotelIds = CatchContractFieldConstraints(
@@ -118678,6 +118702,7 @@ abstract final class CatchContractConstraints {
     'programAccessCallableResponse.capabilities.items': programAccessCallableResponseCapabilitiesItems,
     'programAccessCallableResponse.duties': programAccessCallableResponseDuties,
     'programAccessCallableResponse.duties.items.duty': programAccessCallableResponseDutiesItemsDuty,
+    'programAccessCallableResponse.duties.items.expiresAtMillis': programAccessCallableResponseDutiesItemsExpiresAtMillis,
     'programAccessCallableResponse.duties.items.hotelIds': programAccessCallableResponseDutiesItemsHotelIds,
     'programAccessCallableResponse.duties.items.hotelIds.items': programAccessCallableResponseDutiesItemsHotelIdsItems,
     'programAccessCallableResponse.duties.items.pickupPointIds': programAccessCallableResponseDutiesItemsPickupPointIds,
@@ -118883,6 +118908,7 @@ abstract final class CatchContractConstraints {
     'programStaffGrantDocument.displayName': programStaffGrantDocumentDisplayName,
     'programStaffGrantDocument.duties': programStaffGrantDocumentDuties,
     'programStaffGrantDocument.duties.items.duty': programStaffGrantDocumentDutiesItemsDuty,
+    'programStaffGrantDocument.duties.items.expiresAtMillis': programStaffGrantDocumentDutiesItemsExpiresAtMillis,
     'programStaffGrantDocument.duties.items.hotelIds': programStaffGrantDocumentDutiesItemsHotelIds,
     'programStaffGrantDocument.duties.items.hotelIds.items': programStaffGrantDocumentDutiesItemsHotelIdsItems,
     'programStaffGrantDocument.duties.items.pickupPointIds': programStaffGrantDocumentDutiesItemsPickupPointIds,
@@ -118929,6 +118955,7 @@ abstract final class CatchContractConstraints {
     'programStaffListCallableResponse.members.items.displayName': programStaffListCallableResponseMembersItemsDisplayName,
     'programStaffListCallableResponse.members.items.duties': programStaffListCallableResponseMembersItemsDuties,
     'programStaffListCallableResponse.members.items.duties.items.duty': programStaffListCallableResponseMembersItemsDutiesItemsDuty,
+    'programStaffListCallableResponse.members.items.duties.items.expiresAtMillis': programStaffListCallableResponseMembersItemsDutiesItemsExpiresAtMillis,
     'programStaffListCallableResponse.members.items.duties.items.hotelIds': programStaffListCallableResponseMembersItemsDutiesItemsHotelIds,
     'programStaffListCallableResponse.members.items.duties.items.hotelIds.items': programStaffListCallableResponseMembersItemsDutiesItemsHotelIdsItems,
     'programStaffListCallableResponse.members.items.duties.items.pickupPointIds': programStaffListCallableResponseMembersItemsDutiesItemsPickupPointIds,

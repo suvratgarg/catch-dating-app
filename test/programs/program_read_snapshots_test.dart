@@ -63,14 +63,14 @@ void main() {
 
     test('returns null for corrupted stored json', () async {
       SharedPreferences.setMockInitialValues({
-        'program_read_snapshots_v1_acct_1': 'not-json{{{',
+        'program_read_snapshots_v2_acct_1': 'not-json{{{',
       });
       expect(await store().load('acct_1', 'arrivals:p1:t3'), isNull);
     });
 
     test('returns null for malformed entries', () async {
       SharedPreferences.setMockInitialValues({
-        'program_read_snapshots_v1_acct_1':
+        'program_read_snapshots_v2_acct_1':
             '{"arrivals:p1:t3":{"data":{"rows":[]}}}',
       });
       final cache = store();

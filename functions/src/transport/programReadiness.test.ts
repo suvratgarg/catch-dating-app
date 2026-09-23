@@ -51,7 +51,9 @@ test("replayed readiness requires current leg access", async () => {
   await setProgramTravelReadinessHandler(
     request(data(), "greeter-1"), deps(db));
   db.updateDoc("programStaffGrants/program-1__greeter-1", {duties: [{
-    duty: "airportGreeter", pickupPointIds: ["pp-t1"], hotelIds: [],
+    duty: "airportGreeter",
+    expiresAtMillis: 1_800_086_400_000,
+    pickupPointIds: ["pp-t1"], hotelIds: [],
   }]});
   await assert.rejects(setProgramTravelReadinessHandler(
     request(data(), "greeter-1"), deps(db)), isCode("permission-denied"));
@@ -61,9 +63,13 @@ test("dispatcher duty elsewhere cannot release another greeter's claim",
   async () => {
     const seed = baseSeed();
     seed["programStaffGrants/program-1__greeter-1"].duties = [{
-      duty: "airportGreeter", pickupPointIds: ["pp-t3"], hotelIds: [],
+      duty: "airportGreeter",
+      expiresAtMillis: 1_800_086_400_000,
+      pickupPointIds: ["pp-t3"], hotelIds: [],
     }, {
-      duty: "transportDispatcher", pickupPointIds: ["pp-t1"], hotelIds: [],
+      duty: "transportDispatcher",
+      expiresAtMillis: 1_800_086_400_000,
+      pickupPointIds: ["pp-t1"], hotelIds: [],
     }];
     seed["programTravelLegs/leg-1"].claimedByUid = "greeter-2";
     const db = new FakeFirestore(seed);

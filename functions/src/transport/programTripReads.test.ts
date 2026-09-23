@@ -8,7 +8,9 @@ test("trip ledger does not expose another dispatch station's passengers",
   async () => {
     const seed = baseSeed();
     seed["programStaffGrants/program-1__dispatcher-1"].duties = [{
-      duty: "transportDispatcher", pickupPointIds: ["pp-t3"], hotelIds: [],
+      duty: "transportDispatcher",
+      expiresAtMillis: 1_800_086_400_000,
+      pickupPointIds: ["pp-t3"], hotelIds: [],
     }];
     for (const [id, pickupPointId, legId] of [
       ["visible", "pp-t3", "leg-1"], ["hidden", "pp-t1", "leg-2"],
@@ -33,10 +35,12 @@ test("trip ledger applies each granted scope before unioning duties",
   async () => {
     const seed = baseSeed();
     seed["programStaffGrants/program-1__dispatcher-1"].duties = [{
-      duty: "reconciliationViewer",
+      duty: "reconciliationViewer", expiresAtMillis: 1_800_086_400_000,
       pickupPointIds: ["pp-t3"], hotelIds: ["hotel-2"],
     }, {
-      duty: "transportDispatcher", pickupPointIds: ["pp-t1"], hotelIds: [],
+      duty: "transportDispatcher",
+      expiresAtMillis: 1_800_086_400_000,
+      pickupPointIds: ["pp-t1"], hotelIds: [],
     }];
     for (const [id, pickupPointId, hotel] of [
       ["a", "pp-t3", "hotel-1"], ["b", "pp-t3", "hotel-2"],
@@ -58,7 +62,9 @@ test("a busy unassigned station cannot crowd assigned trips out of the page",
   async () => {
     const seed = baseSeed();
     seed["programStaffGrants/program-1__dispatcher-1"].duties = [{
-      duty: "transportDispatcher", pickupPointIds: ["pp-t3"], hotelIds: [],
+      duty: "transportDispatcher",
+      expiresAtMillis: 1_800_086_400_000,
+      pickupPointIds: ["pp-t3"], hotelIds: [],
     }];
     for (let index = 0; index < 205; index++) {
       seed[`transportTrips/hidden-${index}`] = {

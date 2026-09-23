@@ -8339,7 +8339,7 @@ export interface ProgramStaffGrantDocument {
   displayName: string;
   phoneLastFour: string;
   /**
-   * At most one assignment per duty; each duty independently scopes pickup points and hotels.
+   * Up to eight independently expiring scope tuples. Identical tuples may be renewed; different tuples remain separate.
    *
    * @minItems 1
    * @maxItems 8
@@ -8352,17 +8352,21 @@ export interface ProgramStaffGrantDocument {
       | "transportDispatcher"
       | "reconciliationViewer";
     /**
-     * Station scope for airportGreeter/transportDispatcher duties. Empty means all pickup points in the program.
+     * Pickup restriction; empty means all program pickup points. Both resource restrictions must be met by the same assignment.
      *
      * @maxItems 32
      */
     pickupPointIds: string[];
     /**
-     * Hotel scope for hotelDesk duties. Empty means all hotels in the program.
+     * Destination restriction; empty means all program hotels. Restrictions from different assignments never combine into new routes.
      *
      * @maxItems 64
      */
     hotelIds: string[];
+    /**
+     * Exclusive expiry of this exact duty and resource scope. Independent of other assignments.
+     */
+    expiresAtMillis: number;
   }[];
   status: "active" | "revoked";
   createdBy: string;
@@ -8397,13 +8401,13 @@ export interface ProgramStaffInviteDocument {
       | "transportDispatcher"
       | "reconciliationViewer";
     /**
-     * Station scope for airportGreeter/transportDispatcher duties. Empty means all pickup points in the program.
+     * Pickup restriction; empty means all program pickup points. Both resource restrictions must be met by the same assignment.
      *
      * @maxItems 32
      */
     pickupPointIds: string[];
     /**
-     * Hotel scope for hotelDesk duties. Empty means all hotels in the program.
+     * Destination restriction; empty means all program hotels. Restrictions from different assignments never combine into new routes.
      *
      * @maxItems 64
      */

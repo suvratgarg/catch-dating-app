@@ -45,14 +45,17 @@ Future<ProgramReadView<T>> readProgramWithSnapshot<T>({
     );
     if (work == null) rethrow;
     final access = ProgramWorkAccess.fromCallableData(work.data);
+    final now = DateTime.now();
     if (access.programId != programId ||
         (!access.isManager &&
             (access.grantExpiresAt == null ||
-                !access.grantExpiresAt!.isAfter(DateTime.now()))) ||
-        (allowsAccess != null && !allowsAccess(access))) {
+                !access.grantExpiresAt!.isAfter(now) ||
+                access.activeDutiesAt(now).isEmpty))) {
       await store.clearProgram(accountId, programId);
       rethrow;
     }
+    // One expired duty must not erase other, independently valid work access.
+    if (allowsAccess != null && !allowsAccess(access)) rethrow;
     final snapshot = await store.load(accountId, scope);
     if (snapshot == null) rethrow;
     final payload = requiredMap(snapshot.data, 'saved program data');

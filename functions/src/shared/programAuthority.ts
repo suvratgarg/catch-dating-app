@@ -88,23 +88,36 @@ export async function requireProgramAccess(params: {
       "This account does not have active program access."
     );
   }
-  return {program, organizer, role: "staff", grant};
+  const duties = activeProgramDuties(grant, now.toMillis());
+  if (duties.length === 0) {
+    throw new HttpsError("permission-denied",
+      "No active program duties. Ask a manager to reissue access.");
+  }
+  return {program, organizer, role: "staff", grant: {...grant, duties}};
 }
 
-function findDuty(grant: ProgramStaffGrantDocument,
-  duty: ProgramStaffDuty): ProgramDutyAssignment | undefined {
-  return (grant.duties ?? []).find((assignment) => assignment.duty === duty);
+/** Legacy assignments without their own expiry cannot prove authority. */
+export function activeProgramDuties(grant: ProgramStaffGrantDocument,
+  nowMillis: number): ProgramDutyAssignment[] {
+  if (grant.status !== "active" ||
+      staffTimestampMillis(grant.expiresAt) <= nowMillis) return [];
+  return (grant.duties ?? []).filter((assignment) =>
+    Number.isSafeInteger(assignment.expiresAtMillis) &&
+    assignment.expiresAtMillis > nowMillis &&
+    assignment.expiresAtMillis <= staffTimestampMillis(grant.expiresAt) &&
+    Array.isArray(assignment.pickupPointIds) &&
+    Array.isArray(assignment.hotelIds) &&
+    (assignment.duty !== "programCoordinator" ||
+      (assignment.pickupPointIds.length === 0 &&
+       assignment.hotelIds.length === 0)));
 }
 
-/** Coordinators implicitly satisfy every operational duty. */
+/** Coordinators implicitly satisfy every operational duty. Preserve tuples. */
 export function dutyAssignments(access: ProgramAccess,
   duty: ProgramStaffDuty): ProgramDutyAssignment[] {
   if (access.role === "manager") return [];
-  const grant = access.grant!;
-  const coordinator = findDuty(grant, "programCoordinator");
-  if (coordinator) return [coordinator];
-  const assignment = findDuty(grant, duty);
-  return assignment ? [assignment] : [];
+  return access.grant!.duties.filter((assignment) =>
+    assignment.duty === "programCoordinator" || assignment.duty === duty);
 }
 
 export function requireProgramDuty(access: ProgramAccess,

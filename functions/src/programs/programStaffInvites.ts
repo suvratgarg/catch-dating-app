@@ -17,6 +17,7 @@ import {appCheckCallableOptionsWithLimits} from "../shared/callableOptions";
 import {checkRateLimit} from "../shared/rateLimit";
 import {validateCallableWithAjv} from "../shared/validation";
 import {
+  activeProgramDuties,
   loadProgramBundle,
   nextRevision,
   programStaffGrantId,
@@ -25,6 +26,7 @@ import {staffTimestampMillis} from "../shared/eventOperatorAuthority";
 import {normalizeRosterPhone} from "../events/eventAttendees";
 import {
   dedupeDuties,
+  grantDuties,
   maxGrantDurationMillis,
   maxProgramStaff,
   requireProgramManager,
@@ -218,12 +220,12 @@ export async function claimProgramStaffInviteHandler(
       );
     }
     const mergedDuties = dedupeDuties([
-      ...(currentActive ? current!.duties : []),
-      ...invite.duties,
+      ...(currentActive ?
+        activeProgramDuties(current!, committedAt.toMillis()) : []),
+      ...grantDuties(invite.duties, staffTimestampMillis(invite.expiresAt)),
     ]);
     const grantExpiryMillis = Math.max(
-      currentActive ? staffTimestampMillis(current!.expiresAt) : 0,
-      staffTimestampMillis(invite.expiresAt));
+      ...mergedDuties.map((assignment) => assignment.expiresAtMillis));
     const grant: ProgramStaffGrantDocument = {
       organizerId: invite.organizerId,
       programId: invite.programId,

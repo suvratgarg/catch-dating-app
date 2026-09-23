@@ -45,9 +45,13 @@ test("arrivals duty scopes keep pickup AND hotel within the same assignment",
   async () => {
     const seed = baseSeed();
     seed["programStaffGrants/program-1__dispatcher-1"].duties = [{
-      duty: "airportGreeter", pickupPointIds: ["pp-t3"], hotelIds: ["hotel-2"],
+      duty: "airportGreeter",
+      expiresAtMillis: 1_800_086_400_000,
+      pickupPointIds: ["pp-t3"], hotelIds: ["hotel-2"],
     }, {
-      duty: "transportDispatcher", pickupPointIds: ["pp-t1"], hotelIds: [],
+      duty: "transportDispatcher",
+      expiresAtMillis: 1_800_086_400_000,
+      pickupPointIds: ["pp-t1"], hotelIds: [],
     }];
     seed["programTravelLegs/hotel-two"] = {
       ...seed["programTravelLegs/leg-1"], destinationHotelId: "hotel-2",
@@ -63,9 +67,13 @@ test("an explicit station request does not inherit another duty's hotel scope",
   async () => {
     const seed = baseSeed();
     seed["programStaffGrants/program-1__dispatcher-1"].duties = [{
-      duty: "airportGreeter", pickupPointIds: ["pp-t3"], hotelIds: ["hotel-2"],
+      duty: "airportGreeter",
+      expiresAtMillis: 1_800_086_400_000,
+      pickupPointIds: ["pp-t3"], hotelIds: ["hotel-2"],
     }, {
-      duty: "transportDispatcher", pickupPointIds: ["pp-t1"], hotelIds: [],
+      duty: "transportDispatcher",
+      expiresAtMillis: 1_800_086_400_000,
+      pickupPointIds: ["pp-t1"], hotelIds: [],
     }];
     const result = await getProgramArrivalsRosterHandler(request({
       programId: "program-1", pickupPointId: "pp-t3",
@@ -78,6 +86,8 @@ test("resource queries obey the Firestore disjunction limit with readiness IN",
     const pickupPointIds = Array.from({length: 12}, (_, i) => `pickup-${i}`);
     const hotelIds = Array.from({length: 24}, (_, i) => `hotel-${i}`);
     const scopes = programResourceScopes([{duty: "transportDispatcher",
+      expiresAtMillis: 1_800_086_400_000,
+
       pickupPointIds, hotelIds}], {baseDisjunctions: 3});
     const pairs = new Set<string>();
     for (const scope of scopes) {

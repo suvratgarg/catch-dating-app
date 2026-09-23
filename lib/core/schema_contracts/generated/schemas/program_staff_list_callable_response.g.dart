@@ -60,6 +60,7 @@ const schemaProgramStaffListCallableResponseSchema = <String, Object?>{
                 'duty',
                 'pickupPointIds',
                 'hotelIds',
+                'expiresAtMillis',
               ],
               'properties': <String, Object?>{
                 'duty': <String, Object?>{
@@ -81,7 +82,7 @@ const schemaProgramStaffListCallableResponseSchema = <String, Object?>{
                     'minLength': 1,
                     'maxLength': 180,
                   },
-                  'description': 'Station scope for airportGreeter/transportDispatcher duties. Empty means all pickup points in the program.',
+                  'description': 'Pickup restriction; empty means all program pickup points. Both resource restrictions must be met by the same assignment.',
                 },
                 'hotelIds': <String, Object?>{
                   'type': 'array',
@@ -92,7 +93,13 @@ const schemaProgramStaffListCallableResponseSchema = <String, Object?>{
                     'minLength': 1,
                     'maxLength': 180,
                   },
-                  'description': 'Hotel scope for hotelDesk duties. Empty means all hotels in the program.',
+                  'description': 'Destination restriction; empty means all program hotels. Restrictions from different assignments never combine into new routes.',
+                },
+                'expiresAtMillis': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 1,
+                  'maximum': 9007199254740991,
+                  'description': 'Exclusive expiry of this exact duty and resource scope. Independent of other assignments.',
                 },
               },
             },
