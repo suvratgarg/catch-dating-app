@@ -35,10 +35,15 @@
       "type": "string",
       "enum": [
         "programCoordinator",
+        "guestRelations",
+        "communications",
+        "functionCheckIn",
+        "functionLead",
         "airportGreeter",
         "hotelDesk",
         "transportDispatcher",
-        "reconciliationViewer"
+        "reconciliationViewer",
+        "stakeholderViewer"
       ]
     },
     "programStaffDutyAssignment": {
@@ -70,6 +75,15 @@
             "$ref": "event_common.schema.json#/definitions/documentId"
           },
           "description": "Destination restriction; empty means all program hotels. Restrictions from different assignments never combine into new routes."
+        },
+        "functionIds": {
+          "type": "array",
+          "maxItems": 64,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "event_common.schema.json#/definitions/documentId"
+          },
+          "description": "Function restriction for functionCheckIn and functionLead duties; absent or empty means all program functions. Optional on documents written before function-scoped duties existed."
         }
       }
     },
@@ -200,6 +214,106 @@
         "responded"
       ]
     },
+    "programFunctionInvitationMode": {
+      "type": "string",
+      "enum": [
+        "allGuests",
+        "selectedGuests"
+      ],
+      "description": "Whether the function invites every program guest or only the programFunctionGuests rows marked invited."
+    },
+    "programFunctionAttendanceStatus": {
+      "type": "string",
+      "enum": [
+        "expected",
+        "checkedIn",
+        "noShow"
+      ],
+      "description": "Door/arrival state for one guest at one function. expected is the default for invited guests; noShow is marked after the function ends."
+    },
+    "programHouseholdSide": {
+      "type": "string",
+      "enum": [
+        "partnerA",
+        "partnerB",
+        "mutual"
+      ],
+      "description": "Which side of the couple or family a household belongs to; display labels live on organizerPrograms.householdSideLabels."
+    },
+    "programEntitlementSnapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sku",
+        "limits",
+        "capabilitiesAllowed",
+        "grantedAtMillis",
+        "receiptRef"
+      ],
+      "description": "Immutable copy of the organizer entitlement terms captured when the program was created; later plan changes do not rewrite program history.",
+      "properties": {
+        "sku": {
+          "type": "string",
+          "pattern": "^[a-z0-9_]{1,60}$",
+          "description": "Catalog key from contracts/catalogs/organizer_entitlement_skus.json at grant time."
+        },
+        "limits": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "guests",
+            "functions",
+            "staff",
+            "momentsPerFunction"
+          ],
+          "properties": {
+            "guests": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100000
+            },
+            "functions": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200
+            },
+            "staff": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 500
+            },
+            "momentsPerFunction": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 50
+            }
+          }
+        },
+        "capabilitiesAllowed": {
+          "type": "array",
+          "maxItems": 8,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/definitions/programCapability"
+          },
+          "description": "Ceiling on organizerPrograms.capabilities; an enabled capability must also appear here."
+        },
+        "grantedAtMillis": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "receiptRef": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 180,
+          "description": "Manual invoice or checkout reference recorded by the granting admin."
+        }
+      }
+    },
     "travelLegKind": {
       "type": "string",
       "enum": [
@@ -328,6 +442,9 @@
         },
         "hotelIds": {
           "$ref": "#/definitions/programStaffDutyAssignment/properties/hotelIds"
+        },
+        "functionIds": {
+          "$ref": "#/definitions/programStaffDutyAssignment/properties/functionIds"
         },
         "expiresAtMillis": {
           "type": "integer",

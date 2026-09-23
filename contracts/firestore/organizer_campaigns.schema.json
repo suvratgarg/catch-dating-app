@@ -21,6 +21,19 @@
     "savedAudienceId": {"type": ["string", "null"], "minLength": 1, "maxLength": 180, "description": "Customers-owned reusable audience used by every new campaign. Null or absent only on legacy segment-authored campaigns."},
     "savedAudienceRevision": {"type": ["integer", "null"], "minimum": 1, "maximum": 9007199254740991},
     "savedAudienceDefinitionHash": {"type": ["string", "null"], "pattern": "^[a-f0-9]{64}$"},
+    "recipientSource": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["kind"],
+      "description": "Where recipients resolve from. Absent reads as savedAudience backed by savedAudienceId. kind=programSelection draws recipients from programFunctionGuests/programGuests instead of CRM audiences.",
+      "properties": {
+        "kind": {"type": "string", "enum": ["savedAudience", "programSelection"]},
+        "programId": {"type": ["string", "null"], "minLength": 1, "maxLength": 180, "description": "Required when kind=programSelection; ignored otherwise."},
+        "functionIds": {"type": ["array", "null"], "maxItems": 32, "uniqueItems": true, "items": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"}, "description": "Restricts to guests invited to these functions; null or empty means every function in the program."},
+        "rsvpStatuses": {"type": ["array", "null"], "maxItems": 4, "uniqueItems": true, "items": {"$ref": "../shared/program_common.schema.json#/definitions/programRsvpStatus"}, "description": "Restricts to matching per-function RSVP states; null or empty means every status."},
+        "householdDedupe": {"type": ["boolean", "null"], "description": "When true, one message is sent per household primary contact instead of per guest. Default false."}
+      }
+    },
     "connectionId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
     "templateId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
     "templateVariables": {"type": "object", "maxProperties": 20, "propertyNames": {"pattern": "^[A-Za-z][A-Za-z0-9_]{0,63}$"}, "additionalProperties": {"type": "string", "minLength": 1, "maxLength": 240}},

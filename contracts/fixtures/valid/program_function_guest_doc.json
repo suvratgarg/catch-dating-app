@@ -1,0 +1,15 @@
+{
+  "programId": "program-1",
+  "organizerId": "org-1",
+  "functionId": "function-sangeet",
+  "guestId": "guest-1",
+  "invited": true,
+  "rsvpStatus": "attending",
+  "attendanceStatus": "expected",
+  "partySize": 3,
+  "respondedAt": {"_seconds": 1786625400, "_nanoseconds": 0},
+  "responseNote": "Two kids; vegetarian meals.",
+  "createdAt": {"_seconds": 1786625400, "_nanoseconds": 0},
+  "updatedAt": {"_seconds": 1786625400, "_nanoseconds": 0},
+  "revision": 1
+}
