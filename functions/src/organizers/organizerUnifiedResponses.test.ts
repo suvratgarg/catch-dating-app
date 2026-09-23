@@ -262,7 +262,8 @@ test("answer filters without a version bind to the active version and cursor",
       ...response("new-a", 200), ...response("new-b", 100),
       "organizers/org": {ownerUserId: "owner", hostUserIds: ["owner"],
         hostProfiles: []},
-      "organizerForms/form": {organizerId: "org", activeVersionId: "v2"},
+      "organizerForms/form": {organizerId: "org", activeVersionId: "v2",
+        publishedVersion: 2},
     };
     const definition = {sections: [{questions: [{questionId: "city",
       label: "City", kind: "singleChoice", hostPresentation: "filterable",
@@ -288,6 +289,8 @@ test("answer filters without a version bind to the active version and cursor",
       listOrganizerFormResponsesHandler({data: {...query, ...overrides},
         auth: {uid: "owner"}} as CallableRequest<unknown>, deps);
     const first = await run();
+    assert.deepEqual(Reflect.get(first, "versionScope"),
+      {activeVersionId: "v2", publishedVersion: 2});
     assert.deepEqual(first.entries?.map((row) => row.entryId),
       ["response:new-a"]);
     assert.ok(first.nextCursor);
@@ -299,6 +302,8 @@ test("answer filters without a version bind to the active version and cursor",
     await assert.rejects(run({versionId: "v1", cursor: first.nextCursor}),
       {code: "invalid-argument"});
     docs["organizerForms/form"].activeVersionId = "v1";
+    assert.deepEqual(Reflect.get(await run(), "versionScope"),
+      {activeVersionId: "v1", publishedVersion: 2});
     await assert.rejects(run({cursor: first.nextCursor}),
       {code: "invalid-argument"});
   });

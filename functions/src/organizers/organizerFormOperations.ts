@@ -108,6 +108,8 @@ export async function listOrganizerFormResponsesHandler(
   const versions = new Map<string, OrganizerFormVersionDocument>();
   let answerFilterOptions: ReturnType<typeof responseFilterOptions> = [];
   let answerVersionId: string | null = null;
+  let versionScope: {activeVersionId: string | null;
+    publishedVersion: number} | null = null;
   if (data.formId) {
     const formSnap = await db.collection("organizerForms")
       .doc(data.formId).get();
@@ -138,6 +140,8 @@ export async function listOrganizerFormResponsesHandler(
       }
     } else {
       const form = requireOwnedForm(formSnap, data.organizerId);
+      versionScope = {activeVersionId: form.activeVersionId,
+        publishedVersion: form.publishedVersion};
       const versionId = data.versionId ?? form.activeVersionId;
       if (versionId) {
         const version = requireOwnedVersion(await db
@@ -173,7 +177,8 @@ export async function listOrganizerFormResponsesHandler(
     })),
   });
   if (data.includeApplications) {
-    return listUnifiedResponses({db, data, filterHash, answerFilterOptions,
+    const result = await listUnifiedResponses({db, data, filterHash,
+      answerFilterOptions,
       project: (docs) => responseRows(db, docs),
       matches: async (response) => {
         if (!matchesResponse(response, data)) return false;
@@ -190,6 +195,7 @@ export async function listOrganizerFormResponsesHandler(
           answerFilters);
       },
     });
+    return Object.assign(result, {versionScope});
   }
   if (data.reviewStatus || data.contactId) {
     throw new HttpsError("invalid-argument",
@@ -254,7 +260,7 @@ export async function listOrganizerFormResponsesHandler(
     if (page.size < responseScanPageSize) break;
   }
   const items = await responseRows(db, matched);
-  return {
+  return Object.assign({
     organizerId: data.organizerId,
     items,
     answerFilterOptions,
@@ -266,7 +272,7 @@ export async function listOrganizerFormResponsesHandler(
         FirebaseFirestore.Timestamp).toMillis(),
       responseId: lastScanned.id,
     }) : null,
-  };
+  }, {versionScope});
 }
 
 /** Returns immutable answers plus expiring private upload links. */
