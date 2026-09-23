@@ -5,6 +5,8 @@ import {requireAuth} from "../shared/auth";
 import {appCheckCallableOptionsWithLimits} from "../shared/callableOptions";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import {moderateText} from "../moderation/textFilter";
+import {dispatchEventChatNotificationCandidates} from
+  "./eventChatNotificationPolicy";
 import {eventChatMembershipId, requireEventChatMember,
   readEventChatAccount, requireEventChatActor} from "./eventChatAccess";
 import {chatHash, chatIdentityReader, emptyReactionCounts, eventChatReactionId,
@@ -46,9 +48,16 @@ export async function sendEventChatMessageHandler(
   await deps.rateLimit(db, uid, "sendEventChatMessage");
   const messageRef = db.collection("eventChatMessages")
     .doc(chatHash([data.eventId, uid, data.requestId]));
-  const payloadHash = chatHash([text, data.replyToMessageId]);
-  return db.runTransaction(async (tx) => {
-    const access = await requireEventChatMember(db, tx, data.eventId, uid);
+  const kind = data.kind ?? "text";
+  const payloadHash = chatHash(kind === "text" ?
+    [text, data.replyToMessageId] : [text, data.replyToMessageId, kind]);
+  const result = await db.runTransaction(async (tx) => {
+    const access = await requireEventChatMember(db, tx, data.eventId, uid,
+      deps.now().toMillis());
+    if (!access.view.canPostMessages ||
+        (kind === "announcement" && !access.view.canManage) ||
+        (access.view.room.status === "announcementsOnly" &&
+          kind !== "announcement")) throw messageUnavailable();
     const existing = await tx.get(messageRef);
     if (existing.exists) {
       const message = requireDoc<Message>(existing, "EventChatMessageDocument");
@@ -76,6 +85,7 @@ export async function sendEventChatMessageHandler(
     const now = deps.now();
     tx.create(messageRef, {eventId: data.eventId,
       organizerId: access.view.organizerId, uid, sequence, text,
+      kind,
       replyToMessageId: data.replyToMessageId, status: "visible", payloadHash,
       reactionCounts: emptyReactionCounts(), createdAt: now, removedAt: null,
     } satisfies Message);
@@ -91,6 +101,16 @@ export async function sendEventChatMessageHandler(
     }
     return {messageId: messageRef.id, sequence, replayed: false};
   });
+  if (!result.replayed) {
+    try {
+      await (deps.notificationDispatch ??
+        dispatchEventChatNotificationCandidates)({eventId: data.eventId,
+        messageId: result.messageId});
+    } catch {
+      // Optional notification delivery cannot undo a committed room message.
+    }
+  }
+  return result;
 }
 
 export async function setEventChatReactionHandler(
@@ -111,6 +131,7 @@ export async function setEventChatReactionHandler(
     .doc(eventChatReactionId(data.messageId, uid));
   return db.runTransaction(async (tx) => {
     const access = await requireEventChatMember(db, tx, data.eventId, uid);
+    if (!access.view.canPostMessages) throw messageUnavailable();
     const receiptSnap = await tx.get(receiptRef);
     if (receiptSnap.exists) {
       const receipt = requireDoc<Receipt>(receiptSnap,
@@ -170,7 +191,8 @@ export async function setEventChatTypingHandler(
   return db.runTransaction(async (tx) => {
     // Withdrawal can clear one's own indicator even after admission is revoked.
     if (data.isTyping) {
-      await requireEventChatMember(db, tx, data.eventId, uid);
+      const access = await requireEventChatMember(db, tx, data.eventId, uid);
+      if (!access.view.canPostMessages) throw messageUnavailable();
     } else {
       await readEventChatAccount(db, tx, uid);
     }

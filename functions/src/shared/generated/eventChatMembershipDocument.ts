@@ -9,7 +9,7 @@ export interface EventChatMembershipDocument {
   eventId: string;
   organizerId: string;
   uid: string;
-  status: "joined" | "left";
+  status: "joined" | "left" | "removed" | "banned";
   revision: number;
   termsVersion: "event-chat-v1";
   /**
@@ -37,4 +37,10 @@ export interface EventChatMembershipDocument {
     _seconds: number;
     _nanoseconds: number;
   };
+  notificationsMuted?: boolean;
+  removedAt?: {
+    _seconds: number;
+    _nanoseconds: number;
+  } | null;
+  removedByUid?: string | null;
 }

@@ -234,6 +234,8 @@ Do not edit it by hand.
 | UpdateEventChatAccessCallablePayload | `callables/update_event_chat_access_payload.schema.json` | `functions/src/shared/generated/updateEventChatAccessCallablePayload.ts` |
 | GetEventChatAccessCallableResponse | `callable_responses/get_event_chat_access_response.schema.json` | `functions/src/shared/generated/getEventChatAccessCallableResponse.ts` |
 | UpdateEventChatAccessCallableResponse | `callable_responses/update_event_chat_access_response.schema.json` | `functions/src/shared/generated/updateEventChatAccessCallableResponse.ts` |
+| ManageEventChatMemberCallablePayload | `callables/manage_event_chat_member_payload.schema.json` | `functions/src/shared/generated/manageEventChatMemberCallablePayload.ts` |
+| ManageEventChatMemberCallableResponse | `callable_responses/manage_event_chat_member_response.schema.json` | `functions/src/shared/generated/manageEventChatMemberCallableResponse.ts` |
 | ListParticipantMessagingPreferencesCallablePayload | `callables/list_participant_messaging_preferences_payload.schema.json` | `functions/src/shared/generated/listParticipantMessagingPreferencesCallablePayload.ts` |
 | ListParticipantMessagingPreferencesCallableResponse | `callable_responses/list_participant_messaging_preferences_response.schema.json` | `functions/src/shared/generated/listParticipantMessagingPreferencesCallableResponse.ts` |
 | WithdrawParticipantMessagingPermissionCallablePayload | `callables/withdraw_participant_messaging_permission_payload.schema.json` | `functions/src/shared/generated/withdrawParticipantMessagingPermissionCallablePayload.ts` |
@@ -1052,6 +1054,8 @@ Do not edit it by hand.
 | `schemaUpdateEventChatAccessCallablePayloadSchema` | UpdateEventChatAccessCallablePayload | `callables/update_event_chat_access_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/update_event_chat_access_callable_payload.g.dart` |
 | `schemaGetEventChatAccessCallableResponseSchema` | GetEventChatAccessCallableResponse | `callable_responses/get_event_chat_access_response.schema.json` | `lib/core/schema_contracts/generated/schemas/get_event_chat_access_callable_response.g.dart` |
 | `schemaUpdateEventChatAccessCallableResponseSchema` | UpdateEventChatAccessCallableResponse | `callable_responses/update_event_chat_access_response.schema.json` | `lib/core/schema_contracts/generated/schemas/update_event_chat_access_callable_response.g.dart` |
+| `schemaManageEventChatMemberCallablePayloadSchema` | ManageEventChatMemberCallablePayload | `callables/manage_event_chat_member_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/manage_event_chat_member_callable_payload.g.dart` |
+| `schemaManageEventChatMemberCallableResponseSchema` | ManageEventChatMemberCallableResponse | `callable_responses/manage_event_chat_member_response.schema.json` | `lib/core/schema_contracts/generated/schemas/manage_event_chat_member_callable_response.g.dart` |
 | `schemaListParticipantMessagingPreferencesCallablePayloadSchema` | ListParticipantMessagingPreferencesCallablePayload | `callables/list_participant_messaging_preferences_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/list_participant_messaging_preferences_callable_payload.g.dart` |
 | `schemaListParticipantMessagingPreferencesCallableResponseSchema` | ListParticipantMessagingPreferencesCallableResponse | `callable_responses/list_participant_messaging_preferences_response.schema.json` | `lib/core/schema_contracts/generated/schemas/list_participant_messaging_preferences_callable_response.g.dart` |
 | `schemaWithdrawParticipantMessagingPermissionCallablePayloadSchema` | WithdrawParticipantMessagingPermissionCallablePayload | `callables/withdraw_participant_messaging_permission_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/withdraw_participant_messaging_permission_callable_payload.g.dart` |
@@ -1970,6 +1974,7 @@ Do not edit it by hand.
 | SetEventWhatsappPreferenceCallablePayload | cannot map field "decision" (no type) |
 | SetEventAssistanceSmsPreferenceCallablePayload | cannot map field "decision" (no type) |
 | AdminDecideEventMessagingBudgetCallablePayload | cannot map field "decision" (no type) |
+| ManageEventChatMemberCallablePayload | cannot map field "action" (no type) |
 | UpdateOrganizerCallablePayloadPatch | no Dart patch config |
 | UpdateClubCallablePayloadPatch | cannot map patch field "clubPhotos" (type=array) |
 | AdminUpdateClubDetailsCallablePayloadPatch | no Dart patch config |

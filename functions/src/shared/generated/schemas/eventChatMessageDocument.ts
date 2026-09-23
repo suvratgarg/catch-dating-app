@@ -80,6 +80,14 @@ export const eventChatMessageDocumentSchema: Record<string, unknown> = {
         "removed"
       ]
     },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "text",
+        "announcement"
+      ],
+      "description": "Legacy omission means text."
+    },
     "payloadHash": {
       "type": "string",
       "pattern": "^[a-f0-9]{64}$"

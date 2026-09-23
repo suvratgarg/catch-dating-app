@@ -227,6 +227,8 @@ export {getEventChatAccessCallablePayloadSchema} from "./schemas/getEventChatAcc
 export {updateEventChatAccessCallablePayloadSchema} from "./schemas/updateEventChatAccessInput";
 export {getEventChatAccessCallableResponseSchema} from "./schemas/getEventChatAccessOutput";
 export {updateEventChatAccessCallableResponseSchema} from "./schemas/updateEventChatAccessOutput";
+export {manageEventChatMemberCallablePayloadSchema} from "./schemas/manageEventChatMemberInput";
+export {manageEventChatMemberCallableResponseSchema} from "./schemas/manageEventChatMemberOutput";
 export {listParticipantMessagingPreferencesCallablePayloadSchema} from "./schemas/listParticipantMessagingPreferencesInput";
 export {listParticipantMessagingPreferencesCallableResponseSchema} from "./schemas/listParticipantMessagingPreferencesOutput";
 export {withdrawParticipantMessagingPermissionCallablePayloadSchema} from "./schemas/withdrawParticipantMessagingPermissionInput";

@@ -8,16 +8,27 @@ export interface GetEventChatAccessCallableResponse {
   title: string;
   role: "host" | "attendee";
   room: {
-    status: "notCreated" | "open" | "closed";
+    status:
+      | "notCreated"
+      | "scheduled"
+      | "open"
+      | "announcementsOnly"
+      | "paused"
+      | "closed"
+      | "archived";
     revision: number;
+    opensAtMillis?: number | null;
+    closesAtMillis?: number | null;
   };
   membership: {
-    status: "notJoined" | "joined" | "left";
+    status: "notJoined" | "joined" | "left" | "removed" | "banned";
     revision: number;
+    notificationsMuted?: boolean;
   };
   canManage: boolean;
   canJoin: boolean;
   canReadMessages: boolean;
+  canPostMessages: boolean;
   profileClaimRequired: boolean;
   termsVersion: "event-chat-v1";
 }

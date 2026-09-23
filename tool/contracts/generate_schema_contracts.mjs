@@ -1164,6 +1164,16 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/updateEventChatAccessCallableResponse.ts",
   },
   {
+    name: "ManageEventChatMemberCallablePayload",
+    source: "callables/manage_event_chat_member_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/manageEventChatMemberCallablePayload.ts",
+  },
+  {
+    name: "ManageEventChatMemberCallableResponse",
+    source: "callable_responses/manage_event_chat_member_response.schema.json",
+    typeOutput: "functions/src/shared/generated/manageEventChatMemberCallableResponse.ts",
+  },
+  {
     name: "ListParticipantMessagingPreferencesCallablePayload",
     source: "callables/list_participant_messaging_preferences_payload.schema.json",
     typeOutput: "functions/src/shared/generated/listParticipantMessagingPreferencesCallablePayload.ts",
