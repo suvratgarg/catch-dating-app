@@ -11409,6 +11409,29 @@ export interface EventSuccessPlanDocument {
   structureConfig?: {
     [k: string]: unknown;
   };
+  /**
+   * @maxItems 8
+   */
+  assignmentFeatureRules?: {
+    featureId: string;
+    formId: string;
+    versionId: string;
+    questionId: string;
+    transformVersion: number;
+    kind: "category" | "set" | "number" | "ordinal";
+    mode: "preferSimilar" | "preferDifferent" | "balanceAcrossGroups";
+    weight: number;
+    /**
+     * @maxItems 40
+     */
+    optionIds?: string[];
+    scoreByOptionId?: {
+      [k: string]: number;
+    };
+    minimum?: number;
+    maximum?: number;
+  }[];
+  assignmentFeatureRevision?: number;
   hostGoal: string;
   wingmanRequestsEnabled: boolean;
   contextualOpenersEnabled: boolean;
@@ -11450,6 +11473,28 @@ export interface EventSuccessPlanDocument {
   updatedAt: FirebaseFirestore.Timestamp;
   frozenAt?: FirebaseFirestore.Timestamp | null;
   completedAt?: FirebaseFirestore.Timestamp | null;
+}
+
+/**
+ * Private participant-owned decision for one event and immutable form answer. Not implied by form submission, profile sharing, messaging consent, or host configuration.
+ */
+export interface EventAssignmentFeatureConsentDocument {
+  eventId: string;
+  organizerId: string;
+  uid: string;
+  responseId: string;
+  featureId: string;
+  formId: string;
+  versionId: string;
+  questionId: string;
+  transformVersion: number;
+  purpose: "eventAssignmentMatching";
+  status: "granted" | "withdrawn";
+  receiptId: string;
+  revision: number;
+  lastRequestId: string;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
 }
 
 /**

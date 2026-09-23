@@ -99027,6 +99027,258 @@ export const manageEventChatMemberCallableResponseSchema = {
   }
 };
 
+export const setEventAssignmentFeatureConsentCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/set_event_assignment_feature_consent_payload.schema.json",
+  "title": "SetEventAssignmentFeatureConsentCallablePayload",
+  "description": "Verified participant grants or withdraws assignment-only use of one exact submitted answer.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "featureId",
+    "responseId",
+    "decision",
+    "expectedRevision",
+    "requestId"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "featureId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "responseId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "decision": {
+      "enum": [
+        "grant",
+        "withdraw"
+      ]
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+};
+
+export const setEventAssignmentFeatureConsentCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/set_event_assignment_feature_consent_response.schema.json",
+  "title": "SetEventAssignmentFeatureConsentCallableResponse",
+  "description": "Current exact-purpose participant decision, including replay status.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "featureId",
+    "status",
+    "revision",
+    "receiptId",
+    "replayed"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "featureId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "status": {
+      "enum": [
+        "granted",
+        "withdrawn"
+      ]
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "receiptId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "replayed": {
+      "type": "boolean"
+    }
+  }
+};
+
+export const configureEventAssignmentFeaturesCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/configure_event_assignment_features_payload.schema.json",
+  "title": "ConfigureEventAssignmentFeaturesCallablePayload",
+  "description": "Organizer maps reviewed versioned form questions to bounded soft assignment features; it does not grant answer use.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "expectedRevision",
+    "requestId",
+    "rules"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "rules": {
+      "type": "array",
+      "maxItems": 8,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "featureId",
+          "formId",
+          "versionId",
+          "questionId",
+          "transformVersion",
+          "kind",
+          "mode",
+          "weight"
+        ],
+        "properties": {
+          "featureId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "formId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "versionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "questionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "transformVersion": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000000
+          },
+          "kind": {
+            "enum": [
+              "category",
+              "set",
+              "number",
+              "ordinal"
+            ]
+          },
+          "mode": {
+            "enum": [
+              "preferSimilar",
+              "preferDifferent",
+              "balanceAcrossGroups"
+            ]
+          },
+          "weight": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "optionIds": {
+            "type": "array",
+            "maxItems": 40,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            }
+          },
+          "scoreByOptionId": {
+            "type": "object",
+            "maxProperties": 40,
+            "propertyNames": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "additionalProperties": {
+              "type": "number"
+            }
+          },
+          "minimum": {
+            "type": "number"
+          },
+          "maximum": {
+            "type": "number"
+          }
+        }
+      }
+    }
+  }
+};
+
+export const configureEventAssignmentFeaturesCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/configure_event_assignment_features_response.schema.json",
+  "title": "ConfigureEventAssignmentFeaturesCallableResponse",
+  "description": "Saved soft-feature configuration revision, never a participant authorization.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "revision",
+    "replayed"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "replayed": {
+      "type": "boolean"
+    }
+  }
+};
+
 export const listParticipantMessagingPreferencesCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/list_participant_messaging_preferences_payload.schema.json",
@@ -148770,6 +149022,106 @@ export const eventSuccessPlanDocumentSchema = {
       ],
       "x-catch-ownership": "callable-owned"
     },
+    "assignmentFeatureRules": {
+      "type": "array",
+      "maxItems": 8,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "featureId",
+          "formId",
+          "versionId",
+          "questionId",
+          "transformVersion",
+          "kind",
+          "mode",
+          "weight"
+        ],
+        "properties": {
+          "featureId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "formId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "versionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "questionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "transformVersion": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000000
+          },
+          "kind": {
+            "enum": [
+              "category",
+              "set",
+              "number",
+              "ordinal"
+            ]
+          },
+          "mode": {
+            "enum": [
+              "preferSimilar",
+              "preferDifferent",
+              "balanceAcrossGroups"
+            ]
+          },
+          "weight": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "optionIds": {
+            "type": "array",
+            "maxItems": 40,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            }
+          },
+          "scoreByOptionId": {
+            "type": "object",
+            "maxProperties": 40,
+            "propertyNames": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "additionalProperties": {
+              "type": "number"
+            }
+          },
+          "minimum": {
+            "type": "number"
+          },
+          "maximum": {
+            "type": "number"
+          }
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "assignmentFeatureRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "callable-owned"
+    },
     "hostGoal": {
       "type": "string",
       "maxLength": 300,
@@ -149089,6 +149441,148 @@ export const eventSuccessPlanDocumentSchema = {
       "description": "Internal demo-operations command name used for cleanup and diagnostics."
     }
   }
+};
+
+export const eventAssignmentFeatureConsentDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_assignment_feature_consents.schema.json",
+  "title": "EventAssignmentFeatureConsentDocument",
+  "description": "Private participant-owned decision for one event and immutable form answer. Not implied by form submission, profile sharing, messaging consent, or host configuration.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "organizerId",
+    "uid",
+    "responseId",
+    "featureId",
+    "formId",
+    "versionId",
+    "questionId",
+    "transformVersion",
+    "purpose",
+    "status",
+    "receiptId",
+    "revision",
+    "lastRequestId",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "responseId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "featureId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "formId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "versionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "questionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "transformVersion": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000000
+    },
+    "purpose": {
+      "const": "eventAssignmentMatching"
+    },
+    "status": {
+      "enum": [
+        "granted",
+        "withdrawn"
+      ]
+    },
+    "receiptId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "lastRequestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    }
+  },
+  "x-firestore-collection": "eventAssignmentFeatureConsents",
+  "x-firestore-path": "eventAssignmentFeatureConsents/{consentId}",
+  "x-document-id-field": "consentId",
+  "x-owner": "participant consent callable; private server read"
 };
 
 export const eventSuccessConversationGraphDocumentSchema = {

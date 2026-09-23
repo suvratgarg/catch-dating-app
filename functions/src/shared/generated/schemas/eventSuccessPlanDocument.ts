@@ -334,6 +334,106 @@ export const eventSuccessPlanDocumentSchema: Record<string, unknown> = {
       ],
       "x-catch-ownership": "callable-owned"
     },
+    "assignmentFeatureRules": {
+      "type": "array",
+      "maxItems": 8,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "featureId",
+          "formId",
+          "versionId",
+          "questionId",
+          "transformVersion",
+          "kind",
+          "mode",
+          "weight"
+        ],
+        "properties": {
+          "featureId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "formId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "versionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "questionId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "transformVersion": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000000
+          },
+          "kind": {
+            "enum": [
+              "category",
+              "set",
+              "number",
+              "ordinal"
+            ]
+          },
+          "mode": {
+            "enum": [
+              "preferSimilar",
+              "preferDifferent",
+              "balanceAcrossGroups"
+            ]
+          },
+          "weight": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "optionIds": {
+            "type": "array",
+            "maxItems": 40,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            }
+          },
+          "scoreByOptionId": {
+            "type": "object",
+            "maxProperties": 40,
+            "propertyNames": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "additionalProperties": {
+              "type": "number"
+            }
+          },
+          "minimum": {
+            "type": "number"
+          },
+          "maximum": {
+            "type": "number"
+          }
+        }
+      },
+      "x-catch-ownership": "callable-owned"
+    },
+    "assignmentFeatureRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991,
+      "x-catch-ownership": "callable-owned"
+    },
     "hostGoal": {
       "type": "string",
       "maxLength": 300,

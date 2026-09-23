@@ -1,0 +1,31 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_assignment_feature_consents.schema.json",
+  "title": "EventAssignmentFeatureConsentDocument",
+  "description": "Private participant-owned decision for one event and immutable form answer. Not implied by form submission, profile sharing, messaging consent, or host configuration.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["eventId", "organizerId", "uid", "responseId", "featureId", "formId", "versionId", "questionId", "transformVersion", "purpose", "status", "receiptId", "revision", "lastRequestId", "createdAt", "updatedAt"],
+  "properties": {
+    "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "organizerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "uid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "responseId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "featureId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "formId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "versionId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "questionId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "transformVersion": {"type": "integer", "minimum": 1, "maximum": 1000000},
+    "purpose": {"const": "eventAssignmentMatching"},
+    "status": {"enum": ["granted", "withdrawn"]},
+    "receiptId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "revision": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+    "lastRequestId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "createdAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+    "updatedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"}
+  },
+  "x-firestore-collection": "eventAssignmentFeatureConsents",
+  "x-firestore-path": "eventAssignmentFeatureConsents/{consentId}",
+  "x-document-id-field": "consentId",
+  "x-owner": "participant consent callable; private server read"
+}

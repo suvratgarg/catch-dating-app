@@ -8452,6 +8452,151 @@ abstract final class CatchContractConstraints {
     minimum: 2,
   );
 
+  static const configureEventAssignmentFeaturesCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'configureEventAssignmentFeaturesCallablePayload.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const configureEventAssignmentFeaturesCallablePayloadExpectedRevision = CatchContractFieldConstraints(
+    path: 'configureEventAssignmentFeaturesCallablePayload.expectedRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const configureEventAssignmentFeaturesCallablePayloadRequestId = CatchContractFieldConstraints(
+    path: 'configureEventAssignmentFeaturesCallablePayload.requestId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const configureEventAssignmentFeaturesCallablePayloadRules = CatchContractFieldConstraints(
+    path: 'configureEventAssignmentFeaturesCallablePayload.rules',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 8,
+  );
+
+  static const configureEventAssignmentFeaturesCallablePayloadRulesItemsFeatureId = CatchContractFieldConstraints(
+    path: 'configureEventAssignmentFeaturesCallablePayload.rules.items.featureId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const configureEventAssignmentFeaturesCallablePayloadRulesItemsFormId = CatchContractFieldConstraints(
+    path: 'configureEventAssignmentFeaturesCallablePayload.rules.items.formId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const configureEventAssignmentFeaturesCallablePayloadRulesItemsKind = CatchContractFieldConstraints(
+    path: 'configureEventAssignmentFeaturesCallablePayload.rules.items.kind',
+    required: true,
+    enumValues: <String>['category', 'set', 'number', 'ordinal'],
+  );
+
+  static const configureEventAssignmentFeaturesCallablePayloadRulesItemsMaximum = CatchContractFieldConstraints(
+    path: 'configureEventAssignmentFeaturesCallablePayload.rules.items.maximum',
+    valueTypes: <String>['number'],
+  );
+
+  static const configureEventAssignmentFeaturesCallablePayloadRulesItemsMinimum = CatchContractFieldConstraints(
+    path: 'configureEventAssignmentFeaturesCallablePayload.rules.items.minimum',
+    valueTypes: <String>['number'],
+  );
+
+  static const configureEventAssignmentFeaturesCallablePayloadRulesItemsMode = CatchContractFieldConstraints(
+    path: 'configureEventAssignmentFeaturesCallablePayload.rules.items.mode',
+    required: true,
+    enumValues: <String>['preferSimilar', 'preferDifferent', 'balanceAcrossGroups'],
+  );
+
+  static const configureEventAssignmentFeaturesCallablePayloadRulesItemsOptionIds = CatchContractFieldConstraints(
+    path: 'configureEventAssignmentFeaturesCallablePayload.rules.items.optionIds',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 40,
+    uniqueItems: true,
+  );
+
+  static const configureEventAssignmentFeaturesCallablePayloadRulesItemsOptionIdsItems = CatchContractFieldConstraints(
+    path: 'configureEventAssignmentFeaturesCallablePayload.rules.items.optionIds.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const configureEventAssignmentFeaturesCallablePayloadRulesItemsQuestionId = CatchContractFieldConstraints(
+    path: 'configureEventAssignmentFeaturesCallablePayload.rules.items.questionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const configureEventAssignmentFeaturesCallablePayloadRulesItemsScoreByOptionId = CatchContractFieldConstraints(
+    path: 'configureEventAssignmentFeaturesCallablePayload.rules.items.scoreByOptionId',
+    valueTypes: <String>['object'],
+  );
+
+  static const configureEventAssignmentFeaturesCallablePayloadRulesItemsTransformVersion = CatchContractFieldConstraints(
+    path: 'configureEventAssignmentFeaturesCallablePayload.rules.items.transformVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000,
+  );
+
+  static const configureEventAssignmentFeaturesCallablePayloadRulesItemsVersionId = CatchContractFieldConstraints(
+    path: 'configureEventAssignmentFeaturesCallablePayload.rules.items.versionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const configureEventAssignmentFeaturesCallablePayloadRulesItemsWeight = CatchContractFieldConstraints(
+    path: 'configureEventAssignmentFeaturesCallablePayload.rules.items.weight',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: 0,
+    maximum: 100,
+  );
+
+  static const configureEventAssignmentFeaturesCallableResponseEventId = CatchContractFieldConstraints(
+    path: 'configureEventAssignmentFeaturesCallableResponse.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const configureEventAssignmentFeaturesCallableResponseReplayed = CatchContractFieldConstraints(
+    path: 'configureEventAssignmentFeaturesCallableResponse.replayed',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const configureEventAssignmentFeaturesCallableResponseRevision = CatchContractFieldConstraints(
+    path: 'configureEventAssignmentFeaturesCallableResponse.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
   static const confirmEventAssistanceDepartureCallablePayloadCommandContextClockId = CatchContractFieldConstraints(
     path: 'confirmEventAssistanceDepartureCallablePayload.command.context.clockId',
     maxLength: 2000,
@@ -15238,6 +15383,141 @@ abstract final class CatchContractConstraints {
     path: 'duplicateOrganizerFormCallablePayload.title',
     maxLength: 160,
     minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssignmentFeatureConsentDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventAssignmentFeatureConsentDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventAssignmentFeatureConsentDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventAssignmentFeatureConsentDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventAssignmentFeatureConsentDocumentEventId = CatchContractFieldConstraints(
+    path: 'eventAssignmentFeatureConsentDocument.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssignmentFeatureConsentDocumentFeatureId = CatchContractFieldConstraints(
+    path: 'eventAssignmentFeatureConsentDocument.featureId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssignmentFeatureConsentDocumentFormId = CatchContractFieldConstraints(
+    path: 'eventAssignmentFeatureConsentDocument.formId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssignmentFeatureConsentDocumentLastRequestId = CatchContractFieldConstraints(
+    path: 'eventAssignmentFeatureConsentDocument.lastRequestId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssignmentFeatureConsentDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'eventAssignmentFeatureConsentDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssignmentFeatureConsentDocumentPurpose = CatchContractFieldConstraints(
+    path: 'eventAssignmentFeatureConsentDocument.purpose',
+    required: true,
+  );
+
+  static const eventAssignmentFeatureConsentDocumentQuestionId = CatchContractFieldConstraints(
+    path: 'eventAssignmentFeatureConsentDocument.questionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssignmentFeatureConsentDocumentReceiptId = CatchContractFieldConstraints(
+    path: 'eventAssignmentFeatureConsentDocument.receiptId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssignmentFeatureConsentDocumentResponseId = CatchContractFieldConstraints(
+    path: 'eventAssignmentFeatureConsentDocument.responseId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssignmentFeatureConsentDocumentRevision = CatchContractFieldConstraints(
+    path: 'eventAssignmentFeatureConsentDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssignmentFeatureConsentDocumentStatus = CatchContractFieldConstraints(
+    path: 'eventAssignmentFeatureConsentDocument.status',
+    required: true,
+    enumValues: <String>['granted', 'withdrawn'],
+  );
+
+  static const eventAssignmentFeatureConsentDocumentTransformVersion = CatchContractFieldConstraints(
+    path: 'eventAssignmentFeatureConsentDocument.transformVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000,
+  );
+
+  static const eventAssignmentFeatureConsentDocumentUid = CatchContractFieldConstraints(
+    path: 'eventAssignmentFeatureConsentDocument.uid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssignmentFeatureConsentDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventAssignmentFeatureConsentDocument.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventAssignmentFeatureConsentDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventAssignmentFeatureConsentDocument.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventAssignmentFeatureConsentDocumentVersionId = CatchContractFieldConstraints(
+    path: 'eventAssignmentFeatureConsentDocument.versionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
     valueTypes: <String>['string'],
   );
 
@@ -54789,6 +55069,111 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
     minimum: 0,
     maximum: 2147483647,
+  );
+
+  static const eventSuccessPlanDocumentAssignmentFeatureRevision = CatchContractFieldConstraints(
+    path: 'eventSuccessPlanDocument.assignmentFeatureRevision',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventSuccessPlanDocumentAssignmentFeatureRules = CatchContractFieldConstraints(
+    path: 'eventSuccessPlanDocument.assignmentFeatureRules',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 8,
+  );
+
+  static const eventSuccessPlanDocumentAssignmentFeatureRulesItemsFeatureId = CatchContractFieldConstraints(
+    path: 'eventSuccessPlanDocument.assignmentFeatureRules.items.featureId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessPlanDocumentAssignmentFeatureRulesItemsFormId = CatchContractFieldConstraints(
+    path: 'eventSuccessPlanDocument.assignmentFeatureRules.items.formId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessPlanDocumentAssignmentFeatureRulesItemsKind = CatchContractFieldConstraints(
+    path: 'eventSuccessPlanDocument.assignmentFeatureRules.items.kind',
+    required: true,
+    enumValues: <String>['category', 'set', 'number', 'ordinal'],
+  );
+
+  static const eventSuccessPlanDocumentAssignmentFeatureRulesItemsMaximum = CatchContractFieldConstraints(
+    path: 'eventSuccessPlanDocument.assignmentFeatureRules.items.maximum',
+    valueTypes: <String>['number'],
+  );
+
+  static const eventSuccessPlanDocumentAssignmentFeatureRulesItemsMinimum = CatchContractFieldConstraints(
+    path: 'eventSuccessPlanDocument.assignmentFeatureRules.items.minimum',
+    valueTypes: <String>['number'],
+  );
+
+  static const eventSuccessPlanDocumentAssignmentFeatureRulesItemsMode = CatchContractFieldConstraints(
+    path: 'eventSuccessPlanDocument.assignmentFeatureRules.items.mode',
+    required: true,
+    enumValues: <String>['preferSimilar', 'preferDifferent', 'balanceAcrossGroups'],
+  );
+
+  static const eventSuccessPlanDocumentAssignmentFeatureRulesItemsOptionIds = CatchContractFieldConstraints(
+    path: 'eventSuccessPlanDocument.assignmentFeatureRules.items.optionIds',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 40,
+    uniqueItems: true,
+  );
+
+  static const eventSuccessPlanDocumentAssignmentFeatureRulesItemsOptionIdsItems = CatchContractFieldConstraints(
+    path: 'eventSuccessPlanDocument.assignmentFeatureRules.items.optionIds.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessPlanDocumentAssignmentFeatureRulesItemsQuestionId = CatchContractFieldConstraints(
+    path: 'eventSuccessPlanDocument.assignmentFeatureRules.items.questionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessPlanDocumentAssignmentFeatureRulesItemsScoreByOptionId = CatchContractFieldConstraints(
+    path: 'eventSuccessPlanDocument.assignmentFeatureRules.items.scoreByOptionId',
+    valueTypes: <String>['object'],
+  );
+
+  static const eventSuccessPlanDocumentAssignmentFeatureRulesItemsTransformVersion = CatchContractFieldConstraints(
+    path: 'eventSuccessPlanDocument.assignmentFeatureRules.items.transformVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000,
+  );
+
+  static const eventSuccessPlanDocumentAssignmentFeatureRulesItemsVersionId = CatchContractFieldConstraints(
+    path: 'eventSuccessPlanDocument.assignmentFeatureRules.items.versionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventSuccessPlanDocumentAssignmentFeatureRulesItemsWeight = CatchContractFieldConstraints(
+    path: 'eventSuccessPlanDocument.assignmentFeatureRules.items.weight',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: 0,
+    maximum: 100,
   );
 
   static const eventSuccessPlanDocumentAttendeePrompt = CatchContractFieldConstraints(
@@ -100962,6 +101347,96 @@ abstract final class CatchContractConstraints {
     minimum: 1,
   );
 
+  static const setEventAssignmentFeatureConsentCallablePayloadDecision = CatchContractFieldConstraints(
+    path: 'setEventAssignmentFeatureConsentCallablePayload.decision',
+    required: true,
+    enumValues: <String>['grant', 'withdraw'],
+  );
+
+  static const setEventAssignmentFeatureConsentCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'setEventAssignmentFeatureConsentCallablePayload.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const setEventAssignmentFeatureConsentCallablePayloadExpectedRevision = CatchContractFieldConstraints(
+    path: 'setEventAssignmentFeatureConsentCallablePayload.expectedRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const setEventAssignmentFeatureConsentCallablePayloadFeatureId = CatchContractFieldConstraints(
+    path: 'setEventAssignmentFeatureConsentCallablePayload.featureId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const setEventAssignmentFeatureConsentCallablePayloadRequestId = CatchContractFieldConstraints(
+    path: 'setEventAssignmentFeatureConsentCallablePayload.requestId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const setEventAssignmentFeatureConsentCallablePayloadResponseId = CatchContractFieldConstraints(
+    path: 'setEventAssignmentFeatureConsentCallablePayload.responseId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const setEventAssignmentFeatureConsentCallableResponseEventId = CatchContractFieldConstraints(
+    path: 'setEventAssignmentFeatureConsentCallableResponse.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const setEventAssignmentFeatureConsentCallableResponseFeatureId = CatchContractFieldConstraints(
+    path: 'setEventAssignmentFeatureConsentCallableResponse.featureId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const setEventAssignmentFeatureConsentCallableResponseReceiptId = CatchContractFieldConstraints(
+    path: 'setEventAssignmentFeatureConsentCallableResponse.receiptId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const setEventAssignmentFeatureConsentCallableResponseReplayed = CatchContractFieldConstraints(
+    path: 'setEventAssignmentFeatureConsentCallableResponse.replayed',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const setEventAssignmentFeatureConsentCallableResponseRevision = CatchContractFieldConstraints(
+    path: 'setEventAssignmentFeatureConsentCallableResponse.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const setEventAssignmentFeatureConsentCallableResponseStatus = CatchContractFieldConstraints(
+    path: 'setEventAssignmentFeatureConsentCallableResponse.status',
+    required: true,
+    enumValues: <String>['granted', 'withdrawn'],
+  );
+
   static const setEventAssistanceCheckpointCloseoutCallablePayloadCommandContextClockId = CatchContractFieldConstraints(
     path: 'setEventAssistanceCheckpointCloseoutCallablePayload.command.context.clockId',
     maxLength: 2000,
@@ -114316,6 +114791,26 @@ abstract final class CatchContractConstraints {
     'configCitiesDocument.markets.items.slug': configCitiesDocumentMarketsItemsSlug,
     'configCitiesDocument.markets.items.timeZone': configCitiesDocumentMarketsItemsTimeZone,
     'configCitiesDocument.version': configCitiesDocumentVersion,
+    'configureEventAssignmentFeaturesCallablePayload.eventId': configureEventAssignmentFeaturesCallablePayloadEventId,
+    'configureEventAssignmentFeaturesCallablePayload.expectedRevision': configureEventAssignmentFeaturesCallablePayloadExpectedRevision,
+    'configureEventAssignmentFeaturesCallablePayload.requestId': configureEventAssignmentFeaturesCallablePayloadRequestId,
+    'configureEventAssignmentFeaturesCallablePayload.rules': configureEventAssignmentFeaturesCallablePayloadRules,
+    'configureEventAssignmentFeaturesCallablePayload.rules.items.featureId': configureEventAssignmentFeaturesCallablePayloadRulesItemsFeatureId,
+    'configureEventAssignmentFeaturesCallablePayload.rules.items.formId': configureEventAssignmentFeaturesCallablePayloadRulesItemsFormId,
+    'configureEventAssignmentFeaturesCallablePayload.rules.items.kind': configureEventAssignmentFeaturesCallablePayloadRulesItemsKind,
+    'configureEventAssignmentFeaturesCallablePayload.rules.items.maximum': configureEventAssignmentFeaturesCallablePayloadRulesItemsMaximum,
+    'configureEventAssignmentFeaturesCallablePayload.rules.items.minimum': configureEventAssignmentFeaturesCallablePayloadRulesItemsMinimum,
+    'configureEventAssignmentFeaturesCallablePayload.rules.items.mode': configureEventAssignmentFeaturesCallablePayloadRulesItemsMode,
+    'configureEventAssignmentFeaturesCallablePayload.rules.items.optionIds': configureEventAssignmentFeaturesCallablePayloadRulesItemsOptionIds,
+    'configureEventAssignmentFeaturesCallablePayload.rules.items.optionIds.items': configureEventAssignmentFeaturesCallablePayloadRulesItemsOptionIdsItems,
+    'configureEventAssignmentFeaturesCallablePayload.rules.items.questionId': configureEventAssignmentFeaturesCallablePayloadRulesItemsQuestionId,
+    'configureEventAssignmentFeaturesCallablePayload.rules.items.scoreByOptionId': configureEventAssignmentFeaturesCallablePayloadRulesItemsScoreByOptionId,
+    'configureEventAssignmentFeaturesCallablePayload.rules.items.transformVersion': configureEventAssignmentFeaturesCallablePayloadRulesItemsTransformVersion,
+    'configureEventAssignmentFeaturesCallablePayload.rules.items.versionId': configureEventAssignmentFeaturesCallablePayloadRulesItemsVersionId,
+    'configureEventAssignmentFeaturesCallablePayload.rules.items.weight': configureEventAssignmentFeaturesCallablePayloadRulesItemsWeight,
+    'configureEventAssignmentFeaturesCallableResponse.eventId': configureEventAssignmentFeaturesCallableResponseEventId,
+    'configureEventAssignmentFeaturesCallableResponse.replayed': configureEventAssignmentFeaturesCallableResponseReplayed,
+    'configureEventAssignmentFeaturesCallableResponse.revision': configureEventAssignmentFeaturesCallableResponseRevision,
     'confirmEventAssistanceDepartureCallablePayload.command.context.clockId': confirmEventAssistanceDepartureCallablePayloadCommandContextClockId,
     'confirmEventAssistanceDepartureCallablePayload.command.context.eventId': confirmEventAssistanceDepartureCallablePayloadCommandContextEventId,
     'confirmEventAssistanceDepartureCallablePayload.command.context.mode': confirmEventAssistanceDepartureCallablePayloadCommandContextMode,
@@ -115247,6 +115742,24 @@ abstract final class CatchContractConstraints {
     'duplicateOrganizerFormCallablePayload.requestId': duplicateOrganizerFormCallablePayloadRequestId,
     'duplicateOrganizerFormCallablePayload.sourceFormId': duplicateOrganizerFormCallablePayloadSourceFormId,
     'duplicateOrganizerFormCallablePayload.title': duplicateOrganizerFormCallablePayloadTitle,
+    'eventAssignmentFeatureConsentDocument.createdAt._nanoseconds': eventAssignmentFeatureConsentDocumentCreatedAtNanoseconds,
+    'eventAssignmentFeatureConsentDocument.createdAt._seconds': eventAssignmentFeatureConsentDocumentCreatedAtSeconds,
+    'eventAssignmentFeatureConsentDocument.eventId': eventAssignmentFeatureConsentDocumentEventId,
+    'eventAssignmentFeatureConsentDocument.featureId': eventAssignmentFeatureConsentDocumentFeatureId,
+    'eventAssignmentFeatureConsentDocument.formId': eventAssignmentFeatureConsentDocumentFormId,
+    'eventAssignmentFeatureConsentDocument.lastRequestId': eventAssignmentFeatureConsentDocumentLastRequestId,
+    'eventAssignmentFeatureConsentDocument.organizerId': eventAssignmentFeatureConsentDocumentOrganizerId,
+    'eventAssignmentFeatureConsentDocument.purpose': eventAssignmentFeatureConsentDocumentPurpose,
+    'eventAssignmentFeatureConsentDocument.questionId': eventAssignmentFeatureConsentDocumentQuestionId,
+    'eventAssignmentFeatureConsentDocument.receiptId': eventAssignmentFeatureConsentDocumentReceiptId,
+    'eventAssignmentFeatureConsentDocument.responseId': eventAssignmentFeatureConsentDocumentResponseId,
+    'eventAssignmentFeatureConsentDocument.revision': eventAssignmentFeatureConsentDocumentRevision,
+    'eventAssignmentFeatureConsentDocument.status': eventAssignmentFeatureConsentDocumentStatus,
+    'eventAssignmentFeatureConsentDocument.transformVersion': eventAssignmentFeatureConsentDocumentTransformVersion,
+    'eventAssignmentFeatureConsentDocument.uid': eventAssignmentFeatureConsentDocumentUid,
+    'eventAssignmentFeatureConsentDocument.updatedAt._nanoseconds': eventAssignmentFeatureConsentDocumentUpdatedAtNanoseconds,
+    'eventAssignmentFeatureConsentDocument.updatedAt._seconds': eventAssignmentFeatureConsentDocumentUpdatedAtSeconds,
+    'eventAssignmentFeatureConsentDocument.versionId': eventAssignmentFeatureConsentDocumentVersionId,
     'eventAssistanceAccountabilityCallableResponse.operationRevision': eventAssistanceAccountabilityCallableResponseOperationRevision,
     'eventAssistanceAccountabilityCallableResponse.outcome': eventAssistanceAccountabilityCallableResponseOutcome,
     'eventAssistanceAccountabilityCallableResponse.view.attendeeId': eventAssistanceAccountabilityCallableResponseViewAttendeeId,
@@ -120519,6 +121032,21 @@ abstract final class CatchContractConstraints {
     'eventSuccessPlanDocument.affinityConstraints.items.scope': eventSuccessPlanDocumentAffinityConstraintsItemsScope,
     'eventSuccessPlanDocument.affinityConstraints.items.value': eventSuccessPlanDocumentAffinityConstraintsItemsValue,
     'eventSuccessPlanDocument.assignmentDraftRevision': eventSuccessPlanDocumentAssignmentDraftRevision,
+    'eventSuccessPlanDocument.assignmentFeatureRevision': eventSuccessPlanDocumentAssignmentFeatureRevision,
+    'eventSuccessPlanDocument.assignmentFeatureRules': eventSuccessPlanDocumentAssignmentFeatureRules,
+    'eventSuccessPlanDocument.assignmentFeatureRules.items.featureId': eventSuccessPlanDocumentAssignmentFeatureRulesItemsFeatureId,
+    'eventSuccessPlanDocument.assignmentFeatureRules.items.formId': eventSuccessPlanDocumentAssignmentFeatureRulesItemsFormId,
+    'eventSuccessPlanDocument.assignmentFeatureRules.items.kind': eventSuccessPlanDocumentAssignmentFeatureRulesItemsKind,
+    'eventSuccessPlanDocument.assignmentFeatureRules.items.maximum': eventSuccessPlanDocumentAssignmentFeatureRulesItemsMaximum,
+    'eventSuccessPlanDocument.assignmentFeatureRules.items.minimum': eventSuccessPlanDocumentAssignmentFeatureRulesItemsMinimum,
+    'eventSuccessPlanDocument.assignmentFeatureRules.items.mode': eventSuccessPlanDocumentAssignmentFeatureRulesItemsMode,
+    'eventSuccessPlanDocument.assignmentFeatureRules.items.optionIds': eventSuccessPlanDocumentAssignmentFeatureRulesItemsOptionIds,
+    'eventSuccessPlanDocument.assignmentFeatureRules.items.optionIds.items': eventSuccessPlanDocumentAssignmentFeatureRulesItemsOptionIdsItems,
+    'eventSuccessPlanDocument.assignmentFeatureRules.items.questionId': eventSuccessPlanDocumentAssignmentFeatureRulesItemsQuestionId,
+    'eventSuccessPlanDocument.assignmentFeatureRules.items.scoreByOptionId': eventSuccessPlanDocumentAssignmentFeatureRulesItemsScoreByOptionId,
+    'eventSuccessPlanDocument.assignmentFeatureRules.items.transformVersion': eventSuccessPlanDocumentAssignmentFeatureRulesItemsTransformVersion,
+    'eventSuccessPlanDocument.assignmentFeatureRules.items.versionId': eventSuccessPlanDocumentAssignmentFeatureRulesItemsVersionId,
+    'eventSuccessPlanDocument.assignmentFeatureRules.items.weight': eventSuccessPlanDocumentAssignmentFeatureRulesItemsWeight,
     'eventSuccessPlanDocument.attendeePrompt': eventSuccessPlanDocumentAttendeePrompt,
     'eventSuccessPlanDocument.clubId': eventSuccessPlanDocumentClubId,
     'eventSuccessPlanDocument.compatibilityAffectsRanking': eventSuccessPlanDocumentCompatibilityAffectsRanking,
@@ -126855,6 +127383,18 @@ abstract final class CatchContractConstraints {
     'setCrossPathsEventConsentCallableResponse.enabled': setCrossPathsEventConsentCallableResponseEnabled,
     'setCrossPathsEventConsentCallableResponse.eventId': setCrossPathsEventConsentCallableResponseEventId,
     'setCrossPathsEventConsentCallableResponse.termsVersion': setCrossPathsEventConsentCallableResponseTermsVersion,
+    'setEventAssignmentFeatureConsentCallablePayload.decision': setEventAssignmentFeatureConsentCallablePayloadDecision,
+    'setEventAssignmentFeatureConsentCallablePayload.eventId': setEventAssignmentFeatureConsentCallablePayloadEventId,
+    'setEventAssignmentFeatureConsentCallablePayload.expectedRevision': setEventAssignmentFeatureConsentCallablePayloadExpectedRevision,
+    'setEventAssignmentFeatureConsentCallablePayload.featureId': setEventAssignmentFeatureConsentCallablePayloadFeatureId,
+    'setEventAssignmentFeatureConsentCallablePayload.requestId': setEventAssignmentFeatureConsentCallablePayloadRequestId,
+    'setEventAssignmentFeatureConsentCallablePayload.responseId': setEventAssignmentFeatureConsentCallablePayloadResponseId,
+    'setEventAssignmentFeatureConsentCallableResponse.eventId': setEventAssignmentFeatureConsentCallableResponseEventId,
+    'setEventAssignmentFeatureConsentCallableResponse.featureId': setEventAssignmentFeatureConsentCallableResponseFeatureId,
+    'setEventAssignmentFeatureConsentCallableResponse.receiptId': setEventAssignmentFeatureConsentCallableResponseReceiptId,
+    'setEventAssignmentFeatureConsentCallableResponse.replayed': setEventAssignmentFeatureConsentCallableResponseReplayed,
+    'setEventAssignmentFeatureConsentCallableResponse.revision': setEventAssignmentFeatureConsentCallableResponseRevision,
+    'setEventAssignmentFeatureConsentCallableResponse.status': setEventAssignmentFeatureConsentCallableResponseStatus,
     'setEventAssistanceCheckpointCloseoutCallablePayload.command.context.clockId': setEventAssistanceCheckpointCloseoutCallablePayloadCommandContextClockId,
     'setEventAssistanceCheckpointCloseoutCallablePayload.command.context.eventId': setEventAssistanceCheckpointCloseoutCallablePayloadCommandContextEventId,
     'setEventAssistanceCheckpointCloseoutCallablePayload.command.context.mode': setEventAssistanceCheckpointCloseoutCallablePayloadCommandContextMode,

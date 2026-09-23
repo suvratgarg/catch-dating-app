@@ -37,6 +37,29 @@ export interface EventSuccessPlanDocument {
   structureConfig?: {
     [k: string]: unknown;
   };
+  /**
+   * @maxItems 8
+   */
+  assignmentFeatureRules?: {
+    featureId: string;
+    formId: string;
+    versionId: string;
+    questionId: string;
+    transformVersion: number;
+    kind: "category" | "set" | "number" | "ordinal";
+    mode: "preferSimilar" | "preferDifferent" | "balanceAcrossGroups";
+    weight: number;
+    /**
+     * @maxItems 40
+     */
+    optionIds?: string[];
+    scoreByOptionId?: {
+      [k: string]: number;
+    };
+    minimum?: number;
+    maximum?: number;
+  }[];
+  assignmentFeatureRevision?: number;
   hostGoal: string;
   wingmanRequestsEnabled: boolean;
   contextualOpenersEnabled: boolean;
