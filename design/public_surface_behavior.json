@@ -4235,7 +4235,7 @@
           ]
         },
         {
-          "path": "lib/routing/go_router.dart",
+          "path": "lib/routing/route_destinations.dart",
           "contains": [
             "String? appRedirect("
           ]
@@ -4641,7 +4641,7 @@
           ]
         },
         {
-          "path": "lib/routing/go_router.dart",
+          "path": "lib/routing/route_destinations.dart",
           "contains": [
             "bool isGuestPublicRoute(String matchedLocation)",
             "return false;"
@@ -4774,7 +4774,7 @@
       ],
       "evidence": [
         {
-          "path": "lib/routing/go_router.dart",
+          "path": "lib/routing/route_destinations.dart",
           "contains": [
             "bool _requiresSocialProfile",
             "matchedLocation.startsWith('/catches/')",
@@ -4900,7 +4900,7 @@
       ],
       "evidence": [
         {
-          "path": "lib/routing/go_router.dart",
+          "path": "lib/routing/route_destinations.dart",
           "contains": [
             "if (onOnboarding) return null;",
             "profileCompletionLocation("
