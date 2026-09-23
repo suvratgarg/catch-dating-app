@@ -49,5 +49,5 @@ export type CatchCommunicationPermissionReceiptDocument = {
     _seconds: number;
     _nanoseconds: number;
   };
-  sourceOrganizerId: string;
+  sourceOrganizerId: string | null;
 };

@@ -1,0 +1,45 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/withdraw_participant_messaging_permission_response.schema.json",
+  "title": "WithdrawParticipantMessagingPermissionCallableResponse",
+  "description": "Current permission after an idempotent withdrawal; later consent is never overwritten by an old retry.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "preference",
+    "replayed"
+  ],
+  "properties": {
+    "preference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "receiptId"
+      ],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "unknown",
+            "optedIn",
+            "optedOut"
+          ]
+        },
+        "receiptId": {
+          "anyOf": [
+            {
+              "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "replayed": {
+      "type": "boolean"
+    }
+  }
+}

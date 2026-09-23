@@ -5058,7 +5058,7 @@ export interface CatchCommunicationPermissionReceiptDocument {
   revokedAt: FirebaseFirestore.Timestamp | null;
   supersedesReceiptId: string | null;
   createdAt: FirebaseFirestore.Timestamp;
-  sourceOrganizerId: string;
+  sourceOrganizerId: string | null;
 }
 
 /**

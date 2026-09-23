@@ -1009,6 +1009,26 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/participantFormProfileProposalDocument.ts",
   },
   {
+    name: "ListParticipantMessagingPreferencesCallablePayload",
+    source: "callables/list_participant_messaging_preferences_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/listParticipantMessagingPreferencesCallablePayload.ts",
+  },
+  {
+    name: "ListParticipantMessagingPreferencesCallableResponse",
+    source: "callable_responses/list_participant_messaging_preferences_response.schema.json",
+    typeOutput: "functions/src/shared/generated/listParticipantMessagingPreferencesCallableResponse.ts",
+  },
+  {
+    name: "WithdrawParticipantMessagingPermissionCallablePayload",
+    source: "callables/withdraw_participant_messaging_permission_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/withdrawParticipantMessagingPermissionCallablePayload.ts",
+  },
+  {
+    name: "WithdrawParticipantMessagingPermissionCallableResponse",
+    source: "callable_responses/withdraw_participant_messaging_permission_response.schema.json",
+    typeOutput: "functions/src/shared/generated/withdrawParticipantMessagingPermissionCallableResponse.ts",
+  },
+  {
     name: "CatchCommunicationPreferenceDocument",
     source: "firestore/catch_communication_preferences.schema.json",
     typeOutput: "functions/src/shared/generated/catchCommunicationPreferenceDocument.ts",

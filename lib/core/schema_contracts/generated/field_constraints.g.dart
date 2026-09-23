@@ -5153,7 +5153,6 @@ abstract final class CatchContractConstraints {
     path: 'catchCommunicationPermissionReceiptDocument.sourceOrganizerId',
     maxLength: 180,
     minLength: 1,
-    required: true,
     valueTypes: <String>['string'],
   );
 
@@ -70117,6 +70116,78 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const listParticipantMessagingPreferencesCallablePayloadCursor = CatchContractFieldConstraints(
+    path: 'listParticipantMessagingPreferencesCallablePayload.cursor',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const listParticipantMessagingPreferencesCallablePayloadLimit = CatchContractFieldConstraints(
+    path: 'listParticipantMessagingPreferencesCallablePayload.limit',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 30,
+  );
+
+  static const listParticipantMessagingPreferencesCallableResponseCatchPreferenceReceiptId = CatchContractFieldConstraints(
+    path: 'listParticipantMessagingPreferencesCallableResponse.catchPreference.receiptId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const listParticipantMessagingPreferencesCallableResponseCatchPreferenceStatus = CatchContractFieldConstraints(
+    path: 'listParticipantMessagingPreferencesCallableResponse.catchPreference.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['unknown', 'optedIn', 'optedOut'],
+  );
+
+  static const listParticipantMessagingPreferencesCallableResponseNextCursor = CatchContractFieldConstraints(
+    path: 'listParticipantMessagingPreferencesCallableResponse.nextCursor',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const listParticipantMessagingPreferencesCallableResponseOrganizers = CatchContractFieldConstraints(
+    path: 'listParticipantMessagingPreferencesCallableResponse.organizers',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 30,
+  );
+
+  static const listParticipantMessagingPreferencesCallableResponseOrganizersItemsOrganizerId = CatchContractFieldConstraints(
+    path: 'listParticipantMessagingPreferencesCallableResponse.organizers.items.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listParticipantMessagingPreferencesCallableResponseOrganizersItemsOrganizerName = CatchContractFieldConstraints(
+    path: 'listParticipantMessagingPreferencesCallableResponse.organizers.items.organizerName',
+    maxLength: 240,
+    valueTypes: <String>['string'],
+  );
+
+  static const listParticipantMessagingPreferencesCallableResponseOrganizersItemsPreferenceReceiptId = CatchContractFieldConstraints(
+    path: 'listParticipantMessagingPreferencesCallableResponse.organizers.items.preference.receiptId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const listParticipantMessagingPreferencesCallableResponseOrganizersItemsPreferenceStatus = CatchContractFieldConstraints(
+    path: 'listParticipantMessagingPreferencesCallableResponse.organizers.items.preference.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['unknown', 'optedIn', 'optedOut'],
+  );
+
   static const listPublicClubReviewsCallablePayloadClubId = CatchContractFieldConstraints(
     path: 'listPublicClubReviewsCallablePayload.clubId',
     maxLength: 180,
@@ -103777,6 +103848,55 @@ abstract final class CatchContractConstraints {
     maximum: 9007199254740991,
   );
 
+  static const withdrawParticipantMessagingPermissionCallablePayloadExpectedReceiptId = CatchContractFieldConstraints(
+    path: 'withdrawParticipantMessagingPermissionCallablePayload.expectedReceiptId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const withdrawParticipantMessagingPermissionCallablePayloadOrganizerId = CatchContractFieldConstraints(
+    path: 'withdrawParticipantMessagingPermissionCallablePayload.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const withdrawParticipantMessagingPermissionCallablePayloadRequestId = CatchContractFieldConstraints(
+    path: 'withdrawParticipantMessagingPermissionCallablePayload.requestId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const withdrawParticipantMessagingPermissionCallablePayloadScope = CatchContractFieldConstraints(
+    path: 'withdrawParticipantMessagingPermissionCallablePayload.scope',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['catch', 'organizer'],
+  );
+
+  static const withdrawParticipantMessagingPermissionCallableResponsePreferenceReceiptId = CatchContractFieldConstraints(
+    path: 'withdrawParticipantMessagingPermissionCallableResponse.preference.receiptId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const withdrawParticipantMessagingPermissionCallableResponsePreferenceStatus = CatchContractFieldConstraints(
+    path: 'withdrawParticipantMessagingPermissionCallableResponse.preference.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['unknown', 'optedIn', 'optedOut'],
+  );
+
+  static const withdrawParticipantMessagingPermissionCallableResponseReplayed = CatchContractFieldConstraints(
+    path: 'withdrawParticipantMessagingPermissionCallableResponse.replayed',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
   static const all = <String, CatchContractFieldConstraints>{
     'accessApplicationDocument.applicationVersion': accessApplicationDocumentApplicationVersion,
     'accessApplicationDocument.availabilityWindows': accessApplicationDocumentAvailabilityWindows,
@@ -113257,6 +113377,16 @@ abstract final class CatchContractConstraints {
     'listParticipantFormProfilesCallableResponse.items.items.responseId': listParticipantFormProfilesCallableResponseItemsItemsResponseId,
     'listParticipantFormProfilesCallableResponse.items.items.submittedAtMillis': listParticipantFormProfilesCallableResponseItemsItemsSubmittedAtMillis,
     'listParticipantFormProfilesCallableResponse.nextCursor': listParticipantFormProfilesCallableResponseNextCursor,
+    'listParticipantMessagingPreferencesCallablePayload.cursor': listParticipantMessagingPreferencesCallablePayloadCursor,
+    'listParticipantMessagingPreferencesCallablePayload.limit': listParticipantMessagingPreferencesCallablePayloadLimit,
+    'listParticipantMessagingPreferencesCallableResponse.catchPreference.receiptId': listParticipantMessagingPreferencesCallableResponseCatchPreferenceReceiptId,
+    'listParticipantMessagingPreferencesCallableResponse.catchPreference.status': listParticipantMessagingPreferencesCallableResponseCatchPreferenceStatus,
+    'listParticipantMessagingPreferencesCallableResponse.nextCursor': listParticipantMessagingPreferencesCallableResponseNextCursor,
+    'listParticipantMessagingPreferencesCallableResponse.organizers': listParticipantMessagingPreferencesCallableResponseOrganizers,
+    'listParticipantMessagingPreferencesCallableResponse.organizers.items.organizerId': listParticipantMessagingPreferencesCallableResponseOrganizersItemsOrganizerId,
+    'listParticipantMessagingPreferencesCallableResponse.organizers.items.organizerName': listParticipantMessagingPreferencesCallableResponseOrganizersItemsOrganizerName,
+    'listParticipantMessagingPreferencesCallableResponse.organizers.items.preference.receiptId': listParticipantMessagingPreferencesCallableResponseOrganizersItemsPreferenceReceiptId,
+    'listParticipantMessagingPreferencesCallableResponse.organizers.items.preference.status': listParticipantMessagingPreferencesCallableResponseOrganizersItemsPreferenceStatus,
     'listPublicClubReviewsCallablePayload.clubId': listPublicClubReviewsCallablePayloadClubId,
     'listPublicClubReviewsCallableResponse.reviews': listPublicClubReviewsCallableResponseReviews,
     'listPublicClubReviewsCallableResponse.reviews.items.comment': listPublicClubReviewsCallableResponseReviewsItemsComment,
@@ -117908,5 +118038,12 @@ abstract final class CatchContractConstraints {
     'withdrawOrganizerFormResponseCallableResponse.responseId': withdrawOrganizerFormResponseCallableResponseResponseId,
     'withdrawOrganizerFormResponseCallableResponse.status': withdrawOrganizerFormResponseCallableResponseStatus,
     'withdrawOrganizerFormResponseCallableResponse.withdrawnAtMillis': withdrawOrganizerFormResponseCallableResponseWithdrawnAtMillis,
+    'withdrawParticipantMessagingPermissionCallablePayload.expectedReceiptId': withdrawParticipantMessagingPermissionCallablePayloadExpectedReceiptId,
+    'withdrawParticipantMessagingPermissionCallablePayload.organizerId': withdrawParticipantMessagingPermissionCallablePayloadOrganizerId,
+    'withdrawParticipantMessagingPermissionCallablePayload.requestId': withdrawParticipantMessagingPermissionCallablePayloadRequestId,
+    'withdrawParticipantMessagingPermissionCallablePayload.scope': withdrawParticipantMessagingPermissionCallablePayloadScope,
+    'withdrawParticipantMessagingPermissionCallableResponse.preference.receiptId': withdrawParticipantMessagingPermissionCallableResponsePreferenceReceiptId,
+    'withdrawParticipantMessagingPermissionCallableResponse.preference.status': withdrawParticipantMessagingPermissionCallableResponsePreferenceStatus,
+    'withdrawParticipantMessagingPermissionCallableResponse.replayed': withdrawParticipantMessagingPermissionCallableResponseReplayed,
   };
 }

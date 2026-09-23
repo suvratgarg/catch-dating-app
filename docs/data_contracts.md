@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.136.0
+version: 1.137.0
 updated: 2026-09-23
 owner: recursive_audit_loop
 status: active
@@ -2492,8 +2492,19 @@ server-only `catchCommunicationPreferences/{uid}` and
 other sender. A newer withdrawal wins over a delayed submission/capture, while
 replayed finalization is idempotent. Account deletion removes these preferences
 and receipts, and a deletion tombstone prevents a late payment from granting
-consent again. Participant withdrawal controls and any Catch sender must use this
-same authority; collecting permission does not itself dispatch messages.
+consent again. `listParticipantMessagingPreferences` lists only the signed-in
+UID's permissions, with at most 30 organizer rows and a document-ID cursor.
+Confirmed opt-in requires matching grant evidence. The exact authenticated
+`/settings/whatsapp` route remains available before profile setup.
+`withdrawParticipantMessagingPermission` stops exactly one sender, preserves
+SMS and all other organizers, and writes an immutable `participantSettings`
+receipt. Catch withdrawal receipts have a null source organizer. The reviewed
+receipt is an optimistic fence; retries reuse their receipt and return current
+status without overwriting later consent. Withdrawal timestamps also fence
+older pending form payments. No profile or phone re-verification is needed to
+withdraw existing account permission. The UI discards results after account
+changes. Any Catch sender must use this same authority; collecting permission
+does not itself dispatch messages.
 
 ### Private form profile preparation
 

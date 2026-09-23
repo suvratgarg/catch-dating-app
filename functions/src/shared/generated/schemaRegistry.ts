@@ -196,6 +196,10 @@ export {getParticipantFormPhotoCallableResponseSchema} from "./schemas/getPartic
 export {getParticipantFormProfileCallablePayloadSchema} from "./schemas/getParticipantFormProfileInput";
 export {getParticipantFormProfileCallableResponseSchema} from "./schemas/getParticipantFormProfileOutput";
 export {participantFormProfileProposalDocumentSchema} from "./schemas/participantFormProfileProposalDocument";
+export {listParticipantMessagingPreferencesCallablePayloadSchema} from "./schemas/listParticipantMessagingPreferencesInput";
+export {listParticipantMessagingPreferencesCallableResponseSchema} from "./schemas/listParticipantMessagingPreferencesOutput";
+export {withdrawParticipantMessagingPermissionCallablePayloadSchema} from "./schemas/withdrawParticipantMessagingPermissionInput";
+export {withdrawParticipantMessagingPermissionCallableResponseSchema} from "./schemas/withdrawParticipantMessagingPermissionOutput";
 export {catchCommunicationPreferenceDocumentSchema} from "./schemas/catchCommunicationPreferenceDocument";
 export {catchCommunicationPermissionReceiptDocumentSchema} from "./schemas/catchCommunicationPermissionReceiptDocument";
 export {organizerCommunicationPreferenceDocumentSchema} from "./schemas/organizerCommunicationPreferenceDocument";

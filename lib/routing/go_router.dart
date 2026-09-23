@@ -60,6 +60,7 @@ import 'package:catch_dating_app/public_profile/presentation/public_profile_scre
 import 'package:catch_dating_app/reviews/presentation/reviews_history_screen.dart';
 import 'package:catch_dating_app/routing/host_legacy_redirects.dart';
 import 'package:catch_dating_app/routing/route_contract.dart';
+import 'package:catch_dating_app/safety/presentation/messaging_permissions_screen.dart';
 import 'package:catch_dating_app/safety/presentation/settings_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/event_recap_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/filters_screen.dart';
@@ -306,6 +307,11 @@ GoRouter _buildGoRouter(Ref ref, {required bool isHostApp}) {
           path: Routes.settingsScreen.path,
           name: Routes.settingsScreen.name,
           builder: (context, state) => const SettingsScreen(),
+        ),
+        GoRoute(
+          path: Routes.messagingPermissionsScreen.path,
+          name: Routes.messagingPermissionsScreen.name,
+          builder: (context, state) => const MessagingPermissionsScreen(),
         ),
         GoRoute(
           path: Routes.launchAccessScreen.path,
@@ -1215,6 +1221,7 @@ String? appRedirect({
 bool _isOwnAccountRoute(String path) =>
     path == Routes.profileScreen.path ||
     path == Routes.settingsScreen.path ||
+    path == Routes.messagingPermissionsScreen.path ||
     path == Routes.formProfilesScreen.path ||
     RegExp(r'^/you/forms/[^/]+$').hasMatch(path);
 

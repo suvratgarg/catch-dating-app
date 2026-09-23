@@ -533,6 +533,8 @@ import 'package:widgetbook_workspace/utility/launch_access.dart'
     as _widgetbook_workspace_utility_launch_access;
 import 'package:widgetbook_workspace/utility/location_map.dart'
     as _widgetbook_workspace_utility_location_map;
+import 'package:widgetbook_workspace/utility/messaging_permissions.dart'
+    as _widgetbook_workspace_utility_messaging_permissions;
 import 'package:widgetbook_workspace/utility/notifications.dart'
     as _widgetbook_workspace_utility_notifications;
 import 'package:widgetbook_workspace/utility/payment_confirmation.dart'
@@ -13212,6 +13214,26 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Blocked account row',
                 builder: _widgetbook_workspace_utility_settings
                     .blockedAccountTileState,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'MessagingPermissionsPageBody',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Allowed, stopped, unknown and pending',
+                builder: _widgetbook_workspace_utility_messaging_permissions
+                    .messagingPermissionsPageStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'MessagingPermissionsScreen',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Independent sender permissions',
+                builder: _widgetbook_workspace_utility_messaging_permissions
+                    .messagingPermissionsScreenStates,
               ),
             ],
           ),

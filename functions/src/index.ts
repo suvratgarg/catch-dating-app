@@ -597,3 +597,6 @@ export {getEventAssistanceCheckpoint, recordEventAssistanceCheckpoint} from
 
 export {getEventRcsWithdrawal, withdrawEventRcs} from
   "./eventSuccess/operations/rcsWithdrawalHandlers";
+
+export {listParticipantMessagingPreferences, withdrawParticipantMessagingPermission}
+  from "./messaging/participantMessagingPreferences";

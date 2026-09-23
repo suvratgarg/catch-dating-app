@@ -1,6 +1,6 @@
 ---
 doc_id: backend_operation_catalog
-version: 1.76.0
+version: 1.77.0
 updated: 2026-09-23
 owner: recursive_audit_loop
 status: active
@@ -165,6 +165,7 @@ is `docs/migrations/clubs_to_organizers.md`.
 
 | Function | Type | Initiator | Writes | Notes |
 |---|---|---|---|---|
+| `listParticipantMessagingPreferences` / `withdrawParticipantMessagingPermission` | Callable | Participant WhatsApp permissions | Own Catch/organizer preferences and immutable permission receipts | UID-scoped bounded reads; separate sender scopes; optimistic receipt fence and idempotent withdrawal. No opt-in, dispatch, booking, or profile mutation. |
 | `listParticipantFormProfiles` / `getParticipantFormProfile` / `getParticipantFormPhoto` / `claimParticipantFormProfile` | Callable | Participant form profile review | Private proposals, users, intake, selected card pointers and claim receipts | Verified phone and exact response ownership; explicit review, revision checks, payload-bound replay and deletion/withdrawal checks. No event admission or public grant. |
 | `updateUserProfile` | Callable | `UserProfileRepository.updateUserProfile` | `users/{uid}` | Validates profile patches with generated Ajv contract validators; owns complex profile edits after initial create and increments the server profile revision; rate-limited at 60/minute. Verified phone is excluded from the patch contract and initial profile creation must match the Firebase Auth phone claim. |
 | `listOrganizerAttentionItems` | Callable | Host Today | Reads bounded canonical event, practical guest-help case, event-assistance delivery work, participation, application, provider-sync, form-automation, organizer, and payout-account facts; reconciles `organizerAttentionItems` | App-Check-protected, rate-limited, manager-only read-through projection. It aggregates open event-lead help cases and validated delivery work in the explicit host-review phase per active event while keeping safety cases and private message details outside Host Today, resolves stale rows before returning at most 400 open items ordered by urgency and deadline, fails closed on every over-cap source, merges legacy `clubId` and canonical `organizerId` ownership, and returns explicit coverage for client-local, shortcut-only, and missing-truth kinds. |

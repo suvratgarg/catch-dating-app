@@ -346,6 +346,17 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               CatchSection.fieldRows(
                 title: context.l10n.safetySettingsScreenTitleNotifications,
                 children: [
+                  CatchField.nav(
+                    copy: catchFieldCopy(context.l10n),
+                    title: context.l10n.messagingPermissionsTitle,
+                    body: context.l10n.messagingPermissionsSettingsHelp,
+                    bodyMaxLines: 4,
+                    onTap: operationPending
+                        ? null
+                        : () => context.pushNamed(
+                            Routes.messagingPermissionsScreen.name,
+                          ),
+                  ),
                   CatchField.toggle(
                     copy: catchFieldCopy(context.l10n),
                     key: SettingsKeys.newCatchesSwitch,

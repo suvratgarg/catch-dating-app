@@ -96101,6 +96101,254 @@ export const participantFormProfileProposalDocumentSchema = {
   }
 };
 
+export const listParticipantMessagingPreferencesCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/list_participant_messaging_preferences_payload.schema.json",
+  "title": "ListParticipantMessagingPreferencesCallablePayload",
+  "description": "Read only the signed-in participant’s independent Catch and organizer WhatsApp permissions.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "cursor",
+    "limit"
+  ],
+  "properties": {
+    "cursor": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 30
+    }
+  }
+};
+
+export const listParticipantMessagingPreferencesCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/list_participant_messaging_preferences_response.schema.json",
+  "title": "ListParticipantMessagingPreferencesCallableResponse",
+  "description": "Bounded participant-only WhatsApp permission directory; no contact endpoints or CRM fields.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "catchPreference",
+    "organizers",
+    "nextCursor"
+  ],
+  "properties": {
+    "catchPreference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "receiptId"
+      ],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "unknown",
+            "optedIn",
+            "optedOut"
+          ]
+        },
+        "receiptId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "organizers": {
+      "type": "array",
+      "maxItems": 30,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "organizerId",
+          "organizerName",
+          "preference"
+        ],
+        "properties": {
+          "organizerId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "organizerName": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 240
+          },
+          "preference": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "status",
+              "receiptId"
+            ],
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": [
+                  "unknown",
+                  "optedIn",
+                  "optedOut"
+                ]
+              },
+              "receiptId": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "nextCursor": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+};
+
+export const withdrawParticipantMessagingPermissionCallablePayloadSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/withdraw_participant_messaging_permission_payload.schema.json",
+  "title": "WithdrawParticipantMessagingPermissionCallablePayload",
+  "description": "Withdraw exactly one sender’s WhatsApp permission using the reviewed receipt. Never grants consent.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "scope",
+    "organizerId",
+    "expectedReceiptId",
+    "requestId"
+  ],
+  "properties": {
+    "scope": {
+      "type": "string",
+      "enum": [
+        "catch",
+        "organizer"
+      ]
+    },
+    "organizerId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "expectedReceiptId": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "requestId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+};
+
+export const withdrawParticipantMessagingPermissionCallableResponseSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/withdraw_participant_messaging_permission_response.schema.json",
+  "title": "WithdrawParticipantMessagingPermissionCallableResponse",
+  "description": "Current permission after an idempotent withdrawal; later consent is never overwritten by an old retry.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "preference",
+    "replayed"
+  ],
+  "properties": {
+    "preference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "receiptId"
+      ],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "unknown",
+            "optedIn",
+            "optedOut"
+          ]
+        },
+        "receiptId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "replayed": {
+      "type": "boolean"
+    }
+  }
+};
+
 export const catchCommunicationPreferenceDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/catch_communication_preferences.schema.json",
@@ -96520,9 +96768,16 @@ export const catchCommunicationPermissionReceiptDocumentSchema = {
       }
     },
     "sourceOrganizerId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
     }
   },
   "allOf": [
@@ -96617,6 +96872,27 @@ export const catchCommunicationPermissionReceiptDocumentSchema = {
                 "maximum": 999999999
               }
             }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "source": {
+            "const": "hostFormResponse"
+          }
+        },
+        "required": [
+          "source"
+        ]
+      },
+      "then": {
+        "properties": {
+          "sourceOrganizerId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
           }
         }
       }

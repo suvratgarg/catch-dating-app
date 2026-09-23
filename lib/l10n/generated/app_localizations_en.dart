@@ -20366,6 +20366,43 @@ class AppLocalizationsEn extends AppLocalizations {
       'Requires verified phone access. The applicant can see this answer in their private card for your organizer. Other organizers cannot see it. Event sharing needs their permission.';
 
   @override
+  String get messagingPermissionsTitle => 'WhatsApp permissions';
+
+  @override
+  String get messagingPermissionsDescription =>
+      'Choose who can send you WhatsApp updates. Catch and each organizer have separate permissions. Stopping updates does not change your form submission, booking, or event-service messages.';
+
+  @override
+  String get messagingPermissionsCatch => 'Catch';
+
+  @override
+  String get messagingPermissionsOn => 'Updates allowed';
+
+  @override
+  String get messagingPermissionsOff => 'Updates stopped';
+
+  @override
+  String get messagingPermissionsUnknown => 'No confirmed permission';
+
+  @override
+  String get messagingPermissionsCatchHelp =>
+      'Event recommendations and Catch updates.';
+
+  @override
+  String get messagingPermissionsOrganizerHelp =>
+      'Event announcements and updates from this organizer only.';
+
+  @override
+  String get messagingPermissionsStop => 'Stop updates';
+
+  @override
+  String get messagingPermissionsRefresh => 'Refresh permissions';
+
+  @override
+  String get messagingPermissionsSettingsHelp =>
+      'Manage Catch and organizer WhatsApp updates separately.';
+
+  @override
   String get formProfilesTabLabel => 'Forms & cards';
 
   @override

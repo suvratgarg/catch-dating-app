@@ -53,6 +53,7 @@ void main() {
     for (final path in [
       '/you',
       '/settings',
+      '/settings/whatsapp',
       '/you/forms',
       '/you/forms/response-1',
     ]) {

@@ -32440,6 +32440,72 @@ abstract class AppLocalizations {
   /// **'Requires verified phone access. The applicant can see this answer in their private card for your organizer. Other organizers cannot see it. Event sharing needs their permission.'**
   String get hostFormAnswerOrganizerCardHelp;
 
+  /// Participant-owned WhatsApp permission controls.
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp permissions'**
+  String get messagingPermissionsTitle;
+
+  /// Participant-owned WhatsApp permission controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose who can send you WhatsApp updates. Catch and each organizer have separate permissions. Stopping updates does not change your form submission, booking, or event-service messages.'**
+  String get messagingPermissionsDescription;
+
+  /// Participant-owned WhatsApp permission controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch'**
+  String get messagingPermissionsCatch;
+
+  /// Participant-owned WhatsApp permission controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Updates allowed'**
+  String get messagingPermissionsOn;
+
+  /// Participant-owned WhatsApp permission controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Updates stopped'**
+  String get messagingPermissionsOff;
+
+  /// Participant-owned WhatsApp permission controls.
+  ///
+  /// In en, this message translates to:
+  /// **'No confirmed permission'**
+  String get messagingPermissionsUnknown;
+
+  /// Participant-owned WhatsApp permission controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Event recommendations and Catch updates.'**
+  String get messagingPermissionsCatchHelp;
+
+  /// Participant-owned WhatsApp permission controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Event announcements and updates from this organizer only.'**
+  String get messagingPermissionsOrganizerHelp;
+
+  /// Participant-owned WhatsApp permission controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop updates'**
+  String get messagingPermissionsStop;
+
+  /// Participant-owned WhatsApp permission controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh permissions'**
+  String get messagingPermissionsRefresh;
+
+  /// Participant-owned WhatsApp permission controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Catch and organizer WhatsApp updates separately.'**
+  String get messagingPermissionsSettingsHelp;
+
   /// Own-profile tab for form submissions and private organizer cards.
   ///
   /// In en, this message translates to:

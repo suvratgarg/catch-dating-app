@@ -243,9 +243,16 @@ const schemaCatchCommunicationPermissionReceiptDocumentSchema = <String, Object?
       },
     },
     'sourceOrganizerId': <String, Object?>{
-      'type': 'string',
-      'minLength': 1,
-      'maxLength': 180,
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+        },
+        <String, Object?>{
+          'type': 'null',
+        },
+      ],
     },
   },
   'allOf': <Object?>[
@@ -340,6 +347,27 @@ const schemaCatchCommunicationPermissionReceiptDocumentSchema = <String, Object?
                 'maximum': 999999999,
               },
             },
+          },
+        },
+      },
+    },
+    <String, Object?>{
+      'if': <String, Object?>{
+        'properties': <String, Object?>{
+          'source': <String, Object?>{
+            'const': 'hostFormResponse',
+          },
+        },
+        'required': <Object?>[
+          'source',
+        ],
+      },
+      'then': <String, Object?>{
+        'properties': <String, Object?>{
+          'sourceOrganizerId': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 180,
           },
         },
       },

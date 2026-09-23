@@ -241,9 +241,16 @@ export const catchCommunicationPermissionReceiptDocumentSchema: Record<string, u
       }
     },
     "sourceOrganizerId": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 180
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        {
+          "type": "null"
+        }
+      ]
     }
   },
   "allOf": [
@@ -338,6 +345,27 @@ export const catchCommunicationPermissionReceiptDocumentSchema: Record<string, u
                 "maximum": 999999999
               }
             }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "source": {
+            "const": "hostFormResponse"
+          }
+        },
+        "required": [
+          "source"
+        ]
+      },
+      "then": {
+        "properties": {
+          "sourceOrganizerId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
           }
         }
       }

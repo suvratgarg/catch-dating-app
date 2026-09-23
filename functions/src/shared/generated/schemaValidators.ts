@@ -196,6 +196,10 @@ export {validateGetParticipantFormPhotoCallableResponse} from "./validators/getP
 export {validateGetParticipantFormProfileCallablePayload} from "./validators/getParticipantFormProfileInput";
 export {validateGetParticipantFormProfileCallableResponse} from "./validators/getParticipantFormProfileOutput";
 export {validateParticipantFormProfileProposalDocument} from "./validators/participantFormProfileProposalDocument";
+export {validateListParticipantMessagingPreferencesCallablePayload} from "./validators/listParticipantMessagingPreferencesInput";
+export {validateListParticipantMessagingPreferencesCallableResponse} from "./validators/listParticipantMessagingPreferencesOutput";
+export {validateWithdrawParticipantMessagingPermissionCallablePayload} from "./validators/withdrawParticipantMessagingPermissionInput";
+export {validateWithdrawParticipantMessagingPermissionCallableResponse} from "./validators/withdrawParticipantMessagingPermissionOutput";
 export {validateCatchCommunicationPreferenceDocument} from "./validators/catchCommunicationPreferenceDocument";
 export {validateCatchCommunicationPermissionReceiptDocument} from "./validators/catchCommunicationPermissionReceiptDocument";
 export {validateOrganizerCommunicationPreferenceDocument} from "./validators/organizerCommunicationPreferenceDocument";

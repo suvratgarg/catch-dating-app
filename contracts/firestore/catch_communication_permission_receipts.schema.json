@@ -162,7 +162,14 @@
       "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
     },
     "sourceOrganizerId": {
-      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+      "anyOf": [
+        {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        },
+        {
+          "type": "null"
+        }
+      ]
     }
   },
   "allOf": [
@@ -223,6 +230,25 @@
           },
           "revokedAt": {
             "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "source": {
+            "const": "hostFormResponse"
+          }
+        },
+        "required": [
+          "source"
+        ]
+      },
+      "then": {
+        "properties": {
+          "sourceOrganizerId": {
+            "$ref": "../shared/event_common.schema.json#/definitions/documentId"
           }
         }
       }
