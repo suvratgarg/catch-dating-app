@@ -5,6 +5,22 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:share_plus/share_plus.dart';
 
 void main() {
+  test('shareJsonFile preserves recovery bytes and file metadata', () async {
+    ShareParams? params;
+    final controller = ExternalShareController((value) async {
+      params = value;
+    });
+    const raw = '{"journalRaw":"broken JSON: {"}';
+    await controller.shareJsonFile(
+      json: raw,
+      fileName: 'recovery.json',
+      subject: 'Recovery',
+    );
+    expect(params!.fileNameOverrides, ['recovery.json']);
+    expect(params!.subject, 'Recovery');
+    expect(params!.files!.single.mimeType, 'application/json');
+    expect(await params!.files!.single.readAsString(), raw);
+  });
   test(
     'shareText forwards text, subject, and origin to share launcher',
     () async {

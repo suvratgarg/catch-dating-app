@@ -1,0 +1,151 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/program_access_response.schema.json",
+  "title": "ProgramAccessCallableResponse",
+  "description": "Work-shell bootstrap: the caller's role, duties, station scopes and labeled program resources. Staff receive only operational fields.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "organizerId",
+    "title",
+    "kind",
+    "timezone",
+    "status",
+    "actorRole",
+    "duties",
+    "grantExpiresAtMillis",
+    "capabilities",
+    "pickupPoints",
+    "hotels",
+    "vehicleClasses"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "organizerId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 140
+    },
+    "kind": {
+      "$ref": "../shared/program_common.schema.json#/definitions/programKind"
+    },
+    "timezone": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 60
+    },
+    "status": {
+      "$ref": "../shared/program_common.schema.json#/definitions/programStatus"
+    },
+    "actorRole": {
+      "type": "string",
+      "enum": [
+        "manager",
+        "staff"
+      ]
+    },
+    "duties": {
+      "type": "array",
+      "items": {
+        "$ref": "../shared/program_common.schema.json#/definitions/programStaffGrantedDuty"
+      },
+      "description": "Managers receive an empty list meaning unrestricted; staff receive their granted duties."
+    },
+    "grantExpiresAtMillis": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "capabilities": {
+      "type": "array",
+      "items": {
+        "$ref": "../shared/program_common.schema.json#/definitions/programCapability"
+      }
+    },
+    "pickupPoints": {
+      "type": "array",
+      "maxItems": 32,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "pickupPointId",
+          "label",
+          "kind",
+          "iataCode",
+          "terminal"
+        ],
+        "properties": {
+          "pickupPointId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 140
+          },
+          "kind": {
+            "$ref": "../shared/program_common.schema.json#/definitions/pickupPointKind"
+          },
+          "iataCode": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "terminal": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      }
+    },
+    "hotels": {
+      "type": "array",
+      "maxItems": 64,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "hotelId",
+          "name"
+        ],
+        "properties": {
+          "hotelId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 140
+          }
+        }
+      }
+    },
+    "vehicleClasses": {
+      "type": "array",
+      "maxItems": 16,
+      "items": {
+        "$ref": "../shared/program_common.schema.json#/definitions/programVehicleClass"
+      }
+    }
+  }
+}

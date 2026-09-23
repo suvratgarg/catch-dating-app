@@ -306,6 +306,63 @@ import {
   eventParticipationDocumentSchema,
   eventAttendeeDocumentSchema,
   eventStaffGrantDocumentSchema,
+  organizerProgramDocumentSchema,
+  programFunctionDocumentSchema,
+  programGuestDocumentSchema,
+  programHouseholdDocumentSchema,
+  programStaffGrantDocumentSchema,
+  programStaffInviteDocumentSchema,
+  programPickupPointDocumentSchema,
+  programHotelDocumentSchema,
+  programTravelLegDocumentSchema,
+  programTravelPartyDocumentSchema,
+  transportVendorDocumentSchema,
+  transportTripDocumentSchema,
+  transportActiveAssignmentDocumentSchema,
+  transportVehicleAssignmentDocumentSchema,
+  transportOperationReceiptDocumentSchema,
+  programIdCallablePayloadSchema,
+  listOrganizerProgramsCallablePayloadSchema,
+  createOrganizerProgramCallablePayloadSchema,
+  updateOrganizerProgramCallablePayloadSchema,
+  grantProgramStaffCallablePayloadSchema,
+  revokeProgramStaffCallablePayloadSchema,
+  inviteProgramStaffCallablePayloadSchema,
+  claimProgramStaffInviteCallablePayloadSchema,
+  revokeProgramStaffInviteCallablePayloadSchema,
+  upsertProgramGuestCallablePayloadSchema,
+  listProgramStaffCallablePayloadSchema,
+  listProgramTripsCallablePayloadSchema,
+  listProgramGuestsCallablePayloadSchema,
+  upsertProgramHouseholdCallablePayloadSchema,
+  upsertProgramFunctionCallablePayloadSchema,
+  upsertProgramPickupPointCallablePayloadSchema,
+  upsertProgramHotelCallablePayloadSchema,
+  upsertTransportVendorCallablePayloadSchema,
+  upsertProgramTravelLegCallablePayloadSchema,
+  upsertProgramTravelPartyCallablePayloadSchema,
+  setProgramTravelReadinessCallablePayloadSchema,
+  dispatchProgramTripCallablePayloadSchema,
+  programTripActionCallablePayloadSchema,
+  importProgramManifestCallablePayloadSchema,
+  refreshProgramTravelLegCallablePayloadSchema,
+  programStationScopeCallablePayloadSchema,
+  getProgramHotelInboundCallablePayloadSchema,
+  listTransportVendorsCallablePayloadSchema,
+  programMutationCallableResponseSchema,
+  organizerProgramListCallableResponseSchema,
+  programAccessCallableResponseSchema,
+  organizerProgramCallableResponseSchema,
+  programInviteClaimCallableResponseSchema,
+  programStaffListCallableResponseSchema,
+  programGuestListCallableResponseSchema,
+  programArrivalsRosterCallableResponseSchema,
+  programTransportPlanCallableResponseSchema,
+  programHotelInboundCallableResponseSchema,
+  programManifestImportCallableResponseSchema,
+  dispatchProgramTripCallableResponseSchema,
+  transportVendorListCallableResponseSchema,
+  programTripListCallableResponseSchema,
   eventAttendeeAttendanceReceiptDocumentSchema,
   eventAttendeeImportDocumentSchema,
   eventRosterHandoffDocumentSchema,
@@ -1083,6 +1140,63 @@ export const validateEventInviteAttributionDocument = ajv.compile(eventInviteAtt
 export const validateEventParticipationDocument = ajv.compile(eventParticipationDocumentSchema);
 export const validateEventAttendeeDocument = ajv.compile(eventAttendeeDocumentSchema);
 export const validateEventStaffGrantDocument = ajv.compile(eventStaffGrantDocumentSchema);
+export const validateOrganizerProgramDocument = ajv.compile(organizerProgramDocumentSchema);
+export const validateProgramFunctionDocument = ajv.compile(programFunctionDocumentSchema);
+export const validateProgramGuestDocument = ajv.compile(programGuestDocumentSchema);
+export const validateProgramHouseholdDocument = ajv.compile(programHouseholdDocumentSchema);
+export const validateProgramStaffGrantDocument = ajv.compile(programStaffGrantDocumentSchema);
+export const validateProgramStaffInviteDocument = ajv.compile(programStaffInviteDocumentSchema);
+export const validateProgramPickupPointDocument = ajv.compile(programPickupPointDocumentSchema);
+export const validateProgramHotelDocument = ajv.compile(programHotelDocumentSchema);
+export const validateProgramTravelLegDocument = ajv.compile(programTravelLegDocumentSchema);
+export const validateProgramTravelPartyDocument = ajv.compile(programTravelPartyDocumentSchema);
+export const validateTransportVendorDocument = ajv.compile(transportVendorDocumentSchema);
+export const validateTransportTripDocument = ajv.compile(transportTripDocumentSchema);
+export const validateTransportActiveAssignmentDocument = ajv.compile(transportActiveAssignmentDocumentSchema);
+export const validateTransportVehicleAssignmentDocument = ajv.compile(transportVehicleAssignmentDocumentSchema);
+export const validateTransportOperationReceiptDocument = ajv.compile(transportOperationReceiptDocumentSchema);
+export const validateProgramIdCallablePayload = ajv.compile(programIdCallablePayloadSchema);
+export const validateListOrganizerProgramsCallablePayload = ajv.compile(listOrganizerProgramsCallablePayloadSchema);
+export const validateCreateOrganizerProgramCallablePayload = ajv.compile(createOrganizerProgramCallablePayloadSchema);
+export const validateUpdateOrganizerProgramCallablePayload = ajv.compile(updateOrganizerProgramCallablePayloadSchema);
+export const validateGrantProgramStaffCallablePayload = ajv.compile(grantProgramStaffCallablePayloadSchema);
+export const validateRevokeProgramStaffCallablePayload = ajv.compile(revokeProgramStaffCallablePayloadSchema);
+export const validateInviteProgramStaffCallablePayload = ajv.compile(inviteProgramStaffCallablePayloadSchema);
+export const validateClaimProgramStaffInviteCallablePayload = ajv.compile(claimProgramStaffInviteCallablePayloadSchema);
+export const validateRevokeProgramStaffInviteCallablePayload = ajv.compile(revokeProgramStaffInviteCallablePayloadSchema);
+export const validateUpsertProgramGuestCallablePayload = ajv.compile(upsertProgramGuestCallablePayloadSchema);
+export const validateListProgramStaffCallablePayload = ajv.compile(listProgramStaffCallablePayloadSchema);
+export const validateListProgramTripsCallablePayload = ajv.compile(listProgramTripsCallablePayloadSchema);
+export const validateListProgramGuestsCallablePayload = ajv.compile(listProgramGuestsCallablePayloadSchema);
+export const validateUpsertProgramHouseholdCallablePayload = ajv.compile(upsertProgramHouseholdCallablePayloadSchema);
+export const validateUpsertProgramFunctionCallablePayload = ajv.compile(upsertProgramFunctionCallablePayloadSchema);
+export const validateUpsertProgramPickupPointCallablePayload = ajv.compile(upsertProgramPickupPointCallablePayloadSchema);
+export const validateUpsertProgramHotelCallablePayload = ajv.compile(upsertProgramHotelCallablePayloadSchema);
+export const validateUpsertTransportVendorCallablePayload = ajv.compile(upsertTransportVendorCallablePayloadSchema);
+export const validateUpsertProgramTravelLegCallablePayload = ajv.compile(upsertProgramTravelLegCallablePayloadSchema);
+export const validateUpsertProgramTravelPartyCallablePayload = ajv.compile(upsertProgramTravelPartyCallablePayloadSchema);
+export const validateSetProgramTravelReadinessCallablePayload = ajv.compile(setProgramTravelReadinessCallablePayloadSchema);
+export const validateDispatchProgramTripCallablePayload = ajv.compile(dispatchProgramTripCallablePayloadSchema);
+export const validateProgramTripActionCallablePayload = ajv.compile(programTripActionCallablePayloadSchema);
+export const validateImportProgramManifestCallablePayload = ajv.compile(importProgramManifestCallablePayloadSchema);
+export const validateRefreshProgramTravelLegCallablePayload = ajv.compile(refreshProgramTravelLegCallablePayloadSchema);
+export const validateProgramStationScopeCallablePayload = ajv.compile(programStationScopeCallablePayloadSchema);
+export const validateGetProgramHotelInboundCallablePayload = ajv.compile(getProgramHotelInboundCallablePayloadSchema);
+export const validateListTransportVendorsCallablePayload = ajv.compile(listTransportVendorsCallablePayloadSchema);
+export const validateProgramMutationCallableResponse = ajv.compile(programMutationCallableResponseSchema);
+export const validateOrganizerProgramListCallableResponse = ajv.compile(organizerProgramListCallableResponseSchema);
+export const validateProgramAccessCallableResponse = ajv.compile(programAccessCallableResponseSchema);
+export const validateOrganizerProgramCallableResponse = ajv.compile(organizerProgramCallableResponseSchema);
+export const validateProgramInviteClaimCallableResponse = ajv.compile(programInviteClaimCallableResponseSchema);
+export const validateProgramStaffListCallableResponse = ajv.compile(programStaffListCallableResponseSchema);
+export const validateProgramGuestListCallableResponse = ajv.compile(programGuestListCallableResponseSchema);
+export const validateProgramArrivalsRosterCallableResponse = ajv.compile(programArrivalsRosterCallableResponseSchema);
+export const validateProgramTransportPlanCallableResponse = ajv.compile(programTransportPlanCallableResponseSchema);
+export const validateProgramHotelInboundCallableResponse = ajv.compile(programHotelInboundCallableResponseSchema);
+export const validateProgramManifestImportCallableResponse = ajv.compile(programManifestImportCallableResponseSchema);
+export const validateDispatchProgramTripCallableResponse = ajv.compile(dispatchProgramTripCallableResponseSchema);
+export const validateTransportVendorListCallableResponse = ajv.compile(transportVendorListCallableResponseSchema);
+export const validateProgramTripListCallableResponse = ajv.compile(programTripListCallableResponseSchema);
 export const validateEventAttendeeAttendanceReceiptDocument = ajv.compile(eventAttendeeAttendanceReceiptDocumentSchema);
 export const validateEventAttendeeImportDocument = ajv.compile(eventAttendeeImportDocumentSchema);
 export const validateEventRosterHandoffDocument = ajv.compile(eventRosterHandoffDocumentSchema);

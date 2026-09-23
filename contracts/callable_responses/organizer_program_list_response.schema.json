@@ -1,0 +1,67 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/organizer_program_list_response.schema.json",
+  "title": "OrganizerProgramListCallableResponse",
+  "description": "Manager's program inventory: summaries only, no guest or logistics data.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programs"
+  ],
+  "properties": {
+    "programs": {
+      "type": "array",
+      "maxItems": 50,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "programId",
+          "kind",
+          "title",
+          "status",
+          "startsAtMillis",
+          "endsAtMillis",
+          "capabilities",
+          "revision"
+        ],
+        "properties": {
+          "programId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 180
+          },
+          "kind": {
+            "$ref": "../shared/program_common.schema.json#/definitions/programKind"
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 140
+          },
+          "status": {
+            "$ref": "../shared/program_common.schema.json#/definitions/programStatus"
+          },
+          "startsAtMillis": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "endsAtMillis": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "capabilities": {
+            "type": "array",
+            "items": {
+              "$ref": "../shared/program_common.schema.json#/definitions/programCapability"
+            }
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      }
+    }
+  }
+}

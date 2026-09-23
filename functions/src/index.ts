@@ -616,3 +616,56 @@ export {listEventChats} from "./chats/listEventChats";
 
 export {getEventChatProfileSharing, updateEventChatProfileSharing,
   getEventChatProfile} from "./chats/eventChatProfiles";
+// Private programs (weddings/corporate offsites) and arrivals transport.
+export {
+  createOrganizerProgram,
+  updateOrganizerProgram,
+  listOrganizerPrograms,
+  getOrganizerProgram,
+} from "./programs/programs";
+export {
+  getProgramWorkAccess,
+  listProgramStaff,
+  grantProgramStaff,
+  revokeProgramStaff,
+} from "./programs/programStaff";
+export {
+  inviteProgramStaff,
+  claimProgramStaffInvite,
+  revokeProgramStaffInvite,
+} from "./programs/programStaffInvites";
+export {
+  upsertProgramGuest,
+  listProgramGuests,
+  upsertProgramHousehold,
+  listProgramHouseholds,
+} from "./programs/programGuests";
+export {
+  upsertProgramFunction,
+  upsertProgramPickupPoint,
+  upsertProgramHotel,
+  upsertTransportVendor,
+  listTransportVendors,
+} from "./programs/programResources";
+export {
+  upsertProgramTravelLeg,
+  upsertProgramTravelParty,
+} from "./transport/programTravel";
+export {importProgramManifest} from "./programs/programManifestImport";
+export {
+  getProgramArrivalsRoster,
+  getProgramTransportPlan,
+  setProgramTravelReadiness,
+} from "./transport/programArrivals";
+export {
+  dispatchProgramTrip,
+  markProgramTripArrived,
+  voidProgramTrip,
+  getProgramHotelInbound,
+  listProgramTrips,
+} from "./transport/programDispatch";
+export {
+  refreshProgramTravelLeg,
+  refreshProgramFlightStatuses,
+} from "./transport/programFlightRefresh";
+export {flightAlertWebhook} from "./transport/flightAlerts";

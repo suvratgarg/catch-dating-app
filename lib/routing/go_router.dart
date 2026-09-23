@@ -58,6 +58,11 @@ import 'package:catch_dating_app/onboarding/presentation/start_welcome_route_scr
 import 'package:catch_dating_app/payments/domain/payment_confirmation_data.dart';
 import 'package:catch_dating_app/payments/presentation/payment_confirmation_screen.dart';
 import 'package:catch_dating_app/payments/presentation/payment_history_screen.dart';
+import 'package:catch_dating_app/programs/presentation/program_arrivals_screen.dart';
+import 'package:catch_dating_app/programs/presentation/program_dispatch_screen.dart';
+import 'package:catch_dating_app/programs/presentation/program_hotel_desk_screen.dart';
+import 'package:catch_dating_app/programs/presentation/program_trips_screen.dart';
+import 'package:catch_dating_app/programs/presentation/program_work_screen.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/public_profile/presentation/public_profile_screen.dart';
 import 'package:catch_dating_app/reviews/presentation/reviews_history_screen.dart';
@@ -85,6 +90,7 @@ export 'route_contract.dart';
 part 'detail_route_pages.dart';
 part 'go_router.g.dart';
 part 'host_inbox_route.dart';
+part 'route_destinations.dart';
 
 HostEventManageSection _hostManageSectionFromState(GoRouterState state) {
   return switch (state.uri.queryParameters['section']) {
@@ -549,6 +555,46 @@ List<RouteBase> _hostUtilityRoutes(GlobalKey<NavigatorState> rootNavigatorKey) {
       name: Routes.hostOperatorEventScreen.name,
       builder: (context, state) =>
           HostEventOperatorScreen(eventId: state.pathParameters['eventId']!),
+    ),
+    GoRoute(
+      path: Routes.hostWorkProgramScreen.path,
+      name: Routes.hostWorkProgramScreen.name,
+      builder: (context, state) => ProgramWorkScreen(
+        programId: state.pathParameters['programId']!,
+        inviteId: state.uri.queryParameters['invite'],
+      ),
+    ),
+    GoRoute(
+      path: Routes.hostWorkArrivalsScreen.path,
+      name: Routes.hostWorkArrivalsScreen.name,
+      builder: (context, state) => ProgramArrivalsScreen(
+        programId: state.pathParameters['programId']!,
+        pickupPointId: state.pathParameters['pickupPointId'],
+        stationLabel: state.uri.queryParameters['station'] ?? 'Arrivals',
+      ),
+    ),
+    GoRoute(
+      path: Routes.hostWorkDispatchScreen.path,
+      name: Routes.hostWorkDispatchScreen.name,
+      builder: (context, state) => ProgramDispatchScreen(
+        programId: state.pathParameters['programId']!,
+        pickupPointId: state.pathParameters['pickupPointId']!,
+        stationLabel: state.uri.queryParameters['station'] ?? 'Dispatch',
+      ),
+    ),
+    GoRoute(
+      path: Routes.hostWorkHotelScreen.path,
+      name: Routes.hostWorkHotelScreen.name,
+      builder: (context, state) => ProgramHotelDeskScreen(
+        programId: state.pathParameters['programId']!,
+        hotelId: state.pathParameters['hotelId']!,
+      ),
+    ),
+    GoRoute(
+      path: Routes.hostWorkTripsScreen.path,
+      name: Routes.hostWorkTripsScreen.name,
+      builder: (context, state) =>
+          ProgramTripsScreen(programId: state.pathParameters['programId']!),
     ),
     GoRoute(
       path: Routes.hostOrganizerMessagingScreen.path,
@@ -1263,98 +1309,6 @@ bool _requiresSocialProfile(String matchedLocation) {
   return matchedLocation == Routes.filtersScreen.path ||
       matchedLocation.startsWith('/catches/');
 }
-
-String? _pendingDestination({
-  required Uri uri,
-  required String matchedLocation,
-}) {
-  final from = _sanitizeFrom(uri.queryParameters[_fromQueryParam]);
-  if (from != null) return from;
-  if (_isTransientRoute(matchedLocation)) return null;
-  return uri.toString();
-}
-
-String _resumeDestination(Uri uri) {
-  final from = _sanitizeFrom(uri.queryParameters[_fromQueryParam]);
-  final defaultPath = AppConfig.appRole.isHost
-      ? Routes.hostTodayScreen.path
-      : Routes.dashboardScreen.path;
-  if (from == null) return defaultPath;
-
-  final targetPath = Uri.parse(from).path;
-  if (_isTransientRoute(targetPath)) {
-    return defaultPath;
-  }
-  if (AppConfig.appRole.isHost && !_isHostRoute(targetPath)) {
-    return defaultPath;
-  }
-  return from;
-}
-
-String? _hostPendingDestination({
-  required Uri uri,
-  required String matchedLocation,
-}) {
-  final from = _sanitizeFrom(uri.queryParameters[_fromQueryParam]);
-  if (from != null && _isHostRoute(Uri.parse(from).path)) return from;
-  if (_isTransientRoute(matchedLocation)) return null;
-  if (_isHostRoute(uri.path)) return uri.toString();
-  return null;
-}
-
-String _locationWithFrom(String path, {String? from}) {
-  final safeFrom = _sanitizeFrom(from);
-  if (safeFrom == null || Uri.parse(safeFrom).path == path) {
-    return path;
-  }
-  return Uri(
-    path: path,
-    queryParameters: {_fromQueryParam: safeFrom},
-  ).toString();
-}
-
-String profileCompletionLocation({String? from}) {
-  final safeFrom = _sanitizeFrom(from);
-  return Uri(
-    path: Routes.onboardingScreen.path,
-    queryParameters: {
-      _onboardingIntentQueryParam: _completeProfileIntent,
-      if (safeFrom != null &&
-          Uri.parse(safeFrom).path != Routes.onboardingScreen.path)
-        _fromQueryParam: safeFrom,
-    },
-  ).toString();
-}
-
-String runPreferencesCompletionLocation({String? from}) {
-  final safeFrom = _sanitizeFrom(from);
-  return Uri(
-    path: Routes.onboardingScreen.path,
-    queryParameters: {
-      _onboardingIntentQueryParam: _completeRunPreferencesIntent,
-      if (safeFrom != null &&
-          Uri.parse(safeFrom).path != Routes.onboardingScreen.path)
-        _fromQueryParam: safeFrom,
-    },
-  ).toString();
-}
-
-String? _sanitizeFrom(String? from) {
-  if (from == null || from.isEmpty || !from.startsWith('/')) return null;
-  final uri = Uri.tryParse(from);
-  if (uri == null || uri.hasScheme || uri.hasAuthority) return null;
-  return uri.toString();
-}
-
-bool _isTransientRoute(String path) =>
-    path == Routes.loadingScreen.path ||
-    path == Routes.startScreen.path ||
-    path == Routes.authScreen.path ||
-    path == Routes.onboardingScreen.path;
-
-bool _isHostRoute(String? path) =>
-    path == Routes.hostHomeScreen.path ||
-    (path?.startsWith('${Routes.hostHomeScreen.path}/') ?? false);
 
 EventDetailScreen _eventDetailScreen(GoRouterState state) {
   return EventDetailScreen(

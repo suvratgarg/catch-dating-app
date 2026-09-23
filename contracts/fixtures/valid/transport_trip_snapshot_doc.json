@@ -1,0 +1,77 @@
+{
+  "programId": "program-1",
+  "organizerId": "org-1",
+  "kind": "guestTransfer",
+  "pickupPointId": "pickup-1",
+  "destinationHotelId": "hotel-1",
+  "destinationLabel": null,
+  "vehicleClassId": "innova",
+  "vendorId": "vendor-1",
+  "vendorNameSnapshot": "Sharma Cabs",
+  "plateNormalized": "DL1T4471",
+  "plateDisplay": "DL-1T-4471",
+  "partyIds": [
+    "party-1"
+  ],
+  "legIds": [
+    "leg-1",
+    "leg-2"
+  ],
+  "passengerCount": 5,
+  "status": "enRoute",
+  "departedAt": {
+    "_seconds": 1786629000,
+    "_nanoseconds": 0
+  },
+  "departedByUid": "dispatcher-1",
+  "arrivedAt": null,
+  "arrivedByUid": null,
+  "rateSnapshot": null,
+  "clientOperationId": "op-dispatch-0001",
+  "notes": null,
+  "createdAt": {
+    "_seconds": 1786629000,
+    "_nanoseconds": 0
+  },
+  "updatedAt": {
+    "_seconds": 1786629000,
+    "_nanoseconds": 0
+  },
+  "revision": 1,
+  "voidedByUid": null,
+  "voidReason": null,
+  "dispatchSnapshot": {
+    "recordedAt": {
+      "_seconds": 1786629000,
+      "_nanoseconds": 0
+    },
+    "vehicleClass": {
+      "id": "innova",
+      "label": "Innova",
+      "passengerCapacity": 6,
+      "luggageCapacity": 8,
+      "capabilities": [
+        "extraLuggage"
+      ],
+      "sortOrder": 1
+    },
+    "manifest": [
+      {
+        "legId": "leg-1",
+        "guestId": "guest-1",
+        "guestDisplayName": "Rohan Sharma",
+        "partyId": "party-1",
+        "passengers": 2,
+        "luggageUnits": 3
+      },
+      {
+        "legId": "leg-2",
+        "guestId": "guest-2",
+        "guestDisplayName": "Vikram Rao",
+        "partyId": "party-1",
+        "passengers": 3,
+        "luggageUnits": 4
+      }
+    ]
+  }
+}

@@ -48,8 +48,8 @@ test("checked manifest validates offline without invoking gcloud", () => {
   );
 
   assert.equal(execution.exitCode, 0);
-  assert.equal(execution.report.secretCount, 14);
-  assert.equal(execution.report.requirementCount, 18);
+  assert.equal(execution.report.secretCount, 16);
+  assert.equal(execution.report.requirementCount, 20);
   assert.equal(commandCalls, 0);
 });
 
@@ -151,9 +151,21 @@ test("target and capability filtering selects only relevant prerequisites", () =
     selected("dev", ["functions"]).filter(
       (entry) => entry.kind === "secret-version",
     ).length,
-    14,
+    16,
   );
-  assert.equal(selected("dev", ["functions"]).length, 18);
+  assert.equal(selected("dev", ["functions"]).length, 20);
+  for (const environment of ["dev", "staging", "prod"]) {
+    for (const [target, secrets] of [
+      ["refreshProgramTravelLeg", ["AERODATABOX_API_KEY"]],
+      ["flightAlertWebhook", ["FLIGHT_WEBHOOK_SECRET"]],
+      ["refreshProgramFlightStatuses", ["AERODATABOX_API_KEY", "FLIGHT_WEBHOOK_SECRET"]],
+    ]) {
+      assert.deepEqual(
+        selected(environment, [`functions:${target}`]).map((entry) => entry.name).sort(),
+        secrets,
+      );
+    }
+  }
   for (const target of [
     "functions:checkInEventRuntime",
     "functions:createEventVenueSession",

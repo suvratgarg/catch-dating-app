@@ -1,0 +1,481 @@
+import assert from "node:assert/strict";
+import test from "node:test";
+import {HttpsError} from "firebase-functions/v2/https";
+import {
+  createOrganizerProgramHandler,
+  updateOrganizerProgramHandler,
+} from "../programs/programs";
+import {
+  getProgramWorkAccessHandler,
+  grantProgramStaffHandler,
+  listProgramStaffHandler,
+} from "../programs/programStaff";
+import {upsertProgramGuestHandler} from "../programs/programGuests";
+import {
+  getProgramArrivalsRosterHandler,
+  getProgramTransportPlanHandler,
+  setProgramTravelReadinessHandler,
+} from "./programArrivals";
+import {
+  dispatchProgramTripHandler,
+  getProgramHotelInboundHandler,
+  listProgramTripsHandler,
+  voidProgramTripHandler,
+} from "./programDispatch";
+
+import {FakeFirestore} from
+  "../shared/testing/programFirestore";
+
+import {baseSeed, deps, now, readySeed, request, transportSettings} from
+  "../shared/testing/programFixtures";
+
+test("createOrganizerProgram requires organizer management", async () => {
+  const firestore = new FakeFirestore(baseSeed());
+  await assert.rejects(
+    createOrganizerProgramHandler(request({
+      organizerId: "org-1",
+      kind: "wedding",
+      title: "Test",
+      timezone: "Asia/Kolkata",
+      startsAtMillis: 1,
+      endsAtMillis: 2,
+      capabilities: ["arrivalsTransport"],
+    }, "stranger"), deps(firestore)),
+    (error: unknown) =>
+      error instanceof HttpsError && error.code === "permission-denied"
+  );
+  const created = await createOrganizerProgramHandler(request({
+    organizerId: "org-1",
+    kind: "wedding",
+    title: "New Program",
+    timezone: "Asia/Kolkata",
+    startsAtMillis: 1_800_000_000_000,
+    endsAtMillis: 1_800_300_000_000,
+    capabilities: ["arrivalsTransport"],
+  }, "manager-1"), deps(firestore));
+  assert.equal(created.revision, 1);
+  const stored = firestore.getDoc(`organizerPrograms/${created.entityId}`);
+  assert.equal(stored?.status, "draft");
+  // Premium default: 30-minute bands, 10-minute ready wait.
+  const settings = stored?.transportSettings as Record<string, unknown>;
+  assert.equal(settings.bandWindowMillis, 30 * 60 * 1000);
+  assert.equal(settings.maxReadyWaitMillis, 10 * 60 * 1000);
+});
+
+test("updateOrganizerProgram fences on revision and stores settings",
+  async () => {
+    const firestore = new FakeFirestore(baseSeed());
+    await assert.rejects(
+      updateOrganizerProgramHandler(request({
+        programId: "program-1",
+        expectedRevision: 99,
+        transportSettings: {
+          ...transportSettings,
+          maxReadyWaitMillis: 5 * 60 * 1000,
+        },
+      }, "manager-1"), deps(firestore)),
+      (error: unknown) =>
+        error instanceof HttpsError && error.code === "aborted"
+    );
+    const updated = await updateOrganizerProgramHandler(request({
+      programId: "program-1",
+      expectedRevision: 3,
+      transportSettings: {
+        ...transportSettings,
+        maxReadyWaitMillis: 5 * 60 * 1000,
+      },
+    }, "manager-1"), deps(firestore));
+    const stored = firestore.getDoc("organizerPrograms/program-1");
+    const settings = stored?.transportSettings as Record<string, unknown>;
+    assert.equal(settings.maxReadyWaitMillis, 5 * 60 * 1000);
+    assert.equal(updated.revision, stored?.revision);
+  });
+
+test("staff grants are duty-scoped, expiring, and station-checked",
+  async () => {
+    const firestore = new FakeFirestore(baseSeed());
+    await assert.rejects(
+      grantProgramStaffHandler(request({
+        programId: "program-1",
+        phoneNumber: "+91 90000 00009",
+        duties: [{duty: "airportGreeter", pickupPointIds: [], hotelIds: []}],
+        expiresAtMillis: now.toMillis() + 86_400_000,
+      }, "greeter-1"), deps(firestore)),
+      (error: unknown) =>
+        error instanceof HttpsError && error.code === "permission-denied"
+    );
+    await assert.rejects(
+      grantProgramStaffHandler(request({
+        programId: "program-1",
+        phoneNumber: "+91 90000 00009",
+        duties: [{
+          duty: "airportGreeter",
+          pickupPointIds: ["pp-foreign"],
+          hotelIds: [],
+        }],
+        expiresAtMillis: now.toMillis() + 86_400_000,
+      }, "manager-1"), deps(firestore)),
+      (error: unknown) =>
+        error instanceof HttpsError && error.code === "invalid-argument"
+    );
+    const receipt = await grantProgramStaffHandler(request({
+      programId: "program-1",
+      phoneNumber: "+91 90000 00009",
+      duties: [{
+        duty: "airportGreeter",
+        pickupPointIds: ["pp-t1"],
+        hotelIds: [],
+      }],
+      expiresAtMillis: now.toMillis() + 86_400_000,
+    }, "manager-1"), deps(firestore));
+    assert.equal(receipt.entityId, "new-staff-1");
+    const members = await listProgramStaffHandler(request({
+      programId: "program-1"}, "manager-1"), deps(firestore));
+    assert.equal(members.members.length, 5);
+    const grant = firestore.getDoc("programStaffGrants/program-1__new-staff-1");
+    assert.equal(grant?.status, "active");
+  });
+
+test("work access redacts a greeter to their station scope", async () => {
+  const firestore = new FakeFirestore(baseSeed());
+  const access = await getProgramWorkAccessHandler(request({
+    programId: "program-1",
+  }, "greeter-1"), deps(firestore));
+  assert.equal(access.actorRole, "staff");
+  assert.deepEqual(access.pickupPoints.map((p) => p.pickupPointId),
+    ["pp-t3"]);
+  // Greeters still see labeled destinations for roster context.
+  assert.deepEqual(access.hotels.map((h) => h.hotelId).sort(),
+    ["hotel-1", "hotel-2"]);
+  await assert.rejects(
+    getProgramWorkAccessHandler(request({programId: "program-1"},
+      "stranger"), deps(firestore)),
+    (error: unknown) =>
+      error instanceof HttpsError && error.code === "permission-denied"
+  );
+});
+
+test("two guests sharing a phone stay distinct people", async () => {
+  const firestore = new FakeFirestore(baseSeed());
+  const managerDeps = deps(firestore);
+  const first = await upsertProgramGuestHandler(request({
+    programId: "program-1",
+    displayName: "Kid One",
+    phoneE164: "+919111111111",
+  }, "manager-1"), managerDeps);
+  const second = await upsertProgramGuestHandler(request({
+    programId: "program-1",
+    displayName: "Kid Two",
+    phoneE164: "+919111111111",
+  }, "manager-1"), managerDeps);
+  assert.notEqual(first.entityId, second.entityId);
+});
+
+test("arrivals roster is station-scoped and field-redacted", async () => {
+  const firestore = new FakeFirestore(baseSeed());
+  const roster = await getProgramArrivalsRosterHandler(request({
+    programId: "program-1",
+    pickupPointId: null,
+  }, "greeter-1"), deps(firestore));
+  // pp-t3 scope only: leg-1 yes, leg-2 (T1) no.
+  assert.deepEqual(roster.rows.map((row) => row.legId), ["leg-1"]);
+  const row = roster.rows[0];
+  assert.equal(row.guestDisplayName, "Rohan Sharma");
+  assert.equal(row.flightNumber, "AI847");
+  assert.equal(
+    row.curbAtMillis,
+    1_800_000_000_000 + transportSettings.domesticExitLagMillis
+  );
+  assert.equal(row.curbSource, "scheduledLanding");
+  // No contact fields in the operational projection.
+  assert.equal("phoneE164" in row, false);
+  assert.equal("email" in row, false);
+  // A greeter may not pull another station's roster by name.
+  await assert.rejects(
+    getProgramArrivalsRosterHandler(request({
+      programId: "program-1",
+      pickupPointId: "pp-t1",
+    }, "greeter-1"), deps(firestore)),
+    (error: unknown) =>
+      error instanceof HttpsError && error.code === "permission-denied"
+  );
+  // Staff without any airport duty are denied entirely.
+  await assert.rejects(
+    getProgramArrivalsRosterHandler(request({
+      programId: "program-1",
+      pickupPointId: null,
+    }, "hotelier-1"), deps(firestore)),
+    (error: unknown) =>
+      error instanceof HttpsError && error.code === "permission-denied"
+  );
+});
+
+test("claims are exclusive, releasable, and replay-safe", async () => {
+  const firestore = new FakeFirestore(baseSeed());
+  const greeterDeps = deps(firestore);
+  const claim = await setProgramTravelReadinessHandler(request({
+    programId: "program-1",
+    legId: "leg-1",
+    action: "claim",
+    observedAtMillis: now.toMillis(),
+    expectedRevision: 1,
+    clientOperationId: "op-claim-1",
+  }, "greeter-1"), greeterDeps);
+  assert.equal(claim.alreadyApplied, false);
+  // Same request replayed returns the stored result.
+  const replay = await setProgramTravelReadinessHandler(request({
+    programId: "program-1",
+    legId: "leg-1",
+    action: "claim",
+    observedAtMillis: now.toMillis(),
+    expectedRevision: 1,
+    clientOperationId: "op-claim-1",
+  }, "greeter-1"), greeterDeps);
+  assert.equal(replay.alreadyApplied, true);
+  assert.equal(replay.revision, claim.revision);
+  // A second greeter cannot steal the claim.
+  await assert.rejects(
+    setProgramTravelReadinessHandler(request({
+      programId: "program-1",
+      legId: "leg-1",
+      action: "claim",
+      observedAtMillis: now.toMillis(),
+      expectedRevision: claim.revision,
+      clientOperationId: "op-claim-2",
+    }, "greeter-2"), greeterDeps),
+    (error: unknown) =>
+      error instanceof HttpsError && error.code === "already-exists"
+  );
+  // Same operation id with a different payload is rejected.
+  await assert.rejects(
+    setProgramTravelReadinessHandler(request({
+      programId: "program-1",
+      legId: "leg-1",
+      action: "claim",
+      observedAtMillis: now.toMillis(),
+      expectedRevision: 7,
+      clientOperationId: "op-claim-1",
+    }, "greeter-1"), greeterDeps),
+    (error: unknown) =>
+      error instanceof HttpsError && error.code === "aborted"
+  );
+  // Claimants may release their own claim.
+  await setProgramTravelReadinessHandler(request({
+    programId: "program-1",
+    legId: "leg-1",
+    action: "unclaim",
+    observedAtMillis: now.toMillis(),
+    expectedRevision: claim.revision,
+    clientOperationId: "op-unclaim-1",
+  }, "greeter-1"), greeterDeps);
+  assert.equal(
+    firestore.getDoc("programTravelLegs/leg-1")?.claimedByUid, null);
+  // Greeters cannot touch a leg at a station outside their scope.
+  await assert.rejects(
+    setProgramTravelReadinessHandler(request({
+      programId: "program-1",
+      legId: "leg-2",
+      action: "claim",
+      observedAtMillis: now.toMillis(),
+      expectedRevision: 1,
+      clientOperationId: "op-claim-3",
+    }, "greeter-1"), greeterDeps),
+    (error: unknown) =>
+      error instanceof HttpsError && error.code === "permission-denied"
+  );
+});
+
+test("dispatch writes trip, assignments and receipt atomically", async () => {
+  const firestore = new FakeFirestore(readySeed());
+  const dispatchDeps = deps(firestore);
+  const dispatched = await dispatchProgramTripHandler(request({
+    programId: "program-1",
+    pickupPointId: "pp-t3",
+    destinationHotelId: "hotel-1",
+    vehicleClassId: "suv",
+    plateDisplay: "DL-1T-4471",
+    vendorId: "vendor-1",
+    legIds: ["leg-1"],
+    expectedLegRevisions: [{legId: "leg-1", revision: 1}],
+    clientOperationId: "op-dispatch-1",
+  }, "dispatcher-1"), dispatchDeps);
+  assert.equal(dispatched.passengerCount, 2);
+  const trip = firestore.getDoc(`transportTrips/${dispatched.tripId}`);
+  assert.equal(trip?.plateNormalized, "DL1T4471");
+  assert.equal(trip?.vendorNameSnapshot, "Sharma Cabs");
+  assert.equal(trip?.status, "enRoute");
+  assert.equal(
+    firestore.getDoc("programTravelLegs/leg-1")?.readiness, "dispatched");
+  const assignment = firestore.getDoc(
+    "transportActiveAssignments/program-1__leg-1");
+  assert.equal(assignment?.status, "active");
+  assert.equal(assignment?.tripId, dispatched.tripId);
+  // Exact replay returns the original trip, not a duplicate.
+  const replay = await dispatchProgramTripHandler(request({
+    programId: "program-1",
+    pickupPointId: "pp-t3",
+    destinationHotelId: "hotel-1",
+    vehicleClassId: "suv",
+    plateDisplay: "DL-1T-4471",
+    vendorId: "vendor-1",
+    legIds: ["leg-1"],
+    expectedLegRevisions: [{legId: "leg-1", revision: 1}],
+    clientOperationId: "op-dispatch-1",
+  }, "dispatcher-1"), dispatchDeps);
+  assert.equal(replay.alreadyApplied, true);
+  assert.equal(replay.tripId, dispatched.tripId);
+  // A second dispatch of an assigned leg is rejected.
+  await assert.rejects(
+    dispatchProgramTripHandler(request({
+      programId: "program-1",
+      pickupPointId: "pp-t3",
+      destinationHotelId: "hotel-1",
+      vehicleClassId: "sedan",
+      plateDisplay: "DL-9Z-0001",
+      legIds: ["leg-1"],
+      expectedLegRevisions: [{legId: "leg-1", revision: 1}],
+      clientOperationId: "op-dispatch-2",
+    }, "dispatcher-1"), dispatchDeps),
+    (error: unknown) =>
+      error instanceof HttpsError &&
+      ["already-exists", "failed-precondition", "aborted"].includes(error.code)
+  );
+  // A greeter cannot dispatch.
+  await assert.rejects(
+    dispatchProgramTripHandler(request({
+      programId: "program-1",
+      pickupPointId: "pp-t1",
+      destinationHotelId: "hotel-1",
+      vehicleClassId: "sedan",
+      plateDisplay: "DL-9Z-0002",
+      legIds: ["leg-2"],
+      expectedLegRevisions: [{legId: "leg-2", revision: 1}],
+      clientOperationId: "op-dispatch-3",
+    }, "greeter-1"), dispatchDeps),
+    (error: unknown) =>
+      error instanceof HttpsError && error.code === "permission-denied"
+  );
+  // Voiding releases the assignment and returns the leg to ready.
+  const tripDoc = firestore.getDoc(`transportTrips/${dispatched.tripId}`);
+  const voided = await voidProgramTripHandler(request({
+    programId: "program-1",
+    tripId: dispatched.tripId,
+    reason: "Wrong vehicle dispatched",
+    expectedRevision: tripDoc?.revision as number,
+    clientOperationId: "op-void-1",
+  }, "dispatcher-1"), dispatchDeps);
+  assert.equal(voided.alreadyApplied, false);
+  assert.equal(
+    firestore.getDoc(`transportTrips/${dispatched.tripId}`)?.status,
+    "voided");
+  assert.equal(
+    firestore.getDoc(`transportTrips/${dispatched.tripId}`)?.voidReason,
+    "Wrong vehicle dispatched");
+  assert.equal(
+    firestore.getDoc("transportActiveAssignments/program-1__leg-1")?.status,
+    "released");
+  assert.equal(
+    firestore.getDoc("programTravelLegs/leg-1")?.readiness, "ready");
+});
+
+test("hotel inbound is hotel-scoped and arrival marks the trip", async () => {
+  const firestore = new FakeFirestore(readySeed());
+  const dispatchDeps = deps(firestore);
+  const dispatched = await dispatchProgramTripHandler(request({
+    programId: "program-1",
+    pickupPointId: "pp-t3",
+    destinationHotelId: "hotel-1",
+    vehicleClassId: "suv",
+    plateDisplay: "DL-1T-4471",
+    vendorId: "vendor-1",
+    legIds: ["leg-1"],
+    expectedLegRevisions: [{legId: "leg-1", revision: 1}],
+    clientOperationId: "op-dispatch-9",
+  }, "dispatcher-1"), dispatchDeps);
+  const inbound = await getProgramHotelInboundHandler(request({
+    programId: "program-1",
+    hotelId: "hotel-1",
+  }, "hotelier-1"), dispatchDeps);
+  assert.equal(inbound.trips.length, 1);
+  assert.equal(inbound.trips[0].plateDisplay, "DL-1T-4471");
+  assert.deepEqual(inbound.trips[0].guestNames, ["Rohan Sharma"]);
+  assert.equal(inbound.trips[0].estimatedArriveAtMillis, null);
+  // The T1 leg headed to hotel-1 is visible as "expected".
+  assert.equal(inbound.expectedLegs.length, 1);
+  assert.equal(inbound.expectedLegs[0].guestDisplayName, "Vikram Rao");
+  // Hotel staff cannot open another hotel's view.
+  await assert.rejects(
+    getProgramHotelInboundHandler(request({
+      programId: "program-1",
+      hotelId: "hotel-2",
+    }, "hotelier-1"), dispatchDeps),
+    (error: unknown) =>
+      error instanceof HttpsError && error.code === "permission-denied"
+  );
+  // Marking arrival is hotel-scoped and idempotent.
+  const tripDoc = firestore.getDoc(`transportTrips/${dispatched.tripId}`);
+  await assert.rejects(
+    voidProgramTripHandler(request({
+      programId: "program-1",
+      tripId: dispatched.tripId,
+      reason: "Hotel cannot void",
+      expectedRevision: tripDoc?.revision as number,
+      clientOperationId: "op-void-hotel",
+    }, "hotelier-1"), dispatchDeps),
+    (error: unknown) =>
+      error instanceof HttpsError && error.code === "permission-denied"
+  );
+});
+
+test("transport plan groups by station, destination and readiness",
+  async () => {
+    const firestore = new FakeFirestore(baseSeed());
+    // leg-1 (T3, hotel-1, scheduled) vs leg-2 (T1, hotel-1): separate
+    // stations, so the dispatcher sees each station's plan independently.
+    const plan = await getProgramTransportPlanHandler(request({
+      programId: "program-1",
+      pickupPointId: "pp-t3",
+    }, "dispatcher-1"), deps(firestore));
+    assert.equal(plan.groups.length, 1);
+    const group = plan.groups[0];
+    assert.deepEqual(group.legIds, ["leg-1"]);
+    assert.equal(group.vehicleClassId, "sedan");
+    assert.equal(group.readiness, "expected");
+    assert.equal(group.waitOverdue, false);
+    // A dispatcher without station restriction sees the T1 plan too.
+    const t1 = await getProgramTransportPlanHandler(request({
+      programId: "program-1",
+      pickupPointId: "pp-t1",
+    }, "dispatcher-1"), deps(firestore));
+    assert.equal(t1.groups.length, 1);
+    assert.deepEqual(t1.groups[0].legIds, ["leg-2"]);
+  });
+
+test("trip ledger is restricted to dispatcher/reconciliation duties",
+  async () => {
+    const firestore = new FakeFirestore(readySeed());
+    await dispatchProgramTripHandler(request({
+      programId: "program-1",
+      pickupPointId: "pp-t3",
+      destinationHotelId: "hotel-1",
+      vehicleClassId: "suv",
+      plateDisplay: "DL-1T-4471",
+      vendorId: "vendor-1",
+      legIds: ["leg-1"],
+      expectedLegRevisions: [{legId: "leg-1", revision: 1}],
+      clientOperationId: "op-dispatch-ledger",
+    }, "dispatcher-1"), deps(firestore));
+    const ledger = await listProgramTripsHandler(request({
+      programId: "program-1",
+    }, "dispatcher-1"), deps(firestore));
+    assert.equal(ledger.trips.length, 1);
+    assert.equal(ledger.trips[0].plateDisplay, "DL-1T-4471");
+    assert.deepEqual(ledger.trips[0].guestNames, ["Rohan Sharma"]);
+    // A greeter is not a reconciliation reader.
+    await assert.rejects(
+      listProgramTripsHandler(request({programId: "program-1"},
+        "greeter-1"), deps(firestore)),
+      (error: unknown) =>
+        error instanceof HttpsError && error.code === "permission-denied"
+    );
+  });

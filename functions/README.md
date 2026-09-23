@@ -126,6 +126,17 @@ options when specific functions need higher or lower limits.
 | `createAttendeeInviteLink` / `getEventInviteLinkToken` / `recordEventShareIntent` / `resolveEventInviteLanding` | `src/events/inviteLinks.ts` | Issue opaque attributable attendee links, record Catch share intent, and resolve verified invite landings |
 | `getOrganizerProviderSetup` / `connectOrganizerLumaProvider` / `listOrganizerLumaEvents` / `syncOrganizerProviderEvent` / `disconnectOrganizerProvider` | `src/organizers/organizerProviderSetup.ts` | Configure, inspect, synchronize, and disconnect supported external booking providers |
 | `getEventOperatorAccess` / `listEventStaff` / `grantEventStaff` / `revokeEventStaff` | `src/events/eventStaff.ts` | Grant and inspect time-bounded event staff access |
+| `createOrganizerProgram` / `updateOrganizerProgram` / `listOrganizerPrograms` / `getOrganizerProgram` | `src/programs/programs.ts` | Manager-owned private program (wedding/offsite) lifecycle and setup overview |
+| `getProgramWorkAccess` / `listProgramStaff` / `grantProgramStaff` / `revokeProgramStaff` | `src/programs/programStaff.ts` | Duty- and station-scoped program staff grants and work-shell bootstrap |
+| `inviteProgramStaff` / `claimProgramStaffInvite` / `revokeProgramStaffInvite` | `src/programs/programStaffInvites.ts` | Single-use phone-bound staff invites that redeem into station-scoped grants on verified-phone claim |
+| `upsertProgramGuest` / `listProgramGuests` / `upsertProgramHousehold` / `listProgramHouseholds` | `src/programs/programGuests.ts` | Person-level program guests and household groupings (no phone-based merging) |
+| `upsertProgramFunction` / `upsertProgramPickupPoint` / `upsertProgramHotel` / `upsertTransportVendor` / `listTransportVendors` | `src/programs/programResources.ts` | Program functions, pickup stations, hotels, and organizer transport vendors |
+| `upsertProgramTravelLeg` / `upsertProgramTravelParty` | `src/transport/programTravel.ts` | Planner-owned travel legs and ride-together parties |
+| `importProgramManifest` | `src/programs/programManifestImport.ts` | Preview/commit guest manifest import with externalReference dedup, household/party label matching, and receipt-backed idempotent convergence |
+| `getProgramArrivalsRoster` / `getProgramTransportPlan` / `setProgramTravelReadiness` | `src/transport/programArrivals.ts` | Station-scoped redacted arrivals roster, deterministic grouping suggestions, and claim/ready/disruption writes |
+| `dispatchProgramTrip` / `markProgramTripArrived` / `voidProgramTrip` / `getProgramHotelInbound` / `listProgramTrips` | `src/transport/programDispatch.ts` | Idempotent dispatch with plate/vendor capture and assignment exclusivity, trip lifecycle, hotel-scoped inbound projection, and the reconciliation trip ledger |
+| `refreshProgramTravelLeg` / `refreshProgramFlightStatuses` | `src/transport/programFlightRefresh.ts` | Manual leg refresh plus a scheduled proximity-tiered sweep that enriches flight legs from AeroDataBox without overwriting observed arrivals |
+| `flightAlertWebhook` | `src/transport/flightAlerts.ts` | Receive AeroDataBox flight-alert pushes against a URL-secret-gated endpoint; applies updates through the same write-back guards as polling and never un-lands a leg |
 | `setEventAttendeeAttendance` | `src/events/eventAttendees.ts` | Perform revision-safe, replay-safe operational attendance changes |
 | `markEventAttendance` | `src/events/` | Host marks attendance |
 | `selfCheckInAttendance` | `src/events/` | Participant self-check-in with GPS |

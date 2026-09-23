@@ -20822,4 +20822,555 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eventChatRemoved => 'Message removed.';
+
+  @override
+  String get programsWorkShellTitle => 'Program operations';
+
+  @override
+  String get programsWorkShellAccessTitle => 'Restricted program access';
+
+  @override
+  String get programsWorkShellAccessSubtitle =>
+      'This workspace shows only the duties and scopes granted for this program.';
+
+  @override
+  String get programsWorkShellRoleManager => 'Organizer manager';
+
+  @override
+  String get programsWorkShellRoleStaff => 'Program staff';
+
+  @override
+  String get programsWorkArrivalsTitle => 'Airport arrivals';
+
+  @override
+  String get programsWorkArrivalsSubtitle =>
+      'Live guest roster for each pickup station in your scope.';
+
+  @override
+  String get programsWorkDispatchTitle => 'Dispatch desk';
+
+  @override
+  String get programsWorkDispatchSubtitle =>
+      'Vehicle suggestions and plate capture per station.';
+
+  @override
+  String get programsWorkHotelTitle => 'Hotel desk';
+
+  @override
+  String get programsWorkHotelSubtitle =>
+      'Inbound vehicles and expected guests for your hotel.';
+
+  @override
+  String get programsWorkLedgerTitle => 'Trip ledger';
+
+  @override
+  String get programsWorkLedgerSubtitle =>
+      'Every dispatch as a reconciliation record.';
+
+  @override
+  String get programsWorkLedgerOpen => 'Open trip ledger';
+
+  @override
+  String get programsWorkShellEmptyTitle => 'No duties assigned';
+
+  @override
+  String get programsWorkShellEmptyMessage =>
+      'Ask the organizer to grant you an airport, hotel or dispatch duty for this program.';
+
+  @override
+  String get programsArrivalsTitle => 'Arrivals roster';
+
+  @override
+  String get programsArrivalsAttentionTitle => 'Needs attention';
+
+  @override
+  String get programsArrivalsAttentionSubtitle =>
+      'Cancelled, diverted or disrupted arrivals that need a human decision.';
+
+  @override
+  String get programsArrivalsReadyTitle => 'Ready at the curb';
+
+  @override
+  String get programsArrivalsReadySubtitle =>
+      'Guests observed at the pickup point and waiting.';
+
+  @override
+  String get programsArrivalsReadyEmpty =>
+      'Nobody is waiting at the curb right now.';
+
+  @override
+  String get programsArrivalsExpectedTitle => 'Expected';
+
+  @override
+  String get programsArrivalsExpectedSubtitle =>
+      'Inbound or landed guests, sorted by estimated curb time.';
+
+  @override
+  String get programsArrivalsExpectedEmpty =>
+      'No more guests expected at this station.';
+
+  @override
+  String get programsOperationsReviewBadge => 'Needs review';
+
+  @override
+  String get programsOperationsReviewTitle => 'Review saved changes';
+
+  @override
+  String get programsOperationsReviewBody =>
+      'Check the current arrivals and trip records before dismissing a change. Dismissal stops this saved change from syncing; it does not undo work already recorded. Record any correction from the current journey.';
+
+  @override
+  String get programsOperationsReviewEmpty =>
+      'No changes need review for this account.';
+
+  @override
+  String get programsOperationsGuestUnavailable =>
+      'Guest details unavailable at this station';
+
+  @override
+  String get programsOperationsDismiss => 'Dismiss this saved change';
+
+  @override
+  String programsOperationsDeparture({required String plate}) {
+    return 'Departure · $plate';
+  }
+
+  @override
+  String get programsOperationsClaim => 'Claim guest';
+
+  @override
+  String get programsOperationsUnclaim => 'Release guest claim';
+
+  @override
+  String get programsOperationsReady => 'Guest ready at curb';
+
+  @override
+  String get programsOperationsDisrupted => 'Guest journey disrupted';
+
+  @override
+  String get programsOperationsNeedsReview =>
+      'This saved change needs review. Check the current journey and trip records before recording more work.';
+
+  @override
+  String get programsOperationsReloadManifest =>
+      'Reload the complete arrivals roster before dispatching this vehicle.';
+
+  @override
+  String get coreSavedOperationsQuarantined =>
+      'Some saved operations need recovery. Keep the app’s saved data and contact support.';
+
+  @override
+  String get coreSavedOperationsUnavailable =>
+      'Saved operations could not be read or saved. Free device space and try again. Keep the app’s saved data if you need support.';
+
+  @override
+  String get programsRecoveryAction => 'Recover saved work';
+
+  @override
+  String get programsRecoveryTitle => 'Saved work recovery';
+
+  @override
+  String get programsRecoveryBody =>
+      'Export a recovery copy for review with support. It includes this account’s saved operations across all programs on this device and may contain private guest or trip details. Choose a trusted place to save it. Exporting does not repair, send, or delete any saved operation. Keep the original app data until recovery is complete.';
+
+  @override
+  String get programsRecoveryExport => 'Export recovery file';
+
+  @override
+  String get programsOperationsPassengersNotReady =>
+      'Every passenger must be marked ready at the curb before this vehicle departs.';
+
+  @override
+  String get programsArrivalsOutboxTitle => 'Offline queue';
+
+  @override
+  String get programsArrivalsOutboxSync => 'Sync now';
+
+  @override
+  String get programsArrivalsOutboxClear => 'Review changes';
+
+  @override
+  String get programsArrivalsClaimedByMe => 'Claimed by you';
+
+  @override
+  String get programsArrivalsQueued => 'Queued offline';
+
+  @override
+  String get programsArrivalsCurbSourceReady => 'ready';
+
+  @override
+  String get programsArrivalsCurbSourceManual => 'manual';
+
+  @override
+  String get programsArrivalsCurbSourceLanded => 'landed';
+
+  @override
+  String get programsArrivalsCurbSourceEstimated => 'est.';
+
+  @override
+  String get programsArrivalsCurbSourceScheduled => 'sched.';
+
+  @override
+  String get programsArrivalsCancelled => 'Flight cancelled';
+
+  @override
+  String get programsArrivalsDiverted => 'Flight diverted';
+
+  @override
+  String get programsArrivalsNoEstimate => 'No curb estimate';
+
+  @override
+  String get programsArrivalsReadyBadge => 'Ready';
+
+  @override
+  String get programsArrivalsExpectedBadge => 'Expected';
+
+  @override
+  String get programsArrivalsDisruptedBadge => 'Disrupted';
+
+  @override
+  String get programsArrivalsDispatchedBadge => 'Dispatched';
+
+  @override
+  String get programsArrivalsNoShowBadge => 'No-show';
+
+  @override
+  String get programsArrivalsArrivedBadge => 'Arrived';
+
+  @override
+  String get programsArrivalsRowActions => 'Arrival actions';
+
+  @override
+  String get programsArrivalsClaimAction => 'Claim this party';
+
+  @override
+  String get programsArrivalsUnclaimAction => 'Release my claim';
+
+  @override
+  String get programsArrivalsReadyAction => 'Mark ready at curb';
+
+  @override
+  String get programsArrivalsDisruptedAction => 'Flag disruption';
+
+  @override
+  String get programsDispatchTitle => 'Dispatch desk';
+
+  @override
+  String get programsDispatchGroupsTitle => 'Suggested vehicles';
+
+  @override
+  String get programsDispatchGroupsSubtitle =>
+      'Parties batched by curb window and destination. Suggestions only — you decide.';
+
+  @override
+  String get programsDispatchGroupsEmpty =>
+      'No parties are waiting or expected in this window.';
+
+  @override
+  String get programsDispatchUnassignedTitle => 'Unassigned';
+
+  @override
+  String get programsDispatchUnassignedSubtitle =>
+      'Legs the planner could not batch.';
+
+  @override
+  String get programsDispatchReasonMissingTime =>
+      'A guest has no usable arrival estimate.';
+
+  @override
+  String get programsDispatchReasonNoVehicle =>
+      'No vehicle class fits this party — needs review.';
+
+  @override
+  String get programsDispatchReasonMissingScope =>
+      'A leg is missing a pickup or destination assignment.';
+
+  @override
+  String get programsDispatchAction => 'Dispatch vehicle';
+
+  @override
+  String get programsDispatchSheetTitle => 'Dispatch vehicle';
+
+  @override
+  String get programsDispatchPlateHint => 'Plate, e.g. DL-1T-4471';
+
+  @override
+  String get programsDispatchNoVendors =>
+      'No vendors are bound to this program yet.';
+
+  @override
+  String get programsDispatchVendorsUnavailable =>
+      'Vendor list could not be loaded — you can still dispatch without a vendor.';
+
+  @override
+  String get programsDispatchConfirm => 'Dispatch now';
+
+  @override
+  String get programsHotelPreviousTrip => 'Previous vehicles';
+
+  @override
+  String get programsHotelFirstTrip => 'First vehicles';
+
+  @override
+  String get programsHotelMoreTrip => 'More vehicles';
+
+  @override
+  String get programsHotelPreviousExpected => 'Previous guests';
+
+  @override
+  String get programsHotelFirstExpected => 'First guests';
+
+  @override
+  String get programsHotelMoreExpected => 'More guests';
+
+  @override
+  String get programsHotelRefresh => 'Refresh hotel';
+
+  @override
+  String get programsHotelTitle => 'Hotel desk';
+
+  @override
+  String get programsHotelSubtitle => 'Inbound arrivals';
+
+  @override
+  String get programsHotelEnRouteTitle => 'On the way';
+
+  @override
+  String get programsHotelEnRouteSubtitle =>
+      'Vehicles that departed the airport for this hotel.';
+
+  @override
+  String get programsHotelEnRouteEmpty =>
+      'No vehicles are on the way right now.';
+
+  @override
+  String get programsHotelExpectedTitle => 'Still expected';
+
+  @override
+  String get programsHotelExpectedSubtitle =>
+      'Parties assigned to this hotel that have not departed yet.';
+
+  @override
+  String get programsHotelExpectedEmpty =>
+      'No more guests expected at this hotel.';
+
+  @override
+  String get programsHotelExpectedNoEstimate => 'No curb estimate yet.';
+
+  @override
+  String get programsHotelEtaUnknown => 'ETA unknown';
+
+  @override
+  String get programsHotelMarkArrived => 'Mark arrived';
+
+  @override
+  String get programsHotelStatusEnRoute => 'En route';
+
+  @override
+  String get programsHotelStatusArrived => 'Arrived';
+
+  @override
+  String get programsHotelStatusCancelled => 'Cancelled';
+
+  @override
+  String get programsHotelStatusVoided => 'Voided';
+
+  @override
+  String get programsTripsNewer => 'Newer trips';
+
+  @override
+  String get programsTripsOlder => 'Older trips';
+
+  @override
+  String get programsTripsLatest => 'Latest trips';
+
+  @override
+  String get programsTripCurrentNames =>
+      'Guest names reflect current records; no dispatch snapshot was saved.';
+
+  @override
+  String get programsTripsTitle => 'Trip ledger';
+
+  @override
+  String get programsTripsSubtitle => 'Dispatch reconciliation';
+
+  @override
+  String get programsTripsLedgerTitle => 'Dispatched vehicles';
+
+  @override
+  String get programsTripsLedgerSubtitle =>
+      'One record per departure, newest first. Voided trips stay listed.';
+
+  @override
+  String get programsTripsEmpty => 'No vehicles dispatched yet.';
+
+  @override
+  String get programsTripsVoidAction => 'Void this trip';
+
+  @override
+  String get programsTripsVoidSheetTitle => 'Void trip';
+
+  @override
+  String get programsTripsVoidSheetSubtitle =>
+      'A void releases the guests back to the ready pool. The record stays in the ledger.';
+
+  @override
+  String get programsTripsVoidReasonHint => 'Reason, e.g. wrong vehicle sent';
+
+  @override
+  String get programsTripsVoidConfirm => 'Void trip';
+
+  @override
+  String get programsTripsStatusEnRoute => 'En route';
+
+  @override
+  String get programsTripsStatusArrived => 'Arrived';
+
+  @override
+  String get programsTripsStatusCancelled => 'Cancelled';
+
+  @override
+  String get programsTripsStatusVoided => 'Voided';
+
+  @override
+  String programsWorkShellExpires({required Object date}) {
+    return 'Access expires $date';
+  }
+
+  @override
+  String programsArrivalsOutboxPending({required int count}) {
+    return '$count change(s) queued while offline. They will sync when connectivity returns.';
+  }
+
+  @override
+  String programsArrivalsOutboxReview({
+    required int pending,
+    required int review,
+  }) {
+    return '$pending pending, $review need review before they can sync.';
+  }
+
+  @override
+  String programsArrivalsPassengerCount({required int count}) {
+    return '$count pax';
+  }
+
+  @override
+  String programsArrivalsBagCount({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count bags',
+      one: '1 bag',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String programsArrivalsOrigin({required String airport}) {
+    return 'from $airport';
+  }
+
+  @override
+  String programsArrivalsTerminal({required String terminal}) {
+    return 'T$terminal';
+  }
+
+  @override
+  String programsArrivalsClaimedBy({required Object name}) {
+    return 'Claimed by $name';
+  }
+
+  @override
+  String programsDispatchGroupMeta({
+    required int passengers,
+    required int luggage,
+    required int legs,
+  }) {
+    return '$passengers pax · $luggage bags · $legs leg(s)';
+  }
+
+  @override
+  String programsDispatchWaitOverdue({required Object time}) {
+    return 'Ready wait overdue — should have left by $time';
+  }
+
+  @override
+  String programsDispatchDispatchBy({required Object time}) {
+    return 'Dispatch by $time to keep the ready wait';
+  }
+
+  @override
+  String programsDispatchSheetSubtitle({required Object destination}) {
+    return 'To $destination';
+  }
+
+  @override
+  String programsHotelExpectedMeta({
+    required int passengers,
+    required Object time,
+  }) {
+    return '$passengers pax · at curb ~$time';
+  }
+
+  @override
+  String programsHotelTripMeta({
+    required int passengers,
+    required Object names,
+  }) {
+    return '$passengers pax · $names';
+  }
+
+  @override
+  String programsHotelTripTiming({
+    required Object departed,
+    required Object eta,
+  }) {
+    return 'Departed $departed · ETA $eta';
+  }
+
+  @override
+  String programsTripsRowMeta({
+    required int passengers,
+    required Object names,
+  }) {
+    return '$passengers pax · $names';
+  }
+
+  @override
+  String programsTripsRowTimingArrived({
+    required Object departed,
+    required Object arrived,
+  }) {
+    return 'Departed $departed · arrived $arrived';
+  }
+
+  @override
+  String programsTripsRowTimingDeparted({required Object departed}) {
+    return 'Departed $departed · still en route';
+  }
+
+  @override
+  String get programsDispatchHoldTitle => 'Hold for expected arrivals';
+
+  @override
+  String programsDispatchHoldSubtitle({required Object destination}) {
+    return 'Still inbound to $destination — adding them makes this vehicle wait.';
+  }
+
+  @override
+  String programsDispatchHoldOption({
+    required Object time,
+    required int passengers,
+  }) {
+    return '$time · $passengers pax';
+  }
+
+  @override
+  String get programsSnapshotTitle => 'Saved view';
+
+  @override
+  String programsSnapshotBanner({required Object time}) {
+    return 'Last synced at $time — your changes queue until you are back online.';
+  }
 }

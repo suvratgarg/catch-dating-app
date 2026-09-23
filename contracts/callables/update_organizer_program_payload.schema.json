@@ -1,0 +1,58 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/update_organizer_program_payload.schema.json",
+  "title": "UpdateOrganizerProgramCallablePayload",
+  "description": "Patch program fields. Omitted fields are unchanged; expectedRevision fences concurrent edits.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "programId",
+    "expectedRevision"
+  ],
+  "properties": {
+    "programId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 140
+    },
+    "timezone": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 60
+    },
+    "startsAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "endsAtMillis": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "status": {
+      "$ref": "../shared/program_common.schema.json#/definitions/programStatus"
+    },
+    "capabilities": {
+      "type": "array",
+      "maxItems": 8,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "../shared/program_common.schema.json#/definitions/programCapability"
+      }
+    },
+    "transportSettings": {
+      "$ref": "../shared/program_common.schema.json#/definitions/programTransportSettings"
+    }
+  }
+}

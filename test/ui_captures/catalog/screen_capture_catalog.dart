@@ -4037,21 +4037,11 @@ List<Object> _hostManageRouteProviderOverrides({
   ];
 }
 
-final class _CaptureHostAttendanceOutboxStore
-    implements HostAttendanceOutboxStore {
-  final Map<String, List<HostAttendanceOutboxEntry>> _entries = {};
-
+class _CaptureHostAttendanceOutboxStore extends Fake implements HostAttendanceOutboxStore {
+  List<HostAttendanceOutboxEntry> entries = [];
   @override
-  Future<List<HostAttendanceOutboxEntry>> load(String accountId) async =>
-      List<HostAttendanceOutboxEntry>.of(_entries[accountId] ?? const []);
-
-  @override
-  Future<void> save(
-    String accountId,
-    List<HostAttendanceOutboxEntry> entries,
-  ) async {
-    _entries[accountId] = List<HostAttendanceOutboxEntry>.of(entries);
-  }
+  Future<List<HostAttendanceOutboxEntry>> load(String accountId,
+      {String? scope, DateTime? now}) async => List.of(entries);
 }
 
 final class _CaptureFirebaseFunctions extends Fake

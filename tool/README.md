@@ -350,8 +350,10 @@ resolved by `tool/architecture/check_ui_composition_contracts.dart`.
 Composite Firestore query/index parity is owned by
 `tool/contracts/check_firestore_query_indexes.mjs`. Repository query builders
 declare ordered `firestore-index` contracts next to the query; the gate scans
-all handwritten repository sources and validates the declared shapes against
-`firestore.indexes.json`. Run it through
+handwritten Dart data repositories and the program/transport Functions modules.
+It checks static backend query shapes and validates declared shapes against
+`firestore.indexes.json`. Dynamic query additions need an explicit contract and
+review. Block comments support readable multiline field lists. Run it through
 `node tool/run.mjs check contracts:firestore-query-indexes`.
 
 New scanners must ship with a manifest `role`, `rules`, `vacuityProof`, and a

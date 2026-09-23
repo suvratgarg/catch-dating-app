@@ -375,6 +375,41 @@
       "reason": "Covered by screen.host.event.manage as the rendered least-privilege staff variant of the canonical per-event Host roster workspace; it intentionally removes manager-only sections and actions."
     },
     {
+      "routeId": "hostWorkProgramScreen",
+      "status": "contracted",
+      "priority": "P1",
+      "screenId": "screen.programs.work",
+      "reason": "Covered by screen.programs.work as the scoped program workspace landing route."
+    },
+    {
+      "routeId": "hostWorkArrivalsScreen",
+      "status": "contracted",
+      "priority": "P1",
+      "screenId": "screen.programs.arrivals",
+      "reason": "Covered by screen.programs.arrivals as the station-scoped greeter roster."
+    },
+    {
+      "routeId": "hostWorkDispatchScreen",
+      "status": "contracted",
+      "priority": "P1",
+      "screenId": "screen.programs.dispatch",
+      "reason": "Covered by screen.programs.dispatch as the station-scoped dispatch desk."
+    },
+    {
+      "routeId": "hostWorkHotelScreen",
+      "status": "contracted",
+      "priority": "P1",
+      "screenId": "screen.programs.hotel_desk",
+      "reason": "Covered by screen.programs.hotel_desk as the hotel-scoped inbound view."
+    },
+    {
+      "routeId": "hostWorkTripsScreen",
+      "status": "contracted",
+      "priority": "P1",
+      "screenId": "screen.programs.trips",
+      "reason": "Covered by screen.programs.trips as the trip ledger and reconciliation surface."
+    },
+    {
       "routeId": "hostOrganizerScreen",
       "status": "contracted",
       "priority": "P1",

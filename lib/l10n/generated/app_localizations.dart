@@ -33255,6 +33255,910 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Message removed.'**
   String get eventChatRemoved;
+
+  /// Program operations copy: programsWorkShellTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Program operations'**
+  String get programsWorkShellTitle;
+
+  /// Program operations copy: programsWorkShellAccessTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Restricted program access'**
+  String get programsWorkShellAccessTitle;
+
+  /// Program operations copy: programsWorkShellAccessSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'This workspace shows only the duties and scopes granted for this program.'**
+  String get programsWorkShellAccessSubtitle;
+
+  /// Program operations copy: programsWorkShellRoleManager.
+  ///
+  /// In en, this message translates to:
+  /// **'Organizer manager'**
+  String get programsWorkShellRoleManager;
+
+  /// Program operations copy: programsWorkShellRoleStaff.
+  ///
+  /// In en, this message translates to:
+  /// **'Program staff'**
+  String get programsWorkShellRoleStaff;
+
+  /// Program operations copy: programsWorkArrivalsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Airport arrivals'**
+  String get programsWorkArrivalsTitle;
+
+  /// Program operations copy: programsWorkArrivalsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Live guest roster for each pickup station in your scope.'**
+  String get programsWorkArrivalsSubtitle;
+
+  /// Program operations copy: programsWorkDispatchTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Dispatch desk'**
+  String get programsWorkDispatchTitle;
+
+  /// Program operations copy: programsWorkDispatchSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Vehicle suggestions and plate capture per station.'**
+  String get programsWorkDispatchSubtitle;
+
+  /// Program operations copy: programsWorkHotelTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Hotel desk'**
+  String get programsWorkHotelTitle;
+
+  /// Program operations copy: programsWorkHotelSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Inbound vehicles and expected guests for your hotel.'**
+  String get programsWorkHotelSubtitle;
+
+  /// Program operations copy: programsWorkLedgerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Trip ledger'**
+  String get programsWorkLedgerTitle;
+
+  /// Program operations copy: programsWorkLedgerSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Every dispatch as a reconciliation record.'**
+  String get programsWorkLedgerSubtitle;
+
+  /// Program operations copy: programsWorkLedgerOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Open trip ledger'**
+  String get programsWorkLedgerOpen;
+
+  /// Program operations copy: programsWorkShellEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No duties assigned'**
+  String get programsWorkShellEmptyTitle;
+
+  /// Program operations copy: programsWorkShellEmptyMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask the organizer to grant you an airport, hotel or dispatch duty for this program.'**
+  String get programsWorkShellEmptyMessage;
+
+  /// Program operations copy: programsArrivalsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Arrivals roster'**
+  String get programsArrivalsTitle;
+
+  /// Program operations copy: programsArrivalsAttentionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs attention'**
+  String get programsArrivalsAttentionTitle;
+
+  /// Program operations copy: programsArrivalsAttentionSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled, diverted or disrupted arrivals that need a human decision.'**
+  String get programsArrivalsAttentionSubtitle;
+
+  /// Program operations copy: programsArrivalsReadyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready at the curb'**
+  String get programsArrivalsReadyTitle;
+
+  /// Program operations copy: programsArrivalsReadySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Guests observed at the pickup point and waiting.'**
+  String get programsArrivalsReadySubtitle;
+
+  /// Program operations copy: programsArrivalsReadyEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Nobody is waiting at the curb right now.'**
+  String get programsArrivalsReadyEmpty;
+
+  /// Program operations copy: programsArrivalsExpectedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Expected'**
+  String get programsArrivalsExpectedTitle;
+
+  /// Program operations copy: programsArrivalsExpectedSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Inbound or landed guests, sorted by estimated curb time.'**
+  String get programsArrivalsExpectedSubtitle;
+
+  /// Program operations copy: programsArrivalsExpectedEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No more guests expected at this station.'**
+  String get programsArrivalsExpectedEmpty;
+
+  /// Saved operation conflict status.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs review'**
+  String get programsOperationsReviewBadge;
+
+  /// Program saved operation review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Review saved changes'**
+  String get programsOperationsReviewTitle;
+
+  /// Program saved operation review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Check the current arrivals and trip records before dismissing a change. Dismissal stops this saved change from syncing; it does not undo work already recorded. Record any correction from the current journey.'**
+  String get programsOperationsReviewBody;
+
+  /// Program saved operation review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'No changes need review for this account.'**
+  String get programsOperationsReviewEmpty;
+
+  /// Program saved operation review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest details unavailable at this station'**
+  String get programsOperationsGuestUnavailable;
+
+  /// Program saved operation review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Dismiss this saved change'**
+  String get programsOperationsDismiss;
+
+  /// Program saved operation review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Departure · {plate}'**
+  String programsOperationsDeparture({required String plate});
+
+  /// Program saved operation review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Claim guest'**
+  String get programsOperationsClaim;
+
+  /// Program saved operation review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Release guest claim'**
+  String get programsOperationsUnclaim;
+
+  /// Program saved operation review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest ready at curb'**
+  String get programsOperationsReady;
+
+  /// Program saved operation review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest journey disrupted'**
+  String get programsOperationsDisrupted;
+
+  /// Program saved operation review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'This saved change needs review. Check the current journey and trip records before recording more work.'**
+  String get programsOperationsNeedsReview;
+
+  /// Program saved operation review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Reload the complete arrivals roster before dispatching this vehicle.'**
+  String get programsOperationsReloadManifest;
+
+  /// Shared attendance/program command journal contains quarantined records requiring recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Some saved operations need recovery. Keep the app’s saved data and contact support.'**
+  String get coreSavedOperationsQuarantined;
+
+  /// Shared attendance/program command journal storage is unavailable; original data must be preserved.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved operations could not be read or saved. Free device space and try again. Keep the app’s saved data if you need support.'**
+  String get coreSavedOperationsUnavailable;
+
+  /// Opens recovery options when the local operations journal cannot be read.
+  ///
+  /// In en, this message translates to:
+  /// **'Recover saved work'**
+  String get programsRecoveryAction;
+
+  /// Title of the saved operations recovery sheet and exported file.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved work recovery'**
+  String get programsRecoveryTitle;
+
+  /// Explains recovery file scope, privacy, and the non-destructive export boundary.
+  ///
+  /// In en, this message translates to:
+  /// **'Export a recovery copy for review with support. It includes this account’s saved operations across all programs on this device and may contain private guest or trip details. Choose a trusted place to save it. Exporting does not repair, send, or delete any saved operation. Keep the original app data until recovery is complete.'**
+  String get programsRecoveryBody;
+
+  /// Opens the platform file share or download flow for a recovery copy; does not automatically contact support.
+  ///
+  /// In en, this message translates to:
+  /// **'Export recovery file'**
+  String get programsRecoveryExport;
+
+  /// Program saved operation review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Every passenger must be marked ready at the curb before this vehicle departs.'**
+  String get programsOperationsPassengersNotReady;
+
+  /// Program operations copy: programsArrivalsOutboxTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Offline queue'**
+  String get programsArrivalsOutboxTitle;
+
+  /// Program operations copy: programsArrivalsOutboxSync.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync now'**
+  String get programsArrivalsOutboxSync;
+
+  /// Program operations copy: programsArrivalsOutboxClear.
+  ///
+  /// In en, this message translates to:
+  /// **'Review changes'**
+  String get programsArrivalsOutboxClear;
+
+  /// Program operations copy: programsArrivalsClaimedByMe.
+  ///
+  /// In en, this message translates to:
+  /// **'Claimed by you'**
+  String get programsArrivalsClaimedByMe;
+
+  /// Program operations copy: programsArrivalsQueued.
+  ///
+  /// In en, this message translates to:
+  /// **'Queued offline'**
+  String get programsArrivalsQueued;
+
+  /// Program operations copy: programsArrivalsCurbSourceReady.
+  ///
+  /// In en, this message translates to:
+  /// **'ready'**
+  String get programsArrivalsCurbSourceReady;
+
+  /// Program operations copy: programsArrivalsCurbSourceManual.
+  ///
+  /// In en, this message translates to:
+  /// **'manual'**
+  String get programsArrivalsCurbSourceManual;
+
+  /// Program operations copy: programsArrivalsCurbSourceLanded.
+  ///
+  /// In en, this message translates to:
+  /// **'landed'**
+  String get programsArrivalsCurbSourceLanded;
+
+  /// Program operations copy: programsArrivalsCurbSourceEstimated.
+  ///
+  /// In en, this message translates to:
+  /// **'est.'**
+  String get programsArrivalsCurbSourceEstimated;
+
+  /// Program operations copy: programsArrivalsCurbSourceScheduled.
+  ///
+  /// In en, this message translates to:
+  /// **'sched.'**
+  String get programsArrivalsCurbSourceScheduled;
+
+  /// Program operations copy: programsArrivalsCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Flight cancelled'**
+  String get programsArrivalsCancelled;
+
+  /// Program operations copy: programsArrivalsDiverted.
+  ///
+  /// In en, this message translates to:
+  /// **'Flight diverted'**
+  String get programsArrivalsDiverted;
+
+  /// Program operations copy: programsArrivalsNoEstimate.
+  ///
+  /// In en, this message translates to:
+  /// **'No curb estimate'**
+  String get programsArrivalsNoEstimate;
+
+  /// Program operations copy: programsArrivalsReadyBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready'**
+  String get programsArrivalsReadyBadge;
+
+  /// Program operations copy: programsArrivalsExpectedBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Expected'**
+  String get programsArrivalsExpectedBadge;
+
+  /// Program operations copy: programsArrivalsDisruptedBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Disrupted'**
+  String get programsArrivalsDisruptedBadge;
+
+  /// Program operations copy: programsArrivalsDispatchedBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Dispatched'**
+  String get programsArrivalsDispatchedBadge;
+
+  /// A guest marked as a no-show for this travel leg.
+  ///
+  /// In en, this message translates to:
+  /// **'No-show'**
+  String get programsArrivalsNoShowBadge;
+
+  /// Program operations copy: programsArrivalsArrivedBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Arrived'**
+  String get programsArrivalsArrivedBadge;
+
+  /// Program operations copy: programsArrivalsRowActions.
+  ///
+  /// In en, this message translates to:
+  /// **'Arrival actions'**
+  String get programsArrivalsRowActions;
+
+  /// Program operations copy: programsArrivalsClaimAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Claim this party'**
+  String get programsArrivalsClaimAction;
+
+  /// Program operations copy: programsArrivalsUnclaimAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Release my claim'**
+  String get programsArrivalsUnclaimAction;
+
+  /// Program operations copy: programsArrivalsReadyAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark ready at curb'**
+  String get programsArrivalsReadyAction;
+
+  /// Program operations copy: programsArrivalsDisruptedAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Flag disruption'**
+  String get programsArrivalsDisruptedAction;
+
+  /// Program operations copy: programsDispatchTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Dispatch desk'**
+  String get programsDispatchTitle;
+
+  /// Program operations copy: programsDispatchGroupsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggested vehicles'**
+  String get programsDispatchGroupsTitle;
+
+  /// Program operations copy: programsDispatchGroupsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Parties batched by curb window and destination. Suggestions only — you decide.'**
+  String get programsDispatchGroupsSubtitle;
+
+  /// Program operations copy: programsDispatchGroupsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No parties are waiting or expected in this window.'**
+  String get programsDispatchGroupsEmpty;
+
+  /// Program operations copy: programsDispatchUnassignedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Unassigned'**
+  String get programsDispatchUnassignedTitle;
+
+  /// Program operations copy: programsDispatchUnassignedSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Legs the planner could not batch.'**
+  String get programsDispatchUnassignedSubtitle;
+
+  /// Program operations copy: programsDispatchReasonMissingTime.
+  ///
+  /// In en, this message translates to:
+  /// **'A guest has no usable arrival estimate.'**
+  String get programsDispatchReasonMissingTime;
+
+  /// Program operations copy: programsDispatchReasonNoVehicle.
+  ///
+  /// In en, this message translates to:
+  /// **'No vehicle class fits this party — needs review.'**
+  String get programsDispatchReasonNoVehicle;
+
+  /// Program operations copy: programsDispatchReasonMissingScope.
+  ///
+  /// In en, this message translates to:
+  /// **'A leg is missing a pickup or destination assignment.'**
+  String get programsDispatchReasonMissingScope;
+
+  /// Program operations copy: programsDispatchAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Dispatch vehicle'**
+  String get programsDispatchAction;
+
+  /// Program operations copy: programsDispatchSheetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Dispatch vehicle'**
+  String get programsDispatchSheetTitle;
+
+  /// Program operations copy: programsDispatchPlateHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Plate, e.g. DL-1T-4471'**
+  String get programsDispatchPlateHint;
+
+  /// Program operations copy: programsDispatchNoVendors.
+  ///
+  /// In en, this message translates to:
+  /// **'No vendors are bound to this program yet.'**
+  String get programsDispatchNoVendors;
+
+  /// Program operations copy: programsDispatchVendorsUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Vendor list could not be loaded — you can still dispatch without a vendor.'**
+  String get programsDispatchVendorsUnavailable;
+
+  /// Program operations copy: programsDispatchConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Dispatch now'**
+  String get programsDispatchConfirm;
+
+  /// Hotel desk page navigation
+  ///
+  /// In en, this message translates to:
+  /// **'Previous vehicles'**
+  String get programsHotelPreviousTrip;
+
+  /// Hotel desk page navigation
+  ///
+  /// In en, this message translates to:
+  /// **'First vehicles'**
+  String get programsHotelFirstTrip;
+
+  /// Hotel desk page navigation
+  ///
+  /// In en, this message translates to:
+  /// **'More vehicles'**
+  String get programsHotelMoreTrip;
+
+  /// Hotel desk page navigation
+  ///
+  /// In en, this message translates to:
+  /// **'Previous guests'**
+  String get programsHotelPreviousExpected;
+
+  /// Hotel desk page navigation
+  ///
+  /// In en, this message translates to:
+  /// **'First guests'**
+  String get programsHotelFirstExpected;
+
+  /// Hotel desk page navigation
+  ///
+  /// In en, this message translates to:
+  /// **'More guests'**
+  String get programsHotelMoreExpected;
+
+  /// Hotel desk page navigation
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh hotel'**
+  String get programsHotelRefresh;
+
+  /// Program operations copy: programsHotelTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Hotel desk'**
+  String get programsHotelTitle;
+
+  /// Program operations copy: programsHotelSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Inbound arrivals'**
+  String get programsHotelSubtitle;
+
+  /// Program operations copy: programsHotelEnRouteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'On the way'**
+  String get programsHotelEnRouteTitle;
+
+  /// Program operations copy: programsHotelEnRouteSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Vehicles that departed the airport for this hotel.'**
+  String get programsHotelEnRouteSubtitle;
+
+  /// Program operations copy: programsHotelEnRouteEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No vehicles are on the way right now.'**
+  String get programsHotelEnRouteEmpty;
+
+  /// Program operations copy: programsHotelExpectedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Still expected'**
+  String get programsHotelExpectedTitle;
+
+  /// Program operations copy: programsHotelExpectedSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Parties assigned to this hotel that have not departed yet.'**
+  String get programsHotelExpectedSubtitle;
+
+  /// Program operations copy: programsHotelExpectedEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No more guests expected at this hotel.'**
+  String get programsHotelExpectedEmpty;
+
+  /// Program operations copy: programsHotelExpectedNoEstimate.
+  ///
+  /// In en, this message translates to:
+  /// **'No curb estimate yet.'**
+  String get programsHotelExpectedNoEstimate;
+
+  /// Program operations copy: programsHotelEtaUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'ETA unknown'**
+  String get programsHotelEtaUnknown;
+
+  /// Program operations copy: programsHotelMarkArrived.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark arrived'**
+  String get programsHotelMarkArrived;
+
+  /// Program operations copy: programsHotelStatusEnRoute.
+  ///
+  /// In en, this message translates to:
+  /// **'En route'**
+  String get programsHotelStatusEnRoute;
+
+  /// Program operations copy: programsHotelStatusArrived.
+  ///
+  /// In en, this message translates to:
+  /// **'Arrived'**
+  String get programsHotelStatusArrived;
+
+  /// Program operations copy: programsHotelStatusCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get programsHotelStatusCancelled;
+
+  /// Program operations copy: programsHotelStatusVoided.
+  ///
+  /// In en, this message translates to:
+  /// **'Voided'**
+  String get programsHotelStatusVoided;
+
+  /// Trip ledger pagination action
+  ///
+  /// In en, this message translates to:
+  /// **'Newer trips'**
+  String get programsTripsNewer;
+
+  /// Trip ledger pagination action
+  ///
+  /// In en, this message translates to:
+  /// **'Older trips'**
+  String get programsTripsOlder;
+
+  /// Trip ledger pagination action
+  ///
+  /// In en, this message translates to:
+  /// **'Latest trips'**
+  String get programsTripsLatest;
+
+  /// Legacy trip manifest provenance shown in ledger and hotel receiving views
+  ///
+  /// In en, this message translates to:
+  /// **'Guest names reflect current records; no dispatch snapshot was saved.'**
+  String get programsTripCurrentNames;
+
+  /// Program operations copy: programsTripsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Trip ledger'**
+  String get programsTripsTitle;
+
+  /// Program operations copy: programsTripsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Dispatch reconciliation'**
+  String get programsTripsSubtitle;
+
+  /// Program operations copy: programsTripsLedgerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Dispatched vehicles'**
+  String get programsTripsLedgerTitle;
+
+  /// Program operations copy: programsTripsLedgerSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'One record per departure, newest first. Voided trips stay listed.'**
+  String get programsTripsLedgerSubtitle;
+
+  /// Program operations copy: programsTripsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No vehicles dispatched yet.'**
+  String get programsTripsEmpty;
+
+  /// Program operations copy: programsTripsVoidAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Void this trip'**
+  String get programsTripsVoidAction;
+
+  /// Program operations copy: programsTripsVoidSheetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Void trip'**
+  String get programsTripsVoidSheetTitle;
+
+  /// Program operations copy: programsTripsVoidSheetSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'A void releases the guests back to the ready pool. The record stays in the ledger.'**
+  String get programsTripsVoidSheetSubtitle;
+
+  /// Program operations copy: programsTripsVoidReasonHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason, e.g. wrong vehicle sent'**
+  String get programsTripsVoidReasonHint;
+
+  /// Program operations copy: programsTripsVoidConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Void trip'**
+  String get programsTripsVoidConfirm;
+
+  /// Program operations copy: programsTripsStatusEnRoute.
+  ///
+  /// In en, this message translates to:
+  /// **'En route'**
+  String get programsTripsStatusEnRoute;
+
+  /// Program operations copy: programsTripsStatusArrived.
+  ///
+  /// In en, this message translates to:
+  /// **'Arrived'**
+  String get programsTripsStatusArrived;
+
+  /// Program operations copy: programsTripsStatusCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get programsTripsStatusCancelled;
+
+  /// Program operations copy: programsTripsStatusVoided.
+  ///
+  /// In en, this message translates to:
+  /// **'Voided'**
+  String get programsTripsStatusVoided;
+
+  /// Program operations copy: programsWorkShellExpires.
+  ///
+  /// In en, this message translates to:
+  /// **'Access expires {date}'**
+  String programsWorkShellExpires({required Object date});
+
+  /// Program operations copy: programsArrivalsOutboxPending.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} change(s) queued while offline. They will sync when connectivity returns.'**
+  String programsArrivalsOutboxPending({required int count});
+
+  /// Program operations copy: programsArrivalsOutboxReview.
+  ///
+  /// In en, this message translates to:
+  /// **'{pending} pending, {review} need review before they can sync.'**
+  String programsArrivalsOutboxReview({
+    required int pending,
+    required int review,
+  });
+
+  /// Compact passenger count in an airport arrival party row; pax means passengers.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} pax'**
+  String programsArrivalsPassengerCount({required int count});
+
+  /// Baggage count in an airport arrival party row.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{1 bag} other{{count} bags}}'**
+  String programsArrivalsBagCount({required int count});
+
+  /// Origin airport in an arrival party row; airport is an IATA code.
+  ///
+  /// In en, this message translates to:
+  /// **'from {airport}'**
+  String programsArrivalsOrigin({required String airport});
+
+  /// Compact arrival terminal label in an arrival party row.
+  ///
+  /// In en, this message translates to:
+  /// **'T{terminal}'**
+  String programsArrivalsTerminal({required String terminal});
+
+  /// Program operations copy: programsArrivalsClaimedBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Claimed by {name}'**
+  String programsArrivalsClaimedBy({required Object name});
+
+  /// Program operations copy: programsDispatchGroupMeta.
+  ///
+  /// In en, this message translates to:
+  /// **'{passengers} pax · {luggage} bags · {legs} leg(s)'**
+  String programsDispatchGroupMeta({
+    required int passengers,
+    required int luggage,
+    required int legs,
+  });
+
+  /// Program operations copy: programsDispatchWaitOverdue.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready wait overdue — should have left by {time}'**
+  String programsDispatchWaitOverdue({required Object time});
+
+  /// Program operations copy: programsDispatchDispatchBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Dispatch by {time} to keep the ready wait'**
+  String programsDispatchDispatchBy({required Object time});
+
+  /// Program operations copy: programsDispatchSheetSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'To {destination}'**
+  String programsDispatchSheetSubtitle({required Object destination});
+
+  /// Program operations copy: programsHotelExpectedMeta.
+  ///
+  /// In en, this message translates to:
+  /// **'{passengers} pax · at curb ~{time}'**
+  String programsHotelExpectedMeta({
+    required int passengers,
+    required Object time,
+  });
+
+  /// Program operations copy: programsHotelTripMeta.
+  ///
+  /// In en, this message translates to:
+  /// **'{passengers} pax · {names}'**
+  String programsHotelTripMeta({
+    required int passengers,
+    required Object names,
+  });
+
+  /// Program operations copy: programsHotelTripTiming.
+  ///
+  /// In en, this message translates to:
+  /// **'Departed {departed} · ETA {eta}'**
+  String programsHotelTripTiming({
+    required Object departed,
+    required Object eta,
+  });
+
+  /// Program operations copy: programsTripsRowMeta.
+  ///
+  /// In en, this message translates to:
+  /// **'{passengers} pax · {names}'**
+  String programsTripsRowMeta({required int passengers, required Object names});
+
+  /// Program operations copy: programsTripsRowTimingArrived.
+  ///
+  /// In en, this message translates to:
+  /// **'Departed {departed} · arrived {arrived}'**
+  String programsTripsRowTimingArrived({
+    required Object departed,
+    required Object arrived,
+  });
+
+  /// Program operations copy: programsTripsRowTimingDeparted.
+  ///
+  /// In en, this message translates to:
+  /// **'Departed {departed} · still en route'**
+  String programsTripsRowTimingDeparted({required Object departed});
+
+  /// Program operations copy: programsDispatchHoldTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Hold for expected arrivals'**
+  String get programsDispatchHoldTitle;
+
+  /// Program operations copy: programsDispatchHoldSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Still inbound to {destination} — adding them makes this vehicle wait.'**
+  String programsDispatchHoldSubtitle({required Object destination});
+
+  /// Program operations copy: programsDispatchHoldOption.
+  ///
+  /// In en, this message translates to:
+  /// **'{time} · {passengers} pax'**
+  String programsDispatchHoldOption({
+    required Object time,
+    required int passengers,
+  });
+
+  /// Program operations copy: programsSnapshotTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved view'**
+  String get programsSnapshotTitle;
+
+  /// Program operations copy: programsSnapshotBanner.
+  ///
+  /// In en, this message translates to:
+  /// **'Last synced at {time} — your changes queue until you are back online.'**
+  String programsSnapshotBanner({required Object time});
 }
 
 class _AppLocalizationsDelegate

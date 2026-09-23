@@ -1,0 +1,100 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/program_staff_invites.schema.json",
+  "title": "ProgramStaffInviteDocument",
+  "description": "Server-owned single-use staff invite bound to a phone number. Redeeming the invite requires a signed-in account whose verified phone matches; redemption materializes a programStaffGrants document.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "programStaffInvites",
+  "x-firestore-path": "programStaffInvites/{inviteId}",
+  "x-document-id-field": "inviteId",
+  "x-owner": "program staff invite callables",
+  "required": [
+    "organizerId",
+    "programId",
+    "phoneE164",
+    "displayName",
+    "duties",
+    "status",
+    "createdBy",
+    "createdAt",
+    "expiresAt",
+    "claimedByUid",
+    "claimedAt",
+    "revokedBy",
+    "revokedAt",
+    "updatedAt",
+    "revision"
+  ],
+  "properties": {
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "programId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "phoneE164": {
+      "type": "string",
+      "minLength": 4,
+      "maxLength": 32,
+      "description": "Normalized E.164 phone the invite is bound to. Only a verified auth token carrying this number may claim the invite."
+    },
+    "displayName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "duties": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 8,
+      "items": {
+        "$ref": "../shared/program_common.schema.json#/definitions/programStaffDutyAssignment"
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "claimed",
+        "revoked"
+      ]
+    },
+    "createdBy": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "createdAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+    },
+    "expiresAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "description": "Invite redemption deadline. The resulting grant uses its own expiry."
+    },
+    "claimedByUid": {
+      "type": ["string", "null"],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "claimedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"
+    },
+    "revokedBy": {
+      "type": ["string", "null"],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "revokedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"
+    },
+    "updatedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    }
+  }
+}
