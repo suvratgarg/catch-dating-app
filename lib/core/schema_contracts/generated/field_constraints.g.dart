@@ -63719,6 +63719,14 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const getParticipantFormProfileCallableResponseCardRevision = CatchContractFieldConstraints(
+    path: 'getParticipantFormProfileCallableResponse.cardRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
   static const getParticipantFormProfileCallableResponseClaimedAtMillis = CatchContractFieldConstraints(
     path: 'getParticipantFormProfileCallableResponse.claimedAtMillis',
     valueTypes: <String>['integer'],
@@ -114243,6 +114251,7 @@ abstract final class CatchContractConstraints {
     'getParticipantFormPhotoCallableResponse.previewBase64': getParticipantFormPhotoCallableResponsePreviewBase64,
     'getParticipantFormPhotoCallableResponse.width': getParticipantFormPhotoCallableResponseWidth,
     'getParticipantFormProfileCallablePayload.responseId': getParticipantFormProfileCallablePayloadResponseId,
+    'getParticipantFormProfileCallableResponse.cardRevision': getParticipantFormProfileCallableResponseCardRevision,
     'getParticipantFormProfileCallableResponse.claimedAtMillis': getParticipantFormProfileCallableResponseClaimedAtMillis,
     'getParticipantFormProfileCallableResponse.currentLinkedinUrl': getParticipantFormProfileCallableResponseCurrentLinkedinUrl,
     'getParticipantFormProfileCallableResponse.currentProfile.children': getParticipantFormProfileCallableResponseCurrentProfileChildren,

@@ -26,6 +26,7 @@ const schemaGetParticipantFormProfileCallableResponseSchema = <String, Object?>{
     'claimedAtMillis',
     'currentProfile',
     'currentLinkedinUrl',
+    'cardRevision',
   ],
   'properties': <String, Object?>{
     'responseId': <String, Object?>{
@@ -512,6 +513,11 @@ const schemaGetParticipantFormProfileCallableResponseSchema = <String, Object?>{
         'null',
       ],
       'maxLength': 2048,
+    },
+    'cardRevision': <String, Object?>{
+      'type': 'integer',
+      'minimum': 0,
+      'maximum': 9007199254740991,
     },
   },
 };

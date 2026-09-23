@@ -25,6 +25,7 @@ class _Forms extends FormProfilesController {
     page: FormProfilePage(
       items: [
         FormProfileSummary(
+          organizerId: 'org',
           responseId: 'rsvp',
           formTitle: 'Meet the community',
           organizerName: 'RSVP Demo',
@@ -33,6 +34,7 @@ class _Forms extends FormProfilesController {
           cardFieldCount: 2,
         ),
         FormProfileSummary(
+          organizerId: 'org',
           responseId: 'coffee',
           formTitle: 'Coffee & conversation',
           organizerName: 'Coffee Club Demo',

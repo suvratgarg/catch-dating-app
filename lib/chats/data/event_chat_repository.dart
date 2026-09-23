@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/chats/domain/event_chat.dart';
 import 'package:catch_dating_app/chats/domain/event_chat_directory.dart';
+import 'package:catch_dating_app/chats/domain/event_chat_profile.dart';
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/data/read_limit_policy.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
@@ -14,6 +15,52 @@ part 'event_chat_repository.g.dart';
 class EventChatRepository {
   const EventChatRepository(this._functions);
   final FirebaseFunctions _functions;
+
+  Future<EventProfileSettings> profileSettings(
+    String uid,
+    String eventId,
+  ) async => EventProfileSettings.fromMap(
+    await _call(
+      'getEventChatProfileSharing',
+      GetEventChatProfileSharingCallableRequest(
+        eventId: eventId,
+        expectedUid: uid,
+      ).toJson(),
+    ),
+  );
+
+  Future<EventParticipantProfile> participantProfile(
+    String uid,
+    String eventId,
+    String participantUid,
+  ) async => EventParticipantProfile.fromMap(
+    await _call(
+      'getEventChatProfile',
+      GetEventChatProfileCallableRequest(
+        eventId: eventId,
+        expectedUid: uid,
+        participantUid: participantUid,
+      ).toJson(),
+    ),
+  );
+
+  Future<void> shareProfile(
+    String uid,
+    EventProfileSettings reviewed,
+    EventProfileSelection? selection,
+    String requestId,
+  ) async {
+    await _call(
+      'updateEventChatProfileSharing',
+      UpdateEventChatProfileSharingCallableRequest(
+        eventId: reviewed.eventId,
+        expectedUid: uid,
+        expectedRevision: reviewed.revision,
+        requestId: requestId,
+        selection: selection?.toJson(),
+      ).toJson(),
+    );
+  }
 
   Future<EventChatDirectoryPage> directory({
     Map<String, Object?>? cursor,

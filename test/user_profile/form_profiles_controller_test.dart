@@ -22,6 +22,7 @@ class _Repository extends Fake implements FormProfileRepository {
 FormProfilePage _page(String id, {String? cursor}) => FormProfilePage(
   items: [
     FormProfileSummary(
+      organizerId: 'org',
       responseId: id,
       formTitle: 'Form',
       organizerName: 'Organizer',

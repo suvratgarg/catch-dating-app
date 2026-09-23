@@ -289,6 +289,8 @@ test("owned review includes editable values and selected card, never CRM",
     assert.equal(result.currentProfile?.dateOfBirth, "1994-06-15");
     assert.equal(result.currentProfile?.displayName, "Sara Demo");
     assert.deepEqual(result.selectedCardQuestionIds, ["cocktail"]);
+    assert.equal(result.cardRevision, 1);
+    assert.equal(result.organizerId, "org");
     assert.equal(JSON.stringify(result).includes("Private"), false);
     assert.equal("phoneNumber" in result.currentProfile!, false);
     assert.equal("prefsShowOnMap" in result.currentProfile!, false);

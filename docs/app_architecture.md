@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.70.0
+version: 1.71.0
 updated: 2026-09-23
 owner: app_architecture
 status: active
@@ -1949,6 +1949,20 @@ pages by event ID and revalidates previously loaded windows on refresh or load
 more; errors and account changes discard old entries. The directory refreshes
 on returning from a room, resuming the app while visible, or explicit refresh.
 Empty filtered pages retain a continuation action until all sources are scanned.
+
+`EventProfileEditorController` owns account-bound sharing reads, card pagination,
+reviewed revisions and payload-bound save retries. Card choices retain organizer
+ownership from the private form directory and require a current claim and card
+revision; only selected applicant fields qualify. `EventProfileDraft` restores
+only unchanged saved selections, never preselecting newly edited core values or
+answers. Immutable requests separate an in-flight save from later editing.
+Revocation does not require current admission or successful card loading.
+
+`EventParticipantProfileController` rechecks the protected projection while
+visible and clears it on failed reads, backgrounding or account changes. Its
+result contains only selected fields and a bounded in-memory photo preview.
+Both controllers expose lifecycle hooks for their presentation owners; route
+and rendered mini-profile integration remains in progress.
 
 ## Controller And View-Model Contract
 

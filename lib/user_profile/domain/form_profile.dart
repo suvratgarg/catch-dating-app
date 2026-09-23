@@ -5,6 +5,7 @@ import 'package:meta/meta.dart';
 class FormProfileSummary {
   const FormProfileSummary({
     required this.responseId,
+    required this.organizerId,
     required this.formTitle,
     required this.organizerName,
     required this.submittedAt,
@@ -15,6 +16,7 @@ class FormProfileSummary {
   factory FormProfileSummary.fromMap(Map<Object?, Object?> json) =>
       FormProfileSummary(
         responseId: json['responseId']! as String,
+        organizerId: json['organizerId']! as String,
         formTitle: json['formTitle']! as String,
         organizerName: json['organizerName'] as String?,
         submittedAt: DateTime.fromMillisecondsSinceEpoch(
@@ -29,6 +31,7 @@ class FormProfileSummary {
       );
 
   final String responseId;
+  final String organizerId;
   final String formTitle;
   final String? organizerName;
   final DateTime submittedAt;
@@ -132,6 +135,7 @@ class FormProfileField {
 class FormProfileReview {
   FormProfileReview({
     required this.responseId,
+    required this.organizerId,
     required this.formTitle,
     required this.organizerName,
     required this.profileRevision,
@@ -141,6 +145,8 @@ class FormProfileReview {
     required Iterable<String> selectedCardQuestionIds,
     required Map<String, Object?>? currentProfile,
     required this.currentLinkedinUrl,
+    required this.cardRevision,
+    required this.claimedAt,
   }) : fields = List.unmodifiable(fields),
        selectedCardQuestionIds = Set.unmodifiable(selectedCardQuestionIds),
        currentProfile = currentProfile == null
@@ -152,25 +158,31 @@ class FormProfileReview {
                      : entry.value,
              });
 
-  factory FormProfileReview.fromMap(Map<Object?, Object?> json) =>
-      FormProfileReview(
-        responseId: json['responseId']! as String,
-        formTitle: json['formTitle']! as String,
-        organizerName: json['organizerName'] as String?,
-        profileRevision: json['profileRevision']! as int,
-        intakeRevision: json['intakeRevision']! as int,
-        termsVersion: json['termsVersion']! as String,
-        fields: (json['fields']! as List).map(
-          (field) => FormProfileField.fromMap(field as Map),
-        ),
-        selectedCardQuestionIds: (json['selectedCardQuestionIds']! as List)
-            .cast<String>(),
-        currentProfile: (json['currentProfile'] as Map?)
-            ?.cast<String, Object?>(),
-        currentLinkedinUrl: json['currentLinkedinUrl'] as String?,
-      );
+  factory FormProfileReview.fromMap(
+    Map<Object?, Object?> json,
+  ) => FormProfileReview(
+    responseId: json['responseId']! as String,
+    organizerId: json['organizerId']! as String,
+    formTitle: json['formTitle']! as String,
+    organizerName: json['organizerName'] as String?,
+    profileRevision: json['profileRevision']! as int,
+    intakeRevision: json['intakeRevision']! as int,
+    termsVersion: json['termsVersion']! as String,
+    fields: (json['fields']! as List).map(
+      (field) => FormProfileField.fromMap(field as Map),
+    ),
+    selectedCardQuestionIds: (json['selectedCardQuestionIds']! as List)
+        .cast<String>(),
+    currentProfile: (json['currentProfile'] as Map?)?.cast<String, Object?>(),
+    currentLinkedinUrl: json['currentLinkedinUrl'] as String?,
+    cardRevision: json['cardRevision']! as int,
+    claimedAt: json['claimedAtMillis'] == null
+        ? null
+        : DateTime.fromMillisecondsSinceEpoch(json['claimedAtMillis']! as int),
+  );
 
   final String responseId;
+  final String organizerId;
   final String formTitle;
   final String? organizerName;
   final int profileRevision;
@@ -180,4 +192,6 @@ class FormProfileReview {
   final Set<String> selectedCardQuestionIds;
   final Map<String, Object?>? currentProfile;
   final String? currentLinkedinUrl;
+  final int cardRevision;
+  final DateTime? claimedAt;
 }

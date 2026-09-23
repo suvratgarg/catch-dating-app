@@ -81,6 +81,7 @@ export async function getParticipantFormProfileHandler(
     const name = organizerSnap.data()?.name;
     return {...proposal, profileRevision: user?.profileRevision ?? 0,
       intakeRevision: intake?.revision ?? 0,
+      cardRevision: card?.revision ?? 0,
       organizerName: typeof name === "string" ? name : null,
       selectedCardQuestionIds: (card?.questionIds ?? []).filter((id) =>
         proposal.fields.some((field) => field.questionId === id &&

@@ -154,4 +154,5 @@ export interface GetParticipantFormProfileCallableResponse {
     interestedInGenders?: ("man" | "woman" | "nonBinary" | "other")[];
   } | null;
   currentLinkedinUrl: string | null;
+  cardRevision: number;
 }

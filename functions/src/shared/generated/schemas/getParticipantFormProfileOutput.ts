@@ -23,7 +23,8 @@ export const getParticipantFormProfileCallableResponseSchema: Record<string, unk
     "selectedCardQuestionIds",
     "claimedAtMillis",
     "currentProfile",
-    "currentLinkedinUrl"
+    "currentLinkedinUrl",
+    "cardRevision"
   ],
   "properties": {
     "responseId": {
@@ -510,6 +511,11 @@ export const getParticipantFormProfileCallableResponseSchema: Record<string, unk
         "null"
       ],
       "maxLength": 2048
+    },
+    "cardRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
     }
   }
 } as const;

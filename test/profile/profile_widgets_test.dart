@@ -507,6 +507,7 @@ class _AccountFormProfilesController extends FormProfilesController {
     page: FormProfilePage(
       items: [
         FormProfileSummary(
+          organizerId: 'org',
           responseId: 'owned-response',
           formTitle: 'Application',
           organizerName: 'RSVP Demo',

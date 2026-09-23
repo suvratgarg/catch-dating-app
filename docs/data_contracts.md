@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.142.0
+version: 1.143.0
 updated: 2026-09-23
 owner: recursive_audit_loop
 status: active
@@ -2662,6 +2662,10 @@ candidate query; this is a presence hint, not a member census. Client transport
 and UI must discard cached room content when access fails or identity changes.
 
 ### Event participant profile sharing
+
+The private form review returns the current `cardRevision` alongside organizer
+ownership and claim time. Sharing clients must preserve these fields rather than
+infer ownership from a form title or organizer display name.
 
 Joining shares the claimed display name only. `getEventChatProfileSharing`
 returns the caller's private choices and eligible core field/photo identifiers.

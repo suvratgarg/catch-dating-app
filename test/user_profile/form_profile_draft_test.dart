@@ -7,6 +7,9 @@ FormProfileReview reviewFixture({
   Map<String, Object?>? current,
 }) => FormProfileReview(
   responseId: 'response',
+  organizerId: 'org',
+  cardRevision: 0,
+  claimedAt: null,
   formTitle: 'RSVP escape',
   organizerName: 'RSVP',
   profileRevision: 4,
