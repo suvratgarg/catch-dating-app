@@ -8,29 +8,13 @@ import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
-part 'event_success_block_header.dart';
 part 'event_success_conversation_cue_row.dart';
-part 'event_success_live_step_row.dart';
-part 'event_success_module_toggle_row.dart';
-part 'event_success_progress_row.dart';
 
-const EdgeInsets _moduleToggleRowGap = EdgeInsets.only(bottom: CatchSpacing.s2);
-const EdgeInsets _moduleToggleContentPadding = EdgeInsets.fromLTRB(
-  CatchSpacing.s3,
-  CatchSpacing.s2,
-  CatchSpacing.s2,
-  CatchSpacing.s2,
-);
-const EdgeInsets _issueListItemGap = EdgeInsets.only(bottom: CatchSpacing.s1);
-const EdgeInsets _liveStepRowGap = EdgeInsets.only(bottom: CatchSpacing.s3);
 const EdgeInsets _conversationCueRowGap = EdgeInsets.only(
   bottom: CatchSpacing.s2,
 );
 const EdgeInsets _conversationCueIconInset = EdgeInsets.only(
   top: CatchSpacing.micro3,
-);
-const EdgeInsets _wingmanCandidateGap = EdgeInsets.only(
-  bottom: CatchSpacing.s2,
 );
 
 class EventSuccessPostEventReport extends StatelessWidget {

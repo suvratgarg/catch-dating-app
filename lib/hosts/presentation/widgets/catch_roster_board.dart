@@ -4,16 +4,6 @@ import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
-/// Maps a [CatchBadgeTone] to its functional colour for roster tiles.
-Color _rosterToneColor(CatchTokens t, CatchBadgeTone tone) => switch (tone) {
-  CatchBadgeTone.success => t.success,
-  CatchBadgeTone.warning => t.warning,
-  CatchBadgeTone.danger => t.danger,
-  CatchBadgeTone.gold => t.gold,
-  CatchBadgeTone.affinity => t.affinityText,
-  CatchBadgeTone.neutral || CatchBadgeTone.brand => t.ink2,
-};
-
 /// One count tile for host roster filters.
 class CatchRosterTile {
   const CatchRosterTile({

@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
-import '../../preview_layout_contracts.dart';
 import '../../support/page_preview.dart';
 import 'fixtures.dart';
 import 'preview.dart';

@@ -437,7 +437,7 @@ Widget hostStrictHostEventActionsSectionCatalogStates(BuildContext context) =>
     _hostEventManageExactCatalog(context, 'HostEventActionsSection');
 
 @widgetbook.UseCase(
-  name: 'Exact catalog',
+  name: 'Live attendance catalog',
   type: HostEventParticipantsPanel,
   path: '[P1 product surfaces]/Host operations/Strict coverage',
 )

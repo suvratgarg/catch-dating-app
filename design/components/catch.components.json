@@ -470,144 +470,6 @@
       }
     },
     {
-      "id": "catch.ui_label",
-      "verification": {
-        "vehicle": "widgetbook-contract",
-        "reason": "Canonical states are exercised through the generated Widgetbook contract."
-      },
-      "name": "CatchSectionHeaderTitle",
-      "status": "active",
-      "kind": "primitive",
-      "summary": "Structural section heading with optional activity accent and leading glyph; Flutter retains explicit heading semantics and bounded text.",
-      "design": {
-        "figma": {
-          "status": "unmapped",
-          "componentName": "Catch/UI Label",
-          "componentUrl": null
-        },
-        "codeConnect": {
-          "status": "planned",
-          "snippetLanguage": "dart",
-          "template": null
-        },
-        "claude": {
-          "handoffName": "UiLabel",
-          "allowed": true
-        }
-      },
-      "contract": {
-        "props": [
-          {
-            "name": "label",
-            "type": "string",
-            "required": true,
-            "dartType": "String"
-          },
-          {
-            "name": "icon",
-            "type": "object",
-            "required": false,
-            "dartType": "IconData?"
-          },
-          {
-            "name": "accentColor",
-            "type": "object",
-            "required": false,
-            "dartType": "Color?"
-          },
-          {
-            "name": "maxLines",
-            "type": "number",
-            "required": false,
-            "default": 1,
-            "dartType": "int"
-          }
-        ],
-        "states": [
-          "eyebrow",
-          "metadata-label",
-          "with-icon",
-          "accented",
-          "truncated",
-          "multi-line"
-        ],
-        "slots": [],
-        "tokens": [
-          "space.s2",
-          "theme.light.color.primary",
-          "theme.light.color.ink2"
-        ],
-        "dartRoles": [
-          "CatchSectionHeaderTitle",
-          "CatchTextStyles.kicker",
-          "CatchIcon.md"
-        ],
-        "goldens": [
-          "text_roles"
-        ],
-        "accessibility": {
-          "largeText": {
-            "minimumScale": 2,
-            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
-          },
-          "reducedMotion": {
-            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
-          },
-          "themes": [
-            "light",
-            "dark"
-          ]
-        }
-      },
-      "handoff": {
-        "allowedChildren": [],
-        "notes": [
-          "Use to introduce hierarchy or metadata context; use catch.badge for state, status, counts, or alerts.",
-          "Keep copy short and scannable. Long explanatory text belongs in supporting copy.",
-          "Surface adapters own casing, color, spacing, and element choice while preserving non-interactive semantics.",
-          "This cross-stack contract is the single registered identity for the section-heading anatomy. The former catch.section.label row duplicated the same Flutter declaration and is removed."
-        ]
-      },
-      "governance": {
-        "role": "atom",
-        "canonicalFamily": "catch.ui_label",
-        "publicApi": true,
-        "stateOwnership": "local-ui-only",
-        "asyncOwnership": "none",
-        "layoutOwnership": "internal-only",
-        "actionOwnership": "none",
-        "allowedDependencyLevel": "tokens-and-primitives",
-        "reviewPolicy": "contract-page-canonical",
-        "conceptRole": "member",
-        "conceptId": "catch.section",
-        "parentConceptId": "catch.section",
-        "qualifier": "anatomy",
-        "decisionRef": "pattern-family:typography-role-boundaries"
-      },
-      "dart": {
-        "symbol": "CatchSectionHeaderTitle",
-        "file": "packages/catch_ui/lib/src/primitives/catch_section_header_title.dart",
-        "constructors": [
-          "CatchSectionHeaderTitle"
-        ]
-      },
-      "surfaces": {
-        "flutter": "CatchSectionHeaderTitle",
-        "website": "UiLabel",
-        "admin": "AdminEyebrow",
-        "webui": "UiLabel"
-      },
-      "level": "L2",
-      "roleNoun": "HeaderTitle",
-      "naming": {
-        "useCase": "Section",
-        "comparedWith": [
-          "catch.section"
-        ],
-        "reason": "Owns the section title text, optional leading glyph and heading semantics. The parent Section owns grouping, sibling boundaries and header/action placement; display-only metadata and editorial text do not acquire heading semantics."
-      }
-    },
-    {
       "id": "catch.button",
       "enforcement": {
         "code": "catch_no_raw_button_control",
@@ -4379,11 +4241,11 @@
             "child"
           ],
           "CatchSection.choiceGroup": [
-        "title",
-        "first",
-        "child"
-      ],
-      "CatchSection.containedFieldRows": [
+            "title",
+            "first",
+            "child"
+          ],
+          "CatchSection.containedFieldRows": [
             "title",
             "count",
             "trailing",
@@ -4911,7 +4773,6 @@
           "CatchDividerVariant.fieldRow",
           "CatchKickerText",
           "CatchSectionHeader",
-          "CatchSectionHeaderTitle",
           "CatchDaySectionHeader",
           "CatchDaySectionHeaderDelegate",
           "CatchTextStyles.sectionTitle",
@@ -6024,7 +5885,8 @@
         "allowedChildren": [],
         "notes": [
           "Use these widgets for repeated text-role atoms; keep raw text-style definitions centralized in CatchTextStyles.",
-          "Do not create feature-local typography wrappers for kicker or mono metadata labels."
+          "Do not create feature-local typography wrappers for kicker or mono metadata labels.",
+          "Website UiLabel, AdminEyebrow and web-ui UiLabel retain their non-interactive eyebrow/metadata role. Their former catch.ui_label mapping moved here when the unused Flutter structural heading was retired; web rendering is unchanged."
         ]
       },
       "governance": {
@@ -6042,7 +5904,10 @@
         "decisionRef": "pattern-family:typography-role-boundaries"
       },
       "surfaces": {
-        "flutter": "CatchKickerText"
+        "flutter": "CatchKickerText",
+        "website": "UiLabel",
+        "admin": "AdminEyebrow",
+        "webui": "UiLabel"
       },
       "level": "L2",
       "roleNoun": "Text",
@@ -6060,21 +5925,21 @@
         "vehicle": "widgetbook-contract",
         "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
-      "name": "CatchBarSeriesIndicator",
+      "name": "CatchBarIndicator",
       "status": "active",
       "kind": "primitive",
-      "summary": "Compact quantitative bar series with one shared scale, explicit empty-value treatment and a shared single-bar renderer.",
+      "summary": "One quantitative bar with bounded fractional height and rounded or square rendering.",
       "dart": {
-        "symbol": "CatchBarSeriesIndicator",
-        "file": "packages/catch_ui/lib/src/components/catch_bar_series_indicator.dart",
+        "symbol": "CatchBarIndicator",
+        "file": "packages/catch_ui/lib/src/components/catch_bar_indicator.dart",
         "constructors": [
-          "CatchBarSeriesIndicator"
+          "CatchBarIndicator"
         ]
       },
       "design": {
         "figma": {
           "status": "unmapped",
-          "componentName": "Catch/BarSeriesIndicator",
+          "componentName": "Catch/BarIndicator",
           "componentUrl": null
         },
         "codeConnect": {
@@ -6083,69 +5948,77 @@
           "template": null
         },
         "claude": {
-          "handoffName": "BarSeriesIndicator",
+          "handoffName": "BarIndicator",
           "allowed": true
         }
       },
       "contract": {
         "props": [
           {
-            "name": "values",
-            "type": "list",
+            "name": "value",
+            "type": "number",
             "required": true,
-            "dartType": "List<num>"
+            "dartType": "num"
           },
           {
             "name": "maxValue",
             "type": "number",
-            "required": false,
-            "dartType": "num?"
+            "required": true,
+            "dartType": "num"
           },
           {
-            "name": "height",
+            "name": "variant",
+            "type": "enum",
+            "required": false,
+            "dartType": "CatchBarIndicatorVariant",
+            "values": [
+              "rounded",
+              "square"
+            ],
+            "default": "rounded"
+          },
+          {
+            "name": "minFilledHeightFactor",
             "type": "number",
             "required": false,
-            "default": "space.s16",
-            "dartType": "double"
+            "dartType": "double",
+            "default": 0.06
           },
           {
-            "name": "spacing",
+            "name": "emptyHeightFactor",
             "type": "number",
             "required": false,
-            "default": "space.micro6",
-            "dartType": "double"
+            "dartType": "double",
+            "default": 0.02
           },
           {
-            "name": "semanticLabel",
-            "type": "string",
+            "name": "filledColor",
+            "type": "color",
             "required": false,
-            "dartType": "String?"
+            "dartType": "Color?"
+          },
+          {
+            "name": "emptyColor",
+            "type": "color",
+            "required": false,
+            "dartType": "Color?"
           }
         ],
         "states": [
           "default",
-          "empty",
           "zero-values",
-          "color-override",
-          "semantic-label"
+          "color-override"
         ],
         "slots": [],
         "tokens": [
-          "space.s16",
-          "space.micro6",
-          "space.s4",
           "radius.xs",
-          "theme.light.color.surface",
-          "theme.light.color.line",
-          "theme.light.color.line2",
-          "theme.light.color.ink"
+          "theme.light.color.ink",
+          "theme.light.color.line2"
         ],
         "dartRoles": [
+          "CatchBarIndicatorVariant",
           "CatchSurface",
-          "CatchInsets.contentDense",
-          "CatchRadius.xs",
-          "CatchBarIndicator",
-          "CatchBarIndicatorVariant"
+          "CatchRadius.xs"
         ],
         "goldens": [],
         "accessibility": {
@@ -6160,43 +6033,13 @@
             "light",
             "dark"
           ]
-        },
-        "members": [
-          {
-            "id": "catch.mini_bar_chart.bar",
-            "symbol": "CatchBarIndicator",
-            "file": "packages/catch_ui/lib/src/components/catch_bar_indicator.dart",
-            "summary": "Bottom-aligned quantitative bar with rounded standalone or square series treatment, shared ratio bounds and nonzero width.",
-            "states": [
-              "zero-stub",
-              "fractional",
-              "maximum"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.mini_bar_chart",
-              "parentConceptId": "catch.mini_bar_chart",
-              "qualifier": "anatomy",
-              "decisionRef": "contract-family:catch.mini_bar_chart"
-            },
-            "level": "L3",
-            "roleNoun": "Indicator",
-            "naming": {
-              "useCase": "Bar",
-              "comparedWith": [
-                "catch.mini_bar_chart"
-              ],
-              "reason": "The parent series owns the shared maximum, frame, gaps and accessible description. This member paints one observation at a bounded fractional height. Rounded and square variants preserve the established standalone and series shapes while using the same ratio and width calculation."
-            }
-          }
-        ]
+        }
       },
       "handoff": {
         "allowedChildren": [],
         "notes": [
-          "Use only for compact trend or coverage summaries; larger analytical charts need a dedicated data visualization surface.",
-          "Always provide a semantic label when the chart communicates non-decorative data.",
-          "Every series column uses the square CatchBarIndicator variant through its Variant axis. The fractional renderer explicitly fills its allocated width; a paint-size regression test rejects invisible zero-width bars. Negative/zero, tiny, full and over-maximum values, empty arrays, automatic maxima and custom colors have reference goldens."
+          "The parent layout supplies bounded width and height. Values clamp to the supported fractional range; zero and negative values use the empty color.",
+          "Compose separate bars when needed. The unused series wrapper is retired; callers own shared scales, layout and accessible chart descriptions."
         ]
       },
       "governance": {
@@ -6213,17 +6056,17 @@
         "conceptId": "catch.mini_bar_chart"
       },
       "surfaces": {
-        "flutter": "CatchBarSeriesIndicator"
+        "flutter": "CatchBarIndicator"
       },
       "level": "L3",
       "roleNoun": "Indicator",
       "naming": {
-        "useCase": "BarSeries",
+        "useCase": "Bar",
         "comparedWith": [
           "catch.loading_indicator",
           "catch.page_dots"
         ],
-        "reason": "Displays several known numerical observations against one scale. LoadingIndicator communicates indeterminate work, while PageIndicator identifies one active position in a finite set; neither renders measured magnitudes. The series delegates every column to its Bar member, so it cannot keep a competing fill calculation or zero-width painter."
+        "reason": "Displays a known numerical observation against an explicit maximum. Loading and page indicators represent different state."
       }
     },
     {
@@ -10542,125 +10385,6 @@
       }
     },
     {
-      "id": "catch.roster_tiles",
-      "verification": {
-        "vehicle": "widgetbook-contract",
-        "reason": "Canonical states are exercised through the generated Widgetbook contract."
-      },
-      "name": "CatchRosterTiles",
-      "status": "active",
-      "kind": "composite",
-      "summary": "Selectable host-roster count tiles for filtering participant boards by lifecycle or attention state.",
-      "dart": {
-        "symbol": "CatchRosterTiles",
-        "file": "lib/hosts/presentation/widgets/catch_roster_board.dart",
-        "constructors": [
-          "CatchRosterTiles"
-        ]
-      },
-      "design": {
-        "figma": {
-          "status": "unmapped",
-          "componentName": "Catch/RosterTiles",
-          "componentUrl": null
-        },
-        "codeConnect": {
-          "status": "planned",
-          "snippetLanguage": "dart",
-          "template": null
-        },
-        "claude": {
-          "handoffName": "RosterTiles",
-          "allowed": true
-        }
-      },
-      "contract": {
-        "props": [
-          {
-            "name": "items",
-            "type": "list",
-            "required": true,
-            "dartType": "List<CatchRosterTile>"
-          },
-          {
-            "name": "selected",
-            "type": "string",
-            "required": false,
-            "dartType": "String?"
-          },
-          {
-            "name": "onSelect",
-            "type": "callback",
-            "required": false,
-            "dartType": "ValueChanged<String>?"
-          }
-        ],
-        "states": [
-          "default",
-          "selected",
-          "read-only",
-          "warning",
-          "danger"
-        ],
-        "slots": [],
-        "tokens": [
-          "space.micro6",
-          "radius.md",
-          "theme.light.color.ink",
-          "theme.light.color.surface",
-          "theme.light.color.line",
-          "theme.light.color.success",
-          "theme.light.color.warning",
-          "theme.light.color.danger",
-          "theme.light.color.gold"
-        ],
-        "dartRoles": [
-          "CatchLayout.rosterFilterTileMinHeight",
-          "CatchTextStyles.numericLarge",
-          "CatchTextStyles.monoLabel",
-          "CatchOpacity.calloutFill",
-          "CatchOpacity.subtleBorder"
-        ],
-        "goldens": [],
-        "accessibility": {
-          "largeText": {
-            "minimumScale": 2,
-            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
-          },
-          "reducedMotion": {
-            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
-          },
-          "themes": [
-            "light",
-            "dark"
-          ]
-        }
-      },
-      "handoff": {
-        "allowedChildren": [],
-        "notes": [
-          "Use for roster filtering or count summaries only; do not use as a generic stat strip.",
-          "Parent state owns selection and filtering; the visual primitive only emits selected ids."
-        ]
-      },
-      "governance": {
-        "role": "composition",
-        "canonicalFamily": "catch.roster_tiles",
-        "publicApi": true,
-        "stateOwnership": "slot-state-only",
-        "asyncOwnership": "none",
-        "layoutOwnership": "slot-layout",
-        "actionOwnership": "callbacks-only",
-        "allowedDependencyLevel": "primitives-and-slots",
-        "reviewPolicy": "contract-page-canonical",
-        "conceptRole": "concept",
-        "conceptId": "catch.roster_tiles"
-      },
-      "surfaces": {
-        "flutter": "CatchRosterTiles"
-      }
-    },
-    {
       "id": "catch.roster_row",
       "verification": {
         "vehicle": "widgetbook-contract",
@@ -10965,165 +10689,6 @@
       },
       "surfaces": {
         "flutter": "CatchRosterTable"
-      }
-    },
-    {
-      "id": "catch.activity_art",
-      "verification": {
-        "vehicle": "widgetbook-contract",
-        "reason": "Canonical states are exercised through the generated Widgetbook contract."
-      },
-      "name": "CatchActivityArt",
-      "status": "active",
-      "kind": "primitive",
-      "summary": "Activity-pigmented art shell with gradient, motif texture, ghost glyph, optional dim layer, and overlay child.",
-      "dart": {
-        "symbol": "CatchActivityArt",
-        "file": "lib/core/widgets/catch_activity_art.dart",
-        "constructors": [
-          "CatchActivityArt"
-        ]
-      },
-      "design": {
-        "figma": {
-          "status": "unmapped",
-          "componentName": "Catch/ActivityArt",
-          "componentUrl": null
-        },
-        "codeConnect": {
-          "status": "planned",
-          "snippetLanguage": "dart",
-          "template": null
-        },
-        "claude": {
-          "handoffName": "ActivityArt",
-          "allowed": true
-        }
-      },
-      "contract": {
-        "props": [
-          {
-            "name": "activityKind",
-            "type": "enum",
-            "required": true,
-            "dartType": "ActivityKind",
-            "values": [
-              "socialRun",
-              "running",
-              "walking",
-              "pickleball",
-              "padel",
-              "tennis",
-              "badminton",
-              "cycling",
-              "spinClass",
-              "yoga",
-              "strengthTraining",
-              "pubQuiz",
-              "barCrawl",
-              "dinner",
-              "singlesMixer",
-              "openActivity"
-            ]
-          },
-          {
-            "name": "height",
-            "type": "number",
-            "required": false,
-            "default": 148,
-            "dartType": "double"
-          },
-          {
-            "name": "radius",
-            "type": "number",
-            "required": false,
-            "dartType": "double"
-          },
-          {
-            "name": "dim",
-            "type": "bool",
-            "required": false,
-            "default": false,
-            "dartType": "bool"
-          },
-          {
-            "name": "child",
-            "type": "widget",
-            "required": false,
-            "dartType": "Widget?"
-          }
-        ],
-        "states": [
-          "default",
-          "activity-kind-variants",
-          "dim",
-          "with-overlay-child",
-          "custom-size"
-        ],
-        "slots": [
-          {
-            "name": "child",
-            "kind": "overlay",
-            "allowedComponents": [
-              "catch.button",
-              "catch.badge"
-            ],
-            "notes": "Use for foreground story content; the art shell still owns pigment and clipping."
-          }
-        ],
-        "tokens": [
-          "space.s3",
-          "space.s4",
-          "radius.lg",
-          "theme.light.color.primary",
-          "theme.light.color.surface"
-        ],
-        "dartRoles": [
-          "ActivityPalette.resolve",
-          "CatchLayout.activityArtDefaultHeight",
-          "CatchLayout.activityArtGlyphScale",
-          "CatchOpacity.activityArtDim"
-        ],
-        "goldens": [],
-        "accessibility": {
-          "largeText": {
-            "minimumScale": 2,
-            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
-          },
-          "reducedMotion": {
-            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
-          },
-          "themes": [
-            "light",
-            "dark"
-          ]
-        }
-      },
-      "handoff": {
-        "allowedChildren": [
-          "catch.button",
-          "catch.badge"
-        ],
-        "notes": [
-          "Use as the canonical activity-gradient art shell.",
-          "Do not create feature-local gradient/photo fallback shells without first checking whether this can compose the surface."
-        ]
-      },
-      "governance": {
-        "role": "atom",
-        "canonicalFamily": "catch.activity_art",
-        "publicApi": true,
-        "stateOwnership": "local-ui-only",
-        "asyncOwnership": "none",
-        "layoutOwnership": "internal-only",
-        "actionOwnership": "callbacks-only",
-        "allowedDependencyLevel": "tokens-and-primitives",
-        "reviewPolicy": "contract-page-canonical",
-        "conceptRole": "concept",
-        "conceptId": "catch.activity_art"
-      },
-      "surfaces": {
-        "flutter": "CatchActivityArt"
       }
     },
     {
@@ -16119,7 +15684,7 @@
       },
       "handoff": {
         "allowedChildren": [
-          "catch.ui_label"
+          "catch.typography"
         ],
         "notes": [
           "Use for quiet browse and directory indexes; richer selectable controls belong to CatchChoiceInput.segmented.",

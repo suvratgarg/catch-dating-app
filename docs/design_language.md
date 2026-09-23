@@ -834,7 +834,7 @@ is registered separately with shell, top-bar, and state policies and validated
 with analyzer resolution.
 
 Structural labels and status badges are separate semantic families. Use
-`catch.ui_label` (`CatchSectionHeaderTitle`, website `UiLabel`, admin
+`catch.typography` (`CatchKickerText`, website `UiLabel`, admin
 `AdminEyebrow`, web-ui `UiLabel`) for eyebrows and compact hierarchy context.
 Use `catch.badge` (`CatchBadge`, `StatusBadge`, `StatusChip`, `BadgeControl`)
 for status, state, counts, and alerts. The lexicon gate pins these mappings so a

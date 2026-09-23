@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "06fa8caedda1402d3cb96223669557c6d3f4d29ce17f1edcf4c5dbf2977e4901",
+  "sourceDigest": "14fcc949bc32659e68138c23bcd71d59b55d569feece443d859055f3a4e3fc3c",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "06fa8caedda1402d3cb96223669557c6d3f4d29ce17f1edcf4c5dbf2977e4901",
-    "contractDigest": "06fa8caedda1402d3cb96223669557c6d3f4d29ce17f1edcf4c5dbf2977e4901"
+    "digest": "14fcc949bc32659e68138c23bcd71d59b55d569feece443d859055f3a4e3fc3c",
+    "contractDigest": "14fcc949bc32659e68138c23bcd71d59b55d569feece443d859055f3a4e3fc3c"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "5972e001ca2c62adfbaee03f4fc473c28c96ff473f2b666d228eefaddd4224a1",
+    "handoffRequestDigest": "e27956bc271f36f7e2366faa65a35f6d850ac65030547d2d7520dd78cdd1220f",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -82,19 +82,19 @@
     }
   },
   "metrics": {
-    "contractCount": 68,
-    "publicClassCount": 230,
-    "conceptCount": 60,
-    "memberCount": 152,
-    "membersPerConcept": 2.53,
+    "contractCount": 65,
+    "publicClassCount": 226,
+    "conceptCount": 58,
+    "memberCount": 150,
+    "membersPerConcept": 2.59,
     "unclassifiedCount": 0,
     "byConceptRole": {
       "composition": 3,
-      "concept": 60,
-      "member": 152,
+      "concept": 58,
+      "member": 150,
       "screen": 15
     },
-    "collisionCount": 29,
+    "collisionCount": 28,
     "collisions": [
       {
         "key": "catch.badge",
@@ -256,13 +256,6 @@
         ]
       },
       {
-        "key": "catch.mini_bar_chart",
-        "symbols": [
-          "CatchBarIndicator",
-          "CatchBarSeriesIndicator"
-        ]
-      },
-      {
         "key": "catch.motion_viewport",
         "symbols": [
           "CatchHeroViewport",
@@ -351,7 +344,6 @@
           "CatchRowSection",
           "CatchSection",
           "CatchSectionHeader",
-          "CatchSectionHeaderTitle",
           "CatchSectionRowList",
           "CatchSectionSurface"
         ]
@@ -424,12 +416,12 @@
       }
     ],
     "naming": {
-      "canonicalConceptNames": 59,
+      "canonicalConceptNames": 57,
       "documentedConceptNameExceptions": 1,
       "undocumentedConceptNameExceptions": 0
     },
     "figmaMappingStates": {
-      "missing": 66,
+      "missing": 63,
       "stale": 2
     },
     "figmaPropertyDriftCount": 2,
@@ -437,9 +429,9 @@
     "figmaReviewSnapshotMappings": 2,
     "figmaPublishedMappings": 0,
     "codeConnectMappingStates": {
-      "planned": 68
+      "planned": 65
     },
-    "claudeAllowed": 68,
+    "claudeAllowed": 65,
     "claudeContextState": "current",
     "claudeDesignReceiptState": "missing",
     "figmaMappedConcepts": 0
@@ -519,38 +511,6 @@
       "claudeHandoffName": "Badge",
       "claudeAllowed": true,
       "contractDigest": "c561cc76d9fa5c3bbb2f4404ca106ea64ba480e276efcb3260831fb4728b9329"
-    },
-    {
-      "contractId": "catch.ui_label",
-      "conceptRole": "member",
-      "conceptId": "catch.section",
-      "dartSymbol": "CatchSectionHeaderTitle",
-      "dartFile": "packages/catch_ui/lib/src/primitives/catch_section_header_title.dart",
-      "figmaName": "Catch/UI Label",
-      "figmaPropertyProjectionMode": "inferred",
-      "figmaReviewStatePolicy": "variant",
-      "figmaPropertySources": {},
-      "figmaDeclaredStatus": "unmapped",
-      "figmaDeclaredUrl": null,
-      "figmaStatus": "missing",
-      "figmaUrl": null,
-      "figmaNodeId": null,
-      "figmaComponentKey": null,
-      "figmaPublishStatus": null,
-      "figmaSnapshotCaptureMethod": "figma-mcp",
-      "figmaVariableBindingCount": 0,
-      "figmaVariableBindingDigest": null,
-      "figmaReviewSnapshot": null,
-      "figmaExpectedPropertyCount": 3,
-      "figmaExpectedPropertyDigest": "e84073449fb8ad69e7f12a925031f2a72771d253a443b55102f0dfe57c43842c",
-      "figmaActualPropertyCount": 0,
-      "figmaActualPropertyDigest": null,
-      "figmaDrift": [],
-      "codeConnectStatus": "planned",
-      "codeConnectTemplate": null,
-      "claudeHandoffName": "UiLabel",
-      "claudeAllowed": true,
-      "contractDigest": "1d5b0c82414b98e32d6bfd44d983f9bb385324f4f03d4e940ecbb2508d816ea6"
     },
     {
       "contractId": "catch.button",
@@ -1022,9 +982,9 @@
       "contractId": "catch.mini_bar_chart",
       "conceptRole": "concept",
       "conceptId": "catch.mini_bar_chart",
-      "dartSymbol": "CatchBarSeriesIndicator",
-      "dartFile": "packages/catch_ui/lib/src/components/catch_bar_series_indicator.dart",
-      "figmaName": "Catch/BarSeriesIndicator",
+      "dartSymbol": "CatchBarIndicator",
+      "dartFile": "packages/catch_ui/lib/src/components/catch_bar_indicator.dart",
+      "figmaName": "Catch/BarIndicator",
       "figmaPropertyProjectionMode": "inferred",
       "figmaReviewStatePolicy": "variant",
       "figmaPropertySources": {},
@@ -1039,16 +999,16 @@
       "figmaVariableBindingCount": 0,
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
-      "figmaExpectedPropertyCount": 5,
-      "figmaExpectedPropertyDigest": "654eb218b3cbf0f2506d2f8866de631e46cb02526072250aa67b4a60544f111f",
+      "figmaExpectedPropertyCount": 6,
+      "figmaExpectedPropertyDigest": "220f42520985c239585d09414f8ed717bb44cddb2250b29f82fb9f304fcad81f",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
       "codeConnectStatus": "planned",
       "codeConnectTemplate": null,
-      "claudeHandoffName": "BarSeriesIndicator",
+      "claudeHandoffName": "BarIndicator",
       "claudeAllowed": true,
-      "contractDigest": "90fc6fe4f4ff8f072253da99437faec7d776dfbf22ed669174efff6977d81662"
+      "contractDigest": "21046a3979138ea8b881a263ebff2c00cacc3307a9855edbd9904e8184b986e0"
     },
     {
       "contractId": "catch.metric_strip",
@@ -1531,38 +1491,6 @@
       "contractDigest": "2999ba9adbce6ef9a5ca1801abb6bc1d0ff54169df3dd68af7d3ad70a292d7c1"
     },
     {
-      "contractId": "catch.roster_tiles",
-      "conceptRole": "concept",
-      "conceptId": "catch.roster_tiles",
-      "dartSymbol": "CatchRosterTiles",
-      "dartFile": "lib/hosts/presentation/widgets/catch_roster_board.dart",
-      "figmaName": "Catch/RosterTiles",
-      "figmaPropertyProjectionMode": "inferred",
-      "figmaReviewStatePolicy": "variant",
-      "figmaPropertySources": {},
-      "figmaDeclaredStatus": "unmapped",
-      "figmaDeclaredUrl": null,
-      "figmaStatus": "missing",
-      "figmaUrl": null,
-      "figmaNodeId": null,
-      "figmaComponentKey": null,
-      "figmaPublishStatus": null,
-      "figmaSnapshotCaptureMethod": "figma-mcp",
-      "figmaVariableBindingCount": 0,
-      "figmaVariableBindingDigest": null,
-      "figmaReviewSnapshot": null,
-      "figmaExpectedPropertyCount": 2,
-      "figmaExpectedPropertyDigest": "f1c72dfe10c16e6a321abc97a9ed43ba61928c1513cfe159cea6226d92d02eea",
-      "figmaActualPropertyCount": 0,
-      "figmaActualPropertyDigest": null,
-      "figmaDrift": [],
-      "codeConnectStatus": "planned",
-      "codeConnectTemplate": null,
-      "claudeHandoffName": "RosterTiles",
-      "claudeAllowed": true,
-      "contractDigest": "395c835edf7c0675cbf007731792b3189a34179c8e6a7ae49ecd5bd8c0d38b8b"
-    },
-    {
       "contractId": "catch.roster_row",
       "conceptRole": "concept",
       "conceptId": "catch.roster_row",
@@ -1625,38 +1553,6 @@
       "claudeHandoffName": "RosterTable",
       "claudeAllowed": true,
       "contractDigest": "bc20c50ad5cbc9e29a9420c220f837f5e40776bf0a2f0c7bfb8ef723f1c5cde0"
-    },
-    {
-      "contractId": "catch.activity_art",
-      "conceptRole": "concept",
-      "conceptId": "catch.activity_art",
-      "dartSymbol": "CatchActivityArt",
-      "dartFile": "lib/core/widgets/catch_activity_art.dart",
-      "figmaName": "Catch/ActivityArt",
-      "figmaPropertyProjectionMode": "inferred",
-      "figmaReviewStatePolicy": "variant",
-      "figmaPropertySources": {},
-      "figmaDeclaredStatus": "unmapped",
-      "figmaDeclaredUrl": null,
-      "figmaStatus": "missing",
-      "figmaUrl": null,
-      "figmaNodeId": null,
-      "figmaComponentKey": null,
-      "figmaPublishStatus": null,
-      "figmaSnapshotCaptureMethod": "figma-mcp",
-      "figmaVariableBindingCount": 0,
-      "figmaVariableBindingDigest": null,
-      "figmaReviewSnapshot": null,
-      "figmaExpectedPropertyCount": 5,
-      "figmaExpectedPropertyDigest": "bcdf087113e6f018fcb6049bf63bfafb8297b141e9fa1a9b8529deaeb8a38cb5",
-      "figmaActualPropertyCount": 0,
-      "figmaActualPropertyDigest": null,
-      "figmaDrift": [],
-      "codeConnectStatus": "planned",
-      "codeConnectTemplate": null,
-      "claudeHandoffName": "ActivityArt",
-      "claudeAllowed": true,
-      "contractDigest": "fe62941b151621440f1a2fbf1bcf3ade5a43eb733db2a0e629e1805ac5127b63"
     },
     {
       "contractId": "catch.network_image",

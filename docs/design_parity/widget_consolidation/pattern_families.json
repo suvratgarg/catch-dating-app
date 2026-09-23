@@ -84,7 +84,7 @@
       "status": "implemented",
       "targetContract": "catch.badge",
       "qualityReference": "CatchBadge",
-      "decisionSource": "user-approved:2026-07-13",
+      "decisionSource": "user-approved:2026-07-13; user-approved:2026-09-23 unused-widget-retirement",
       "acceptedVisualDelta": [
         "Functional status uses mono uppercase typography; ordinary metadata uses sentence case.",
         "Badges on dark or media surfaces use EventSuccessDarkPill's translucent light fill, light hairline, and light ink.",
@@ -177,9 +177,9 @@
         },
         {
           "symbol": "ClubHostRoleBadge",
-          "disposition": "register",
-          "preview": "required",
-          "rationale": "Keep this as the intended feature-adapter boundary: it maps owner/host domain state into CatchBadge without inventing chrome."
+          "disposition": "discard",
+          "preview": "not-applicable",
+          "rationale": "User reviewed the rendered retirement gallery on 2026-09-23 and approved removal: no production caller remains outside the retired set and no design extraction is requested."
         },
         {
           "symbol": "CatchStatusIndicator",
@@ -256,10 +256,9 @@
         },
         {
           "symbol": "EventSuccessMetricPill",
-          "disposition": "repair",
-          "target": "CatchBadge",
-          "preview": "required",
-          "rationale": "Keep its value-formatting adapter while routing the resulting short factual label through shared badge chrome."
+          "disposition": "discard",
+          "preview": "not-applicable",
+          "rationale": "User reviewed the rendered retirement gallery on 2026-09-23 and approved removal: no production caller remains outside the retired set and no design extraction is requested."
         },
         {
           "symbol": "UnsavedChangesPill",
@@ -447,7 +446,7 @@
       "status": "implemented",
       "targetContract": "EventSuccessProgressStatus",
       "qualityReference": "EventSuccessCountdownStepper",
-      "decisionSource": "user-approved:2026-07-13",
+      "decisionSource": "user-approved:2026-07-13; user-approved:2026-09-23 unused-widget-retirement",
       "acceptedVisualDelta": [
         "Reusable progress sequences accept ordered display items plus currentIndex while Event Success retains percentage-threshold adaptation.",
         "Completed items use an explicit success check; only the current item uses the gold active treatment and future items remain muted.",
@@ -503,9 +502,9 @@
         },
         {
           "symbol": "LiveStepRow",
-          "disposition": "register",
-          "preview": "required",
-          "rationale": "Keep this expanded sibling, but make it consume the same future/current/complete state model and explicit completion treatment as the compact rail."
+          "disposition": "discard",
+          "preview": "not-applicable",
+          "rationale": "User reviewed the rendered retirement gallery on 2026-09-23 and approved removal: no production caller remains outside the retired set and no design extraction is requested."
         }
       ]
     },
@@ -824,11 +823,12 @@
       "status": "approved",
       "targetContract": "catch.typography",
       "qualityReference": "CatchKickerText",
-      "decisionSource": "owner-delegated:2026-09-08 source and rendered Phase 4 naming review",
+      "decisionSource": "owner-delegated:2026-09-08 source and rendered Phase 4 naming review; user-approved:2026-09-23 unused-widget-retirement",
       "acceptedVisualDelta": [
         "Preserve editorial, metadata and section-heading text appearance at light/dark and text scales 1.0/2.0 against pre-refactor text_roles goldens.",
         "Preserve heading semantics only on the section-heading API. Kicker and metadata styles continue to resolve through CatchTextStyles.",
-        "Widgetbook headings use the canonical API names and the canonical section-title preview gains the previously member-declared multi-line example."
+        "Widgetbook headings use the canonical API names and the canonical section-title preview gains the previously member-declared multi-line example.",
+        "Retire the unused Flutter section-heading API; keep the live web eyebrow components mapped to catch.typography with no rendering change."
       ],
       "members": [
         {
@@ -859,9 +859,9 @@
         },
         {
           "symbol": "CatchSectionHeaderTitle",
-          "disposition": "register",
-          "preview": "required",
-          "rationale": "Its existing Semantics(header: true) makes this structural heading anatomy, not ordinary metadata text. Keep catch.ui_label as the single contract and attach it to the section concept."
+          "disposition": "discard",
+          "preview": "not-applicable",
+          "rationale": "User reviewed the rendered retirement gallery on 2026-09-23 and approved removal: no production caller remains outside the retired set and no design extraction is requested."
         },
         {
           "symbol": "CatchSectionLabel",
@@ -1850,12 +1850,12 @@
     {
       "id": "quantitative-bar-indicators",
       "title": "One quantitative bar renderer",
-      "intent": "Use one bounded fractional bar for standalone observations and compact series, with names that distinguish quantitative display from loading or selected-page feedback.",
+      "intent": "Retain the actively used bounded fractional bar. Retire the unused series composition and promote its existing bar renderer to primary contract ownership.",
       "priority": "P1",
       "status": "approved",
       "targetContract": "catch.mini_bar_chart",
-      "qualityReference": "CatchBarSeriesIndicator",
-      "decisionSource": "owner-delegated:2026-09-08 source and rendered review",
+      "qualityReference": "CatchBarIndicator",
+      "decisionSource": "owner-delegated:2026-09-08 source and rendered review; user-approved:2026-09-23 unused-widget-retirement",
       "acceptedVisualDelta": [
         "Series observations now paint their allocated width. Previously the childless ColoredBox chose zero width under loose constraints, leaving populated series blank.",
         "Standalone rounded bars, series square corners, scale calculations, empty stubs, custom colors, spacing and frame geometry are preserved."
@@ -1863,15 +1863,15 @@
       "members": [
         {
           "symbol": "CatchBarSeriesIndicator",
-          "disposition": "canonical",
-          "preview": "required",
-          "rationale": "Displays several known numerical observations against one scale. LoadingIndicator communicates indeterminate work, while PageIndicator identifies one active position in a finite set; neither renders measured magnitudes. The series delegates every column to its Bar member, so it cannot keep a competing fill calculation or zero-width painter."
+          "disposition": "discard",
+          "preview": "not-applicable",
+          "rationale": "User reviewed the rendered retirement gallery on 2026-09-23 and approved removal: no production caller remains outside the retired set and no design extraction is requested."
         },
         {
           "symbol": "CatchBarIndicator",
           "disposition": "canonical",
           "preview": "required",
-          "rationale": "The parent series owns the shared maximum, frame, gaps and accessible description. This member paints one observation at a bounded fractional height. Rounded and square variants preserve the established standalone and series shapes while using the same ratio and width calculation."
+          "rationale": "The existing renderer is used by live analytics. Its API and rendering are unchanged; it now owns the quantitative bar contract directly."
         },
         {
           "symbol": "CatchMiniBarChart",

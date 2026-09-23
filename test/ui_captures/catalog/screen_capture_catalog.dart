@@ -1187,32 +1187,8 @@ final _postRunProfiles = [
 final _catchesOpenEvent = CatchesSurfaceFixtures.openWindowEvent(
   id: 'capture-catches-open',
 );
-final _catchesClosingSoonEvent = CatchesSurfaceFixtures.closingSoonEvent();
 final _catchesClosedEvent = CatchesSurfaceFixtures.closedWindowEvent();
 final _catchesUpcomingEvent = CatchesSurfaceFixtures.upcomingEvent();
-
-List<Object> _swipeHubProviderOverrides({
-  AsyncValue<String?> uidValue = const AsyncData<String?>(
-    CatchesSurfaceFixtures.viewerUid,
-  ),
-  AsyncValue<List<Event>>? eventsValue,
-}) {
-  final uid = switch (uidValue) {
-    AsyncData(:final value) => value,
-    _ => null,
-  };
-  return [
-    uidProvider.overrideWithValue(uidValue),
-    if (uid != null)
-      watchAttendedEventsProvider(uid).overrideWithValue(
-        eventsValue ??
-            AsyncData<List<Event>>([
-              _catchesOpenEvent,
-              _catchesClosingSoonEvent,
-            ]),
-      ),
-  ];
-}
 
 NetworkException _catchesOfflineException({required String action}) {
   return obviousOfflineException(

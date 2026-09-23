@@ -1,4 +1,3 @@
-import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_display_state.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_information_state.dart';
@@ -11,10 +10,8 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
-import '../../preview_layout_contracts.dart';
 import '../../support/contract_preview.dart';
 import '../../support/page_preview.dart';
-import '../../support/widgetbook_harness.dart';
 import 'event_scope.dart';
 import 'fixtures.dart';
 import 'preview.dart';
@@ -378,18 +375,4 @@ Widget eventCtaStatusLeadingStates(BuildContext context) {
       ),
     ],
   );
-}
-
-class _SheetFrame extends StatelessWidget {
-  const _SheetFrame({required this.child});
-  final Widget child;
-  @override
-  Widget build(BuildContext context) =>
-      WidgetbookViewportFrame.constrainedSheet(
-        size: const Size(
-          390,
-          WidgetbookPreviewLayout.profileExpandedEditorHeight,
-        ),
-        child: child,
-      );
 }
