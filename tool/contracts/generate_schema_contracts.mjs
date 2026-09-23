@@ -954,6 +954,36 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/organizerFollowDocument.ts",
   },
   {
+    name: "ParticipantOrganizerCardDocument",
+    source: "firestore/participant_organizer_cards.schema.json",
+    typeOutput: "functions/src/shared/generated/participantOrganizerCardDocument.ts",
+  },
+  {
+    name: "ParticipantProfileClaimReceiptDocument",
+    source: "firestore/participant_profile_claim_receipts.schema.json",
+    typeOutput: "functions/src/shared/generated/participantProfileClaimReceiptDocument.ts",
+  },
+  {
+    name: "ClaimParticipantFormProfileCallablePayload",
+    source: "callables/claim_participant_form_profile_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/claimParticipantFormProfileCallablePayload.ts",
+  },
+  {
+    name: "ClaimParticipantFormProfileCallableResponse",
+    source: "callable_responses/claim_participant_form_profile_response.schema.json",
+    typeOutput: "functions/src/shared/generated/claimParticipantFormProfileCallableResponse.ts",
+  },
+  {
+    name: "GetParticipantFormProfileCallablePayload",
+    source: "callables/get_participant_form_profile_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/getParticipantFormProfileCallablePayload.ts",
+  },
+  {
+    name: "GetParticipantFormProfileCallableResponse",
+    source: "callable_responses/get_participant_form_profile_response.schema.json",
+    typeOutput: "functions/src/shared/generated/getParticipantFormProfileCallableResponse.ts",
+  },
+  {
     name: "ParticipantFormProfileProposalDocument",
     source: "firestore/participant_form_profile_proposals.schema.json",
     typeOutput: "functions/src/shared/generated/participantFormProfileProposalDocument.ts",

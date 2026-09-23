@@ -2517,6 +2517,31 @@ unavailable; account deletion removes the pointers. Claimed profile updates,
 image transfer, participant-owned cards and explicit event sharing are separate
 operations and must not infer permission from these prepared pointers.
 
+`getParticipantFormProfile` resolves only the verified owner’s designated fields
+and returns the current core/intake revisions. `claimParticipantFormProfile`
+requires explicit reviewed core values, selected question IDs, and versioned
+claim terms. It atomically updates `users`, private `participantOrganizerCards`
+answer pointers and a payload-bound `participantProfileClaimReceipts` receipt.
+Concurrent retries reuse the receipt; a newer core/intake revision aborts stale
+review. Normal `updateUserProfile` edits increment the same core revision.
+LinkedIn retains its existing private `participantIntakeProfiles` destination.
+Verified phone always comes from Auth, never an editable answer.
+
+New claimed identities have `profileComplete=false`, empty dating preferences
+and discovery disabled. The server schema permits empty preferences for this
+path; existing client initial-create, booking and social-readiness gates remain
+unchanged. Claiming does not admit someone to an event or grant room sharing.
+Owner cards contain only selected applicant-answer pointers, never CRM notes,
+tags or private review fields. Card reads must revalidate the source response.
+Account deletion removes proposals, cards and claim receipts.
+
+A selected form photo must still match the owned response, form, version, draft
+and question. Its bytes and digest are verified, safety checked, stripped of
+metadata and copied to owned profile media with a thumbnail. Original private
+form URLs are never promoted. The commit rechecks response withdrawal, account
+deletion and profile revision after image processing. Participant claim/card UI
+and event-scoped sharing remain separate delivery work.
+
 ### Organizer Application Intake
 
 Organizer applications are a provider-neutral intake domain. A Google Form,

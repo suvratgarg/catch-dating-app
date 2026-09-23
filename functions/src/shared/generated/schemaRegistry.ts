@@ -185,6 +185,12 @@ export {organizerPostDeliveryOperationDocumentSchema} from "./schemas/organizerP
 export {organizerPostDeliveryRecipientDocumentSchema} from "./schemas/organizerPostDeliveryRecipientDocument";
 export {organizerTeamMembershipDocumentSchema} from "./schemas/organizerTeamMembershipDocument";
 export {organizerFollowDocumentSchema} from "./schemas/organizerFollowDocument";
+export {participantOrganizerCardDocumentSchema} from "./schemas/participantOrganizerCardDocument";
+export {participantProfileClaimReceiptDocumentSchema} from "./schemas/participantProfileClaimReceiptDocument";
+export {claimParticipantFormProfileCallablePayloadSchema} from "./schemas/claimParticipantFormProfileInput";
+export {claimParticipantFormProfileCallableResponseSchema} from "./schemas/claimParticipantFormProfileOutput";
+export {getParticipantFormProfileCallablePayloadSchema} from "./schemas/getParticipantFormProfileInput";
+export {getParticipantFormProfileCallableResponseSchema} from "./schemas/getParticipantFormProfileOutput";
 export {participantFormProfileProposalDocumentSchema} from "./schemas/participantFormProfileProposalDocument";
 export {catchCommunicationPreferenceDocumentSchema} from "./schemas/catchCommunicationPreferenceDocument";
 export {catchCommunicationPermissionReceiptDocumentSchema} from "./schemas/catchCommunicationPermissionReceiptDocument";

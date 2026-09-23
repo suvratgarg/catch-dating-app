@@ -414,6 +414,8 @@ export {
   syncHostProfile,
   syncPublicProfile,
 } from "./profiles/syncPublicProfile";
+export {getParticipantFormProfile, claimParticipantFormProfile}
+  from "./profiles/claimFormProfile";
 export {updateUserProfile} from "./profiles/updateUserProfile";
 export {setCrossPathsEventConsent} from
   "./crossPaths/setCrossPathsEventConsent";

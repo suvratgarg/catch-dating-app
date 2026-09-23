@@ -106,6 +106,33 @@ const schemaUserProfileDocumentSchema = <String, Object?>{
       'pattern': '^\\+\\d{1,4}\$',
       'x-catch-ownership': 'client-writable',
     },
+    'profileRevision': <String, Object?>{
+      'type': 'integer',
+      'minimum': 0,
+      'maximum': 9007199254740991,
+      'x-catch-ownership': 'server-only',
+    },
+    'profileClaimedAt': <String, Object?>{
+      'type': 'object',
+      'description': 'Serialized Firestore Timestamp fixture shape.',
+      'x-firestore-type': 'timestamp',
+      'additionalProperties': false,
+      'required': <Object?>[
+        '_seconds',
+        '_nanoseconds',
+      ],
+      'properties': <String, Object?>{
+        '_seconds': <String, Object?>{
+          'type': 'integer',
+        },
+        '_nanoseconds': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 999999999,
+        },
+      },
+      'x-catch-ownership': 'server-only',
+    },
     'profileComplete': <String, Object?>{
       'type': 'boolean',
       'x-catch-ownership': 'client-writable',
@@ -439,7 +466,7 @@ const schemaUserProfileDocumentSchema = <String, Object?>{
     },
     'interestedInGenders': <String, Object?>{
       'type': 'array',
-      'minItems': 1,
+      'minItems': 0,
       'maxItems': 8,
       'uniqueItems': true,
       'items': <String, Object?>{

@@ -185,6 +185,12 @@ export {validateOrganizerPostDeliveryOperationDocument} from "./validators/organ
 export {validateOrganizerPostDeliveryRecipientDocument} from "./validators/organizerPostDeliveryRecipientDocument";
 export {validateOrganizerTeamMembershipDocument} from "./validators/organizerTeamMembershipDocument";
 export {validateOrganizerFollowDocument} from "./validators/organizerFollowDocument";
+export {validateParticipantOrganizerCardDocument} from "./validators/participantOrganizerCardDocument";
+export {validateParticipantProfileClaimReceiptDocument} from "./validators/participantProfileClaimReceiptDocument";
+export {validateClaimParticipantFormProfileCallablePayload} from "./validators/claimParticipantFormProfileInput";
+export {validateClaimParticipantFormProfileCallableResponse} from "./validators/claimParticipantFormProfileOutput";
+export {validateGetParticipantFormProfileCallablePayload} from "./validators/getParticipantFormProfileInput";
+export {validateGetParticipantFormProfileCallableResponse} from "./validators/getParticipantFormProfileOutput";
 export {validateParticipantFormProfileProposalDocument} from "./validators/participantFormProfileProposalDocument";
 export {validateCatchCommunicationPreferenceDocument} from "./validators/catchCommunicationPreferenceDocument";
 export {validateCatchCommunicationPermissionReceiptDocument} from "./validators/catchCommunicationPermissionReceiptDocument";

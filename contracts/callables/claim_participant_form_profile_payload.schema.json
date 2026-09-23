@@ -1,0 +1,178 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/claim_participant_form_profile_payload.schema.json",
+  "title": "ClaimParticipantFormProfileCallablePayload",
+  "description": "Claim reviewed form data for the authenticated participant without enabling dating discovery or event admission.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "responseId",
+    "expectedProfileRevision",
+    "requestId",
+    "termsVersion",
+    "selectedQuestionIds",
+    "profile",
+    "expectedIntakeRevision"
+  ],
+  "properties": {
+    "responseId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "expectedProfileRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "requestId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{16,100}$"
+    },
+    "termsVersion": {
+      "type": "string",
+      "const": "form-profile-claim-v1"
+    },
+    "selectedQuestionIds": {
+      "type": "array",
+      "maxItems": 100,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+      }
+    },
+    "profile": {
+      "description": "Explicit participant-reviewed core values. Phone identity comes from verified Auth, never a form answer.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "displayName",
+        "dateOfBirth",
+        "gender"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "firstName": {
+          "type": "string",
+          "maxLength": 80
+        },
+        "lastName": {
+          "type": "string",
+          "maxLength": 80
+        },
+        "displayName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80,
+          "pattern": ".*\\S.*"
+        },
+        "gender": {
+          "$ref": "../shared/profile_common.schema.json#/definitions/gender"
+        },
+        "email": {
+          "anyOf": [
+            {
+              "const": ""
+            },
+            {
+              "type": "string",
+              "format": "email",
+              "maxLength": 320
+            }
+          ]
+        },
+        "instagramHandle": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 30,
+              "pattern": "^[A-Za-z0-9._]{1,30}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "city": {
+          "anyOf": [
+            {
+              "$ref": "../shared/profile_common.schema.json#/definitions/marketId"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "height": {
+          "$ref": "../shared/profile_common.schema.json#/definitions/heightCm"
+        },
+        "occupation": {
+          "$ref": "../shared/profile_common.schema.json#/definitions/nullableShortText"
+        },
+        "company": {
+          "$ref": "../shared/profile_common.schema.json#/definitions/nullableShortText"
+        },
+        "education": {
+          "$ref": "../shared/profile_common.schema.json#/definitions/educationLevel"
+        },
+        "religion": {
+          "$ref": "../shared/profile_common.schema.json#/definitions/religion"
+        },
+        "languages": {
+          "type": "array",
+          "maxItems": 20,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "../shared/profile_common.schema.json#/definitions/language"
+          }
+        },
+        "relationshipGoal": {
+          "$ref": "../shared/profile_common.schema.json#/definitions/relationshipGoal"
+        },
+        "drinking": {
+          "$ref": "../shared/profile_common.schema.json#/definitions/drinkingHabit"
+        },
+        "smoking": {
+          "$ref": "../shared/profile_common.schema.json#/definitions/smokingHabit"
+        },
+        "workout": {
+          "$ref": "../shared/profile_common.schema.json#/definitions/workoutFrequency"
+        },
+        "diet": {
+          "$ref": "../shared/profile_common.schema.json#/definitions/dietaryPreference"
+        },
+        "children": {
+          "$ref": "../shared/profile_common.schema.json#/definitions/childrenStatus"
+        },
+        "dateOfBirth": {
+          "type": "string",
+          "format": "date"
+        },
+        "interestedInGenders": {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 8,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "../shared/profile_common.schema.json#/definitions/gender"
+          },
+          "x-catch-ownership": "client-writable"
+        }
+      }
+    },
+    "expectedIntakeRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "reviewedLinkedinUrl": {
+      "type": "string",
+      "maxLength": 2048,
+      "format": "uri",
+      "pattern": "^https://([a-z]{2,3}\\.)?(www\\.)?linkedin\\.com/in/[^\\s]+$"
+    }
+  }
+}

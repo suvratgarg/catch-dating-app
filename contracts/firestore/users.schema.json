@@ -77,6 +77,8 @@
       "pattern": "^\\+\\d{1,4}$",
       "x-catch-ownership": "client-writable"
     },
+    "profileRevision": {"type": "integer", "minimum": 0, "maximum": 9007199254740991, "x-catch-ownership": "server-only"},
+    "profileClaimedAt": {"$ref": "../shared/profile_common.schema.json#/definitions/timestamp", "x-catch-ownership": "server-only"},
     "profileComplete": {
       "type": "boolean",
       "x-catch-ownership": "client-writable"
@@ -173,7 +175,7 @@
     },
     "interestedInGenders": {
       "type": "array",
-      "minItems": 1,
+      "minItems": 0,
       "maxItems": 8,
       "uniqueItems": true,
       "items": {

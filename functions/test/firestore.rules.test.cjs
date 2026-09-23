@@ -644,8 +644,8 @@ describe("firestore.rules", () => {
       projectId,
       firestore: {
         rules: firestoreRules,
-        host: "127.0.0.1",
-        port: 8080,
+        host: process.env.FIRESTORE_EMULATOR_HOST?.split(":")[0] ?? "127.0.0.1",
+        port: Number(process.env.FIRESTORE_EMULATOR_HOST?.split(":")[1] ?? 8080),
       },
     });
   });
@@ -1882,6 +1882,8 @@ describe("firestore.rules", () => {
         ["organizerCommunicationPermissionReceipts", "permission-1"],
         ["catchCommunicationPreferences", "runner-1"],
         ["participantFormProfileProposals", "response-1"],
+        ["participantOrganizerCards", "response-1"],
+        ["participantProfileClaimReceipts", "receipt-1"],
         ["catchCommunicationPermissionReceipts", "permission-1"],
         ["organizerContactOrigins", "origin-1"],
         ["organizerSavedAudiences", "audience-1"],
@@ -2378,6 +2380,22 @@ describe("firestore.rules", () => {
       await assertFails(updateDoc(userRef, {photoUrls: ["https://example.test/a.jpg"]}));
       await assertFails(updateDoc(userRef, {prefsWeeklyDigest: true}));
       await assertFails(updateDoc(userRef, {dateOfBirth: "1998-01-01"}));
+    });
+
+    it("keeps profile claim metadata server-owned and claimed identities private", async () => {
+      const claimed = {profileRevision: 1, profileClaimedAt: Timestamp.now()};
+      for (const patch of [{profileRevision: 0}, {profileClaimedAt: Timestamp.now()}]) {
+        await assertFails(setDoc(doc(authedDb("runner-1"), "users", "runner-1"),
+          userProfile(patch)));
+      }
+      await seed(["users", "runner-1"], userProfile({...claimed,
+        profileComplete: false, interestedInGenders: []}));
+      const ownerRef = doc(authedDb("runner-1"), "users", "runner-1");
+      await assertSucceeds(getDoc(ownerRef));
+      await assertSucceeds(updateDoc(ownerRef, {fcmToken: "token-claim"}));
+      await assertFails(updateDoc(ownerRef, {profileRevision: 2}));
+      await assertFails(updateDoc(ownerRef, {profileClaimedAt: Timestamp.now()}));
+      await assertFails(getDoc(doc(authedDb("other-host"), "users", "runner-1")));
     });
 
     it("denies client writes to account-deletion lifecycle fields", async () => {

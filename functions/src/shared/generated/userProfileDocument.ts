@@ -24,6 +24,14 @@ export interface UserProfileDocument {
   gender: "man" | "woman" | "nonBinary" | "other";
   phoneNumber: string;
   countryCode?: string;
+  profileRevision?: number;
+  /**
+   * Serialized Firestore Timestamp fixture shape.
+   */
+  profileClaimedAt?: {
+    _seconds: number;
+    _nanoseconds: number;
+  };
   profileComplete: boolean;
   /**
    * Internal demo seed marker used for cleanup and diagnostics.
@@ -63,7 +71,7 @@ export interface UserProfileDocument {
   latitude?: number | null;
   longitude?: number | null;
   /**
-   * @minItems 1
+   * @minItems 0
    * @maxItems 8
    */
   interestedInGenders: ("man" | "woman" | "nonBinary" | "other")[];

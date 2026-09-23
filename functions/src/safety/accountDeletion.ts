@@ -326,15 +326,18 @@ async function queueHostAnalyticsSnapshotCleanup(
   snapshots.forEach((doc) => writer.delete(doc.ref));
 }
 
-/** Deletes unclaimed private form pointers without touching organizer CRM. */
+/** Deletes private form claim state without touching organizer CRM. */
 async function queueFormProfileProposalCleanup(
   db: FirebaseFirestore.Firestore,
   uid: string,
   writer: BatchQueue
 ) {
-  const proposals = await db.collection("participantFormProfileProposals")
-    .where("uid", "==", uid).get();
-  proposals.forEach((doc) => writer.delete(doc.ref));
+  for (const collection of ["participantFormProfileProposals",
+    "participantOrganizerCards", "participantProfileClaimReceipts"]) {
+    const records = await db.collection(collection)
+      .where("uid", "==", uid).get();
+    records.forEach((doc) => writer.delete(doc.ref));
+  }
 }
 
 /**

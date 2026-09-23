@@ -284,7 +284,7 @@ service cloud.firestore {
           // Server-owned lifecycle fields. These must be tolerated on existing
           // retained docs, but clients cannot create or change them.
           'deleted',
-          'deletedAt'
+          'deletedAt', 'profileRevision', 'profileClaimedAt'
         ])
         && data.keys().hasAll([
           'name', 'displayName', 'email', 'phoneNumber', 'dateOfBirth',
@@ -417,7 +417,9 @@ service cloud.firestore {
         && request.auth.uid == uid
         && !isDeletedUser(uid)
         && hasValidUserShape(request.resource.data)
-        && !request.resource.data.keys().hasAny(['deleted', 'deletedAt']);
+        && !request.resource.data.keys().hasAny([
+          'deleted', 'deletedAt', 'profileRevision', 'profileClaimedAt'
+        ]);
     }
 
     function userChangedKeys() {
@@ -1317,6 +1319,14 @@ service cloud.firestore {
 
     // Form submission prepares private review pointers, never a public profile.
     match /participantFormProfileProposals/{responseId} {
+      allow read, write: if false;
+    }
+
+    match /participantOrganizerCards/{responseId} {
+      allow read, write: if false;
+    }
+
+    match /participantProfileClaimReceipts/{receiptId} {
       allow read, write: if false;
     }
 

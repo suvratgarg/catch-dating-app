@@ -88,6 +88,10 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
         uid: "runner-1",
         channel: "whatsapp",
       },
+      "participantOrganizerCards/response-1": {uid: "runner-1"},
+      "participantOrganizerCards/response-other": {uid: "runner-2"},
+      "participantProfileClaimReceipts/receipt-1": {uid: "runner-1"},
+      "participantProfileClaimReceipts/receipt-other": {uid: "runner-2"},
       "participantFormProfileProposals/response-1": {
         uid: "runner-1", organizerId: "club-1",
       },
@@ -355,6 +359,14 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
       "organizerCommunicationPermissionReceipts/receipt-1"
     )
   );
+  for (const path of ["participantOrganizerCards/response-1",
+    "participantProfileClaimReceipts/receipt-1"]) {
+    assert.ok(harness.deletedPublicDocs.includes(path));
+  }
+  for (const path of ["participantOrganizerCards/response-other",
+    "participantProfileClaimReceipts/receipt-other"]) {
+    assert.equal(harness.deletedPublicDocs.includes(path), false);
+  }
   assert.ok(harness.deletedPublicDocs.includes(
     "participantFormProfileProposals/response-1"));
   assert.equal(harness.deletedPublicDocs.includes(

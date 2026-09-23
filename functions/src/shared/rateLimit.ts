@@ -345,6 +345,8 @@ export const RATE_LIMITS: Record<string, RateLimitConfig> = {
   blockUser: {maxRequests: 10, windowMs: 60 * 1000},
   unblockUser: {maxRequests: 10, windowMs: 60 * 1000},
   // 60/min because profile editing can save one field per sheet interaction.
+  getParticipantFormProfile: {maxRequests: 60, windowMs: 60 * 1000},
+  claimParticipantFormProfile: {maxRequests: 10, windowMs: 60 * 1000},
   updateUserProfile: {maxRequests: 60, windowMs: 60 * 1000},
   setCrossPathsEventConsent: {maxRequests: 30, windowMs: 60 * 1000},
   getCrossPathsSuggestions: {maxRequests: 12, windowMs: 60 * 1000},

@@ -3984,6 +3984,8 @@ export interface UserProfileDocument {
   gender: "man" | "woman" | "nonBinary" | "other";
   phoneNumber: string;
   countryCode?: string;
+  profileRevision?: number;
+  profileClaimedAt?: FirebaseFirestore.Timestamp;
   profileComplete: boolean;
   email: "" | string;
   instagramHandle?: string | null;
@@ -3999,7 +4001,7 @@ export interface UserProfileDocument {
   latitude?: number | null;
   longitude?: number | null;
   /**
-   * @minItems 1
+   * @minItems 0
    * @maxItems 8
    */
   interestedInGenders: ("man" | "woman" | "nonBinary" | "other")[];
@@ -4914,6 +4916,34 @@ export interface OrganizerFollowDocument {
   pushNotificationsEnabled: boolean;
   followedAt: FirebaseFirestore.Timestamp;
   unfollowedAt: FirebaseFirestore.Timestamp | null;
+}
+
+/**
+ * Participant-owned selection of applicant-submitted organizer-card fields. No CRM content or event sharing permission.
+ */
+export interface ParticipantOrganizerCardDocument {
+  uid: string;
+  organizerId: string;
+  responseId: string;
+  /**
+   * @maxItems 100
+   */
+  questionIds: string[];
+  revision: number;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Idempotency proof for a participant-reviewed form profile claim. Contains no submitted answers.
+ */
+export interface ParticipantProfileClaimReceiptDocument {
+  uid: string;
+  responseId: string;
+  payloadHash: string;
+  profileRevision: number;
+  organizerCardId: string | null;
+  createdAt: FirebaseFirestore.Timestamp;
 }
 
 /**

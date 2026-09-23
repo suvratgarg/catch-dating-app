@@ -61,11 +61,12 @@ export async function prepareFormProfileProposal(params: {
 /** One owner-only projection for claim and organizer-card review callers. */
 export async function readParticipantFormProfileProposal(params: {
   db: FirebaseFirestore.Firestore; uid: string; responseId: string;
+  tx?: FirebaseFirestore.Transaction;
 }) {
   const {db, uid, responseId} = params;
   // Take one consistent snapshot so withdrawal/deletion cannot combine with
   // an earlier source read to yield a new authorized projection.
-  return db.runTransaction(async (tx) => {
+  const read = async (tx: FirebaseFirestore.Transaction) => {
     const [proposalSnap, responseSnap, deleted] = await Promise.all([
       tx.get(db.collection("participantFormProfileProposals").doc(responseId)),
       tx.get(db.collection("organizerFormResponses").doc(responseId)),
@@ -118,5 +119,6 @@ export async function readParticipantFormProfileProposal(params: {
     return {responseId, organizerId: proposal.organizerId,
       formId: proposal.formId, formTitle: version.definition.title,
       submittedAtMillis: response.submittedAt.toMillis(), fields};
-  });
+  };
+  return params.tx ? read(params.tx) : db.runTransaction(read);
 }

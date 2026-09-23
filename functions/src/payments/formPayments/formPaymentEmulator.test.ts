@@ -7,6 +7,8 @@ import {createFormPaymentFixture} from "./formPaymentTestStore";
 import {reserveFormPayment, finalizeCapturedFormPayment,
   expireFormPaymentReservation} from "./formPaymentSubmission";
 
+import {claimParticipantFormProfileHandler} from
+  "../../profiles/claimFormProfile";
 import {listOrganizerFormPaymentsHandler} from "./formPaymentLedger";
 
 const emulator = process.env.FIRESTORE_EMULATOR_HOST;
@@ -21,7 +23,8 @@ test("Firestore serializes payment reservations, finalization and late capture",
     const collections = ["organizerForms", "organizerFormVersions",
       "organizerFormResponseDrafts", "organizerPaymentConnections",
       "organizerFormPayments", "organizerFormResponses",
-      "participantFormProfileProposals",
+      "participantFormProfileProposals", "participantOrganizerCards",
+      "participantProfileClaimReceipts", "users", "participantIntakeProfiles",
       "organizerCommunicationPreferences",
       "organizerCommunicationPermissionReceipts",
       "catchCommunicationPreferences", "catchCommunicationPermissionReceipts"];
@@ -88,6 +91,35 @@ test("Firestore serializes payment reservations, finalization and late capture",
       assert.equal(proposals.docs[0].get("uid"), "person");
       assert.equal(proposals.docs[0].get("fields")[0].destination,
         "catchProfile");
+
+      // Real Firestore retries race the claim, but write one identity/receipt.
+      const claimRequest = {...fixture.request, data: {
+        responseId: proposals.docs[0].id, expectedProfileRevision: 0,
+        expectedIntakeRevision: 0, requestId: "claim-emulator-00000001",
+        termsVersion: "form-profile-claim-v1", selectedQuestionIds: ["name"],
+        profile: {displayName: "Sara Demo", dateOfBirth: "1994-06-15",
+          gender: "woman"},
+      }};
+      const claimDeps = {db: () => db,
+        now: () => Timestamp.fromDate(new Date("2026-09-23T12:00:00Z")),
+        rateLimit: async () => undefined,
+        copyPhoto: async (): Promise<never> => {
+          throw new Error("No photo");
+        }};
+      const claims = await Promise.all([
+        claimParticipantFormProfileHandler(claimRequest, claimDeps),
+        claimParticipantFormProfileHandler(claimRequest, claimDeps),
+      ]);
+      assert.deepEqual(claims.map((claim) => claim.replayed).sort(),
+        [false, true]);
+      assert.equal((await db.doc("users/person").get())
+        .get("profileRevision"), 1);
+      assert.equal((await db.collection("participantProfileClaimReceipts")
+        .get()).size, 1);
+      await assert.rejects(claimParticipantFormProfileHandler({
+        ...claimRequest, data: {...claimRequest.data,
+          requestId: "claim-emulator-00000002"},
+      }, claimDeps), /profile changed/u);
 
       // A separate frozen checkout expires. Later captured funds must not
       // create another response, even if two recovery workers race.

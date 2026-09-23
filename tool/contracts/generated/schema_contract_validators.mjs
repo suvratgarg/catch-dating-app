@@ -183,6 +183,12 @@ import {
   organizerPostDeliveryRecipientDocumentSchema,
   organizerTeamMembershipDocumentSchema,
   organizerFollowDocumentSchema,
+  participantOrganizerCardDocumentSchema,
+  participantProfileClaimReceiptDocumentSchema,
+  claimParticipantFormProfileCallablePayloadSchema,
+  claimParticipantFormProfileCallableResponseSchema,
+  getParticipantFormProfileCallablePayloadSchema,
+  getParticipantFormProfileCallableResponseSchema,
   participantFormProfileProposalDocumentSchema,
   catchCommunicationPreferenceDocumentSchema,
   catchCommunicationPermissionReceiptDocumentSchema,
@@ -913,6 +919,12 @@ export const validateOrganizerPostDeliveryOperationDocument = ajv.compile(organi
 export const validateOrganizerPostDeliveryRecipientDocument = ajv.compile(organizerPostDeliveryRecipientDocumentSchema);
 export const validateOrganizerTeamMembershipDocument = ajv.compile(organizerTeamMembershipDocumentSchema);
 export const validateOrganizerFollowDocument = ajv.compile(organizerFollowDocumentSchema);
+export const validateParticipantOrganizerCardDocument = ajv.compile(participantOrganizerCardDocumentSchema);
+export const validateParticipantProfileClaimReceiptDocument = ajv.compile(participantProfileClaimReceiptDocumentSchema);
+export const validateClaimParticipantFormProfileCallablePayload = ajv.compile(claimParticipantFormProfileCallablePayloadSchema);
+export const validateClaimParticipantFormProfileCallableResponse = ajv.compile(claimParticipantFormProfileCallableResponseSchema);
+export const validateGetParticipantFormProfileCallablePayload = ajv.compile(getParticipantFormProfileCallablePayloadSchema);
+export const validateGetParticipantFormProfileCallableResponse = ajv.compile(getParticipantFormProfileCallableResponseSchema);
 export const validateParticipantFormProfileProposalDocument = ajv.compile(participantFormProfileProposalDocumentSchema);
 export const validateCatchCommunicationPreferenceDocument = ajv.compile(catchCommunicationPreferenceDocumentSchema);
 export const validateCatchCommunicationPermissionReceiptDocument = ajv.compile(catchCommunicationPermissionReceiptDocumentSchema);
