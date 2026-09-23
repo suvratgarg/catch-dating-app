@@ -67,6 +67,7 @@ try {
 const knownStoryIds = new Set(
   resolveStories(allReadyStories, storyIndex.entries ?? {}).map((story) => story.id)
 );
+thresholdOverrides = new Map([...thresholdOverrides].filter(([, entry]) => entry.surface === args.surface));
 const unusedOverrides = [...thresholdOverrides.keys()].filter((id) => !knownStoryIds.has(id));
 if (unusedOverrides.length > 0) {
   fail(`storybook_visual_thresholds.json lists unknown ready-story id(s): ${unusedOverrides.join(", ")}`);
@@ -298,21 +299,25 @@ function parseThresholdOverrides(data) {
     if (entry === null || typeof entry !== "object" || Array.isArray(entry)) {
       throw new Error(`${label}: entry must be an object`);
     }
-    const extra = Object.keys(entry).filter((key) => !["threshold", "reason", "expires"].includes(key));
+    const extra = Object.keys(entry).filter((key) => !["surface", "threshold", "reason", "expires"].includes(key));
     if (extra.length > 0) {
       throw new Error(`${label}: unsupported field(s) ${extra.join(", ")}`);
     }
-    const {threshold, reason, expires} = entry;
+    const {surface, threshold, reason, expires} = entry;
+    if (!["admin", "website", "webui"].includes(surface)) {
+      throw new Error(`${label}: surface must be admin, website, or webui`);
+    }
     if (!Number.isFinite(threshold) || threshold <= 0 || threshold > 1) {
       throw new Error(`${label}: threshold must be a number in (0, 1]`);
     }
     if (typeof reason !== "string" || reason.trim() === "") {
       throw new Error(`${label}: reason must be a non-empty string`);
     }
-    if (expires !== undefined && (typeof expires !== "string" || !/^\d{4}-\d{2}-\d{2}$/u.test(expires))) {
+    if (typeof expires !== "string" || !/^\d{4}-\d{2}-\d{2}$/u.test(expires) ||
+        !Number.isFinite(Date.parse(expires)) || new Date(expires).toISOString().slice(0, 10) !== expires) {
       throw new Error(`${label}: expires must be a YYYY-MM-DD date`);
     }
-    overrides.set(storyId, {threshold, reason, expires});
+    overrides.set(storyId, {surface, threshold, reason, expires});
   }
   return overrides;
 }
@@ -526,13 +531,20 @@ async function runSelfTest() {
   const overrides = parseThresholdOverrides({
     version: 1,
     stories: {
-      "story-a": {threshold: 0.003, reason: "subpixel drift", expires: "2099-01-01"},
-      "story-b": {threshold: 0.5, reason: "kept"},
+      "story-a": {surface: "admin", threshold: 0.003, reason: "subpixel drift", expires: "2099-01-01"},
+      "story-b": {surface: "website", threshold: 0.5, reason: "kept", expires: "2099-02-01"},
     },
   });
   assert.equal(overrides.get("story-a").threshold, 0.003);
   assert.equal(overrides.get("story-b").threshold, 0.5);
   assert.deepEqual(parseThresholdOverrides({version: 1}), new Map());
+  for (const patch of [{surface: "typo"}, {expires: undefined}, {expires: "2099-02-30"}]) {
+    assert.throws(() => parseThresholdOverrides({version: 1, stories: {
+      a: {surface: "admin", threshold: 0.003, reason: "evidence", expires: "2099-01-01", ...patch},
+    }}));
+  }
+  assert.deepEqual([...overrides].filter(([, entry]) => entry.surface === "webui"), []);
+  assert.deepEqual([...overrides].filter(([, entry]) => entry.surface === "website").map(([id]) => id), ["story-b"]);
   for (const bad of [
     null, [], "x",
     {version: 2, stories: {}},
@@ -570,8 +582,8 @@ Options:
   --self-test                    Run pixel-comparison and capture-scheduler proofs.
 
 Per-story overrides live in tool/web/storybook_visual_thresholds.json:
-{"version": 1, "stories": {"<story-id>": {"threshold": <ratio>, "reason": "...", "expires": "YYYY-MM-DD"}}}
-Overrides apply to both viewports of the named story, must reference a
+{"version": 1, "stories": {"<story-id>": {"surface": "admin|website|webui", "threshold": <ratio>, "reason": "...", "expires": "YYYY-MM-DD"}}}
+Overrides apply only to the named surface, cover both viewports, and must reference a
 registry-ready story, and fail the check once their expires date passes.
 `);
 }
