@@ -37,6 +37,7 @@ test("disabled legacy Meta params remain visibly unconfigured", () => {
     'EVENT_ASSISTANCE_RCS_ENABLED="false"',
     'EVENT_ASSISTANCE_RCS_WEBHOOK_ENABLED="false"',
     'EVENT_ASSISTANCE_SMS_REPORTS_ENABLED="false"',
+    'FLIGHT_WEBHOOK_BASE_URL=" "',
     "",
   ].join("\n"));
   assert.equal(fs.statSync(result.outputPath).mode & 0o777, 0o600);
@@ -66,6 +67,7 @@ test("empty GitHub repository variables default Meta to disabled", () => {
     'EVENT_ASSISTANCE_RCS_ENABLED="false"',
     'EVENT_ASSISTANCE_RCS_WEBHOOK_ENABLED="false"',
     'EVENT_ASSISTANCE_SMS_REPORTS_ENABLED="false"',
+    'FLIGHT_WEBHOOK_BASE_URL=" "',
     "",
   ].join("\n"));
 });

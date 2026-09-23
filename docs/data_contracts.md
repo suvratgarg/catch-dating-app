@@ -3032,7 +3032,8 @@ Repository-owned composite query builders declare adjacent contracts using:
 ```
 
 `node tool/run.mjs check contracts:firestore-query-indexes` scans every
-handwritten repository source, rejects composite builders with no contract,
+handwritten Dart data repository and program/transport Functions source,
+rejects uncovered statically resolvable composite builders,
 verifies each declared ordered field list against `firestore.indexes.json`,
 and rejects non-vector one-field composites, with or without an explicit
 `__name__`, that Firestore refuses to deploy because built-in single-field
@@ -3041,7 +3042,8 @@ rejected using the same scope, field-order and implicit `__name__` normalization
 as the deployment readiness check, preventing duplicate creation requests in a
 single deployment.
 The check also runs inside `./tool/check_data_contract.sh` and Tools CI whenever
-repository data code or the index file changes.
+repository data code or the index file changes. Dynamic additions such as a
+station filter require an adjacent contract and review alongside the base query.
 
 ### Canonical read limits and cursors
 

@@ -216,7 +216,8 @@ Iterable<HostAttentionItem> _attendanceItems(
       assignedHostUid: accountId,
       openedAt: entry.createdAt,
       dueAt: dueAt,
-      expiresAt: entry.createdAt.add(HostAttendanceOutbox.deleteAfter),
+      // Local observations remain actionable until replayed or dismissed.
+      expiresAt: null,
     );
   }
 }

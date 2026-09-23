@@ -1,0 +1,78 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/program_hotels.schema.json",
+  "title": "ProgramHotelDocument",
+  "description": "Server-owned program accommodation property. Scopes hotel-desk duties, guest stays and transport destinations.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "programHotels",
+  "x-firestore-path": "programHotels/{hotelId}",
+  "x-document-id-field": "hotelId",
+  "x-owner": "program resource setup callables",
+  "required": [
+    "programId",
+    "organizerId",
+    "name",
+    "address",
+    "latitude",
+    "longitude",
+    "receptionContact",
+    "notes",
+    "active",
+    "createdAt",
+    "updatedAt",
+    "revision"
+  ],
+  "properties": {
+    "programId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "organizerId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 140
+    },
+    "address": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 300
+    },
+    "latitude": {
+      "$ref": "../shared/event_common.schema.json#/definitions/latitude"
+    },
+    "longitude": {
+      "$ref": "../shared/event_common.schema.json#/definitions/longitude"
+    },
+    "receptionContact": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 140
+    },
+    "notes": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 500
+    },
+    "active": {
+      "type": "boolean"
+    },
+    "createdAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+    },
+    "updatedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    }
+  }
+}

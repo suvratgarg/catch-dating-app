@@ -173,6 +173,10 @@ service cloud.firestore {
       return eventId + '__' + uid;
     }
 
+    function programStaffGrantDocId(programId, uid) {
+      return programId + '__' + uid;
+    }
+
     function hasActiveEventOperatorGrant(eventId, permission) {
       let grantId = eventStaffGrantDocId(eventId, request.auth.uid);
       return isAuthed()
@@ -1556,6 +1560,74 @@ service cloud.firestore {
         && resource.data.uid == request.auth.uid
         && grantId == eventStaffGrantDocId(resource.data.eventId, request.auth.uid);
       allow list, write: if false;
+    }
+
+    // Private wedding/corporate programs. Every document in this family is
+    // private operational data: no direct client list/read, all access goes
+    // through scoped callables that apply duty and field redaction.
+    match /organizerPrograms/{programId} {
+      allow read, write: if false;
+    }
+
+    match /programFunctions/{functionId} {
+      allow read, write: if false;
+    }
+
+    match /programGuests/{guestId} {
+      allow read, write: if false;
+    }
+
+    match /programHouseholds/{householdId} {
+      allow read, write: if false;
+    }
+
+    // Staff may read only their own grant so the restricted work shell can
+    // discover duties without a callable round-trip; grant ids are derived.
+    match /programStaffGrants/{grantId} {
+      allow get: if isAuthed()
+        && resource.data.uid == request.auth.uid
+        && grantId == programStaffGrantDocId(resource.data.programId, request.auth.uid);
+      allow list, write: if false;
+    }
+
+    match /programStaffInvites/{inviteId} {
+      allow read, write: if false;
+    }
+
+    match /programPickupPoints/{pickupPointId} {
+      allow read, write: if false;
+    }
+
+    match /programHotels/{hotelId} {
+      allow read, write: if false;
+    }
+
+    match /programTravelLegs/{legId} {
+      allow read, write: if false;
+    }
+
+    match /programTravelParties/{partyId} {
+      allow read, write: if false;
+    }
+
+    match /transportVendors/{vendorId} {
+      allow read, write: if false;
+    }
+
+    match /transportTrips/{tripId} {
+      allow read, write: if false;
+    }
+
+    match /transportActiveAssignments/{assignmentId} {
+      allow read, write: if false;
+    }
+
+    match /transportVehicleAssignments/{assignmentId} {
+      allow read, write: if false;
+    }
+
+    match /transportOperationReceipts/{receiptId} {
+      allow read, write: if false;
     }
 
     match /eventParticipations/{participationId} {

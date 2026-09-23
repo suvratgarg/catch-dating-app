@@ -1,0 +1,42 @@
+{
+  "organizerId": "org-1",
+  "programId": "program-1",
+  "uid": "greeter-1",
+  "displayName": "Priya",
+  "phoneLastFour": "3210",
+  "duties": [
+    {
+      "duty": "airportGreeter",
+      "pickupPointIds": [
+        "pickup-1"
+      ],
+      "hotelIds": [],
+      "expiresAtMillis": 1786711800000
+    },
+    {
+      "duty": "transportDispatcher",
+      "pickupPointIds": [
+        "pickup-1"
+      ],
+      "hotelIds": [],
+      "expiresAtMillis": 1786711800000
+    }
+  ],
+  "status": "active",
+  "createdBy": "host-1",
+  "createdAt": {
+    "_seconds": 1786625400,
+    "_nanoseconds": 0
+  },
+  "expiresAt": {
+    "_seconds": 1786711800,
+    "_nanoseconds": 0
+  },
+  "revokedBy": null,
+  "revokedAt": null,
+  "updatedAt": {
+    "_seconds": 1786625400,
+    "_nanoseconds": 0
+  },
+  "revision": 1
+}

@@ -51,12 +51,59 @@ class ExternalShareController {
     String? subject,
     String? text,
     Rect? origin,
+  }) => _shareFile(
+    bytes: Uint8List.fromList(utf8.encode(csv)),
+    mimeType: 'text/csv',
+    action: 'share csv file',
+    fileName: fileName,
+    subject: subject,
+    text: text,
+    origin: origin,
+  );
+
+  Future<void> shareJsonFile({
+    required String json,
+    required String fileName,
+    String? subject,
+    Rect? origin,
+  }) => _shareFile(
+    bytes: Uint8List.fromList(utf8.encode(json)),
+    mimeType: 'application/json',
+    action: 'share json file',
+    fileName: fileName,
+    subject: subject,
+    origin: origin,
+  );
+
+  Future<void> sharePngFile({
+    required Uint8List pngBytes,
+    required String fileName,
+    String? subject,
+    String? text,
+    Rect? origin,
+  }) => _shareFile(
+    bytes: pngBytes,
+    mimeType: 'image/png',
+    action: 'share png file',
+    fileName: fileName,
+    subject: subject,
+    text: text,
+    origin: origin,
+  );
+
+  Future<void> _shareFile({
+    required Uint8List bytes,
+    required String mimeType,
+    required String action,
+    required String fileName,
+    String? subject,
+    String? text,
+    Rect? origin,
   }) {
-    final bytes = Uint8List.fromList(utf8.encode(csv));
     final file = XFile.fromData(
       bytes,
       name: fileName,
-      mimeType: 'text/csv',
+      mimeType: mimeType,
       length: bytes.length,
     );
     return withBackendErrorContext(
@@ -70,41 +117,9 @@ class ExternalShareController {
           sharePositionOrigin: origin,
         ),
       ),
-      context: const BackendErrorContext(
+      context: BackendErrorContext(
         service: BackendService.external,
-        action: 'share csv file',
-        resource: 'share_sheet',
-      ),
-    );
-  }
-
-  Future<void> sharePngFile({
-    required Uint8List pngBytes,
-    required String fileName,
-    String? subject,
-    String? text,
-    Rect? origin,
-  }) {
-    final file = XFile.fromData(
-      pngBytes,
-      name: fileName,
-      mimeType: 'image/png',
-      length: pngBytes.length,
-    );
-    return withBackendErrorContext(
-      () => _share(
-        ShareParams(
-          text: text,
-          subject: subject,
-          title: fileName,
-          files: [file],
-          fileNameOverrides: [fileName],
-          sharePositionOrigin: origin,
-        ),
-      ),
-      context: const BackendErrorContext(
-        service: BackendService.external,
-        action: 'share png file',
+        action: action,
         resource: 'share_sheet',
       ),
     );

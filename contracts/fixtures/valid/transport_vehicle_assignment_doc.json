@@ -1,0 +1,13 @@
+{
+  "organizerId": "org-1",
+  "plateNormalized": "DL1T4471",
+  "programId": "program-1",
+  "tripId": "trip-1",
+  "status": "active",
+  "assignedAt": {
+    "_seconds": 1786629000,
+    "_nanoseconds": 0
+  },
+  "releasedAt": null,
+  "revision": 1
+}

@@ -22,6 +22,7 @@ export const materializedNonSecretParams = [
   "EVENT_ASSISTANCE_RCS_ENABLED",
   "EVENT_ASSISTANCE_RCS_WEBHOOK_ENABLED",
   "EVENT_ASSISTANCE_SMS_REPORTS_ENABLED",
+  "FLIGHT_WEBHOOK_BASE_URL",
 ];
 
 function option(name) {
@@ -71,6 +72,12 @@ function normalizedProviderParams(environment = process.env) {
       environment, "EVENT_ASSISTANCE_SMS_REPORTS_ENABLED"),
   };
 
+  const flightWebhookBaseUrl =
+    environment.FLIGHT_WEBHOOK_BASE_URL?.trim() ?? "";
+  assert(!flightWebhookBaseUrl || /^https:\/\/[^\s/?#]+/.test(
+    flightWebhookBaseUrl),
+  "FLIGHT_WEBHOOK_BASE_URL must be an https URL when configured");
+
   const params = {
     // Distinct names coexist with the SecretParams in immutable older packages.
     ALGOLIA_APPLICATION_ID: algoliaApplicationId,
@@ -82,6 +89,8 @@ function normalizedProviderParams(environment = process.env) {
     META_WHATSAPP_GRAPH_VERSION: graphVersion,
     META_WHATSAPP_ENABLED: enabled,
     ...eventAssistance,
+    // Empty lets the function derive the URL from GCLOUD_PROJECT.
+    FLIGHT_WEBHOOK_BASE_URL: flightWebhookBaseUrl || " ",
   };
   assert(
     Object.keys(params).join(",") === materializedNonSecretParams.join(","),
