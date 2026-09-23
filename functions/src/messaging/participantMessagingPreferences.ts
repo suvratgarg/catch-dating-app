@@ -186,8 +186,11 @@ export async function withdrawParticipantMessagingPermissionHandler(
   await deps.rateLimit(db, uid, "withdrawParticipantMessagingPermission");
   const scope = data.scope;
   const purpose = data.purpose ?? null;
-  const receiptId = "pmpr_" + createHash("sha256").update(JSON.stringify([
-    uid, scope, data.organizerId, purpose, data.requestId]))
+  const receiptIdentity = purpose ?
+    ["purpose-v1", uid, scope, data.organizerId, purpose, data.requestId] :
+    [uid, scope, data.organizerId, data.requestId];
+  const receiptId = "pmpr_" + createHash("sha256")
+    .update(JSON.stringify(receiptIdentity))
     .digest("hex").slice(0, 48);
   const preferenceRef = scope === "catch" ?
     db.collection("catchCommunicationPreferences").doc(uid) :

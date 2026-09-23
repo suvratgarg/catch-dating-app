@@ -7,6 +7,7 @@ import {
   createOrganizerFormAssetIntent,
   finalizeOrganizerFormAsset,
   getPublicOrganizerForm,
+  promoteFormCommunicationIntent,
   saveOrganizerFormResponseDraft,
   sendPublicFormEmailSignInLink,
   submitOrganizerFormResponse,
@@ -59,6 +60,9 @@ export function usePublicFormController(publicFormId: string) {
   const [receipt, setReceipt] = useState<PublicOrganizerFormReceipt | null>(
     () => storedReceipt(publicFormId)
   );
+  const receiptRef = useRef<PublicOrganizerFormReceipt | null>(receipt);
+  const promotingConsentRef = useRef(false);
+  const [verifyingConsent, setVerifyingConsent] = useState(false);
   const [answers, setAnswers] = useState<PublicFormAnswers>({});
   const [consentAccepted, setConsentAccepted] = useState(false);
   const [messagingChoices, setMessagingChoices] = useState<MessagingChoices>(uncheckedMessaging);
@@ -91,6 +95,7 @@ export function usePublicFormController(publicFormId: string) {
   const showPayment = useCallback(() => setStage("payment"), []);
   const acceptReceipt = useCallback((submitted: PublicOrganizerFormReceipt) => {
     if (formRef.current && submitted.formId !== formRef.current.formId) return;
+    receiptRef.current = submitted;
     setReceipt(submitted);
     persistReceipt(publicFormId, submitted, userRef.current?.uid ?? null);
     setStage(submitted.status === "withdrawn" ? "withdrawn" : "complete");
@@ -136,6 +141,7 @@ export function usePublicFormController(publicFormId: string) {
         if (!nextForm.definition.payment && savedReceipt?.formId === nextForm.formId &&
             savedReceipt.status === "submitted") {
           setReceipt(savedReceipt);
+          receiptRef.current = savedReceipt;
           setStage("complete");
           return;
         }
@@ -190,10 +196,17 @@ export function usePublicFormController(publicFormId: string) {
     setAnswers({});
     setUploads({});
     setReceipt(null);
+    receiptRef.current = null;
+    promotingConsentRef.current = false;
+    setVerifyingConsent(false);
     setStage("loading");
     setStatus({message: "", tone: ""});
     const unsubscribe = watchPublicFormAuthState((user) => {
       if (cancelled) return;
+      if (promotingConsentRef.current && receiptRef.current) {
+        userRef.current = user;
+        return;
+      }
       if (userRef.current?.uid !== user?.uid) {
         authGenerationRef.current++;
         startPromiseRef.current = null;
@@ -205,6 +218,7 @@ export function usePublicFormController(publicFormId: string) {
         draftRef.current = null;
         setDraft(null);
         setReceipt(null);
+        receiptRef.current = null;
         setAnswers({});
         setUploads({});
         answersRef.current = {};
@@ -228,6 +242,7 @@ export function usePublicFormController(publicFormId: string) {
             savedReceipt?.formId === loaded.formId &&
             savedReceipt.status === "submitted") {
           setReceipt(savedReceipt);
+          receiptRef.current = savedReceipt;
           setStage("complete");
           return;
         }
@@ -352,9 +367,23 @@ export function usePublicFormController(publicFormId: string) {
     const verification = verificationRef.current;
     if (!verification) return;
     await actionMutation.mutateAsync(async () => {
-      await verification.confirm(code);
+      const verifiedUser = await verification.confirm(code);
       verification.clear();
       verificationRef.current = null;
+      if (promotingConsentRef.current && receiptRef.current) {
+        try {
+          await promoteSelectedConsent(verifiedUser);
+        } catch (error) {
+          userRef.current = verifiedUser;
+          persistReceipt(publicFormId, receiptRef.current,
+            verifiedUser.uid);
+          promotingConsentRef.current = false;
+          setVerifyingConsent(false);
+          setStage("complete");
+          throw error;
+        }
+        return;
+      }
       if (formRef.current) await startDraft(formRef.current);
     }).catch(() => undefined);
   }
@@ -530,6 +559,44 @@ export function usePublicFormController(publicFormId: string) {
     }).catch(() => undefined);
   }
 
+  async function promoteSelectedConsent(verifiedUser: User) {
+    const submitted = receiptRef.current;
+    if (!submitted) return;
+    const result = await promoteFormCommunicationIntent({
+      responseId: submitted.responseId,
+      withdrawalToken: submitted.withdrawalToken,
+      requestId: requestId(),
+    });
+    persistReceipt(publicFormId, submitted, verifiedUser.uid);
+    userRef.current = verifiedUser;
+    promotingConsentRef.current = false;
+    setVerifyingConsent(false);
+    setStage("complete");
+    setStatus({tone: "", message: result.promotedPurposes.length > 0 ?
+      publicFormsCopy.messagingActivated : publicFormsCopy.messagingNoChange});
+  }
+
+  async function startConsentPromotion() {
+    if (!receiptRef.current ||
+        formRef.current?.messagingOffer?.termsVersion !== "form-whatsapp-v2") {
+      return;
+    }
+    const currentUser = userRef.current;
+    if (currentUser?.phoneNumber) {
+      try {
+        await actionMutation.mutateAsync(() =>
+          promoteSelectedConsent(currentUser));
+        return;
+      } catch {
+        // A signed-in number can differ from the one on this response.
+      }
+    }
+    promotingConsentRef.current = true;
+    setVerifyingConsent(true);
+    setStatus({tone: "", message: publicFormsCopy.messagingVerifyHelp});
+    setStage("identity");
+  }
+
   async function restartAfterPayment() {
     await actionMutation.mutateAsync(async () => {
       if (!await payments.restart()) return;
@@ -591,6 +658,7 @@ export function usePublicFormController(publicFormId: string) {
     setStage,
     stage,
     status,
+    startConsentPromotion,
     submit,
     updateAnswer,
     updateConsent,
@@ -599,6 +667,7 @@ export function usePublicFormController(publicFormId: string) {
     uploadInProgress,
     uploads,
     visibleSections,
+    verifyingConsent,
     withdraw,
   };
 }
