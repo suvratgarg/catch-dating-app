@@ -15,6 +15,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../test/programs/program_operations_fixture.dart';
+import '../../test/test_pump_helpers.dart';
 
 Widget _app(ProviderContainer container) => UncontrolledProviderScope(
   container: container,
@@ -64,7 +65,7 @@ void main() {
       );
       addTearDown(container.dispose);
       await tester.pumpWidget(_app(container));
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
       expect(
         find.text(
           'Some saved operations need recovery. Keep the app’s saved data and contact support.',
@@ -72,7 +73,7 @@ void main() {
         findsOneWidget,
       );
       await tester.tap(find.text('Recover saved work'));
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
       expect(find.text('Saved work recovery'), findsOneWidget);
       expect(shared, isEmpty);
       expect(find.textContaining('across all programs'), findsOneWidget);
@@ -81,13 +82,13 @@ void main() {
         matchesGoldenFile('program_screens/program_journal_recovery.png'),
       );
       await tester.tap(find.text('Export recovery file'));
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
       expect(shared, hasLength(1));
       expect(shared.single.origin, isNotNull);
       expect(find.text('Saved work recovery'), findsOneWidget);
       shareFails = false;
       await tester.tap(find.text('Export recovery file'));
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
       expect(shared, hasLength(2));
       final result = jsonDecode(shared.last.raw) as Map;
       expect(result['legacyRaw'], 'unparseable original record');
@@ -125,9 +126,9 @@ void main() {
       );
       addTearDown(container.dispose);
       await tester.pumpWidget(_app(container));
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
       await tester.tap(find.text('Recover saved work'));
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
       await tester.tap(find.text('Export recovery file'));
       await tester.pump();
       container.updateOverrides([
@@ -140,7 +141,7 @@ void main() {
       ]);
       await tester.pump();
       response.complete('{"private":"prior account"}');
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
       expect(shared, isFalse);
       expect(tester.takeException(), isNull);
     },
