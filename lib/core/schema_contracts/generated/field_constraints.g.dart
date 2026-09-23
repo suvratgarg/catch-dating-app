@@ -63560,6 +63560,72 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['unknown', 'emailVerified', 'phoneVerified', 'catchAccount'],
   );
 
+  static const getOrganizerContactDetailCallableResponseWhatsappPermissionPurposesEventOperationsDecisionAtMillis = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.whatsappPermission.purposes.eventOperations.decisionAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const getOrganizerContactDetailCallableResponseWhatsappPermissionPurposesEventOperationsDeliveryAvailable = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.whatsappPermission.purposes.eventOperations.deliveryAvailable',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const getOrganizerContactDetailCallableResponseWhatsappPermissionPurposesEventOperationsEvidenceStatus = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.whatsappPermission.purposes.eventOperations.evidenceStatus',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['complete', 'incomplete'],
+  );
+
+  static const getOrganizerContactDetailCallableResponseWhatsappPermissionPurposesEventOperationsReceiptId = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.whatsappPermission.purposes.eventOperations.receiptId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const getOrganizerContactDetailCallableResponseWhatsappPermissionPurposesEventOperationsStatus = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.whatsappPermission.purposes.eventOperations.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['unknown', 'optedIn', 'optedOut'],
+  );
+
+  static const getOrganizerContactDetailCallableResponseWhatsappPermissionPurposesMarketingDecisionAtMillis = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.whatsappPermission.purposes.marketing.decisionAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+  );
+
+  static const getOrganizerContactDetailCallableResponseWhatsappPermissionPurposesMarketingDeliveryAvailable = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.whatsappPermission.purposes.marketing.deliveryAvailable',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const getOrganizerContactDetailCallableResponseWhatsappPermissionPurposesMarketingEvidenceStatus = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.whatsappPermission.purposes.marketing.evidenceStatus',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['complete', 'incomplete'],
+  );
+
+  static const getOrganizerContactDetailCallableResponseWhatsappPermissionPurposesMarketingReceiptId = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.whatsappPermission.purposes.marketing.receiptId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const getOrganizerContactDetailCallableResponseWhatsappPermissionPurposesMarketingStatus = CatchContractFieldConstraints(
+    path: 'getOrganizerContactDetailCallableResponse.whatsappPermission.purposes.marketing.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['unknown', 'optedIn', 'optedOut'],
+  );
+
   static const getOrganizerContactDetailCallableResponseWhatsappPermissionReceiptId = CatchContractFieldConstraints(
     path: 'getOrganizerContactDetailCallableResponse.whatsappPermission.receiptId',
     maxLength: 180,
@@ -121418,6 +121484,16 @@ abstract final class CatchContractConstraints {
     'getOrganizerContactDetailCallableResponse.whatsappPermission.decisionAtMillis': getOrganizerContactDetailCallableResponseWhatsappPermissionDecisionAtMillis,
     'getOrganizerContactDetailCallableResponse.whatsappPermission.evidenceStatus': getOrganizerContactDetailCallableResponseWhatsappPermissionEvidenceStatus,
     'getOrganizerContactDetailCallableResponse.whatsappPermission.identityStrength': getOrganizerContactDetailCallableResponseWhatsappPermissionIdentityStrength,
+    'getOrganizerContactDetailCallableResponse.whatsappPermission.purposes.eventOperations.decisionAtMillis': getOrganizerContactDetailCallableResponseWhatsappPermissionPurposesEventOperationsDecisionAtMillis,
+    'getOrganizerContactDetailCallableResponse.whatsappPermission.purposes.eventOperations.deliveryAvailable': getOrganizerContactDetailCallableResponseWhatsappPermissionPurposesEventOperationsDeliveryAvailable,
+    'getOrganizerContactDetailCallableResponse.whatsappPermission.purposes.eventOperations.evidenceStatus': getOrganizerContactDetailCallableResponseWhatsappPermissionPurposesEventOperationsEvidenceStatus,
+    'getOrganizerContactDetailCallableResponse.whatsappPermission.purposes.eventOperations.receiptId': getOrganizerContactDetailCallableResponseWhatsappPermissionPurposesEventOperationsReceiptId,
+    'getOrganizerContactDetailCallableResponse.whatsappPermission.purposes.eventOperations.status': getOrganizerContactDetailCallableResponseWhatsappPermissionPurposesEventOperationsStatus,
+    'getOrganizerContactDetailCallableResponse.whatsappPermission.purposes.marketing.decisionAtMillis': getOrganizerContactDetailCallableResponseWhatsappPermissionPurposesMarketingDecisionAtMillis,
+    'getOrganizerContactDetailCallableResponse.whatsappPermission.purposes.marketing.deliveryAvailable': getOrganizerContactDetailCallableResponseWhatsappPermissionPurposesMarketingDeliveryAvailable,
+    'getOrganizerContactDetailCallableResponse.whatsappPermission.purposes.marketing.evidenceStatus': getOrganizerContactDetailCallableResponseWhatsappPermissionPurposesMarketingEvidenceStatus,
+    'getOrganizerContactDetailCallableResponse.whatsappPermission.purposes.marketing.receiptId': getOrganizerContactDetailCallableResponseWhatsappPermissionPurposesMarketingReceiptId,
+    'getOrganizerContactDetailCallableResponse.whatsappPermission.purposes.marketing.status': getOrganizerContactDetailCallableResponseWhatsappPermissionPurposesMarketingStatus,
     'getOrganizerContactDetailCallableResponse.whatsappPermission.receiptId': getOrganizerContactDetailCallableResponseWhatsappPermissionReceiptId,
     'getOrganizerContactDetailCallableResponse.whatsappPermission.source': getOrganizerContactDetailCallableResponseWhatsappPermissionSource,
     'getOrganizerContactDetailCallableResponse.whatsappPermission.sourceFormId': getOrganizerContactDetailCallableResponseWhatsappPermissionSourceFormId,

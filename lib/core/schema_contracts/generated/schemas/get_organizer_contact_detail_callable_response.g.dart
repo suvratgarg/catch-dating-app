@@ -220,6 +220,114 @@ const schemaGetOrganizerContactDetailCallableResponseSchema = <String, Object?>{
             'catchAccount',
           ],
         },
+        'purposes': <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'properties': <String, Object?>{
+            'eventOperations': <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'status',
+                'evidenceStatus',
+                'receiptId',
+                'decisionAtMillis',
+                'deliveryAvailable',
+              ],
+              'properties': <String, Object?>{
+                'status': <String, Object?>{
+                  'type': 'string',
+                  'enum': <Object?>[
+                    'unknown',
+                    'optedIn',
+                    'optedOut',
+                  ],
+                },
+                'evidenceStatus': <String, Object?>{
+                  'type': 'string',
+                  'enum': <Object?>[
+                    'complete',
+                    'incomplete',
+                  ],
+                },
+                'receiptId': <String, Object?>{
+                  'anyOf': <Object?>[
+                    <String, Object?>{
+                      'type': 'string',
+                      'minLength': 1,
+                      'maxLength': 180,
+                    },
+                    <String, Object?>{
+                      'type': 'null',
+                    },
+                  ],
+                },
+                'decisionAtMillis': <String, Object?>{
+                  'type': <Object?>[
+                    'integer',
+                    'null',
+                  ],
+                  'minimum': 0,
+                },
+                'deliveryAvailable': <String, Object?>{
+                  'type': 'boolean',
+                  'description': 'False for form-originated WhatsApp purposes pending provider review; consent can still be recorded.',
+                },
+              },
+            },
+            'marketing': <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'status',
+                'evidenceStatus',
+                'receiptId',
+                'decisionAtMillis',
+                'deliveryAvailable',
+              ],
+              'properties': <String, Object?>{
+                'status': <String, Object?>{
+                  'type': 'string',
+                  'enum': <Object?>[
+                    'unknown',
+                    'optedIn',
+                    'optedOut',
+                  ],
+                },
+                'evidenceStatus': <String, Object?>{
+                  'type': 'string',
+                  'enum': <Object?>[
+                    'complete',
+                    'incomplete',
+                  ],
+                },
+                'receiptId': <String, Object?>{
+                  'anyOf': <Object?>[
+                    <String, Object?>{
+                      'type': 'string',
+                      'minLength': 1,
+                      'maxLength': 180,
+                    },
+                    <String, Object?>{
+                      'type': 'null',
+                    },
+                  ],
+                },
+                'decisionAtMillis': <String, Object?>{
+                  'type': <Object?>[
+                    'integer',
+                    'null',
+                  ],
+                  'minimum': 0,
+                },
+                'deliveryAvailable': <String, Object?>{
+                  'type': 'boolean',
+                  'description': 'False for form-originated WhatsApp purposes pending provider review; consent can still be recorded.',
+                },
+              },
+            },
+          },
+        },
       },
     },
     'origins': <String, Object?>{
@@ -1436,6 +1544,165 @@ const schemaGetOrganizerContactDetailCallableResponseSchema = <String, Object?>{
             'phoneVerified',
             'catchAccount',
           ],
+        },
+        'purposes': <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'properties': <String, Object?>{
+            'eventOperations': <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'status',
+                'evidenceStatus',
+                'receiptId',
+                'decisionAtMillis',
+                'deliveryAvailable',
+              ],
+              'properties': <String, Object?>{
+                'status': <String, Object?>{
+                  'type': 'string',
+                  'enum': <Object?>[
+                    'unknown',
+                    'optedIn',
+                    'optedOut',
+                  ],
+                },
+                'evidenceStatus': <String, Object?>{
+                  'type': 'string',
+                  'enum': <Object?>[
+                    'complete',
+                    'incomplete',
+                  ],
+                },
+                'receiptId': <String, Object?>{
+                  'anyOf': <Object?>[
+                    <String, Object?>{
+                      'type': 'string',
+                      'minLength': 1,
+                      'maxLength': 180,
+                    },
+                    <String, Object?>{
+                      'type': 'null',
+                    },
+                  ],
+                },
+                'decisionAtMillis': <String, Object?>{
+                  'type': <Object?>[
+                    'integer',
+                    'null',
+                  ],
+                  'minimum': 0,
+                },
+                'deliveryAvailable': <String, Object?>{
+                  'type': 'boolean',
+                  'description': 'False for form-originated WhatsApp purposes pending provider review; consent can still be recorded.',
+                },
+              },
+            },
+            'marketing': <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'status',
+                'evidenceStatus',
+                'receiptId',
+                'decisionAtMillis',
+                'deliveryAvailable',
+              ],
+              'properties': <String, Object?>{
+                'status': <String, Object?>{
+                  'type': 'string',
+                  'enum': <Object?>[
+                    'unknown',
+                    'optedIn',
+                    'optedOut',
+                  ],
+                },
+                'evidenceStatus': <String, Object?>{
+                  'type': 'string',
+                  'enum': <Object?>[
+                    'complete',
+                    'incomplete',
+                  ],
+                },
+                'receiptId': <String, Object?>{
+                  'anyOf': <Object?>[
+                    <String, Object?>{
+                      'type': 'string',
+                      'minLength': 1,
+                      'maxLength': 180,
+                    },
+                    <String, Object?>{
+                      'type': 'null',
+                    },
+                  ],
+                },
+                'decisionAtMillis': <String, Object?>{
+                  'type': <Object?>[
+                    'integer',
+                    'null',
+                  ],
+                  'minimum': 0,
+                },
+                'deliveryAvailable': <String, Object?>{
+                  'type': 'boolean',
+                  'description': 'False for form-originated WhatsApp purposes pending provider review; consent can still be recorded.',
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    'purposePermission': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'status',
+        'evidenceStatus',
+        'receiptId',
+        'decisionAtMillis',
+        'deliveryAvailable',
+      ],
+      'properties': <String, Object?>{
+        'status': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'unknown',
+            'optedIn',
+            'optedOut',
+          ],
+        },
+        'evidenceStatus': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'complete',
+            'incomplete',
+          ],
+        },
+        'receiptId': <String, Object?>{
+          'anyOf': <Object?>[
+            <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
+            },
+            <String, Object?>{
+              'type': 'null',
+            },
+          ],
+        },
+        'decisionAtMillis': <String, Object?>{
+          'type': <Object?>[
+            'integer',
+            'null',
+          ],
+          'minimum': 0,
+        },
+        'deliveryAvailable': <String, Object?>{
+          'type': 'boolean',
+          'description': 'False for form-originated WhatsApp purposes pending provider review; consent can still be recorded.',
         },
       },
     },

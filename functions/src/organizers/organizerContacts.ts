@@ -1061,13 +1061,17 @@ async function contactWhatsappPermission(params: {
     const belongsToContact = evidence?.organizerId === params.organizerId &&
       evidence.uid === params.contact.linkedUid &&
       evidence.channel === "whatsapp";
-    const completeGrant = belongsToContact &&
+    const completeGrant = scoped.status === "optedIn" &&
+      scoped.evidenceStatus === "complete" && belongsToContact &&
       evidence?.decision === "optedIn" && evidence.purpose === purpose &&
       evidence.endpointE164 === scoped.endpointE164 &&
       evidence.sourceResponseId === scoped.sourceResponseId &&
+      evidence.source === scoped.source &&
+      evidence.termsVersion === scoped.termsVersion &&
       evidence.evidenceStatus === "complete" &&
       typeof evidence.consentCopyHash === "string" &&
       /^[a-f0-9]{64}$/u.test(evidence.consentCopyHash) &&
+      evidence.grantedAt !== null &&
       evidence.revokedAt === null;
     const broadStop = channel.status === "optedOut" &&
       channel.updatedAt && (!scoped.updatedAt ||
