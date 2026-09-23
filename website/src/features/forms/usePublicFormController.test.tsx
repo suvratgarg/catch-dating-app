@@ -1,3 +1,4 @@
+import {Blob as NodeBlob} from "node:buffer";
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import {act, renderHook, waitFor} from "@testing-library/react";
 import type {PropsWithChildren} from "react";
@@ -9,24 +10,28 @@ const submitOrganizerFormResponse = vi.hoisted(() => vi.fn());
 const getPublicOrganizerForm = vi.hoisted(() => vi.fn());
 const watchPublicFormAuthState = vi.hoisted(() => vi.fn());
 const findOrganizerFormPayment = vi.hoisted(() => vi.fn());
+const createOrganizerFormAssetIntent = vi.hoisted(() => vi.fn());
+const uploadOrganizerFormAsset = vi.hoisted(() => vi.fn());
+const finalizeOrganizerFormAsset = vi.hoisted(() => vi.fn());
 
 vi.mock("../../firebase", () => ({
   beginOrganizerFormResponse,
   beginPublicEventPhoneVerification: vi.fn(),
   completePublicFormEmailSignIn: vi.fn(),
-  createOrganizerFormAssetIntent: vi.fn(),
-  finalizeOrganizerFormAsset: vi.fn(),
+  createOrganizerFormAssetIntent,
+  finalizeOrganizerFormAsset,
   getPublicOrganizerForm,
   findOrganizerFormPayment,
   saveOrganizerFormResponseDraft,
   sendPublicFormEmailSignInLink: vi.fn(),
   submitOrganizerFormResponse,
-  uploadOrganizerFormAsset: vi.fn(),
+  uploadOrganizerFormAsset,
   watchPublicFormAuthState,
   withdrawOrganizerFormResponse: vi.fn(),
 }));
 
 import {usePublicFormController} from "./usePublicFormController";
+import type {PublicFormQuestion} from "./publicFormModel";
 
 beforeEach(() => {findOrganizerFormPayment.mockResolvedValue({payment: null});});
 afterEach(() => {vi.restoreAllMocks();});
@@ -186,6 +191,62 @@ describe("form consent and authenticated draft ownership", () => {
       .toEqual({termsVersion: "form-whatsapp-v1", organizerWhatsapp: false, catchWhatsapp: false});
   });
 
+  for (const step of ["intent", "upload", "finalize"] as const) {
+    for (const outcome of ["success", "failure"] as const) {
+      it(`ignores an old account's ${step} ${outcome} after switching identity`, async () => {
+        let authChanged!: (value: {uid: string}) => void;
+        watchPublicFormAuthState.mockImplementation((listener) => {
+          authChanged = listener; listener({uid: "person-1"}); return vi.fn();
+        });
+        const intent = {assetId: "old-private-photo", uploadToken: "old-upload"};
+        createOrganizerFormAssetIntent.mockResolvedValue(intent);
+        uploadOrganizerFormAsset.mockResolvedValue(undefined);
+        finalizeOrganizerFormAsset.mockResolvedValue(undefined);
+        const pendingStep = {intent: createOrganizerFormAssetIntent,
+          upload: uploadOrganizerFormAsset, finalize: finalizeOrganizerFormAsset}[step];
+        let finish!: (value?: unknown) => void;
+        let reject!: (error: Error) => void;
+        pendingStep.mockImplementationOnce(() => new Promise((resolve, fail) => {
+          finish = resolve; reject = fail;
+        }));
+        const {result} = renderHook(() => usePublicFormController("public-form-1"), {wrapper: wrapper()});
+        await waitFor(() => expect(result.current.stage).toBe("form"));
+        let uploading!: Promise<void>;
+        act(() => {
+          uploading = result.current.uploadAnswer(photoQuestion, [photoFile]);
+        });
+        await waitFor(() => expect(pendingStep).toHaveBeenCalledTimes(1));
+        beginOrganizerFormResponse.mockResolvedValue({...draft, draftId: "draft-2"});
+        act(() => authChanged({uid: "person-2"}));
+        await waitFor(() => expect(beginOrganizerFormResponse).toHaveBeenCalledTimes(2));
+        await act(async () => {
+          if (outcome === "success") finish(intent);
+          else reject(new Error("Old account upload failed"));
+          await uploading;
+        });
+        expect(result.current.answers).toEqual({});
+        expect(result.current.uploads).toEqual({});
+        expect(result.current.uploadInProgress).toBe(false);
+        expect(result.current.status.message).toBe("");
+        if (step === "intent") expect(uploadOrganizerFormAsset).not.toHaveBeenCalled();
+        if (step !== "finalize") expect(finalizeOrganizerFormAsset).not.toHaveBeenCalled();
+      });
+    }
+  }
+
+  it("keeps a successful upload on its original account's draft", async () => {
+    createOrganizerFormAssetIntent.mockResolvedValue({assetId: "photo-1", uploadToken: "upload-1"});
+    uploadOrganizerFormAsset.mockResolvedValue(undefined);
+    finalizeOrganizerFormAsset.mockResolvedValue(undefined);
+    const {result} = renderHook(() => usePublicFormController("public-form-1"), {wrapper: wrapper()});
+    await waitFor(() => expect(result.current.stage).toBe("form"));
+    await act(async () => {await result.current.uploadAnswer(photoQuestion, [photoFile]);});
+    expect(result.current.answers).toEqual({photo: ["photo-1"]});
+    expect(result.current.uploads.photo.status).toBe("ready");
+    expect(finalizeOrganizerFormAsset).toHaveBeenCalledWith({draftId: "draft-1",
+      draftToken: null, assetId: "photo-1", uploadToken: "upload-1"});
+  });
+
   it("an old identity's draft result cannot populate the next identity's form", async () => {
     let authChanged: (value: {uid: string}) => void = () => undefined;
     watchPublicFormAuthState.mockImplementation((listener) => {
@@ -211,3 +272,15 @@ const recoveredPayment = {paymentId: `fp_${"a".repeat(32)}`, status: "submitted"
     status: "submitted", submittedAtMillis: 1000, withdrawalToken: null,
     completion: {title: "Received", message: null, actionKind: "none",
       actionLabel: null, actionUrl: null}}};
+
+const photoQuestion: PublicFormQuestion = {
+  questionId: "photo", key: "photo", label: "Photo", helpText: null,
+  kind: "file", required: false, options: [], canonicalFieldId: null,
+  privacyClass: "organizerCustom", prefillPolicy: "never", hostPresentation: "detailOnly",
+  validation: {minLength: null, maxLength: null, minNumber: null, maxNumber: null,
+    earliestDate: null, latestDate: null, minSelections: null, maxSelections: null,
+    maxFileCount: 1, maxFileSizeBytes: null, allowedMimeTypes: ["image/png"],
+    patternPreset: null, customError: null},
+};
+const photoFile = {blob: new NodeBlob(["synthetic photo"], {type: "image/png"}) as Blob,
+  name: "photo.png"};

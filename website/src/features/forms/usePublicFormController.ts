@@ -179,6 +179,7 @@ export function usePublicFormController(publicFormId: string) {
     setForm(null);
     setDraft(null);
     setAnswers({});
+    setUploads({});
     setReceipt(null);
     setStage("loading");
     setStatus({message: "", tone: ""});
@@ -196,6 +197,7 @@ export function usePublicFormController(publicFormId: string) {
         setDraft(null);
         setReceipt(null);
         setAnswers({});
+        setUploads({});
         answersRef.current = {};
       }
       userRef.current = user;
@@ -388,6 +390,9 @@ export function usePublicFormController(publicFormId: string) {
   ) {
     const current = draftRef.current;
     if (!current || files.length === 0) return;
+    const generation = authGenerationRef.current;
+    const stillOwnsDraft = () => generation === authGenerationRef.current &&
+      draftRef.current?.draftId === current.draftId;
     const maximum = question.kind === "signature" ? 1 :
       question.validation.maxFileCount ?? 1;
     if (files.length > maximum) {
@@ -409,6 +414,7 @@ export function usePublicFormController(publicFormId: string) {
       const assetIds: string[] = [];
       for (const file of files) {
         const sha256 = await sha256Hex(file.blob);
+        if (!stillOwnsDraft()) return;
         const intent = await createOrganizerFormAssetIntent({
           draftId: current.draftId,
           draftToken: current.draftToken,
@@ -419,13 +425,16 @@ export function usePublicFormController(publicFormId: string) {
           sizeBytes: file.blob.size,
           sha256,
         });
+        if (!stillOwnsDraft()) return;
         await uploadOrganizerFormAsset(intent, file.blob);
+        if (!stillOwnsDraft()) return;
         await finalizeOrganizerFormAsset({
           draftId: current.draftId,
           draftToken: current.draftToken,
           assetId: intent.assetId,
           uploadToken: intent.uploadToken,
         });
+        if (!stillOwnsDraft()) return;
         assetIds.push(intent.assetId);
       }
       updateAnswer(
@@ -442,6 +451,7 @@ export function usePublicFormController(publicFormId: string) {
       }));
       setStatus({message: "", tone: ""});
     } catch (error) {
+      if (!stillOwnsDraft()) return;
       setUploads((value) => ({
         ...value,
         [question.questionId]: {
