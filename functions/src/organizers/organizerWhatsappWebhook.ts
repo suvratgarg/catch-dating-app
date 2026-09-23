@@ -14,6 +14,7 @@ import type {
 } from "../shared/generated/firestoreAdminTypes";
 import {
   inboundStopPermissionReceipt,
+  organizerCommunicationPermissionReceiptId,
   organizerCommunicationPreferenceId,
   unknownOrganizerCommunicationChannel,
 } from
@@ -477,6 +478,19 @@ async function optOutPreference(params: {
     const snap = await tx.get(ref);
     const existing = snap.data() as
       OrganizerCommunicationPreferenceDocument | undefined;
+    const receiptRef = params.db
+      .collection("organizerCommunicationPermissionReceipts")
+      .doc(organizerCommunicationPermissionReceiptId({
+        organizerId: params.organizerId,
+        uid: params.uid,
+        channel: "whatsapp",
+        decision: "optedOut",
+        source: "inboundStop",
+        sourceIdentity: params.providerEventId,
+      }));
+    // A provider replay is the original STOP, even if a newer, explicit
+    // purpose choice has since superseded it. Keep its original revokedAt.
+    if ((await tx.get(receiptRef)).exists) return;
     const stopAt = admin.firestore.Timestamp.fromMillis(Math.max(
       params.now.toMillis(),
       (existing?.whatsapp.updatedAt?.toMillis() ?? -1) + 1,
@@ -492,15 +506,7 @@ async function optOutPreference(params: {
       supersedesReceiptId: existing?.whatsapp.currentReceiptId ?? null,
       now: stopAt,
     });
-    const receiptRef = params.db
-      .collection("organizerCommunicationPermissionReceipts")
-      .doc(receipt.id);
-    const receiptSnap = await tx.get(receiptRef);
-    if (receiptSnap.exists &&
-        existing?.whatsapp.currentReceiptId !== receipt.id) {
-      return;
-    }
-    if (!receiptSnap.exists) tx.create(receiptRef, receipt.document);
+    tx.create(receiptRef, receipt.document);
     tx.set(ref, {
       organizerId: params.organizerId,
       uid: params.uid,
