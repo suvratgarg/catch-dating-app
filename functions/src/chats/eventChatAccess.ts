@@ -13,6 +13,7 @@ import {requireVerifiedParticipant} from "../profiles/claimFormProfile";
 import type {EventDocument, UserProfileDocument,
   EventParticipationDocument, EventAttendeeDocument,
   EventChatRoomDocument as Room, EventChatMembershipDocument as Membership,
+  EventChatProfileShareDocument as ProfileShare,
   EventChatAccessReceiptDocument as Receipt} from
   "../shared/generated/firestoreAdminTypes";
 import type {GetEventChatAccessCallableResponse as View} from
@@ -226,6 +227,24 @@ export async function updateEventChatAccessHandler(
       }
       assertRevision(member.revision, data.expectedRevision);
       revision = member.revision + 1;
+      if (data.action !== "leave") {
+        const shareRef = db.collection("eventChatProfileShares")
+          .doc(eventChatMembershipId(data.eventId, uid));
+        const shareSnap = await tx.get(shareRef);
+        if (shareSnap.exists) {
+          const share = requireDoc<ProfileShare>(shareSnap,
+            "EventChatProfileShareDocument");
+          const selectedRevision = share.selection?.membershipRevision;
+          // Mute is a setting within the same membership, not a new profile
+          // consent. Advance only a choice still valid before this change.
+          if (share.uid === uid && share.eventId === data.eventId &&
+              share.organizerId === member.organizerId &&
+              (selectedRevision === member.revision ||
+                (selectedRevision === 0 && member.revision === 1))) {
+            tx.update(shareRef, {"selection.membershipRevision": revision});
+          }
+        }
+      }
       tx.set(memberRef, {...member, revision,
         status: data.action === "leave" ? "left" : member.status,
         leftAt: data.action === "leave" ? now : member.leftAt,
