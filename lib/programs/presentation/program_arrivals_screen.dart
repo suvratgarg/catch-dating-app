@@ -333,11 +333,14 @@ class ProgramArrivalRow extends StatelessWidget {
 
   String _meta(BuildContext context) {
     final parts = <String>[
-      '${row.passengers} pax',
-      if (row.luggageUnits > 0) '${row.luggageUnits} bags',
+      context.l10n.programsArrivalsPassengerCount(count: row.passengers),
+      if (row.luggageUnits > 0)
+        context.l10n.programsArrivalsBagCount(count: row.luggageUnits),
       if (row.flightNumber != null) row.flightNumber!,
-      if (row.originIata != null) 'from ${row.originIata}',
-      if (row.arrivalTerminal != null) 'T${row.arrivalTerminal}',
+      if (row.originIata != null)
+        context.l10n.programsArrivalsOrigin(airport: row.originIata!),
+      if (row.arrivalTerminal != null)
+        context.l10n.programsArrivalsTerminal(terminal: row.arrivalTerminal!),
       row.curbLabel(context),
       row.destinationLabel,
     ];
@@ -456,13 +459,13 @@ class ProgramArrivalActionMenu extends StatelessWidget {
           ),
       ],
       onSelected: (action) {
-        final name = switch (action) {
+        final wireAction = switch (action) {
           ProgramArrivalActionKind.claim => 'claim',
           ProgramArrivalActionKind.unclaim => 'unclaim',
           ProgramArrivalActionKind.ready => 'markReady',
           ProgramArrivalActionKind.disrupted => 'markDisrupted',
         };
-        onAction(row, name);
+        onAction(row, wireAction);
       },
     );
   }

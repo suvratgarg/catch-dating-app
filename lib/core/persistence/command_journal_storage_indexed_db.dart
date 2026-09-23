@@ -13,6 +13,7 @@ class IndexedDbCommandJournalStorage implements CommandJournalStorage {
 
   static Future<IndexedDbCommandJournalStorage> open(
     IdbFactory factory, {
+    // copy:allow-inline(Stable IndexedDB database identifier, not visible copy)
     String name = 'catch_commands_v1',
   }) async => IndexedDbCommandJournalStorage(
     await factory.open(

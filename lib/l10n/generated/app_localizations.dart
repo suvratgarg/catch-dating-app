@@ -32725,6 +32725,30 @@ abstract class AppLocalizations {
     required int review,
   });
 
+  /// Compact passenger count in an airport arrival party row; pax means passengers.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} pax'**
+  String programsArrivalsPassengerCount({required int count});
+
+  /// Baggage count in an airport arrival party row.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{1 bag} other{{count} bags}}'**
+  String programsArrivalsBagCount({required int count});
+
+  /// Origin airport in an arrival party row; airport is an IATA code.
+  ///
+  /// In en, this message translates to:
+  /// **'from {airport}'**
+  String programsArrivalsOrigin({required String airport});
+
+  /// Compact arrival terminal label in an arrival party row.
+  ///
+  /// In en, this message translates to:
+  /// **'T{terminal}'**
+  String programsArrivalsTerminal({required String terminal});
+
   /// Program operations copy: programsArrivalsClaimedBy.
   ///
   /// In en, this message translates to:

@@ -20527,6 +20527,32 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String programsArrivalsPassengerCount({required int count}) {
+    return '$count pax';
+  }
+
+  @override
+  String programsArrivalsBagCount({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count bags',
+      one: '1 bag',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String programsArrivalsOrigin({required String airport}) {
+    return 'from $airport';
+  }
+
+  @override
+  String programsArrivalsTerminal({required String terminal}) {
+    return 'T$terminal';
+  }
+
+  @override
   String programsArrivalsClaimedBy({required Object name}) {
     return 'Claimed by $name';
   }

@@ -106,7 +106,7 @@ class ProgramWorkRepository {
     expectedRevision: expectedRevision,
     observedAt: observedAt,
     afterObservation: afterObservation,
-    label: 'claim the guest',
+    errorAction: 'claim the guest',
   );
 
   Future<ProgramMutationResult> unclaimLeg({
@@ -124,7 +124,7 @@ class ProgramWorkRepository {
     expectedRevision: expectedRevision,
     observedAt: observedAt,
     afterObservation: afterObservation,
-    label: 'release the claim',
+    errorAction: 'release the claim',
   );
 
   Future<ProgramMutationResult> markLegReady({
@@ -146,7 +146,7 @@ class ProgramWorkRepository {
     afterObservation: afterObservation,
     manualCurbAt: manualCurbAt,
     manualCurbNote: manualCurbNote,
-    label: 'mark the guest ready',
+    errorAction: 'mark the guest ready',
   );
 
   Future<ProgramMutationResult> markLegDisrupted({
@@ -168,7 +168,7 @@ class ProgramWorkRepository {
     afterObservation: afterObservation,
     manualCurbAt: manualCurbAt,
     manualCurbNote: manualCurbNote,
-    label: 'flag the disruption',
+    errorAction: 'flag the disruption',
   );
 
   Future<DispatchResult> dispatchTrip({
@@ -217,7 +217,7 @@ class ProgramWorkRepository {
     tripId: tripId,
     expectedRevision: expectedRevision,
     clientOperationId: clientOperationId,
-    label: 'mark the trip arrived',
+    errorAction: 'mark the trip arrived',
   );
 
   Future<ProgramMutationResult> voidTrip({
@@ -233,7 +233,7 @@ class ProgramWorkRepository {
     expectedRevision: expectedRevision,
     reason: reason,
     clientOperationId: clientOperationId,
-    label: 'void the trip',
+    errorAction: 'void the trip',
   );
 
   Future<ProgramHotelInbound> getHotelInbound({
@@ -299,7 +299,7 @@ class ProgramWorkRepository {
     required String legId,
     required String action,
     required String clientOperationId,
-    required String label,
+    required String errorAction,
     required int expectedRevision,
     required DateTime observedAt,
     TravelLegObservationReference? afterObservation,
@@ -318,7 +318,7 @@ class ProgramWorkRepository {
       manualCurbNote: manualCurbNote,
       clientOperationId: clientOperationId,
     ).toJson(),
-    action: label,
+    action: errorAction,
     parse: ProgramMutationResult.fromCallableData,
   );
 
@@ -328,7 +328,7 @@ class ProgramWorkRepository {
     required String tripId,
     required int expectedRevision,
     required String clientOperationId,
-    required String label,
+    required String errorAction,
     String? reason,
   }) => _call(
     name: name,
@@ -339,7 +339,7 @@ class ProgramWorkRepository {
       expectedRevision: expectedRevision,
       clientOperationId: clientOperationId,
     ).toJson(),
-    action: label,
+    action: errorAction,
     parse: ProgramMutationResult.fromCallableData,
   );
 
