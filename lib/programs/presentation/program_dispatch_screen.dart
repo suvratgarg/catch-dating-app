@@ -551,33 +551,26 @@ class _ProgramDispatchSheetState extends ConsumerState<ProgramDispatchSheet> {
               style: Theme.of(context).textTheme.bodySmall,
             ),
             gapH8,
-            Wrap(
-              spacing: CatchSpacing.s2,
-              runSpacing: CatchSpacing.s2,
-              children: [
-                for (
-                  var index = 0;
-                  index < widget.holdCandidates.length;
-                  index += 1
-                )
-                  CatchChoiceButton<int>(
-                    option: CatchOption(
-                      value: index,
-                      label: context.l10n.programsDispatchHoldOption(
-                        time: AppTimeFormatters.time(
-                          widget.holdCandidates[index].earliestCurbAt,
-                        ),
-                        passengers: widget.holdCandidates[index].passengers,
-                      ),
+            CatchChoiceInput<int>(
+              values: List.generate(
+                widget.holdCandidates.length,
+                (index) => index,
+              ),
+              itemLabelBuilder: (index) =>
+                  context.l10n.programsDispatchHoldOption(
+                    time: AppTimeFormatters.time(
+                      widget.holdCandidates[index].earliestCurbAt,
                     ),
-                    selected: _heldCandidates.contains(index),
-                    onTap: () => setState(() {
-                      if (!_heldCandidates.remove(index)) {
-                        _heldCandidates.add(index);
-                      }
-                    }),
+                    passengers: widget.holdCandidates[index].passengers,
                   ),
-              ],
+              selected: _heldCandidates,
+              mode: CatchChipMode.multiple,
+              allowEmptySelection: true,
+              onChanged: (selected) => setState(() {
+                _heldCandidates
+                  ..clear()
+                  ..addAll(selected);
+              }),
             ),
           ],
           gapH16,
@@ -591,17 +584,17 @@ class _ProgramDispatchSheetState extends ConsumerState<ProgramDispatchSheet> {
             onChanged: (_) => setState(() {}),
           ),
           gapH16,
-          Wrap(
-            spacing: CatchSpacing.s2,
-            runSpacing: CatchSpacing.s2,
-            children: [
+          CatchChoiceInput<String>(
+            values: [for (final entry in classes) entry.id],
+            itemLabelBuilder: (id) =>
+                classes.firstWhere((entry) => entry.id == id).label,
+            selected: {
               for (final entry in classes)
-                CatchChoiceButton<ProgramVehicleClass>(
-                  option: CatchOption(value: entry, label: entry.label),
-                  selected: _vehicleClassId == entry.id,
-                  onTap: () => setState(() => _vehicleClassId = entry.id),
-                ),
-            ],
+                if (entry.id == _vehicleClassId) entry.id,
+            },
+            mode: CatchChipMode.single,
+            onChanged: (selected) =>
+                setState(() => _vehicleClassId = selected.single),
           ),
 
           gapH16,
@@ -616,21 +609,18 @@ class _ProgramDispatchSheetState extends ConsumerState<ProgramDispatchSheet> {
                   label: context.l10n.programsDispatchNoVendors,
                 );
               }
-              return Wrap(
-                spacing: CatchSpacing.s2,
-                runSpacing: CatchSpacing.s2,
-                children: [
+              return CatchChoiceInput<String>(
+                values: [for (final vendor in active) vendor.vendorId],
+                itemLabelBuilder: (id) =>
+                    active.firstWhere((vendor) => vendor.vendorId == id).name,
+                selected: {
                   for (final vendor in active)
-                    CatchChoiceButton<ProgramVendorOption>(
-                      option: CatchOption(value: vendor, label: vendor.name),
-                      selected: _vendorId == vendor.vendorId,
-                      onTap: () => setState(
-                        () => _vendorId = _vendorId == vendor.vendorId
-                            ? null
-                            : vendor.vendorId,
-                      ),
-                    ),
-                ],
+                    if (vendor.vendorId == _vendorId) vendor.vendorId,
+                },
+                mode: CatchChipMode.single,
+                allowEmptySelection: true,
+                onChanged: (selected) =>
+                    setState(() => _vendorId = selected.firstOrNull),
               );
             },
             loading: CatchLoadingIndicator.new,

@@ -11,10 +11,12 @@ import 'package:catch_dating_app/programs/data/program_work_repository.dart';
 import 'package:catch_dating_app/programs/domain/program_models.dart';
 import 'package:catch_dating_app/programs/presentation/program_dispatch_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../test/programs/program_operations_fixture.dart';
+import '../../test/test_pump_helpers.dart';
 
 void main() {
   for (final change in ['deadline', 'authority']) {
@@ -49,7 +51,16 @@ void main() {
             programTransportVendorsProvider(
               'org-1',
               'program-1',
-            ).overrideWithValue(const AsyncData([])),
+            ).overrideWithValue(
+              const AsyncData([
+                ProgramVendorOption(
+                  vendorId: 'vendor-1',
+                  name: 'Demo fleet',
+                  active: true,
+                  boundToProgram: true,
+                ),
+              ]),
+            ),
             programArrivalsRosterViewProvider(
               'program-1',
               'pickup-1',
@@ -96,19 +107,86 @@ void main() {
                   dispatchBy: null,
                   waitOverdue: false,
                 ),
-                holdCandidates: const [],
-                vehicleClasses: const [],
+                holdCandidates: [
+                  TransportGroupSuggestion(
+                    legIds: const ['held-leg'],
+                    partyIds: const [],
+                    destinationHotelId: 'hotel-1',
+                    destinationLabel: 'Demo Hotel',
+                    readiness: TransportGroupReadiness.expected,
+                    vehicleClassId: 'sedan',
+                    vehicleClassLabel: 'Sedan',
+                    passengers: 2,
+                    luggageUnits: 1,
+                    earliestCurbAt: DateTime(2026, 9, 23, 12),
+                    latestCurbAt: DateTime(2026, 9, 23, 12),
+                    dispatchBy: null,
+                    waitOverdue: false,
+                  ),
+                ],
+                vehicleClasses: const [
+                  ProgramVehicleClass(
+                    id: 'sedan',
+                    label: 'Sedan',
+                    passengerCapacity: 3,
+                    luggageCapacity: 3,
+                    capabilities: {},
+                    sortOrder: 0,
+                  ),
+                  ProgramVehicleClass(
+                    id: 'van',
+                    label: 'Van',
+                    passengerCapacity: 6,
+                    luggageCapacity: 6,
+                    capabilities: {},
+                    sortOrder: 1,
+                  ),
+                ],
                 onDispatched: (_, _) => accepted = true,
               ),
             ),
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
+      final hold = find.byType(CatchChoiceInput<int>);
+      final holdLabel = tester
+          .widget<CatchChoiceInput<int>>(hold)
+          .itemLabelBuilder(0);
+      await tester.tap(find.text(holdLabel));
+      await pumpFeatureUi(tester);
+      expect(tester.widget<CatchChoiceInput<int>>(hold).selected, {0});
+      await tester.tap(find.text(holdLabel));
+      await pumpFeatureUi(tester);
+      expect(tester.widget<CatchChoiceInput<int>>(hold).selected, isEmpty);
+      await tester.tap(find.text('Van'));
+      await pumpFeatureUi(tester);
+      await tester.tap(find.text('Demo fleet'));
+      await pumpFeatureUi(tester);
+      await tester.tap(find.text('Demo fleet'));
+      await pumpFeatureUi(tester);
+      expect(
+        tester
+            .widgetList<CatchChoiceInput<String>>(
+              find.byType(CatchChoiceInput<String>),
+            )
+            .last
+            .selected,
+        isEmpty,
+      );
+      await tester.tap(find.text('Demo fleet'));
+      await pumpFeatureUi(tester);
       await tester.enterText(find.byType(EditableText), 'DL 1 A 1234');
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
+      if (change == 'deadline') {
+        await expectLater(
+          find.byType(MaterialApp),
+          matchesGoldenFile('program_screens/program_dispatch_choices.png'),
+        );
+      }
+      await tester.ensureVisible(find.text('Dispatch now'));
       await tester.tap(find.text('Dispatch now'));
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
       expect(accepted, isFalse);
       expect(find.byType(ProgramDispatchSheet), findsOneWidget);
       expect(find.text('DL 1 A 1234'), findsOneWidget);
@@ -122,16 +200,20 @@ void main() {
         (await journal.load('acct')).single.status,
         ProgramOperationOutboxStatus.needsReview,
       );
+      final saved = (await journal.load('acct')).single;
+      expect(saved.payload['vehicleClassId'], 'van');
+      expect(saved.payload['vendorId'], 'vendor-1');
+      expect(saved.payload['legIds'], ['leg-1']);
       final calls = mutator.calls.length;
       if (change == 'deadline') {
         now = expiry;
-        await tester.pump(const Duration(seconds: 10));
+        await pumpFeatureUiFor(tester, const Duration(seconds: 10));
       } else {
         await tester.runAsync(
           () => snapshots.clearProgram('acct', 'program-1'),
         );
       }
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
       expect(find.text('DL 1 A 1234'), findsNothing);
       expect(find.textContaining('Demo Hotel'), findsNothing);
       expect(find.text('Dispatch now'), findsNothing);
