@@ -101,6 +101,13 @@
       ],
       "rewrites": [
         {
+          "source": "/api/form-domain",
+          "function": {
+            "functionId": "resolvePublicFormDomain",
+            "region": "asia-south1"
+          }
+        },
+        {
           "source": "/api/join-waitlist",
           "function": {
             "functionId": "joinWaitlist",

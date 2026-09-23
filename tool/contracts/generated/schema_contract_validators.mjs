@@ -253,6 +253,7 @@ import {
   organizerApplicationFormDocumentSchema,
   organizerApplicationFormVersionDocumentSchema,
   organizerFormDocumentSchema,
+  organizerFormDomainDocumentSchema,
   organizerPaymentConnectionDocumentSchema,
   organizerPaymentOauthStateDocumentSchema,
   organizerFormPaymentDocumentSchema,
@@ -612,6 +613,8 @@ import {
   getOrganizerCrmSummaryCallableResponseSchema,
   listOrganizerContactsCallablePayloadSchema,
   createOrganizerFormCallablePayloadSchema,
+  manageOrganizerFormDomainCallablePayloadSchema,
+  manageOrganizerFormDomainCallableResponseSchema,
   createOrganizerFormCallableResponseSchema,
   updateOrganizerFormDraftCallablePayloadSchema,
   updateOrganizerFormDraftCallableResponseSchema,
@@ -1087,6 +1090,7 @@ export const validateOrganizerProviderConnectionDocument = ajv.compile(organizer
 export const validateOrganizerApplicationFormDocument = ajv.compile(organizerApplicationFormDocumentSchema);
 export const validateOrganizerApplicationFormVersionDocument = ajv.compile(organizerApplicationFormVersionDocumentSchema);
 export const validateOrganizerFormDocument = ajv.compile(organizerFormDocumentSchema);
+export const validateOrganizerFormDomainDocument = ajv.compile(organizerFormDomainDocumentSchema);
 export const validateOrganizerPaymentConnectionDocument = ajv.compile(organizerPaymentConnectionDocumentSchema);
 export const validateOrganizerPaymentOauthStateDocument = ajv.compile(organizerPaymentOauthStateDocumentSchema);
 export const validateOrganizerFormPaymentDocument = ajv.compile(organizerFormPaymentDocumentSchema);
@@ -1446,6 +1450,8 @@ export const validateGetEventRosterInsightsCallableResponse = ajv.compile(getEve
 export const validateGetOrganizerCrmSummaryCallableResponse = ajv.compile(getOrganizerCrmSummaryCallableResponseSchema);
 export const validateListOrganizerContactsCallablePayload = ajv.compile(listOrganizerContactsCallablePayloadSchema);
 export const validateCreateOrganizerFormCallablePayload = ajv.compile(createOrganizerFormCallablePayloadSchema);
+export const validateManageOrganizerFormDomainCallablePayload = ajv.compile(manageOrganizerFormDomainCallablePayloadSchema);
+export const validateManageOrganizerFormDomainCallableResponse = ajv.compile(manageOrganizerFormDomainCallableResponseSchema);
 export const validateCreateOrganizerFormCallableResponse = ajv.compile(createOrganizerFormCallableResponseSchema);
 export const validateUpdateOrganizerFormDraftCallablePayload = ajv.compile(updateOrganizerFormDraftCallablePayloadSchema);
 export const validateUpdateOrganizerFormDraftCallableResponse = ajv.compile(updateOrganizerFormDraftCallableResponseSchema);

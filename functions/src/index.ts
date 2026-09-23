@@ -252,6 +252,10 @@ export {
   submitOrganizerFormResponse,
   withdrawOrganizerFormResponse,
 } from "./organizers/organizerFormResponses";
+export {resolvePublicFormDomain} from
+  "./organizers/organizerFormDomainHttp";
+export {manageOrganizerFormDomain} from
+  "./organizers/organizerFormDomainCallables";
 export {
   getOrganizerFormAnalytics,
   getOrganizerFormResponseDetail,

@@ -1330,6 +1330,11 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/organizerFormDocument.ts",
   },
   {
+    name: "OrganizerFormDomainDocument",
+    source: "firestore/organizer_form_domains.schema.json",
+    typeOutput: "functions/src/shared/generated/organizerFormDomainDocument.ts",
+  },
+  {
     name: "OrganizerPaymentConnectionDocument",
     source: "firestore/organizer_payment_connections.schema.json",
     typeOutput: "functions/src/shared/generated/organizerPaymentConnectionDocument.ts",
@@ -3624,6 +3629,19 @@ const schemaSpecs = [
     source: "callables/create_organizer_form_payload.schema.json",
     typeOutput:
       "functions/src/shared/generated/createOrganizerFormCallablePayload.ts",
+  },
+  {
+    name: "ManageOrganizerFormDomainCallablePayload",
+    source: "callables/manage_organizer_form_domain_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/manageOrganizerFormDomainCallablePayload.ts",
+  },
+  {
+    name: "ManageOrganizerFormDomainCallableResponse",
+    source:
+      "callable_responses/manage_organizer_form_domain_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/manageOrganizerFormDomainCallableResponse.ts",
   },
   {
     name: "CreateOrganizerFormCallableResponse",
