@@ -76,6 +76,49 @@ describe("public form choices", () => {
   });
 });
 
+describe("embedded public form resize", () => {
+  it("sends dimensions only as the form grows and shrinks", () => {
+    const postMessage = vi.fn();
+    const originalParent = window.parent;
+    const originalReferrer = Object.getOwnPropertyDescriptor(document, "referrer");
+    const originalResizeObserver = globalThis.ResizeObserver;
+    const originalRect = HTMLElement.prototype.getBoundingClientRect;
+    let notify: (() => void) | undefined;
+    let height = 780;
+    try {
+      Object.defineProperty(window, "parent", {value: {postMessage}, configurable: true});
+      Object.defineProperty(document, "referrer", {value: "https://client.example/apply",
+        configurable: true});
+      window.history.replaceState({}, "", "/f/public-form-1/?embed=1&embedId=frame_1");
+      globalThis.ResizeObserver = class {
+        constructor(callback: ResizeObserverCallback) { notify = () => callback([], this); }
+        observe() {}
+        disconnect() {}
+        unobserve() {}
+      };
+      HTMLElement.prototype.getBoundingClientRect = () => ({height} as DOMRect);
+      usePublicFormController.mockReturnValue({embed: true, stage: "loading",
+        form: null, status: {message: "", tone: ""}});
+      render(<MemoryRouter><PublicFormPage /></MemoryRouter>);
+      expect(postMessage).toHaveBeenCalledWith({
+        type: "catch:form:resize", version: 1, embedId: "frame_1", height: 780,
+      }, "https://client.example");
+      height = 420;
+      notify?.();
+      expect(postMessage).toHaveBeenLastCalledWith({
+        type: "catch:form:resize", version: 1, embedId: "frame_1", height: 420,
+      }, "https://client.example");
+      expect(JSON.stringify(postMessage.mock.calls)).not.toMatch(/answer|draftToken|sourceToken/u);
+    } finally {
+      Object.defineProperty(window, "parent", {value: originalParent, configurable: true});
+      if (originalReferrer) Object.defineProperty(document, "referrer", originalReferrer);
+      globalThis.ResizeObserver = originalResizeObserver;
+      HTMLElement.prototype.getBoundingClientRect = originalRect;
+      window.history.replaceState({}, "", "/");
+    }
+  });
+});
+
 describe("public form payment", () => {
   it("offers recovery on a closed form without implying a new submission", () => {
     const recoverPayment = vi.fn();
