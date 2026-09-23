@@ -357,40 +357,6 @@ Widget paymentReferralBannerStates(BuildContext context) {
           child: PaymentReferralBanner(onShare: widgetbookNoop),
         ),
       ),
-      WidgetbookPageStateCard(
-        label: 'provider wired',
-        child: WidgetbookPaymentScope(
-          child: IgnorePointer(
-            child: PaymentReferralBannerController(
-              event: widgetbookUtilityEvent,
-            ),
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Referral banner controller',
-  type: PaymentReferralBannerController,
-  path: '[P3 utility surfaces]/Payment confirmation',
-)
-Widget paymentReferralBannerControllerStates(BuildContext context) {
-  return WidgetbookPageCatalogFrame(
-    title: 'PaymentReferralBannerController',
-    contractId: 'component.payments.referral_banner.controller',
-    children: [
-      WidgetbookPageStateCard(
-        label: 'provider wired',
-        child: WidgetbookPaymentScope(
-          child: IgnorePointer(
-            child: PaymentReferralBannerController(
-              event: widgetbookUtilityEvent,
-            ),
-          ),
-        ),
-      ),
     ],
   );
 }

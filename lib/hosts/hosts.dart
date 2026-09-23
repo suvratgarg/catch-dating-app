@@ -52,7 +52,7 @@ export 'presentation/payments/host_payment_account_card.dart'; // public-api: sh
 export 'presentation/payments/host_payment_account_controller.dart'; // public-api: command seam for route-owned actions
 export 'presentation/validators.dart'; // public-api: presentation value/helper API used across feature boundaries
 export 'presentation/widgets/catch_roster_board.dart'; // public-api: shared presentation component used outside this feature
-export 'presentation/widgets/host_club_tools.dart'; // public-api: shared presentation component used outside this feature
+// public-api: shared presentation component used outside this feature
 export 'presentation/widgets/host_event_attendance_panel.dart'; // public-api: shared presentation component used outside this feature
 export 'presentation/widgets/host_event_tools.dart'; // public-api: shared presentation component used outside this feature
 export 'presentation/widgets/host_loading_skeletons.dart'; // public-api: shared presentation component used outside this feature

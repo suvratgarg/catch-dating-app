@@ -14,53 +14,6 @@ import 'fixtures.dart';
 import 'preview.dart';
 
 @widgetbook.UseCase(
-  name: 'Direct text entry states',
-  type: ProfileDirectTextEntryField,
-  path: '[P1 product surfaces]/Profiles/Inline Editors',
-)
-Widget profileDirectTextEntryFieldStates(BuildContext context) {
-  return WidgetbookProfileProfileCatalog(
-    title: 'ProfileDirectTextEntryField',
-    contractId: 'screen.profile.inline.direct_text_entry',
-    children: [
-      WidgetbookProfileStateCard(
-        label: 'editable and legal identity rows',
-        child: WidgetbookProfileSectionFrame(
-          height: WidgetbookPreviewLayout.profileMediumPreviewHeight,
-          child: Column(
-            children: [
-              ProfileDirectTextEntryField(
-                icon: CatchIcons.personOutlined,
-                label: 'Display name',
-                contract:
-                    CatchContractConstraints.updateUserProfilePatchDisplayName,
-                currentValue: 'Neha',
-                currentFieldValue: 'Neha',
-                fieldName: 'displayName',
-                patchForValue: (value) =>
-                    UpdateUserProfilePatch(displayName: value as String),
-              ),
-              CatchField.read(
-                copy: catchFieldCopy(context.l10n),
-                icon: CatchIcons.cakeOutlined,
-                title: 'Date of birth',
-                body: '16/07/1994 (31 years)',
-              ),
-              CatchField.read(
-                copy: catchFieldCopy(context.l10n),
-                icon: CatchIcons.groupOutlined,
-                title: 'Gender',
-                body: 'Woman',
-              ),
-            ],
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
   name: 'Inline prompt editor states',
   type: ProfileInlinePromptEntryEditor,
   path: '[P1 product surfaces]/Profiles/Inline Editors',

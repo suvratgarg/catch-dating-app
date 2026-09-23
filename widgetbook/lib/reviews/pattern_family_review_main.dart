@@ -292,8 +292,6 @@ class _BadgeStatusFamily extends StatelessWidget {
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
               CatchPrivacyBadge(copy: catchPrivacyBadgeCopy(context.l10n)),
-              ClubHostRoleBadge(role: ClubHostRole.owner),
-              EventSuccessMetricPill(label: 'Pacing', value: .78),
               CatchStatusRow(
                 label: 'Unsaved changes',
                 tone: CatchStatusRowTone.warning,
@@ -546,9 +544,6 @@ class _ProgressCueFamily extends StatelessWidget {
       (label: 'Watch', icon: CatchIcons.visibilityOutlined),
       (label: 'Move', icon: CatchIcons.boltRounded),
     ];
-    final steps = EventSuccessPlaybookLibrary.socialRun.runOfShow
-        .take(3)
-        .toList();
     return _FamilySection(
       id: 'progress-cues · P1–P3',
       title: 'Compact progress cues',
@@ -578,23 +573,6 @@ class _ProgressCueFamily extends StatelessWidget {
           child: SizedBox(
             width: WidgetbookPreviewLayout.standardContractWidth,
             child: EventSuccessCountdownStepper(items: items, currentIndex: 2),
-          ),
-        ),
-        _PreviewCard(
-          title: 'Expanded sibling',
-          note:
-              'Rows consume the same typed state without sharing rail layout.',
-          child: Column(
-            children: [
-              for (final entry in steps.indexed)
-                LiveStepRow(
-                  step: entry.$2,
-                  state: EventSuccessProgressStatus.fromPosition(
-                    index: entry.$1,
-                    currentIndex: 1,
-                  ),
-                ),
-            ],
           ),
         ),
       ],

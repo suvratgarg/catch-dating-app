@@ -23,35 +23,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 export 'package:catch_dating_app/user_profile/presentation/widgets/profile_tab_skeleton.dart';
 
-class ProfileTab extends ConsumerWidget {
-  const ProfileTab({
-    super.key,
-    required this.user,
-    required this.uploadState,
-    this.physics,
-  });
-
-  static const scrollViewKey = ValueKey('profile-tab-scroll-view');
-
-  final UserProfile user;
-  final PhotoUploadState uploadState;
-  final ScrollPhysics? physics;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return ProfileTabContent(
-      user: user,
-      uploadState: uploadState,
-      builder: (context, children) => ListView(
-        key: scrollViewKey,
-        physics: physics,
-        padding: CatchInsets.pageBody.copyWith(left: 0, right: 0),
-        children: children,
-      ),
-    );
-  }
-}
-
 class ProfileTabSliverBody extends ConsumerWidget {
   const ProfileTabSliverBody({
     super.key,

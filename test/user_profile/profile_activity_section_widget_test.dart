@@ -40,9 +40,14 @@ void main() {
                   child: child!,
                 ),
                 home: Scaffold(
-                  body: ProfileTab(
+                  body: ProfileTabContent(
                     user: buildUser(name: 'Sara Demo'),
                     uploadState: const PhotoUploadState(),
+                    builder: (context, children) => ListView(
+                      key: const ValueKey('profile-tab-scroll-view'),
+                      padding: CatchInsets.pageBody.copyWith(left: 0, right: 0),
+                      children: children,
+                    ),
                   ),
                 ),
               ),
@@ -57,7 +62,7 @@ void main() {
         );
         await tester.dragUntilVisible(
           activity,
-          find.byKey(ProfileTab.scrollViewKey),
+          find.byKey(const ValueKey('profile-tab-scroll-view')),
           const Offset(0, -300),
         );
         await tester.ensureVisible(activity);

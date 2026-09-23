@@ -44,32 +44,6 @@ part 'host_roster_filter_header.dart';
 
 enum HostEventParticipantsMode { setup, live, report }
 
-class HostEventAttendancePanel extends StatelessWidget {
-  const HostEventAttendancePanel({
-    super.key,
-    required this.eventId,
-    this.scrollable = false,
-    this.showSummaryHeader = true,
-    this.initialSearchQuery = '',
-  });
-
-  final String eventId;
-  final bool scrollable;
-  final bool showSummaryHeader;
-  final String initialSearchQuery;
-
-  @override
-  Widget build(BuildContext context) {
-    return HostEventParticipantsPanel(
-      eventId: eventId,
-      mode: HostEventParticipantsMode.live,
-      scrollable: scrollable,
-      showSummaryHeader: showSummaryHeader,
-      initialSearchQuery: initialSearchQuery,
-    );
-  }
-}
-
 class HostEventParticipantsPanel extends ConsumerStatefulWidget {
   const HostEventParticipantsPanel({
     super.key,

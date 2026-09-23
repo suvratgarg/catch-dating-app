@@ -36,32 +36,6 @@ Widget clubAvatarRailStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Discover list states',
-  type: ClubDiscoverList,
-  path: '[Club Discovery]/Sections',
-)
-Widget clubDiscoverListStates(BuildContext context) {
-  return WidgetbookScrollCatalogFrame(
-    title: 'ClubDiscoverList',
-    catalogId: 'section.club.discover_list',
-    children: [
-      WidgetbookPageStateCard(
-        label: 'directory sliver',
-        child: WidgetbookClubSliverFrame(
-          height: WidgetbookPreviewLayout.profilePhonePreviewHeight,
-          slivers: [
-            ClubDiscoverList(
-              clubs: [widgetbookClubClub, widgetbookClubMinimalClub],
-              joinedClubIds: {widgetbookClubClub.id},
-            ),
-          ],
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
   name: 'Index row states',
   type: ClubIndexRow,
   path: '[Club Discovery]/Cards',

@@ -138,7 +138,7 @@ Widget hostTeamAddHostSheetStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Host action confirmation dialogs',
-  type: HostTeamHostActionDialog,
+  type: HostTeamHostActionConfirmation,
   path: '[P1 product surfaces]/Host operations/Sections',
 )
 Widget hostTeamHostActionDialogStates(BuildContext context) {
@@ -239,14 +239,17 @@ class _HostTeamHostActionDialogPreview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final host = HostOperationsFixtures.primaryClub.hostProfiles[1];
+    final confirmation = HostTeamHostActionConfirmation(
+      action: action,
+      host: host,
+    );
 
     return Scaffold(
       body: Center(
-        child: HostTeamHostActionDialog(
-          confirmation: HostTeamHostActionConfirmation(
-            action: action,
-            host: host,
-          ),
+        child: CatchDialog<bool>.confirmation(
+          title: confirmation.title(context.l10n),
+          message: confirmation.message(context.l10n),
+          actions: confirmation.actions(context.l10n),
         ),
       ),
     );

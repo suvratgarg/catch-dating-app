@@ -1,5 +1,4 @@
 import 'package:catch_dating_app/swipes/shared/profile_surface/catch_profile_view.dart';
-import 'package:catch_dating_app/swipes/shared/profile_surface/profile_info_chip.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_surface.dart';
 import 'package:catch_dating_app/swipes/shared/profile_surface/profile_view.dart';
 import 'package:catch_tokens/catch_tokens.dart';
@@ -230,43 +229,6 @@ Widget profileSurfaceRuleStates(BuildContext context) {
         child: WidgetbookCatchesSectionFrame(
           height: WidgetbookPreviewLayout.skeletonListItemHeight,
           child: ProfileSurfaceRule(),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Profile info chip states',
-  type: ProfileInfoChip,
-  path: '[P1 product surfaces]/Catches/Sections',
-)
-Widget profileInfoChipStates(BuildContext context) {
-  return WidgetbookPageCatalogFrame(
-    title: 'ProfileInfoChip',
-    contractId: 'screen.catches.profile.info_chip',
-    children: [
-      WidgetbookPageStateCard(
-        label: 'short and long labels',
-        child: WidgetbookCatchesSectionFrame(
-          height: WidgetbookPreviewLayout.insetPreviewHeight,
-          child: Padding(
-            padding: CatchInsets.content,
-            child: Wrap(
-              spacing: CatchSpacing.s2,
-              runSpacing: CatchSpacing.s2,
-              children: [
-                ProfileInfoChip(
-                  icon: CatchIcons.locationOnOutlined,
-                  text: 'Bandra',
-                ),
-                ProfileInfoChip(
-                  icon: CatchIcons.directionsRunOutlined,
-                  text: 'Long run person who likes morning miles',
-                ),
-              ],
-            ),
-          ),
         ),
       ),
     ],

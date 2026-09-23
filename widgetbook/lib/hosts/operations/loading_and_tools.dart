@@ -2,7 +2,6 @@ import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
 import 'package:catch_dating_app/hosts/domain/host_attendance_window.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/catch_roster_board.dart';
-import 'package:catch_dating_app/hosts/presentation/widgets/host_club_tools.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_event_tools.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeletons.dart';
 import 'package:catch_tokens/catch_tokens.dart';
@@ -43,11 +42,6 @@ Widget hostLoadingStatesCatalog(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Roster primitive states',
-  type: CatchRosterTileCell,
-  path: '[P1 product surfaces]/Host operations/Components',
-)
-@widgetbook.UseCase(
-  name: 'Roster primitive states',
   type: CatchRosterActionCell,
   path: '[P1 product surfaces]/Host operations/Components',
 )
@@ -61,28 +55,6 @@ Widget hostRosterPrimitiveCatalogStates(BuildContext context) {
     title: 'Catch roster primitives',
     contractId: 'component.host.roster_primitives',
     children: [
-      WidgetbookPageStateCard(
-        label: 'filter tiles',
-        child: CatchRosterTiles(
-          selected: 'booked',
-          onSelect: (_) {},
-          items: const [
-            CatchRosterTile(id: 'all', value: '42', label: 'All'),
-            CatchRosterTile(
-              id: 'booked',
-              value: '30',
-              label: 'Booked',
-              tone: CatchBadgeTone.success,
-            ),
-            CatchRosterTile(
-              id: 'waitlist',
-              value: '12',
-              label: 'Wait',
-              tone: CatchBadgeTone.warning,
-            ),
-          ],
-        ),
-      ),
       WidgetbookPageStateCard(
         label: 'decision row',
         child: CatchRosterTable(
@@ -108,93 +80,6 @@ Widget hostRosterPrimitiveCatalogStates(BuildContext context) {
             ),
           ],
         ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Tool card states',
-  type: HostClubManagementPanel,
-  path: '[P1 product surfaces]/Host operations/Components',
-)
-@widgetbook.UseCase(
-  name: 'Tool card states',
-  type: HostStatChip,
-  path: '[P1 product surfaces]/Host operations/Components',
-)
-@widgetbook.UseCase(
-  name: 'Tool card states',
-  type: HostEventToolsCarousel,
-  path: '[P1 product surfaces]/Host operations/Components',
-)
-@widgetbook.UseCase(
-  name: 'Tool card states',
-  type: HostEventToolsPageIndicator,
-  path: '[P1 product surfaces]/Host operations/Components',
-)
-@widgetbook.UseCase(
-  name: 'Tool card states',
-  type: HostEventToolCard,
-  path: '[P1 product surfaces]/Host operations/Components',
-)
-Widget hostToolCardCatalogStates(BuildContext context) {
-  final tools = [
-    HostEventToolItem(
-      event: HostOperationsFixtures.upcomingEvent,
-      attendanceState: HostEventAttendanceState.open,
-    ),
-    HostEventToolItem(
-      event: HostOperationsFixtures.privateEvent,
-      attendanceState: HostEventAttendanceState.closed,
-    ),
-  ];
-  return WidgetbookPageCatalogFrame(
-    title: 'Host tool cards',
-    contractId: 'component.host.tool_cards',
-    children: [
-      WidgetbookPageStateCard(
-        label: 'club management panel',
-        child: HostClubManagementPanel(
-          club: widgetbookClub,
-          events:
-              HostOperationsFixtures.eventsByClub[widgetbookClub.id] ??
-              const [],
-          onEditClub: () {},
-          onCreateEvent: () {},
-        ),
-      ),
-      WidgetbookPageStateCard(
-        label: 'stat chip',
-        child: HostStatChip(
-          label: 'Booked',
-          value: '30',
-          icon: CatchIcons.checkCircleOutlineRounded,
-        ),
-      ),
-      WidgetbookPageStateCard(
-        label: 'event tools carousel',
-        child: HostEventToolsCarousel(
-          tools: tools,
-          onManageEvent: (_) {},
-          onTakeAttendance: (_) {},
-          onViewReport: (_) {},
-        ),
-      ),
-      WidgetbookPageStateCard(
-        label: 'event tool card',
-        child: HostEventToolCard(
-          item: tools.first,
-          cardIndex: 0,
-          cardCount: tools.length,
-          onManageEvent: (_) {},
-          onTakeAttendance: (_) {},
-          onViewReport: (_) {},
-        ),
-      ),
-      const WidgetbookPageStateCard(
-        label: 'page indicator',
-        child: HostEventToolsPageIndicator(selectedIndex: 0, itemCount: 2),
       ),
     ],
   );

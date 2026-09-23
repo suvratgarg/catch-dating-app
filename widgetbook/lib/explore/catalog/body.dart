@@ -1,7 +1,7 @@
+import 'package:catch_dating_app/explore/presentation/widgets/explore_events_section.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_providers.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_body.dart';
-import 'package:catch_dating_app/explore/presentation/widgets/explore_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
@@ -14,7 +14,7 @@ import 'scope.dart';
 
 @widgetbook.UseCase(
   name: 'Body sliver states',
-  type: ExploreList,
+  type: ExploreFeedContentSliver,
   path: '[Explore]/Sections',
 )
 Widget exploreBodyStates(BuildContext context) {
@@ -27,97 +27,6 @@ Widget exploreBodyStates(BuildContext context) {
         child: WidgetbookExploreSliverFrame(
           child: WidgetbookExploreScope(
             child: const _ExploreBodySliverPreview(),
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'List sliver states',
-  type: ExploreList,
-  path: '[Explore]/Sections',
-)
-Widget exploreListStates(BuildContext context) {
-  return WidgetbookScrollCatalogFrame(
-    title: 'ExploreList',
-    catalogId: 'section.explore.list',
-    children: [
-      WidgetbookPageStateCard(
-        label: 'provider-backed list',
-        child: WidgetbookExploreSliverFrame(
-          child: WidgetbookExploreScope(
-            child: CustomScrollView(slivers: [ExploreList()]),
-          ),
-        ),
-      ),
-      WidgetbookPageStateCard(
-        label: 'empty search',
-        child: WidgetbookExploreSliverFrame(
-          height: WidgetbookPreviewLayout.sliverPreviewHeight,
-          child: WidgetbookExploreScope(
-            searchQuery: 'silent supper cycling crew',
-            viewModel: const AsyncData(
-              ExploreViewModel(joinedClubs: [], allClubs: []),
-            ),
-            child: CustomScrollView(slivers: [ExploreList()]),
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'List empty state',
-  type: ExploreListEmptyState,
-  path: '[Explore]/Sections',
-)
-Widget exploreListEmptyStateStates(BuildContext context) {
-  return WidgetbookScrollCatalogFrame(
-    title: 'ExploreListEmptyState',
-    catalogId: 'section.explore.list.empty_state',
-    children: [
-      WidgetbookPageStateCard(
-        label: 'city empty',
-        child: WidgetbookExploreDeviceFrame(
-          height: WidgetbookPreviewLayout.profileSectionPreviewHeight,
-          child: WidgetbookExploreScope(
-            child: const ExploreListEmptyState(
-              cityLabel: 'Mumbai',
-              hasSearch: false,
-              filters: ExploreFilterSelection(),
-            ),
-          ),
-        ),
-      ),
-      WidgetbookPageStateCard(
-        label: 'search empty',
-        child: WidgetbookExploreDeviceFrame(
-          height: WidgetbookPreviewLayout.profileSectionPreviewHeight,
-          child: WidgetbookExploreScope(
-            child: const ExploreListEmptyState(
-              cityLabel: 'Mumbai',
-              hasSearch: true,
-              filters: ExploreFilterSelection(),
-            ),
-          ),
-        ),
-      ),
-      WidgetbookPageStateCard(
-        label: 'search and filters empty',
-        child: WidgetbookExploreDeviceFrame(
-          height: WidgetbookPreviewLayout.profileSectionPreviewHeight,
-          child: WidgetbookExploreScope(
-            child: const ExploreListEmptyState(
-              cityLabel: 'Mumbai',
-              hasSearch: true,
-              filters: ExploreFilterSelection(
-                distanceFilter: ExploreDistanceFilter.threeKm,
-                activityTag: 'dinner',
-              ),
-            ),
           ),
         ),
       ),

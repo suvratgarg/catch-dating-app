@@ -1,5 +1,4 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
-import 'package:catch_dating_app/core/widgets/catch_activity_art.dart';
 import 'package:catch_dating_app/core/widgets/catch_activity_map_pin.dart';
 import 'package:catch_dating_app/core/widgets/catch_event_activity_cards.dart';
 import 'package:catch_dating_app/core/widgets/catch_event_thumbnail.dart';
@@ -331,11 +330,7 @@ class _GradeSample extends StatelessWidget {
     final child = Stack(
       fit: StackFit.expand,
       children: [
-        CatchActivityArt(
-          activityKind: ActivityKind.dinner,
-          height: WidgetbookPreviewLayout.compactPanelHeight,
-          radius: 0,
-        ),
+        ColoredBox(color: CatchTokens.of(context).primary),
         Align(
           alignment: Alignment.bottomLeft,
           child: Padding(

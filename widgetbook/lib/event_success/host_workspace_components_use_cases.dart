@@ -10,7 +10,6 @@ import 'package:catch_dating_app/event_success/presentation/host_report/event_su
 import 'package:catch_dating_app/event_success/presentation/host_report/event_success_report_quality_section.dart';
 import 'package:catch_dating_app/event_success/presentation/host_setup/event_success_host_setup_page_body.dart';
 import 'package:catch_dating_app/event_success/presentation/host_setup/event_success_readiness_field.dart';
-import 'package:catch_dating_app/event_success/presentation/host_setup/event_success_setup_notice_banner.dart';
 import 'package:catch_dating_app/event_success/presentation/host_setup/event_success_target_attendees_field.dart';
 import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -113,24 +112,6 @@ Widget eventSuccessStrictReadinessIssues(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Ready',
-  type: EventSuccessSetupNoticeBanner,
-  path: '[P1 product surfaces]/Event Success/Host workspace components',
-)
-Widget eventSuccessStrictNoticeCard(BuildContext context) =>
-    WidgetbookCatalogFrame(
-      title: 'EventSuccessSetupNoticeBanner',
-      catalogId: 'Event Success Host workspace',
-      children: [
-        EventSuccessSetupNoticeBanner(
-          icon: CatchIcons.infoOutlineRounded,
-          title: 'Setup notice',
-          body: 'Check the guide before the event begins.',
-        ),
-      ],
-    );
-
-@widgetbook.UseCase(
-  name: 'Ready',
   type: EventSuccessHostReportPageBody,
   path: '[P1 product surfaces]/Event Success/Host workspace components',
 )
@@ -198,9 +179,10 @@ Widget eventSuccessStrictHostFunnelSummary(BuildContext context) =>
   type: EventSuccessHostSectionLoadingPageBody,
   path: '[P1 product surfaces]/Event Success/Host workspace components',
 )
-Widget eventSuccessStrictEventSuccessHostSectionLoadingPageBody(BuildContext context) =>
-    WidgetbookCatalogFrame(
-      title: 'EventSuccessHostSectionLoadingPageBody',
-      catalogId: 'Event Success Host workspace',
-      children: [const EventSuccessHostSectionLoadingPageBody()],
-    );
+Widget eventSuccessStrictEventSuccessHostSectionLoadingPageBody(
+  BuildContext context,
+) => WidgetbookCatalogFrame(
+  title: 'EventSuccessHostSectionLoadingPageBody',
+  catalogId: 'Event Success Host workspace',
+  children: [const EventSuccessHostSectionLoadingPageBody()],
+);
