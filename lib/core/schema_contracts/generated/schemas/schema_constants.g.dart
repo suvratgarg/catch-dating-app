@@ -608,6 +608,8 @@ export 'prepare_event_success_rotation_draft_callable_payload.g.dart';
 export 'prepare_organizer_form_payment_callable_payload.g.dart';
 export 'prepare_organizer_form_payment_callable_response.g.dart';
 export 'prepare_organizer_manual_send_task_callable_payload.g.dart';
+export 'preview_event_assignment_features_callable_payload.g.dart';
+export 'preview_event_assignment_features_callable_response.g.dart';
 export 'preview_organizer_application_import_callable_payload.g.dart';
 export 'preview_organizer_application_import_callable_response.g.dart';
 export 'preview_organizer_form_conversion_callable_payload.g.dart';

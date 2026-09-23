@@ -3,6 +3,7 @@ import * as admin from "firebase-admin";
 import {HttpsError, onCall, type CallableRequest} from
   "firebase-functions/v2/https";
 import type {EventDocument, EventSuccessPlanDocument,
+  OrganizerFormDocument as Form,
   OrganizerFormResponseDocument as Response,
   OrganizerFormVersionDocument as Version,
   EventAssignmentFeatureConsentDocument as Consent} from
@@ -14,6 +15,12 @@ import type {
   ConfigureEventAssignmentFeaturesCallableResponse as ConfigResult} from
   "../shared/generated/configureEventAssignmentFeaturesCallableResponse";
 import type {
+  PreviewEventAssignmentFeaturesCallablePayload as PreviewInput} from
+  "../shared/generated/previewEventAssignmentFeaturesCallablePayload";
+import type {
+  PreviewEventAssignmentFeaturesCallableResponse as PreviewResult} from
+  "../shared/generated/previewEventAssignmentFeaturesCallableResponse";
+import type {
   SetEventAssignmentFeatureConsentCallablePayload as ConsentInput} from
   "../shared/generated/setEventAssignmentFeatureConsentCallablePayload";
 import type {
@@ -21,6 +28,8 @@ import type {
   "../shared/generated/setEventAssignmentFeatureConsentCallableResponse";
 import {validateConfigureEventAssignmentFeaturesCallablePayload} from
   "../shared/generated/validators/configureEventAssignmentFeaturesInput";
+import {validatePreviewEventAssignmentFeaturesCallablePayload} from
+  "../shared/generated/validators/previewEventAssignmentFeaturesInput";
 import {validateSetEventAssignmentFeatureConsentCallablePayload} from
   "../shared/generated/validators/setEventAssignmentFeatureConsentInput";
 import {requireAuth} from "../shared/auth";
@@ -29,9 +38,11 @@ import {eventOrganizerRef, isEventOrganizerManager,
   requireEventOrganizer} from "../shared/eventOrganizers";
 import {checkRateLimit} from "../shared/rateLimit";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
-import {loadEventSuccessRosterParticipant} from "./eventSuccessRoster";
+import {loadEventSuccessRoster,
+  loadEventSuccessRosterParticipant} from "./eventSuccessRoster";
 import {assignmentFeatureConsentId, assignmentFeatureRuleMatchesVersion,
   authorizedAssignmentFeatureSnapshot,
+  loadAuthorizedAssignmentFeatures,
   readAssignmentFeatureConsent} from "./assignmentFeatureConsent";
 import {type AssignmentFeatureRule,
   validateAssignmentFeatureRules} from "./assignmentFeatureScoring";
@@ -45,6 +56,108 @@ const defaults: Deps = {db: () => admin.firestore(),
   now: () => admin.firestore.Timestamp.now(), rateLimit: checkRateLimit};
 const hash = (text: string) => createHash("sha256").update(text)
   .digest("hex");
+
+/** Manager preview returns source catalog and aggregate coverage, never answers. */
+export async function previewEventAssignmentFeaturesHandler(
+  request: CallableRequest<unknown>, deps: Deps = defaults
+): Promise<PreviewResult> {
+  const uid = requireAuth(request);
+  const data = validateCallableWithAjv<PreviewInput>(request,
+    validatePreviewEventAssignmentFeaturesCallablePayload);
+  const rules = validateAssignmentFeatureRules(data.rules as
+    AssignmentFeatureRule[]);
+  const db = deps.db();
+  await deps.rateLimit(db, uid, "previewEventAssignmentFeatures");
+  const [eventSnap, planSnap] = await Promise.all([
+    db.collection("events").doc(data.eventId).get(),
+    db.collection("eventSuccessPlans").doc(data.eventId).get(),
+  ]);
+  if (!eventSnap.exists || !planSnap.exists) throw unavailable();
+  const event = requireDoc<EventDocument>(eventSnap, "EventDocument");
+  const plan = requireDoc<EventSuccessPlanDocument>(planSnap,
+    "EventSuccessPlanDocument");
+  const organizerSnap = await eventOrganizerRef(db, event).get();
+  const organizer = requireEventOrganizer(organizerSnap, event);
+  if (!isEventOrganizerManager(organizer, event, uid)) throw unavailable();
+  if (plan.eventId !== data.eventId || plan.clubId !== event.clubId ||
+      event.status === "cancelled" ||
+      plan.structureConfig?.topology === "sequence") {
+    throw new HttpsError("failed-precondition",
+      "Structured matching preview is unavailable for this event.");
+  }
+  const organizerId = event.organizerId ?? event.clubId;
+  const formIds = [...new Set([...(data.sourceFormIds ?? []),
+    ...rules.map((rule) => rule.formId)])];
+  if (formIds.length > 8) throw unavailable();
+  const formSnaps = await Promise.all(formIds.map((id) =>
+    db.collection("organizerForms").doc(id).get()));
+  const forms = new Map(formSnaps.filter((snap) => snap.exists)
+    .map((snap) => [snap.id, requireDoc<Form>(snap,
+      "OrganizerFormDocument")]));
+  if (formIds.some((id) => forms.get(id)?.organizerId !== organizerId)) {
+    throw unavailable();
+  }
+  const versionIds = [...new Set([...forms.values()]
+    .map((form) => form.activeVersionId).filter((id): id is string =>
+      typeof id === "string")
+    .concat(rules.map((rule) => rule.versionId)))];
+  if (versionIds.length > 8) throw unavailable();
+  const versionSnaps = await Promise.all(versionIds.map((id) =>
+    db.collection("organizerFormVersions").doc(id).get()));
+  const versions = new Map(versionSnaps.filter((snap) => snap.exists)
+    .map((snap) => [snap.id, requireDoc<Version>(snap,
+      "OrganizerFormVersionDocument")]));
+  if (rules.some((rule) => {
+    const version = versions.get(rule.versionId);
+    return !version || !assignmentFeatureRuleMatchesVersion(rule,
+      rule.versionId, version, organizerId);
+  })) {
+    throw new HttpsError("failed-precondition",
+      "A matching rule no longer maps to a published custom question.");
+  }
+  const sources: PreviewResult["sources"] = [];
+  for (const [formId, form] of forms) {
+    for (const [versionId, version] of versions) {
+      if (version.formId !== formId ||
+          version.organizerId !== organizerId) continue;
+      const questions = version.definition.sections.flatMap((section) =>
+        section.questions).filter((question) =>
+        question.privacyClass === "organizerCustom" &&
+        ["singleChoice", "multiChoice", "number"].includes(question.kind) &&
+        question.options.length <= 40).map((question) => ({
+        questionId: question.questionId, label: question.label,
+        kind: question.kind as "singleChoice" | "multiChoice" | "number",
+        options: question.options.map((option) => ({
+          optionId: option.optionId, label: option.label,
+        })),
+      }));
+      if (questions.length > 100) throw unavailable();
+      sources.push({formId, formTitle: form.title, versionId,
+        isActiveVersion: form.activeVersionId === versionId, questions});
+    }
+  }
+  if (sources.length > 8) throw unavailable();
+  const roster = await loadEventSuccessRoster(db, data.eventId);
+  const eligibleUids = roster.filter((item) => item.status === "signedUp" ||
+    item.status === "attended").map((item) => item.uid);
+  if (eligibleUids.length > 1000) {
+    throw new HttpsError("failed-precondition",
+      "Structured matching preview supports up to 1000 roster members.");
+  }
+  const snapshots = await loadAuthorizedAssignmentFeatures({db,
+    eventId: data.eventId, organizerId, eligibleUids, rules});
+  const rows = rules.map((rule) => {
+    const grantedCount = snapshots.filter((snapshot) =>
+      snapshot.featureId === rule.featureId).length;
+    return {featureId: rule.featureId, kind: rule.kind, mode: rule.mode,
+      weight: rule.weight, grantedCount,
+      missingCount: eligibleUids.length - grantedCount};
+  });
+  return {eventId: data.eventId,
+    revision: plan.assignmentFeatureRevision ?? 0,
+    rosterCount: eligibleUids.length,
+    coverageBasis: "currentEventRoster", sources, rows};
+}
 
 /** Host config validates source lineage and changes no participant grant. */
 export async function configureEventAssignmentFeaturesHandler(
@@ -231,6 +344,10 @@ export const configureEventAssignmentFeatures = onCall(
   appCheckCallableOptionsWithLimits({timeoutSeconds: 30,
     maxInstances: 20}),
   (request) => configureEventAssignmentFeaturesHandler(request));
+export const previewEventAssignmentFeatures = onCall(
+  appCheckCallableOptionsWithLimits({timeoutSeconds: 30,
+    maxInstances: 20}),
+  (request) => previewEventAssignmentFeaturesHandler(request));
 export const setEventAssignmentFeatureConsent = onCall(
   appCheckCallableOptionsWithLimits({timeoutSeconds: 30,
     maxInstances: 20}),

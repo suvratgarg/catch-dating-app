@@ -1,11 +1,14 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {HttpsError} from "firebase-functions/v2/https";
+import {validatePreviewEventAssignmentFeaturesCallableResponse} from
+  "../shared/generated/validators/previewEventAssignmentFeaturesOutput";
 import {AudienceTestStore} from
   "../organizers/organizerAudienceTestStore";
 import {assignmentFeatureConsentId} from
   "./assignmentFeatureConsent";
 import {configureEventAssignmentFeaturesHandler,
+  previewEventAssignmentFeaturesHandler,
   setEventAssignmentFeatureConsentHandler} from
   "./assignmentFeatureActions";
 
@@ -26,8 +29,12 @@ function fixture() {
     "organizerFormVersions/version-1": {organizerId: "org-1",
       formId: "form-1", publishedAt: stamp,
       definition: {sections: [{questions: [{questionId: "question-1",
+        label: "Favorite activity",
         privacyClass: "organizerCustom", kind: "singleChoice",
-        options: [{optionId: "option-1", value: "answer-1"}]}]}]}},
+        options: [{optionId: "option-1", label: "Hiking",
+          value: "answer-1"}]}]}]}},
+    "organizerForms/form-1": {organizerId: "org-1",
+      title: "Event choices", activeVersionId: "version-1"},
     "eventParticipations/event-1_user-1": {eventId: "event-1",
       uid: "user-1", status: "signedUp"},
     "organizerFormResponses/response-1": {organizerId: "org-1",
@@ -94,3 +101,39 @@ test("mismatched endpoint cannot grant matching answer use", async () => {
     assignmentFeatureConsentId("event-1", "user-1", "feature-1")}`],
   undefined);
 });
+
+test("preview uses exact published catalog and returns aggregate coverage",
+  async () => {
+    const {docs, deps} = fixture();
+    const request = {auth: {uid: "host-1"},
+      data: {eventId: "event-1", sourceFormIds: ["form-1"],
+        rules: [rule]}};
+    const before = await previewEventAssignmentFeaturesHandler(
+      request as never, deps as never);
+    assert.equal(validatePreviewEventAssignmentFeaturesCallableResponse(
+      before), true);
+    assert.equal(before.rosterCount, 1);
+    assert.deepEqual(before.rows[0], {featureId: "feature-1",
+      kind: "category", mode: "preferSimilar", weight: 5,
+      grantedCount: 0, missingCount: 1});
+    assert.equal(before.sources[0].versionId, "version-1");
+    assert.deepEqual(before.sources[0].questions[0].options,
+      [{optionId: "option-1", label: "Hiking"}]);
+    assert.equal(JSON.stringify(before).includes("answer-1"), false);
+
+    const consentPath = `eventAssignmentFeatureConsents/${
+      assignmentFeatureConsentId("event-1", "user-1", "feature-1")}`;
+    docs[consentPath] = {eventId: "event-1", organizerId: "org-1",
+      uid: "user-1", responseId: "response-1", featureId: "feature-1",
+      formId: "form-1", versionId: "version-1",
+      questionId: "question-1", transformVersion: 1,
+      purpose: "eventAssignmentMatching", status: "granted",
+      receiptId: "receipt-1", revision: 1, lastRequestId: "grant-1",
+      createdAt: stamp, updatedAt: stamp};
+    const after = await previewEventAssignmentFeaturesHandler(
+      request as never, deps as never);
+    assert.equal(after.rows[0].grantedCount, 1);
+    assert.equal(after.rows[0].missingCount, 0);
+    assert.equal(JSON.stringify(after).includes("answer-1"), false);
+    assert.equal(JSON.stringify(after).includes("user-1"), false);
+  });

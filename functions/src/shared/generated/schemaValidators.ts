@@ -233,6 +233,8 @@ export {validateSetEventAssignmentFeatureConsentCallablePayload} from "./validat
 export {validateSetEventAssignmentFeatureConsentCallableResponse} from "./validators/setEventAssignmentFeatureConsentOutput";
 export {validateConfigureEventAssignmentFeaturesCallablePayload} from "./validators/configureEventAssignmentFeaturesInput";
 export {validateConfigureEventAssignmentFeaturesCallableResponse} from "./validators/configureEventAssignmentFeaturesOutput";
+export {validatePreviewEventAssignmentFeaturesCallablePayload} from "./validators/previewEventAssignmentFeaturesInput";
+export {validatePreviewEventAssignmentFeaturesCallableResponse} from "./validators/previewEventAssignmentFeaturesOutput";
 export {validateListParticipantMessagingPreferencesCallablePayload} from "./validators/listParticipantMessagingPreferencesInput";
 export {validateListParticipantMessagingPreferencesCallableResponse} from "./validators/listParticipantMessagingPreferencesOutput";
 export {validateWithdrawParticipantMessagingPermissionCallablePayload} from "./validators/withdrawParticipantMessagingPermissionInput";

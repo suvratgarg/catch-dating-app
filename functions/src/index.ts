@@ -371,6 +371,10 @@ export {
   generateEventSuccessRotations,
   overrideEventSuccessRotations,
 } from "./eventSuccess/generateEventSuccessRotations";
+export {configureEventAssignmentFeatures,
+  previewEventAssignmentFeatures,
+  setEventAssignmentFeatureConsent} from
+  "./eventSuccess/assignmentFeatureActions";
 export {
   controlEventSuccessLive,
   publishEventSuccessRotationRound,

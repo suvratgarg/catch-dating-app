@@ -215,6 +215,7 @@ export 'callables/override_event_success_rotations_callable_request.g.dart';
 export 'callables/place_details_callable_request.g.dart';
 export 'callables/places_autocomplete_callable_request.g.dart';
 export 'callables/prepare_event_success_rotation_draft_callable_request.g.dart';
+export 'callables/preview_event_assignment_features_callable_request.g.dart';
 export 'callables/preview_organizer_application_import_callable_request.g.dart';
 export 'callables/preview_organizer_form_conversion_callable_request.g.dart';
 export 'callables/preview_organizer_saved_audience_callable_request.g.dart';
