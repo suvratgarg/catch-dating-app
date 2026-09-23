@@ -2610,9 +2610,16 @@ into production.
 
 ### Event chat access
 
-`eventChatRooms/{eventId}` is the organizer manager's explicit open/close
-switch for an event conversation. `eventChatMemberships/{sha256([eventId,uid])}`
-records the participant's explicit join/leave choice and versioned room terms.
+`eventChatRooms/{eventId}` is the organizer manager's explicit room control
+for an event conversation. It can carry an optional, manager-selected open and
+close time; no production schedule is inferred from the event. Before the open
+time and from the close time onward, access is closed. An explicit close or
+archive also closes access, and archive is terminal. An open room permits
+joined members to read and post; announcements-only permits all joined members
+to read and managers to post announcements; pause permits reading and safety
+actions but no posting, reactions or new typing.
+`eventChatMemberships/{sha256([eventId,uid])}` records the participant's
+explicit join/leave and mute choices and versioned room terms.
 `getEventChatAccess` and `updateEventChatAccess` own these records; all direct
 client access is denied. A room does not create event admission, a dating match,
 a public profile, or an organizer-card sharing grant.
@@ -2637,11 +2644,17 @@ profile claim timestamp); a revision number or private form proposal alone
 never qualifies. A claimed form
 profile may join without enabling dating discovery or completing dating setup.
 
-Organizer managers can open/close a room; guests cannot. Message access requires
-an active event, an open room and the caller's joined membership. A cancelled
+Organizer managers can schedule, open, pause, limit to announcements, close or
+archive a room; guests cannot. Message reads require an active event, a readable
+room mode and the caller's joined membership. A cancelled
 event or revoked admission disables access immediately, regardless of the
 membership record. Leaving remains possible after admission is revoked or the
-event is removed. Account deletion removes membership and private action
+event is removed. Removed and banned members cannot read, post or rejoin from
+an old invite or retry. A manager-only, revisioned `manageEventChatMember`
+action can remove or ban; explicit reinstatement requires current event
+admission and returns the person to `left`, requiring a fresh verified join.
+Ordinary leave does not ban a later eligible rejoin. Account deletion removes
+membership and private action
 receipts; its tombstone prevents replay from restoring access.
 
 Mutations bind `expectedUid` to the authenticated account before any reads or
@@ -2668,6 +2681,18 @@ bounded to 30 rows plus a lookahead with a sequence cursor. Prior messages from
 a participant who leaves remain history; account deletion redacts their text
 and identity. Existing text moderation blocks prohibited writes or atomically
 creates a review flag while leaving flagged text visible.
+Announcements are message records with a server-validated kind, not a separate
+renderer or permission source. Only a current manager can author them, and an
+announcements-only room rejects ordinary text. The history projection marks
+readable announcements and redacts kind with other fields when a message is
+unavailable.
+
+Room notification delivery is disabled by default. The delivery policy accepts
+only a queued message identifier and recipient UID, rechecks current admission,
+joined state, mute, room readability and sender status at dispatch time, and
+uses a fixed generic preview without message or applicant text. A later
+provider/outbox activation must preserve those checks and cannot infer
+WhatsApp permission from room membership.
 
 `actOnEventChatMessage` offers separate report, block and remove actions. The
 server derives the target from an immutable, currently readable room message;
