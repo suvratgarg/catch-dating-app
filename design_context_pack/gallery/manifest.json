@@ -3,7 +3,7 @@
   "source": "test/ui_captures/catalog/screen_capture_catalog.dart",
   "coverage": {
     "routes": 72,
-    "captures": 670,
+    "captures": 673,
     "statusCounts": {
       "excluded": 2,
       "captured": 53,
@@ -9284,6 +9284,57 @@
         "dark": "dark/host_application_detail.png"
       },
       "whatItIs": "Host Application Detail",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_response_review_submitted",
+      "routes": [
+        "hostFormResponseDetailScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_response_review_submitted.png",
+        "dark": "dark/host_response_review_submitted.png"
+      },
+      "whatItIs": "Host Response Review Submitted",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_response_review_imported",
+      "routes": [
+        "hostFormResponseDetailScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_response_review_imported.png",
+        "dark": "dark/host_response_review_imported.png"
+      },
+      "whatItIs": "Host Response Review Imported",
+      "keepChangeNotes": ""
+    },
+    {
+      "id": "host_response_review_revoked",
+      "routes": [
+        "hostFormResponseDetailScreen"
+      ],
+      "device": "iphone-17-pro",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "files": {
+        "light": "light/host_response_review_revoked.png",
+        "dark": "dark/host_response_review_revoked.png"
+      },
+      "whatItIs": "Host Response Review Revoked",
       "keepChangeNotes": ""
     },
     {

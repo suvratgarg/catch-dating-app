@@ -10,7 +10,14 @@ import 'package:catch_ui/src/primitives/catch_row_press_surface.dart';
 import 'package:catch_ui/src/primitives/catch_surface.dart';
 import 'package:flutter/material.dart';
 
-enum CatchButtonVariant { primary, secondary, ghost, danger, light }
+enum CatchButtonVariant {
+  primary,
+  secondary,
+  ghost,
+  danger,
+  dangerSecondary,
+  light,
+}
 
 enum CatchButtonSize { sm, md, lg }
 
@@ -507,6 +514,17 @@ class _CatchButtonState extends State<CatchButton> {
         ? CatchRadius.pill
         : CatchRadius.md;
     var palette = _ButtonPalette.from(widget.variant, t);
+    if (widget.variant == CatchButtonVariant.dangerSecondary &&
+        _enabled &&
+        (_hovered || _pressed || _focused)) {
+      palette = palette.copyWith(
+        foreground: t.danger,
+        border: t.danger,
+        background: t.danger.withValues(
+          alpha: CatchOpacity.controlOverlayHover,
+        ),
+      );
+    }
     final accent = widget.accentColor;
     if (accent != null && widget.variant == CatchButtonVariant.primary) {
       palette = palette.copyWith(
@@ -522,7 +540,8 @@ class _CatchButtonState extends State<CatchButton> {
     );
     final border = _focused
         ? CatchBorder.resolve(t, CatchBorderRole.focus)
-        : widget.variant == CatchButtonVariant.secondary
+        : (widget.variant == CatchButtonVariant.secondary ||
+              widget.variant == CatchButtonVariant.dangerSecondary)
         ? CatchBorder.interactive(
             t,
             _pressed
@@ -530,7 +549,15 @@ class _CatchButtonState extends State<CatchButton> {
                 : _hovered
                 ? CatchInteractiveBorderState.hovered
                 : CatchInteractiveBorderState.resting,
-          ).copyWith(color: widget.borderColor)
+          ).copyWith(
+            color:
+                widget.borderColor ??
+                (widget.variant == CatchButtonVariant.dangerSecondary &&
+                        _enabled &&
+                        (_hovered || _pressed)
+                    ? t.danger
+                    : null),
+          )
         : CatchBorder.resolve(
             t,
             CatchBorderRole.boundary,
@@ -728,6 +755,11 @@ class _ButtonPalette {
         background: Colors.transparent,
         foreground: t.ink,
         border: Colors.transparent,
+      ),
+      CatchButtonVariant.dangerSecondary => _ButtonPalette(
+        background: t.surface,
+        foreground: t.ink,
+        border: t.line2,
       ),
       CatchButtonVariant.danger => _ButtonPalette(
         background: t.danger,

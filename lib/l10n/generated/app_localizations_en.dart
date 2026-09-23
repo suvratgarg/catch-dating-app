@@ -14814,15 +14814,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostApplicationsSourceConnector => 'Connected form';
 
   @override
-  String hostApplicationsSubmittedOn({required String date}) {
-    return 'Submitted $date';
-  }
-
-  @override
   String get hostApplicationsLoadMore => 'Load more applications';
-
-  @override
-  String get hostApplicationAnswersTitle => 'Answers';
 
   @override
   String get hostApplicationNotAnswered => 'Not answered';
@@ -14845,9 +14837,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get hostApplicationOutreachTitle => 'Contact applicant';
-
-  @override
   String get hostApplicationCall => 'Call';
 
   @override
@@ -14858,10 +14847,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostApplicationLinkedin => 'LinkedIn';
-
-  @override
-  String get hostApplicationNoOutreach =>
-      'This form did not grant a usable phone, email, Instagram, or LinkedIn destination.';
 
   @override
   String get hostApplicationReviewNote => 'Private review note';
@@ -17031,9 +17016,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostApplicationOpenPerson => 'Open person';
 
   @override
-  String get hostApplicationOpenResponse => 'Open original response';
-
-  @override
   String get hostSavedAudienceEditRules => 'Edit rules';
 
   @override
@@ -17446,12 +17428,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostAudienceSubmissionDetails => 'Submission details';
 
   @override
-  String get hostAudienceReviewApplication => 'Review application';
-
-  @override
-  String get hostAudienceApplicationTitle => 'Application';
-
-  @override
   String get hostAudienceApplicationAccepted =>
       'Accepted into People. Event admission is handled separately.';
 
@@ -17464,9 +17440,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostAudienceApplicationOrganizer => 'Organizer application';
-
-  @override
-  String get hostAudienceApplicationActivity => 'Activity';
 
   @override
   String get hostAudienceManualGroup => 'Selected people';
@@ -20092,4 +20065,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostAudienceSelectedPerson => 'Selected person';
+
+  @override
+  String get hostResponseSaveReviewNote => 'Save review note';
+
+  @override
+  String get hostResponseStartReview => 'Start application review';
 }
