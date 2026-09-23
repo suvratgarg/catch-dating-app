@@ -273,6 +273,8 @@ export async function prepareFormMessagingGrants(params: {
         ...shared};
       const updated: OrganizerPreference = {organizerId: draft.organizerId,
         uid, whatsapp: channel,
+        ...(organizer?.whatsappPurposes ?
+          {whatsappPurposes: organizer.whatsappPurposes} : {}),
         sms: organizer?.sms ?? unknownOrganizerCommunicationChannel(),
         createdAt: organizer?.createdAt ?? now, updatedAt: now};
       writes.push(() => {
@@ -284,6 +286,8 @@ export async function prepareFormMessagingGrants(params: {
       const receipt: CatchReceipt = {sourceOrganizerId: draft.organizerId,
         ...shared};
       const updated: CatchPreference = {uid, whatsapp: channel,
+        ...(catchPreference?.whatsappPurposes ?
+          {whatsappPurposes: catchPreference.whatsappPurposes} : {}),
         createdAt: catchPreference?.createdAt ?? now, updatedAt: now};
       writes.push(() => {
         tx.create(db.collection("catchCommunicationPermissionReceipts")

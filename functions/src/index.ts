@@ -602,6 +602,8 @@ export {getEventRcsWithdrawal, withdrawEventRcs} from
 export {listParticipantMessagingPreferences,
   withdrawParticipantMessagingPermission}
   from "./messaging/participantMessagingPreferences";
+export {promoteFormCommunicationIntent} from
+  "./organizers/organizerFormConsentPromotion";
 
 export {getEventChatAccess, updateEventChatAccess}
   from "./chats/eventChatAccess";

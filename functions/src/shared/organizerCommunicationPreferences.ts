@@ -222,9 +222,6 @@ export function effectiveOrganizerWhatsappPurposeStatus(
   if (purpose === "marketing" &&
       legacy.source === "publicEventRegistration" &&
       legacy.termsVersion === "organizer-updates-v1") return "optedIn";
-  if (purpose === "eventOperations" &&
-      legacy.source === "hostFormResponse" &&
-      legacy.termsVersion === "form-whatsapp-v1") return "optedIn";
   return "unknown";
 }
 
