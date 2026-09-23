@@ -57,6 +57,16 @@ describe("organizer form domain registry", () => {
     const probe = {hostname: input.hostname,
       txtValues: [pending.ownershipChallenge], cnameTarget: hostingTarget,
       checkedAtMillis: now};
+    let dnsCalls = 0;
+    const loadProbe = async () => {
+      dnsCalls++;
+      return probe;
+    };
+    assert.equal(await resolveOrganizerFormDomain(
+      db, "absent.client.example", loadProbe, now), null);
+    assert.equal(await resolveOrganizerFormDomain(
+      db, input.hostname, loadProbe, now), null);
+    assert.equal(dnsCalls, 0);
     assert.equal(await resolveOrganizerFormDomain(
       db, input.hostname, probe, now), null);
     await assert.rejects(verifyOrganizerFormDomain(db, input.hostname,
@@ -68,6 +78,11 @@ describe("organizer form domain registry", () => {
     await markOrganizerFormCertificateReady(
       db, input.hostname, verified.generation);
     await activateOrganizerFormDomain(db, input.hostname, probe, now);
+    assert.deepEqual(await resolveOrganizerFormDomain(
+      db, input.hostname, loadProbe, now), {
+      organizerId: "organizer-a", publicFormId: "public-a",
+    });
+    assert.equal(dnsCalls, 1);
     assert.deepEqual(await resolveOrganizerFormDomain(
       db, input.hostname, probe, now), {
       organizerId: "organizer-a", publicFormId: "public-a",
@@ -82,6 +97,9 @@ describe("organizer form domain registry", () => {
       {...probe, cnameTarget: "other.example"}, now), null);
     await revokeOrganizerFormDomain(db, input.hostname, input.organizerId,
       input.actorUid, manager);
+    assert.equal(await resolveOrganizerFormDomain(
+      db, input.hostname, loadProbe, now), null);
+    assert.equal(dnsCalls, 1);
     assert.equal(await resolveOrganizerFormDomain(
       db, input.hostname, probe, now), null);
     const replacement = await reserveOrganizerFormDomain(db,

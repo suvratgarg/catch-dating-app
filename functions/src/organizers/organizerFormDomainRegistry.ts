@@ -161,14 +161,18 @@ export async function revokeOrganizerFormDomain(
 
 /** Exact host, current DNS, and current form ownership all have to agree. */
 export async function resolveOrganizerFormDomain(
-  db: firestore.Firestore, requestHost: string, probe: DomainProbe | null,
+  db: firestore.Firestore, requestHost: string,
+  probeOrLoad: DomainProbe | null | (() => Promise<DomainProbe | null>),
   nowMillis: number
 ): Promise<{organizerId: string; publicFormId: string} | null> {
   const hostname = normalizeCustomFormHost(requestHost);
   if (!hostname) return null;
   const domainSnap = await db.collection(COLLECTION).doc(hostname).get();
   const record = parseOrganizerFormDomain(domainSnap.data());
-  if (!record || !hasCurrentDomainOwnership(record, probe, nowMillis)) {
+  if (!record || record.status !== "active") return null;
+  const probe = typeof probeOrLoad === "function" ?
+    await probeOrLoad() : probeOrLoad;
+  if (!hasCurrentDomainOwnership(record, probe, nowMillis)) {
     return null;
   }
   const resolved = resolveCustomFormHost(hostname, record, probe, nowMillis);

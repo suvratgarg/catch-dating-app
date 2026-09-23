@@ -30,6 +30,7 @@ import {
 import {PageShell} from "../shared/site";
 import {PendingRequestProvider} from "../shared/pendingRequest";
 import {RouteLoadingState} from "../shared/ui/primitives";
+import {CustomFormDomainGate} from "./CustomFormDomainGate";
 
 const ClaimPage = lazy(async () => ({
   default: (await import("../features/claims/ClaimPage")).ClaimPage,
@@ -76,7 +77,9 @@ function App() {
   return (
     <BrowserRouter>
       <PendingRequestProvider>
-        <MarketingRouteShell />
+        <CustomFormDomainGate>
+          <MarketingRouteShell />
+        </CustomFormDomainGate>
       </PendingRequestProvider>
     </BrowserRouter>
   );
