@@ -47,23 +47,29 @@ export async function loadAuthorizedAssignmentFeatures(params: {
   if (eligible.size > 1000) {
     throw new Error("Assignment feature pool exceeds supported cohort.");
   }
-  const decisions = await db.collection("eventAssignmentFeatureConsents")
-    .where("eventId", "==", eventId).get();
   const byFeature = new Map(rules.map((rule) => [rule.featureId, rule]));
   const selected: Array<{decision: AssignmentFeatureConsentDecision;
     rule: AssignmentFeatureRule}> = [];
-  const seen = new Set<string>();
-  for (const doc of decisions.docs) {
-    const decision = doc.data() as AssignmentFeatureConsentDecision;
-    const rule = byFeature.get(decision.featureId);
-    if (!rule || !eligible.has(decision.uid)) continue;
-    const key = `${decision.uid}|${decision.featureId}`;
-    if (seen.has(key) || doc.id !== assignmentFeatureConsentId(
-      eventId, decision.uid, decision.featureId)) {
-      throw new Error("Assignment feature consent is inconsistent.");
+  const refs = [...eligible].flatMap((uid) => rules.map((rule) =>
+    db.collection("eventAssignmentFeatureConsents").doc(
+      assignmentFeatureConsentId(eventId, uid, rule.featureId))));
+  for (let offset = 0; offset < refs.length; offset += 200) {
+    const snaps = await db.getAll(...refs.slice(offset, offset + 200));
+    for (const snap of snaps) {
+      if (!snap.exists) continue;
+      const value = snap.data();
+      if (!validDecision(value)) {
+        throw new Error("Assignment feature consent is malformed.");
+      }
+      const decision = value;
+      const rule = byFeature.get(decision.featureId);
+      if (!rule || !eligible.has(decision.uid) ||
+          snap.id !== assignmentFeatureConsentId(
+            eventId, decision.uid, decision.featureId)) {
+        throw new Error("Assignment feature consent is inconsistent.");
+      }
+      if (decision.status === "granted") selected.push({decision, rule});
     }
-    seen.add(key);
-    if (decision.status === "granted") selected.push({decision, rule});
   }
   const versionSnaps = await Promise.all([...new Set(rules.map((rule) =>
     rule.versionId))].map((id) => db.collection("organizerFormVersions")
@@ -94,6 +100,20 @@ export async function loadAuthorizedAssignmentFeatures(params: {
       version: versions.get(rule.versionId) ?? null});
     return snapshot ? [snapshot] : [];
   });
+}
+
+function validDecision(value: unknown):
+  value is AssignmentFeatureConsentDecision {
+  if (!value || typeof value !== "object") return false;
+  const row = value as Record<string, unknown>;
+  const ids = ["eventId", "organizerId", "uid", "responseId",
+    "featureId", "formId", "versionId", "questionId", "receiptId"];
+  return ids.every((key) => typeof row[key] === "string" &&
+    /^[A-Za-z0-9_-]{1,128}$/u.test(row[key] as string)) &&
+    Number.isSafeInteger(row.transformVersion) &&
+    (row.transformVersion as number) > 0 &&
+    row.purpose === "eventAssignmentMatching" &&
+    (row.status === "granted" || row.status === "withdrawn");
 }
 
 /** Host rules and responses alone never grant answer use. */
