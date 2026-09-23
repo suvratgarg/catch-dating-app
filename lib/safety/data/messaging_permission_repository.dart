@@ -39,9 +39,10 @@ class MessagingPermissionRepository {
       ).toJson(),
     );
     final result = data['preference']! as Map;
-    return permission.afterWithdrawal(
-      purpose,
-      result['receiptId']! as String,
+    return MessagingPermission.fromMap(
+      result,
+      organizerId: permission.organizerId,
+      organizerName: permission.organizerName,
     );
   }
 

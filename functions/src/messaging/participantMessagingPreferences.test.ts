@@ -152,7 +152,10 @@ test("purpose grants are visible and sender withdrawal revokes every purpose",
     const scoped = await withdraw(request({...input("organizer",
       "purpose-eventOperations", "scope-operations"),
     purpose: "eventOperations"}), h.deps);
-    assert.equal(scoped.preference.status, "optedOut");
+    assert.equal(scoped.preference.status, "optedIn");
+    assert.equal(scoped.preference.purposes?.eventOperations?.status,
+      "optedOut");
+    assert.equal(scoped.preference.purposes?.marketing?.status, "optedIn");
     const partial = await list(request({cursor: null, limit: 10}), h.deps);
     assert.equal(partial.organizers[0].preference.purposes?.eventOperations
       ?.status, "optedOut");
@@ -166,6 +169,27 @@ test("purpose grants are visible and sender withdrawal revokes every purpose",
       ?.status, "optedOut");
     assert.equal(after.organizers[0].preference.purposes?.marketing
       ?.status, "optedOut");
+    const stored = h.store.records.get(orgPath)!;
+    h.store.records.set(orgPath, {...stored, whatsappPurposes: {
+      ...(stored.whatsappPurposes as Record<string, unknown>),
+      eventOperations: {...makeChannel("eventOperations"),
+        currentReceiptId: "later-operations",
+        updatedAt: Timestamp.fromMillis(2000)},
+    }});
+    h.store.records.set(
+      "organizerCommunicationPermissionReceipts/later-operations",
+      {organizerId: "org", uid: "person", channel: "whatsapp",
+        purpose: "eventOperations", sourceResponseId: "response",
+        endpointE164: "+919000000001", decision: "optedIn",
+        evidenceStatus: "complete", consentCopyHash: "a".repeat(64),
+        revokedAt: null});
+    const replay = await withdraw(request({...input("organizer",
+      "purpose-eventOperations", "scope-operations"),
+    purpose: "eventOperations"}), h.deps);
+    assert.equal(replay.replayed, true);
+    assert.equal(replay.preference.status, "optedIn");
+    assert.equal(replay.preference.purposes?.eventOperations?.status,
+      "optedIn");
     await assert.rejects(withdraw(request({...input("catch"),
       purpose: "eventOperations"}), h.deps), {code: "invalid-argument"});
   });

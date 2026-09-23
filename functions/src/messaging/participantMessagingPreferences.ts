@@ -267,9 +267,11 @@ export async function withdrawParticipantMessagingPermissionHandler(
           ...(previous?.whatsappPurposes ?? {}), [purpose]: channel,
         } : {marketing: channel},
         createdAt: previous?.createdAt ?? now, updatedAt: now};
+      const projected = await summarize(db, tx, document, scope);
       const evidence: CatchReceipt = {...receipt, sourceOrganizerId: null};
       tx.create(receiptRef, evidence);
       tx.set(preferenceRef, document);
+      return {preference: projected, replayed: false};
     } else {
       const document: OrganizerPreference = {uid, organizerId:
         data.organizerId!,
@@ -282,12 +284,13 @@ export async function withdrawParticipantMessagingPermissionHandler(
           unknownOrganizerCommunicationChannel(), createdAt:
             previous?.createdAt ?? now,
       updatedAt: now};
+      const projected = await summarize(db, tx, document, scope);
       const evidence: OrganizerReceipt = {...receipt, organizerId:
         data.organizerId!};
       tx.create(receiptRef, evidence);
       tx.set(preferenceRef, document);
+      return {preference: projected, replayed: false};
     }
-    return {preference: {status: "optedOut", receiptId}, replayed: false};
   });
 }
 

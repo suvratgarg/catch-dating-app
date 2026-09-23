@@ -112893,6 +112893,34 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['catch', 'organizer'],
   );
 
+  static const withdrawParticipantMessagingPermissionCallableResponsePreferencePurposesEventOperationsReceiptId = CatchContractFieldConstraints(
+    path: 'withdrawParticipantMessagingPermissionCallableResponse.preference.purposes.eventOperations.receiptId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const withdrawParticipantMessagingPermissionCallableResponsePreferencePurposesEventOperationsStatus = CatchContractFieldConstraints(
+    path: 'withdrawParticipantMessagingPermissionCallableResponse.preference.purposes.eventOperations.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['unknown', 'optedIn', 'optedOut'],
+  );
+
+  static const withdrawParticipantMessagingPermissionCallableResponsePreferencePurposesMarketingReceiptId = CatchContractFieldConstraints(
+    path: 'withdrawParticipantMessagingPermissionCallableResponse.preference.purposes.marketing.receiptId',
+    maxLength: 180,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const withdrawParticipantMessagingPermissionCallableResponsePreferencePurposesMarketingStatus = CatchContractFieldConstraints(
+    path: 'withdrawParticipantMessagingPermissionCallableResponse.preference.purposes.marketing.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['unknown', 'optedIn', 'optedOut'],
+  );
+
   static const withdrawParticipantMessagingPermissionCallableResponsePreferenceReceiptId = CatchContractFieldConstraints(
     path: 'withdrawParticipantMessagingPermissionCallableResponse.preference.receiptId',
     maxLength: 180,
@@ -128286,6 +128314,10 @@ abstract final class CatchContractConstraints {
     'withdrawParticipantMessagingPermissionCallablePayload.purpose': withdrawParticipantMessagingPermissionCallablePayloadPurpose,
     'withdrawParticipantMessagingPermissionCallablePayload.requestId': withdrawParticipantMessagingPermissionCallablePayloadRequestId,
     'withdrawParticipantMessagingPermissionCallablePayload.scope': withdrawParticipantMessagingPermissionCallablePayloadScope,
+    'withdrawParticipantMessagingPermissionCallableResponse.preference.purposes.eventOperations.receiptId': withdrawParticipantMessagingPermissionCallableResponsePreferencePurposesEventOperationsReceiptId,
+    'withdrawParticipantMessagingPermissionCallableResponse.preference.purposes.eventOperations.status': withdrawParticipantMessagingPermissionCallableResponsePreferencePurposesEventOperationsStatus,
+    'withdrawParticipantMessagingPermissionCallableResponse.preference.purposes.marketing.receiptId': withdrawParticipantMessagingPermissionCallableResponsePreferencePurposesMarketingReceiptId,
+    'withdrawParticipantMessagingPermissionCallableResponse.preference.purposes.marketing.status': withdrawParticipantMessagingPermissionCallableResponsePreferencePurposesMarketingStatus,
     'withdrawParticipantMessagingPermissionCallableResponse.preference.receiptId': withdrawParticipantMessagingPermissionCallableResponsePreferenceReceiptId,
     'withdrawParticipantMessagingPermissionCallableResponse.preference.status': withdrawParticipantMessagingPermissionCallableResponsePreferenceStatus,
     'withdrawParticipantMessagingPermissionCallableResponse.replayed': withdrawParticipantMessagingPermissionCallableResponseReplayed,

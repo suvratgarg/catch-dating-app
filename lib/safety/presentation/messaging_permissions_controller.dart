@@ -101,7 +101,7 @@ class MessagingPermissionsController extends _$MessagingPermissionsController {
     final row = current.page.permission(permission.key);
     if (row == null || row.receiptId != permission.receiptId ||
         (purpose == null &&
-          row.status == MessagingPermissionStatus.optedOut) ||
+          row.effectiveStatus == MessagingPermissionStatus.optedOut) ||
         (purpose != null &&
           (row.purposes[purpose]?.receiptId !=
             permission.purposes[purpose]?.receiptId ||
