@@ -1,3 +1,4 @@
+import {useEffect, useRef} from "react";
 import {useParams} from "react-router";
 import {
   Button,
@@ -32,18 +33,35 @@ import {
   type PublicFormQuestion as Question,
 } from "./publicFormModel";
 import {formProfileReviewUrl} from "./formProfileReviewLink";
+import {embedParentOrigin, resizePayload} from "./publicFormEmbed";
 import {usePublicFormController} from "./usePublicFormController";
 
 export function PublicFormPage() {
   const {publicFormId = ""} = useParams<{publicFormId: string}>();
   const controller = usePublicFormController(publicFormId);
+  const frameRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!controller.embed || window.parent === window || !frameRef.current) return;
+    const embedId = new URLSearchParams(window.location.search).get("embedId") ?? "";
+    const parentOrigin = embedParentOrigin(document.referrer);
+    if (!parentOrigin) return;
+    const frame = frameRef.current;
+    const sendHeight = () => {
+      const payload = resizePayload(embedId, frame.getBoundingClientRect().height);
+      if (payload) window.parent.postMessage(payload, parentOrigin);
+    };
+    const observer = new ResizeObserver(sendHeight);
+    observer.observe(frame);
+    sendHeight();
+    return () => observer.disconnect();
+  }, [controller.embed]);
   const organizerName = controller.form?.organizer.name;
   const hasProfileFields = controller.form?.definition.sections?.some((section) =>
     section.questions.some((question) => question.answerDestination === "catchProfile" ||
       question.answerDestination === "organizerCard")) ?? false;
 
   return (
-    <PublicFormFrame
+    <div ref={frameRef}><PublicFormFrame
       embed={controller.embed}
       appearance={controller.form?.definition.appearance.preset}
       activityKind={controller.form?.definition.appearance.activityKind}
@@ -58,7 +76,7 @@ export function PublicFormPage() {
       >
         {hasProfileFields ? publicFormsCopy.profilePrivacyNote : publicFormsCopy.privacyNote}
       </PublicFormPrivacy>
-    </PublicFormFrame>
+    </PublicFormFrame></div>
   );
 }
 
