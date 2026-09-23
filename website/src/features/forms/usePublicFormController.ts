@@ -60,7 +60,7 @@ export function usePublicFormController(publicFormId: string) {
   const [receipt, setReceipt] = useState<PublicOrganizerFormReceipt | null>(
     () => storedReceipt(publicFormId)
   );
-  const [pendingConsentResponseId, setPendingConsentResponseId] = useState<
+  const [consentActivationResponseId, setConsentActivationResponseId] = useState<
     string | null>(() => {
       const cached = storedReceipt(publicFormId);
       return cached && isPendingConsentResponse(publicFormId, cached) ?
@@ -106,7 +106,7 @@ export function usePublicFormController(publicFormId: string) {
     persistReceipt(publicFormId, submitted, userRef.current?.uid ?? null);
     const pending = submitted.status === "submitted" &&
       bindPendingConsentResponse(publicFormId, submitted, draftRef.current);
-    setPendingConsentResponseId(pending ? submitted.responseId : null);
+    setConsentActivationResponseId(pending ? submitted.responseId : null);
     setStage(submitted.status === "withdrawn" ? "withdrawn" : "complete");
     setStatus({message: "", tone: ""});
   }, [publicFormId]);
@@ -151,7 +151,7 @@ export function usePublicFormController(publicFormId: string) {
             savedReceipt.status === "submitted") {
           setReceipt(savedReceipt);
           receiptRef.current = savedReceipt;
-          setPendingConsentResponseId(isPendingConsentResponse(
+          setConsentActivationResponseId(isPendingConsentResponse(
             publicFormId, savedReceipt) ? savedReceipt.responseId : null);
           setStage("complete");
           return;
@@ -208,7 +208,7 @@ export function usePublicFormController(publicFormId: string) {
     setUploads({});
     setReceipt(null);
     receiptRef.current = null;
-    setPendingConsentResponseId(null);
+    setConsentActivationResponseId(null);
     promotingConsentRef.current = false;
     setVerifyingConsent(false);
     setStage("loading");
@@ -231,7 +231,7 @@ export function usePublicFormController(publicFormId: string) {
         setDraft(null);
         setReceipt(null);
         receiptRef.current = null;
-        setPendingConsentResponseId(null);
+        setConsentActivationResponseId(null);
         setAnswers({});
         setUploads({});
         answersRef.current = {};
@@ -256,7 +256,7 @@ export function usePublicFormController(publicFormId: string) {
             savedReceipt.status === "submitted") {
           setReceipt(savedReceipt);
           receiptRef.current = savedReceipt;
-          setPendingConsentResponseId(isPendingConsentResponse(
+          setConsentActivationResponseId(isPendingConsentResponse(
             publicFormId, savedReceipt) ? savedReceipt.responseId : null);
           setStage("complete");
           return;
@@ -589,7 +589,7 @@ export function usePublicFormController(publicFormId: string) {
         requestId: requestId(),
       });
       clearReceipt(publicFormId);
-      setPendingConsentResponseId(null);
+      setConsentActivationResponseId(null);
       setStage("withdrawn");
     }).catch(() => undefined);
   }
@@ -604,7 +604,7 @@ export function usePublicFormController(publicFormId: string) {
     });
     persistReceipt(publicFormId, submitted, verifiedUser.uid);
     removeFormStorage("local", consentIntentHintKey(publicFormId));
-    setPendingConsentResponseId(null);
+    setConsentActivationResponseId(null);
     userRef.current = verifiedUser;
     promotingConsentRef.current = false;
     setVerifyingConsent(false);
@@ -615,7 +615,7 @@ export function usePublicFormController(publicFormId: string) {
 
   async function startConsentPromotion() {
     if (!receiptRef.current ||
-        pendingConsentResponseId !== receiptRef.current.responseId) {
+        consentActivationResponseId !== receiptRef.current.responseId) {
       return;
     }
     const currentUser = userRef.current;
@@ -642,7 +642,7 @@ export function usePublicFormController(publicFormId: string) {
       recoveringPaymentRef.current = false;
       setRecoveringPayment(false);
       clearReceipt(publicFormId);
-      setPendingConsentResponseId(null);
+      setConsentActivationResponseId(null);
       submitRequestIdRef.current = requestId();
       const current = await getPublicOrganizerForm({publicFormId, sourceToken});
       formRef.current = current;
@@ -682,7 +682,7 @@ export function usePublicFormController(publicFormId: string) {
     nextSection,
     pending,
     payments,
-    pendingConsentResponseId,
+    pendingConsentResponseId: consentActivationResponseId,
     phoneNumber,
     previousSection,
     receipt,
