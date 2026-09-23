@@ -24,16 +24,29 @@ jobs:
 
       - name: Generate matching repository provider
         id: provider-codegen
-        run: >-
-          dart run build_runner build --delete-conflicting-outputs
-          --build-filter=lib/event_success/data/event_assignment_feature_choice_repository.g.dart
+        run: |
+          dart run build_runner build \
+            --build-filter=lib/event_success/data/event_assignment_feature_choice_repository.g.dart
+          # A clean filtered build deletes tracked outputs outside its filter.
+          # Restore those unchanged outputs before downstream package analysis.
+          python3 - <<'PY'
+          import subprocess
+          deleted = subprocess.check_output([
+              'git', 'diff', '--name-only', '--diff-filter=D', '-z', '--',
+              '*.g.dart', '*.freezed.dart',
+          ]).decode().split('\0')
+          deleted = [path for path in deleted if path]
+          if deleted:
+              subprocess.run(['git', 'restore', '--worktree', '--', *deleted], check=True)
+          print(f'Restored {len(deleted)} unchanged generated files outside the target filter')
+          PY
 
       - name: Resolve Widgetbook dependencies
         run: (cd widgetbook && flutter pub get)
 
       - name: Generate Widgetbook directories
         id: widgetbook-codegen
-        run: (cd widgetbook && dart run build_runner build --delete-conflicting-outputs)
+        run: (cd widgetbook && dart run build_runner build)
 
       - name: Package generated Flutter outputs
         id: package-codegen
