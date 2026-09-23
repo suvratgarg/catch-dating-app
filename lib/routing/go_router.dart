@@ -90,6 +90,7 @@ export 'route_contract.dart';
 part 'detail_route_pages.dart';
 part 'go_router.g.dart';
 part 'host_inbox_route.dart';
+part 'host_response_review_routes.dart';
 part 'route_destinations.dart';
 
 HostEventManageSection _hostManageSectionFromState(GoRouterState state) {
@@ -792,6 +793,7 @@ GoRoute _hostAudienceRoute(_RouterNavigatorKeys keys) {
         builder: (context, state) => HostApplicationDetailScreen(
           organizerId: state.uri.queryParameters['organizerId'] ?? '',
           applicationId: state.pathParameters['applicationId']!,
+          queue: _responseReviewQueue(state.extra),
         ),
       ),
       GoRoute(
@@ -838,6 +840,7 @@ GoRoute _hostAudienceRoute(_RouterNavigatorKeys keys) {
         builder: (context, state) => HostFormResponseDetailScreen(
           organizerId: state.uri.queryParameters['organizerId'] ?? '',
           responseId: state.pathParameters['responseId']!,
+          queue: _responseReviewQueue(state.extra),
         ),
       ),
       GoRoute(
@@ -1097,28 +1100,6 @@ StatefulShellRoute _hostShellRoute(
         ],
       ),
     ],
-  );
-}
-
-EventDetailScreen _eventDetailScreen(GoRouterState state) {
-  return EventDetailScreen(
-    clubId: state.pathParameters['clubId']!,
-    eventId: state.pathParameters['eventId']!,
-    inviteCode: state.uri.queryParameters['invite'],
-    inviteLinkId:
-        state.uri.queryParameters['il'] ??
-        state.uri.queryParameters['inviteLinkId'],
-    initialEvent: _eventDetailInitialEvent(state),
-    presentationMode: _eventDetailPresentationMode(state),
-    heroTag: _eventDetailHeroTag(state),
-    attribution: _eventDetailAttribution(state),
-  );
-}
-
-ClubDetailScreen _clubDetailScreen(GoRouterState state) {
-  return ClubDetailScreen(
-    clubId: state.pathParameters['clubId']!,
-    initialClub: _clubDetailInitialClub(state),
   );
 }
 

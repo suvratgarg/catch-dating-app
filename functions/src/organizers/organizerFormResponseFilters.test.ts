@@ -17,6 +17,14 @@ function definition() {
         {value: "sport", label: "Sport"}, {value: "art", label: "Art"}]},
     {questionId: "private", label: "Private note", kind: "shortText",
       hostPresentation: "detailOnly", options: []},
+    {questionId: "sensitive", label: "Sensitive choice",
+      kind: "singleChoice", privacyClass: "sensitive",
+      hostPresentation: "filterable", options: [
+        {value: "yes", label: "Yes"}]},
+    {questionId: "sortOnly", label: "Sort-only choice",
+      kind: "singleChoice", privacyClass: "organizerCustom",
+      hostPresentation: "sortable", options: [
+        {value: "yes", label: "Yes"}]},
   ]}]} as Definition;
 }
 function response(status: "submitted" | "withdrawn" = "submitted") {
@@ -68,6 +76,8 @@ test("only published categorical options can be queried", () => {
   for (const filters of [
     [{questionId: "city", values: ["unknown"]}],
     [{questionId: "private", values: ["Mumbai"]}],
+    [{questionId: "sensitive", values: ["yes"]}],
+    [{questionId: "sortOnly", values: ["yes"]}],
     [{questionId: "city", values: ["Mumbai"]},
       {questionId: "city", values: ["Dubai"]}],
   ]) {
