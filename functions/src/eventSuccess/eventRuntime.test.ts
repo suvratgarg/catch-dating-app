@@ -2,8 +2,10 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import * as admin from "firebase-admin";
 import {CallableRequest, HttpsError} from "firebase-functions/v2/https";
-import {eventAttendeeId} from "../events/eventAttendees";
+import {eventAttendeeId, importEventAttendeesHandler} from
+  "../events/eventAttendees";
 import {eventVenueSessionRedemptionId} from "../events/venueSessions";
+import {loadEventSuccessRoster} from "./eventSuccessRoster";
 import {requiredDataRequestId} from
   "./operations/runtimeRequiredDataStore";
 import {
@@ -134,6 +136,12 @@ class FakeFirestore {
   constructor(private readonly docs: Record<string, FakeData | undefined>) {}
   collection(path: string): FakeCollectionRef {
     return new FakeCollectionRef(this, path);
+  }
+  batch(): FakeTransaction {
+    return new FakeTransaction(this);
+  }
+  async getAll(...refs: FakeDocRef[]): Promise<FakeSnapshot[]> {
+    return refs.map((ref) => new FakeSnapshot(this, ref.path));
   }
   async runTransaction<T>(
     callback: (tx: FakeTransaction) => Promise<T>
@@ -587,6 +595,116 @@ test("verified phone claims the matching imported attendee", async () => {
   assert.equal(h.firestore.get("eventParticipations/event-1_runner-1"),
     undefined);
 });
+
+test("canonical import feeds verified claim, readiness and checked-in roster",
+  async () => {
+    const h = harness({
+      "events/event-1": event({checkedInCount: 0,
+        startTime: timestamp("2026-08-11T10:05:00.000Z")}),
+      "organizers/organizer-1": organizer(),
+      "eventSuccessPlans/event-1": {
+        selectedModuleIds: ["first_hello_check_in"],
+      },
+      [`eventVenueSessions/${venueSessionId}`]: {
+        eventId: "event-1", organizerId: "organizer-1",
+        createdBy: "host-1",
+        issuedAt: timestamp("2026-08-11T09:59:00.000Z"),
+        expiresAt: timestamp("2026-08-11T10:01:00.000Z"),
+      },
+    });
+    const csv = {eventId: "event-1", importKey: "synthetic-urbanot-1",
+      fileName: "synthetic-urbanot.csv", format: "csv", rows: [
+        {rowId: "2", displayName: " Asha Shah ",
+          phone: "98765 43210", email: "asha@example.test",
+          externalReference: "ticket-001", ticketType: "General",
+          revenueAmountMinor: 100000, revenueCurrency: "INR",
+          revenueSource: "hostImport", status: "registered"},
+        {rowId: "3", displayName: "Waitlisted guest",
+          phone: "+919876543211", externalReference: "ticket-002",
+          status: "waitlisted"},
+        {rowId: "4", displayName: "Duplicate Asha",
+          phone: "+919876543210", status: "registered"},
+        {rowId: "5", displayName: "No stable identity",
+          status: "registered"},
+      ]};
+    const importRequest = request("host-1", csv);
+    const imported = await importEventAttendeesHandler(importRequest, h.deps);
+    assert.equal(imported.createdCount, 2);
+    assert.equal(imported.skippedCount, 2);
+    assert.deepEqual(imported.errors.map((error) => error.code),
+      ["duplicate-row", "missing-stable-identity"]);
+    assert.equal((await importEventAttendeesHandler(importRequest,
+      h.deps)).replayed, true);
+    await assert.rejects(() => importEventAttendeesHandler(request("host-1",
+      {...csv, rows: csv.rows.slice(0, 1)}), h.deps),
+    (error) => code(error, "failed-precondition"));
+
+    const attendeeId = eventAttendeeId("event-1",
+      "phone:+919876543210");
+    const importedAttendee = h.firestore.get(`eventAttendees/${attendeeId}`);
+    assert.equal(importedAttendee?.displayName, "Asha Shah");
+    assert.equal(importedAttendee?.revenueSource, "hostImport");
+    assert.equal(importedAttendee?.linkedUid, null);
+    assert.equal(h.firestore.get("users/runner-1"), undefined);
+    assert.deepEqual(await loadEventSuccessRoster(
+      h.firestore as unknown as FirebaseFirestore.Firestore, "event-1"), []);
+    const claim = {publicRuntimeId: "runtime_123456789012345678901234",
+      displayName: "Asha Shah", runtimeTermsVersion: "event-runtime-v1"};
+    await assert.rejects(() => claimEventRuntimeAccessHandler(
+      request("wrong-runner", claim, "+919876543299"), h.deps),
+    (error) => code(error, "permission-denied"));
+    assert.equal(h.firestore.get(`eventAttendees/${attendeeId}`)?.linkedUid,
+      null);
+    const claimed = await claimEventRuntimeAccessHandler(
+      request("runner-1", claim), h.deps);
+    assert.equal(claimed.attendeeId, attendeeId);
+    assert.equal(claimed.status, "needsInput");
+    assert.deepEqual(await loadEventSuccessRoster(
+      h.firestore as unknown as FirebaseFirestore.Firestore, "event-1"), []);
+    const profile = {publicRuntimeId: claim.publicRuntimeId,
+      runtimeTermsVersion: claim.runtimeTermsVersion, fields: {
+        questionnaireAnswerIds: ["event_energy_easy_conversation"],
+      }, saveAsCatchPrefill: false};
+    await assert.rejects(() => submitEventRuntimeProfileHandler(
+      request("runner-1", profile), h.deps),
+    (error) => code(error, "failed-precondition"));
+    const completed = await submitEventRuntimeProfileHandler(
+      request("runner-1", {...profile,
+        sensitiveDataTermsVersion: "sensitive-runtime-v1"}), h.deps);
+    assert.equal(completed.status, "ready");
+    const beforeCheckIn = await loadEventSuccessRoster(
+      h.firestore as unknown as FirebaseFirestore.Firestore, "event-1");
+    assert.deepEqual(beforeCheckIn.map((row) => [row.uid, row.status,
+      row.source]), [["runner-1", "signedUp", "externalRuntime"]]);
+    await assert.rejects(() => claimEventRuntimeAccessHandler(
+      request("runner-2", claim), h.deps),
+    (error) => code(error, "permission-denied"));
+    const waitlistedClaim = await claimEventRuntimeAccessHandler(
+      request("runner-2", claim, "+919876543211"), h.deps);
+    assert.equal(waitlistedClaim.status, "needsInput");
+    await submitEventRuntimeProfileHandler(request("runner-2", {...profile,
+      sensitiveDataTermsVersion: "sensitive-runtime-v1"},
+    "+919876543211"), h.deps);
+    assert.deepEqual((await loadEventSuccessRoster(
+      h.firestore as unknown as FirebaseFirestore.Firestore, "event-1"))
+      .map((row) => row.uid), ["runner-1"]);
+    await assert.rejects(() => checkInEventRuntimeHandler(
+      request("runner-2", {publicRuntimeId: claim.publicRuntimeId,
+        venueSessionToken}, "+919876543211"), h.deps),
+    (error) => code(error, "failed-precondition"));
+    const checkedIn = await checkInEventRuntimeHandler(
+      request("runner-1", {publicRuntimeId: claim.publicRuntimeId,
+        venueSessionToken}), h.deps);
+    assert.equal(checkedIn.status, "checkedIn");
+    const readyPool = await loadEventSuccessRoster(
+      h.firestore as unknown as FirebaseFirestore.Firestore, "event-1");
+    assert.deepEqual(readyPool.map((row) => [row.uid, row.status,
+      row.source]), [["runner-1", "attended", "externalRuntime"]]);
+    assert.equal(h.firestore.get("eventParticipations/event-1_runner-1"),
+      undefined);
+    assert.equal(h.firestore.get("organizerCommunicationPreferences/runner-1"),
+      undefined);
+  });
 
 test("unmatched numbers obey deny and Host approval policies", async () => {
   const denied = harness({"events/event-1": event()});
