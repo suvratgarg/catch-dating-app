@@ -2,89 +2,75 @@ part of 'host_forms_screen.dart';
 
 Future<void> _showHostFormsFilters(
   BuildContext context, {
-  required HostFormPurpose? purpose,
-  required HostFormLifecycleStatus? status,
-  required ValueChanged<HostFormPurpose?> onPurposeChanged,
-  required ValueChanged<HostFormLifecycleStatus?> onStatusChanged,
+  required Set<HostFormPurpose> purposes,
+  required Set<HostFormLifecycleStatus> statuses,
+  required ValueChanged<Set<HostFormPurpose>> onPurposesChanged,
+  required ValueChanged<Set<HostFormLifecycleStatus>> onStatusesChanged,
 }) async {
-  var selectedPurpose = purpose;
-  var selectedStatus = status;
+  var selectedPurposes = Set<HostFormPurpose>.of(purposes);
+  var selectedStatuses = Set<HostFormLifecycleStatus>.of(statuses);
   await showCatchBottomSheet<void>(
     context: context,
     builder: (sheetContext) => StatefulBuilder(
       builder: (context, updateSheet) => CatchSheet.standard(
+        pinFooter: true,
         title: context.l10n.hostCustomersFilters,
+        subtitle: context.l10n.hostFiltersMultiSelectHelp,
+        trailing: CatchButton(
+          label: context.l10n.hostFiltersResetAll,
+          variant: CatchButtonVariant.ghost,
+          size: CatchButtonSize.sm,
+          onPressed: selectedPurposes.isEmpty && selectedStatuses.isEmpty
+              ? null
+              : () {
+                  updateSheet(() {
+                    selectedPurposes = {};
+                    selectedStatuses = {};
+                  });
+                  onPurposesChanged(const {});
+                  onStatusesChanged(const {});
+                },
+        ),
         footer: CatchButton(
           label: context.l10n.hostSheetClose,
           fullWidth: true,
           onPressed: () => Navigator.of(sheetContext).pop(),
         ),
-        child: CatchSection.fieldRows(
-          first: true,
+        child: CatchSectionList(
+          emptyStateOmitted: true,
+          mainAxisSize: MainAxisSize.min,
           children: [
-            CatchField.nav(
-              copy: catchFieldCopy(context.l10n),
+            CatchSection.divided(
+              first: true,
               title: context.l10n.hostFormPurposeLabel,
-              valueText: selectedPurpose == null
-                  ? context.l10n.hostAudienceAllPurposes
-                  : hostFormPurposeLabel(context, selectedPurpose!),
-              onTap: () async {
-                final value = await showCatchSelectionSheet<String>(
-                  context: context,
-                  title: context.l10n.hostAudienceFormPurposeFilter,
-                  value: selectedPurpose?.name ?? 'all',
-                  items: [
-                    CatchSelectionMenuItem(
-                      value: 'all',
-                      label: context.l10n.hostAudienceAllPurposes,
-                    ),
-                    for (final item in HostFormPurpose.values)
-                      CatchSelectionMenuItem(
-                        value: item.name,
-                        label: hostFormPurposeLabel(context, item),
-                      ),
-                  ],
-                );
-                if (value == null || !context.mounted) return;
-                updateSheet(
-                  () => selectedPurpose = value == 'all'
-                      ? null
-                      : HostFormPurpose.values.byName(value),
-                );
-                onPurposeChanged(selectedPurpose);
-              },
+              child: CatchChoiceInput<HostFormPurpose>(
+                values: HostFormPurpose.values,
+                itemLabelBuilder: (value) =>
+                    hostFormPurposeLabel(context, value),
+                selected: selectedPurposes,
+                mode: CatchChipMode.multiple,
+                allowEmptySelection: true,
+                onChanged: (values) {
+                  updateSheet(() => selectedPurposes = Set.of(values));
+                  onPurposesChanged(Set.unmodifiable(values));
+                },
+              ),
             ),
-            CatchField.nav(
-              copy: catchFieldCopy(context.l10n),
+            CatchSection.divided(
+              first: true,
               title: context.l10n.hostAudienceFormStatusFilter,
-              valueText: selectedStatus == null
-                  ? context.l10n.hostAudienceAllStatuses
-                  : hostFormStatusLabel(context, selectedStatus!),
-              onTap: () async {
-                final value = await showCatchSelectionSheet<String>(
-                  context: context,
-                  title: context.l10n.hostAudienceFormStatusFilter,
-                  value: selectedStatus?.name ?? 'all',
-                  items: [
-                    CatchSelectionMenuItem(
-                      value: 'all',
-                      label: context.l10n.hostAudienceAllStatuses,
-                    ),
-                    for (final item in HostFormLifecycleStatus.values)
-                      CatchSelectionMenuItem(
-                        value: item.name,
-                        label: hostFormStatusLabel(context, item),
-                      ),
-                  ],
-                );
-                if (value == null || !context.mounted) return;
-                updateSheet(
-                  () => selectedStatus = value == 'all'
-                      ? null
-                      : HostFormLifecycleStatus.values.byName(value),
-                );
-                onStatusChanged(selectedStatus);
-              },
+              child: CatchChoiceInput<HostFormLifecycleStatus>(
+                values: HostFormLifecycleStatus.values,
+                itemLabelBuilder: (value) =>
+                    hostFormStatusLabel(context, value),
+                selected: selectedStatuses,
+                mode: CatchChipMode.multiple,
+                allowEmptySelection: true,
+                onChanged: (values) {
+                  updateSheet(() => selectedStatuses = Set.of(values));
+                  onStatusesChanged(Set.unmodifiable(values));
+                },
+              ),
             ),
           ],
         ),

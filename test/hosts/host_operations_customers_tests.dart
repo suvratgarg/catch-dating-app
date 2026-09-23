@@ -507,6 +507,69 @@ void _registerHostOperationsCustomersTests() {
     },
   );
 
+  testWidgets(
+    'People chips combine categories, persist and reset immediately',
+    (tester) async {
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = const Size(402, 874);
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final requests = <HostCustomersDirectoryRequest>[];
+      final club = buildClub(id: 'organizer-1', ownerUserId: _hostUid);
+      await _pumpHostScreen(
+        tester,
+        const HostCustomersScreen(),
+        overrides: [
+          ..._hostClubOverrides(owned: [club]),
+          hostCustomersDirectoryControllerProvider.overrideWith2(
+            (_) => _FixedHostCustomersDirectoryController(
+              requests,
+              _customerDirectoryState(),
+            ),
+          ),
+        ],
+      );
+      await tester.tap(find.byKey(const ValueKey('host-customers-filters')));
+      await pumpFeatureUi(tester);
+      for (final filter in [
+        HostCustomerFilter.repeat,
+        HostCustomerFilter.firstTime,
+        HostCustomerFilter.reliable,
+      ]) {
+        final chip = find.byKey(
+          ValueKey('host-customer-filter-${filter.name}'),
+        );
+        await tester.ensureVisible(chip);
+        await tester.tap(chip);
+        await pumpFeatureUi(tester);
+      }
+      expect(requests.last.filters, {
+        HostCustomerFilter.repeat,
+        HostCustomerFilter.firstTime,
+        HostCustomerFilter.reliable,
+      });
+      expect(find.byType(HostCustomerFilterSheet), findsOneWidget);
+      await tester.ensureVisible(find.text('Close'));
+      await tester.tap(find.text('Close'));
+      await pumpFeatureUi(tester);
+      expect(find.byType(HostCustomerFilterSheet), findsNothing);
+      await tester.tap(find.byKey(const ValueKey('host-customers-filters')));
+      await pumpFeatureUi(tester);
+      expect(
+        tester
+            .widget<CatchChip>(
+              find.byKey(const ValueKey('host-customer-filter-repeat')),
+            )
+            .selected,
+        isTrue,
+      );
+      await tester.tap(find.text('Reset all'));
+      await pumpFeatureUi(tester);
+      expect(requests.last.filters, isEmpty);
+      expect(requests.last.manualTagIds, isEmpty);
+    },
+  );
+
   testWidgets('customer filter sheet scrolls without loading every count', (
     tester,
   ) async {
@@ -522,7 +585,6 @@ void _registerHostOperationsCustomersTests() {
           alignment: Alignment.bottomCenter,
           child: HostCustomerFilterSheet(
             selectedFilter: HostCustomerFilter.newToOrganizer,
-            selectedManualTag: null,
             manualTagVocabulary: [],
             selectedCount: HostCustomerSegmentCount(
               count: 12,
@@ -535,7 +597,7 @@ void _registerHostOperationsCustomersTests() {
     );
 
     expect(find.text('New to your audience'), findsOneWidget);
-    expect(find.text('12 people'), findsOneWidget);
+    expect(find.text('12 people'), findsNothing);
     expect(find.textContaining('Loading count'), findsNothing);
     expect(find.text('ADVOCACY').hitTestable(), findsNothing);
 

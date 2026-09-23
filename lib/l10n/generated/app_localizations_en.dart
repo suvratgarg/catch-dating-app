@@ -13956,8 +13956,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostCustomersFilterSheetTitle => 'Filter people';
 
   @override
-  String get hostCustomersFilterSheetSubtitle =>
-      'Choose one segment or tag. Your selection applies immediately.';
+  String get hostFiltersMultiSelectHelp =>
+      'Choose any options in each group. Results match any selected option in a group and every group you filter.';
+
+  @override
+  String get hostFiltersResetAll => 'Reset all';
 
   @override
   String get hostCustomersFilterGroupAttendance => 'Attendance';
@@ -14416,10 +14419,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostCustomersFilterGroupYourTags => 'Your tags';
-
-  @override
-  String get hostCustomersManualTagExportUnavailable =>
-      'Clear the manual tag filter to export.';
 
   @override
   String get hostCustomersMemory => 'Notes & tags';
@@ -17276,15 +17275,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostAutomationConfigured => 'Configured';
-
-  @override
-  String get hostAudienceAllPurposes => 'All purposes';
-
-  @override
-  String get hostAudienceAllStatuses => 'All statuses';
-
-  @override
-  String get hostAudienceFormPurposeFilter => 'Form purpose';
 
   @override
   String get hostAudienceFormStatusFilter => 'Form status';

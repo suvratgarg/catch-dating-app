@@ -84,6 +84,69 @@ void main() {
     }
   }
 
+  for (final scale in [1.0, 2.0]) {
+    testWidgets(
+      'pinned filter Close stays visible while choices scroll at $scale',
+      (tester) async {
+        tester.view.physicalSize = const Size(320, 568);
+        tester.view.devicePixelRatio = 1;
+        addTearDown(tester.view.reset);
+        var closed = false;
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: CatchTheme.dark,
+            builder: (context, child) => MediaQuery(
+              data: MediaQuery.of(
+                context,
+              ).copyWith(textScaler: TextScaler.linear(scale)),
+              child: child!,
+            ),
+            home: Scaffold(
+              body: Align(
+                alignment: Alignment.bottomCenter,
+                child: CatchSheet.standard(
+                  title: 'Filters',
+                  pinFooter: true,
+                  footer: CatchButton(
+                    label: 'Close',
+                    fullWidth: true,
+                    onPressed: () => closed = true,
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      for (var i = 0; i < 30; i++) Text('Filter option $i'),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+        final close = find.widgetWithText(CatchButton, 'Close');
+        final before = tester.getRect(close);
+        expect(
+          tester
+              .widgetList<CatchSurface>(find.byType(CatchSurface))
+              .where(
+                (surface) => surface.emphasis == CatchSurfaceEmphasis.floating,
+              ),
+          hasLength(1),
+        );
+        expect(close.hitTestable(), findsOneWidget);
+        await tester.drag(
+          find.byKey(const ValueKey('catch-sheet-scroll')),
+          const Offset(0, -400),
+        );
+        await tester.pumpAndSettle();
+        expect(tester.getRect(close), before);
+        await tester.tap(close);
+        expect(closed, isTrue);
+        expect(tester.takeException(), isNull);
+      },
+    );
+  }
+
   testWidgets('standard short sheet shrink wraps and aligns choice rows', (
     tester,
   ) async {

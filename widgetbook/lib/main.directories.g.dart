@@ -10184,6 +10184,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
+                name: 'HostCustomerFilterSheet',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Combined filter chips',
+                    builder:
+                        _widgetbook_workspace_hosts_operations_customer_components
+                            .hostCustomerFilterSheetStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
                 name: 'HostCustomerHistoryFilters',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(

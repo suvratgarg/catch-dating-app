@@ -13,7 +13,9 @@ status: active
 Host bottom sheets use `CatchSheet.standard` for bounded whole-sheet scrolling,
 keyboard clearance and shared header/body/footer geometry. Choices reuse
 `CatchSelectionSheet` and `CatchMenuRow.sheet`; natural-height bodies do not own
-vertical scrolling or viewport caps. Native wheel and share-card recipes retain
+vertical scrolling or viewport caps. Multi-select filters use wrapped
+`CatchChoiceInput` groups and the shell-owned `pinFooter` option for a persistent
+Close action. Native wheel and share-card recipes retain
 their specific transaction and capture behavior.
 
 Independent measurements use `CatchMetricSection.grid`; source-completeness
@@ -804,6 +806,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>HostCustomerDetailTabs</code> | <code>lib/hosts/presentation/customers/host_customer_detail_tabs.dart:7</code> | — | — | No class documentation or registry summary. |
 | <code>HostCustomerIdentityInputSection</code> | <code>lib/hosts/presentation/customers/host_customer_editor.dart:187</code> | — | — | No class documentation or registry summary. |
 | <code>HostSaveAudienceSheet</code> | <code>lib/hosts/presentation/customers/host_customer_editor_sheets.dart:3</code> | — | — | No class documentation or registry summary. |
+| <code>HostCustomerFilterSheet</code> | <code>lib/hosts/presentation/customers/host_customer_filter_sheet.dart:3</code> | — | — | No class documentation or registry summary. |
 | <code>HostCustomerHistoryPanel</code> | <code>lib/hosts/presentation/customers/host_customer_history_panel.dart:4</code> | — | — | Mounted only by the History tab, so operational joins cannot block Overview. |
 | <code>HostCustomerMemoryPreview</code> | <code>lib/hosts/presentation/customers/host_customer_memory.dart:18</code> | — | — | No class documentation or registry summary. |
 | <code>HostCustomerMemorySection</code> | <code>lib/hosts/presentation/customers/host_customer_memory.dart:51</code> | — | — | No class documentation or registry summary. |
@@ -815,11 +818,10 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>HostCustomerReachSection</code> | <code>lib/hosts/presentation/customers/host_customer_timeline.dart:16</code> | — | — | No class documentation or registry summary. |
 | <code>HostCustomerTimelineSection</code> | <code>lib/hosts/presentation/customers/host_customer_timeline.dart:365</code> | — | — | No class documentation or registry summary. |
 | <code>HostCustomerDirectoryControls</code> | <code>lib/hosts/presentation/customers/host_customers_directory.dart:3</code> | — | — | No class documentation or registry summary. |
-| <code>HostCustomerFilterSheet</code> | <code>lib/hosts/presentation/customers/host_customers_directory.dart:194</code> | — | — | No class documentation or registry summary. |
 | <code>HostCustomerFilterSummary</code> | <code>lib/hosts/presentation/customers/host_customers_directory.dart:89</code> | — | — | No class documentation or registry summary. |
-| <code>HostCustomersDirectory</code> | <code>lib/hosts/presentation/customers/host_customers_directory.dart:280</code> | — | — | Sliver-native directory. The page owns scrolling; the section builds only visible people and preserves each contact's identity across filter changes. |
+| <code>HostCustomersDirectory</code> | <code>lib/hosts/presentation/customers/host_customers_directory.dart:201</code> | — | — | Sliver-native directory. The page owns scrolling; the section builds only visible people and preserves each contact's identity across filter changes. |
 | <code>HostCustomersNoOrganizer</code> | <code>lib/hosts/presentation/customers/host_customers_directory.dart:57</code> | — | — | No class documentation or registry summary. |
-| <code>HostCustomersSummary</code> | <code>lib/hosts/presentation/customers/host_customers_directory.dart:394</code> | — | — | No class documentation or registry summary. |
+| <code>HostCustomersSummary</code> | <code>lib/hosts/presentation/customers/host_customers_directory.dart:315</code> | — | — | No class documentation or registry summary. |
 | <code>HostSavedAudienceOverview</code> | <code>lib/hosts/presentation/customers/host_saved_audience_overview.dart:33</code> | — | — | No class documentation or registry summary. |
 | <code>HostSavedAudienceWorkspace</code> | <code>lib/hosts/presentation/customers/host_saved_audience_overview.dart:3</code> | — | — | No class documentation or registry summary. |
 | <code>HostAudienceSourceRuleFields</code> | <code>lib/hosts/presentation/customers/host_saved_audience_source_rules.dart:10</code> | — | — | No class documentation or registry summary. |
@@ -881,7 +883,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>HostFormValidationFieldLanes</code> | <code>lib/hosts/presentation/forms/host_form_validation_field_lanes.dart:12</code> | — | — | No class documentation or registry summary. |
 | <code>HostFormValidationTextField</code> | <code>lib/hosts/presentation/forms/host_form_validation_text_field.dart:6</code> | — | — | No class documentation or registry summary. |
 | <code>HostFormWorkspaceHeader</code> | <code>lib/hosts/presentation/forms/host_form_workspace_header.dart:9</code> | — | — | No class documentation or registry summary. |
-| <code>HostFormsNoOrganizer</code> | <code>lib/hosts/presentation/forms/host_forms_screen.dart:751</code> | — | — | No class documentation or registry summary. |
+| <code>HostFormsNoOrganizer</code> | <code>lib/hosts/presentation/forms/host_forms_screen.dart:766</code> | — | — | No class documentation or registry summary. |
 | <code>HostResponseAnswerRow</code> | <code>lib/hosts/presentation/forms/host_response_answer_section.dart:3</code> | — | — | No class documentation or registry summary. |
 | <code>HostResponseMetadataSection</code> | <code>lib/hosts/presentation/forms/host_response_answer_section.dart:35</code> | — | — | No class documentation or registry summary. |
 | <code>HostResponseContactSection</code> | <code>lib/hosts/presentation/forms/host_response_detail_section.dart:382</code> | — | — | No class documentation or registry summary. |
@@ -1237,7 +1239,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>HostCreateClubScreen</code> | <code>lib/hosts/presentation/club_management/host_create_club_screen.dart:4</code> | — | — | No class documentation or registry summary. |
 | <code>HostCustomerDetailScreen</code> | <code>lib/hosts/presentation/customers/host_customer_detail_screen.dart:43</code> | — | — | No class documentation or registry summary. |
 | <code>HostAddCustomerScreen</code> | <code>lib/hosts/presentation/customers/host_customer_editor.dart:5</code> | — | — | No class documentation or registry summary. |
-| <code>HostCustomersScreen</code> | <code>lib/hosts/presentation/customers/host_customers_screen.dart:64</code> | — | — | No class documentation or registry summary. |
+| <code>HostCustomersScreen</code> | <code>lib/hosts/presentation/customers/host_customers_screen.dart:65</code> | — | — | No class documentation or registry summary. |
 | <code>HostSavedAudienceEditorScreen</code> | <code>lib/hosts/presentation/customers/host_saved_audience_editor.dart:3</code> | — | — | No class documentation or registry summary. |
 | <code>EditHostedEventRouteScreen</code> | <code>lib/hosts/presentation/edit_hosted_event_route_screen.dart:3</code> | — | — | No class documentation or registry summary. |
 | <code>EditHostedEventScreen</code> | <code>lib/hosts/presentation/edit_hosted_event_screen.dart:59</code> | — | — | No class documentation or registry summary. |

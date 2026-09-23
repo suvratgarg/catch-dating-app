@@ -117,6 +117,56 @@ void main() {
   );
 
   testWidgets(
+    'combined saved filters retain edits on dismissal and expose stored SMS',
+    (tester) async {
+      final repository = _AudienceRepository()
+        ..saved = const HostSavedAudienceDefinition(
+          join: HostSavedAudienceJoin.all,
+          predicates: [
+            HostSavedAudienceDirectoryFilters(
+              manualTagIds: {},
+              segments: {
+                HostAudienceSegment.repeatAttendee,
+                HostAudienceSegment.reliableAttendee,
+                HostAudienceSegment.smsReachable,
+              },
+            ),
+          ],
+        );
+      await _pump(tester, repository);
+      await tester.tap(find.byKey(const ValueKey('host-saved-audience-edit')));
+      await pumpFeatureUi(tester);
+      final filters = find.byKey(
+        const ValueKey('host-saved-audience-directory-filters-1'),
+      );
+      await tester.ensureVisible(filters);
+      await tester.tap(filters);
+      await pumpFeatureUi(tester);
+      for (final filter in ['firstTime', 'needsConfirmation', 'smsReachable']) {
+        final chip = find.byKey(ValueKey('host-customer-filter-$filter'));
+        await tester.ensureVisible(chip);
+        await tester.tap(chip);
+        await pumpFeatureUi(tester);
+      }
+      Navigator.of(tester.element(find.byType(HostCustomerFilterSheet))).pop();
+      await pumpFeatureUi(tester);
+      await tester.tap(find.byKey(const ValueKey('host-saved-audience-save')));
+      await pumpFeatureUi(tester);
+      final saved =
+          repository.saved!.predicates.single
+              as HostSavedAudienceDirectoryFilters;
+      expect(saved.segments, {
+        HostAudienceSegment.firstTimeAttendee,
+        HostAudienceSegment.repeatAttendee,
+        HostAudienceSegment.reliableAttendee,
+        HostAudienceSegment.needsConfirmation,
+      });
+      expect(saved.manualTagIds, isEmpty);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets(
     'form-answer authoring saves the selected published version and choice',
     (tester) async {
       final repository = _AudienceRepository();

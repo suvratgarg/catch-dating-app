@@ -21793,11 +21793,17 @@ abstract class AppLocalizations {
   /// **'Filter people'**
   String get hostCustomersFilterSheetTitle;
 
-  /// Explains when the grouped customer filter result count updates.
+  /// Explains OR within categories and AND across filter categories.
   ///
   /// In en, this message translates to:
-  /// **'Choose one segment or tag. Your selection applies immediately.'**
-  String get hostCustomersFilterSheetSubtitle;
+  /// **'Choose any options in each group. Results match any selected option in a group and every group you filter.'**
+  String get hostFiltersMultiSelectHelp;
+
+  /// Clears every selected filter category.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset all'**
+  String get hostFiltersResetAll;
 
   /// Customer segment group for attendance lifecycle filters.
   ///
@@ -22416,12 +22422,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Your tags'**
   String get hostCustomersFilterGroupYourTags;
-
-  /// Explains why the segment-based export is unavailable for an organizer-authored tag filter.
-  ///
-  /// In en, this message translates to:
-  /// **'Clear the manual tag filter to export.'**
-  String get hostCustomersManualTagExportUnavailable;
 
   /// Organizer-authored contact memory section heading.
   ///
@@ -27298,24 +27298,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Configured'**
   String get hostAutomationConfigured;
-
-  /// Form directory purpose filter for every purpose.
-  ///
-  /// In en, this message translates to:
-  /// **'All purposes'**
-  String get hostAudienceAllPurposes;
-
-  /// Directory status filter for every lifecycle state.
-  ///
-  /// In en, this message translates to:
-  /// **'All statuses'**
-  String get hostAudienceAllStatuses;
-
-  /// Form directory purpose selection title.
-  ///
-  /// In en, this message translates to:
-  /// **'Form purpose'**
-  String get hostAudienceFormPurposeFilter;
 
   /// Form directory lifecycle selection title.
   ///

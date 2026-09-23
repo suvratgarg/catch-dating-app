@@ -908,7 +908,15 @@ document the map-pin palette as a sanctioned expressive-art exception here.
 keyboard clearance and bottom safe region. Short sheets fit their content; long
 sheets use the shared viewport cap. Choices align with the heading through
 `CatchMenuRow.sheet`, wrap their labels, and show a trailing selection mark.
-Filter counts occupy supporting text rather than changing a chip's width.
+Single-choice sort and membership menus use those rows. People and Forms filters
+use wrapping `CatchChoiceInput` chips in multiple mode inside titled sections.
+Selected chips include a checkmark. Choices within a category are OR; nonempty
+categories combine with AND. Empty categories do not restrict the result.
+Selections apply immediately and remain visible when the sheet reopens. Both
+filters have Reset all in the header and a full-width Close action using
+`CatchSheet.standard(pinFooter: true)` so dismissal remains visible while the
+choices scroll. Counts belong in the directory summary rather than changing a
+chip's width.
 
 Use flat `CatchSection.fieldRows(first: true)` for the first field group in a
 sheet. Additional groups retain section spacing; do not add a contained card

@@ -61,7 +61,8 @@ class CatchSheet extends StatelessWidget {
     this.keyboardSafe = false,
     this.mode = CatchSheetMode.content,
     this.padding,
-  }) : _standard = false;
+  }) : _standard = false,
+       pinFooter = false;
 
   /// Bounded, keyboard-safe sheet with one scroll owner and fixed geometry.
   /// Supply natural-height content; the sheet owns vertical scrolling.
@@ -71,6 +72,7 @@ class CatchSheet extends StatelessWidget {
     this.title,
     this.subtitle,
     this.footer,
+    this.pinFooter = false,
     this.glyph,
     this.badge,
     this.badgeTone = CatchBadgeTone.neutral,
@@ -82,6 +84,9 @@ class CatchSheet extends StatelessWidget {
        padding = null;
 
   final bool _standard;
+
+  /// Keeps a filter dismissal action reachable while long choices scroll.
+  final bool pinFooter;
 
   final String? title;
   final String? subtitle;
@@ -145,7 +150,9 @@ class CatchSheet extends StatelessWidget {
       ),
       child: Padding(
         key: const ValueKey<String>('catch-bottom-sheet-content-padding'),
-        padding: effectivePadding,
+        padding: pinFooter && footer != null
+            ? effectivePadding.copyWith(bottom: 0)
+            : effectivePadding,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: _standard
@@ -172,7 +179,7 @@ class CatchSheet extends StatelessWidget {
             if (hasHeader)
               const SizedBox(height: CatchLayout.sheetHeaderBodyGap),
             child,
-            if (footer != null) ...[gapH16, footer!],
+            if (footer != null && !pinFooter) ...[gapH16, footer!],
           ],
         ),
       ),
@@ -207,10 +214,37 @@ class CatchSheet extends StatelessWidget {
                 borderRadius: const BorderRadius.vertical(
                   top: Radius.circular(CatchLayout.sheetTopRadius),
                 ),
-                child: SingleChildScrollView(
-                  key: const ValueKey('catch-sheet-scroll'),
-                  child: content,
-                ),
+                child: pinFooter && footer != null
+                    ? CatchSurface(
+                        emphasis: CatchSurfaceEmphasis.floating,
+                        duration: Duration.zero,
+                        borderRadius: content.borderRadius,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Flexible(
+                              child: SingleChildScrollView(
+                                key: const ValueKey('catch-sheet-scroll'),
+                                child: content.child,
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.fromLTRB(
+                                CatchLayout.sheetHorizontalPadding,
+                                CatchSpacing.s4,
+                                CatchLayout.sheetHorizontalPadding,
+                                minimumBottomPadding,
+                              ),
+                              child: footer,
+                            ),
+                          ],
+                        ),
+                      )
+                    : SingleChildScrollView(
+                        key: const ValueKey('catch-sheet-scroll'),
+                        child: content,
+                      ),
               ),
             ),
           );

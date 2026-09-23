@@ -88,6 +88,8 @@ class HostCustomersDirectoryRequest {
     this.search,
     this.filter = HostCustomerFilter.all,
     this.manualTagId,
+    this.filters = const {},
+    this.manualTagIds = const {},
     this.sort = HostCustomerSort.lastSeen,
   });
 
@@ -95,6 +97,8 @@ class HostCustomersDirectoryRequest {
   final String? search;
   final HostCustomerFilter filter;
   final String? manualTagId;
+  final Set<HostCustomerFilter> filters;
+  final Set<String> manualTagIds;
   final HostCustomerSort sort;
 
   @override
@@ -104,11 +108,20 @@ class HostCustomersDirectoryRequest {
       other.search == search &&
       other.filter == filter &&
       other.manualTagId == manualTagId &&
+      setEquals(other.filters, filters) &&
+      setEquals(other.manualTagIds, manualTagIds) &&
       other.sort == sort;
 
   @override
-  int get hashCode =>
-      Object.hash(organizerId, search, filter, manualTagId, sort);
+  int get hashCode => Object.hash(
+    organizerId,
+    search,
+    filter,
+    manualTagId,
+    sort,
+    Object.hashAllUnordered(filters),
+    Object.hashAllUnordered(manualTagIds),
+  );
 }
 
 @immutable
@@ -199,13 +212,29 @@ class HostCustomerManualTag {
 
 @immutable
 class HostCustomerFilterSelection {
-  const HostCustomerFilterSelection.computed(this.filter) : manualTag = null;
-
+  const HostCustomerFilterSelection.computed(this.filter)
+    : manualTag = null,
+      filters = const {},
+      manualTags = const [];
   const HostCustomerFilterSelection.manual(this.manualTag)
-    : filter = HostCustomerFilter.all;
+    : filter = HostCustomerFilter.all,
+      filters = const {},
+      manualTags = const [];
+  const HostCustomerFilterSelection.multiple({
+    this.filters = const {},
+    this.manualTags = const [],
+  }) : filter = HostCustomerFilter.all,
+       manualTag = null;
 
   final HostCustomerFilter filter;
   final HostCustomerManualTag? manualTag;
+  final Set<HostCustomerFilter> filters;
+  final List<HostCustomerManualTag> manualTags;
+  Set<HostCustomerFilter> get allFilters => {
+    ...filters,
+    if (filter != HostCustomerFilter.all) filter,
+  };
+  List<HostCustomerManualTag> get allManualTags => [...manualTags, ?manualTag];
 }
 
 enum HostCustomerDirectoryCoverage { exact, partial, insufficientData }

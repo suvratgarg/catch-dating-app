@@ -91,6 +91,7 @@ class HostCustomerFilterSummary extends StatelessWidget {
     super.key,
     required this.filter,
     this.manualTag,
+    this.selectionLabel,
     required this.count,
     required this.countCoverage,
     required this.campaignBlocker,
@@ -102,6 +103,7 @@ class HostCustomerFilterSummary extends StatelessWidget {
 
   final HostCustomerFilter filter;
   final HostCustomerManualTag? manualTag;
+  final String? selectionLabel;
   final int count;
   final HostCustomerMatchCountCoverage countCoverage;
   final String? campaignBlocker;
@@ -114,7 +116,10 @@ class HostCustomerFilterSummary extends StatelessWidget {
   Widget build(BuildContext context) {
     final countLabel = _customerPeopleCountLabel(context, count, countCoverage);
     final header = context.l10n.hostCustomersFilterSummary(
-      label: manualTag?.label ?? _customerFilterLabel(context, filter),
+      label:
+          selectionLabel ??
+          manualTag?.label ??
+          _customerFilterLabel(context, filter),
       countLabel: countLabel,
     );
     return Column(
@@ -187,90 +192,6 @@ class HostCustomerFilterSummary extends StatelessWidget {
           ),
         ],
       ],
-    );
-  }
-}
-
-class HostCustomerFilterSheet extends StatelessWidget {
-  const HostCustomerFilterSheet({
-    super.key,
-    required this.selectedFilter,
-    required this.selectedManualTag,
-    required this.manualTagVocabulary,
-    required this.selectedCount,
-    required this.smsReadiness,
-  });
-
-  final HostCustomerFilter selectedFilter;
-  final HostCustomerManualTag? selectedManualTag;
-  final List<HostCustomerManualTag> manualTagVocabulary;
-  final HostCustomerSegmentCount selectedCount;
-  final HostCrmChannelReadiness? smsReadiness;
-
-  @override
-  Widget build(BuildContext context) {
-    final groups = hostCustomerFilterGroupsForSmsReadiness(smsReadiness);
-    return CatchSheet.standard(
-      title: context.l10n.hostCustomersFilterSheetTitle,
-      subtitle: context.l10n.hostCustomersFilterSheetSubtitle,
-      child: CatchSectionList(
-        emptyStateOmitted: true,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          for (final entry in groups.entries)
-            CatchSection.divided(
-              first: true,
-              title: _customerFilterGroupLabel(context, entry.key),
-              children: [
-                for (final filter in entry.value)
-                  CatchMenuRow<HostCustomerFilterSelection>.sheet(
-                    key: ValueKey('host-customer-filter-${filter.name}'),
-                    item: CatchMenuItem(
-                      value: HostCustomerFilterSelection.computed(filter),
-                      label: _customerFilterLabel(context, filter),
-                      sublabel:
-                          selectedManualTag == null && selectedFilter == filter
-                          ? _customerPeopleCountLabel(
-                              context,
-                              selectedCount.count,
-                              selectedCount.coverage,
-                            )
-                          : null,
-                      selected:
-                          selectedManualTag == null && selectedFilter == filter,
-                      variant: CatchMenuItemVariant.choice,
-                    ),
-                    onSelected: (value, _) => Navigator.of(context).pop(value),
-                  ),
-              ],
-            ),
-          if (manualTagVocabulary.isNotEmpty)
-            CatchSection.divided(
-              first: true,
-              title: context.l10n.hostCustomersFilterGroupYourTags,
-              children: [
-                for (final tag in manualTagVocabulary)
-                  CatchMenuRow<HostCustomerFilterSelection>.sheet(
-                    key: ValueKey('host-customer-manual-tag-${tag.tagId}'),
-                    item: CatchMenuItem(
-                      value: HostCustomerFilterSelection.manual(tag),
-                      label: tag.label,
-                      sublabel: selectedManualTag?.tagId == tag.tagId
-                          ? _customerPeopleCountLabel(
-                              context,
-                              selectedCount.count,
-                              selectedCount.coverage,
-                            )
-                          : null,
-                      selected: selectedManualTag?.tagId == tag.tagId,
-                      variant: CatchMenuItemVariant.choice,
-                    ),
-                    onSelected: (value, _) => Navigator.of(context).pop(value),
-                  ),
-              ],
-            ),
-        ],
-      ),
     );
   }
 }

@@ -45,8 +45,12 @@ void main() {
       ),
     ),
     'people-filter': (_) => const HostCustomerFilterSheet(
-      selectedFilter: HostCustomerFilter.repeat,
-      selectedManualTag: null,
+      selectedFilters: {
+        HostCustomerFilter.repeat,
+        HostCustomerFilter.firstTime,
+        HostCustomerFilter.reliable,
+        HostCustomerFilter.advocate,
+      },
       manualTagVocabulary: [],
       selectedCount: HostCustomerSegmentCount(
         count: 0,
@@ -138,6 +142,23 @@ void main() {
           drive: (tester) async {
             await tester.tap(find.text('Filters').hitTestable().first);
             await pumpFeatureUi(tester);
+            if (!responses) {
+              for (final label in [
+                'Application',
+                'Registration',
+                'Intake',
+                'Published',
+                'Paused',
+              ]) {
+                final chip = find.descendant(
+                  of: find.byType(CatchSheet),
+                  matching: find.widgetWithText(CatchChip, label),
+                );
+                await tester.ensureVisible(chip);
+                await tester.tap(chip);
+                await pumpFeatureUi(tester);
+              }
+            }
           },
         );
         expect(tester.takeException(), isNull);

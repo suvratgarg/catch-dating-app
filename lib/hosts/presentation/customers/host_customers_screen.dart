@@ -53,6 +53,7 @@ import 'package:intl/intl.dart';
 part 'host_customer_detail_cards.dart';
 part 'host_customer_editor.dart';
 part 'host_customer_editor_sheets.dart';
+part 'host_customer_filter_sheet.dart';
 part 'host_customers_directory.dart';
 part 'host_saved_audience_editor.dart';
 part 'host_saved_audience_rule_draft.dart';
@@ -88,8 +89,8 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
   Timer? _searchDebounce;
   String? _search;
   String? _audienceSearch;
-  HostCustomerFilter _filter = HostCustomerFilter.all;
-  HostCustomerManualTag? _manualTag;
+  Set<HostCustomerFilter> _filters = const {};
+  List<HostCustomerManualTag> _manualTags = const [];
   HostCustomerSort _sort = HostCustomerSort.lastSeen;
   bool _exporting = false;
   bool _searchExpanded = false;
@@ -229,14 +230,20 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
     final visibleFilters = hostCustomerFiltersForSmsReadiness(
       summaryState.value?.smsReadiness,
     );
-    final effectiveFilter = visibleFilters.contains(_filter)
-        ? _filter
+    final effectiveFilters = _filters.intersection(visibleFilters.toSet());
+    final effectiveFilter = effectiveFilters.length == 1
+        ? effectiveFilters.single
         : HostCustomerFilter.all;
+    final selectionLabel = _customerSelectionLabel(
+      context,
+      effectiveFilters,
+      _manualTags,
+    );
     final request = HostCustomersDirectoryRequest(
       organizerId: selectedClub.id,
       search: _search,
-      filter: _manualTag == null ? effectiveFilter : HostCustomerFilter.all,
-      manualTagId: _manualTag?.tagId,
+      filters: effectiveFilters,
+      manualTagIds: {for (final tag in _manualTags) tag.tagId},
       sort: _sort,
     );
     final directory = peopleView
@@ -245,8 +252,8 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
     final directoryState = catchAsyncStateFromAsyncValue(directory).value;
     final campaignAudienceDefinition =
         hostSavedAudienceDefinitionForCustomerSelection(
-          filter: effectiveFilter,
-          manualTag: _manualTag,
+          filters: effectiveFilters,
+          manualTags: _manualTags,
         );
     final campaignBridgePhase = directoryState == null
         ? HostCustomerCampaignBridgePhase.notApplicable
@@ -273,17 +280,14 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
         final activeQuery = peopleView ? _search : _audienceSearch;
         final directoryControls = HostCustomerDirectoryControls(
           sort: _sort,
-          activeFilters:
-              _manualTag?.label ??
-              (effectiveFilter == HostCustomerFilter.all
-                  ? null
-                  : _customerFilterLabel(context, effectiveFilter)),
-          onClear:
-              _manualTag == null && effectiveFilter == HostCustomerFilter.all
+          activeFilters: effectiveFilters.isEmpty && _manualTags.isEmpty
+              ? null
+              : selectionLabel,
+          onClear: effectiveFilters.isEmpty && _manualTags.isEmpty
               ? null
               : () => setState(() {
-                  _filter = HostCustomerFilter.all;
-                  _manualTag = null;
+                  _filters = {};
+                  _manualTags = [];
                 }),
           shrinkWrap: true,
           condensed: screenSize.isCompact || screenSize.isExpanded,
@@ -291,8 +295,8 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
           onOpenFilters: directoryState == null
               ? null
               : () => _openFilters(
-                  effectiveFilter,
-                  _manualTag,
+                  effectiveFilters,
+                  _manualTags,
                   directoryState,
                   summaryState.value?.smsReadiness,
                 ),
@@ -320,12 +324,7 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
                   ? _hostCustomersHeaderActions(
                       context,
                       includeExport: !_exporting,
-                      exportEnabled: _manualTag == null,
-                      exportSublabel: _manualTag == null
-                          ? null
-                          : context
-                                .l10n
-                                .hostCustomersManualTagExportUnavailable,
+                      exportEnabled: true,
                     )
                   : const [],
               onMenuAction: (action) {
@@ -333,7 +332,7 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
                   unawaited(_reviewDuplicates(selectedClub.id));
                 }
                 if (action == HostAudienceMenuAction.export) {
-                  unawaited(_exportCustomers(selectedClub, effectiveFilter));
+                  unawaited(_exportCustomers(selectedClub, effectiveFilters));
                 }
               },
               search: CatchTopBarSearch(
@@ -415,7 +414,8 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
                                 hostCrmSummaryProvider(selectedClub.id),
                               ),
                               selectedFilter:
-                                  _manualTag == null &&
+                                  _manualTags.isEmpty &&
+                                      effectiveFilters.length <= 1 &&
                                       const {
                                         HostCustomerFilter.all,
                                         HostCustomerFilter.repeat,
@@ -425,13 +425,16 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
                                   : null,
                               onFilterSelected: (selectedFilter) =>
                                   setState(() {
-                                    _filter =
-                                        selectedFilter == effectiveFilter &&
-                                            selectedFilter !=
-                                                HostCustomerFilter.all
-                                        ? HostCustomerFilter.all
-                                        : selectedFilter;
-                                    _manualTag = null;
+                                    _filters =
+                                        selectedFilter ==
+                                                HostCustomerFilter.all ||
+                                            (effectiveFilters.length == 1 &&
+                                                effectiveFilters.contains(
+                                                  selectedFilter,
+                                                ))
+                                        ? {}
+                                        : {selectedFilter};
+                                    _manualTags = [];
                                   }),
                             ),
                             gapH16,
@@ -441,15 +444,15 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
                     ),
                     SliverToBoxAdapter(child: directoryControls),
                     if (directoryState != null &&
-                        (effectiveFilter != HostCustomerFilter.all ||
-                            _manualTag != null ||
+                        (effectiveFilters.isNotEmpty ||
+                            _manualTags.isNotEmpty ||
                             _search != null))
                       CatchPageBody.sliver(
                         child: SliverList.list(
                           children: [
                             HostCustomerFilterSummary(
                               filter: effectiveFilter,
-                              manualTag: _manualTag,
+                              selectionLabel: selectionLabel,
                               count: directoryState.matchCount,
                               countCoverage: directoryState.matchCountCoverage,
                               campaignBlocker: campaignBridgeBlocker,
@@ -460,8 +463,7 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
                                       campaignAudienceDefinition != null
                                   ? () => _saveAndMessageCustomers(
                                       selectedClub,
-                                      effectiveFilter,
-                                      _manualTag,
+                                      selectionLabel,
                                       campaignAudienceDefinition,
                                     )
                                   : null,
@@ -503,8 +505,8 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
                             : null,
                         hasActiveQuery:
                             _search != null ||
-                            effectiveFilter != HostCustomerFilter.all ||
-                            _manualTag != null,
+                            effectiveFilters.isNotEmpty ||
+                            _manualTags.isNotEmpty,
                         onCustomerSelected: (contact) =>
                             _openCustomer(selectedClub, contact),
                         onLoadMore: state.canLoadMore
@@ -645,39 +647,34 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
   }
 
   Future<void> _openFilters(
-    HostCustomerFilter activeFilter,
-    HostCustomerManualTag? activeManualTag,
+    Set<HostCustomerFilter> activeFilters,
+    List<HostCustomerManualTag> activeManualTags,
     HostCustomersDirectoryState directory,
     HostCrmChannelReadiness? smsReadiness,
   ) async {
-    final selected = await showCatchBottomSheet<HostCustomerFilterSelection>(
+    await showCatchBottomSheet<HostCustomerFilterSelection>(
       context: context,
       builder: (_) => HostCustomerFilterSheet(
-        selectedFilter: activeFilter,
-        selectedManualTag: activeManualTag,
+        selectedFilters: activeFilters,
+        selectedManualTags: activeManualTags,
         manualTagVocabulary: directory.manualTagVocabulary,
-        selectedCount: HostCustomerSegmentCount(
-          count: directory.matchCount,
-          coverage: directory.matchCountCoverage,
-        ),
         smsReadiness: smsReadiness,
+        onChanged: (selection) {
+          if (!mounted) return;
+          setState(() {
+            _filters = selection.allFilters;
+            _manualTags = selection.allManualTags;
+          });
+        },
       ),
     );
-    if (selected != null && mounted) {
-      setState(() {
-        _filter = selected.filter;
-        _manualTag = selected.manualTag;
-      });
-    }
   }
 
   Future<void> _saveAndMessageCustomers(
     Club club,
-    HostCustomerFilter filter,
-    HostCustomerManualTag? manualTag,
+    String label,
     HostSavedAudienceDefinition definition,
   ) async {
-    final label = manualTag?.label ?? _customerFilterLabel(context, filter);
     final audience = await showCatchBottomSheet<HostSavedAudience>(
       context: context,
       builder: (_) => HostSaveAudienceSheet(
@@ -721,7 +718,10 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
     );
   }
 
-  Future<void> _exportCustomers(Club club, HostCustomerFilter filter) async {
+  Future<void> _exportCustomers(
+    Club club,
+    Set<HostCustomerFilter> filters,
+  ) async {
     if (_exporting) return;
     setState(() => _exporting = true);
     try {
@@ -729,7 +729,14 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
           .read(hostCustomersControllerProvider)
           .exportCustomers(
             organizerId: club.id,
-            segment: hostAudienceSegmentForCustomerFilter(filter),
+            query: HostAudienceQuery(
+              search: _search,
+              segments: {
+                for (final filter in filters)
+                  ?hostAudienceSegmentForCustomerFilter(filter),
+              },
+              manualTagIds: {for (final tag in _manualTags) tag.tagId},
+            ),
           );
       if (!mounted) return;
       await ref
@@ -790,4 +797,26 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
       extra: HostCustomerDetailRouteArguments(displayName: displayName),
     );
   }
+}
+
+String _customerSelectionLabel(
+  BuildContext context,
+  Set<HostCustomerFilter> filters,
+  List<HostCustomerManualTag> tags,
+) {
+  final groups = hostCustomerFilterGroupsForSmsReadiness(
+    HostCrmChannelReadiness.currentEventOnly,
+  );
+  final labels = [
+    for (final group in groups.values)
+      if (group.any(filters.contains))
+        group
+            .where(filters.contains)
+            .map((filter) => _customerFilterLabel(context, filter))
+            .join(' / '),
+    if (tags.isNotEmpty) tags.map((tag) => tag.label).join(' / '),
+  ];
+  return labels.isEmpty
+      ? _customerFilterLabel(context, HostCustomerFilter.all)
+      : labels.join(' · ');
 }

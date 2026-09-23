@@ -74,17 +74,10 @@ void main() {
   });
 
   test('campaign audience definitions require a scoped customer selection', () {
-    expect(
-      hostSavedAudienceDefinitionForCustomerSelection(
-        filter: HostCustomerFilter.all,
-        manualTag: null,
-      ),
-      isNull,
-    );
+    expect(hostSavedAudienceDefinitionForCustomerSelection(), isNull);
 
     final computed = hostSavedAudienceDefinitionForCustomerSelection(
       filter: HostCustomerFilter.atRisk,
-      manualTag: null,
     );
     expect(
       computed?.predicates.single,
@@ -93,7 +86,6 @@ void main() {
 
     final attended = hostSavedAudienceDefinitionForCustomerSelection(
       filter: HostCustomerFilter.attended,
-      manualTag: null,
     );
     final attendancePredicate =
         attended?.predicates.single as HostSavedAudienceAttendanceCount?;
@@ -104,13 +96,44 @@ void main() {
     expect(attendancePredicate?.eventCount, 1);
 
     final manual = hostSavedAudienceDefinitionForCustomerSelection(
-      filter: HostCustomerFilter.all,
       manualTag: const HostCustomerManualTag(
         tagId: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
         label: 'Brings friends',
       ),
     );
     expect(manual?.predicates.single, isA<HostSavedAudienceManualTag>());
+  });
+
+  test('combined selection survives saved audience serialization', () {
+    final definition = hostSavedAudienceDefinitionForCustomerSelection(
+      filters: {
+        HostCustomerFilter.repeat,
+        HostCustomerFilter.firstTime,
+        HostCustomerFilter.reliable,
+      },
+      manualTags: [HostCustomerManualTag(tagId: 'a' * 32, label: 'VIP')],
+    )!;
+    final json = definition.toJson();
+    expect(HostSavedAudienceDefinition.fromMap(json).toJson(), json);
+    expect((json['predicates']! as List).single, {
+      'kind': 'directoryFilters',
+      'segmentIds': [
+        'first_time_attendee',
+        'reliable_attendee',
+        'repeat_attendee',
+      ],
+      'manualTagIds': ['a' * 32],
+    });
+    const a = HostCustomersDirectoryRequest(
+      organizerId: 'org',
+      filters: {HostCustomerFilter.repeat, HostCustomerFilter.reliable},
+    );
+    const b = HostCustomersDirectoryRequest(
+      organizerId: 'org',
+      filters: {HostCustomerFilter.reliable, HostCustomerFilter.repeat},
+    );
+    expect(a, b);
+    expect(a.hashCode, b.hashCode);
   });
 
   test('campaign bridge exhaustively separates async setup states', () {
