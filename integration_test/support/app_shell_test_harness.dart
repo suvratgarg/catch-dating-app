@@ -67,11 +67,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../test/support/empty_event_chat_repository.dart';
 import '../../test/clubs/clubs_test_helpers.dart' as club_helpers;
 import '../../test/events/events_test_helpers.dart' as event_helpers;
 import '../../test/onboarding/onboarding_test_helpers.dart'
     as onboarding_helpers;
+import '../../test/support/empty_event_chat_repository.dart';
 
 const testShellCity = CityData(
   name: 'mumbai',
