@@ -514,6 +514,12 @@
       "reason": "Shared admission-checked event conversation covered by typed route layout ownership, Widgetbook and focused keyboard, theme and large-text tests."
     },
     {
+      "routeId": "eventChatParticipantsScreen",
+      "status": "excluded",
+      "priority": "P3",
+      "reason": "Current event participant directory uses a typed pushed-route owner, Widgetbook previews and focused light/dark/large-text captures plus admission, account and block-boundary tests rather than a baseline screen-parity contract."
+    },
+    {
       "routeId": "formProfilesScreen",
       "status": "excluded",
       "priority": "P3",
