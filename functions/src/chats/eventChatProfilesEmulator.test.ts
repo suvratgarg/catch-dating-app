@@ -259,6 +259,53 @@ test(
       });
 
       await t.test(
+        "verified prejoin preview is exact and grants only the first join",
+        async () => {
+          const member = ref("eventChatMemberships",
+            eventChatMembershipId(eventId, person));
+          await member.delete();
+          const proposed = {
+            ...chosen,
+            membershipRevision: 0,
+            firstName: "Mira",
+            introduction: "I like coffee and running.",
+            termsVersion: "event-profile-sharing-v2",
+          };
+          const own = await settings(request(person, {}), deps);
+          assert.equal(own.canShare, true);
+          assert.equal(own.membershipRevision, 0);
+          const preview = await settings(request(person,
+            {previewSelection: proposed}), deps);
+          assert.equal(preview.preview?.displayName, "Mira");
+          assert.equal(preview.preview?.introduction,
+            "I like coffee and running.");
+          assert.deepEqual(preview.preview?.cardFields,
+            [{label: "Favourite drink", value: "Tequila"}]);
+          assert.equal(JSON.stringify(preview.preview).includes("private"), false);
+          await assert.rejects(read(), {code: "permission-denied"});
+          await save(proposed);
+          await change("join", 0);
+          const visible = await read();
+          assert.equal(visible.displayName, preview.preview?.displayName);
+          assert.equal(visible.introduction, preview.preview?.introduction);
+          assert.deepEqual(visible.coreFields, preview.preview?.coreFields);
+          assert.deepEqual(visible.cardFields, preview.preview?.cardFields);
+          await change("leave", 1);
+          await change("join", 2);
+          const rejoined = await read();
+          assert.equal(rejoined.displayName, "Sara");
+          assert.equal(rejoined.introduction, null);
+          assert.deepEqual(rejoined.cardFields, []);
+          // Return the fixture to its original first membership for the
+          // independent revocation cases below.
+          await member.update({revision: 1});
+          await ref("eventChatProfileShares",
+            eventChatMembershipId(eventId, person)).delete();
+          revision = 0;
+        },
+      );
+
+      await t.test(
         "joining alone shares only the claimed display name",
         async () => {
           const before = await read();

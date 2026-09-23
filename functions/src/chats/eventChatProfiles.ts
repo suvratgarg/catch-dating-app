@@ -47,6 +47,7 @@ import {
 } from "./eventChatProfileProjection";
 
 type Selection = NonNullable<Share["selection"]>;
+type Access = Awaited<ReturnType<typeof readEventChatAccess>>;
 interface Deps extends EventChatMessageDeps {
   readPhoto: typeof readEventProfilePhoto;
 }
@@ -139,6 +140,88 @@ async function cardFields(
   });
 }
 
+function selectionMatchesMember(selection: Selection, access: Access) {
+  return selection.membershipRevision === access.member?.revision ||
+    // A choice made before the first join applies only to that first room
+    // membership. Leave/rejoin increments the generation and revokes it.
+    (selection.membershipRevision === 0 &&
+      access.member?.status === "joined" && access.member.revision === 1);
+}
+
+function firstName(displayName: string) {
+  return displayName.trim().split(/\s+/u)[0].slice(0, 80);
+}
+
+function hasSelection(selection: Selection) {
+  return selection.coreFieldIds.length > 0 || !!selection.photoId ||
+    !!selection.card || !!selection.firstName || !!selection.introduction;
+}
+
+async function projectProfile(
+  db: FirebaseFirestore.Firestore,
+  tx: FirebaseFirestore.Transaction,
+  eventId: string,
+  uid: string,
+  target: Access,
+  selected: Selection | null,
+  now: Date,
+) {
+  const profile: Profile = {
+    eventId,
+    participantUid: uid,
+    displayName: firstName(target.user!.displayName!),
+    introduction: null,
+    coreFields: [],
+    cardFields: [],
+    photo: null,
+  };
+  let photo = null;
+  if (selected) {
+    if (selected.termsVersion === "event-profile-sharing-v2") {
+      profile.displayName = selected.firstName ?? profile.displayName;
+      profile.introduction = selected.introduction ?? null;
+    }
+    if (selected.profileRevision === (target.user?.profileRevision ?? 0)) {
+      profile.coreFields = eventProfileCoreFields(target.user, now)
+        .filter((field) => selected.coreFieldIds.includes(field.fieldId));
+      photo = eventProfilePhotos(target.user, uid)
+        .find((item) => item.id === selected.photoId) ?? null;
+    }
+    if (selected.card) {
+      try {
+        profile.cardFields = await cardFields(db, tx, uid,
+          target.view.organizerId, selected.card);
+      } catch (error) {
+        if (!isUnavailable(error) &&
+          !(error instanceof HttpsError && error.code === "aborted")) {
+          throw error;
+        }
+      }
+    }
+  }
+  return {profile, photo};
+}
+
+async function validateSelection(
+  db: FirebaseFirestore.Firestore,
+  tx: FirebaseFirestore.Transaction,
+  uid: string,
+  access: Access,
+  selection: Selection,
+  now: Date,
+) {
+  if ((selection.firstName || selection.introduction) &&
+    selection.termsVersion !== "event-profile-sharing-v2") throw stale();
+  const available = new Set(eventProfileCoreFields(access.user, now)
+    .map((field) => field.fieldId));
+  if (selection.coreFieldIds.some((id) => !available.has(id)) ||
+    (selection.photoId && !eventProfilePhotos(access.user, uid)
+      .some((photo) => photo.id === selection.photoId))) throw stale();
+  if (selection.card) {
+    await cardFields(db, tx, uid, access.view.organizerId, selection.card);
+  }
+}
+
 /** Own settings remain readable for revocation after room/admission removal. */
 export async function getEventChatProfileSharingHandler(
   request: CallableRequest<unknown>,
@@ -150,9 +233,10 @@ export async function getEventChatProfileSharingHandler(
     validateGetEventChatProfileSharingCallablePayload,
   );
   requireEventChatActor(uid, data.expectedUid);
+  if (data.previewSelection) requireVerifiedParticipant(request);
   const db = deps.db();
   await deps.rateLimit(db, uid, "getEventChatProfileSharing");
-  return db.runTransaction(async (tx) => {
+  const inspect = async (tx: FirebaseFirestore.Transaction) => {
     const user = await readEventChatAccount(db, tx, uid);
     const share = await readShare(db, tx, data.eventId, uid);
     let access: Awaited<ReturnType<typeof readEventChatAccess>> | null = null;
@@ -161,18 +245,46 @@ export async function getEventChatProfileSharingHandler(
     } catch (error) {
       if (!isUnavailable(error)) throw error;
     }
-    return {
+    const proposed = data.previewSelection ?? null;
+    let projected: Awaited<ReturnType<typeof projectProfile>> | null = null;
+    if (proposed) {
+      if (!access || !access.view.canJoin || !hasSelection(proposed) ||
+        (access.member && access.member.status !== "joined") ||
+        proposed.profileRevision !== (access.user?.profileRevision ?? 0) ||
+        proposed.membershipRevision !== (access.member?.revision ?? 0) ||
+        (access.member?.status === "joined" &&
+          !selectionMatchesMember(proposed, access))) throw stale();
+      await validateSelection(db, tx, uid, access, proposed, deps.now().toDate());
+      projected = await projectProfile(db, tx, data.eventId, uid, access,
+        proposed, deps.now().toDate());
+    }
+    const result: Settings = {
       eventId: data.eventId,
       organizerId: access?.view.organizerId ?? share?.organizerId ?? null,
       revision: share?.revision ?? 0,
       selection: share?.selection ?? null,
-      canShare: access?.view.canReadMessages ?? false,
+      canShare: access?.view.canJoin === true &&
+        (!access.member || access.member.status === "joined"),
       profileRevision: user?.profileRevision ?? 0,
-      membershipRevision: access?.member?.revision ?? null,
+      membershipRevision: access ? access.member?.revision ?? 0 : null,
       coreFields: eventProfileCoreFields(user, deps.now().toDate()),
       photoIds: eventProfilePhotos(user, uid).map((photo) => photo.id),
+      preview: projected?.profile ?? null,
     };
-  });
+    return {result, projected, fingerprint: chatHash([
+      share?.revision, access?.member?.revision, user?.profileRevision,
+      projected?.photo?.id, projected?.photo?.thumbnailStoragePath,
+      projected?.photo?.updatedAt?.toMillis(), projected?.profile,
+    ])};
+  };
+  const before = await db.runTransaction(inspect);
+  if (!before.projected?.photo) return before.result;
+  const photo = await deps.readPhoto(before.projected.photo);
+  const latest = await db.runTransaction(inspect);
+  if (!latest.projected?.photo || latest.fingerprint !== before.fingerprint) {
+    throw unavailable();
+  }
+  return {...latest.result, preview: {...latest.projected.profile, photo}};
 }
 
 export async function updateEventChatProfileSharingHandler(
@@ -199,15 +311,12 @@ export async function updateEventChatProfileSharingHandler(
           questionIds: [...data.selection.card.questionIds].sort(),
         } :
         null,
+      firstName: data.selection.firstName?.trim(),
+      introduction: data.selection.introduction?.trim(),
       termsVersion: data.selection.termsVersion,
     } :
     null;
-  if (
-    selection &&
-    !selection.coreFieldIds.length &&
-    !selection.photoId &&
-    !selection.card
-  ) {
+  if (selection && !hasSelection(selection)) {
     throw new HttpsError("invalid-argument", "Choose information to share.");
   }
   const db = deps.db();
@@ -247,31 +356,20 @@ export async function updateEventChatProfileSharingHandler(
     );
     let organizerId = previous?.organizerId ?? null;
     if (selection) {
-      const access = await requireEventChatMember(db, tx, data.eventId, uid);
+      const access = await readEventChatAccess(db, tx, data.eventId, uid);
+      if (!access.view.canJoin ||
+        (access.member && access.member.status !== "joined")) {
+        throw unavailable();
+      }
       organizerId = access.view.organizerId;
       if (
         selection.profileRevision !== (access.user?.profileRevision ?? 0) ||
-        selection.membershipRevision !== access.member?.revision
+        selection.membershipRevision !== (access.member?.revision ?? 0)
       ) {
         throw stale();
       }
-      const available = new Set(
-        eventProfileCoreFields(access.user, deps.now().toDate()).map(
-          (field) => field.fieldId,
-        ),
-      );
-      if (
-        selection.coreFieldIds.some((id) => !available.has(id)) ||
-        (selection.photoId &&
-          !eventProfilePhotos(access.user, uid).some(
-            (photo) => photo.id === selection.photoId,
-          ))
-      ) {
-        throw stale();
-      }
-      if (selection.card) {
-        await cardFields(db, tx, uid, organizerId, selection.card);
-      }
+      await validateSelection(db, tx, uid, access, selection,
+        deps.now().toDate());
     }
     const now = deps.now();
     tx.set(shareRef(db, data.eventId, uid), {
@@ -323,52 +421,13 @@ export async function getEventChatProfileHandler(
       throw unavailable();
     }
     const share = await readShare(db, tx, data.eventId, data.participantUid);
-    const profile: Profile = {
-      eventId: data.eventId,
-      participantUid: data.participantUid,
-      displayName: target.user!.displayName!.trim().slice(0, 120),
-      coreFields: [],
-      cardFields: [],
-      photo: null,
-    };
     const selected =
       share?.organizerId === target.view.organizerId &&
-      share.selection?.membershipRevision === target.member?.revision ?
+      share.selection && selectionMatchesMember(share.selection, target) ?
         share.selection :
         null;
-    let photo = null;
-    if (selected) {
-      if (selected.profileRevision === (target.user?.profileRevision ?? 0)) {
-        profile.coreFields = eventProfileCoreFields(
-          target.user,
-          deps.now().toDate(),
-        ).filter((field) => selected.coreFieldIds.includes(field.fieldId));
-        photo =
-          eventProfilePhotos(target.user, data.participantUid).find(
-            (item) => item.id === selected.photoId,
-          ) ?? null;
-      }
-      if (selected.card) {
-        try {
-          profile.cardFields = await cardFields(
-            db,
-            tx,
-            data.participantUid,
-            target.view.organizerId,
-            selected.card,
-          );
-        } catch (error) {
-          // Changing or withdrawing a card stops sharing; it never falls back
-          // to another response, organizer, private note or copied answer.
-          if (
-            !isUnavailable(error) &&
-            !(error instanceof HttpsError && error.code === "aborted")
-          ) {
-            throw error;
-          }
-        }
-      }
-    }
+    const {profile, photo} = await projectProfile(db, tx, data.eventId,
+      data.participantUid, target, selected, deps.now().toDate());
     return {
       profile,
       photo,
