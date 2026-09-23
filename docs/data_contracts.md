@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.137.0
+version: 1.138.0
 updated: 2026-09-23
 owner: recursive_audit_loop
 status: active
@@ -2582,6 +2582,39 @@ Production uses the registered Consumer domain. Other environments require the
 build-owned `VITE_CONSUMER_APP_URL` origin (HTTPS or a local loopback HTTP URL);
 without one the completion page omits the link rather than crossing accounts
 into production.
+
+### Event chat access
+
+`eventChatRooms/{eventId}` is the organizer manager's explicit open/close
+switch for an event conversation. `eventChatMemberships/{sha256([eventId,uid])}`
+records the participant's explicit join/leave choice and versioned room terms.
+`getEventChatAccess` and `updateEventChatAccess` own these records; all direct
+client access is denied. A room does not create event admission, a dating match,
+a public profile, or an organizer-card sharing grant.
+
+Every access reads current organizer authority and current admission in the
+same transaction. Guests need a `signedUp`/`attended` participation or exactly
+one linked `registered`/`checkedIn` operational attendee for this event and
+organizer. Contradictory projections, duplicate linked attendees, cancellation,
+waitlisting and foreign identity bindings fail closed. A runtime identity alone
+is not admission. Joining also requires verified phone identity and an
+intentionally created Consumer profile (completed onboarding or a reviewed
+profile revision); private form proposals alone never qualify. A claimed form
+profile may join without enabling dating discovery or completing dating setup.
+
+Organizer managers can open/close a room; guests cannot. Message access requires
+an active event, an open room and the caller's joined membership. A cancelled
+event or revoked admission disables access immediately, regardless of the
+membership record. Leaving remains possible after admission is revoked or the
+event is removed. Account deletion removes membership and private action
+receipts; its tombstone prevents replay from restoring access.
+
+Mutations use a reviewed room/membership revision and UID-bound request ID.
+`eventChatAccessReceipts` prevents an old join or open retry from reversing a
+later leave or close. Replay results report the originally applied revision;
+clients must refresh current access, not interpret replay as current permission.
+These endpoints currently establish access only; message delivery, presence,
+replies, reactions and optional member-card disclosure use separate contracts.
 
 ### Organizer Application Intake
 

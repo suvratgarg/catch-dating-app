@@ -1009,6 +1009,41 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/participantFormProfileProposalDocument.ts",
   },
   {
+    name: "EventChatRoomDocument",
+    source: "firestore/event_chat_rooms.schema.json",
+    typeOutput: "functions/src/shared/generated/eventChatRoomDocument.ts",
+  },
+  {
+    name: "EventChatMembershipDocument",
+    source: "firestore/event_chat_memberships.schema.json",
+    typeOutput: "functions/src/shared/generated/eventChatMembershipDocument.ts",
+  },
+  {
+    name: "EventChatAccessReceiptDocument",
+    source: "firestore/event_chat_access_receipts.schema.json",
+    typeOutput: "functions/src/shared/generated/eventChatAccessReceiptDocument.ts",
+  },
+  {
+    name: "GetEventChatAccessCallablePayload",
+    source: "callables/get_event_chat_access_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/getEventChatAccessCallablePayload.ts",
+  },
+  {
+    name: "UpdateEventChatAccessCallablePayload",
+    source: "callables/update_event_chat_access_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/updateEventChatAccessCallablePayload.ts",
+  },
+  {
+    name: "GetEventChatAccessCallableResponse",
+    source: "callable_responses/get_event_chat_access_response.schema.json",
+    typeOutput: "functions/src/shared/generated/getEventChatAccessCallableResponse.ts",
+  },
+  {
+    name: "UpdateEventChatAccessCallableResponse",
+    source: "callable_responses/update_event_chat_access_response.schema.json",
+    typeOutput: "functions/src/shared/generated/updateEventChatAccessCallableResponse.ts",
+  },
+  {
     name: "ListParticipantMessagingPreferencesCallablePayload",
     source: "callables/list_participant_messaging_preferences_payload.schema.json",
     typeOutput: "functions/src/shared/generated/listParticipantMessagingPreferencesCallablePayload.ts",

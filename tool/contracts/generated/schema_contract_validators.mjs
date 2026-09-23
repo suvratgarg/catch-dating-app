@@ -194,6 +194,13 @@ import {
   getParticipantFormProfileCallablePayloadSchema,
   getParticipantFormProfileCallableResponseSchema,
   participantFormProfileProposalDocumentSchema,
+  eventChatRoomDocumentSchema,
+  eventChatMembershipDocumentSchema,
+  eventChatAccessReceiptDocumentSchema,
+  getEventChatAccessCallablePayloadSchema,
+  updateEventChatAccessCallablePayloadSchema,
+  getEventChatAccessCallableResponseSchema,
+  updateEventChatAccessCallableResponseSchema,
   listParticipantMessagingPreferencesCallablePayloadSchema,
   listParticipantMessagingPreferencesCallableResponseSchema,
   withdrawParticipantMessagingPermissionCallablePayloadSchema,
@@ -938,6 +945,13 @@ export const validateGetParticipantFormPhotoCallableResponse = ajv.compile(getPa
 export const validateGetParticipantFormProfileCallablePayload = ajv.compile(getParticipantFormProfileCallablePayloadSchema);
 export const validateGetParticipantFormProfileCallableResponse = ajv.compile(getParticipantFormProfileCallableResponseSchema);
 export const validateParticipantFormProfileProposalDocument = ajv.compile(participantFormProfileProposalDocumentSchema);
+export const validateEventChatRoomDocument = ajv.compile(eventChatRoomDocumentSchema);
+export const validateEventChatMembershipDocument = ajv.compile(eventChatMembershipDocumentSchema);
+export const validateEventChatAccessReceiptDocument = ajv.compile(eventChatAccessReceiptDocumentSchema);
+export const validateGetEventChatAccessCallablePayload = ajv.compile(getEventChatAccessCallablePayloadSchema);
+export const validateUpdateEventChatAccessCallablePayload = ajv.compile(updateEventChatAccessCallablePayloadSchema);
+export const validateGetEventChatAccessCallableResponse = ajv.compile(getEventChatAccessCallableResponseSchema);
+export const validateUpdateEventChatAccessCallableResponse = ajv.compile(updateEventChatAccessCallableResponseSchema);
 export const validateListParticipantMessagingPreferencesCallablePayload = ajv.compile(listParticipantMessagingPreferencesCallablePayloadSchema);
 export const validateListParticipantMessagingPreferencesCallableResponse = ajv.compile(listParticipantMessagingPreferencesCallableResponseSchema);
 export const validateWithdrawParticipantMessagingPermissionCallablePayload = ajv.compile(withdrawParticipantMessagingPermissionCallablePayloadSchema);

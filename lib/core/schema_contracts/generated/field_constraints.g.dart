@@ -29147,6 +29147,228 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
+  static const eventChatAccessReceiptDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventChatAccessReceiptDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventChatAccessReceiptDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventChatAccessReceiptDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventChatAccessReceiptDocumentEventId = CatchContractFieldConstraints(
+    path: 'eventChatAccessReceiptDocument.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventChatAccessReceiptDocumentPayloadHash = CatchContractFieldConstraints(
+    path: 'eventChatAccessReceiptDocument.payloadHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventChatAccessReceiptDocumentRevision = CatchContractFieldConstraints(
+    path: 'eventChatAccessReceiptDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventChatAccessReceiptDocumentUid = CatchContractFieldConstraints(
+    path: 'eventChatAccessReceiptDocument.uid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventChatMembershipDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventChatMembershipDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventChatMembershipDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventChatMembershipDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventChatMembershipDocumentEventId = CatchContractFieldConstraints(
+    path: 'eventChatMembershipDocument.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventChatMembershipDocumentJoinedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventChatMembershipDocument.joinedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventChatMembershipDocumentJoinedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventChatMembershipDocument.joinedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventChatMembershipDocumentLeftAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventChatMembershipDocument.leftAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventChatMembershipDocumentLeftAtSeconds = CatchContractFieldConstraints(
+    path: 'eventChatMembershipDocument.leftAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventChatMembershipDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'eventChatMembershipDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventChatMembershipDocumentRevision = CatchContractFieldConstraints(
+    path: 'eventChatMembershipDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventChatMembershipDocumentStatus = CatchContractFieldConstraints(
+    path: 'eventChatMembershipDocument.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['joined', 'left'],
+  );
+
+  static const eventChatMembershipDocumentTermsVersion = CatchContractFieldConstraints(
+    path: 'eventChatMembershipDocument.termsVersion',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['event-chat-v1'],
+  );
+
+  static const eventChatMembershipDocumentUid = CatchContractFieldConstraints(
+    path: 'eventChatMembershipDocument.uid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventChatMembershipDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventChatMembershipDocument.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventChatMembershipDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventChatMembershipDocument.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventChatRoomDocumentCreatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventChatRoomDocument.createdAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventChatRoomDocumentCreatedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventChatRoomDocument.createdAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventChatRoomDocumentCreatedByUid = CatchContractFieldConstraints(
+    path: 'eventChatRoomDocument.createdByUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventChatRoomDocumentEventId = CatchContractFieldConstraints(
+    path: 'eventChatRoomDocument.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventChatRoomDocumentOrganizerId = CatchContractFieldConstraints(
+    path: 'eventChatRoomDocument.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventChatRoomDocumentRevision = CatchContractFieldConstraints(
+    path: 'eventChatRoomDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventChatRoomDocumentStatus = CatchContractFieldConstraints(
+    path: 'eventChatRoomDocument.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['open', 'closed'],
+  );
+
+  static const eventChatRoomDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventChatRoomDocument.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventChatRoomDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventChatRoomDocument.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventChatRoomDocumentUpdatedByUid = CatchContractFieldConstraints(
+    path: 'eventChatRoomDocument.updatedByUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const eventCrossPathsConsentDocumentConsentedAtNanoseconds = CatchContractFieldConstraints(
     path: 'eventCrossPathsConsentDocument.consentedAt._nanoseconds',
     required: true,
@@ -58887,6 +59109,105 @@ abstract final class CatchContractConstraints {
     path: 'getEventAttendanceReportCallablePayload.context.organizerId',
     maxLength: 2000,
     minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventChatAccessCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'getEventChatAccessCallablePayload.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventChatAccessCallableResponseCanJoin = CatchContractFieldConstraints(
+    path: 'getEventChatAccessCallableResponse.canJoin',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const getEventChatAccessCallableResponseCanManage = CatchContractFieldConstraints(
+    path: 'getEventChatAccessCallableResponse.canManage',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const getEventChatAccessCallableResponseCanReadMessages = CatchContractFieldConstraints(
+    path: 'getEventChatAccessCallableResponse.canReadMessages',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const getEventChatAccessCallableResponseEventId = CatchContractFieldConstraints(
+    path: 'getEventChatAccessCallableResponse.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventChatAccessCallableResponseMembershipRevision = CatchContractFieldConstraints(
+    path: 'getEventChatAccessCallableResponse.membership.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const getEventChatAccessCallableResponseMembershipStatus = CatchContractFieldConstraints(
+    path: 'getEventChatAccessCallableResponse.membership.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['notJoined', 'joined', 'left'],
+  );
+
+  static const getEventChatAccessCallableResponseOrganizerId = CatchContractFieldConstraints(
+    path: 'getEventChatAccessCallableResponse.organizerId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventChatAccessCallableResponseProfileClaimRequired = CatchContractFieldConstraints(
+    path: 'getEventChatAccessCallableResponse.profileClaimRequired',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const getEventChatAccessCallableResponseRole = CatchContractFieldConstraints(
+    path: 'getEventChatAccessCallableResponse.role',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['host', 'attendee'],
+  );
+
+  static const getEventChatAccessCallableResponseRoomRevision = CatchContractFieldConstraints(
+    path: 'getEventChatAccessCallableResponse.room.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const getEventChatAccessCallableResponseRoomStatus = CatchContractFieldConstraints(
+    path: 'getEventChatAccessCallableResponse.room.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['notCreated', 'open', 'closed'],
+  );
+
+  static const getEventChatAccessCallableResponseTermsVersion = CatchContractFieldConstraints(
+    path: 'getEventChatAccessCallableResponse.termsVersion',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['event-chat-v1'],
+  );
+
+  static const getEventChatAccessCallableResponseTitle = CatchContractFieldConstraints(
+    path: 'getEventChatAccessCallableResponse.title',
+    maxLength: 200,
     required: true,
     valueTypes: <String>['string'],
   );
@@ -97645,6 +97966,57 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
+  static const updateEventChatAccessCallablePayloadAction = CatchContractFieldConstraints(
+    path: 'updateEventChatAccessCallablePayload.action',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['open', 'close', 'join', 'leave'],
+  );
+
+  static const updateEventChatAccessCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'updateEventChatAccessCallablePayload.eventId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateEventChatAccessCallablePayloadExpectedRevision = CatchContractFieldConstraints(
+    path: 'updateEventChatAccessCallablePayload.expectedRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const updateEventChatAccessCallablePayloadRequestId = CatchContractFieldConstraints(
+    path: 'updateEventChatAccessCallablePayload.requestId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const updateEventChatAccessCallablePayloadTermsVersion = CatchContractFieldConstraints(
+    path: 'updateEventChatAccessCallablePayload.termsVersion',
+    valueTypes: <String>['string'],
+    enumValues: <String>['event-chat-v1'],
+  );
+
+  static const updateEventChatAccessCallableResponseReplayed = CatchContractFieldConstraints(
+    path: 'updateEventChatAccessCallableResponse.replayed',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const updateEventChatAccessCallableResponseRevision = CatchContractFieldConstraints(
+    path: 'updateEventChatAccessCallableResponse.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
   static const updateEventRehearsalSetupCallablePayloadActorCount = CatchContractFieldConstraints(
     path: 'updateEventRehearsalSetupCallablePayload.actorCount',
     required: true,
@@ -107847,6 +108219,36 @@ abstract final class CatchContractConstraints {
     'eventBroadcastDocument.title': eventBroadcastDocumentTitle,
     'eventBroadcastDocument.updatedAt._nanoseconds': eventBroadcastDocumentUpdatedAtNanoseconds,
     'eventBroadcastDocument.updatedAt._seconds': eventBroadcastDocumentUpdatedAtSeconds,
+    'eventChatAccessReceiptDocument.createdAt._nanoseconds': eventChatAccessReceiptDocumentCreatedAtNanoseconds,
+    'eventChatAccessReceiptDocument.createdAt._seconds': eventChatAccessReceiptDocumentCreatedAtSeconds,
+    'eventChatAccessReceiptDocument.eventId': eventChatAccessReceiptDocumentEventId,
+    'eventChatAccessReceiptDocument.payloadHash': eventChatAccessReceiptDocumentPayloadHash,
+    'eventChatAccessReceiptDocument.revision': eventChatAccessReceiptDocumentRevision,
+    'eventChatAccessReceiptDocument.uid': eventChatAccessReceiptDocumentUid,
+    'eventChatMembershipDocument.createdAt._nanoseconds': eventChatMembershipDocumentCreatedAtNanoseconds,
+    'eventChatMembershipDocument.createdAt._seconds': eventChatMembershipDocumentCreatedAtSeconds,
+    'eventChatMembershipDocument.eventId': eventChatMembershipDocumentEventId,
+    'eventChatMembershipDocument.joinedAt._nanoseconds': eventChatMembershipDocumentJoinedAtNanoseconds,
+    'eventChatMembershipDocument.joinedAt._seconds': eventChatMembershipDocumentJoinedAtSeconds,
+    'eventChatMembershipDocument.leftAt._nanoseconds': eventChatMembershipDocumentLeftAtNanoseconds,
+    'eventChatMembershipDocument.leftAt._seconds': eventChatMembershipDocumentLeftAtSeconds,
+    'eventChatMembershipDocument.organizerId': eventChatMembershipDocumentOrganizerId,
+    'eventChatMembershipDocument.revision': eventChatMembershipDocumentRevision,
+    'eventChatMembershipDocument.status': eventChatMembershipDocumentStatus,
+    'eventChatMembershipDocument.termsVersion': eventChatMembershipDocumentTermsVersion,
+    'eventChatMembershipDocument.uid': eventChatMembershipDocumentUid,
+    'eventChatMembershipDocument.updatedAt._nanoseconds': eventChatMembershipDocumentUpdatedAtNanoseconds,
+    'eventChatMembershipDocument.updatedAt._seconds': eventChatMembershipDocumentUpdatedAtSeconds,
+    'eventChatRoomDocument.createdAt._nanoseconds': eventChatRoomDocumentCreatedAtNanoseconds,
+    'eventChatRoomDocument.createdAt._seconds': eventChatRoomDocumentCreatedAtSeconds,
+    'eventChatRoomDocument.createdByUid': eventChatRoomDocumentCreatedByUid,
+    'eventChatRoomDocument.eventId': eventChatRoomDocumentEventId,
+    'eventChatRoomDocument.organizerId': eventChatRoomDocumentOrganizerId,
+    'eventChatRoomDocument.revision': eventChatRoomDocumentRevision,
+    'eventChatRoomDocument.status': eventChatRoomDocumentStatus,
+    'eventChatRoomDocument.updatedAt._nanoseconds': eventChatRoomDocumentUpdatedAtNanoseconds,
+    'eventChatRoomDocument.updatedAt._seconds': eventChatRoomDocumentUpdatedAtSeconds,
+    'eventChatRoomDocument.updatedByUid': eventChatRoomDocumentUpdatedByUid,
     'eventCrossPathsConsentDocument.consentedAt._nanoseconds': eventCrossPathsConsentDocumentConsentedAtNanoseconds,
     'eventCrossPathsConsentDocument.consentedAt._seconds': eventCrossPathsConsentDocumentConsentedAtSeconds,
     'eventCrossPathsConsentDocument.enabled': eventCrossPathsConsentDocumentEnabled,
@@ -111839,6 +112241,20 @@ abstract final class CatchContractConstraints {
     'getEventAttendanceReportCallablePayload.context.eventId': getEventAttendanceReportCallablePayloadContextEventId,
     'getEventAttendanceReportCallablePayload.context.mode': getEventAttendanceReportCallablePayloadContextMode,
     'getEventAttendanceReportCallablePayload.context.organizerId': getEventAttendanceReportCallablePayloadContextOrganizerId,
+    'getEventChatAccessCallablePayload.eventId': getEventChatAccessCallablePayloadEventId,
+    'getEventChatAccessCallableResponse.canJoin': getEventChatAccessCallableResponseCanJoin,
+    'getEventChatAccessCallableResponse.canManage': getEventChatAccessCallableResponseCanManage,
+    'getEventChatAccessCallableResponse.canReadMessages': getEventChatAccessCallableResponseCanReadMessages,
+    'getEventChatAccessCallableResponse.eventId': getEventChatAccessCallableResponseEventId,
+    'getEventChatAccessCallableResponse.membership.revision': getEventChatAccessCallableResponseMembershipRevision,
+    'getEventChatAccessCallableResponse.membership.status': getEventChatAccessCallableResponseMembershipStatus,
+    'getEventChatAccessCallableResponse.organizerId': getEventChatAccessCallableResponseOrganizerId,
+    'getEventChatAccessCallableResponse.profileClaimRequired': getEventChatAccessCallableResponseProfileClaimRequired,
+    'getEventChatAccessCallableResponse.role': getEventChatAccessCallableResponseRole,
+    'getEventChatAccessCallableResponse.room.revision': getEventChatAccessCallableResponseRoomRevision,
+    'getEventChatAccessCallableResponse.room.status': getEventChatAccessCallableResponseRoomStatus,
+    'getEventChatAccessCallableResponse.termsVersion': getEventChatAccessCallableResponseTermsVersion,
+    'getEventChatAccessCallableResponse.title': getEventChatAccessCallableResponseTitle,
     'getEventInviteLinkTokenCallablePayload.eventId': getEventInviteLinkTokenCallablePayloadEventId,
     'getEventInviteLinkTokenCallablePayload.inviteLinkId': getEventInviteLinkTokenCallablePayloadInviteLinkId,
     'getEventRcsPreferenceCallablePayload.attendeeId': getEventRcsPreferenceCallablePayloadAttendeeId,
@@ -117166,6 +117582,13 @@ abstract final class CatchContractConstraints {
     'updateEventCallablePayload.fields.startingPointLat': updateEventCallablePayloadFieldsStartingPointLat,
     'updateEventCallablePayload.fields.startingPointLng': updateEventCallablePayloadFieldsStartingPointLng,
     'updateEventCallablePayload.fields.startTimeMillis': updateEventCallablePayloadFieldsStartTimeMillis,
+    'updateEventChatAccessCallablePayload.action': updateEventChatAccessCallablePayloadAction,
+    'updateEventChatAccessCallablePayload.eventId': updateEventChatAccessCallablePayloadEventId,
+    'updateEventChatAccessCallablePayload.expectedRevision': updateEventChatAccessCallablePayloadExpectedRevision,
+    'updateEventChatAccessCallablePayload.requestId': updateEventChatAccessCallablePayloadRequestId,
+    'updateEventChatAccessCallablePayload.termsVersion': updateEventChatAccessCallablePayloadTermsVersion,
+    'updateEventChatAccessCallableResponse.replayed': updateEventChatAccessCallableResponseReplayed,
+    'updateEventChatAccessCallableResponse.revision': updateEventChatAccessCallableResponseRevision,
     'updateEventRehearsalSetupCallablePayload.actorCount': updateEventRehearsalSetupCallablePayloadActorCount,
     'updateEventRehearsalSetupCallablePayload.expectedRevision': updateEventRehearsalSetupCallablePayloadExpectedRevision,
     'updateEventRehearsalSetupCallablePayload.scenarioId': updateEventRehearsalSetupCallablePayloadScenarioId,

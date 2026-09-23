@@ -4997,6 +4997,47 @@ export interface ParticipantFormProfileProposalDocument {
 }
 
 /**
+ * Host-controlled event conversation availability. No attendee admission or profile data.
+ */
+export interface EventChatRoomDocument {
+  eventId: string;
+  organizerId: string;
+  status: "open" | "closed";
+  revision: number;
+  createdByUid: string;
+  updatedByUid: string;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Explicit room participation. Current admission and claimed identity must still be rechecked on every access.
+ */
+export interface EventChatMembershipDocument {
+  eventId: string;
+  organizerId: string;
+  uid: string;
+  status: "joined" | "left";
+  revision: number;
+  termsVersion: "event-chat-v1";
+  joinedAt: FirebaseFirestore.Timestamp;
+  leftAt: FirebaseFirestore.Timestamp | null;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * Payload-bound idempotency receipt for an explicit room availability or membership change.
+ */
+export interface EventChatAccessReceiptDocument {
+  eventId: string;
+  uid: string;
+  payloadHash: string;
+  revision: number;
+  createdAt: FirebaseFirestore.Timestamp;
+}
+
+/**
  * Server-owned Catch WhatsApp preference. Never usable as organizer messaging permission.
  */
 export interface CatchCommunicationPreferenceDocument {

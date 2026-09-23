@@ -600,3 +600,6 @@ export {getEventRcsWithdrawal, withdrawEventRcs} from
 
 export {listParticipantMessagingPreferences, withdrawParticipantMessagingPermission}
   from "./messaging/participantMessagingPreferences";
+
+export {getEventChatAccess, updateEventChatAccess}
+  from "./chats/eventChatAccess";

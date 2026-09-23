@@ -206,7 +206,7 @@ async function queueRelationshipCleanup(params: {
     queueEventBroadcastCleanup(db, uid, writer),
     queueOrganizerCommunicationPreferenceCleanup(db, uid, writer),
     queueHostAnalyticsSnapshotCleanup(db, uid, writer),
-    queueFormProfileProposalCleanup(db, uid, writer),
+    queueParticipantPrivateStateCleanup(db, uid, writer),
     queueBlockCleanup(db, uid, writer),
     queueReportCleanup(db, uid, now, writer),
   ]);
@@ -326,14 +326,15 @@ async function queueHostAnalyticsSnapshotCleanup(
   snapshots.forEach((doc) => writer.delete(doc.ref));
 }
 
-/** Deletes private form claim state without touching organizer CRM. */
-async function queueFormProfileProposalCleanup(
+/** Deletes private form and room decisions without touching organizer CRM. */
+async function queueParticipantPrivateStateCleanup(
   db: FirebaseFirestore.Firestore,
   uid: string,
   writer: BatchQueue
 ) {
   for (const collection of ["participantFormProfileProposals",
-    "participantOrganizerCards", "participantProfileClaimReceipts"]) {
+    "participantOrganizerCards", "participantProfileClaimReceipts",
+    "eventChatMemberships", "eventChatAccessReceipts"]) {
     const records = await db.collection(collection)
       .where("uid", "==", uid).get();
     records.forEach((doc) => writer.delete(doc.ref));

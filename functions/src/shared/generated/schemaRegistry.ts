@@ -196,6 +196,13 @@ export {getParticipantFormPhotoCallableResponseSchema} from "./schemas/getPartic
 export {getParticipantFormProfileCallablePayloadSchema} from "./schemas/getParticipantFormProfileInput";
 export {getParticipantFormProfileCallableResponseSchema} from "./schemas/getParticipantFormProfileOutput";
 export {participantFormProfileProposalDocumentSchema} from "./schemas/participantFormProfileProposalDocument";
+export {eventChatRoomDocumentSchema} from "./schemas/eventChatRoomDocument";
+export {eventChatMembershipDocumentSchema} from "./schemas/eventChatMembershipDocument";
+export {eventChatAccessReceiptDocumentSchema} from "./schemas/eventChatAccessReceiptDocument";
+export {getEventChatAccessCallablePayloadSchema} from "./schemas/getEventChatAccessInput";
+export {updateEventChatAccessCallablePayloadSchema} from "./schemas/updateEventChatAccessInput";
+export {getEventChatAccessCallableResponseSchema} from "./schemas/getEventChatAccessOutput";
+export {updateEventChatAccessCallableResponseSchema} from "./schemas/updateEventChatAccessOutput";
 export {listParticipantMessagingPreferencesCallablePayloadSchema} from "./schemas/listParticipantMessagingPreferencesInput";
 export {listParticipantMessagingPreferencesCallableResponseSchema} from "./schemas/listParticipantMessagingPreferencesOutput";
 export {withdrawParticipantMessagingPermissionCallablePayloadSchema} from "./schemas/withdrawParticipantMessagingPermissionInput";
