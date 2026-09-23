@@ -231,6 +231,7 @@ jobs:
           SHARD_INDEX: ${{ matrix.shard_index }}
           SHARD_TOTAL: ${{ matrix.shard_total }}
           CATCH_EVENT_PARTICIPANTS_CAPTURE_DIR: /tmp/catch-event-participants-review
+          CATCH_HOST_RESPONSE_REVIEW_DIR: /tmp/catch-host-response-review
         run: |
           jq -er --arg sha "$GITHUB_SHA" --argjson index "$SHARD_INDEX" \
             '.sourceSha == $sha and (.shards[$index].files | length > 0)' \
@@ -271,6 +272,7 @@ jobs:
               'event-profile': ('/tmp/catch-event-profile-review', 'test/chats/event_profile_widget_test.dart'),
               'event-chat': ('/tmp/catch-event-chat-review', 'test/chats/event_chat_widget_test.dart'),
               'event-participants': ('/tmp/catch-event-participants-review', 'test/chats/event_chat_participants_widget_test.dart'),
+              'host-response-review': ('/tmp/catch-host-response-review', 'test/hosts/forms/host_form_response_detail_screen_test.dart'),
           }
           output = Path(os.environ['CAPTURE_OUTPUT_DIR'])
           captures = []
@@ -287,6 +289,8 @@ jobs:
                   capture_source = source_test
                   if group == 'event-chat' and image.name.startswith('directory-'):
                       capture_source = 'test/chats/event_chat_directory_widget_test.dart'
+                  if group == 'host-response-review' and image.name.startswith('filters-'):
+                      capture_source = 'test/hosts/forms/host_form_response_filters_test.dart'
                   captures.append({
                       'path': str(target.relative_to(output)),
                       'sourceTest': capture_source,
