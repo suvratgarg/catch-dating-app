@@ -31,6 +31,33 @@ submission receipts, and withdrawal, and remains usable in a bounded iframe
 presentation. It never reads Forms collections directly and does not bootstrap
 the Consumer Flutter application.
 
+## Form embeds and proposed custom-host activation
+
+The public form share asset keeps `/f/:publicFormId/` as the canonical Catch URL.
+Its iframe installer is an external script at `/form-embed-resize.js`; a parent
+site must allow the Catch iframe in `frame-src` and that script in `script-src`.
+The installer accepts only a dimension message with a matching Catch origin,
+exact iframe `contentWindow`, frame identifier and bounded height. The child
+sends only that message to the origin derived from its browser referrer. A
+direct Catch link remains available if the site blocks scripts or if embedding
+is unsupported. Site-specific CSP, keyboard, mobile scroll, checkout popups,
+and browser storage need real browser validation before a client page goes live.
+
+`organizerFormDomainRegistry.ts` is the inactive server-side ownership and
+routing policy for a future Catch-served customer subdomain. It stores one
+exact hostname per record, binds it to a published organizer form, issues a
+fresh TXT challenge for every reservation, requires a matching CNAME and
+current DNS probe, and requires trusted certificate readiness before activation.
+Resolution also rechecks form ownership and publication. Revocation stops
+resolution; reassignment starts with a rotated challenge and generation.
+No custom hostname is enabled by this module alone. The hosting target, DNS
+and TLS provisioner, public endpoint/route, contract generation, Auth/App
+Check, upload CORS and payment return origins must be integrated and reviewed
+before activation. A client-owned `/apply` page can instead embed the Catch
+iframe without changing the form origin. Serving `/apply` directly on an
+existing client origin requires that site's supported proxy or native routing;
+DNS alone cannot select a URL path.
+
 ## Cross-Surface Feature Identity
 
 `design/features/feature_coverage.json` is the exhaustive migration boundary
