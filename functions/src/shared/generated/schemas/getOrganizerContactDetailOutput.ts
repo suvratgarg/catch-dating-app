@@ -217,6 +217,114 @@ export const getOrganizerContactDetailCallableResponseSchema: Record<string, unk
             "phoneVerified",
             "catchAccount"
           ]
+        },
+        "purposes": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "eventOperations": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "status",
+                "evidenceStatus",
+                "receiptId",
+                "decisionAtMillis",
+                "deliveryAvailable"
+              ],
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "unknown",
+                    "optedIn",
+                    "optedOut"
+                  ]
+                },
+                "evidenceStatus": {
+                  "type": "string",
+                  "enum": [
+                    "complete",
+                    "incomplete"
+                  ]
+                },
+                "receiptId": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "decisionAtMillis": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 0
+                },
+                "deliveryAvailable": {
+                  "type": "boolean",
+                  "description": "False for form-originated WhatsApp purposes pending provider review; consent can still be recorded."
+                }
+              }
+            },
+            "marketing": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "status",
+                "evidenceStatus",
+                "receiptId",
+                "decisionAtMillis",
+                "deliveryAvailable"
+              ],
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "unknown",
+                    "optedIn",
+                    "optedOut"
+                  ]
+                },
+                "evidenceStatus": {
+                  "type": "string",
+                  "enum": [
+                    "complete",
+                    "incomplete"
+                  ]
+                },
+                "receiptId": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "decisionAtMillis": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 0
+                },
+                "deliveryAvailable": {
+                  "type": "boolean",
+                  "description": "False for form-originated WhatsApp purposes pending provider review; consent can still be recorded."
+                }
+              }
+            }
+          }
         }
       }
     },
@@ -1434,6 +1542,165 @@ export const getOrganizerContactDetailCallableResponseSchema: Record<string, unk
             "phoneVerified",
             "catchAccount"
           ]
+        },
+        "purposes": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "eventOperations": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "status",
+                "evidenceStatus",
+                "receiptId",
+                "decisionAtMillis",
+                "deliveryAvailable"
+              ],
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "unknown",
+                    "optedIn",
+                    "optedOut"
+                  ]
+                },
+                "evidenceStatus": {
+                  "type": "string",
+                  "enum": [
+                    "complete",
+                    "incomplete"
+                  ]
+                },
+                "receiptId": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "decisionAtMillis": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 0
+                },
+                "deliveryAvailable": {
+                  "type": "boolean",
+                  "description": "False for form-originated WhatsApp purposes pending provider review; consent can still be recorded."
+                }
+              }
+            },
+            "marketing": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "status",
+                "evidenceStatus",
+                "receiptId",
+                "decisionAtMillis",
+                "deliveryAvailable"
+              ],
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "unknown",
+                    "optedIn",
+                    "optedOut"
+                  ]
+                },
+                "evidenceStatus": {
+                  "type": "string",
+                  "enum": [
+                    "complete",
+                    "incomplete"
+                  ]
+                },
+                "receiptId": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "decisionAtMillis": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 0
+                },
+                "deliveryAvailable": {
+                  "type": "boolean",
+                  "description": "False for form-originated WhatsApp purposes pending provider review; consent can still be recorded."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "purposePermission": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "evidenceStatus",
+        "receiptId",
+        "decisionAtMillis",
+        "deliveryAvailable"
+      ],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "unknown",
+            "optedIn",
+            "optedOut"
+          ]
+        },
+        "evidenceStatus": {
+          "type": "string",
+          "enum": [
+            "complete",
+            "incomplete"
+          ]
+        },
+        "receiptId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "decisionAtMillis": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "deliveryAvailable": {
+          "type": "boolean",
+          "description": "False for form-originated WhatsApp purposes pending provider review; consent can still be recorded."
         }
       }
     },

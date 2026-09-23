@@ -11,6 +11,16 @@ export type OrganizerCommunicationPermissionReceiptDocument = {
   organizerId: string;
   uid: string;
   channel: "whatsapp" | "sms";
+  purpose?: "eventOperations" | "marketing";
+  endpointE164?: string;
+  sourceVersionId?: string;
+  /**
+   * Serialized Firestore Timestamp fixture shape.
+   */
+  sourceDecidedAt?: {
+    _seconds: number;
+    _nanoseconds: number;
+  };
   decision: "optedIn" | "optedOut";
   evidenceStatus: "complete" | "incomplete";
   termsVersion: string | null;

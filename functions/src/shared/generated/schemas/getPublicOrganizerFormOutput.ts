@@ -959,8 +959,11 @@ export const getPublicOrganizerFormCallableResponseSchema: Record<string, unknow
           ],
           "properties": {
             "termsVersion": {
-              "const": "form-whatsapp-v1",
-              "type": "string"
+              "type": "string",
+              "enum": [
+                "form-whatsapp-v1",
+                "form-whatsapp-v2"
+              ]
             },
             "organizerWhatsapp": {
               "type": [
@@ -970,6 +973,27 @@ export const getPublicOrganizerFormCallableResponseSchema: Record<string, unknow
               "maxLength": 1000
             },
             "catchWhatsapp": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 1000
+            },
+            "organizerOperationsWhatsapp": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 1000
+            },
+            "organizerMarketingWhatsapp": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 1000
+            },
+            "catchMarketingWhatsapp": {
               "type": [
                 "string",
                 "null"

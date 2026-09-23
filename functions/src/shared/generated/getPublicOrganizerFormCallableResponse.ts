@@ -249,8 +249,11 @@ export type GetPublicOrganizerFormCallableResponse = {
     };
   };
   messagingOffer?: {
-    termsVersion: "form-whatsapp-v1";
+    termsVersion: "form-whatsapp-v1" | "form-whatsapp-v2";
     organizerWhatsapp: string | null;
     catchWhatsapp: string | null;
+    organizerOperationsWhatsapp?: string | null;
+    organizerMarketingWhatsapp?: string | null;
+    catchMarketingWhatsapp?: string | null;
   };
 };

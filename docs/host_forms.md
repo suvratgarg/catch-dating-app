@@ -1,6 +1,6 @@
 ---
 doc_id: host_forms_product_spec
-version: 1.2.3
+version: 1.3.0
 updated: 2026-09-23
 owner: host_tooling
 status: active
@@ -369,24 +369,32 @@ editable and round-trips without changing the destination. Publish validation
 requires verified-phone access for profile/card fields; submission only prepares
 private review pointers and does not claim, publish or share a profile.
 
-The Settings workspace can offer organizer and Catch WhatsApp choices
-independently; enabling either requires verified-phone identity. The public
-review step starts both unchecked and uses versioned server-owned copy. A
-respondent may choose either, both or neither without changing application or
-payment eligibility. Leaving a box unchecked does not revoke an existing
-permission. Draft choices resume with the same verified account, and switching
-accounts clears local answers and choices.
+The Settings workspace offers independently unchecked organizer application and
+event updates, organizer future-event marketing, and Catch future-experience
+marketing choices on new `form-whatsapp-v2` forms. Legacy v1 organizer/Catch
+choices remain verified-phone-first and retain only their established scope;
+their broader copy never becomes a v2 operational grant. The public review step
+uses versioned server-owned copy and explains that v2 choices need a valid
+mobile number from a canonical form answer or verified Auth phone. Without one,
+the choices are disabled and the response can still be submitted unchecked.
+An unchecked choice neither grants nor withdraws permission. Draft choices
+resume under the same respondent authority; account switching clears local
+answers and choices.
 
-Successful free submission or verified paid finalization atomically records only
-the selected permissions. Organizer receipts/preferences and Catch
-receipts/preferences are separate server-only collections. Each scope retains
-its own decision timestamp: a delayed payment cannot overwrite a later STOP or
-settings withdrawal, and changing one scope cannot renew the other. Checkout
-freezes the choices with the answers. Replays cannot create duplicate receipts;
-account deletion removes both scopes and its tombstone blocks late grants.
-Participant preference management must expose separate withdrawal controls
-before releasing this consent flow; form capture alone does not enable a Catch
-marketing sender.
+Free submission and paid finalization atomically record selected decisions.
+An unverified v2 response creates only a private pending intent bound to its
+form, version, response, source copy and phone endpoint; it does not activate a
+sender. The respondent can later verify that same number and claim the exact
+submitted response to promote the selected purposes. Organizer and Catch
+receipts/preferences stay separate server-only ledgers. Each purpose retains
+its own decision time: delayed payment or late promotion cannot override a
+newer STOP or settings withdrawal, and changing one choice cannot renew another.
+Checkout freezes the choices with the answers. Replays return current canonical
+permission without recreating receipts; deletion prevents late grants.
+Participants can withdraw each purpose or the whole sender. Collecting a new
+form-originated WhatsApp permission does not enable managed delivery until the
+provider use case is reviewed; existing independent event-service sends keep
+their own eligibility rules.
 
 Live Razorpay setup remains external: create Catch's Technology Partner
 application, register the HTTPS callback, provision its client credentials and
@@ -518,6 +526,17 @@ against its immutable version. Detail-only and withdrawn answers never satisfy
 an answer filter. Changing answer filters or chronological order starts a new
 query; cursors are bound to those selections. Bounded scans can yield an empty
 page with a continuation, so the UI must retain Load more and active controls.
+When an older client sends answer filters without a version ID, the server
+matches only the form's active published version and binds that resolved version
+to the cursor. An explicit version ID matches only that immutable version; equal
+labels or option values on another version do not widen the result.
+For a native form the Host response inbox first resolves the server's active
+published version, then shows that version as the selected scope. Hosts can
+select a historical version or all versions; selecting a different scope clears
+answer choices because question and option identities belong to one version.
+The server supplies the active version and publication count, and the client
+derives historical IDs from the published `formId_vN` identity. Imported forms
+without a native version scope keep their own response behavior.
 
 Application detail places authorized phone/social contact actions and review
 status controls before the answer list. Acceptance creates or reuses a CRM
@@ -574,6 +593,13 @@ The primary action uses the borderless shared page-action recipe. Decline is a
 neutral outlined secondary danger action at rest. The review status badge
 represents the existing decision. Withdrawn or revoked entries expose no review
 or conversion mutations.
+Opening a row from the response inbox carries its form, version, search, status,
+answer choices and order into the unified detail route. Previous and Next walk
+that same bounded queue. If a review removes the current row from the filter,
+Next takes the row now at its former position and Previous takes the preceding
+row; additional pages load under the same request. Returning to the inbox keeps
+its selected filters and loaded position. A direct detail link has no queue
+controls because it has no originating filter context.
 
 ## Automations And Conversion
 

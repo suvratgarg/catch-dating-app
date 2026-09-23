@@ -100,6 +100,7 @@ class HostCustomerWhatsappPermission {
     required this.sourceFormTitle,
     required this.decisionAt,
     required this.identityStrength,
+    this.purposes = const {},
   });
 
   factory HostCustomerWhatsappPermission.fromMap(Map<Object?, Object?> map) =>
@@ -120,6 +121,7 @@ class HostCustomerWhatsappPermission {
         sourceFormTitle: crmNullableString(map['sourceFormTitle']),
         decisionAt: crmDateTimeFromMillis(map['decisionAtMillis']),
         identityStrength: crmNullableString(map['identityStrength']),
+        purposes: _parseWhatsappPurposes(map['purposes']),
       );
 
   final HostAudiencePermissionStatus status;
@@ -130,6 +132,60 @@ class HostCustomerWhatsappPermission {
   final String? sourceFormTitle;
   final DateTime? decisionAt;
   final String? identityStrength;
+  final Map<String, HostCustomerWhatsappPurposePermission> purposes;
+  HostAudiencePermissionStatus get effectiveStatus => purposes.values.any(
+    (decision) => decision.status == HostAudiencePermissionStatus.optedIn &&
+        decision.evidenceStatus ==
+            HostCustomerPermissionEvidenceStatus.complete,
+  ) ? HostAudiencePermissionStatus.optedIn : status;
+}
+
+Map<String, HostCustomerWhatsappPurposePermission> _parseWhatsappPurposes(
+  Object? value,
+) {
+  if (value == null) return const {};
+  final map = crmRequiredMap(value, 'WhatsApp purposes');
+  return {
+    for (final purpose in ['eventOperations', 'marketing'])
+      if (map[purpose] != null)
+        purpose: HostCustomerWhatsappPurposePermission.fromMap(
+          crmRequiredMap(map[purpose], 'WhatsApp $purpose permission'),
+        ),
+  };
+}
+
+class HostCustomerWhatsappPurposePermission {
+  const HostCustomerWhatsappPurposePermission({
+    required this.status,
+    required this.evidenceStatus,
+    required this.receiptId,
+    required this.decisionAt,
+    required this.deliveryAvailable,
+  });
+
+  factory HostCustomerWhatsappPurposePermission.fromMap(
+    Map<Object?, Object?> map,
+  ) => HostCustomerWhatsappPurposePermission(
+    status: crmEnumByName(
+      HostAudiencePermissionStatus.values,
+      crmRequiredString(map, 'status'),
+      'WhatsApp purpose permission status',
+    ),
+    evidenceStatus: crmEnumByName(
+      HostCustomerPermissionEvidenceStatus.values,
+      crmRequiredString(map, 'evidenceStatus'),
+      'WhatsApp purpose evidence status',
+    ),
+    receiptId: crmNullableString(map['receiptId']),
+    decisionAt: crmDateTimeFromMillis(map['decisionAtMillis']),
+    deliveryAvailable: crmRequiredBool(map, 'deliveryAvailable'),
+  );
+
+  final HostAudiencePermissionStatus status;
+  final HostCustomerPermissionEvidenceStatus evidenceStatus;
+  final String? receiptId;
+  final DateTime? decisionAt;
+  final bool deliveryAvailable;
 }
 
 enum HostCustomerOriginSourceKind {

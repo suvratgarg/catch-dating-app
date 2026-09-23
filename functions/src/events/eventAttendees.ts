@@ -748,6 +748,8 @@ export function mergeOrganizerCommunicationPreference(params: {
     uid: params.uid,
     whatsapp: grantsWhatsapp ? optedInChannel("whatsapp") :
       params.existing?.whatsapp ?? unknownOrganizerCommunicationChannel(),
+    ...(params.existing?.whatsappPurposes ?
+      {whatsappPurposes: params.existing.whatsappPurposes} : {}),
     sms: grantsSms ? optedInChannel("sms") :
       params.existing?.sms ?? unknownOrganizerCommunicationChannel(),
     createdAt: params.existing?.createdAt ?? params.now,

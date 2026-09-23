@@ -1,3 +1,4 @@
+import {useEffect, useRef} from "react";
 import {useParams} from "react-router";
 import {
   Button,
@@ -32,18 +33,35 @@ import {
   type PublicFormQuestion as Question,
 } from "./publicFormModel";
 import {formProfileReviewUrl} from "./formProfileReviewLink";
+import {embedParentOrigin, resizePayload} from "./publicFormEmbed";
 import {usePublicFormController} from "./usePublicFormController";
 
 export function PublicFormPage() {
   const {publicFormId = ""} = useParams<{publicFormId: string}>();
   const controller = usePublicFormController(publicFormId);
+  const frameRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!controller.embed || window.parent === window || !frameRef.current) return;
+    const embedId = new URLSearchParams(window.location.search).get("embedId") ?? "";
+    const parentOrigin = embedParentOrigin(document.referrer);
+    if (!parentOrigin) return;
+    const frame = frameRef.current;
+    const sendHeight = () => {
+      const payload = resizePayload(embedId, frame.getBoundingClientRect().height);
+      if (payload) window.parent.postMessage(payload, parentOrigin);
+    };
+    const observer = new ResizeObserver(sendHeight);
+    observer.observe(frame);
+    sendHeight();
+    return () => observer.disconnect();
+  }, [controller.embed]);
   const organizerName = controller.form?.organizer.name;
   const hasProfileFields = controller.form?.definition.sections?.some((section) =>
     section.questions.some((question) => question.answerDestination === "catchProfile" ||
       question.answerDestination === "organizerCard")) ?? false;
 
   return (
-    <PublicFormFrame
+    <div ref={frameRef}><PublicFormFrame
       embed={controller.embed}
       appearance={controller.form?.definition.appearance.preset}
       activityKind={controller.form?.definition.appearance.activityKind}
@@ -58,7 +76,7 @@ export function PublicFormPage() {
       >
         {hasProfileFields ? publicFormsCopy.profilePrivacyNote : publicFormsCopy.privacyNote}
       </PublicFormPrivacy>
-    </PublicFormFrame>
+    </PublicFormFrame></div>
   );
 }
 
@@ -128,6 +146,16 @@ function PublicFormStage({
           <FormStatus status={{message: publicFormsCopy.profileReviewHelp, tone: ""}} />
         ) : null}
         <PublicFormActions>
+          {controller.pendingConsentResponseId ===
+          controller.receipt.responseId ? (
+            <Button
+              loading={controller.pending}
+              onClick={() => void controller.startConsentPromotion()}
+              type="button"
+            >
+              {publicFormsCopy.messagingVerifyAction}
+            </Button>
+          ) : null}
           {reviewUrl ? (
             <ButtonLink href={reviewUrl}>
               {publicFormsCopy.profileReviewAction}
@@ -170,9 +198,11 @@ function IdentityStage({
   controller: ReturnType<typeof usePublicFormController>;
 }) {
   const policy = controller.form?.definition.identityPolicy;
-  const permitsPhone = controller.recoveringPayment || policy === "phoneVerified" ||
+  const permitsPhone = controller.verifyingConsent ||
+    controller.recoveringPayment || policy === "phoneVerified" ||
     policy === "emailOrPhoneVerified" || policy === "catchAccount";
-  const permitsEmail = !controller.recoveringPayment && (policy === "emailVerified" ||
+  const permitsEmail = !controller.verifyingConsent &&
+    !controller.recoveringPayment && (policy === "emailVerified" ||
     policy === "emailOrPhoneVerified" || policy === "catchAccount");
   if (controller.stage === "emailSent") {
     return (
@@ -572,15 +602,28 @@ function ReviewStage({
           {definition.consent.consentCopy}
         </CheckboxField>
       </PublicFormConsent>
-      {controller.form?.messagingOffer?.organizerWhatsapp ||
-          controller.form?.messagingOffer?.catchWhatsapp ? (
+      {controller.form?.messagingOffer && (
+        controller.form.messagingOffer.organizerWhatsapp ||
+        controller.form.messagingOffer.catchWhatsapp ||
+        controller.form.messagingOffer.organizerOperationsWhatsapp ||
+        controller.form.messagingOffer.organizerMarketingWhatsapp ||
+        controller.form.messagingOffer.catchMarketingWhatsapp) ? (
         <PublicFormConsent>
           <h2>{publicFormsCopy.messagingHeading}</h2>
-          <p>{publicFormsCopy.messagingHelp}</p>
-          {(["organizerWhatsapp", "catchWhatsapp"] as const).map((scope) => {
+          <p>{controller.form.messagingOffer.termsVersion === "form-whatsapp-v2" ?
+            publicFormsCopy.messagingPurposeHelp : publicFormsCopy.messagingHelp}</p>
+          {controller.form.messagingOffer.termsVersion === "form-whatsapp-v2" &&
+          !controller.messagingEndpointAvailable ? (
+            <p>{publicFormsCopy.messagingPhoneRequired}</p>
+          ) : null}
+          {(["organizerWhatsapp", "catchWhatsapp",
+            "organizerOperationsWhatsapp", "organizerMarketingWhatsapp",
+            "catchMarketingWhatsapp"] as const).map((scope) => {
             const label = controller.form?.messagingOffer?.[scope];
             return label ? <CheckboxField key={scope}
               checked={controller.messagingChoices[scope]}
+              disabled={controller.form?.messagingOffer?.termsVersion ===
+                "form-whatsapp-v2" && !controller.messagingEndpointAvailable}
               onChange={(event) => controller.updateMessagingChoice(scope, event.target.checked)}
             >{label}</CheckboxField> : null;
           })}
