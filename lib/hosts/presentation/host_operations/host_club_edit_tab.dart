@@ -688,7 +688,6 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
         ),
       ];
     }
-
     return [
       CatchFormSingleChoiceRow<UpdateClubPatch, _HostOrganizerTypeOption>(
         itemLabel: (value) => value.label,
@@ -782,7 +781,6 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
         ),
       ];
     }
-
     return [
       CatchFormTextRow<UpdateClubPatch>(
         validationCopy: catchFormValidationCopy(context.l10n),

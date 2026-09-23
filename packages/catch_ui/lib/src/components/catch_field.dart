@@ -782,7 +782,6 @@ final class CatchField<T> extends StatefulWidget
          onTap: null,
          explicitSave: true,
        );
-
   const CatchField.add({
     required CatchFieldCopy copy,
     Key? key,
