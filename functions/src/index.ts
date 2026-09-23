@@ -414,6 +414,7 @@ export {
   syncHostProfile,
   syncPublicProfile,
 } from "./profiles/syncPublicProfile";
+export {listParticipantFormProfiles} from "./profiles/listFormProfiles";
 export {getParticipantFormProfile, claimParticipantFormProfile}
   from "./profiles/claimFormProfile";
 export {updateUserProfile} from "./profiles/updateUserProfile";

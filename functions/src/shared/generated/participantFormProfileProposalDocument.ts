@@ -55,4 +55,11 @@ export interface ParticipantFormProfileProposalDocument {
     _seconds: number;
     _nanoseconds: number;
   };
+  /**
+   * Serialized Firestore Timestamp fixture shape.
+   */
+  claimedAt?: {
+    _seconds: number;
+    _nanoseconds: number;
+  };
 }

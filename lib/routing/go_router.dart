@@ -67,6 +67,8 @@ import 'package:catch_dating_app/swipes/presentation/swipe_screen.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_readiness.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
+import 'package:catch_dating_app/user_profile/presentation/form_profile_review_screen.dart';
+import 'package:catch_dating_app/user_profile/presentation/form_profiles_screen.dart';
 import 'package:catch_dating_app/user_profile/presentation/profile_screen.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -76,9 +78,8 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 export 'route_contract.dart';
 
-part 'go_router.g.dart';
-
 part 'detail_route_pages.dart';
+part 'go_router.g.dart';
 part 'host_inbox_route.dart';
 
 HostEventManageSection _hostManageSectionFromState(GoRouterState state) {
@@ -459,6 +460,22 @@ GoRouter _buildGoRouter(Ref ref, {required bool isHostApp}) {
                   path: Routes.profileScreen.path,
                   name: Routes.profileScreen.name,
                   builder: (context, state) => const ProfileScreen(),
+                  routes: [
+                    GoRoute(
+                      path: 'forms',
+                      name: Routes.formProfilesScreen.name,
+                      builder: (context, state) => const FormProfilesScreen(),
+                      routes: [
+                        GoRoute(
+                          path: ':responseId',
+                          name: Routes.formProfileReviewScreen.name,
+                          builder: (context, state) => FormProfileReviewScreen(
+                            responseId: state.pathParameters['responseId']!,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -1130,6 +1147,14 @@ String? appRedirect({
     return null;
   }
 
+  // Claiming applicant-owned form details must not require dating preferences.
+  // Authentication still runs above; booking and dating routes keep their gates.
+  if (_isFormProfileRoute(matchedLocation)) return null;
+  if (onLoading || onStart || onAuth || onOnboarding) {
+    final resume = _resumeDestination(uri);
+    if (_isFormProfileRoute(Uri.parse(resume).path)) return resume;
+  }
+
   final onProfileCompletionOnboarding =
       onOnboarding &&
       uri.queryParameters[_onboardingIntentQueryParam] ==
@@ -1178,6 +1203,10 @@ String? appRedirect({
 
   return null;
 }
+
+bool _isFormProfileRoute(String path) =>
+    path == Routes.formProfilesScreen.path ||
+    RegExp(r'^/you/forms/[^/]+$').hasMatch(path);
 
 bool _requiresSocialProfile(String matchedLocation) {
   return matchedLocation == Routes.filtersScreen.path ||

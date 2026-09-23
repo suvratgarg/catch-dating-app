@@ -2972,6 +2972,7 @@
         "getOrganizerFormPayment",
         "requestAccountDeletion",
         "getParticipantFormProfile",
+        "listParticipantFormProfiles",
         "claimParticipantFormProfile"
       ],
       "migrationNotes": [
@@ -2990,6 +2991,7 @@
       "read": "server only; authenticated participant projection",
       "write": "server only; explicit participant review",
       "exportedFunctions": [
+        "listParticipantFormProfiles",
         "claimParticipantFormProfile",
         "requestAccountDeletion"
       ],

@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import {FieldValue, Timestamp} from "firebase-admin/firestore";
+import {FieldPath, FieldValue, Timestamp} from "firebase-admin/firestore";
 import type {CallableRequest} from "firebase-functions/v2/https";
 import type {OrganizerFormDocument as Form,
   OrganizerFormVersionDocument as Version,
@@ -23,21 +23,38 @@ export class FormPaymentTestStore {
       doc: (id: string) => this.ref(`${name}/${id}`)};
   }
   private query(name: string, filters: Array<[string, unknown]> = [],
-    limit = 100) {
+    limit = 100, order: "createdAt" | "documentId" | null = null,
+    cursor: string | null = null) {
     return {
       where: (field: string, operator: string, value: unknown) => {
         assert.equal(operator, "==");
-        return this.query(name, [...filters, [field, value]], limit);
+        return this.query(name, [...filters, [field, value]],
+          limit, order, cursor);
       },
-      orderBy: (field: string, direction: string) => {
+      orderBy: (field: string | FieldPath, direction?: string) => {
+        if (field instanceof FieldPath) {
+          assert.ok(field.isEqual(FieldPath.documentId()));
+          assert.equal(direction, undefined);
+          return this.query(name, filters, limit, "documentId", cursor);
+        }
         assert.equal(field, "createdAt");
         assert.equal(direction, "desc");
-        return this.query(name, filters, limit);
+        return this.query(name, filters, limit, "createdAt", cursor);
       },
-      limit: (value: number) => this.query(name, filters, value),
+      startAfter: (value: string) => {
+        assert.equal(order, "documentId");
+        return this.query(name, filters, limit, order, value);
+      },
+      limit: (value: number) => this.query(name, filters, value, order, cursor),
       get: async () => ({docs: [...this.records.entries()]
         .filter(([path, data]) => path.startsWith(`${name}/`) &&
-          filters.every(([field, value]) => data[field] === value))
+          path.split("/").length === name.split("/").length + 1 &&
+          filters.every(([field, value]) => data[field] === value) &&
+          (!cursor || path.split("/").at(-1)! > cursor))
+        .sort(([left, a], [right, b]) => order === "documentId" ?
+          (left < right ? -1 : left > right ? 1 : 0) : order === "createdAt" ?
+            (b.createdAt as Timestamp).toMillis() -
+              (a.createdAt as Timestamp).toMillis() : 0)
         .slice(0, limit).map(([path]) => this.snapshot(path))}),
     };
   }

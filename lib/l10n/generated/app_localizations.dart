@@ -32439,6 +32439,216 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Requires verified phone access. The applicant can see this answer in their private card for your organizer. Other organizers cannot see it. Event sharing needs their permission.'**
   String get hostFormAnswerOrganizerCardHelp;
+
+  /// Participant form profile review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Forms & private cards'**
+  String get formProfilesTitle;
+
+  /// Participant form profile review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Review the details you submitted and choose what to keep in Catch. Your private organizer cards contain only answers you chose from your forms.'**
+  String get formProfilesDescription;
+
+  /// Participant form profile review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'No form profiles yet'**
+  String get formProfilesEmptyTitle;
+
+  /// Participant form profile review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Forms with Catch profile fields or private card fields appear here after you submit with your verified phone number.'**
+  String get formProfilesEmptyBody;
+
+  /// Participant form profile review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Load more'**
+  String get formProfilesLoadMore;
+
+  /// Participant form profile review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Review details'**
+  String get formProfilesReview;
+
+  /// Participant form profile review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage saved details'**
+  String get formProfilesManage;
+
+  /// Participant form profile review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Organizer'**
+  String get formProfilesOrganizerFallback;
+
+  /// Participant form profile review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Review your profile'**
+  String get formProfileReviewTitle;
+
+  /// Participant form profile review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose which form details to use. Saving does not change your original submission, admit you to an event, or turn on dating discovery.'**
+  String get formProfileReviewDescription;
+
+  /// Participant form profile review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch profile details'**
+  String get formProfileCoreTitle;
+
+  /// Participant form profile review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Your private organizer card'**
+  String get formProfileCardTitle;
+
+  /// Participant form profile review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Only you can see this card. Other organizers cannot see it. The organizer still has your original form response. Removing an answer here removes it from this card only.'**
+  String get formProfileCardDescription;
+
+  /// Participant form profile review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep on my private card'**
+  String get formProfileKeepAnswer;
+
+  /// Participant form profile review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Use for my Catch profile'**
+  String get formProfileUseAnswer;
+
+  /// Participant form profile review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Review your identity'**
+  String get formProfileBasicsTitle;
+
+  /// Participant form profile review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Your verified sign-in phone identifies your account. Review your name, date of birth and gender before saving.'**
+  String get formProfileBasicsDescription;
+
+  /// Participant form profile review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Display name'**
+  String get formProfileDisplayName;
+
+  /// Participant form profile review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Date of birth'**
+  String get formProfileBirthDate;
+
+  /// Participant form profile review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Gender'**
+  String get formProfileGender;
+
+  /// Participant form profile review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'YYYY-MM-DD · You must be 18 or older.'**
+  String get formProfileDateHint;
+
+  /// Participant form profile review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'I have reviewed these details'**
+  String get formProfileConfirmation;
+
+  /// Participant form profile review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch can store the profile details I choose. They remain subject to my sharing settings. My private organizer card stays private until I choose to share it.'**
+  String get formProfileConfirmationBody;
+
+  /// Participant form profile review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Save reviewed details'**
+  String get formProfileSave;
+
+  /// Participant form profile review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Your reviewed details have been saved.'**
+  String get formProfileSaved;
+
+  /// Participant form profile review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes'**
+  String get formProfileYes;
+
+  /// Participant form profile review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'No'**
+  String get formProfileNo;
+
+  /// Participant form profile review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'No answer'**
+  String get formProfileEmptyAnswer;
+
+  /// Participant form profile review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Submitted attachment'**
+  String get formProfileAttachment;
+
+  /// Participant form profile review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Reload latest details'**
+  String get formProfileReload;
+
+  /// Participant form profile review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'You can add a photo from your profile. Form photo preview will be available here before you can choose to use it.'**
+  String get formProfilePhotoReviewPending;
+
+  /// Participant form profile review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Your sign-in phone is verified separately. This form answer cannot change it.'**
+  String get formProfilePhoneAuthority;
+
+  /// Participant form profile review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'This answer can stay in your private form submission. It cannot be copied into a Catch profile field here.'**
+  String get formProfileUnsupported;
+
+  /// Participant form profile review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Check the highlighted fields before saving.'**
+  String get formProfileInvalid;
+
+  /// Participant form profile review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid value.'**
+  String get formProfileRequired;
 }
 
 class _AppLocalizationsDelegate

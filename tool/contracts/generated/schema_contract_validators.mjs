@@ -187,6 +187,8 @@ import {
   participantProfileClaimReceiptDocumentSchema,
   claimParticipantFormProfileCallablePayloadSchema,
   claimParticipantFormProfileCallableResponseSchema,
+  listParticipantFormProfilesCallablePayloadSchema,
+  listParticipantFormProfilesCallableResponseSchema,
   getParticipantFormProfileCallablePayloadSchema,
   getParticipantFormProfileCallableResponseSchema,
   participantFormProfileProposalDocumentSchema,
@@ -923,6 +925,8 @@ export const validateParticipantOrganizerCardDocument = ajv.compile(participantO
 export const validateParticipantProfileClaimReceiptDocument = ajv.compile(participantProfileClaimReceiptDocumentSchema);
 export const validateClaimParticipantFormProfileCallablePayload = ajv.compile(claimParticipantFormProfileCallablePayloadSchema);
 export const validateClaimParticipantFormProfileCallableResponse = ajv.compile(claimParticipantFormProfileCallableResponseSchema);
+export const validateListParticipantFormProfilesCallablePayload = ajv.compile(listParticipantFormProfilesCallablePayloadSchema);
+export const validateListParticipantFormProfilesCallableResponse = ajv.compile(listParticipantFormProfilesCallableResponseSchema);
 export const validateGetParticipantFormProfileCallablePayload = ajv.compile(getParticipantFormProfileCallablePayloadSchema);
 export const validateGetParticipantFormProfileCallableResponse = ajv.compile(getParticipantFormProfileCallableResponseSchema);
 export const validateParticipantFormProfileProposalDocument = ajv.compile(participantFormProfileProposalDocumentSchema);

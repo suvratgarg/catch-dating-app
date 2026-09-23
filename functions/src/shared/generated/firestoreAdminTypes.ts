@@ -4993,6 +4993,7 @@ export interface ParticipantFormProfileProposalDocument {
       | null;
   }[];
   createdAt: FirebaseFirestore.Timestamp;
+  claimedAt?: FirebaseFirestore.Timestamp;
 }
 
 /**

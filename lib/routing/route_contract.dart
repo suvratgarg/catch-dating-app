@@ -47,6 +47,8 @@ enum Routes {
   matchesListScreen('/chats', AppRouteAudience.consumer),
   chatScreen('/chats/:matchId', AppRouteAudience.consumer),
   profileScreen('/you', AppRouteAudience.consumer),
+  formProfilesScreen('/you/forms', AppRouteAudience.consumer),
+  formProfileReviewScreen('/you/forms/:responseId', AppRouteAudience.consumer),
   reviewsHistoryScreen('/you/reviews', AppRouteAudience.consumer),
   publicProfileScreen('/profiles/:uid', AppRouteAudience.consumer),
   settingsScreen('/settings', AppRouteAudience.consumer),

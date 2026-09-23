@@ -189,6 +189,8 @@ export {validateParticipantOrganizerCardDocument} from "./validators/participant
 export {validateParticipantProfileClaimReceiptDocument} from "./validators/participantProfileClaimReceiptDocument";
 export {validateClaimParticipantFormProfileCallablePayload} from "./validators/claimParticipantFormProfileInput";
 export {validateClaimParticipantFormProfileCallableResponse} from "./validators/claimParticipantFormProfileOutput";
+export {validateListParticipantFormProfilesCallablePayload} from "./validators/listParticipantFormProfilesInput";
+export {validateListParticipantFormProfilesCallableResponse} from "./validators/listParticipantFormProfilesOutput";
 export {validateGetParticipantFormProfileCallablePayload} from "./validators/getParticipantFormProfileInput";
 export {validateGetParticipantFormProfileCallableResponse} from "./validators/getParticipantFormProfileOutput";
 export {validateParticipantFormProfileProposalDocument} from "./validators/participantFormProfileProposalDocument";

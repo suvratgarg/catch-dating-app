@@ -189,6 +189,8 @@ export {participantOrganizerCardDocumentSchema} from "./schemas/participantOrgan
 export {participantProfileClaimReceiptDocumentSchema} from "./schemas/participantProfileClaimReceiptDocument";
 export {claimParticipantFormProfileCallablePayloadSchema} from "./schemas/claimParticipantFormProfileInput";
 export {claimParticipantFormProfileCallableResponseSchema} from "./schemas/claimParticipantFormProfileOutput";
+export {listParticipantFormProfilesCallablePayloadSchema} from "./schemas/listParticipantFormProfilesInput";
+export {listParticipantFormProfilesCallableResponseSchema} from "./schemas/listParticipantFormProfilesOutput";
 export {getParticipantFormProfileCallablePayloadSchema} from "./schemas/getParticipantFormProfileInput";
 export {getParticipantFormProfileCallableResponseSchema} from "./schemas/getParticipantFormProfileOutput";
 export {participantFormProfileProposalDocumentSchema} from "./schemas/participantFormProfileProposalDocument";

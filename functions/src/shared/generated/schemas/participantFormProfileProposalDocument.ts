@@ -133,6 +133,26 @@ export const participantFormProfileProposalDocumentSchema: Record<string, unknow
           "maximum": 999999999
         }
       }
+    },
+    "claimedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
     }
   }
 } as const;

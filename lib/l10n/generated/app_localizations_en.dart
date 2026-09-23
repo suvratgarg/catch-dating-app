@@ -20364,4 +20364,119 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hostFormAnswerOrganizerCardHelp =>
       'Requires verified phone access. The applicant can see this answer in their private card for your organizer. Other organizers cannot see it. Event sharing needs their permission.';
+
+  @override
+  String get formProfilesTitle => 'Forms & private cards';
+
+  @override
+  String get formProfilesDescription =>
+      'Review the details you submitted and choose what to keep in Catch. Your private organizer cards contain only answers you chose from your forms.';
+
+  @override
+  String get formProfilesEmptyTitle => 'No form profiles yet';
+
+  @override
+  String get formProfilesEmptyBody =>
+      'Forms with Catch profile fields or private card fields appear here after you submit with your verified phone number.';
+
+  @override
+  String get formProfilesLoadMore => 'Load more';
+
+  @override
+  String get formProfilesReview => 'Review details';
+
+  @override
+  String get formProfilesManage => 'Manage saved details';
+
+  @override
+  String get formProfilesOrganizerFallback => 'Organizer';
+
+  @override
+  String get formProfileReviewTitle => 'Review your profile';
+
+  @override
+  String get formProfileReviewDescription =>
+      'Choose which form details to use. Saving does not change your original submission, admit you to an event, or turn on dating discovery.';
+
+  @override
+  String get formProfileCoreTitle => 'Catch profile details';
+
+  @override
+  String get formProfileCardTitle => 'Your private organizer card';
+
+  @override
+  String get formProfileCardDescription =>
+      'Only you can see this card. Other organizers cannot see it. The organizer still has your original form response. Removing an answer here removes it from this card only.';
+
+  @override
+  String get formProfileKeepAnswer => 'Keep on my private card';
+
+  @override
+  String get formProfileUseAnswer => 'Use for my Catch profile';
+
+  @override
+  String get formProfileBasicsTitle => 'Review your identity';
+
+  @override
+  String get formProfileBasicsDescription =>
+      'Your verified sign-in phone identifies your account. Review your name, date of birth and gender before saving.';
+
+  @override
+  String get formProfileDisplayName => 'Display name';
+
+  @override
+  String get formProfileBirthDate => 'Date of birth';
+
+  @override
+  String get formProfileGender => 'Gender';
+
+  @override
+  String get formProfileDateHint => 'YYYY-MM-DD · You must be 18 or older.';
+
+  @override
+  String get formProfileConfirmation => 'I have reviewed these details';
+
+  @override
+  String get formProfileConfirmationBody =>
+      'Catch can store the profile details I choose. They remain subject to my sharing settings. My private organizer card stays private until I choose to share it.';
+
+  @override
+  String get formProfileSave => 'Save reviewed details';
+
+  @override
+  String get formProfileSaved => 'Your reviewed details have been saved.';
+
+  @override
+  String get formProfileYes => 'Yes';
+
+  @override
+  String get formProfileNo => 'No';
+
+  @override
+  String get formProfileEmptyAnswer => 'No answer';
+
+  @override
+  String get formProfileAttachment => 'Submitted attachment';
+
+  @override
+  String get formProfileReload => 'Reload latest details';
+
+  @override
+  String get formProfilePhotoReviewPending =>
+      'You can add a photo from your profile. Form photo preview will be available here before you can choose to use it.';
+
+  @override
+  String get formProfilePhoneAuthority =>
+      'Your sign-in phone is verified separately. This form answer cannot change it.';
+
+  @override
+  String get formProfileUnsupported =>
+      'This answer can stay in your private form submission. It cannot be copied into a Catch profile field here.';
+
+  @override
+  String get formProfileInvalid =>
+      'Check the highlighted fields before saving.';
+
+  @override
+  String get formProfileRequired => 'Enter a valid value.';
 }

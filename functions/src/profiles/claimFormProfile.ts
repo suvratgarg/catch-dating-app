@@ -7,6 +7,8 @@ import {requireAuth} from "../shared/auth";
 import {checkRateLimit} from "../shared/rateLimit";
 import {appCheckCallableOptionsWithLimits} from "../shared/callableOptions";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
+import {claimParticipantFormProfileCallablePayloadSchema} from
+  "../shared/generated/schemas/claimParticipantFormProfileInput";
 import {validateClaimParticipantFormProfileCallablePayload} from
   "../shared/generated/validators/claimParticipantFormProfileInput";
 import {validateGetParticipantFormProfileCallablePayload} from
@@ -66,8 +68,26 @@ export async function getParticipantFormProfileHandler(
       responseId: data.responseId});
     const user = userSnap.data() as User | undefined;
     if (user?.deleted) throw unavailable();
+    const [cardSnap, organizerSnap] = await Promise.all([
+      tx.get(db.collection("participantOrganizerCards").doc(data.responseId)),
+      tx.get(db.collection("organizers").doc(proposal.organizerId)),
+    ]);
+    const card = cardSnap.data() as Card | undefined;
+    if (card && (card.uid !== uid || card.responseId !== data.responseId ||
+        card.organizerId !== proposal.organizerId)) throw unavailable();
+    const intake = intakeSnap.data() as Intake | undefined;
+    const linkedin = intake?.fields.find((field) =>
+      field.canonicalFieldId === "linkedinUrl")?.value;
+    const name = organizerSnap.data()?.name;
     return {...proposal, profileRevision: user?.profileRevision ?? 0,
-      intakeRevision: Number(intakeSnap.data()?.revision ?? 0),
+      intakeRevision: intake?.revision ?? 0,
+      organizerName: typeof name === "string" ? name : null,
+      selectedCardQuestionIds: (card?.questionIds ?? []).filter((id) =>
+        proposal.fields.some((field) => field.questionId === id &&
+          field.destination === "organizerCard")),
+      currentProfile: user ? currentReviewedProfile(user) : null,
+      currentLinkedinUrl: linkedin?.valueKind === "text" ?
+        linkedin.textValue : null,
       termsVersion: "form-profile-claim-v1"};
   });
 }
@@ -177,6 +197,8 @@ export async function claimParticipantFormProfileHandler(
       payloadHash: fingerprint, profileRevision: updated.profileRevision!,
       organizerCardId, createdAt: now};
     tx.set(userRef, updated);
+    tx.update(db.collection("participantFormProfileProposals")
+      .doc(data.responseId), {claimedAt: now});
     if (data.reviewedLinkedinUrl !== undefined) {
       const intake = current.intake;
       const fields = (intake?.fields ?? []).filter((field) =>
@@ -260,6 +282,16 @@ export function reviewedUserProfile(input: {
   return result as unknown as User;
 }
 
+function currentReviewedProfile(user: User): Payload["profile"] {
+  const schema = claimParticipantFormProfileCallablePayloadSchema as {
+    properties: {profile: {properties: Record<string, unknown>}};
+  };
+  const allowed = new Set(Object.keys(schema.properties.profile.properties));
+  return {...Object.fromEntries(Object.entries(user).filter(([key]) =>
+    allowed.has(key))), dateOfBirth: user.dateOfBirth.toDate()
+    .toISOString().slice(0, 10)} as Payload["profile"];
+}
+
 /** Every selected source must have a reviewed destination. */
 function assertReviewedSelections(data: Payload, fields: Review["fields"]) {
   const selected = new Set(data.selectedQuestionIds);
@@ -285,7 +317,7 @@ function assertReviewedSelections(data: Payload, fields: Review["fields"]) {
   }
 }
 
-function requireVerifiedParticipant(request: CallableRequest<unknown>) {
+export function requireVerifiedParticipant(request: CallableRequest<unknown>) {
   const uid = requireAuth(request);
   const phone = request.auth?.token.phone_number;
   if (typeof phone !== "string" || !/^\+[1-9][0-9]{7,14}$/u.test(phone)) {

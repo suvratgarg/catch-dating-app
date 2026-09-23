@@ -72,6 +72,9 @@
     },
     "createdAt": {
       "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+    },
+    "claimedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
     }
   }
 }

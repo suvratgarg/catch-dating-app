@@ -9,6 +9,8 @@ import {reserveFormPayment, finalizeCapturedFormPayment,
 
 import {claimParticipantFormProfileHandler} from
   "../../profiles/claimFormProfile";
+import {listParticipantFormProfilesHandler} from
+  "../../profiles/listFormProfiles";
 import {listOrganizerFormPaymentsHandler} from "./formPaymentLedger";
 
 const emulator = process.env.FIRESTORE_EMULATOR_HOST;
@@ -120,6 +122,14 @@ test("Firestore serializes payment reservations, finalization and late capture",
         ...claimRequest, data: {...claimRequest.data,
           requestId: "claim-emulator-00000002"},
       }, claimDeps), /profile changed/u);
+
+      const profileDirectory = await listParticipantFormProfilesHandler({
+        ...fixture.request, data: {cursor: null, limit: 1},
+      }, {db: () => db, rateLimit: async () => undefined});
+      assert.equal(profileDirectory.items[0].responseId, proposals.docs[0].id);
+      assert.equal(profileDirectory.items[0].claimedAtMillis,
+        claimDeps.now().toMillis());
+      assert.equal(profileDirectory.nextCursor, null);
 
       // A separate frozen checkout expires. Later captured funds must not
       // create another response, even if two recovery workers race.

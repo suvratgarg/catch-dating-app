@@ -118,7 +118,8 @@ export async function readParticipantFormProfileProposal(params: {
     // draft token, review notes and all organizer-only answers.
     return {responseId, organizerId: proposal.organizerId,
       formId: proposal.formId, formTitle: version.definition.title,
-      submittedAtMillis: response.submittedAt.toMillis(), fields};
+      submittedAtMillis: response.submittedAt.toMillis(),
+      claimedAtMillis: proposal.claimedAt?.toMillis() ?? null, fields};
   };
   return params.tx ? read(params.tx) : db.runTransaction(read);
 }

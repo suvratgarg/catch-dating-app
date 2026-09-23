@@ -7,6 +7,9 @@ import {createFormPaymentFixture} from
 import {claimParticipantFormProfileHandler as claim,
   getParticipantFormProfileHandler as review, reviewedUserProfile} from
   "./claimFormProfile";
+import {listParticipantFormProfilesHandler as list} from "./listFormProfiles";
+import {validateGetParticipantFormProfileCallableResponse} from
+  "../shared/generated/validators/getParticipantFormProfileOutput";
 import {updateUserProfileHandler} from "./updateUserProfile";
 import type {ClaimParticipantFormProfileCallablePayload as Payload} from
   "../shared/generated/claimParticipantFormProfileCallablePayload";
@@ -269,4 +272,55 @@ test("deselecting card fields clears pointers without changing the source",
       `participantOrganizerCards/${h.responseId}`)!.questionIds, []);
     assert.equal(h.store.records.has(
       `organizerFormResponses/${h.responseId}`), true);
+  });
+
+
+test("owned review includes editable values and selected card, never CRM",
+  async () => {
+    const h = await fixture();
+    await claim(h.request(), h.deps);
+    h.store.records.set("organizers/org", {name: "RSVP"});
+    const result = await review({...h.request(), data: {
+      responseId: h.responseId}}, h.deps);
+    assert.equal(validateGetParticipantFormProfileCallableResponse(result),
+      true);
+    assert.equal(result.organizerName, "RSVP");
+    assert.equal(result.claimedAtMillis, now.toMillis());
+    assert.equal(result.currentProfile?.dateOfBirth, "1994-06-15");
+    assert.equal(result.currentProfile?.displayName, "Sara Demo");
+    assert.deepEqual(result.selectedCardQuestionIds, ["cocktail"]);
+    assert.equal(JSON.stringify(result).includes("Private"), false);
+    assert.equal("phoneNumber" in result.currentProfile!, false);
+    assert.equal("prefsShowOnMap" in result.currentProfile!, false);
+  });
+
+test("directory pagination skips withdrawn sources without exposing others",
+  async () => {
+    const h = await fixture();
+    await claim(h.request(), h.deps);
+    const proposal = h.store.records.get(
+      `participantFormProfileProposals/${h.responseId}`)!;
+    const response = h.store.records.get(
+      `organizerFormResponses/${h.responseId}`)!;
+    h.store.records.delete(`participantFormProfileProposals/${h.responseId}`);
+    for (const id of ["a", "b", "c"]) {
+      h.store.records.set(`participantFormProfileProposals/${id}`,
+        {...proposal, responseId: id});
+      h.store.records.set(`organizerFormResponses/${id}`,
+        {...response, status: id === "a" ? "withdrawn" : "submitted",
+          withdrawnAt: id === "a" ? now : null});
+    }
+    h.store.records.set("participantFormProfileProposals/foreign",
+      {...proposal, uid: "someone-else", responseId: "foreign"});
+    const request = (cursor: string | null) => ({...h.request(), data: {
+      cursor, limit: 1}});
+    const first = await list(request(null), h.deps);
+    assert.deepEqual(first, {items: [], nextCursor: "a"});
+    const second = await list(request(first.nextCursor), h.deps);
+    assert.deepEqual(second.items.map((row) => row.responseId), ["b"]);
+    const third = await list(request(second.nextCursor), h.deps);
+    assert.deepEqual(third.items.map((row) => row.responseId), ["c"]);
+    assert.equal(third.nextCursor, null);
+    h.store.records.set("deletedUsers/person", {status: "processing"});
+    await assert.rejects(list(request(null), h.deps), /unavailable/u);
   });

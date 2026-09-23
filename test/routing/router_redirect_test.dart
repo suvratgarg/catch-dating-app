@@ -49,6 +49,66 @@ void main() {
 
   tearDown(AppConfig.resetEntrypointRoleOverrideForTesting);
 
+  group('form profile claim routes', () {
+    test('requires sign-in but not a dating or booking-ready profile', () {
+      for (final path in ['/you/forms', '/you/forms/response-1']) {
+        expect(
+          _redirect(
+            uidAsync: const AsyncData(null),
+            userProfileAsync: const AsyncData(null),
+            location: path,
+          ),
+          startsWith('/start'),
+        );
+        expect(
+          _redirect(
+            uidAsync: const AsyncData(_testUid),
+            userProfileAsync: const AsyncData(null),
+            location: path,
+          ),
+          isNull,
+        );
+        expect(
+          _redirect(
+            uidAsync: const AsyncData(_testUid),
+            userProfileAsync: AsyncData(_identityIncompleteUser()),
+            location: path,
+          ),
+          isNull,
+        );
+      }
+    });
+    test(
+      'returns to form review after authentication, preserving other gates',
+      () {
+        expect(
+          _redirect(
+            uidAsync: const AsyncData(_testUid),
+            userProfileAsync: const AsyncData(null),
+            location: '/auth?from=%2Fyou%2Fforms%2Fresponse-1',
+          ),
+          '/you/forms/response-1',
+        );
+        expect(
+          _redirect(
+            uidAsync: const AsyncData(_testUid),
+            userProfileAsync: const AsyncData(null),
+            location: '/payment-history',
+          ),
+          startsWith('/onboarding'),
+        );
+        expect(
+          _redirect(
+            uidAsync: const AsyncData(_testUid),
+            userProfileAsync: const AsyncData(null),
+            location: '/you/forms/response-1/other',
+          ),
+          startsWith('/onboarding'),
+        );
+      },
+    );
+  });
+
   group('route role boundary', () {
     test('host management routes are not available to consumer role', () {
       final hostRoutes = Routes.values.where(

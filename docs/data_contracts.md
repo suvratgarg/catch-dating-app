@@ -2518,7 +2518,12 @@ image transfer, participant-owned cards and explicit event sharing are separate
 operations and must not infer permission from these prepared pointers.
 
 `getParticipantFormProfile` resolves only the verified owner’s designated fields
-and returns the current core/intake revisions. `claimParticipantFormProfile`
+and returns current editable core values, core/intake revisions, and selected
+private-card question IDs. `listParticipantFormProfiles` queries the verified
+UID with a bounded document-ID cursor, then revalidates every source before
+projecting a summary. Withdrawn sources are skipped; an empty scanned page may
+still have a continuation cursor. No caller-supplied UID or organizer filter
+can expand this scope. `claimParticipantFormProfile`
 requires explicit reviewed core values, selected question IDs, and versioned
 claim terms. It atomically updates `users`, private `participantOrganizerCards`
 answer pointers and a payload-bound `participantProfileClaimReceipts` receipt.
@@ -2539,8 +2544,12 @@ A selected form photo must still match the owned response, form, version, draft
 and question. Its bytes and digest are verified, safety checked, stripped of
 metadata and copied to owned profile media with a thumbnail. Original private
 form URLs are never promoted. The commit rechecks response withdrawal, account
-deletion and profile revision after image processing. Participant claim/card UI
-and event-scoped sharing remain separate delivery work.
+deletion and profile revision after image processing. Consumer form review lives
+at `/you/forms/:responseId`; the authenticated directory is `/you/forms`.
+These routes are available before dating setup, while booking and social gates
+remain unchanged. Selection is explicit, retries reuse a payload-bound key,
+and account changes discard retained review data. Event-scoped card sharing
+and uploaded-photo preview remain separate delivery work.
 
 ### Organizer Application Intake
 

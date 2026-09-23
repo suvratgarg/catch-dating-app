@@ -27641,5 +27641,250 @@
   "hostFormAnswerCatchProfileHelp": "Requires verified phone access. Prepares this answer privately for the applicant. They must claim their profile and choose what to share before other participants can see it.",
   "@hostFormAnswerCatchProfileHelp": {"description": "Host form answer destination and privacy disclosure.", "x-audience": "host", "x-owner": "product", "x-surface": "forms"},
   "hostFormAnswerOrganizerCardHelp": "Requires verified phone access. The applicant can see this answer in their private card for your organizer. Other organizers cannot see it. Event sharing needs their permission.",
-  "@hostFormAnswerOrganizerCardHelp": {"description": "Host form answer destination and privacy disclosure.", "x-audience": "host", "x-owner": "product", "x-surface": "forms"}
+  "@hostFormAnswerOrganizerCardHelp": {"description": "Host form answer destination and privacy disclosure.", "x-audience": "host", "x-owner": "product", "x-surface": "forms"},
+  "formProfilesTitle": "Forms & private cards",
+  "@formProfilesTitle": {
+    "description": "Participant form profile review copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles"
+  },
+  "formProfilesDescription": "Review the details you submitted and choose what to keep in Catch. Your private organizer cards contain only answers you chose from your forms.",
+  "@formProfilesDescription": {
+    "description": "Participant form profile review copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles"
+  },
+  "formProfilesEmptyTitle": "No form profiles yet",
+  "@formProfilesEmptyTitle": {
+    "description": "Participant form profile review copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles"
+  },
+  "formProfilesEmptyBody": "Forms with Catch profile fields or private card fields appear here after you submit with your verified phone number.",
+  "@formProfilesEmptyBody": {
+    "description": "Participant form profile review copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles"
+  },
+  "formProfilesLoadMore": "Load more",
+  "@formProfilesLoadMore": {
+    "description": "Participant form profile review copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles"
+  },
+  "formProfilesReview": "Review details",
+  "@formProfilesReview": {
+    "description": "Participant form profile review copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles"
+  },
+  "formProfilesManage": "Manage saved details",
+  "@formProfilesManage": {
+    "description": "Participant form profile review copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles"
+  },
+  "formProfilesOrganizerFallback": "Organizer",
+  "@formProfilesOrganizerFallback": {
+    "description": "Participant form profile review copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles"
+  },
+  "formProfileReviewTitle": "Review your profile",
+  "@formProfileReviewTitle": {
+    "description": "Participant form profile review copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles"
+  },
+  "formProfileReviewDescription": "Choose which form details to use. Saving does not change your original submission, admit you to an event, or turn on dating discovery.",
+  "@formProfileReviewDescription": {
+    "description": "Participant form profile review copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles"
+  },
+  "formProfileCoreTitle": "Catch profile details",
+  "@formProfileCoreTitle": {
+    "description": "Participant form profile review copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles"
+  },
+  "formProfileCardTitle": "Your private organizer card",
+  "@formProfileCardTitle": {
+    "description": "Participant form profile review copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles"
+  },
+  "formProfileCardDescription": "Only you can see this card. Other organizers cannot see it. The organizer still has your original form response. Removing an answer here removes it from this card only.",
+  "@formProfileCardDescription": {
+    "description": "Participant form profile review copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles"
+  },
+  "formProfileKeepAnswer": "Keep on my private card",
+  "@formProfileKeepAnswer": {
+    "description": "Participant form profile review copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles"
+  },
+  "formProfileUseAnswer": "Use for my Catch profile",
+  "@formProfileUseAnswer": {
+    "description": "Participant form profile review copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles"
+  },
+  "formProfileBasicsTitle": "Review your identity",
+  "@formProfileBasicsTitle": {
+    "description": "Participant form profile review copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles"
+  },
+  "formProfileBasicsDescription": "Your verified sign-in phone identifies your account. Review your name, date of birth and gender before saving.",
+  "@formProfileBasicsDescription": {
+    "description": "Participant form profile review copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles"
+  },
+  "formProfileDisplayName": "Display name",
+  "@formProfileDisplayName": {
+    "description": "Participant form profile review copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles"
+  },
+  "formProfileBirthDate": "Date of birth",
+  "@formProfileBirthDate": {
+    "description": "Participant form profile review copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles"
+  },
+  "formProfileGender": "Gender",
+  "@formProfileGender": {
+    "description": "Participant form profile review copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles"
+  },
+  "formProfileDateHint": "YYYY-MM-DD · You must be 18 or older.",
+  "@formProfileDateHint": {
+    "description": "Participant form profile review copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles"
+  },
+  "formProfileConfirmation": "I have reviewed these details",
+  "@formProfileConfirmation": {
+    "description": "Participant form profile review copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles"
+  },
+  "formProfileConfirmationBody": "Catch can store the profile details I choose. They remain subject to my sharing settings. My private organizer card stays private until I choose to share it.",
+  "@formProfileConfirmationBody": {
+    "description": "Participant form profile review copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles"
+  },
+  "formProfileSave": "Save reviewed details",
+  "@formProfileSave": {
+    "description": "Participant form profile review copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles"
+  },
+  "formProfileSaved": "Your reviewed details have been saved.",
+  "@formProfileSaved": {
+    "description": "Participant form profile review copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles"
+  },
+  "formProfileYes": "Yes",
+  "@formProfileYes": {
+    "description": "Participant form profile review copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles"
+  },
+  "formProfileNo": "No",
+  "@formProfileNo": {
+    "description": "Participant form profile review copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles"
+  },
+  "formProfileEmptyAnswer": "No answer",
+  "@formProfileEmptyAnswer": {
+    "description": "Participant form profile review copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles"
+  },
+  "formProfileAttachment": "Submitted attachment",
+  "@formProfileAttachment": {
+    "description": "Participant form profile review copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles"
+  },
+  "formProfileReload": "Reload latest details",
+  "@formProfileReload": {
+    "description": "Participant form profile review copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles"
+  },
+  "formProfilePhotoReviewPending": "You can add a photo from your profile. Form photo preview will be available here before you can choose to use it.",
+  "@formProfilePhotoReviewPending": {
+    "description": "Participant form profile review copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles"
+  },
+  "formProfilePhoneAuthority": "Your sign-in phone is verified separately. This form answer cannot change it.",
+  "@formProfilePhoneAuthority": {
+    "description": "Participant form profile review copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles"
+  },
+  "formProfileUnsupported": "This answer can stay in your private form submission. It cannot be copied into a Catch profile field here.",
+  "@formProfileUnsupported": {
+    "description": "Participant form profile review copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles"
+  },
+  "formProfileInvalid": "Check the highlighted fields before saving.",
+  "@formProfileInvalid": {
+    "description": "Participant form profile review copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles"
+  },
+  "formProfileRequired": "Enter a valid value.",
+  "@formProfileRequired": {
+    "description": "Participant form profile review copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles"
+  }
 }

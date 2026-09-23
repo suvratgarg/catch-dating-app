@@ -173,6 +173,7 @@ export 'callables/list_organizer_luma_events_callable_request.g.dart';
 export 'callables/list_organizer_manual_send_tasks_callable_request.g.dart';
 export 'callables/list_organizer_saved_audiences_callable_request.g.dart';
 export 'callables/list_organizer_whatsapp_threads_callable_request.g.dart';
+export 'callables/list_participant_form_profiles_callable_request.g.dart';
 export 'callables/list_public_club_reviews_callable_request.g.dart';
 export 'callables/list_public_organizer_reviews_callable_request.g.dart';
 export 'callables/manage_organizer_form_payment_connection_callable_request.g.dart';
