@@ -418,7 +418,23 @@ class ProgramWorkRepository {
           (error is PermissionException ||
               error is SignInRequiredException ||
               error is DocumentNotFoundException)) {
-        await _snapshots.clearProgram(accountId, programId);
+        // Hide all projections immediately. A scoped denial can mean either
+        // one expired assignment or full revocation; only a fresh canonical
+        // bootstrap can distinguish them. Old private snapshots stay deleted.
+        final clearing = _snapshots.clearProgram(accountId, programId);
+        final deniedGeneration = _snapshots.generation(accountId, programId);
+        await clearing;
+        if (name != 'getProgramWorkAccess' &&
+            error is! SignInRequiredException &&
+            _currentAccountId() == accountId &&
+            _snapshots.generation(accountId, programId) == deniedGeneration) {
+          try {
+            await getWorkAccess(programId, snapshotAccountId: accountId);
+          } on AppException {
+            // Preserve the original denial. Failed/revoked rechecks cannot
+            // restore cached projections or recursively bootstrap themselves.
+          }
+        }
       }
       rethrow;
     }
@@ -467,6 +483,7 @@ Future<ProgramReadView<T>> _readView<T>(
     isCurrentAccount: () =>
         ref.mounted && ref.read(uidProvider).asData?.value == accountId,
     live: live,
+    liveOwnsAccessInvalidation: true,
     parse: parse,
     allowsAccess: allowsAccess,
     now: ref.read(programProjectionClockProvider),

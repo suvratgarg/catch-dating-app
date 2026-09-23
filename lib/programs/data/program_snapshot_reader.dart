@@ -20,6 +20,10 @@ Future<ProgramReadView<T>> readProgramWithSnapshot<T>({
   bool Function()? isCurrentRead,
   required Future<T> Function() live,
   required T Function(Object?) parse,
+  // Repository calls purge before rechecking canonical work access. A second
+  // purge here would erase that fresh authority. Standalone readers own their
+  // invalidation by default; account changes always invalidate locally too.
+  bool liveOwnsAccessInvalidation = false,
   bool Function(ProgramWorkAccess)? allowsAccess,
   DateTime Function()? now,
 }) async {
@@ -40,7 +44,11 @@ Future<ProgramReadView<T>> readProgramWithSnapshot<T>({
     if (error is PermissionException ||
         error is SignInRequiredException ||
         error is DocumentNotFoundException) {
-      await store.clearProgram(accountId, programId);
+      if (!liveOwnsAccessInvalidation ||
+          error is SignInRequiredException ||
+          !isCurrentAccount()) {
+        await store.clearProgram(accountId, programId);
+      }
       rethrow;
     }
     if (error is! NetworkException ||

@@ -1,6 +1,6 @@
 ---
 doc_id: airport_arrivals_prd
-version: 0.3.16
+version: 0.3.17
 updated: 2026-09-23
 owner: product
 status: draft
@@ -1452,6 +1452,15 @@ reconciliation rather than falling back to current names. Production retention
 and erasure policy still applies to these private operational records.
 
 ### Operational read scope
+
+An online permission or missing-resource denial invalidates all cached program
+projections before a fresh canonical work-access check. Successfully reverified
+duties remain available; their rosters must reload before offline reuse. A
+failed access check, account change or later denial leaves prior snapshots
+closed. The originally denied action still fails; revalidation never retries
+a mutation. Repository calls own this invalidation, so the snapshot fallback
+reader cannot erase freshly verified work a second time. Standalone snapshot
+readers retain their own fail-closed invalidation.
 
 Manager staff inventory pages up to 50 grants in stable staff-identity order,
 including expired and revoked records. Continuations use the staff UID and
