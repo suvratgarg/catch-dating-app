@@ -13,7 +13,7 @@ const policy = {windowMillis: 45, maxReadyWaitMillis: 20, nowMillis: 100};
 const party = (id: string, changes: Partial<TransportParty> = {}):
 TransportParty => ({id, programId: "wedding", pickupPointId: "airport-t1",
   destinationId: "hotel-a", readiness: "expected", availableAtMillis: 100,
-  passengers: 1, luggageUnits: 1, requiredCapabilities: [],
+  guestIds: [id], passengers: 1, luggageUnits: 1, requiredCapabilities: [],
   dedicatedVehicle: false, ...changes});
 const suggest = (parties: TransportParty[], vehicleClasses = vehicles,
   changes: Partial<typeof policy> = {}) => suggestTransportGroups({
@@ -185,7 +185,7 @@ test("generated manifests preserve parties and capacity invariants", () => {
     programId: `program-${i % 2}`, pickupPointId: `airport-${i % 3}`,
     destinationId: `hotel-${i % 4}`, passengers: i % 7 + 1,
     luggageUnits: i % 8, availableAtMillis: 100 + i % 90,
-    dedicatedVehicle: i % 11 === 0,
+    dedicatedVehicle: i % 11 === 0, guestIds: [`guest-${i % 5}`],
     requiredCapabilities: i % 9 === 0 ? ["wheelchair"] : [],
   }));
   const result = suggest(parties);
@@ -195,6 +195,8 @@ test("generated manifests preserve parties and capacity invariants", () => {
   assert.equal(ids.length, parties.length);
   for (const group of result.groups) {
     const members = parties.filter((row) => group.partyIds.includes(row.id));
+    const guests = members.flatMap((member) => member.guestIds);
+    assert.equal(new Set(guests).size, guests.length);
     const vehicle = vehicles.find((row) => row.id === group.vehicleClassId)!;
     assert.ok(group.passengers <= vehicle.passengerCapacity);
     assert.ok(group.luggageUnits <= vehicle.luggageCapacity);
@@ -235,7 +237,30 @@ test("large vehicles still obey the 50-journey dispatch contract", () => {
     [bus]);
   assert.deepEqual(result.groups.map((group) => group.partyIds.length),
     [50, 50, 10]);
-  const grouped = suggest([party("a", {legCount: 30, passengers: 30}),
-    party("b", {legCount: 30, passengers: 30})], [bus]);
+  const grouped = suggest([party("a", {passengers: 30,
+    guestIds: Array.from({length: 30}, (_, i) => `a-${i}`)}),
+  party("b", {passengers: 30,
+    guestIds: Array.from({length: 30}, (_, i) => `b-${i}`)})], [bus]);
   assert.equal(grouped.groups.length, 2);
+});
+
+
+test("overlapping guests keep separate journeys without splitting parties",
+  () => {
+    const parties = [party("a", {guestIds: ["shared", "a"], passengers: 2}),
+      party("b", {guestIds: ["shared", "b"], passengers: 2}),
+      party("c", {guestIds: ["c"]})];
+    const result = suggest(parties);
+    assert.deepEqual(result.unassigned, []);
+    assert.deepEqual(result.groups.map((group) => group.partyIds),
+      [["a", "c"], ["b"]]);
+    assert.deepEqual(result, suggest([...parties].reverse()));
+  });
+
+test("ambiguous or unbounded party guest membership is rejected", () => {
+  assert.throws(() => suggest([party("a", {guestIds: ["same", "same"]})]),
+    TypeError);
+  assert.throws(() => suggest([party("a", {guestIds: []})]), RangeError);
+  assert.throws(() => suggest([party("a", {guestIds:
+    Array.from({length: 51}, (_, i) => `guest-${i}`)})]), RangeError);
 });

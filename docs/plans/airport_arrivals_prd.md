@@ -1,6 +1,6 @@
 ---
 doc_id: airport_arrivals_prd
-version: 0.3.8
+version: 0.3.9
 updated: 2026-09-23
 owner: product
 status: draft
@@ -1404,7 +1404,10 @@ parties keeps the earliest deadline. Disrupted journeys stay unassigned until
 staff resolve their readiness, including when a manual curb estimate exists.
 Hotel identifiers and free-text destinations use distinct internal identities;
 operational views display the current hotel name. Every suggestion respects the
-50-journey dispatch limit even when a vehicle has more seats. Views needing more
+50-journey dispatch limit even when a vehicle has more seats. Journey counts
+are derived from each unit's explicit guest IDs. Two units with overlapping
+guests remain separate suggestions, preserving legitimate separate journeys
+without producing a manifest that dispatch would reject. Views needing more
 than 200 groups fail explicitly instead of returning an incomplete plan.
 
 ### Operational read scope

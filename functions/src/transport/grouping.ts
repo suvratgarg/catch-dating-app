@@ -10,7 +10,8 @@ export interface TransportParty {
   availableAtMillis: number | null;
   /** Earliest member observation; availability remains the slowest member. */
   earliestReadyAtMillis?: number;
-  legCount?: number;
+  /** One guest per journey, matching the dispatch manifest invariant. */
+  guestIds: readonly string[];
   passengers: number;
   luggageUnits: number;
   requiredCapabilities: readonly string[];
@@ -47,7 +48,7 @@ export interface TransportGroupingResult {
 }
 
 interface Group {
-  legCount: number;
+  guestIds: Set<string>;
   view: TransportGroupSuggestion;
   scope: string;
   dedicated: boolean;
@@ -84,14 +85,14 @@ export function suggestTransportGroups(
     const window = party.readiness === "ready" ?
       Math.min(input.windowMillis, input.maxReadyWaitMillis) :
       input.windowMillis;
-    const legCount = party.legCount ?? 1;
     const dispatchByMillis = party.readiness === "ready" ?
       (party.earliestReadyAtMillis ?? time) + input.maxReadyWaitMillis : null;
     if (dispatchByMillis !== null) requireInteger(dispatchByMillis);
     const group = party.dedicatedVehicle ? undefined :
       groups.find((candidate) =>
         !candidate.dedicated && candidate.scope === partyScope &&
-        candidate.legCount + legCount <= 50 &&
+        candidate.guestIds.size + party.guestIds.length <= 50 &&
+        party.guestIds.every((id) => !candidate.guestIds.has(id)) &&
         time - candidate.view.earliestAtMillis <= window &&
         fittingClass(classes, candidate.view.passengers + party.passengers,
           candidate.view.luggageUnits + party.luggageUnits,
@@ -99,7 +100,7 @@ export function suggestTransportGroups(
           undefined);
     if (group) {
       const view = group.view;
-      group.legCount += legCount;
+      for (const guestId of party.guestIds) group.guestIds.add(guestId);
       if (dispatchByMillis !== null) {
         view.dispatchByMillis =
           Math.min(view.dispatchByMillis!, dispatchByMillis);
@@ -115,7 +116,7 @@ export function suggestTransportGroups(
       view.vehicleClassId = fittingClass(classes, view.passengers,
         view.luggageUnits, [...group.capabilities])!.id;
     } else {
-      groups.push({legCount, scope: partyScope,
+      groups.push({guestIds: new Set(party.guestIds), scope: partyScope,
         dedicated: party.dedicatedVehicle,
         capabilities: new Set(party.requiredCapabilities), view: {
           programId: party.programId, pickupPointId: party.pickupPointId,
@@ -182,9 +183,9 @@ function validateInput(input: TransportGroupingInput): void {
   for (const party of input.parties) {
     [party.programId, party.pickupPointId, party.destinationId]
       .forEach(requireId);
-    requireInteger(party.legCount ?? 1, 1);
-    if ((party.legCount ?? 1) > 50) {
-      throw new RangeError("A party cannot exceed 50 journeys.");
+    uniqueIds(party.guestIds);
+    if (party.guestIds.length === 0 || party.guestIds.length > 50) {
+      throw new RangeError("A party must contain between 1 and 50 journeys.");
     }
     if (party.earliestReadyAtMillis !== undefined) {
       requireInteger(party.earliestReadyAtMillis);

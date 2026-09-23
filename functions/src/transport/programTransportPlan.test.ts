@@ -86,3 +86,23 @@ test("more than 200 suggested groups requires narrowing the view", async () => {
   await assert.rejects(plan(new FakeFirestore(seed)), (error: unknown) =>
     error instanceof HttpsError && error.code === "resource-exhausted");
 });
+
+
+for (const inParty of [false, true]) {
+  test(`separate journeys for one guest remain separate (${inParty ?
+    "party member" : "unpartied"})`, async () => {
+    const seed = baseSeed();
+    seed["programTravelLegs/leg-2"] = {...seed["programTravelLegs/leg-1"]};
+    if (inParty) {
+      seed["programTravelLegs/leg-1"].partyId = "party";
+      seed["programTravelParties/party"] = {programId: "program-1",
+        organizerId: "org-1", legIds: ["leg-1"]};
+    }
+    const result = await plan(new FakeFirestore(seed));
+    assert.equal(result.groups.length, 2);
+    assert.deepEqual(result.groups.flatMap((group) => group.legIds).sort(),
+      ["leg-1", "leg-2"]);
+    assert.deepEqual(result.unassigned, []);
+    assert.ok(result.groups.every((group) => group.legIds.length === 1));
+  });
+}

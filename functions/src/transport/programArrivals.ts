@@ -245,7 +245,7 @@ export async function getProgramTransportPlanHandler(
       readiness: ready ? "ready" : "expected",
       availableAtMillis: ready ? unit.readyAt : unit.availableAt,
       earliestReadyAtMillis: ready ? unit.earliestReadyAt : undefined,
-      legCount: unit.legIds.length,
+      guestIds: unit.legIds.map((id) => visibleLegs.get(id)!.guestId),
       passengers: unit.passengers,
       luggageUnits: unit.luggageUnits,
       requiredCapabilities: [...unit.capabilities],
