@@ -158,7 +158,7 @@ final class HostFormEditorControllerProvider
 }
 
 String _$hostFormEditorControllerHash() =>
-    r'd765fd564b76e5b04c08587e96ae005e7014a889';
+    r'e20bea6f2d11a17f8a65db64967d45d569d3b549';
 
 final class HostFormEditorControllerFamily extends $Family
     with

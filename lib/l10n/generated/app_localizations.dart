@@ -27887,13 +27887,13 @@ abstract class AppLocalizations {
   /// Person-field mapping in the Host form builder.
   ///
   /// In en, this message translates to:
-  /// **'Use this answer as'**
+  /// **'Person field'**
   String get hostFormPersonField;
 
   /// Person-field mapping in the Host form builder.
   ///
   /// In en, this message translates to:
-  /// **'Identify contact and profile answers for review. Other answers stay with this response.'**
+  /// **'Classify this answer for your CRM. This label alone does not save or share a Catch profile field.'**
   String get hostFormPersonFieldHelp;
 
   /// Person-field mapping in the Host form builder.
@@ -32397,6 +32397,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Choose verified phone in Access to offer WhatsApp updates.'**
   String get hostFormMessagingPhoneRequired;
+
+  /// Host form answer destination and privacy disclosure.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile use'**
+  String get hostFormAnswerDestinationLabel;
+
+  /// Host form answer destination and privacy disclosure.
+  ///
+  /// In en, this message translates to:
+  /// **'Organizer only'**
+  String get hostFormAnswerOrganizerOnly;
+
+  /// Host form answer destination and privacy disclosure.
+  ///
+  /// In en, this message translates to:
+  /// **'Catch profile'**
+  String get hostFormAnswerCatchProfile;
+
+  /// Host form answer destination and privacy disclosure.
+  ///
+  /// In en, this message translates to:
+  /// **'Organizer card'**
+  String get hostFormAnswerOrganizerCard;
+
+  /// Host form answer destination and privacy disclosure.
+  ///
+  /// In en, this message translates to:
+  /// **'Stays in your form response. A person-field label does not add it to a Catch profile. Choose a supported person field above to offer a Catch profile building block.'**
+  String get hostFormAnswerOrganizerOnlyHelp;
+
+  /// Host form answer destination and privacy disclosure.
+  ///
+  /// In en, this message translates to:
+  /// **'Requires verified phone access. Prepares this answer privately for the applicant. They must claim their profile and choose what to share before other participants can see it.'**
+  String get hostFormAnswerCatchProfileHelp;
+
+  /// Host form answer destination and privacy disclosure.
+  ///
+  /// In en, this message translates to:
+  /// **'Requires verified phone access. The applicant can see this answer in their private card for your organizer. Other organizers cannot see it. Event sharing needs their permission.'**
+  String get hostFormAnswerOrganizerCardHelp;
 }
 
 class _AppLocalizationsDelegate

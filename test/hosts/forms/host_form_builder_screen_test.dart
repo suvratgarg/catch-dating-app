@@ -190,7 +190,9 @@ void main() {
       expect(find.text('Advanced settings'), findsOneWidget);
       expect(find.text('Data classification'), findsNothing);
 
-      expect(find.text('Use this answer as'), findsOneWidget);
+      expect(find.text('Person field'), findsOneWidget);
+      expect(find.text('Profile use'), findsOneWidget);
+      expect(find.text('Organizer only'), findsOneWidget);
       await ensureCentered(tester, find.text('Advanced settings'));
       await tester.tap(find.text('Advanced settings'));
       await pumpFeatureUi(tester);

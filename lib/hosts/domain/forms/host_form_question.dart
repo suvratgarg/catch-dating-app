@@ -24,6 +24,8 @@ enum HostFormPrefillPolicy { never, participantReviewRequired }
 
 enum HostFormPresentation { detailOnly, filterable, sortable }
 
+enum HostFormAnswerDestination { organizerOnly, catchProfile, organizerCard }
+
 enum HostFormPatternPreset {
   lettersAndSpaces,
   alphanumeric,
@@ -101,6 +103,34 @@ class HostFormQuestion {
   String? get canonicalFieldId =>
       formDefinitionNullableString(_json['canonicalFieldId']);
 
+  HostFormAnswerDestination get answerDestination => formDefinitionEnumByName(
+    HostFormAnswerDestination.values,
+    formDefinitionStringValue(_json['answerDestination'] ?? 'organizerOnly'),
+    'form answer destination',
+  );
+
+  bool get canPrepareOrganizerCard =>
+      kind != HostFormQuestionKind.acknowledgement &&
+      kind != HostFormQuestionKind.signature;
+
+  bool get canPrepareCatchProfile {
+    final field = canonicalFieldId == null
+        ? null
+        : schemaPersonFieldForId(canonicalFieldId!);
+    return canPrepareOrganizerCard &&
+        field != null &&
+        field.authority != 'derived' &&
+        (field.questionKind == kind.name ||
+            (field.questionKind == 'shortText' &&
+                kind == HostFormQuestionKind.singleChoice));
+  }
+
+  List<HostFormAnswerDestination> get availableAnswerDestinations => [
+    HostFormAnswerDestination.organizerOnly,
+    if (canPrepareCatchProfile) HostFormAnswerDestination.catchProfile,
+    if (canPrepareOrganizerCard) HostFormAnswerDestination.organizerCard,
+  ];
+
   static bool supportsPersonField(String fieldId, HostFormQuestionKind kind) {
     final field = schemaPersonFieldForId(fieldId);
     return field?.questionKind == kind.name ||
@@ -153,6 +183,7 @@ class HostFormQuestion {
     HostFormPrivacyClass? privacyClass,
     HostFormPrefillPolicy? prefillPolicy,
     HostFormPresentation? hostPresentation,
+    HostFormAnswerDestination? answerDestination,
     HostFormQuestionValidation? validation,
   }) {
     final next = toJson();
@@ -207,6 +238,28 @@ class HostFormQuestion {
             'value': 'option_2',
           },
         ];
+      }
+    }
+    final candidate = HostFormQuestion.fromMap(next);
+    final destination = answerDestination ?? candidate.answerDestination;
+    if (!candidate.availableAnswerDestinations.contains(destination)) {
+      if (answerDestination != null) {
+        throw ArgumentError.value(answerDestination, 'answerDestination');
+      }
+      // Clearing a mapping or changing type never broadens sharing. The Host
+      // must explicitly choose a valid profile building block again.
+      next['answerDestination'] = HostFormAnswerDestination.organizerOnly.name;
+    } else if (answerDestination != null) {
+      next['answerDestination'] = answerDestination.name;
+      if (answerDestination != HostFormAnswerDestination.organizerOnly &&
+          candidate.kind == HostFormQuestionKind.file) {
+        next['validation'] = candidate.validation
+            .copyWith(
+              maxFileCount: 1,
+              maxFileSizeBytes: 10 * 1024 * 1024,
+              allowedMimeTypes: const ['image/jpeg', 'image/png', 'image/webp'],
+            )
+            .toJson();
       }
     }
     return HostFormQuestion.fromMap(next);

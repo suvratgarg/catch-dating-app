@@ -280,6 +280,7 @@ class HostFormEditorController extends _$HostFormEditorController {
     HostFormPrivacyClass? privacyClass,
     HostFormPrefillPolicy? prefillPolicy,
     HostFormPresentation? hostPresentation,
+    HostFormAnswerDestination? answerDestination,
     HostFormQuestionValidation? validation,
   }) => _mutate((definition) {
     final currentSection = definition.sections[sectionIndex];
@@ -294,6 +295,7 @@ class HostFormEditorController extends _$HostFormEditorController {
       privacyClass: privacyClass,
       prefillPolicy: prefillPolicy,
       hostPresentation: hostPresentation,
+      answerDestination: answerDestination,
       validation: validation,
     );
     final section = currentSection.replaceQuestion(questionIndex, question);

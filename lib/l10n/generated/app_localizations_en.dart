@@ -17637,11 +17637,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hostsCreateEventCreateAction => 'Create event';
 
   @override
-  String get hostFormPersonField => 'Use this answer as';
+  String get hostFormPersonField => 'Person field';
 
   @override
   String get hostFormPersonFieldHelp =>
-      'Identify contact and profile answers for review. Other answers stay with this response.';
+      'Classify this answer for your CRM. This label alone does not save or share a Catch profile field.';
 
   @override
   String hostFormPersonFieldName({required String field}) {
@@ -20340,4 +20340,28 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hostFormMessagingPhoneRequired =>
       'Choose verified phone in Access to offer WhatsApp updates.';
+
+  @override
+  String get hostFormAnswerDestinationLabel => 'Profile use';
+
+  @override
+  String get hostFormAnswerOrganizerOnly => 'Organizer only';
+
+  @override
+  String get hostFormAnswerCatchProfile => 'Catch profile';
+
+  @override
+  String get hostFormAnswerOrganizerCard => 'Organizer card';
+
+  @override
+  String get hostFormAnswerOrganizerOnlyHelp =>
+      'Stays in your form response. A person-field label does not add it to a Catch profile. Choose a supported person field above to offer a Catch profile building block.';
+
+  @override
+  String get hostFormAnswerCatchProfileHelp =>
+      'Requires verified phone access. Prepares this answer privately for the applicant. They must claim their profile and choose what to share before other participants can see it.';
+
+  @override
+  String get hostFormAnswerOrganizerCardHelp =>
+      'Requires verified phone access. The applicant can see this answer in their private card for your organizer. Other organizers cannot see it. Event sharing needs their permission.';
 }

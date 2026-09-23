@@ -131,6 +131,41 @@ class HostFormQuestionSection extends StatelessWidget {
             },
           ),
         ),
+      CatchFieldLanes.single(
+        child: CatchField<HostFormAnswerDestination>.select(
+          copy: catchFieldCopy(context.l10n),
+          title: context.l10n.hostFormAnswerDestinationLabel,
+          helperText: switch (question.answerDestination) {
+            HostFormAnswerDestination.organizerOnly =>
+              context.l10n.hostFormAnswerOrganizerOnlyHelp,
+            HostFormAnswerDestination.catchProfile =>
+              context.l10n.hostFormAnswerCatchProfileHelp,
+            HostFormAnswerDestination.organizerCard =>
+              context.l10n.hostFormAnswerOrganizerCardHelp,
+          },
+          contract: CatchContractConstraints
+              .organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsAnswerDestination,
+          contractValueBuilder: (value) => value.name,
+          values: {
+            ...question.availableAnswerDestinations,
+            question.answerDestination,
+          }.toList(growable: false),
+          value: question.answerDestination,
+          itemLabelBuilder: (value) => switch (value) {
+            HostFormAnswerDestination.organizerOnly =>
+              context.l10n.hostFormAnswerOrganizerOnly,
+            HostFormAnswerDestination.catchProfile =>
+              context.l10n.hostFormAnswerCatchProfile,
+            HostFormAnswerDestination.organizerCard =>
+              context.l10n.hostFormAnswerOrganizerCard,
+          },
+          onChanged: (value) => notifier.updateQuestion(
+            sectionIndex,
+            questionIndex,
+            answerDestination: value,
+          ),
+        ),
+      ),
       if (sections.length > 1)
         CatchFieldLanes.single(
           child: CatchField<int>.select(

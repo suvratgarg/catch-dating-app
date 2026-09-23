@@ -347,6 +347,17 @@ list. Detail sheets identify test money, separate capture from submission,
 show selectable provider references, and only offer a response link when one
 exists. They do not imply that declining an application issues a refund.
 
+The question editor separates the CRM Person field classification from Profile
+use. Classification alone preserves organizer-only behavior. A Host explicitly
+chooses a supported Catch profile building block or an organizer-card field;
+acknowledgements/signatures cannot use either profile destination, and derived
+age cannot replace a date-of-birth source. Clearing a mapping or changing to an
+incompatible question type falls back to organizer-only use. A profile image
+starts with one JPEG, PNG or WebP up to 10 MB. Requiredness stays independently
+editable and round-trips without changing the destination. Publish validation
+requires verified-phone access for profile/card fields; submission only prepares
+private review pointers and does not claim, publish or share a profile.
+
 The Settings workspace can offer organizer and Catch WhatsApp choices
 independently; enabling either requires verified-phone identity. The public
 review step starts both unchecked and uses versioned server-owned copy. A

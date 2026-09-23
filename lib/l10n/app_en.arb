@@ -24194,14 +24194,14 @@
     "x-owner": "product",
     "x-surface": "event_create"
   },
-  "hostFormPersonField": "Use this answer as",
+  "hostFormPersonField": "Person field",
   "@hostFormPersonField": {
     "description": "Person-field mapping in the Host form builder.",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.forms"
   },
-  "hostFormPersonFieldHelp": "Identify contact and profile answers for review. Other answers stay with this response.",
+  "hostFormPersonFieldHelp": "Classify this answer for your CRM. This label alone does not save or share a Catch profile field.",
   "@hostFormPersonFieldHelp": {
     "description": "Person-field mapping in the Host form builder.",
     "x-audience": "host",
@@ -27627,5 +27627,19 @@
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "host.forms.settings"
-  }
+  },
+  "hostFormAnswerDestinationLabel": "Profile use",
+  "@hostFormAnswerDestinationLabel": {"description": "Host form answer destination and privacy disclosure.", "x-audience": "host", "x-owner": "product", "x-surface": "forms"},
+  "hostFormAnswerOrganizerOnly": "Organizer only",
+  "@hostFormAnswerOrganizerOnly": {"description": "Host form answer destination and privacy disclosure.", "x-audience": "host", "x-owner": "product", "x-surface": "forms"},
+  "hostFormAnswerCatchProfile": "Catch profile",
+  "@hostFormAnswerCatchProfile": {"description": "Host form answer destination and privacy disclosure.", "x-audience": "host", "x-owner": "product", "x-surface": "forms"},
+  "hostFormAnswerOrganizerCard": "Organizer card",
+  "@hostFormAnswerOrganizerCard": {"description": "Host form answer destination and privacy disclosure.", "x-audience": "host", "x-owner": "product", "x-surface": "forms"},
+  "hostFormAnswerOrganizerOnlyHelp": "Stays in your form response. A person-field label does not add it to a Catch profile. Choose a supported person field above to offer a Catch profile building block.",
+  "@hostFormAnswerOrganizerOnlyHelp": {"description": "Host form answer destination and privacy disclosure.", "x-audience": "host", "x-owner": "product", "x-surface": "forms"},
+  "hostFormAnswerCatchProfileHelp": "Requires verified phone access. Prepares this answer privately for the applicant. They must claim their profile and choose what to share before other participants can see it.",
+  "@hostFormAnswerCatchProfileHelp": {"description": "Host form answer destination and privacy disclosure.", "x-audience": "host", "x-owner": "product", "x-surface": "forms"},
+  "hostFormAnswerOrganizerCardHelp": "Requires verified phone access. The applicant can see this answer in their private card for your organizer. Other organizers cannot see it. Event sharing needs their permission.",
+  "@hostFormAnswerOrganizerCardHelp": {"description": "Host form answer destination and privacy disclosure.", "x-audience": "host", "x-owner": "product", "x-surface": "forms"}
 }
