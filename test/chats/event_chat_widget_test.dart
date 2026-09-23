@@ -185,7 +185,7 @@ void main() {
         expect(find.textContaining('membership is unavailable'), findsOneWidget);
       }
       await capture(tester, 'fixture-$room');
-    },
+    });
   }
   for (final reactions in [false, true]) {
     testWidgets(

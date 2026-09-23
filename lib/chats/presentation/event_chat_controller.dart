@@ -389,7 +389,9 @@ class EventChatController extends _$EventChatController {
     final current = state.asData?.value;
     if (current == null || !current.active || current.busy ||
         !current.access.canReadMessages ||
-        current.uid != reviewedUid) return false;
+        current.uid != reviewedUid) {
+      return false;
+    }
     final message = current.messages
         .where((row) => row.messageId == reviewed.messageId)
         .firstOrNull;

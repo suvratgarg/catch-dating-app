@@ -209,24 +209,24 @@ class _EventChatScreenState extends ConsumerState<EventChatScreen>
       firstDate: now,
       lastDate: now.add(const Duration(days: 365)),
     );
-    if (!mounted || openDate == null) return null;
+    if (!context.mounted || openDate == null) return null;
     final openTime = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.fromDateTime(now),
     );
-    if (!mounted || openTime == null) return null;
+    if (!context.mounted || openTime == null) return null;
     final closeDate = await showDatePicker(
       context: context,
       initialDate: openDate,
       firstDate: openDate,
       lastDate: now.add(const Duration(days: 365)),
     );
-    if (!mounted || closeDate == null) return null;
+    if (!context.mounted || closeDate == null) return null;
     final closeTime = await showTimePicker(
       context: context,
       initialTime: openTime,
     );
-    if (!mounted || closeTime == null) return null;
+    if (!context.mounted || closeTime == null) return null;
     return (opensAt: DateTime(openDate.year, openDate.month, openDate.day,
       openTime.hour, openTime.minute),
     closesAt: DateTime(closeDate.year, closeDate.month, closeDate.day,
@@ -531,9 +531,8 @@ class EventChatPageBody extends StatelessWidget {
           children: [
             gapH24,
             Text(
-              access.membershipStatus == 'removed' ||
-                      access.membershipStatus == 'banned'
-                  ? l.eventChatRemoved
+              access.membershipUnavailable
+                  ? l.eventChatMembershipRemoved
                   : !access.isRoomOpen
                   ? l.eventChatNotOpen
                   : l.eventChatJoinTitle,
@@ -739,7 +738,7 @@ class EventChatPageBody extends StatelessWidget {
           Padding(
             padding: CatchInsets.contentHorizontal,
             child: Text(
-              access.roomStatus == 'announcementsOnly'
+              access.announcementsOnly
                   ? l.eventChatAnnouncementsReadOnly
                   : l.eventChatReadOnly,
               style: CatchTextStyles.supporting(context),

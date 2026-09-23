@@ -367,7 +367,10 @@ void main() {
     expect(ScheduleFixtureController._actions, isEmpty);
     expect(find.textContaining('cannot reopen it'), findsOneWidget);
     expect(ScheduleFixtureController._foregroundStates, isNot(contains(false)));
-    await tester.tap(find.text('Archive room').last);
+    await tester.tap(find.descendant(
+      of: find.byType(Dialog),
+      matching: find.widgetWithText(CatchButton, 'Archive room'),
+    ));
     await pumpFeatureUi(tester);
     expect(ScheduleFixtureController._actions, [EventChatAction.archive]);
     expect(tester.takeException(), isNull);

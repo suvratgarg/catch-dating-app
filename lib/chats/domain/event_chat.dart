@@ -83,6 +83,9 @@ class EventChatAccess {
       roomStatus == 'paused' ||
       roomStatus == 'announcementsOnly';
   bool get hasJoined => membershipStatus == 'joined';
+  bool get membershipUnavailable =>
+      membershipStatus == 'removed' || membershipStatus == 'banned';
+  bool get announcementsOnly => roomStatus == 'announcementsOnly';
 
   int revisionFor(EventChatAction action) => switch (action) {
     EventChatAction.open || EventChatAction.close ||

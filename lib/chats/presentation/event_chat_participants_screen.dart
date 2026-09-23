@@ -224,9 +224,9 @@ class EventChatParticipantsRowList extends StatelessWidget {
                         title: person.displayName,
                         body: [
                           if (person.uid == state.uid) l.eventChatYou,
-                          person.membershipStatus == 'removed'
+                          person.isRemoved
                               ? l.eventChatMemberRemoved
-                              : person.membershipStatus == 'banned'
+                              : person.isBanned
                                   ? l.eventChatMemberBanned
                                   : person.isHost
                                       ? l.eventChatParticipantHost
@@ -235,7 +235,7 @@ class EventChatParticipantsRowList extends StatelessWidget {
                         emphasis: CatchFieldEmphasis.title,
                         titleMaxLines: 3,
                         bodyMaxLines: 3,
-                        onTap: person.membershipStatus == 'joined'
+                        onTap: person.isJoined
                             ? () => onOpen(person.uid)
                             : null,
                       ),
@@ -247,17 +247,17 @@ class EventChatParticipantsRowList extends StatelessWidget {
                       CatchActionMenu<String>(
                         tooltip: l.eventChatMemberActions,
                         items: [
-                          if (person.membershipStatus == 'joined')
+                          if (person.isJoined)
                             CatchActionMenuItem(
                               value: 'remove',
                               label: l.eventChatRemoveMember,
                             ),
-                          if (person.membershipStatus != 'banned')
+                          if (!person.isBanned)
                             CatchActionMenuItem(
                               value: 'ban',
                               label: l.eventChatBanMember,
                             ),
-                          if (person.membershipStatus != 'joined')
+                          if (!person.isJoined)
                             CatchActionMenuItem(
                               value: 'reinstate',
                               label: l.eventChatReinstateMember,

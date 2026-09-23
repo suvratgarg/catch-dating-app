@@ -21,6 +21,9 @@ class EventChatParticipant {
   final bool isHost;
   final String membershipStatus;
   final int membershipRevision;
+  bool get isJoined => membershipStatus == 'joined';
+  bool get isRemoved => membershipStatus == 'removed';
+  bool get isBanned => membershipStatus == 'banned';
 }
 
 @immutable
