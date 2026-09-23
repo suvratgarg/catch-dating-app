@@ -5,6 +5,8 @@ import type {OrganizerFormResponseDocument as Response,
 import {createHash} from "node:crypto";
 import {HttpsError} from "firebase-functions/v2/https";
 import {requireDoc} from "../shared/validation";
+import {validateEventAssignmentFeatureConsentDocument} from
+  "../shared/generated/validators/eventAssignmentFeatureConsentDocument";
 import type {AssignmentFeatureRule, AssignmentFeatureValue,
   EventAssignmentFeatureSnapshot} from "./assignmentFeatureScoring";
 import {validateAssignmentFeatureRules} from "./assignmentFeatureScoring";
@@ -80,8 +82,7 @@ export async function loadAuthorizedAssignmentFeatures(params: {
     const snaps = await db.getAll(...refs.slice(offset, offset + 200));
     for (const snap of snaps) {
       if (!snap.exists) continue;
-      const decision = requireDoc<ConsentDoc>(snap,
-        "EventAssignmentFeatureConsentDocument");
+      const decision = readAssignmentFeatureConsent(snap);
       const rule = byFeature.get(decision.featureId);
       if (!rule || !eligible.has(decision.uid) ||
           snap.id !== assignmentFeatureConsentId(
@@ -139,8 +140,7 @@ export async function recheckAssignmentFeatureSnapshots(params: {
       "eventAssignmentFeatureConsents").doc(assignmentFeatureConsentId(
       eventId, snapshot.uid, snapshot.featureId)));
     if (!consentSnap.exists) throw changed();
-    const decision = requireDoc<ConsentDoc>(consentSnap,
-      "EventAssignmentFeatureConsentDocument");
+    const decision = readAssignmentFeatureConsent(consentSnap);
     return {snapshot, decision};
   }));
   const uniqueResponseIds = [...new Set(source.map((item) =>
@@ -179,6 +179,18 @@ export async function recheckAssignmentFeatureSnapshots(params: {
 function changed(): HttpsError {
   return new HttpsError("aborted",
     "Matching consent or source changed before assignment publication.");
+}
+
+/** Parse private consent with the generated contract before using pointers. */
+export function readAssignmentFeatureConsent(
+  snap: FirebaseFirestore.DocumentSnapshot
+): ConsentDoc {
+  const value = snap.data();
+  if (!validateEventAssignmentFeatureConsentDocument(value)) {
+    throw new HttpsError("failed-precondition",
+      "Matching consent record is invalid.");
+  }
+  return value;
 }
 
 /** Host rules and responses alone never grant answer use. */

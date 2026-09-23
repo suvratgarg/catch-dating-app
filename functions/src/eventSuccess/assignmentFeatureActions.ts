@@ -31,7 +31,8 @@ import {checkRateLimit} from "../shared/rateLimit";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import {loadEventSuccessRosterParticipant} from "./eventSuccessRoster";
 import {assignmentFeatureConsentId, assignmentFeatureRuleMatchesVersion,
-  authorizedAssignmentFeatureSnapshot} from "./assignmentFeatureConsent";
+  authorizedAssignmentFeatureSnapshot,
+  readAssignmentFeatureConsent} from "./assignmentFeatureConsent";
 import {type AssignmentFeatureRule,
   validateAssignmentFeatureRules} from "./assignmentFeatureScoring";
 
@@ -116,12 +117,15 @@ export async function setEventAssignmentFeatureConsentHandler(
   const data = validateCallableWithAjv<ConsentInput>(request,
     validateSetEventAssignmentFeatureConsentCallablePayload);
   const phone = request.auth?.token.phone_number;
-  if (typeof phone !== "string" || !/^\+[1-9][0-9]{6,14}$/u.test(phone)) {
+  if (data.decision === "grant" &&
+      (typeof phone !== "string" ||
+        !/^\+[1-9][0-9]{6,14}$/u.test(phone))) {
     throw new HttpsError("failed-precondition", "Verify this phone first.");
   }
   const db = deps.db();
   await deps.rateLimit(db, uid, "setEventAssignmentFeatureConsent");
-  if (!await loadEventSuccessRosterParticipant(db, data.eventId, uid)) {
+  if (data.decision === "grant" &&
+      !await loadEventSuccessRosterParticipant(db, data.eventId, uid)) {
     throw unavailable();
   }
   const consentRef = db.collection("eventAssignmentFeatureConsents")
@@ -135,6 +139,36 @@ export async function setEventAssignmentFeatureConsentHandler(
         tx.get(consentRef),
         tx.get(db.collection("deletedUsers").doc(uid)),
       ]);
+    const previous = currentSnap.exists ?
+      readAssignmentFeatureConsent(currentSnap) : null;
+    const expectedStatus = data.decision === "grant" ? "granted" :
+      "withdrawn";
+    if (previous?.lastRequestId === data.requestId) {
+      if (previous.responseId !== data.responseId ||
+          previous.status !== expectedStatus) throw unavailable();
+      return {eventId: data.eventId, featureId: data.featureId,
+        status: previous.status, revision: previous.revision,
+        receiptId: previous.receiptId, replayed: true};
+    }
+    const revision = previous?.revision ?? 0;
+    if (revision !== data.expectedRevision) {
+      throw new HttpsError("aborted", "Matching consent changed.");
+    }
+    const receiptId = "afcr_" + hash([data.eventId, uid,
+      data.featureId, data.requestId].join("|")).slice(0, 48);
+    if (data.decision === "withdraw") {
+      if (!previous || previous.eventId !== data.eventId ||
+          previous.uid !== uid ||
+          previous.featureId !== data.featureId ||
+          previous.responseId !== data.responseId) throw unavailable();
+      const next: Consent = {...previous, status: "withdrawn",
+        receiptId, revision: revision + 1,
+        lastRequestId: data.requestId, updatedAt: deps.now()};
+      tx.set(consentRef, next);
+      return {eventId: data.eventId, featureId: data.featureId,
+        status: "withdrawn", revision: next.revision,
+        receiptId, replayed: false};
+    }
     if (!eventSnap.exists || !planSnap.exists ||
         !responseSnap.exists || deleted.exists) throw unavailable();
     const event = requireDoc<EventDocument>(eventSnap, "EventDocument");
@@ -149,26 +183,10 @@ export async function setEventAssignmentFeatureConsentHandler(
         response.status !== "submitted" || response.withdrawnAt !== null) {
       throw unavailable();
     }
-    const previous = currentSnap.exists ? requireDoc<Consent>(currentSnap,
-      "EventAssignmentFeatureConsentDocument") : null;
-    const expectedStatus = data.decision === "grant" ? "granted" :
-      "withdrawn";
-    if (previous?.lastRequestId === data.requestId) {
-      if (previous.responseId !== data.responseId ||
-          previous.status !== expectedStatus) throw unavailable();
-      return {eventId: data.eventId, featureId: data.featureId,
-        status: previous.status, revision: previous.revision,
-        receiptId: previous.receiptId, replayed: true};
-    }
-    const revision = previous?.revision ?? 0;
-    if (revision !== data.expectedRevision) {
-      throw new HttpsError("aborted", "Matching consent changed.");
-    }
     const rule = (plan.assignmentFeatureRules ?? []).find((item) =>
       item.featureId === data.featureId) as AssignmentFeatureRule | undefined;
-    if (data.decision === "grant" && !rule) throw unavailable();
-    if (data.decision === "withdraw" && !previous) throw unavailable();
-    const source = rule ?? previous!;
+    if (!rule) throw unavailable();
+    const source = rule;
     if (source.formId !== response.formId ||
         source.versionId !== response.versionId ||
         source.questionId === undefined ||
@@ -180,8 +198,6 @@ export async function setEventAssignmentFeatureConsentHandler(
     if (!versionSnap.exists) throw unavailable();
     const version = requireDoc<Version>(versionSnap,
       "OrganizerFormVersionDocument");
-    const receiptId = "afcr_" + hash([data.eventId, uid,
-      data.featureId, data.requestId].join("|" )).slice(0, 48);
     const candidate = {eventId: data.eventId, organizerId, uid,
       responseId: data.responseId, featureId: data.featureId,
       formId: source.formId, versionId: source.versionId,
@@ -189,20 +205,19 @@ export async function setEventAssignmentFeatureConsentHandler(
       transformVersion: source.transformVersion,
       purpose: "eventAssignmentMatching" as const,
       status: "granted" as const, receiptId};
-    if (data.decision === "grant" && (!rule ||
-        !assignmentFeatureRuleMatchesVersion(rule,
-          rule.versionId, version, organizerId) ||
+    if (!assignmentFeatureRuleMatchesVersion(rule,
+      rule.versionId, version, organizerId) ||
         !authorizedAssignmentFeatureSnapshot({eventId: data.eventId,
           organizerId, uid, rule, decision: candidate,
           responseId: data.responseId, response,
-          versionId: rule.versionId, version}))) throw unavailable();
+          versionId: rule.versionId, version})) throw unavailable();
     const now = deps.now();
-    const next: Consent = {...candidate, status: expectedStatus,
+    const next: Consent = {...candidate, status: "granted",
       revision: revision + 1, lastRequestId: data.requestId,
       createdAt: previous?.createdAt ?? now, updatedAt: now};
     tx.set(consentRef, next);
     return {eventId: data.eventId, featureId: data.featureId,
-      status: expectedStatus, revision: revision + 1,
+      status: "granted", revision: revision + 1,
       receiptId, replayed: false};
   });
 }
