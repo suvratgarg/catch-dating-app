@@ -50,6 +50,13 @@ part 'profile_shell_layout_tests.dart';
 part 'profile_editing_prompts_tests.dart';
 part 'profile_choice_editors_tests.dart';
 
+Future<void> _openRunningPreferences(WidgetTester tester) async {
+  final disclosure = find.byKey(const ValueKey('profile-running-preferences'));
+  await _dragProfileTabUntilTappable(tester, disclosure);
+  await tester.tap(disclosure);
+  await _pumpProfileSheet(tester);
+}
+
 Widget _profileTab(UserProfile user) {
   return ProviderScope(
     child: MaterialApp(

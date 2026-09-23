@@ -756,6 +756,7 @@ void _registerProfileChoiceEditorsTests() {
     final user = buildUser(name: 'Suvrat Garg');
     await _pumpEditableProfileTab(tester, user, repository);
 
+    await _openRunningPreferences(tester);
     final paceTile = _profileInfoTile('Pace range');
     await _dragProfileTabUntilTappable(tester, paceTile);
     await tester.tap(paceTile);

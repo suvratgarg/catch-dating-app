@@ -29,7 +29,7 @@ void _registerProfileEditingPromptsTests() {
     expect(find.textContaining('PHOTOS', findRichText: true), findsOneWidget);
     expect(find.textContaining('PROMPTS', findRichText: true), findsOneWidget);
     expect(find.text('ABOUT YOU'), findsOneWidget);
-    expect(find.text('RUNNING'), findsOneWidget);
+    expect(find.text('ACTIVITY PREFERENCES'), findsOneWidget);
     expect(find.text('LIFESTYLE'), findsOneWidget);
     expect(_profileInfoTile(_perfectRunPromptTitle), findsOneWidget);
 
@@ -443,12 +443,14 @@ void _registerProfileEditingPromptsTests() {
   });
 
   testWidgets(
-    'ProfileTab keeps the handoff Running section available before setup',
+    'ProfileTab keeps activity preferences optional and collapsed before setup',
     (tester) async {
       final user = buildUser(name: 'Suvrat Garg', runPreferencesVersion: 0);
       await _pumpProfileTab(tester, user);
 
-      expect(find.text('RUNNING'), findsOneWidget);
+      expect(find.text('ACTIVITY PREFERENCES'), findsOneWidget);
+      expect(_profileInfoTile('Pace range'), findsNothing);
+      await _openRunningPreferences(tester);
       expect(_profileInfoTile('Pace range'), findsOneWidget);
     },
   );
@@ -458,6 +460,8 @@ void _registerProfileEditingPromptsTests() {
   ) async {
     final user = buildUser(name: 'Suvrat Garg');
     await _pumpProfileTab(tester, user);
+
+    await _openRunningPreferences(tester);
 
     // Scroll to and tap the pace range row.
     final paceTile = _profileInfoTile('Pace range');

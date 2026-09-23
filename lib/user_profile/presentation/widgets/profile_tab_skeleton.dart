@@ -32,13 +32,13 @@ class ProfileTabSkeletonSliverBody extends StatelessWidget {
                   rows: 5,
                 ),
                 ProfileInfoSkeletonSection(
-                  title: context.l10n.userProfileProfileTabSkeletonTitleRunning,
-                  rows: 4,
-                ),
-                ProfileInfoSkeletonSection(
                   title:
                       context.l10n.userProfileProfileTabSkeletonTitleLifestyle,
                   rows: 4,
+                ),
+                ProfileInfoSkeletonSection(
+                  title: context.l10n.profileActivityPreferencesTitle,
+                  rows: 1,
                 ),
               ],
             ),

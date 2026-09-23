@@ -10913,19 +10913,19 @@ abstract class AppLocalizations {
   /// Product copy used by lib/user_profile/presentation/self_profile_edit_tab_state.dart (label).
   ///
   /// In en, this message translates to:
-  /// **'Preferred distances'**
+  /// **'Distances'**
   String get userProfileSelfProfileEditTabStateLabelPreferredDistances;
 
   /// Product copy used by lib/user_profile/presentation/self_profile_edit_tab_state.dart (label).
   ///
   /// In en, this message translates to:
-  /// **'Why I event'**
+  /// **'Motivation'**
   String get userProfileSelfProfileEditTabStateLabelWhyIEvent;
 
   /// Product copy used by lib/user_profile/presentation/self_profile_edit_tab_state.dart (label).
   ///
   /// In en, this message translates to:
-  /// **'Favorite event times'**
+  /// **'Run times'**
   String get userProfileSelfProfileEditTabStateLabelFavoriteEventTimes;
 
   /// Product copy used by lib/user_profile/presentation/self_profile_edit_tab_state.dart (label).
@@ -32473,7 +32473,7 @@ abstract class AppLocalizations {
   /// Participant form profile review copy.
   ///
   /// In en, this message translates to:
-  /// **'Review the details you submitted and choose what to keep in Catch. Your private organizer cards contain only answers you chose from your forms.'**
+  /// **'Your form details, grouped by organizer. Review unclaimed submissions and manage the answers saved to each private card. Other organizers cannot see these cards.'**
   String get formProfilesDescription;
 
   /// Participant form profile review copy.
@@ -32539,7 +32539,7 @@ abstract class AppLocalizations {
   /// Participant form profile review copy.
   ///
   /// In en, this message translates to:
-  /// **'Only you can see this card. Other organizers cannot see it. The organizer still has your original form response. Removing an answer here removes it from this card only.'**
+  /// **'This card is private to you. Other organizers cannot see it. You can separately choose answers to share in an eligible event chat. The original organizer still has your form response; removing an answer here only removes it from your card.'**
   String get formProfileCardDescription;
 
   /// Participant form profile review copy.
@@ -33111,6 +33111,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Photo preview unavailable. Reload before selecting it.'**
   String get eventProfilePhotoUnavailable;
+
+  /// Participant profile structure and private organizer-card copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Not claimed · Review before using in Catch'**
+  String get formProfilesUnclaimed;
+
+  /// Participant profile structure and private organizer-card copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Reviewed · No answers saved to a private card'**
+  String get formProfilesNoCardAnswers;
+
+  /// Participant profile structure and private organizer-card copy.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one {1 answer saved to your private card} other {{count} answers saved to your private card}}'**
+  String formProfilesSavedAnswers({required int count});
+
+  /// Participant profile structure and private organizer-card copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Activity preferences'**
+  String get profileActivityPreferencesTitle;
+
+  /// Participant profile structure and private organizer-card copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional pace, distances and run preferences.'**
+  String get profileActivityPreferencesBody;
+
+  /// Participant profile structure and private organizer-card copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Catch profile'**
+  String get profileCoreDetailsTitle;
+
+  /// Participant profile structure and private organizer-card copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage your photos and core details here. Form answers stay with their organizer unless you explicitly use a Catch profile field. Choose what to share in each event chat.'**
+  String get profileCoreDetailsBody;
 }
 
 class _AppLocalizationsDelegate

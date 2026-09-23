@@ -12643,21 +12643,21 @@
     "x-owner": "product",
     "x-surface": "user_profile.presentation.self_profile_edit_tab_state"
   },
-  "userProfileSelfProfileEditTabStateLabelPreferredDistances": "Preferred distances",
+  "userProfileSelfProfileEditTabStateLabelPreferredDistances": "Distances",
   "@userProfileSelfProfileEditTabStateLabelPreferredDistances": {
     "description": "Product copy used by lib/user_profile/presentation/self_profile_edit_tab_state.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "user_profile.presentation.self_profile_edit_tab_state"
   },
-  "userProfileSelfProfileEditTabStateLabelWhyIEvent": "Why I event",
+  "userProfileSelfProfileEditTabStateLabelWhyIEvent": "Motivation",
   "@userProfileSelfProfileEditTabStateLabelWhyIEvent": {
     "description": "Product copy used by lib/user_profile/presentation/self_profile_edit_tab_state.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "user_profile.presentation.self_profile_edit_tab_state"
   },
-  "userProfileSelfProfileEditTabStateLabelFavoriteEventTimes": "Favorite event times",
+  "userProfileSelfProfileEditTabStateLabelFavoriteEventTimes": "Run times",
   "@userProfileSelfProfileEditTabStateLabelFavoriteEventTimes": {
     "description": "Product copy used by lib/user_profile/presentation/self_profile_edit_tab_state.dart (label).",
     "x-audience": "consumer",
@@ -27657,7 +27657,7 @@
     "x-owner": "product",
     "x-surface": "user_profile.presentation.form_profiles"
   },
-  "formProfilesDescription": "Review the details you submitted and choose what to keep in Catch. Your private organizer cards contain only answers you chose from your forms.",
+  "formProfilesDescription": "Your form details, grouped by organizer. Review unclaimed submissions and manage the answers saved to each private card. Other organizers cannot see these cards.",
   "@formProfilesDescription": {
     "description": "Participant form profile review copy.",
     "x-audience": "consumer",
@@ -27734,7 +27734,7 @@
     "x-owner": "product",
     "x-surface": "user_profile.presentation.form_profiles"
   },
-  "formProfileCardDescription": "Only you can see this card. Other organizers cannot see it. The organizer still has your original form response. Removing an answer here removes it from this card only.",
+  "formProfileCardDescription": "This card is private to you. Other organizers cannot see it. You can separately choose answers to share in an eligible event chat. The original organizer still has your form response; removing an answer here only removes it from your card.",
   "@formProfileCardDescription": {
     "description": "Participant form profile review copy.",
     "x-audience": "consumer",
@@ -28180,5 +28180,59 @@
     "x-owner": "chats",
     "x-domain": "chats",
     "x-surface": "chats.presentation.event_profile"
+  },
+  "formProfilesUnclaimed": "Not claimed · Review before using in Catch",
+  "@formProfilesUnclaimed": {
+    "description": "Participant profile structure and private organizer-card copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles"
+  },
+  "formProfilesNoCardAnswers": "Reviewed · No answers saved to a private card",
+  "@formProfilesNoCardAnswers": {
+    "description": "Participant profile structure and private organizer-card copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles"
+  },
+  "formProfilesSavedAnswers": "{count, plural, one {1 answer saved to your private card} other {{count} answers saved to your private card}}",
+  "@formProfilesSavedAnswers": {
+    "description": "Participant profile structure and private organizer-card copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.form_profiles",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profileActivityPreferencesTitle": "Activity preferences",
+  "@profileActivityPreferencesTitle": {
+    "description": "Participant profile structure and private organizer-card copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.widgets.profile_tab"
+  },
+  "profileActivityPreferencesBody": "Optional pace, distances and run preferences.",
+  "@profileActivityPreferencesBody": {
+    "description": "Participant profile structure and private organizer-card copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.widgets.profile_tab"
+  },
+  "profileCoreDetailsTitle": "Your Catch profile",
+  "@profileCoreDetailsTitle": {
+    "description": "Participant profile structure and private organizer-card copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.widgets.profile_tab"
+  },
+  "profileCoreDetailsBody": "Manage your photos and core details here. Form answers stay with their organizer unless you explicitly use a Catch profile field. Choose what to share in each event chat.",
+  "@profileCoreDetailsBody": {
+    "description": "Participant profile structure and private organizer-card copy.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "user_profile.presentation.widgets.profile_tab"
   }
 }

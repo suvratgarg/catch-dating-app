@@ -34,7 +34,7 @@ class _Forms extends FormProfilesController {
           cardFieldCount: 2,
         ),
         FormProfileSummary(
-          organizerId: 'org',
+          organizerId: 'coffee-org',
           responseId: 'coffee',
           formTitle: 'Coffee & conversation',
           organizerName: 'Coffee Club Demo',

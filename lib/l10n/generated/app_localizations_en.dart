@@ -6878,14 +6878,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get userProfileSelfProfileEditTabStateLabelPreferredDistances =>
-      'Preferred distances';
+      'Distances';
 
   @override
-  String get userProfileSelfProfileEditTabStateLabelWhyIEvent => 'Why I event';
+  String get userProfileSelfProfileEditTabStateLabelWhyIEvent => 'Motivation';
 
   @override
   String get userProfileSelfProfileEditTabStateLabelFavoriteEventTimes =>
-      'Favorite event times';
+      'Run times';
 
   @override
   String get userProfileSelfProfileEditTabStateLabelDrinking => 'Drinking';
@@ -20383,7 +20383,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get formProfilesDescription =>
-      'Review the details you submitted and choose what to keep in Catch. Your private organizer cards contain only answers you chose from your forms.';
+      'Your form details, grouped by organizer. Review unclaimed submissions and manage the answers saved to each private card. Other organizers cannot see these cards.';
 
   @override
   String get formProfilesEmptyTitle => 'No form profiles yet';
@@ -20419,7 +20419,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get formProfileCardDescription =>
-      'Only you can see this card. Other organizers cannot see it. The organizer still has your original form response. Removing an answer here removes it from this card only.';
+      'This card is private to you. Other organizers cannot see it. You can separately choose answers to share in an eligible event chat. The original organizer still has your form response; removing an answer here only removes it from your card.';
 
   @override
   String get formProfileKeepAnswer => 'Keep on my private card';
@@ -20732,4 +20732,37 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get eventProfilePhotoUnavailable =>
       'Photo preview unavailable. Reload before selecting it.';
+
+  @override
+  String get formProfilesUnclaimed =>
+      'Not claimed · Review before using in Catch';
+
+  @override
+  String get formProfilesNoCardAnswers =>
+      'Reviewed · No answers saved to a private card';
+
+  @override
+  String formProfilesSavedAnswers({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count answers saved to your private card',
+      one: '1 answer saved to your private card',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get profileActivityPreferencesTitle => 'Activity preferences';
+
+  @override
+  String get profileActivityPreferencesBody =>
+      'Optional pace, distances and run preferences.';
+
+  @override
+  String get profileCoreDetailsTitle => 'Your Catch profile';
+
+  @override
+  String get profileCoreDetailsBody =>
+      'Manage your photos and core details here. Form answers stay with their organizer unless you explicitly use a Catch profile field. Choose what to share in each event chat.';
 }

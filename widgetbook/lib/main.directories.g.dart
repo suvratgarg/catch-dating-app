@@ -535,6 +535,8 @@ import 'package:widgetbook_workspace/utility/event_profile.dart'
     as _widgetbook_workspace_utility_event_profile;
 import 'package:widgetbook_workspace/utility/force_update.dart'
     as _widgetbook_workspace_utility_force_update;
+import 'package:widgetbook_workspace/utility/form_profiles.dart'
+    as _widgetbook_workspace_utility_form_profiles;
 import 'package:widgetbook_workspace/utility/launch_access.dart'
     as _widgetbook_workspace_utility_launch_access;
 import 'package:widgetbook_workspace/utility/location_map.dart'
@@ -12939,6 +12941,41 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Screen states',
                 builder: _widgetbook_workspace_utility_force_update
                     .updateRequiredScreenStates,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
+        name: 'Form profiles',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'FormProfilesContent',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Account-owned form directory',
+                builder: _widgetbook_workspace_utility_form_profiles
+                    .formProfilesContentPreview,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'FormProfilesList',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Private cards grouped by organizer',
+                builder: _widgetbook_workspace_utility_form_profiles
+                    .formProfilesListPreview,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'FormProfilesScreen',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Organizer-scoped cards and unclaimed submissions',
+                builder: _widgetbook_workspace_utility_form_profiles
+                    .formProfilesScreenPreview,
               ),
             ],
           ),

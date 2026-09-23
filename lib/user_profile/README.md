@@ -16,6 +16,22 @@ data, and the source fields that feed public profile projection.
 - Schema changes belong in `contracts/` first, then generated Dart/TypeScript
   outputs and rules/tests should be updated through `docs/data_contracts.md`.
 
+## Participant form cards
+
+The Forms & cards tab remains available before dating setup. The authenticated
+form directory groups submissions by organizer ID, even when two organizers have
+the same name, and shows the newest loaded submission first within each group.
+Unclaimed submissions are labelled as awaiting review; claimed rows show how many
+applicant-selected answers are on their private card. Pagination counts are not
+presented as totals. Opening a row retains the existing explicit profile/card
+review flow. CRM notes, tags and reviews never enter these cards.
+
+The Edit tab explains the boundary between core Catch profile details and private
+organizer cards. Running remains an optional, initially collapsed activity section
+after core and lifestyle details; its existing persisted preferences and editors
+are preserved. Choosing answers to share in an eligible event chat is a separate
+action, and other organizers cannot read private cards.
+
 ## Verified Open Issues
 
 Verified against `lib/user_profile/presentation/widgets/profile_tab.dart`,

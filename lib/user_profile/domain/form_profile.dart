@@ -54,6 +54,31 @@ class FormProfilePage {
       );
   final List<FormProfileSummary> items;
   final String? nextCursor;
+
+  /// Group by the stable organizer id, never by a possibly shared display name.
+  /// Counts describe loaded submissions only; pagination may add more later.
+  List<List<FormProfileSummary>> get organizerGroups {
+    final grouped = <String, List<FormProfileSummary>>{};
+    for (final item in items) {
+      (grouped[item.organizerId] ??= []).add(item);
+    }
+    for (final rows in grouped.values) {
+      rows.sort((a, b) {
+        final date = b.submittedAt.compareTo(a.submittedAt);
+        return date == 0 ? a.responseId.compareTo(b.responseId) : date;
+      });
+    }
+    final groups = grouped.values.toList();
+    groups.sort((a, b) {
+      final name = (a.first.organizerName ?? '').compareTo(
+        b.first.organizerName ?? '',
+      );
+      return name == 0
+          ? a.first.organizerId.compareTo(b.first.organizerId)
+          : name;
+    });
+    return List.unmodifiable(groups.map(List<FormProfileSummary>.unmodifiable));
+  }
 }
 
 enum FormProfileDestination { catchProfile, organizerCard }

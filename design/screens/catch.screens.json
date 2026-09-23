@@ -8741,7 +8741,7 @@
           "id": "edit_tab_default",
           "kind": "populated",
           "status": "captured",
-          "source": "ProfileTabSliverBody renders Photos, Prompts, About you, Running, and Lifestyle sections from SelfProfileEditTabState descriptors.",
+          "source": "ProfileTabSliverBody renders core profile guidance, Photos, Prompts, About you, Lifestyle, and collapsed optional activity preferences from SelfProfileEditTabState descriptors.",
           "tests": [
             "test/profile/profile_widgets_test.dart"
           ],

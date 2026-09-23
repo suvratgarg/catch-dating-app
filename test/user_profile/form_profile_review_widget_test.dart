@@ -165,6 +165,56 @@ void main() {
       expect(saved.last.selectedQuestionIds, ['occupation']);
     },
   );
+  testWidgets('organizer groups keep status and response actions distinct', (
+    tester,
+  ) async {
+    final opened = <String>[];
+    await _pump(
+      tester,
+      FormProfilesList(
+        state: FormProfilesState(
+          page: FormProfilePage(
+            items: [
+              FormProfileSummary(
+                responseId: 'pending',
+                organizerId: 'rsvp',
+                formTitle: 'Weekend application',
+                organizerName: 'RSVP Demo',
+                submittedAt: DateTime(2026, 9, 23),
+                claimedAt: null,
+                cardFieldCount: 0,
+              ),
+              FormProfileSummary(
+                responseId: 'saved',
+                organizerId: 'rsvp',
+                formTitle: 'Community introduction',
+                organizerName: 'RSVP Demo',
+                submittedAt: DateTime(2026, 9, 22),
+                claimedAt: DateTime(2026, 9, 22),
+                cardFieldCount: 2,
+              ),
+            ],
+            nextCursor: null,
+          ),
+        ),
+        onOpen: opened.add,
+        onLoadMore: () {},
+      ),
+    );
+    expect(find.text('RSVP Demo'), findsOneWidget);
+    expect(find.textContaining('Not claimed'), findsOneWidget);
+    expect(
+      find.textContaining('2 answers saved to your private card'),
+      findsOneWidget,
+    );
+    for (final id in ['pending', 'saved']) {
+      final field = find.byKey(ValueKey('form-profile-$id'));
+      await tester.ensureVisible(field);
+      await pumpFeatureUi(tester);
+      await tester.tap(field);
+    }
+    expect(opened, ['pending', 'saved']);
+  });
   testWidgets(
     'empty scanned page can load more without claiming no profiles exist',
     (tester) async {

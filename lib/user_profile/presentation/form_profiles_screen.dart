@@ -72,7 +72,7 @@ class FormProfilesList extends StatelessWidget {
       children: [
         Text(
           l10n.formProfilesDescription,
-          style: CatchTextStyles.bodyM(context),
+          style: CatchTextStyles.proseM(context),
         ),
         gapH24,
         if (state.page.items.isEmpty && state.page.nextCursor == null)
@@ -82,20 +82,33 @@ class FormProfilesList extends StatelessWidget {
             message: l10n.formProfilesEmptyBody,
           ),
         if (state.page.items.isNotEmpty)
-          CatchSection.fieldRows(
-            first: true,
+          CatchSectionList(
+            emptyStateOmitted: true,
             children: [
-              for (final row in state.page.items)
-                CatchField.nav(
-                  key: ValueKey('form-profile-${row.responseId}'),
-                  copy: catchFieldCopy(l10n),
+              for (final group in state.page.organizerGroups)
+                CatchSection.contained(
+                  key: ValueKey('organizer-card-${group.first.organizerId}'),
                   title:
-                      row.organizerName ?? l10n.formProfilesOrganizerFallback,
-                  body:
-                      '${row.formTitle}\n${AppTimeFormatters.dateTime(row.submittedAt)}\n${row.claimedAt == null ? l10n.formProfilesReview : l10n.formProfilesManage}',
-                  titleMaxLines: 2,
-                  bodyMaxLines: 6,
-                  onTap: () => onOpen(row.responseId),
+                      group.first.organizerName ??
+                      l10n.formProfilesOrganizerFallback,
+                  children: [
+                    for (final row in group)
+                      CatchField.nav(
+                        key: ValueKey('form-profile-${row.responseId}'),
+                        copy: catchFieldCopy(l10n),
+                        title: row.formTitle,
+                        emphasis: CatchFieldEmphasis.title,
+                        body:
+                            '${row.claimedAt == null
+                                ? l10n.formProfilesUnclaimed
+                                : row.cardFieldCount > 0
+                                ? l10n.formProfilesSavedAnswers(count: row.cardFieldCount)
+                                : l10n.formProfilesNoCardAnswers}\n${AppTimeFormatters.dateTime(row.submittedAt)}',
+                        titleMaxLines: 2,
+                        bodyMaxLines: 8,
+                        onTap: () => onOpen(row.responseId),
+                      ),
+                  ],
                 ),
             ],
           ),
