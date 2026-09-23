@@ -1,12 +1,16 @@
-/** Installer code contains only public URLs, a title, and a frame identifier. */
+/** Installer code contains only public URLs, title, and frame identifier. */
 export function organizerFormEmbedAssets(
   canonicalUrl: string,
   title: string,
   embedId: string
 ) {
-  if (!/^[A-Za-z0-9_-]{1,80}$/u.test(embedId)) throw new Error("Invalid embed ID");
+  if (!/^[A-Za-z0-9_-]{1,80}$/u.test(embedId)) {
+    throw new Error("Invalid embed ID");
+  }
   const embedUrl = new URL(canonicalUrl);
-  if (embedUrl.protocol !== "https:") throw new Error("Embed URL must use HTTPS");
+  if (embedUrl.protocol !== "https:") {
+    throw new Error("Embed URL must use HTTPS");
+  }
   embedUrl.searchParams.set("embed", "1");
   embedUrl.searchParams.set("embedId", embedId);
   const url = embedUrl.toString();
@@ -25,6 +29,6 @@ export function organizerFormEmbedAssets(
 
 function escapeHtml(value: string): string {
   return value.replace(/[&<>"']/gu, (character) => ({
-    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;",
   })[character] ?? character);
 }
